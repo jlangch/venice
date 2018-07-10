@@ -27,6 +27,11 @@ venice> (+ 1 1)
 venice>
 ```
 
+## Cheat Sheet
+
+[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/9744b493/cheatsheet.html)
+
+
 ## Java Interop
 
 Venice supports calling constructors, static and instance methods as well static class
