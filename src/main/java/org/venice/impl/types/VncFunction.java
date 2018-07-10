@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.venice.VncException;
 import org.venice.impl.Destructuring;
 import org.venice.impl.Env;
-import org.venice.impl.types.collections.VncHashMap;
 import org.venice.impl.types.collections.VncList;
 
 
@@ -108,35 +107,31 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	}
 
 	public VncList getSignature() { 
-		final VncHashMap meta = getFnMeta();	
-		final VncVal paramDefs = meta.get(new VncSymbol(":signature")); 
+		final VncVal paramDefs = getMetaVal(new VncSymbol(":signature")); 
 		return paramDefs == Constants.Nil ? new VncList() : (VncList)paramDefs;
 	}
 	
 	public void setSignatures(final String... signatures) { 
-		getFnMeta().getMap().put(
+		setMetaVal(
 				new VncSymbol(":signature"), 
 				new VncList(Arrays.stream(signatures).map(s -> new VncString(s)).collect(Collectors.toList())));
 	}
 	
 	public VncVal getDescription() { 
-		final VncHashMap meta = getFnMeta();	
-		return meta.get(new VncSymbol(":description")); 
+		return getMetaVal(new VncSymbol(":description")); 
 	}
 	
 	public void setDescription(final String description) { 
-		final VncHashMap meta = getFnMeta();	
-		meta.getMap().put(new VncSymbol(":description"), new VncString(description));
+		setMetaVal(new VncSymbol(":description"), new VncString(description));
 	}
 	
 	public VncList getExamples() { 
-		final VncHashMap meta = getFnMeta();	
-		final VncVal paramDefs = meta.get(new VncSymbol(":examples")); 
+		final VncVal paramDefs = getMetaVal(new VncSymbol(":examples")); 
 		return paramDefs == Constants.Nil ? new VncList() : (VncList)paramDefs;
 	}
 	
 	public void setExamples(final String... examples) { 
-		getFnMeta().getMap().put(
+		setMetaVal(
 				new VncSymbol(":examples"), 
 				new VncList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
 	}
@@ -144,18 +139,6 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	@Override 
 	public String toString() {
 		return name;
-	}
-
-	private VncHashMap getFnMeta() {
-		final VncVal meta = getMeta();
-		if (meta == Constants.Nil) {
-			final VncHashMap m = new VncHashMap();
-			setMeta(m);
-			return m;
-		}
-		else {
-			return (VncHashMap)meta;
-		}
 	}
 	
 

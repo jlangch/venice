@@ -21,6 +21,8 @@
  */
 package org.venice.impl.types;
 
+import org.venice.impl.types.collections.VncHashMap;
+
 
 abstract public class VncVal implements Comparable<VncVal> {
 
@@ -32,6 +34,23 @@ abstract public class VncVal implements Comparable<VncVal> {
 	
 	public void setMeta(final VncVal m) { 
 		meta = m == null ? Constants.Nil : m; 
+	}
+
+	public VncVal getMetaVal(final VncSymbol key) {
+		if (meta == Constants.Nil) {
+			return Constants.Nil;
+		}
+		else {
+			return ((VncHashMap)meta).get(key);
+		}
+	}
+
+	public void setMetaVal(final VncSymbol key, final VncVal val) {
+		if (meta == Constants.Nil) {
+			meta = new VncHashMap();
+		}
+
+		((VncHashMap)meta).getMap().put(key, val);	
 	}
 	
 	public boolean isList() { 
