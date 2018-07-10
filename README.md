@@ -32,44 +32,6 @@ venice> (+ 1 1)
 venice>
 ```
 
-
-## Java Interop
-
-Venice supports calling constructors, static and instance methods as well static class
-fields and instance fields.
-
-
-```java
-import org.venice.Venice;
-
-final Venice venice = new Venice();
-
-System.out.println(venice.eval("(. :java.lang.Math :min 20 30)"));
-System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"));
-```
-
-
-```java
-import org.venice.Venice;
-
-final Venice venice = new Venice();
-
-final String script =
-         "(do                                                                  " +
-         "   (import :org.test.User :java.time.LocalDate)                      " +
-         "                                                                     " +
-         "   (def users [                                                      " +
-         "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     " +
-         "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12))) ])  " +
-         "                                                                     " +
-         "   (str (filter (fn [u] (> (get u :age) 30)) users))                 " + 
-         ")                                                                    ";
-         
-System.out.println(venice.eval(script));
-```
-
-
-
 ## Venice as expression engine
 
 ```java
@@ -115,6 +77,42 @@ import org.venice.Parameters;
 final Venice venice = new Venice();
 
 System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
+```
+
+
+## Java Interop
+
+Venice supports calling constructors, static and instance methods as well static class
+fields and instance fields.
+
+
+```java
+import org.venice.Venice;
+
+final Venice venice = new Venice();
+
+System.out.println(venice.eval("(. :java.lang.Math :min 20 30)"));
+System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"));
+```
+
+
+```java
+import org.venice.Venice;
+
+final Venice venice = new Venice();
+
+final String script =
+         "(do                                                                  " +
+         "   (import :org.test.User :java.time.LocalDate)                      " +
+         "                                                                     " +
+         "   (def users [                                                      " +
+         "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     " +
+         "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12))) ])  " +
+         "                                                                     " +
+         "   (str (filter (fn [u] (> (get u :age) 30)) users))                 " + 
+         ")                                                                    ";
+         
+System.out.println(venice.eval(script));
 ```
 
 ## Sandbox
