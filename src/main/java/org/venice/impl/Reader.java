@@ -43,12 +43,12 @@ import org.venice.impl.util.StringUtil;
 
 public class Reader {
 	
-	public Reader(final ArrayList<String> tokens) {
+	public Reader(final ArrayList<Token> tokens) {
 		this.tokens = tokens;
 		this.position = 0;
 	}
 
-	public String peek() {
+	public Token peek() {
 		if (position >= tokens.size()) {
 			return null;
 		} 
@@ -57,27 +57,38 @@ public class Reader {
 		}
 	}
    
-	public String next() {
+	public Token next() {
 		return tokens.get(position++);
 	}
 	
-	public static ArrayList<String> tokenize(final String str) {
+	public static ArrayList<Token> tokenize(final String str) {
+		final char[] strArr = str.toCharArray();
 		final Matcher matcher = tokenize_pattern.matcher(str);
 
-		final ArrayList<String> tokens = new ArrayList<String>();
+		int[] lastPos = {1,1};
+		int lastStartPos = 0;
+		
+		final ArrayList<Token> tokens = new ArrayList<>();
 		while (matcher.find()) {
 			final String token = matcher.group(1);
-			//final int tokenStartPos = matcher.start(1);
+			
 			if (token != null && !token.equals("") && !(token.charAt(0) == ';')) {
-				tokens.add(token);
+				final int tokenStartPos = matcher.start(1);
+				
+				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);
+				
+				tokens.add(new Token(token,pos[0],pos[1]));
+				
+				lastStartPos = tokenStartPos;
+				lastPos = pos;
 			}
 		}
 		return tokens;
 	}
 
 	public static VncVal read_atom(final Reader rdr) {
-		final String token = rdr.next();
-		final Matcher matcher = atom_pattern.matcher(token);
+		final Token token = rdr.next();
+		final Matcher matcher = atom_pattern.matcher(token.getToken());
 		
 		if (!matcher.find()) {
 			throw new ParseError("unrecognized token '" + token + "'");
@@ -123,7 +134,7 @@ public class Reader {
 			final char start, 
 			final char end
 	) {
-		String token = rdr.next();
+		Token token = rdr.next();
 		if (token.charAt(0) != start) {
 			throw new ParseError("expected '" + start + "'");
 		}
@@ -146,7 +157,7 @@ public class Reader {
 	}
 
 	public static VncVal read_form(final Reader rdr) {
-		final String token = rdr.peek();
+		final Token token = rdr.peek();
 		if (token == null) { 
 			throw new ContinueException(); 
 		}
@@ -212,6 +223,27 @@ public class Reader {
 		return read_form(new Reader(tokenize(str)));
 	}
 	
+	private static int[] getTextPosition(
+			final char[] text, 
+			final int pos, 
+			final int startPos, 
+			final int startRow, 
+			final int startCol
+	) {
+		int row = startRow;
+		int col = startCol;
+		
+		for(int ii=startPos; ii<pos; ii++) {
+			switch (text[ii]) {
+			case '\n': row++; col=1; break;
+			case '\r': break;
+			case '\t': col+=4; break;
+			default:   col++; break;
+			}
+		}
+		
+		return new int[]{row,col};
+	}
 	
 	// group 1: integer = "(^-?[0-9]+$)";
 	// group 2: decimal = "(^-?[0-9]+[.][0-9]*$)";
@@ -226,6 +258,6 @@ public class Reader {
 	
 	private static final Pattern tokenize_pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
 
-	private ArrayList<String> tokens;
+	private ArrayList<Token> tokens;
 	private int position;
 }
