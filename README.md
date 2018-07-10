@@ -42,23 +42,6 @@ final Venice venice = new Venice();
 System.out.println(venice.eval("(+ 1 1)"));
 ```
 
-Precompiling Venice speeds up evaluation significantly when calling many 
-times an expression with different parameters:
-
-```java
-import org.venice.Venice;
-import org.venice.PreCompiled;
-import org.venice.Parameters;
-
-final Venice venice = new Venice();
-
-final PreCompiled precompiled = venice.precompile("(+ 1 x)");
-
-for(long ii=0; ii<100; ii++) {
-    System.out.println(venice.eval(precompiled, Parameters.of("x", ii)));
-}
-```
-
 
 ### Passing parameters to Venice
 
@@ -77,6 +60,26 @@ import org.venice.Parameters;
 final Venice venice = new Venice();
 
 System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
+```
+
+
+### Precompiling Venice
+
+Precompiling Venice speeds up evaluation significantly when calling many 
+times an expression with different parameters:
+
+```java
+import org.venice.Venice;
+import org.venice.PreCompiled;
+import org.venice.Parameters;
+
+final Venice venice = new Venice();
+
+final PreCompiled precompiled = venice.precompile("(+ 1 x)");
+
+for(long ii=0; ii<100; ii++) {
+    System.out.println(venice.eval(precompiled, Parameters.of("x", ii)));
+}
 ```
 
 
