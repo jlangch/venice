@@ -1,0 +1,88 @@
+**Eval
+
+import org.venice.Venice;
+
+public class Example {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
+
+      Long val = (Long)venice.eval("(+ 1 2)");
+   }
+}
+
+
+**Precompiled
+
+import org.venice.Venice;
+import org.venice.PreCompiled;
+
+public class Example {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
+
+      PreCompiled precompiled = venice.precompile("(+ 1 x)");
+
+      for(int ii=0; ii<100; ii++) {
+        venice.eval(precompiled, Parameters.of("x", ii));
+      }
+   }
+}
+
+
+**Passing parameters
+
+import org.venice.Venice;
+import org.venice.Parameters;
+
+public class Example {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
+
+      Long val = (Long)venice.eval(
+                         "(+ x y 3)",
+                         Parameters.of("x", 6, "y", 3L));
+   }
+}
+
+
+**Java Interop
+
+import java.time.ZonedDateTime;
+import org.venice.Venice;
+
+public class Example {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
+
+      Long val = (Long)venice.eval("(. :java.lang.Math :min 20 30)");
+
+      ZonedDateTime ts = (ZonedDateTime)venice.eval(
+                             "(. (. :java.time.ZonedDateTime :now) :plusDays 5)");
+   }
+}
+
+
+**Sandbox
+
+import org.venice.Venice;
+import import org.venice.javainterop.*;
+
+public class Example {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
+
+      JavaInterceptor interceptor =
+         new JavaSandboxInterceptor(
+            WhiteList.create(
+                "java.lang.Long",
+                "java.lang.Math:min",
+                "java.lang.Math:max",
+                "java.time.ZonedDateTime:*",
+                "java.util.ArrayList:new"));
+
+      venice.eval("(. :java.lang.Math :min 20 30)"); // =>  OK
+      venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"); // => OK
+      venice.eval("(. :java.util.ArrayList :new)"); // => OK
+      venice.eval("(. :java.lang.System :exit 0)"); // => Sandbox SecurityException
+   }
+}

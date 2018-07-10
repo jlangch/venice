@@ -1,0 +1,12 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Treat license files as binary files, their line ending must never be changed
+*.license binary
+*.asc binary
+*.eap binary
+*.EAP binary
+
+# Use the correct line endings for Windows batch scripts and Unix shell scripts
+*.bat text eol=crlf
+*.sh text eol=lf
