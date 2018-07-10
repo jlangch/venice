@@ -16,6 +16,11 @@ Venice supports macros, comes with a configurable sandbox and Java interoperabil
 Because Venice does not depend on any libraries (other than the JVM) you can 
 easily add it as standalone .jar to your classpath.
 
+ 
+## Cheat Sheet
+
+[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/9744b493/cheatsheet.html)
+
 
 ## REPL
 
@@ -26,10 +31,6 @@ venice> (+ 1 1)
 ==> 2
 venice>
 ```
-
-## Cheat Sheet
-
-[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/9744b493/cheatsheet.html)
 
 
 ## Java Interop
