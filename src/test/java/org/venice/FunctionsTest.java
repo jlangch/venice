@@ -1343,8 +1343,8 @@ public class FunctionsTest {
 				"   (def test                         " +
 				"        (fn [a]                      " +
 				"            (do                      " +
-				"                (swap! counter inc)  " +
-				"                (+ a 1))))           " +
+				"               (swap! counter inc)   " +
+				"               (+ a 1))))            " +
 				"                                     " +
 				"   (def test-memo (memoize test))    " +
 				"                                     " +
@@ -1352,7 +1352,7 @@ public class FunctionsTest {
 				"   (test-memo 1)                     " +
 				"   (test-memo 1)                     " +
 				"   (test-memo 2)                     " +
-				"   (test-memo 1)                     " +
+				"   (test-memo 2)                     " +
 				"                                     " +
 				"   (deref counter)                   " +
 				")                                    ";
