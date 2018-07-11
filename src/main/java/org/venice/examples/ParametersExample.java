@@ -3,6 +3,7 @@ package org.venice.examples;
 import org.venice.Parameters;
 import org.venice.Venice;
 
+
 public class ParametersExample {
 	
 	public static void main(final String[] args) {
