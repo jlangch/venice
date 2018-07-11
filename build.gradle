@@ -15,6 +15,17 @@ sourceSets {
     }
 }
 
+jar {
+    from('src/main/java') {
+        include 'org/venice/**/*.vnc'
+    }
+    
+    manifest {
+        attributes 'Main-Class': 'org.venice.REPL'
+    }
+}
+
+
 dependencies {
     //compile 'org.foo:foo:1.0'
     testCompile 'junit:junit:4.12'
