@@ -23,8 +23,28 @@ jar {
     manifest {
         attributes 'Main-Class': 'org.venice.REPL'
     }
+    
+    archiveName = "venice-${version}.jar"
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+    
+    archiveName = "venice-${version}-sources.jar"
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+    
+    archiveName = "venice-${version}-javadoc.jar"
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
 
 dependencies {
     //compile 'org.foo:foo:1.0'
