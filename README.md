@@ -11,7 +11,7 @@ Venice's goal is not to build another Clojure, it's born from the need of
 having a safe and powerful expression language that can be used to implement 
 configurable extension points and rules for applications.
 
-Venice supports macros, comes with a configurable sandbox and Java interoperability.
+Venice supports macros, comes with Java interoperability a configurable sandbox.
 
 Because Venice does not depend on any libraries (other than the JVM) you can 
 easily add it as standalone .jar to your classpath.
@@ -19,7 +19,7 @@ easily add it as standalone .jar to your classpath.
  
 ## Cheat Sheet
 
-[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/9744b493/cheatsheet.html)
+[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/5e3e1022/cheatsheet.html)
 
 
 ## REPL
@@ -28,7 +28,7 @@ start the REPL with `java -jar venice.jar`
 
 ```sh
 venice> (+ 1 1)
-==> 2
+=> 2
 venice>
 ```
 
@@ -85,7 +85,7 @@ for(long ii=0; ii<100; ii++) {
 
 ## Java Interop
 
-Venice supports calling constructors, static and instance methods as well static class
+Venice supports calling constructors, static and instance methods as well as static class
 fields and instance fields.
 
 
