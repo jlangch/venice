@@ -28,7 +28,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 import org.junit.Test;
 
@@ -1866,6 +1869,51 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_slurp() {
+		final Venice venice = new Venice();
+		
+		// with default encoding
+		try {
+			final File file = File.createTempFile("slurp", ".txt");
+			try {
+				Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
+				
+				assertEquals(
+						"123456789", 
+						venice.eval(
+								"(slurp file)", 
+								Parameters.of("file", file.getAbsolutePath())));					
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		
+		// with UTF-8 encoding
+		try {
+			final File file = File.createTempFile("slurp", ".txt");
+			try {
+				Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
+				
+				assertEquals(
+						"123456789", 
+						venice.eval(
+								"(slurp file :encoding \"UTF-8\")", 
+								Parameters.of("file", file.getAbsolutePath())));					
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	@Test
 	public void test_sorted_map_Q() {
 		final Venice venice = new Venice();
 
@@ -2016,6 +2064,55 @@ public class FunctionsTest {
 		assertEquals("{}", venice.eval("(str (sorted-map))"));
 		assertEquals("{:a 1}", venice.eval("(str (sorted-map :a 1))"));
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (sorted-map :a 1 :b 2))"));
+	}
+	
+	@Test
+	public void test_spit() {
+		final Venice venice = new Venice();
+		
+		// with default encoding
+		try {
+			final File file = File.createTempFile("spit", ".txt");
+			try {				
+				venice.eval(
+						"(spit file \"123456789\" :append true)", 
+						Parameters.of("file", file.getAbsolutePath()));
+				
+				assertEquals(
+						"123456789", 
+						venice.eval(
+								"(slurp file)", 
+								Parameters.of("file", file.getAbsolutePath())));					
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		
+		// with UTF-8 encoding
+		try {
+			final File file = File.createTempFile("spit", ".txt");
+			try {				
+				venice.eval(
+						"(spit file \"123456789\" :append true :encoding \"UTF-8\")", 
+						Parameters.of("file", file.getAbsolutePath()));
+				
+				assertEquals(
+						"123456789", 
+						venice.eval(
+								"(slurp file :encoding \"UTF-8\")", 
+								Parameters.of("file", file.getAbsolutePath())));					
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 	
 	@Test

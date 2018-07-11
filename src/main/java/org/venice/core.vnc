@@ -121,7 +121,7 @@
          ret_))
 
 
-(def load-file (fn [file] (eval (read-string (str "(do " (slurp file) ")")))))
+(def load-file (fn [f] (eval (read-string (str "(do " (slurp f) ")")))))
 
 
 (def memoize (fn [f]

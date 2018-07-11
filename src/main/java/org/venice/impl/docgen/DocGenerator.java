@@ -523,6 +523,7 @@ public class DocGenerator {
 		from.addItem(getDocItem("readline"));
 		from.addItem(getDocItem("read-string"));
 		from.addItem(getDocItem("slurp"));
+		from.addItem(getDocItem("spit"));
 
 		return section;
 	}

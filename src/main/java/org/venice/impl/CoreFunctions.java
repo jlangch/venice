@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -528,23 +530,78 @@ public class CoreFunctions {
 
 	public static VncFunction slurp = new VncFunction("slurp") {
 		{
-			setArgLists("(slurp file)", "(slurp file encoding)");
+			setArgLists("(slurp file & options)");
 			
-			setDescription("Returns the file's content as text. The encoding defaults to UTF-8");
+			setDescription(
+					"Returns the file's content as text. The encoding defaults to UTF-8. " +
+					"Options: :encoding \"UTF-8\"");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("slurp", args, 1, 2);
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("slurp", args);
+			
+			try {			
+				final String fname = ((VncString)args.nth(0)).getValue();
+				
+				final VncHashMap options = new VncHashMap(args.slice(1));
+				
+				final VncVal encVal = options.get(VncString.keyword("encoding")); 
+					
+				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+								
+				final byte[] data = Files.readAllBytes(new File(fname).toPath());
+				
+				return new VncString(new String(data, encoding));
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
 
+	public static VncFunction spit = new VncFunction("spit") {
+		{
+			setArgLists("(spit f content & options)");
+			
+			setDescription(
+					"Opens f with writer, writes content, then closes f. " +
+					"Options: :append true/false, :encoding \"UTF-8\"");
+		}
+		
+		public VncVal apply(final VncList args) {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("slurp", args);
 			
 			try {
-				final String encoding = args.size() == 1 
-											?  "UTF-8" 
-											: ((VncString)args.nth(1)).unkeyword().getValue();
+				// Currently just string content is supported!
+				
 				final String fname = ((VncString)args.nth(0)).getValue();
-				final byte[] data = Files.readAllBytes(new File(fname).toPath());
-				return new VncString(new String(data, encoding));
+
+				final VncVal content = args.nth(1);
+
+				final VncHashMap options = new VncHashMap(args.slice(2));
+
+				final VncVal append = options.get(VncString.keyword("append")); 
+				
+				final VncVal encVal = options.get(VncString.keyword("encoding")); 
+					
+				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+
+				final byte[] data = ((VncString)content).getValue().getBytes(encoding);
+
+				final List<OpenOption> openOptions = new ArrayList<>();
+				openOptions.add(StandardOpenOption.CREATE);
+				openOptions.add(StandardOpenOption.WRITE);
+				
+				if (append != False) {
+					openOptions.add(StandardOpenOption.TRUNCATE_EXISTING);
+				}
+				
+				Files.write(
+						new File(fname).toPath(), 
+						data, 
+						openOptions.toArray(new OpenOption[0]));
+				
+				return Nil;
 			} 
 			catch (Exception ex) {
 				throw new VncException(ex.getMessage(), ex);
@@ -4229,6 +4286,7 @@ public class CoreFunctions {
 				.put("readline",			readline)
 				.put("read-string",			read_string)
 				.put("slurp",				slurp)
+				.put("spit",				spit)
 				
 				.put("==",					equal_Q)
 				.put("!=",					not_equal_Q)			
