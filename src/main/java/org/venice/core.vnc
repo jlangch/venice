@@ -1,7 +1,4 @@
 
-(def load-file (fn [f] (eval (read-string (str "(do " (slurp f) ")")))))
-
-
 (defmacro comment [& body] nil)
 
 
@@ -122,3 +119,17 @@
            ret_ ~expr]
          (prn (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
          ret_))
+
+
+(def load-file (fn [file] (eval (read-string (str "(do " (slurp file) ")")))))
+
+
+(def memoize (fn [f]
+   (let [mem (atom {})]
+      (fn [& args]
+         (if-let [e (find @mem args)]
+            (val e)
+            (let [ret (apply f args)]
+               (swap! mem assoc args ret)
+               ret))))))
+ 

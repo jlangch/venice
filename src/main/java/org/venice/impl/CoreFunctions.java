@@ -2162,6 +2162,21 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction key = new VncFunction("key") {
+		{
+			setArgLists("(key e)");
+			
+			setDescription("Returns the key of the map entry.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("key", args, 1);
+			
+			final VncList entry = (VncList)args.nth(0);
+			return entry.first();
+		}
+	};
+
 	public static VncFunction keys = new VncFunction("keys") {
 		{
 			setArgLists("(keys map)");
@@ -2179,6 +2194,21 @@ public class CoreFunctions {
 				key_lst.addAtEnd(key);
 			}
 			return key_lst;
+		}
+	};
+
+	public static VncFunction val = new VncFunction("val") {
+		{
+			setArgLists("(val e)");
+			
+			setDescription("Returns the val of the map entry.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("val", args, 1);
+			
+			final VncList entry = (VncList)args.nth(0);
+			return entry.second();
 		}
 	};
 
@@ -4258,7 +4288,9 @@ public class CoreFunctions {
 				.put("contains?", 			contains_Q)
 				.put("find",				find)
 				.put("get",					get)
+				.put("key",					key)
 				.put("keys",				keys)
+				.put("val",					val)
 				.put("vals",				vals)
 		
 				.put("into",				into)

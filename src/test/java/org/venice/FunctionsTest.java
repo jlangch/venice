@@ -994,6 +994,13 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_key() {
+		final Venice venice = new Venice();
+
+		assertEquals(":b", venice.eval("(str (key (find {:a 1 :b 2} :b)))"));
+	}
+	
+	@Test
 	public void test_keys() {
 		final Venice venice = new Venice();
 
@@ -1322,6 +1329,35 @@ public class FunctionsTest {
 		assertEquals(new BigDecimal("3.0"), venice.eval("(max 1.0M 2.0M 3.0M 2.0)"));
 		assertEquals(Long.valueOf(3), venice.eval("(max 1.0M 3)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(max 1.0M 3.0)"));
+	}
+
+	@Test
+	public void test_memoize() {
+		final Venice venice = new Venice();
+
+
+		final String script = 
+				"(do                                  " +
+				"   (def counter (atom 0))            " +
+				"                                     " +
+				"   (def test                         " +
+				"        (fn [a]                      " +
+				"            (do                      " +
+				"                (swap! counter inc)  " +
+				"                (+ a 1))))           " +
+				"                                     " +
+				"   (def test-memo (memoize test))    " +
+				"                                     " +
+				"   (test-memo 1)                     " +
+				"   (test-memo 1)                     " +
+				"   (test-memo 1)                     " +
+				"   (test-memo 2)                     " +
+				"   (test-memo 1)                     " +
+				"                                     " +
+				"   (deref counter)                   " +
+				")                                    ";
+
+		assertEquals(Long.valueOf(2), venice.eval(script));
 	}
 
 	@Test
@@ -2343,6 +2379,13 @@ public class FunctionsTest {
 		final Venice venice = new Venice();
 
 		assertNotNull(venice.eval("(uuid)"));
+	}
+	
+	@Test
+	public void test_val() {
+		final Venice venice = new Venice();
+
+		assertEquals("2", venice.eval("(str (val (find {:a 1 :b 2} :b)))"));
 	}
 	
 	@Test

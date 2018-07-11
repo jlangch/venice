@@ -364,6 +364,8 @@ public class DocGenerator {
 		map_access.addItem(getDocItem("get"));
 		map_access.addItem(getDocItem("keys"));
 		map_access.addItem(getDocItem("vals"));
+		map_access.addItem(getDocItem("key"));
+		map_access.addItem(getDocItem("val"));
 
 		final DocSection map_modify = new DocSection("Modify");
 		maps.addSection(map_modify);
