@@ -1344,20 +1344,19 @@ public class FunctionsTest {
 				"        (fn [a]                      " +
 				"            (do                      " +
 				"               (swap! counter inc)   " +
-				"               (+ a 1))))            " +
+				"               (+ a 100))))          " +
 				"                                     " +
 				"   (def test-memo (memoize test))    " +
 				"                                     " +
-				"   (test-memo 1)                     " +
-				"   (test-memo 1)                     " +
-				"   (test-memo 1)                     " +
-				"   (test-memo 2)                     " +
-				"   (test-memo 2)                     " +
-				"                                     " +
-				"   (deref counter)                   " +
+				"   [ (test-memo 1)                   " +
+				"     (test-memo 1)                   " +
+				"     (test-memo 1)                   " +
+				"     (test-memo 2)                   " +
+				"     (test-memo 2)                   " +
+				"     (deref counter) ]               " +
 				")                                    ";
 
-		assertEquals(Long.valueOf(2), venice.eval(script));
+		assertEquals("[101 101 101 102 102 2]", venice.eval("(str " + script + ")"));
 	}
 
 	@Test
