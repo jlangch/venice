@@ -569,7 +569,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("slurp", args);
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("spit", args);
 			
 			try {
 				// Currently just string content is supported!
@@ -4218,6 +4218,7 @@ public class CoreFunctions {
 								"println",
 								"readline",
 								"slurp",
+								"spit",
 								"load-file"));
 	}
 	
