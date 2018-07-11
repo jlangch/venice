@@ -34,16 +34,16 @@ public class SandboxExample {
 		// like 'println', 'slurp', ...
 		//
 		// Note: Using the RejectAllInterceptor has the same effect
-		JavaInterceptor interceptor = new JavaSandboxInterceptor(WhiteList.create(true));
+		final JavaInterceptor interceptor = new JavaSandboxInterceptor(WhiteList.create(true));
 		
-		Venice venice = new Venice(interceptor);
+		final Venice venice = new Venice(interceptor);
 
 		// => FAIL (Venice IO function) with Sandbox SecurityException
 		venice.eval("(println 100)"); 
 	}
 	
 	private static void sandboxing_java_calls_with_safe_venice_func() {
-		JavaInterceptor interceptor =
+		final JavaInterceptor interceptor =
 				new JavaSandboxInterceptor(
 						WhiteList.create(
 								true, // reject Venice IO functions
@@ -55,7 +55,7 @@ public class SandboxExample {
 								"java.util.ArrayList:new",
 								"java.util.ArrayList:add"));
 
-		Venice venice = new Venice(interceptor);
+		final Venice venice = new Venice(interceptor);
 
 		// => OK (static method)
 		venice.eval("(. :java.lang.Math :min 20 30)"); 
