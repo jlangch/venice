@@ -1,5 +1,6 @@
 .gradle
 target
+build
 bin
 
 # Compiled source #
