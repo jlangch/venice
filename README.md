@@ -7,7 +7,7 @@ The Venice programming language.
 
 Venice is a Lisp interpreter running on Java. 
 
-Venice's goal is not to build another Clojure, it's born from the need of 
+Venice's goal is not to build another Lisp, it's born from the need of 
 having a safe and powerful expression language that can be used to implement 
 configurable extension points and rules for applications.
 
@@ -137,9 +137,10 @@ on different threads.
 
 #### No blacklisting
 
-Unlikes a sandbox provided by Java SecurityManager, this sandboxing is only a 
-skin deep. In other words, even if you prohibit Venice from executing an operation
-X, if an attacker finds another method Y that calls into X, he can execute X.
+Unlike a sandbox provided by Java SecurityManager, this sandboxing is only a 
+skin deep. In other words, even if you prohibit Venice from executing a Java 
+operation X, if an attacker finds another Java method Y that calls into X, he 
+can execute X.
 
 This in practice means you have to whitelist what's OK, as opposed to blacklist 
 things that are problematic, because you'll never know all the static methods 
