@@ -648,7 +648,6 @@ public class DocGenerator {
 		general.addItem(new DocItem("Constructor: (. classname :new args)"));
 		general.addItem(new DocItem("Method call: (. object method args)"));
 
-
 		return section;
 	}
 
