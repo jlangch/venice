@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    jcenter()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+            exclude 'org/venice/impl/docgen/**'
+        }
+    }
+}
+
+dependencies {
+    //compile 'org.foo:foo:1.0'
+    testCompile 'junit:junit:4.12'
+}
