@@ -138,10 +138,6 @@ public class WhiteList {
 			if (whiteList == null) {
 				return create(Arrays.asList("blacklist:venice:*io*"));
 			}
-			else if (whiteList.getClass() == ArrayList.class) {
-				whiteList.add("blacklist:venice:*io*");
-				return create(whiteList);
-			}
 			else {
 				final List<String> wl = new ArrayList<>(whiteList);
 				wl.add("blacklist:venice:*io*");
@@ -183,13 +179,14 @@ public class WhiteList {
 										.stream()
 										.anyMatch(p -> p.matcher(className).matches());
 			if (matches) {
+				// cache the matched class to prevent the expensive pattern matching 
+				// for subsequent checks.
 				whiteListedClasses.put(clazz, "");
 				return true;
 			}
 			return false;
 		}
 	}
-
 	
 	/**
 	 * Returns <code>true</code> if the class/accessor is white listed otherwise 
