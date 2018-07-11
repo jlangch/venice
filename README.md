@@ -85,7 +85,7 @@ for(long ii=0; ii<100; ii++) {
 
 ## Java Interop
 
-Venice supports calling constructors, static and instance methods as well static class
+Venice supports calling constructors, static and instance methods as well as static class
 fields and instance fields.
 
 
