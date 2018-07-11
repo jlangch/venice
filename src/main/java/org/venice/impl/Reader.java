@@ -61,7 +61,7 @@ public class Reader {
 		return tokens.get(position++);
 	}
 	
-	public static ArrayList<Token> tokenize(final String str) {
+	public static ArrayList<Token> tokenize(final String str, final String filename) {
 		final char[] strArr = str.toCharArray();
 		final Matcher matcher = tokenize_pattern.matcher(str);
 
@@ -77,7 +77,7 @@ public class Reader {
 				
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);
 				
-				tokens.add(new Token(token,pos[0],pos[1]));
+				tokens.add(new Token(token, filename, pos[0], pos[1]));
 				
 				lastStartPos = tokenStartPos;
 				lastPos = pos;
@@ -91,19 +91,30 @@ public class Reader {
 		final Matcher matcher = atom_pattern.matcher(token.getToken());
 		
 		if (!matcher.find()) {
-			throw new ParseError("unrecognized token '" + token + "'");
+			throw new ParseError(String.format(
+					"File %s (%d,%d): unrecognized token '%s'",
+					token.getFile(),
+					token.getLine(),
+					token.getColumn(),
+					token.getToken()));
 		}
 		
 		if (matcher.group(1) != null) {
-			return new VncLong(Long.parseLong(matcher.group(1)));
+			return withTokenPos(
+					new VncLong(Long.parseLong(matcher.group(1))), 
+					token);
 		} 
 		else if (matcher.group(2) != null) {
-			return new VncDouble(Double.parseDouble(matcher.group(2)));
+			return withTokenPos(
+					new VncDouble(Double.parseDouble(matcher.group(2))), 
+					token);
 		} 
 		else if (matcher.group(3) != null) {
 			String dec = matcher.group(3);
 			dec = dec.substring(0, dec.length()-1);
-			return new VncBigDecimal(new BigDecimal(dec));
+			return withTokenPos(
+					new VncBigDecimal(new BigDecimal(dec)), 
+					token);
 		} 
 		else if (matcher.group(4) != null) {
 			return Constants.Nil;
@@ -115,16 +126,27 @@ public class Reader {
 			return Constants.False;
 		} 
 		else if (matcher.group(7) != null) {
-			return new VncString(StringUtil.unescape(matcher.group(7)));
+			return withTokenPos(
+					new VncString(StringUtil.unescape(matcher.group(7))), 
+					token);
 		} 
 		else if (matcher.group(8) != null) {
-			return VncString.keyword(matcher.group(8));
+			return withTokenPos(
+					VncString.keyword(matcher.group(8)), 
+					token);
 		} 
 		else if (matcher.group(9) != null) {
-			return new VncSymbol(matcher.group(9));
+			return withTokenPos(
+					new VncSymbol(matcher.group(9)), 
+					token);
 		} 
 		else {
-			throw new ParseError("unrecognized '" + matcher.group(0) + "'");
+			throw new ParseError(String.format(
+					"File %s (%d,%d): Unrecognized '%s'",
+					token.getFile(),
+					token.getLine(),
+					token.getColumn(),
+					matcher.group(0)));
 		}
 	}
 
@@ -136,7 +158,12 @@ public class Reader {
 	) {
 		Token token = rdr.next();
 		if (token.charAt(0) != start) {
-			throw new ParseError("expected '" + start + "'");
+			throw new ParseError(String.format(
+					"File %s (%d,%d): Expected '%s'",
+					token.getFile(),
+					token.getLine(),
+					token.getColumn(),
+					start));
 		}
 
 		while ((token = rdr.peek()) != null && token.charAt(0) != end) {
@@ -152,8 +179,8 @@ public class Reader {
 	}
 
 	public static VncVal read_hash_map(final Reader rdr) {
-		final VncList lst = (VncList)read_list(rdr, new VncList(), '{', '}');
-		return new VncHashMap(lst);
+		final VncList lst = (VncList)read_list(rdr, (VncList)withTokenPos(new VncList(), rdr.peek()), '{', '}');
+		return withTokenPos(new VncHashMap(lst), rdr.peek());
 	}
 
 	public static VncVal read_form(final Reader rdr) {
@@ -167,60 +194,85 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return new VncList(new VncSymbol("quote"), read_form(rdr));
+				return withTokenPos(
+						new VncList(new VncSymbol("quote"), read_form(rdr)), 
+						token);
 			
 			case '`': 
 				rdr.next();
-				return new VncList(new VncSymbol("quasiquote"), read_form(rdr));
+				return withTokenPos(
+						new VncList(new VncSymbol("quasiquote"), read_form(rdr)), 
+						token);
 			
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return new VncList(new VncSymbol("unquote"), read_form(rdr));
+					return withTokenPos(
+							new VncList(new VncSymbol("unquote"), read_form(rdr)), 
+							token);
 				} 
 				else {
 					rdr.next();
-					return new VncList(new VncSymbol("splice-unquote"), read_form(rdr));
+					return withTokenPos(
+							new VncList(new VncSymbol("splice-unquote"), read_form(rdr)), 
+							token);
 				}
 			
 			case '^': 
 				rdr.next();
 				final VncVal meta = read_form(rdr);
-				return new VncList(new VncSymbol("with-meta"), read_form(rdr), meta);
+				return withTokenPos(
+						new VncList(new VncSymbol("with-meta"), read_form(rdr), meta), 
+						token);
 			
 			case '@': 
 				rdr.next();
-				return new VncList(new VncSymbol("deref"), read_form(rdr));
+				return withTokenPos(
+						new VncList(new VncSymbol("deref"), read_form(rdr)), 
+						token);
 			
 			case '(': 
-				form = read_list(rdr, new VncList(), '(' , ')'); 
+				form = read_list(rdr, (VncList)withTokenPos(new VncList(), token), '(' , ')'); 
 				break;
 			
 			case ')': 
-				throw new ParseError("unexpected ')'");
+				throw new ParseError(String.format(
+						"File %s (%d,%d): Unexpected ')'",
+						token.getFile(),
+						token.getLine(),
+						token.getColumn()));
 			
 			case '[': 
-				form = read_list(rdr, new VncVector(), '[' , ']'); 
+				form = read_list(rdr, (VncVector)withTokenPos(new VncVector(), token), '[' , ']'); 
 				break;
 			
 			case ']': 
-				throw new ParseError("unexpected ']'");
+				throw new ParseError(String.format(
+						"File %s (%d,%d): Unexpected ']'",
+						token.getFile(),
+						token.getLine(),
+						token.getColumn()));
 				
 			case '{': 
 				form = read_hash_map(rdr); break;
 				
 			case '}': 
-				throw new ParseError("unexpected '}'");
+				throw new ParseError(String.format(
+						"File %s (%d,%d): Unexpected '}'",
+						token.getFile(),
+						token.getLine(),
+						token.getColumn()));
 				
 			default:  
 				form = read_atom(rdr);
 				break;
 		}
+		
 		return form;
 	}
 
-	public static VncVal read_str(final String str) {
-		return read_form(new Reader(tokenize(str)));
+	public static VncVal read_str(final String str, final String filename) {
+		return read_form(new Reader(tokenize(str, filename)));
 	}
 	
 	private static int[] getTextPosition(
@@ -243,6 +295,13 @@ public class Reader {
 		}
 		
 		return new int[]{row,col};
+	}
+	
+	private static VncVal withTokenPos(final VncVal val, final Token token) {
+		val.setMetaVal(new VncSymbol(":file"), new VncString(token.getFile()));
+		val.setMetaVal(new VncSymbol(":line"), new VncLong(token.getLine()));
+		val.setMetaVal(new VncSymbol(":column"), new VncLong(token.getColumn()));
+		return val;
 	}
 	
 	// group 1: integer = "(^-?[0-9]+$)";

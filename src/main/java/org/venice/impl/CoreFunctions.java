@@ -81,7 +81,7 @@ public class CoreFunctions {
 
 	public static VncFunction doc = new VncFunction("doc") {
 		{
-			setSignatures("(doc name)");
+			setArgLists("(doc name)");
 			
 			setDescription(
 				"Returns the documentation for the function/macro with the given name");
@@ -101,7 +101,7 @@ public class CoreFunctions {
 
 	public static VncFunction throw_ex = new VncFunction("throw") {
 		{
-			setSignatures("(throw)", "(throw x)");
+			setArgLists("(throw)", "(throw x)");
 			
 			setDescription("Throws exception with passed value x");
 		}
@@ -135,7 +135,7 @@ public class CoreFunctions {
 
 	public static VncFunction nil_Q = new VncFunction("nil?") {
 		{
-			setSignatures("(nil? x)");
+			setArgLists("(nil? x)");
 			
 			setDescription(
 					"Returns true if x is nil, false otherwise");
@@ -150,7 +150,7 @@ public class CoreFunctions {
 
 	public static VncFunction some_Q = new VncFunction("some?") {
 		{
-			setSignatures("(some? x)");
+			setArgLists("(some? x)");
 			
 			setDescription(
 					"Returns true if x is not nil, false otherwise");
@@ -165,7 +165,7 @@ public class CoreFunctions {
 
 	public static VncFunction true_Q = new VncFunction("true?") {
 		{
-			setSignatures("(true? x)");
+			setArgLists("(true? x)");
 			
 			setDescription(
 					"Returns true if x is true, false otherwise");
@@ -180,7 +180,7 @@ public class CoreFunctions {
 
 	public static VncFunction false_Q = new VncFunction("false?") {
 		{
-			setSignatures("(false? x)");
+			setArgLists("(false? x)");
 			
 			setDescription(
 					"Returns true if x is false, false otherwise");
@@ -195,7 +195,7 @@ public class CoreFunctions {
 	
 	public static VncFunction boolean_Q = new VncFunction("boolean?") {
 		{
-			setSignatures("(boolean? n)");
+			setArgLists("(boolean? n)");
 			
 			setDescription(
 					"Returns true if n is a boolean");
@@ -210,7 +210,7 @@ public class CoreFunctions {
 	
 	public static VncFunction long_Q = new VncFunction("long?") {
 		{
-			setSignatures("(long? n)");
+			setArgLists("(long? n)");
 			
 			setDescription(
 					"Returns true if n is a long");
@@ -225,7 +225,7 @@ public class CoreFunctions {
 	
 	public static VncFunction double_Q = new VncFunction("double?") {
 		{
-			setSignatures("(double? n)");
+			setArgLists("(double? n)");
 			
 			setDescription(
 					"Returns true if n is a double");
@@ -240,7 +240,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimal_Q = new VncFunction("decimal?") {
 		{
-			setSignatures("(decimal? n)");
+			setArgLists("(decimal? n)");
 			
 			setDescription(
 					"Returns true if n is a decimal");
@@ -255,7 +255,7 @@ public class CoreFunctions {
 	
 	public static VncFunction number_Q = new VncFunction("number?") {
 		{
-			setSignatures("(number? n)");
+			setArgLists("(number? n)");
 			
 			setDescription(
 					"Returns true if n is a number (long, double, or decimal)");
@@ -272,7 +272,7 @@ public class CoreFunctions {
 	
 	public static VncFunction string_Q = new VncFunction("string?") {
 		{
-			setSignatures("(string? x)");
+			setArgLists("(string? x)");
 			
 			setDescription(
 					"Returns true if x is a string");
@@ -288,7 +288,7 @@ public class CoreFunctions {
 
 	public static VncFunction symbol = new VncFunction("symbol") {
 		{
-			setSignatures("(symbol name)");
+			setArgLists("(symbol name)");
 			
 			setDescription("Returns a symbol from the given name");
 		}
@@ -302,7 +302,7 @@ public class CoreFunctions {
 	
 	public static VncFunction symbol_Q = new VncFunction("symbol?") {
 		{
-			setSignatures("(symbol? x)");
+			setArgLists("(symbol? x)");
 			
 			setDescription(
 					"Returns true if x is a symbol");
@@ -317,7 +317,7 @@ public class CoreFunctions {
 
 	public static VncFunction keyword = new VncFunction("keyword") {
 		{
-			setSignatures("(keyword name)");
+			setArgLists("(keyword name)");
 			
 			setDescription("Returns a keyword from the given name");
 		}
@@ -336,7 +336,7 @@ public class CoreFunctions {
 	
 	public static VncFunction keyword_Q = new VncFunction("keyword?") {
 		{
-			setSignatures("(keyword? x)");
+			setArgLists("(keyword? x)");
 			
 			setDescription(
 					"Returns true if x is a keyword");
@@ -353,7 +353,7 @@ public class CoreFunctions {
 	
 	public static VncFunction fn_Q = new VncFunction("fn?") {
 		{
-			setSignatures("(fn? x)");
+			setArgLists("(fn? x)");
 			
 			setDescription("Returns true if x is a function");
 		}
@@ -368,7 +368,7 @@ public class CoreFunctions {
 	
 	public static VncFunction macro_Q = new VncFunction("macro?") {
 		{
-			setSignatures("(macro? x)");
+			setArgLists("(macro? x)");
 			
 			setDescription("Returns true if x is a macro");
 		}
@@ -388,7 +388,7 @@ public class CoreFunctions {
 
 	public static VncFunction pr_str = new VncFunction("pr-str") {
 		{
-			setSignatures("(pr_str & xs)");
+			setArgLists("(pr_str & xs)");
 			
 			setDescription(
 					"With no args, returns the empty string. With one arg x, returns " + 
@@ -409,7 +409,7 @@ public class CoreFunctions {
 
 	public static VncFunction str = new VncFunction("str") {
 		{
-			setSignatures("(str & xs)");
+			setArgLists("(str & xs)");
 			
 			setDescription(
 					"With no args, returns the empty string. With one arg x, returns " + 
@@ -431,7 +431,7 @@ public class CoreFunctions {
 
 	public static VncFunction prn = new VncFunction("prn") {
 		{
-			setSignatures("(prn & xs)");
+			setArgLists("(prn & xs)");
 			
 			setDescription(
 					"Prints to stdout, with no args, prints the empty string. With one arg x, " + 
@@ -458,7 +458,7 @@ public class CoreFunctions {
 
 	public static VncFunction println = new VncFunction("println") {
 		{
-			setSignatures("(println & xs)");
+			setArgLists("(println & xs)");
 			
 			setDescription(
 					"Prints to stdout with a tailing linefeed, with no args, prints the " + 
@@ -486,7 +486,7 @@ public class CoreFunctions {
 
 	public static VncFunction readline = new VncFunction("readline") {
 		{
-			setSignatures("(readline prompt)");
+			setArgLists("(readline prompt)");
 			
 			setDescription("Reads the next line from stdin. The function is sandboxed");
 		}
@@ -509,7 +509,7 @@ public class CoreFunctions {
 
 	public static VncFunction read_string = new VncFunction("read-string") {
 		{
-			setSignatures("(read-string x)");
+			setArgLists("(read-string x)");
 			
 			setDescription("Reads from x");
 		}
@@ -518,7 +518,7 @@ public class CoreFunctions {
 			try {
 				assertArity("read-string ", args, 1);
 
-				return Reader.read_str(((VncString)args.nth(0)).getValue());
+				return Reader.read_str(((VncString)args.nth(0)).getValue(), null);
 			} 
 			catch (ContinueException c) {
 				return Nil;
@@ -528,7 +528,7 @@ public class CoreFunctions {
 
 	public static VncFunction slurp = new VncFunction("slurp") {
 		{
-			setSignatures("(slurp file)", "(slurp file encoding)");
+			setArgLists("(slurp file)", "(slurp file encoding)");
 			
 			setDescription("Returns the file's content as text. The encoding defaults to UTF-8");
 		}
@@ -559,7 +559,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimalScale = new VncFunction("dec/scale") {
 		{
-			setSignatures("(dec/scale x scale rounding-mode)");
+			setArgLists("(dec/scale x scale rounding-mode)");
 			
 			setDescription(
 					"Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -587,7 +587,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimalAdd = new VncFunction("dec/add") {
 		{
-			setSignatures("(dec/add x y scale rounding-mode)");
+			setArgLists("(dec/add x y scale rounding-mode)");
 			
 			setDescription(
 					"Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -608,7 +608,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimalSubtract = new VncFunction("dec/sub") {
 		{
-			setSignatures("(dec/sub x y scale rounding-mode)");
+			setArgLists("(dec/sub x y scale rounding-mode)");
 			
 			setDescription(
 					"Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -629,7 +629,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimalMultiply = new VncFunction("dec/mul") {
 		{
-			setSignatures("(dec/mul x y scale rounding-mode)");
+			setArgLists("(dec/mul x y scale rounding-mode)");
 			
 			setDescription(
 					"Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -650,7 +650,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimalDivide = new VncFunction("dec/div") {
 		{
-			setSignatures("(dec/div x y scale rounding-mode)");
+			setArgLists("(dec/div x y scale rounding-mode)");
 			
 			setDescription(
 					"Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -671,7 +671,7 @@ public class CoreFunctions {
 	
 	public static VncFunction add = new VncFunction("+") {
 		{
-			setSignatures("(+)", "(+ x)", "(+ x y)", "(+ x y & more)");
+			setArgLists("(+)", "(+ x)", "(+ x y)", "(+ x y & more)");
 			
 			setDescription("Returns the sum of the numbers. (+) returns 0.");
 			
@@ -713,7 +713,7 @@ public class CoreFunctions {
 	
 	public static VncFunction subtract = new VncFunction("-") {
 		{
-			setSignatures("(- x)", "(- x y)", "(- x y & more)");
+			setArgLists("(- x)", "(- x y)", "(- x y & more)");
 			
 			setDescription(
 					"If one number is supplied, returns the negation, else subtracts " +
@@ -767,7 +767,7 @@ public class CoreFunctions {
 	
 	public static VncFunction multiply = new VncFunction("*") {
 		{
-			setSignatures("(*)", "(* x)", "(* x y)", "(* x y & more)");
+			setArgLists("(*)", "(* x)", "(* x y)", "(* x y & more)");
 			
 			setDescription("Returns the product of numbers. (*) returns 1");
 		}
@@ -807,7 +807,7 @@ public class CoreFunctions {
 	
 	public static VncFunction divide = new VncFunction("/") {
 		{
-			setSignatures("(/ x)", "(/ x y)", "(/ x y & more)");
+			setArgLists("(/ x)", "(/ x y)", "(/ x y & more)");
 			
 			setDescription(
 					"If no denominators are supplied, returns 1/numerator, " + 
@@ -861,7 +861,7 @@ public class CoreFunctions {
 	
 	public static VncFunction modulo = new VncFunction("mod") {
 		{
-			setSignatures("(mod n d)");
+			setArgLists("(mod n d)");
 			
 			setDescription("Modulus of n and d.");
 		}
@@ -889,7 +889,7 @@ public class CoreFunctions {
 	
 	public static VncFunction inc = new VncFunction("inc") {
 		{
-			setSignatures("(inc x)");
+			setArgLists("(inc x)");
 			
 			setDescription("Increments the number x");
 		}
@@ -917,7 +917,7 @@ public class CoreFunctions {
 	
 	public static VncFunction dec = new VncFunction("dec") {
 		{
-			setSignatures("(dec x)");
+			setArgLists("(dec x)");
 			
 			setDescription("Decrements the number x");
 		}
@@ -945,7 +945,7 @@ public class CoreFunctions {
 	
 	public static VncFunction max = new VncFunction("max") {
 		{
-			setSignatures("(max x)", "(max x y)", "(max x y & more)");
+			setArgLists("(max x)", "(max x y)", "(max x y & more)");
 			
 			setDescription(
 					"Returns the greatest of the values");
@@ -982,7 +982,7 @@ public class CoreFunctions {
 	
 	public static VncFunction min = new VncFunction("min") {
 		{
-			setSignatures("(min x)", "(min x y)", "(min x y & more)");
+			setArgLists("(min x)", "(min x y)", "(min x y & more)");
 			
 			setDescription(
 					"Returns the smallest of the values");
@@ -1019,7 +1019,7 @@ public class CoreFunctions {
 	
 	public static VncFunction abs = new VncFunction("abs") {
 		{
-			setSignatures("(abs x)");
+			setArgLists("(abs x)");
 			
 			setDescription(
 					"Returns the absolute value of the number");
@@ -1049,7 +1049,7 @@ public class CoreFunctions {
 	
 	public static VncFunction rand_long = new VncFunction("rand-long") {
 		{
-			setSignatures("(rand-long)", "(rand-long max)");
+			setArgLists("(rand-long)", "(rand-long max)");
 			
 			setDescription(
 					"Without argument returns a random long between 0 and MAX_LONG. " +
@@ -1074,7 +1074,7 @@ public class CoreFunctions {
 	};
 	public static VncFunction rand_double = new VncFunction("rand-double") {
 		{
-			setSignatures("(rand-double)", "(rand-double max)");
+			setArgLists("(rand-double)", "(rand-double max)");
 			
 			setDescription(
 					"Without argument returns a double long between 0.0 and 1.0. " +
@@ -1100,7 +1100,7 @@ public class CoreFunctions {
 
 	public static VncFunction equal_Q = new VncFunction("==") {
 		{
-			setSignatures("(== x y)");
+			setArgLists("(== x y)");
 			
 			setDescription(
 					"Returns true of both operands have the equivalent type");
@@ -1115,7 +1115,7 @@ public class CoreFunctions {
 
 	public static VncFunction not_equal_Q = new VncFunction("!=") {
 		{
-			setSignatures("(!= x y)");
+			setArgLists("(!= x y)");
 			
 			setDescription(
 					"Returns true of both operands do not have the equivalent type");
@@ -1130,7 +1130,7 @@ public class CoreFunctions {
 
 	public static VncFunction match_Q = new VncFunction("match") {
 		{
-			setSignatures("(match s regex)");
+			setArgLists("(match s regex)");
 			
 			setDescription("Returns true if the string s matches the regular expression regex");
 		}
@@ -1155,7 +1155,7 @@ public class CoreFunctions {
 
 	public static VncFunction match_not_Q = new VncFunction("match-not") {
 		{
-			setSignatures("(match-not s regex)");
+			setArgLists("(match-not s regex)");
 			
 			setDescription("Returns true if the string s does not match the regular expression regex");
 		}
@@ -1180,7 +1180,7 @@ public class CoreFunctions {
 
 	public static VncFunction lt = new VncFunction("<") {
 		{
-			setSignatures("(< x y)");
+			setArgLists("(< x y)");
 			
 			setDescription(
 					"Returns true if x is smaller than y");
@@ -1222,7 +1222,7 @@ public class CoreFunctions {
 	
 	public static VncFunction lte = new VncFunction("<=") {
 		{
-			setSignatures("(<= x y)");
+			setArgLists("(<= x y)");
 			
 			setDescription(
 					"Returns true if x is smaller or equal to y");
@@ -1264,7 +1264,7 @@ public class CoreFunctions {
 	
 	public static VncFunction gt = new VncFunction(">") {
 		{
-			setSignatures("(> x y)");
+			setArgLists("(> x y)");
 			
 			setDescription(
 					"Returns true if x is greater than y");
@@ -1306,7 +1306,7 @@ public class CoreFunctions {
 	
 	public static VncFunction gte = new VncFunction(">=") {
 		{
-			setSignatures("(>= x y)");
+			setArgLists("(>= x y)");
 			
 			setDescription(
 					"Returns true if x is greater or equal to y");
@@ -1348,7 +1348,7 @@ public class CoreFunctions {
 	
 	public static VncFunction zero_Q = new VncFunction("zero?") {
 		{
-			setSignatures("(zero? x)");
+			setArgLists("(zero? x)");
 			
 			setDescription(
 					"Returns true if x zero else false");
@@ -1377,7 +1377,7 @@ public class CoreFunctions {
 	
 	public static VncFunction pos_Q = new VncFunction("pos?") {
 		{
-			setSignatures("(pos? x)");
+			setArgLists("(pos? x)");
 			
 			setDescription(
 					"Returns true if x greater than zero else false");
@@ -1406,7 +1406,7 @@ public class CoreFunctions {
 	
 	public static VncFunction neg_Q = new VncFunction("neg?") {
 		{
-			setSignatures("(neg? x)");
+			setArgLists("(neg? x)");
 			
 			setDescription(
 					"Returns true if x smaller than zero else false");
@@ -1435,7 +1435,7 @@ public class CoreFunctions {
 	
 	public static VncFunction even_Q = new VncFunction("even?") {
 		{
-			setSignatures("(even? n)");
+			setArgLists("(even? n)");
 			
 			setDescription(
 					"Returns true if n is even, throws an exception if n is not an integer");
@@ -1458,7 +1458,7 @@ public class CoreFunctions {
 	
 	public static VncFunction odd_Q = new VncFunction("odd?") {
 		{
-			setSignatures("(odd? n)");
+			setArgLists("(odd? n)");
 			
 			setDescription(
 					"Returns true if n is odd, throws an exception if n is not an integer");
@@ -1481,7 +1481,7 @@ public class CoreFunctions {
 
 	public static VncFunction time_ms = new VncFunction("time-ms") {
 		{
-			setSignatures("(time-ms)");
+			setArgLists("(time-ms)");
 			
 			setDescription("Returns the current time in milliseconds");
 			
@@ -1497,7 +1497,7 @@ public class CoreFunctions {
 
 	public static VncFunction time_ns = new VncFunction("time-ns") {
 		{
-			setSignatures("(time-ns)");
+			setArgLists("(time-ns)");
 			
 			setDescription(
 					"Returns the current value of the running Java Virtual Machine's " +
@@ -1521,7 +1521,7 @@ public class CoreFunctions {
  	
 	public static VncFunction boolean_cast = new VncFunction("boolean") {
 		{
-			setSignatures("(boolean x)");
+			setArgLists("(boolean x)");
 			
 			setDescription("Converts to boolean. Everything except 'false' and 'nil' is true in boolean context.");
 		}
@@ -1544,7 +1544,7 @@ public class CoreFunctions {
  	
 	public static VncFunction long_cast = new VncFunction("long") {
 		{
-			setSignatures("(long x)");
+			setArgLists("(long x)");
 			
 			setDescription("Converts to long");
 		}
@@ -1592,7 +1592,7 @@ public class CoreFunctions {
 	
 	public static VncFunction double_cast = new VncFunction("double") {
 		{
-			setSignatures("(double x)");
+			setArgLists("(double x)");
 			
 			setDescription("Converts to double");
 		}
@@ -1640,7 +1640,7 @@ public class CoreFunctions {
 	
 	public static VncFunction decimal_cast = new VncFunction("decimal") {
 		{
-			setSignatures("(decimal x) (decimal x scale rounding-mode)");
+			setArgLists("(decimal x) (decimal x scale rounding-mode)");
 			
 			setDescription(
 					"Converts to decimal. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -1702,7 +1702,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_list = new VncFunction("list") {
 		{
-			setSignatures("(list & items)");
+			setArgLists("(list & items)");
 			
 			setDescription("Creates a new list containing the items.");
 		}
@@ -1732,7 +1732,7 @@ public class CoreFunctions {
 	
 	public static VncFunction list_Q = new VncFunction("list?") {
 		{
-			setSignatures("(list? obj)");
+			setArgLists("(list? obj)");
 			
 			setDescription("Returns true if obj is a list");
 		}
@@ -1751,7 +1751,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_vector = new VncFunction("vector") {
 		{
-			setSignatures("(vector & items)");
+			setArgLists("(vector & items)");
 			
 			setDescription("Creates a new vector containing the items.");
 		}
@@ -1778,7 +1778,7 @@ public class CoreFunctions {
 	
 	public static VncFunction vector_Q = new VncFunction("vector?") {
 		{
-			setSignatures("(vector? obj)");
+			setArgLists("(vector? obj)");
 			
 			setDescription("Returns true if obj is a vector");
 		}
@@ -1797,7 +1797,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_set = new VncFunction("set") {
 		{
-			setSignatures("(set & items)");
+			setArgLists("(set & items)");
 			
 			setDescription("Creates a new set containing the items.");
 		}
@@ -1820,7 +1820,7 @@ public class CoreFunctions {
 
 	public static VncFunction set_Q = new VncFunction("set?") {
 		{
-			setSignatures("(set? obj)");
+			setArgLists("(set? obj)");
 			
 			setDescription("Returns true if obj is a set");
 		}
@@ -1839,7 +1839,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_hash_map = new VncFunction("hash-map") {
 		{
-			setSignatures("(hash-map & keyvals)");
+			setArgLists("(hash-map & keyvals)");
 			
 			setDescription("Creates a new hash map containing the items.");
 		}
@@ -1859,7 +1859,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_ordered_map = new VncFunction("ordered-map") {
 		{
-			setSignatures("(ordered-map & keyvals)");
+			setArgLists("(ordered-map & keyvals)");
 			
 			setDescription("Creates a new ordered map containing the items.");
 		}
@@ -1876,7 +1876,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_sorted_map = new VncFunction("sorted-map") {
 		{
-			setSignatures("(sorted-map & keyvals)");
+			setArgLists("(sorted-map & keyvals)");
 			
 			setDescription("Creates a new sorted map containing the items.");
 		}
@@ -1893,7 +1893,7 @@ public class CoreFunctions {
 
 	public static VncFunction map_Q = new VncFunction("map?") {
 		{
-			setSignatures("(map? obj)");
+			setArgLists("(map? obj)");
 			
 			setDescription("Returns true if obj is a map");
 		}
@@ -1907,7 +1907,7 @@ public class CoreFunctions {
 
 	public static VncFunction hash_map_Q = new VncFunction("hash-map?") {
 		{
-			setSignatures("(hash-map? obj)");
+			setArgLists("(hash-map? obj)");
 			
 			setDescription("Returns true if obj is a hash map");
 		}
@@ -1921,7 +1921,7 @@ public class CoreFunctions {
 
 	public static VncFunction ordered_map_Q = new VncFunction("ordered-map?") {
 		{
-			setSignatures("(ordered-map? obj)");
+			setArgLists("(ordered-map? obj)");
 			
 			setDescription("Returns true if obj is an ordered map");
 		}
@@ -1935,7 +1935,7 @@ public class CoreFunctions {
 
 	public static VncFunction sorted_map_Q = new VncFunction("sorted-map?") {
 		{
-			setSignatures("(sorted-map? obj)");
+			setArgLists("(sorted-map? obj)");
 			
 			setDescription(
 					"Returns true if obj is a sorted map");
@@ -1950,7 +1950,7 @@ public class CoreFunctions {
 
 	public static VncFunction contains_Q = new VncFunction("contains?") {
 		{
-			setSignatures("(contains? coll key)");
+			setArgLists("(contains? coll key)");
 			
 			setDescription(
 					"Returns true if key is present in the given collection, otherwise " + 
@@ -1992,7 +1992,7 @@ public class CoreFunctions {
 
 	public static VncFunction assoc = new VncFunction("assoc") {
 		{
-			setSignatures("(assoc coll key val)", "(assoc coll key val & kvs)");
+			setArgLists("(assoc coll key val)", "(assoc coll key val & kvs)");
 			
 			setDescription(
 					"When applied to a map, returns a new map of the " + 
@@ -2058,7 +2058,7 @@ public class CoreFunctions {
 	
 	public static VncFunction dissoc = new VncFunction("dissoc") {
 		{
-			setSignatures("(dissoc coll key)", "(dissoc coll key & ks)");
+			setArgLists("(dissoc coll key)", "(dissoc coll key & ks)");
 			
 			setDescription(
 					"Returns a new coll of the same type, " + 
@@ -2114,7 +2114,7 @@ public class CoreFunctions {
 
 	public static VncFunction get = new VncFunction("get") {
 		{
-			setSignatures("(get map key)", "(get map key not-found)");
+			setArgLists("(get map key)", "(get map key not-found)");
 			
 			setDescription("Returns the value mapped to key, not-found or nil if key not present.");
 		}
@@ -2138,7 +2138,7 @@ public class CoreFunctions {
 
 	public static VncFunction find = new VncFunction("find") {
 		{
-			setSignatures("(find map key)");
+			setArgLists("(find map key)");
 			
 			setDescription("Returns the map entry for key, or nil if key not present.");
 					
@@ -2164,7 +2164,7 @@ public class CoreFunctions {
 
 	public static VncFunction keys = new VncFunction("keys") {
 		{
-			setSignatures("(keys map)");
+			setArgLists("(keys map)");
 			
 			setDescription("Returns a collection of the map's keys.");
 		}
@@ -2184,7 +2184,7 @@ public class CoreFunctions {
 
 	public static VncFunction vals = new VncFunction("vals") {
 		{
-			setSignatures("(vals map)");
+			setArgLists("(vals map)");
 			
 			setDescription("Returns a collection of the map's values.");
 		}
@@ -2210,7 +2210,7 @@ public class CoreFunctions {
 
 	public static VncFunction into = new VncFunction("into") {
 		{
-			setSignatures("(into to-coll from-coll)");
+			setArgLists("(into to-coll from-coll)");
 			
 			setDescription(
 					"Returns a new coll consisting of to-coll with all of the items of" + 
@@ -2267,7 +2267,7 @@ public class CoreFunctions {
 
 	public static VncFunction seq_Q = new VncFunction("seq?") {
 		{
-			setSignatures("(seq? obj)");
+			setArgLists("(seq? obj)");
 			
 			setDescription("Returns true if obj is a sequential collection");
 		}
@@ -2281,7 +2281,7 @@ public class CoreFunctions {
 
 	public static VncFunction coll_Q = new VncFunction("coll?") {
 		{
-			setSignatures("(coll? obj)");
+			setArgLists("(coll? obj)");
 			
 			setDescription("Returns true if obj is a collection");
 		}
@@ -2295,7 +2295,7 @@ public class CoreFunctions {
 
 	public static VncFunction count = new VncFunction("count") {
 		{
-			setSignatures("(count coll)");
+			setArgLists("(count coll)");
 			
 			setDescription(
 					"Returns the number of items in the collection. (count nil) returns " + 
@@ -2340,7 +2340,7 @@ public class CoreFunctions {
 
 	public static VncFunction empty_Q = new VncFunction("empty?") {
 		{
-			setSignatures("(empty? x)");
+			setArgLists("(empty? x)");
 			
 			setDescription("Returns true if x is empty");
 		}
@@ -2366,7 +2366,7 @@ public class CoreFunctions {
 
 	public static VncFunction not_empty_Q = new VncFunction("not-empty?") {
 		{
-			setSignatures("(not-empty? x)");
+			setArgLists("(not-empty? x)");
 			
 			setDescription("Returns true if x is not empty");
 		}
@@ -2392,7 +2392,7 @@ public class CoreFunctions {
 
 	public static VncFunction cons = new VncFunction("cons") {
 		{
-			setSignatures("(cons x coll)");
+			setArgLists("(cons x coll)");
 			
 			setDescription(
 					"Returns a new collection where x is the first element and coll is\n" + 
@@ -2423,7 +2423,7 @@ public class CoreFunctions {
 
 	public static VncFunction concat = new VncFunction("concat") {
 		{
-			setSignatures("(concat coll)", "(concat coll & colls)");
+			setArgLists("(concat coll)", "(concat coll & colls)");
 			
 			setDescription(
 					"Returns a collection of the concatenation of the elements " +
@@ -2474,7 +2474,7 @@ public class CoreFunctions {
 
 	public static VncFunction first = new VncFunction("first") {
 		{
-			setSignatures("(first coll)");
+			setArgLists("(first coll)");
 			
 			setDescription("Returns the first element of coll.");
 		}
@@ -2503,7 +2503,7 @@ public class CoreFunctions {
 
 	public static VncFunction second = new VncFunction("second") {
 		{
-			setSignatures("(second coll)");
+			setArgLists("(second coll)");
 			
 			setDescription("Returns the second element of coll.");
 		}
@@ -2533,7 +2533,7 @@ public class CoreFunctions {
 
 	public static VncFunction nth = new VncFunction("nth") {
 		{
-			setSignatures("(nth coll idx)");
+			setArgLists("(nth coll idx)");
 			
 			setDescription("Returns the nth element of coll.");
 		}
@@ -2564,7 +2564,7 @@ public class CoreFunctions {
 
 	public static VncFunction last = new VncFunction("last") {
 		{
-			setSignatures("(last coll)");
+			setArgLists("(last coll)");
 			
 			setDescription("Returns the last element of coll.");
 		}
@@ -2593,7 +2593,7 @@ public class CoreFunctions {
 
 	public static VncFunction rest = new VncFunction("rest") {
 		{
-			setSignatures("(rest coll)");
+			setArgLists("(rest coll)");
 			
 			setDescription("Returns a collection with second to list element");
 		}
@@ -2616,7 +2616,7 @@ public class CoreFunctions {
 
 	public static VncFunction emptyToNil = new VncFunction("empty-to-nil") {
 		{
-			setSignatures("(empty-to-nil x)");
+			setArgLists("(empty-to-nil x)");
 			
 			setDescription("Returns nil if x is empty");
 		}
@@ -2645,7 +2645,7 @@ public class CoreFunctions {
 
 	public static VncFunction className = new VncFunction("class") {
 		{
-			setSignatures("(class x)");
+			setArgLists("(class x)");
 			
 			setDescription("Returns the class of x");
 		}
@@ -2659,7 +2659,7 @@ public class CoreFunctions {
 
 	public static VncFunction pop = new VncFunction("pop") {
 		{
-			setSignatures("(pop coll)");
+			setArgLists("(pop coll)");
 			
 			setDescription(
 					"For a list, returns a new list without the first item, " + 
@@ -2686,7 +2686,7 @@ public class CoreFunctions {
 
 	public static VncFunction peek = new VncFunction("peek") {
 		{
-			setSignatures("(peek coll)");
+			setArgLists("(peek coll)");
 			
 			setDescription("For a list, same as first, for a vector, same as last");
 		}
@@ -2711,7 +2711,7 @@ public class CoreFunctions {
 	
 	public static VncFunction take_while = new VncFunction("take-while") {
 		{
-			setSignatures("(take-while predicate coll)");
+			setArgLists("(take-while predicate coll)");
 			
 			setDescription(
 					"Returns a list of successive items from coll while " + 
@@ -2736,7 +2736,7 @@ public class CoreFunctions {
 	
 	public static VncFunction take = new VncFunction("take") {
 		{
-			setSignatures("(take n coll)");
+			setArgLists("(take n coll)");
 			
 			setDescription(
 					"Returns a collection of the first n items in coll, or all items if " + 
@@ -2755,7 +2755,7 @@ public class CoreFunctions {
 	
 	public static VncFunction drop_while = new VncFunction("drop-while") {
 		{
-			setSignatures("(drop-while predicate coll)");
+			setArgLists("(drop-while predicate coll)");
 			
 			setDescription(
 					"Returns a list of the items in coll starting from the " + 
@@ -2780,7 +2780,7 @@ public class CoreFunctions {
 	
 	public static VncFunction drop = new VncFunction("drop") {
 		{
-			setSignatures("(drop n coll)");
+			setArgLists("(drop n coll)");
 			
 			setDescription(
 					"Returns a collection of all but the first n items in coll");
@@ -2798,7 +2798,7 @@ public class CoreFunctions {
 	
 	public static VncFunction flatten = new VncFunction("flatten") {
 		{
-			setSignatures("(flatten coll)");
+			setArgLists("(flatten coll)");
 			
 			setDescription(
 					"Takes any nested combination of collections (lists, vectors, " + 
@@ -2819,7 +2819,7 @@ public class CoreFunctions {
 	
 	public static VncFunction reverse = new VncFunction("reverse") {
 		{
-			setSignatures("(reverse coll)");
+			setArgLists("(reverse coll)");
 			
 			setDescription(
 					" Returns a collection of the items in coll in reverse order");
@@ -2841,7 +2841,7 @@ public class CoreFunctions {
 
 	public static VncFunction sort = new VncFunction("sort") {
 		{
-			setSignatures("(sort coll)", "(sort compfn coll)");
+			setArgLists("(sort coll)", "(sort compfn coll)");
 			
 			setDescription(
 					"Returns a sorted list of the items in coll. If no compare function " + 
@@ -2923,7 +2923,7 @@ public class CoreFunctions {
 	
 	public static VncFunction sort_by = new VncFunction("sort-by") {
 		{
-			setSignatures("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)");
+			setArgLists("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)");
 			
 			setDescription(
 					"Returns a sorted sequence of the items in coll, where the sort " + 
@@ -3022,7 +3022,7 @@ public class CoreFunctions {
 	
 	public static VncFunction group_by = new VncFunction("group-by") {
 		{
-			setSignatures("(group-by f coll)");
+			setArgLists("(group-by f coll)");
 			
 			setDescription(
 					"Returns a map of the elements of coll keyed by the result of " + 
@@ -3056,7 +3056,7 @@ public class CoreFunctions {
 	// General sequence functions
 	public static VncFunction apply = new VncFunction("apply") {
 		{
-			setSignatures("(apply f args* coll)");
+			setArgLists("(apply f args* coll)");
 			
 			setDescription("Applies f to all arguments composed of args and coll");
 		}
@@ -3072,7 +3072,7 @@ public class CoreFunctions {
 
 	public static VncFunction map = new VncFunction("map") {
 		{
-			setSignatures("(map f coll colls*)");
+			setArgLists("(map f coll colls*)");
 			
 			setDescription(
 					"Applys f to the set of first items of each coll, followed by applying " + 
@@ -3113,7 +3113,7 @@ public class CoreFunctions {
 
 	public static VncFunction mapcat = new VncFunction("mapcat") {
 		{
-			setSignatures("(mapcat fn & colls)");
+			setArgLists("(mapcat fn & colls)");
 			
 			setDescription(
 					"Returns the result of applying concat to the result of applying map " + 
@@ -3127,7 +3127,7 @@ public class CoreFunctions {
 
 	public static VncFunction filter = new VncFunction("filter") {
 		{
-			setSignatures("(filter predicate coll)");
+			setArgLists("(filter predicate coll)");
 			
 			setDescription(
 					"Returns a collection of the items in coll for which " + 
@@ -3153,7 +3153,7 @@ public class CoreFunctions {
 
 	public static VncFunction remove = new VncFunction("remove") {
 		{
-			setSignatures("(remove predicate coll)");
+			setArgLists("(remove predicate coll)");
 			
 			setDescription(
 					"Returns a collection of the items in coll for which " + 
@@ -3179,7 +3179,7 @@ public class CoreFunctions {
 	
 	public static VncFunction reduce = new VncFunction("reduce") {
 		{
-			setSignatures("(reduce f coll)", "(reduce f val coll)");
+			setArgLists("(reduce f coll)", "(reduce f val coll)");
 			
 			setDescription(
 					"f should be a function of 2 arguments. If val is not supplied, " + 
@@ -3233,7 +3233,7 @@ public class CoreFunctions {
 	
 	public static VncFunction reduce_kv = new VncFunction("reduce-kv") {
 		{
-			setSignatures("(reduce-kv f init coll))");
+			setArgLists("(reduce-kv f init coll))");
 			
 			setDescription(
 					"Reduces an associative collection. f should be a function of 3 " + 
@@ -3270,7 +3270,7 @@ public class CoreFunctions {
 
 	public static VncFunction conj = new VncFunction("conj") {
 		{
-			setSignatures("(conj coll x)", "(conj coll x & xs)");
+			setArgLists("(conj coll x)", "(conj coll x & xs)");
 			
 			setDescription(
 					"Returns a new collection with the x, xs " + 
@@ -3327,7 +3327,7 @@ public class CoreFunctions {
 
 	public static VncFunction seq = new VncFunction("seq") {
 		{
-			setSignatures("(seq coll)");
+			setArgLists("(seq coll)");
 			
 			setDescription(
 					"Returns a seq on the collection. If the collection is " + 
@@ -3385,7 +3385,7 @@ public class CoreFunctions {
 
 	public static VncFunction range = new VncFunction("range") {
 		{
-			setSignatures("(range end)", "(range start end)", "(range start end step)");
+			setArgLists("(range end)", "(range start end)", "(range start end step)");
 			
 			setDescription(
 					"Returns a collection of numbers from start (inclusive) to end " + 
@@ -3460,7 +3460,7 @@ public class CoreFunctions {
 
 	public static VncFunction repeat = new VncFunction("repeat") {
 		{
-			setSignatures("(repeat n x)");
+			setArgLists("(repeat n x)");
 			
 			setDescription("Returns a collection with the value x repeated n times");
 		}
@@ -3494,7 +3494,7 @@ public class CoreFunctions {
 
 	public static VncFunction meta = new VncFunction("meta") {
 		{
-			setSignatures("(meta obj)");
+			setArgLists("(meta obj)");
 			
 			setDescription(
 					"Returns the metadata of obj, returns nil if there is no metadata.");
@@ -3509,7 +3509,7 @@ public class CoreFunctions {
 
 	public static VncFunction with_meta = new VncFunction("with-meta") {
 		{
-			setSignatures("(with-meta obj m)");
+			setArgLists("(with-meta obj m)");
 			
 			setDescription(
 					"Returns a copy of the object obj, with a map m as its metadata.");
@@ -3530,7 +3530,7 @@ public class CoreFunctions {
 
 	public static VncFunction vary_meta = new VncFunction("vary-meta") {
 		{
-			setSignatures("(vary-meta obj f & args)");
+			setArgLists("(vary-meta obj f & args)");
 			
 			setDescription(
 					"Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.");
@@ -3563,7 +3563,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_atom = new VncFunction("atom") {
 		{
-			setSignatures("(atom x)");
+			setArgLists("(atom x)");
 			
 			setDescription("Creates an atom with the initial value x");
 		}
@@ -3577,7 +3577,7 @@ public class CoreFunctions {
 
 	public static VncFunction atom_Q = new VncFunction("atom?") {
 		{
-			setSignatures("(atom? x)");
+			setArgLists("(atom? x)");
 			
 			setDescription("Returns true if x is an atom, otherwise false");
 		}
@@ -3591,7 +3591,7 @@ public class CoreFunctions {
 
 	public static VncFunction deref = new VncFunction("deref") {
 		{
-			setSignatures("(deref atom)");
+			setArgLists("(deref atom)");
 			
 			setDescription("Dereferences an atom, returns its value");
 		}
@@ -3606,7 +3606,7 @@ public class CoreFunctions {
 
 	public static VncFunction reset_BANG = new VncFunction("reset!") {
 		{
-			setSignatures("(reset! atom newval)");
+			setArgLists("(reset! atom newval)");
 			
 			setDescription(
 					"Sets the value of atom to newval without regard for the " + 
@@ -3623,7 +3623,7 @@ public class CoreFunctions {
 
 	public static VncFunction swap_BANG = new VncFunction("swap!") {
 		{
-			setSignatures("(swap! atom f & args)");
+			setArgLists("(swap! atom f & args)");
 			
 			setDescription(
 					"Atomically swaps the value of atom to be: " + 
@@ -3647,7 +3647,7 @@ public class CoreFunctions {
 
 	public static VncFunction compare_and_set_BANG = new VncFunction("compare-and-set!") {
 		{
-			setSignatures("(compare-and-set! atom oldval newval)");
+			setArgLists("(compare-and-set! atom oldval newval)");
 			
 			setDescription(
 					"Atomically sets the value of atom to newval if and only if the " + 
@@ -3671,7 +3671,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_starts_with = new VncFunction("str/starts-with?") {
 		{
-			setSignatures("(str/starts-with? s substr)");
+			setArgLists("(str/starts-with? s substr)");
 			
 			setDescription("True if s starts with substr.");
 		}
@@ -3692,7 +3692,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_ends_with = new VncFunction("str/ends-with?") {
 		{
-			setSignatures("(str/ends-with? s substr)");
+			setArgLists("(str/ends-with? s substr)");
 			
 			setDescription("True if s ends with substr.");
 		}
@@ -3713,7 +3713,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_contains = new VncFunction("str/contains?") {
 		{
-			setSignatures("(str/contains? s substr)");
+			setArgLists("(str/contains? s substr)");
 			
 			setDescription("True if s contains with substr.");
 		}
@@ -3734,7 +3734,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_trim = new VncFunction("str/trim") {
 		{
-			setSignatures("(str/trim s substr)");
+			setArgLists("(str/trim s substr)");
 			
 			setDescription("Trims leading and trailing spaces from s.");
 		}
@@ -3752,7 +3752,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_trim_to_nil = new VncFunction("str/trim-to-nil") {
 		{
-			setSignatures("(str/trim-to-nil s substr)");
+			setArgLists("(str/trim-to-nil s substr)");
 			
 			setDescription(
 					"Trims leading and trailing spaces from s. " +
@@ -3773,7 +3773,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_index_of = new VncFunction("str/index-of") {
 		{
-			setSignatures("(str/index-of s value)", "(str/index-of s value from-index)");
+			setArgLists("(str/index-of s value)", "(str/index-of s value from-index)");
 			
 			setDescription(
 					"Return index of value (string or char) in s, optionally searching " + 
@@ -3800,7 +3800,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_last_index_of = new VncFunction("str/last-index-of") {
 		{
-			setSignatures("(str/last-index-of s value)", "(str/last-index-of s value from-index)");
+			setArgLists("(str/last-index-of s value)", "(str/last-index-of s value from-index)");
 			
 			setDescription(
 					"Return last index of value (string or char) in s, optionally\n" + 
@@ -3831,7 +3831,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_replace_first = new VncFunction("str/replace-first") {
 		{
-			setSignatures("(str/replace-first s search replacement)");
+			setArgLists("(str/replace-first s search replacement)");
 			
 			setDescription(
 					"Replaces the first occurrance of search in s");
@@ -3864,7 +3864,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_replace_last = new VncFunction("str/replace-last") {
 		{
-			setSignatures("(str/replace-last s search replacement)");
+			setArgLists("(str/replace-last s search replacement)");
 			
 			setDescription(
 					"Replaces the last occurrance of search in s");
@@ -3897,7 +3897,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_replace_all = new VncFunction("str/replace-all") {
 		{
-			setSignatures("(str/replace-all s search replacement)");
+			setArgLists("(str/replace-all s search replacement)");
 			
 			setDescription(
 					"Replaces the all occurrances of search in s");
@@ -3938,7 +3938,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_lower_case = new VncFunction("str/lower-case") {
 		{
-			setSignatures("(str/lower-case s)");
+			setArgLists("(str/lower-case s)");
 			
 			setDescription("Converts s to lowercase");
 		}
@@ -3958,7 +3958,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_upper_case = new VncFunction("str/upper-case") {
 		{
-			setSignatures("(str/upper-case s)");
+			setArgLists("(str/upper-case s)");
 			
 			setDescription("Converts s to uppercase");
 		}
@@ -3978,7 +3978,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_join = new VncFunction("str/join") {
 		{
-			setSignatures("(str/join coll)", "(str/join separator coll)");
+			setArgLists("(str/join coll)", "(str/join separator coll)");
 			
 			setDescription("Joins all elements in coll separated by an optional separator.");
 		}
@@ -4002,7 +4002,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_subs = new VncFunction("str/subs") {
 		{
-			setSignatures("(str/subs s start)", "(str/subs s start end)");
+			setArgLists("(str/subs s start)", "(str/subs s start end)");
 			
 			setDescription(
 					"Returns the substring of s beginning at start inclusive, and ending " + 
@@ -4025,7 +4025,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_split = new VncFunction("str/split") {
 		{
-			setSignatures("(str/split s regex)");
+			setArgLists("(str/split s regex)");
 			
 			setDescription(
 					"Splits string on a regular expression.");
@@ -4048,7 +4048,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_split_lines = new VncFunction("str/split-lines") {
 		{
-			setSignatures("(str/split-lines s)");
+			setArgLists("(str/split-lines s)");
 			
 			setDescription("Splits s into lines.");
 		}
@@ -4069,7 +4069,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_format = new VncFunction("str/format") {
 		{
-			setSignatures("(str/format s format args*)");
+			setArgLists("(str/format s format args*)");
 			
 			setDescription("Returns a formatted string using the specified format string and arguments.");
 		}
@@ -4095,7 +4095,7 @@ public class CoreFunctions {
 
 	public static VncFunction gensym = new VncFunction("gensym") {
 		{
-			setSignatures("(gensym)", "(gensym prefix)");
+			setArgLists("(gensym)", "(gensym prefix)");
 			
 			setDescription("Generates a symbol.");
 		}
@@ -4114,7 +4114,7 @@ public class CoreFunctions {
 
 	public static VncFunction uuid = new VncFunction("uuid") {
 		{
-			setSignatures("(uuid)");
+			setArgLists("(uuid)");
 			
 			setDescription("Generates a UUID.");
 		}

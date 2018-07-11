@@ -49,7 +49,7 @@ public class Venice {
 	public PreCompiled precompile(final String script) {
 		final VeniceInterpreter venice = new VeniceInterpreter();
 
-		return new PreCompiled(venice.READ(script), createEnv(venice, null));
+		return new PreCompiled(venice.READ(script, null), createEnv(venice, null));
 	}
 
 	public Object eval(final PreCompiled precompiled) {		
@@ -98,7 +98,7 @@ public class Venice {
 
 			final Env env = createEnv(venice, params);
 			
-			final VncVal result = venice.RE(script, env);
+			final VncVal result = venice.RE(script, null, env);
 			
 			return JavaInteropUtil.convertToJavaObject(result);
 		}

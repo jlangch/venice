@@ -106,15 +106,15 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		return "anonymous-" + UUID.randomUUID().toString();
 	}
 
-	public VncList getSignature() { 
-		final VncVal paramDefs = getMetaVal(new VncSymbol(":signature")); 
+	public VncList getArgLists() { 
+		final VncVal paramDefs = getMetaVal(new VncSymbol(":argslists")); 
 		return paramDefs == Constants.Nil ? new VncList() : (VncList)paramDefs;
 	}
 	
-	public void setSignatures(final String... signatures) { 
+	public void setArgLists(final String... argslists) { 
 		setMetaVal(
-				new VncSymbol(":signature"), 
-				new VncList(Arrays.stream(signatures).map(s -> new VncString(s)).collect(Collectors.toList())));
+				new VncSymbol(":argslists"), 
+				new VncList(Arrays.stream(argslists).map(s -> new VncString(s)).collect(Collectors.toList())));
 	}
 	
 	public VncVal getDescription() { 

@@ -1328,8 +1328,10 @@ public class FunctionsTest {
 	public void test_meta() {
 		final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval("(meta 3)"));
-		assertEquals(null, venice.eval("(meta [1 2 3])"));
+		assertNotNull(venice.eval("(meta 3)"));
+		assertNotNull(venice.eval("(meta '(1 2 3))"));
+		assertNotNull(venice.eval("(meta [1 2 3])"));
+		assertNotNull(venice.eval("(meta { :a 1 })"));
 		
 		assertEquals("{:a 1}", venice.eval("(str (meta (with-meta [1 2 3] { :a 1 })))"));
 	}
@@ -2361,7 +2363,7 @@ public class FunctionsTest {
 	public void test_vary_meta() {
 		final Venice venice = new Venice();
 								
-		assertEquals("{:a 1}", venice.eval("(str (meta (vary-meta [] assoc :a 1)))"));
+		assertEquals("1", venice.eval("(str (get (meta (vary-meta [] assoc :a 1)) :a))"));
 	}
 	
 	@Test

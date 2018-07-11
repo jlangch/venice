@@ -39,7 +39,7 @@ public class Doc {
 		final VncFunction func = functions.get(name);
 		if (func != null) {
 			final StringBuilder sb =  new StringBuilder();
-			sb.append(func.getSignature().getList().stream().map(s -> toString(s)).collect(Collectors.joining(", ")));
+			sb.append(func.getArgLists().getList().stream().map(s -> toString(s)).collect(Collectors.joining(", ")));
 			sb.append("\n");
 			sb.append(toString(func.getDescription()));
 			return sb.toString();			

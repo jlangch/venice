@@ -49,8 +49,8 @@ public class VeniceInterpreter {
 	
 	
 	// read
-	public VncVal READ(final String script) {
-		return Reader.read_str(script);
+	public VncVal READ(final String script, final String filename) {
+		return Reader.read_str(script, filename);
 	}
 
 	// eval
@@ -138,11 +138,16 @@ public class VeniceInterpreter {
 		else if (ast instanceof VncList) {
 			final VncList old_lst = (VncList)ast;
 			final VncList new_lst = old_lst.empty();
+			new_lst.setMeta(old_lst.getMeta().copy());
+			
 			old_lst.forEach(mv -> new_lst.addAtEnd(EVAL(mv, env)));
 			return new_lst;
 		} 
 		else if (ast instanceof VncMap) {
-			final VncMap new_hm = (VncMap)((VncMap)ast).empty();
+			final VncMap old_hm = (VncMap)ast;
+			final VncMap new_hm = (VncMap)old_hm.empty();
+			new_hm.setMeta(old_hm.getMeta().copy());
+
 			((VncMap)ast).getMap().entrySet().forEach(entry ->
 				new_hm.getMap().put(
 						entry.getKey(), 
@@ -397,8 +402,8 @@ public class VeniceInterpreter {
 		return Printer._pr_str(exp, true);
 	}
 	
-	public VncVal RE(final String script, final Env env) {
-		final VncVal ast = READ(script);
+	public VncVal RE(final String script, final String filename, final Env env) {
+		final VncVal ast = READ(script, filename);
 		return EVAL(ast, env);
 	}
 
@@ -428,7 +433,7 @@ public class VeniceInterpreter {
 
 		// load core.vnc 
 		final String core = loadCore();
-		RE("(eval " + core + ")", env);
+		RE("(eval " + core + ")", "core.vnc", env);
 		
 		return env;
 	}

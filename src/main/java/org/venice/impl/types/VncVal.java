@@ -69,26 +69,11 @@ abstract public class VncVal implements Comparable<VncVal> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((meta == null) ? 0 : meta.hashCode());
-		return result;
+		return 31;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VncVal other = (VncVal) obj;
-		if (meta == null) {
-			if (other.meta != null)
-				return false;
-		} else if (!meta.equals(other.meta))
-			return false;
 		return true;
 	}
 

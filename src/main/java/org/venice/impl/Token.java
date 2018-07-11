@@ -3,9 +3,10 @@ package org.venice.impl;
 
 public class Token {
 	
-	public Token(final String token, final int row, final int col) {
+	public Token(final String token, final String file, final int line, final int col) {
 		this.token = token;
-		this.row = row;
+		this.file = file == null || file.isEmpty() ? "unknown" : file;
+		this.line = line;
 		this.col = col;
 	}
 	
@@ -14,16 +15,16 @@ public class Token {
 		return token;
 	}
 	
-	public int getRow() {
-		return row;
+	public String getFile() {
+		return file;
 	}
 	
-	public int getCol() {
-		return col;
+	public int getLine() {
+		return line;
 	}
-
-	public TokenPos getPos() {
-		return new TokenPos(row, col);
+	
+	public int getColumn() {
+		return col;
 	}
 	
 	public char charAt(int index) {
@@ -36,11 +37,12 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return String.format("%s (row %d, col %d)", token, row, col);
+		return String.format("%s (file: %s, line %d, column %d)", token, file, line, col);
 	}
 
 	
 	private final String token;
-	private final int row; 
+	private final String file; 
+	private final int line; 
 	private final int col;
 }

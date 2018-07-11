@@ -62,7 +62,7 @@ public class REPL {
 			}
 			
 			try {
-				System.out.println("=> " + venice.PRINT(venice.RE(line, env)));
+				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
 			} 
 			catch (ContinueException e) {
 				continue;

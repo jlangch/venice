@@ -416,6 +416,13 @@ public class DocGenerator {
 		util.addItem(getDocItem("time-ns"));
 		util.addItem(getDocItem("eval"));
 		util.addItem(getDocItem("class"));
+
+
+		final DocSection meta = new DocSection("Meta");
+		all.addSection(meta);
+		meta.addItem(getDocItem("meta"));
+		meta.addItem(getDocItem("with-meta"));
+		meta.addItem(getDocItem("vary-meta"));
 		
 		return section;
 	}
@@ -635,7 +642,7 @@ public class DocGenerator {
 		general.addItem(
 				new DocItem(
 						fn.getName(), 
-						toStringList(fn.getSignature()), 
+						toStringList(fn.getArgLists()), 
 						((VncString)fn.getDescription()).getValue(),
 						runExamples(fn.getName(), toStringList(fn.getExamples()))));
 		general.addItem(new DocItem("Constructor: (. classname :new args)"));
@@ -650,7 +657,7 @@ public class DocGenerator {
 		if (f != null) {
 			return new DocItem(
 					name, 
-					toStringList(f.getSignature()), 
+					toStringList(f.getArgLists()), 
 					((VncString)f.getDescription()).getValue(),
 					runExamples(name, toStringList(f.getExamples())));
 		}
