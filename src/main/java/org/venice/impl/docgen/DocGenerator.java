@@ -536,6 +536,7 @@ public class DocGenerator {
 		final DocSection load = new DocSection("load");
 		all.addSection(load);
 		load.addItem(getDocItem("load-file"));
+		load.addItem(getDocItem("load-string"));
 
 		return section;
 	}
@@ -700,6 +701,17 @@ public class DocGenerator {
 							Arrays.asList()));
 		}
 
+		if ("load-string".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(load-string s)"), 
+					"Sequentially read and evaluate the set of forms contained in the string.",
+					runExamples(
+							name, 
+							Arrays.asList(
+									"(load-string \"(def x 1)\")")));
+		}
+
 		if ("eval".equals(name)) {
 			return new DocItem(
 					name, 
@@ -708,7 +720,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "(eval '(let [a 10] (+ 3 4 a)))")));
+							 "(eval '(let [a 10] (+ 3 4 a)))",
+							 "(eval (list + 1 2 3))")));
 		}
 
 	

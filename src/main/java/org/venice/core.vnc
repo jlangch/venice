@@ -124,6 +124,9 @@
 (def load-file (fn [f] (eval (read-string (str "(do " (slurp f) ")")))))
 
 
+(def load-string (fn [s] (eval (read-string (str "(do " s ")")))))
+
+
 (def memoize (fn [f]
    (let [mem (atom {})]
       (fn [& args]

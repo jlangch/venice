@@ -1122,6 +1122,13 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_load_string() {
+		final Venice venice = new Venice();
+
+		assertEquals(Long.valueOf(3), venice.eval("(load-string \"(def x 1) (+ x 2)\")"));
+	}
+
+	@Test
 	public void test_long() {
 		final Venice venice = new Venice();
 
