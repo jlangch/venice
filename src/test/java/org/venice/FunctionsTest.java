@@ -1122,6 +1122,32 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_load_file() {
+		final Venice venice = new Venice();
+		
+		try {
+			final File file = File.createTempFile("load", ".txt");
+			try {				
+				venice.eval(
+						"(spit file \"(def x 1) (+ x 2)\")", 
+						Parameters.of("file", file.getAbsolutePath()));
+	
+				assertEquals(
+						Long.valueOf(3), 
+						venice.eval(
+								"(load-file file)", 
+								Parameters.of("file", file.getAbsolutePath())));					
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Test
 	public void test_load_string() {
 		final Venice venice = new Venice();
 
