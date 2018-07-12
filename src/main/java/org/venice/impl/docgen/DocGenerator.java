@@ -195,6 +195,7 @@ public class DocGenerator {
 		final DocSection str_test = new DocSection("Test");
 		strings.addSection(str_test);
 		str_test.addItem(getDocItem("string?"));
+		str_test.addItem(getDocItem("empty?"));
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
@@ -399,6 +400,7 @@ public class DocGenerator {
 		final DocSection call = new DocSection("Call");
 		all.addSection(call);
 		call.addItem(getDocItem("apply"));
+		call.addItem(getDocItem("memoize"));
 
 
 		final DocSection test = new DocSection("Test");
@@ -524,6 +526,10 @@ public class DocGenerator {
 		from.addItem(getDocItem("read-string"));
 		from.addItem(getDocItem("slurp"));
 		from.addItem(getDocItem("spit"));
+
+		final DocSection load = new DocSection("load");
+		all.addSection(load);
+		load.addItem(getDocItem("load-file"));
 
 		return section;
 	}
@@ -664,6 +670,30 @@ public class DocGenerator {
 					runExamples(name, toStringList(f.getExamples())));
 		}
 		
+		if ("memoize".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(memoize f)"), 
+					"Returns a memoized version of a referentially transparent function.",
+					runExamples(
+							name, 
+							Arrays.asList(
+								"(do                                \n" +
+								"   (def test (fn [a] (+ a 100)))   \n" +
+								"   (def test-memo (memoize test))  \n" +
+								"   (test-memo 1))")));
+		}
+
+		if ("load-file".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(load-file name)"), 
+					"Sequentially read and evaluate the set of forms contained in the file.",
+					runExamples(
+							name, 
+							Arrays.asList()));
+		}
+		
 		final MacroDef m = CoreMacroDefs
 							.getMacros()
 							.stream()
@@ -790,4 +820,5 @@ public class DocGenerator {
 			throw new RuntimeException("Failed to load code snippets", ex);
 		}
 	}
+	
 }

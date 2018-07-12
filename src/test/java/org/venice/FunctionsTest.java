@@ -1339,7 +1339,7 @@ public class FunctionsTest {
 		final Venice venice = new Venice();
 
 
-		final String script = 
+		final String script1 = 
 				"(do                                  " +
 				"   (def counter (atom 0))            " +
 				"                                     " +
@@ -1359,7 +1359,27 @@ public class FunctionsTest {
 				"     (deref counter) ]               " +
 				")                                    ";
 
-		assertEquals("[101 101 101 102 102 2]", venice.eval("(str " + script + ")"));
+		final String script2 = 
+				"(do                                  " +
+				"   (def counter (atom 0))            " +
+				"                                     " +
+				"   (def test-memo                    " +
+				"        (memoize                     " +
+				"           (fn [a]                   " +
+				"              (do                    " +
+				"                 (swap! counter inc) " +
+				"                 (+ a 100)))))       " +
+				"                                     " +
+				"   [ (test-memo 1)                   " +
+				"     (test-memo 1)                   " +
+				"     (test-memo 1)                   " +
+				"     (test-memo 2)                   " +
+				"     (test-memo 2)                   " +
+				"     (deref counter) ]               " +
+				")                                    ";
+
+		assertEquals("[101 101 101 102 102 2]", venice.eval("(str " + script1 + ")"));
+		assertEquals("[101 101 101 102 102 2]", venice.eval("(str " + script2 + ")"));
 	}
 
 	@Test
