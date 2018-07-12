@@ -1,11 +1,9 @@
 # Venice
 
-The Venice programming language.
+Venice, a Lisp interpreter running on Java.
 
 
 ## Overview
-
-Venice is a Lisp interpreter running on Java. 
 
 Venice's goal is not to build another Lisp, it's born from the need of 
 having a safe and powerful expression language that can be used to implement 
@@ -24,7 +22,9 @@ easily add it as standalone .jar to your classpath.
 
 ## REPL
 
-start the REPL with `java -jar venice.jar`
+Venice comes with a simple REPL that does not provide command line editing.
+
+Start the REPL with `java -jar venice.jar`
 
 ```sh
 venice> (+ 1 1)

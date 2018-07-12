@@ -162,6 +162,17 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_coalesce() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(coalesce )"));	
+		assertEquals(null, venice.eval("(coalesce nil)"));	
+		assertEquals(null, venice.eval("(coalesce nil nil nil)"));	
+		assertEquals(Long.valueOf(1L), venice.eval("(coalesce 1)"));	
+		assertEquals(Long.valueOf(1L), venice.eval("(coalesce nil 1 2)"));	
+	}
+	
+	@Test
 	public void test_coll_Q() {
 		final Venice venice = new Venice();
 
@@ -175,7 +186,7 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(coll? (sorted-map :a 1 :b 2))"));	
 		assertTrue((Boolean)venice.eval("(coll? (set 1 2))"));	
 	}
-	
+
 	@Test
 	public void test_conj() {
 		final Venice venice = new Venice();
@@ -2343,6 +2354,18 @@ public class FunctionsTest {
 		assertEquals("abcdef", venice.eval("(str/trim-to-nil \"  abcdef\")"));
 		assertEquals("abcdef", venice.eval("(str/trim-to-nil \"abcdef  \")"));
 		assertEquals(null, venice.eval("(str/trim-to-nil \"  \")"));
+	}
+
+	@Test
+	public void test_str_truncate() {
+		final Venice venice = new Venice();
+		
+		assertEquals(null, venice.eval("(str/truncate nil 20 \"...\")"));
+		assertEquals("", venice.eval("(str/truncate \"\" 20 \"...\")"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 20 \"...\")"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 10 \"...\")"));
+		assertEquals("abcdef...", venice.eval("(str/truncate \"abcdefghij\" 9 \"...\")"));
+		assertEquals("a...", venice.eval("(str/truncate \"abcdefghij\" 4 \"...\")"));
 	}
 
 	@Test

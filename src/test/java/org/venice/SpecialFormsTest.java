@@ -157,6 +157,14 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_eval() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Long.valueOf(17), venice.eval("(eval '(let [a 10] (+ 3 4 a)))"));
+		assertEquals(Long.valueOf(5), venice.eval("(do (def x '(+ 2 3)) (eval x))"));
+	}
+
+	@Test
 	public void test_do() {
 		final Venice venice = new Venice();
 		

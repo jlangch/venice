@@ -124,7 +124,38 @@ public class StringUtil {
 		
 		return sb.toString();
 	}
-	
+
+	/**
+	 * Truncates a string.
+	 * 
+	 * @param text a string
+	 * @param maxLen the max length of the truncated string (truncation marker included)
+	 * @param truncationMarker a truncation marker
+	 * @return the truncated string
+	 */
+	public static String truncate(
+			final String text, 
+			final int maxLen, 
+			final String truncationMarker
+	) {
+		if (truncationMarker == null) {
+			throw new IllegalArgumentException("A truncationMarker must not be null");
+		}
+		
+		int lenTruncationMarker = truncationMarker.length();
+		
+		if (maxLen <= lenTruncationMarker){
+			throw new IllegalArgumentException(
+					"A maxLen must greater than the length of the truncation marker");
+		}
+		
+		if (text == null || text.length() <= maxLen) {
+			return text;
+		}
+		
+		return text.substring(0, maxLen - lenTruncationMarker) + truncationMarker;
+	}
+
 	public static boolean isEmpty(final CharSequence cs){
 		return cs == null || cs.length() == 0;
 	}

@@ -190,6 +190,10 @@ public class VeniceInterpreter {
 					env.set((VncSymbol)a1, res);
 					return res;
 				}
+				
+				case "eval":
+					orig_ast = ((VncList)eval_ast(ast.slice(1), env)).first();
+					break;
 					
 				case "let":  { // (let [bindings*] exprs*)
 					env = new Env(env);

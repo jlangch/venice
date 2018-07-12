@@ -181,6 +181,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/subs"));
 		use.addItem(getDocItem("str/split"));
 		use.addItem(getDocItem("str/lines"));
+		use.addItem(getDocItem("str/truncate"));
 
 		final DocSection regex = new DocSection("Regex");
 		strings.addSection(regex);
@@ -413,13 +414,18 @@ public class DocGenerator {
 		ex.addItem(getDocItem("throw"));
 
 
+		final DocSection misc = new DocSection("Misc");
+		all.addSection(misc);
+		misc.addItem(getDocItem("class"));
+		misc.addItem(getDocItem("eval"));
+
+
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("time-ms"));
 		util.addItem(getDocItem("time-ns"));
-		util.addItem(getDocItem("eval"));
-		util.addItem(getDocItem("class"));
+		util.addItem(getDocItem("coalesce"));
 
 
 		final DocSection meta = new DocSection("Meta");
@@ -693,7 +699,19 @@ public class DocGenerator {
 							name, 
 							Arrays.asList()));
 		}
-		
+
+		if ("eval".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(eval form)"), 
+					"Evaluates the form data structure (not text!) and returns the result.",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "(eval '(let [a 10] (+ 3 4 a)))")));
+		}
+
+	
 		final MacroDef m = CoreMacroDefs
 							.getMacros()
 							.stream()

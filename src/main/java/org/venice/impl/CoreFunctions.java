@@ -2701,6 +2701,18 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction coalesce = new VncFunction("coalesce") {
+		{
+			setArgLists("(coalesce args*)");
+			
+			setDescription("Returns the first non nil arg");
+		}
+		
+		public VncVal apply(final VncList args) {
+			return args.getList().stream().filter(v -> v != Nil).findFirst().orElse(Nil);
+		}
+	};
+
 	public static VncFunction emptyToNil = new VncFunction("empty-to-nil") {
 		{
 			setArgLists("(empty-to-nil x)");
@@ -4173,8 +4185,35 @@ public class CoreFunctions {
 			return new VncString(String.format(fmt.unkeyword().getValue(), fmtArgs.toArray()));		
 		}
 	};
-
 	
+	public static VncFunction str_truncate = new VncFunction("str/truncate") {
+		{
+			setArgLists("(str/truncate s maxlen marker)");
+			
+			setDescription(
+					"Truncates a string to the max lenght maxlen and adds the " +
+					"marker to the end if the string needs to be truncated");
+			
+			setExamples(
+					"(str/truncate \"abcdefghij\" 20 \"...\")",
+					"(str/truncate \"abcdefghij\" 9 \"...\")",
+					"(str/truncate \"abcdefghij\" 4 \"...\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/truncate", args, 3);
+			
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			return new VncString(StringUtil.truncate(
+					((VncString)args.nth(0)).getValue(), 
+					((VncLong)args.nth(1)).getValue().intValue(), 					
+					((VncString)args.nth(2)).getValue()));		
+		}
+	};
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// Utilities
@@ -4402,6 +4441,7 @@ public class CoreFunctions {
 				.put("swap!",				swap_BANG)
 				.put("compare-and-set!", 	compare_and_set_BANG)
 				
+				.put("coalesce", 			coalesce)
 				
 				.put("gensym",				gensym)
 				.put("uuid",				uuid)
@@ -4423,6 +4463,7 @@ public class CoreFunctions {
 				.put("str/split",			str_split)
 				.put("str/split-lines",		str_split_lines)
 				.put("str/format",			str_format)
+				.put("str/truncate",		str_truncate)
 
 				.toMap();
 
