@@ -172,8 +172,8 @@ venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))");
 // => OK (constructor & instance method)
 venice.eval(
     "(doto (. :java.util.ArrayList :new)  " +
-    "	  (. :add 1)                     " +
-    "	  (. :add 2))                    ");
+    "      (. :add 1)                     " +
+    "      (. :add 2))                    ");
 
 // => FAIL (static method) with Sandbox SecurityException
  venice.eval("(. :java.lang.System :exit 0)"); 
