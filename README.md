@@ -176,7 +176,7 @@ venice.eval(
     "      (. :add 2))                    ");
 
 // => FAIL (static method) with Sandbox SecurityException
- venice.eval("(. :java.lang.System :exit 0)"); 
+venice.eval("(. :java.lang.System :exit 0)"); 
 ```
 
 
