@@ -150,33 +150,33 @@ that are available to the script in the JVM!
 #### Example
 
 ```java
-    final JavaInterceptor interceptor =
-        new JavaSandboxInterceptor(
-            WhiteList.create(
-                true, // reject all Venice IO functions (slurp, ...)
-                "java.lang.Long",  // Math::min arg type
-                "java.lang.Boolean",  // ArrayList::add return type
-                "java.lang.Math:min", 
-                 "java.time.ZonedDateTime:*", 
-                "java.util.ArrayList:new",
-                "java.util.ArrayList:add"));
+final JavaInterceptor interceptor =
+    new JavaSandboxInterceptor(
+        WhiteList.create(
+            true, // reject all Venice IO functions (slurp, ...)
+            "java.lang.Long",  // Math::min arg type
+            "java.lang.Boolean",  // ArrayList::add return type
+            "java.lang.Math:min", 
+            "java.time.ZonedDateTime:*", 
+            "java.util.ArrayList:new",
+            "java.util.ArrayList:add"));
 
-    final Venice venice = new Venice(interceptor);
+final Venice venice = new Venice(interceptor);
 
-    // => OK (static method)
-    venice.eval("(. :java.lang.Math :min 20 30)"); 
+// => OK (static method)
+venice.eval("(. :java.lang.Math :min 20 30)"); 
     
-    // => OK (constructor & instance method)
-    venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
+// => OK (constructor & instance method)
+venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
  
-    // => OK (constructor & instance method)
-    venice.eval(
-        "(doto (. :java.util.ArrayList :new)  " +
-        "	  (. :add 1)                     " +
-        "	  (. :add 2))                    ");
+// => OK (constructor & instance method)
+venice.eval(
+    "(doto (. :java.util.ArrayList :new)  " +
+    "	  (. :add 1)                     " +
+    "	  (. :add 2))                    ");
 
-    // => FAIL (static method) with Sandbox SecurityException
-    venice.eval("(. :java.lang.System :exit 0)"); 
+// => FAIL (static method) with Sandbox SecurityException
+ venice.eval("(. :java.lang.System :exit 0)"); 
 ```
 
 
