@@ -24,6 +24,7 @@ package org.venice.impl.util.reflect;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -513,6 +514,18 @@ public class ReflectionAccessor {
 		else if (paramType == boolean.class || paramType == Boolean.class) {
 			return argType == Boolean.class;
 		}
+		else if (ReflectionTypes.isArrayType(paramType)) {
+			final Class<?> paramComponentType = paramType.getComponentType();					
+			if (paramComponentType == byte.class) {
+				if (argType == String.class) {
+					return true;
+				}
+				else if (argType == ByteBuffer.class) {
+					return true;
+				}
+			}
+			return false;
+		}
 		
 		return false;
 	}
@@ -553,6 +566,18 @@ public class ReflectionAccessor {
 		else if (paramType == boolean.class || paramType == Boolean.class) {
 			return argType == Boolean.class;
 		}
+		else if (ReflectionTypes.isArrayType(paramType)) {
+			final Class<?> paramComponentType = paramType.getComponentType();					
+			if (paramComponentType == byte.class) {
+				if (argType == String.class) {
+					return true;
+				}
+				else if (argType == ByteBuffer.class) {
+					return true;
+				}
+			}
+			return false;
+		}
 		
 		return false;
 	}
@@ -577,8 +602,25 @@ public class ReflectionAccessor {
 					return boxed;
 				}
 			}
-			
-			return paramType.cast(arg);
+			else if (ReflectionTypes.isArrayType(paramType)) {
+				final Class<?> paramComponentType = paramType.getComponentType();					
+				if (paramComponentType == byte.class) {
+					if (arg.getClass() == String.class) {
+						try {
+							return ((String)arg).getBytes("UTF-8");
+						}
+						catch(Exception ex) {
+							throw new JavaMethodInvocationException(
+									"Failed to box arg of type String to byte[]", ex);
+						}
+					}
+					else if (arg.getClass() == ByteBuffer.class) {
+						return ((ByteBuffer)arg).array();
+					}
+				}
+			}
+		
+			return paramType.cast(arg); // try to cast
 		}
 		else if (paramType == boolean.class) {
 			return Boolean.class.cast(arg);
