@@ -177,6 +177,9 @@ venice.eval(
 
 // => FAIL (static method) with Sandbox SecurityException
 venice.eval("(. :java.lang.System :exit 0)"); 
+
+// => FAIL Venice IO function
+venice.eval("(slurp \"/tmp/file\")"); 
 ```
 
 
