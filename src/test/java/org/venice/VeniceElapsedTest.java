@@ -36,49 +36,67 @@ public class VeniceElapsedTest {
 		final AuditEvent event = new AuditEvent(
 										"jd",
 										2000L,
-										AuditEventType.INFO,
+										AuditEventType.ALERT,
 										"john.doe",
 										"login",
 										"text");
 
 		final Venice venice = new Venice();
 		
-		String script = 
+		String script1 = 
 				"(or (match (get event :eventName) \"webapp[.](started|stopped)\") " +
 				"    (== (get event :eventKey) \"superuser\") " +
 				"    (== (get event :eventType) \"ALERT\") " +
 				")";       
-	       
+
+		String script2 = 
+				"(or (match eventName \"webapp[.](started|stopped)\") " +
+				"    (== eventKey \"superuser\") " +
+				"    (== eventType \"ALERT\") " +
+				")";       
+
+		final PreCompiled compiled1 = venice.precompile(script1);
+		final PreCompiled compiled2 = venice.precompile(script2);
+
 		// warm up
 		for(int ii=0; ii<100; ii++) {
-			venice.eval(script, Parameters.of("event", event));
-			venice.eval(venice.precompile(script), Parameters.of("event", event));
+			venice.eval(script1, Parameters.of("event", event));
+			venice.eval(venice.precompile(script1), Parameters.of("event", event));
 		}
 		
 		
 		// --------------------------------------------------------
+		// Java
+		// --------------------------------------------------------
+		final StopWatch	sw = StopWatch.millis();
+		for(int ii=0; ii<1000; ii++) {
+			boolean res = event.getEventName().matches("webapp[.](started|stopped)")
+							|| event.getEventKey().equals("superuser")
+							|| event.getEventType() == AuditEventType.ALERT;
+		}	
+		System.out.println("Elapsed (Java reference, 1000 calls): " + sw.stop().toString()); 
+
+		
+		// --------------------------------------------------------
 		// not compiled, implicit symbol conversion
 		// --------------------------------------------------------
-
-		final StopWatch	sw = StopWatch.millis();	
+		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
-			venice.eval(script, Parameters.of("event", event));
+			venice.eval(script1, Parameters.of("event", event));
 		}	
 		System.out.println("Elapsed (1000 calls): " + sw.stop().toString()); 
 	  
 		
-		
-		final PreCompiled compiled = venice.precompile(script);
-		
+				
 		// --------------------------------------------------------
 		// precompiled, implicit symbol conversion
 		// --------------------------------------------------------
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// implicitly convert AuditEvent symbol (JavaInteropUtil with reflection)
-	        venice.eval(compiled, Parameters.of("event", event));
+	        venice.eval(compiled1, Parameters.of("event", event));
 		}	
-		System.out.println("Elapsed (precompiled, implicit symbols, 1000 calls): " + sw.stop().toString()); 
+		System.out.println("Elapsed (precompiled, implicit params, 1000 calls): " + sw.stop().toString()); 
 
 		
 		// --------------------------------------------------------
@@ -87,9 +105,24 @@ public class VeniceElapsedTest {
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// explicitly convert AuditEvent symbol
-	        venice.eval(compiled, Parameters.of("event", toMap(event)));
+	        venice.eval(compiled1, Parameters.of("event", toMap(event)));
 		}	
-		System.out.println("Elapsed (precompiled, explicit symbols, 1000 calls): " + sw.stop().toString()); 
+		System.out.println("Elapsed (precompiled, explicit params, 1000 calls): " + sw.stop().toString()); 
+
+		
+		// --------------------------------------------------------
+		// precompiled, explicit symbol conversion
+		// --------------------------------------------------------
+		sw.start();	
+		for(int ii=0; ii<1000; ii++) {
+			// explicitly convert AuditEvent symbol
+	        venice.eval(compiled2, 
+	        		Parameters.of(
+	        				"eventName", event.getEventName(),
+	        				"eventType", event.getEventType(),
+	        				"eventKey", event.getEventKey()));
+		}	
+		System.out.println("Elapsed (precompiled, simple params, 1000 calls): " + sw.stop().toString()); 
 	}
 	
 	
