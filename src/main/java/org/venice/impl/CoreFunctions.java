@@ -4024,7 +4024,6 @@ public class CoreFunctions {
 		}
 	};
 
-
 	public static VncFunction io_exists_file_Q = new VncFunction("io/exists-file?") {
 		{
 			setArgLists("(io/exists-file? x)");
@@ -4042,7 +4041,28 @@ public class CoreFunctions {
 			}
 
 			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
-			return file.exists() ? True : False;
+			return file.isFile() ? True : False;
+		}
+	};
+
+	public static VncFunction io_exists_dir_Q = new VncFunction("io/exists-dir?") {
+		{
+			setArgLists("(io/exists-dir? x)");
+			
+			setDescription("Returns true if the file x exists and is a directory. x must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("io/exists-dir?", args, 1);
+									
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/exists-dir?' does not allow %s as x",
+						Types.getClassName(args.nth(0))));
+			}
+
+			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			return file.isDirectory() ? True : False;
 		}
 	};
 
@@ -4074,6 +4094,52 @@ public class CoreFunctions {
 			}
 			
 			return Nil;
+		}
+	};
+
+	public static VncFunction io_list_files = new VncFunction("io/list-files") {
+		{
+			setArgLists("(io/list-files dir filterFn?)");
+			
+			setDescription("Lists files in a directory. dir must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/list-files", args);
+
+			assertArity("io/list-files", args, 1, 2);
+
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/list-files' does not allow %s as x",
+						Types.getClassName(args.nth(0))));
+			}
+			
+			if (args.size() == 2) {
+				
+			}
+
+			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			try {
+				final VncFunction filterFn = (args.size() == 2) ? (VncFunction)args.nth(1) : null;
+
+				final VncList files = new VncList();
+
+				for(File f : file.listFiles()) {
+					final VncVal result = (filterFn == null) 
+											? True 
+											: filterFn.apply(new VncList(new VncJavaObject(f)));						
+					if (result == True) {
+						files.addAtEnd(new VncJavaObject(f));
+					}
+				}
+				
+				return files;
+			}
+			catch(Exception ex) {
+				throw new VncException(String.format(
+						"Failed to list files %s", file.getPath()));
+			}
 		}
 	};
 
@@ -4646,6 +4712,9 @@ public class CoreFunctions {
 								"slurp",
 								"spit",
 								"load-file",
+								"io/exists-file?",
+								"io/exists-dir?",
+								"io/list-files",
 								"io/delete-file",
 								"io/copy-file",
 								"io/tmp-dir",
@@ -4846,6 +4915,8 @@ public class CoreFunctions {
 				.put("io/file",				io_file)
 				.put("io/file?",			io_file_Q)
 				.put("io/exists-file?",		io_exists_file_Q)
+				.put("io/exists-dir?",		io_exists_dir_Q)
+				.put("io/list-files",		io_list_files)
 				.put("io/delete-file",		io_delete_file)
 				.put("io/copy-file",		io_copy_file)
 				.put("io/tmp-dir",			io_tmp_dir)

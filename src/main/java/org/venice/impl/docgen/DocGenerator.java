@@ -553,15 +553,20 @@ public class DocGenerator {
 		all.addSection(from);
 		from.addItem(getDocItem("readline"));
 		from.addItem(getDocItem("read-string"));
-		from.addItem(getDocItem("slurp"));
-		from.addItem(getDocItem("spit"));
-		from.addItem(getDocItem("io/file"));
-		from.addItem(getDocItem("io/file?"));
-		from.addItem(getDocItem("io/exists-file?"));
-		from.addItem(getDocItem("io/delete-file"));
-		from.addItem(getDocItem("io/copy-file"));
-		from.addItem(getDocItem("io/tmp-dir"));
-		from.addItem(getDocItem("io/user-dir"));
+
+		final DocSection io = new DocSection("file-io");
+		all.addSection(io);
+		io.addItem(getDocItem("slurp"));
+		io.addItem(getDocItem("spit"));
+		io.addItem(getDocItem("io/file"));
+		io.addItem(getDocItem("io/file?"));
+		io.addItem(getDocItem("io/exists-file?"));
+		io.addItem(getDocItem("io/exists-dir?"));
+		io.addItem(getDocItem("io/list-files"));
+		io.addItem(getDocItem("io/delete-file"));
+		io.addItem(getDocItem("io/copy-file"));
+		io.addItem(getDocItem("io/tmp-dir"));
+		io.addItem(getDocItem("io/user-dir"));
 
 		final DocSection load = new DocSection("load");
 		all.addSection(load);
