@@ -75,6 +75,15 @@ public class SandboxRules {
 		return this;
 	}
 	
+	public SandboxRules addClasses(final Class<?>... classes) {
+		if (classes != null) {
+			for(Class<?> clazz : classes) {
+				this.rules.add(clazz.getName() + ":*");
+			}
+		}
+		return this;
+	}
+	
 	public SandboxRules rejectAllVeniceIoFunctions() {
 		if (rules != null) {
 			this.rules.add("blacklist:venice:*io*");

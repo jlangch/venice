@@ -48,6 +48,7 @@ import org.venice.ArityException;
 import org.venice.ContinueException;
 import org.venice.EofException;
 import org.venice.ValueException;
+import org.venice.Version;
 import org.venice.VncException;
 import org.venice.impl.javainterop.JavaInterop;
 import org.venice.impl.javainterop.JavaInteropUtil;
@@ -4685,6 +4686,20 @@ public class CoreFunctions {
 	// Utilities
 	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction version = new VncFunction("version") {
+		{
+			setArgLists("(version)");
+			
+			setDescription("Returns the version.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("version", args, 0);
+			
+			return new VncString(Version.VERSION);
+		}
+	};
+
 	public static VncFunction gensym = new VncFunction("gensym") {
 		{
 			setArgLists("(gensym)", "(gensym prefix)");
@@ -4924,6 +4939,7 @@ public class CoreFunctions {
 				
 				.put("gensym",				gensym)
 				.put("uuid",				uuid)
+				.put("version",				version)
 				
 				.put("io/file",				io_file)
 				.put("io/file?",			io_file_Q)

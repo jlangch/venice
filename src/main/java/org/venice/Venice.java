@@ -38,7 +38,7 @@ import org.venice.javainterop.JavaInterceptor;
 public class Venice {
 
 	public Venice() {
-		this.interceptor = null;
+		this(null);
 	}
 
 	public Venice(final JavaInterceptor interceptor) {
@@ -115,6 +115,10 @@ public class Venice {
 		finally {
 			JavaInterop.unregister();
 		}
+	}
+	
+	public static String getVersion() {
+		return Version.VERSION;
 	}
 	
 	public void enableJavaInteropReflectionCache(final boolean enable) {

@@ -445,6 +445,7 @@ public class DocGenerator {
 
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
+		util.addItem(getDocItem("version"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("time-ms"));
 		util.addItem(getDocItem("time-ns"));

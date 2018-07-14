@@ -56,8 +56,8 @@ public class Parameters {
 			final String key4, final Object val4
 	) {
 		return new Parameters()
-				.put(key1, val1).put(key2, val2).put(key3, val3)
-				.put(key4, val4).toMap();
+					.put(key1, val1).put(key2, val2).put(key3, val3)
+					.put(key4, val4).toMap();
 	}
 
 	public static Map<String,Object> of(
@@ -88,6 +88,10 @@ public class Parameters {
 	}
 
 	public Parameters put(final String key, final Object val) {
+		if (key == null || key.isEmpty()) {
+			throw new IllegalArgumentException("A parameter key must not be null or empty");
+		}
+		
 		symbols.put(key, val);
 		return this;
 	}
