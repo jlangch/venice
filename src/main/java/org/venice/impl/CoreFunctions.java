@@ -4647,7 +4647,9 @@ public class CoreFunctions {
 								"spit",
 								"load-file",
 								"io/delete-file",
-								"io/copy-file"));
+								"io/copy-file",
+								"io/tmp-dir",
+								"io/user-dir"));
 	}
 	
 	
