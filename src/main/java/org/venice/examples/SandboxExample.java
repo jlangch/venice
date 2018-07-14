@@ -50,7 +50,7 @@ public class SandboxExample {
 						new SandboxRules()
 							.rejectAllVeniceIoFunctions()
 							.add(
-								"java.lang.Long",  // Math::min, Math::max arg type
+								"java.lang.Long",  // Math::min, Math::max arguments/return type
 								"java.lang.Boolean",  // ArrayList::add return type
 								"java.lang.Math:min", 
 								"java.lang.Math:max", 
