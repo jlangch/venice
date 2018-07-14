@@ -29,16 +29,13 @@ import java.util.Set;
 
 
 /**
- * Keeps white listed classes and tuples of white listed classes/accessors.
+ * Keeps the sandbox rules.
  * 
- * <p>If a class is white listed all its accessors are implicitly white listed.
- * Accessors are static and instance methods as well as static and instance 
- * fields.
+ * <p>The sandbox keeps whitelist rules for the Java Interop and blacklist rules for the
+ * Venice functions.
  * 
- * 
- * <p>A class/accessor follows the rule 
- * '{path}.{className}:{methodName | fieldName}'.
- * The asterix may be used as a wildcard
+ * <p>Java whitelist rules for class/instance accessor follow the schema: 
+ * '{package}.{className}:{methodName | fieldName}'. The asterix may be used as a wildcard
  * 
  * <p>
  * E.g: white listing Java Interop
