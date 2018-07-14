@@ -3,7 +3,7 @@ package org.venice.examples;
 import org.venice.Venice;
 import org.venice.javainterop.JavaInterceptor;
 import org.venice.javainterop.JavaSandboxInterceptor;
-import org.venice.javainterop.WhiteList;
+import org.venice.javainterop.SandboxRules;
 
 
 public class SandboxExample {
@@ -35,7 +35,8 @@ public class SandboxExample {
 		// like 'println', 'slurp', ...
 		//
 		// Note: Using the RejectAllInterceptor has the same effect
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(WhiteList.create(true));
+		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+													new SandboxRules().rejectAllVeniceIoFunctions());
 		
 		final Venice venice = new Venice(interceptor);
 
@@ -46,8 +47,9 @@ public class SandboxExample {
 	private static void sandboxing_java_calls_with_safe_venice_func() {
 		final JavaInterceptor interceptor =
 				new JavaSandboxInterceptor(
-						WhiteList.create(
-								true, // reject Venice IO functions
+						new SandboxRules()
+							.rejectAllVeniceIoFunctions()
+							.add(
 								"java.lang.Long",  // Math::min, Math::max arg type
 								"java.lang.Boolean",  // ArrayList::add return type
 								"java.lang.Math:min", 

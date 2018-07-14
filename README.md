@@ -152,14 +152,15 @@ that are available to the script in the JVM!
 ```java
 final JavaInterceptor interceptor =
     new JavaSandboxInterceptor(
-        WhiteList.create(
-            true, // reject all Venice IO functions (slurp, ...)
-            "java.lang.Long",  // Math::min arg type
-            "java.lang.Boolean",  // ArrayList::add return type
-            "java.lang.Math:min", 
-            "java.time.ZonedDateTime:*", 
-            "java.util.ArrayList:new",
-            "java.util.ArrayList:add"));
+        new SandboxRules()
+              .rejectAllVeniceIoFunctions()
+              .add(
+                "java.lang.Long",  // Math::min arg type
+                "java.lang.Boolean",  // ArrayList::add return type
+                "java.lang.Math:min", 
+                "java.time.ZonedDateTime:*", 
+                "java.util.ArrayList:new",
+                "java.util.ArrayList:add"));
 
 final Venice venice = new Venice(interceptor);
 

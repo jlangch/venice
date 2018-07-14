@@ -551,8 +551,9 @@ public class CoreFunctions {
 			setArgLists("(slurp file & options)");
 			
 			setDescription(
-					"Returns the file's content as text. The encoding defaults to UTF-8. " +
-					"Options: :encoding \"UTF-8\"");
+					"Returns the file's content as text (string) or binary (bytebuf). " +
+					"Defaults to binary=false and encoding=UTF-8. " +
+					"Options: :encoding \"UTF-8\" :binary true/false. ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -575,14 +576,23 @@ public class CoreFunctions {
 
 				
 				final VncHashMap options = new VncHashMap(args.slice(1));
+
+				final VncVal binary = options.get(VncString.keyword("binary")); 
 				
-				final VncVal encVal = options.get(VncString.keyword("encoding")); 
+				if (binary == True) {
+					final byte[] data = Files.readAllBytes(file.toPath());
 					
-				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
-								
-				final byte[] data = Files.readAllBytes(file.toPath());
-				
-				return new VncString(new String(data, encoding));
+					return new VncByteBuffer(ByteBuffer.wrap(data));
+				}
+				else {
+					final VncVal encVal = options.get(VncString.keyword("encoding")); 
+					
+					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+									
+					final byte[] data = Files.readAllBytes(file.toPath());
+					
+					return new VncString(new String(data, encoding));
+				}
 			} 
 			catch (Exception ex) {
 				throw new VncException(ex.getMessage(), ex);
@@ -595,7 +605,8 @@ public class CoreFunctions {
 			setArgLists("(spit f content & options)");
 			
 			setDescription(
-					"Opens f, writes content, then closes f. " +
+					"Opens f, writes content, and then closes f. Defaults to append=true " +
+					"and encoding=UTF-8. " +
 					"Options: :append true/false, :encoding \"UTF-8\"");
 		}
 		
@@ -1846,7 +1857,7 @@ public class CoreFunctions {
 							"Function 'bytebuf' a list as argument must contains long values");
 				}
 				
-				List<VncVal> list = ((VncList)arg).getList();
+				final List<VncVal> list = ((VncList)arg).getList();
 				
 				final byte[] buf = new byte[list.size()];
 				for(int ii=0; ii<list.size(); ii++) {
@@ -4089,8 +4100,9 @@ public class CoreFunctions {
 				Files.deleteIfExists(file.toPath());	
 			}
 			catch(Exception ex) {
-				throw new VncException(String.format(
-						"Failed to delete file %s", file.getPath()));
+				throw new VncException(
+						String.format("Failed to delete file %s", file.getPath()),
+						ex);
 			}
 			
 			return Nil;
@@ -4101,7 +4113,9 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/list-files dir filterFn?)");
 			
-			setDescription("Lists files in a directory. dir must be a java.io.File.");
+			setDescription(
+					"Lists files in a directory. dir must be a java.io.File. filterFn " +
+					"is an optional filter that filters the files found");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4115,10 +4129,6 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 			
-			if (args.size() == 2) {
-				
-			}
-
 			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
 			try {
 				final VncFunction filterFn = (args.size() == 2) ? (VncFunction)args.nth(1) : null;
@@ -4137,8 +4147,9 @@ public class CoreFunctions {
 				return files;
 			}
 			catch(Exception ex) {
-				throw new VncException(String.format(
-						"Failed to list files %s", file.getPath()));
+				throw new VncException(
+						String.format("Failed to list files %s", file.getPath()), 
+						ex);
 			}
 		}
 	};
@@ -4176,8 +4187,10 @@ public class CoreFunctions {
 				Files.copy(from.toPath(), to.toPath());
 			}
 			catch(Exception ex) {
-				throw new VncException(String.format(
-						"Failed to copy file %s to %s", from.getPath(), to.getPath()));
+				throw new VncException(
+						String.format(
+								"Failed to copy file %s to %s", from.getPath(), to.getPath()),
+						ex);
 			}
 			
 			return Nil;

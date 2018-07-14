@@ -51,7 +51,7 @@ public class BlackListedFunctionTest {
 	public void test_prn_blacklisted() {
 		// all venice 'prn' function blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
-													WhiteList.create("blacklist:venice:prn"));
+													new SandboxRules().add("blacklist:venice:prn"));
 		
 		new Venice(interceptor).eval("(prn 100)");
 	}
@@ -60,7 +60,7 @@ public class BlackListedFunctionTest {
 	public void test_prn_blacklisted_io_1() {
 		// all venice IO functions blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
-													WhiteList.create("blacklist:venice:*io*"));
+													new SandboxRules().add("blacklist:venice:*io*"));
 
 		new Venice(interceptor).eval("(prn 100)");
 	}
@@ -69,7 +69,7 @@ public class BlackListedFunctionTest {
 	public void test_prn_blacklisted_io_2() {
 		// all venice IO functions blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
-													WhiteList.create(true));
+													new SandboxRules().rejectAllVeniceIoFunctions());
 
 		new Venice(interceptor).eval("(prn 100)");
 	}

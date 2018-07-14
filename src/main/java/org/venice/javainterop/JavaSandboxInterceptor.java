@@ -21,13 +21,14 @@
  */
 package org.venice.javainterop;
 
+import org.venice.impl.javainterop.CompiledSandboxRules;
 import org.venice.impl.types.collections.VncList;
 
 
 public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 	
-	public JavaSandboxInterceptor(final WhiteList whiteList) {
-		this.whiteList = whiteList;
+	public JavaSandboxInterceptor(final SandboxRules rules) {
+		this.sandboxRules = CompiledSandboxRules.compile(rules);
 	}
 	
 
@@ -116,7 +117,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 			final String funcName, 
 			final VncList args
 	) {
-		if (whiteList.isBlackListedVeniceFunction(funcName, args)) {
+		if (sandboxRules.isBlackListedVeniceFunction(funcName, args)) {
 			throw new SecurityException(String.format(
 					"Venice Sandbox: Access denied to function %s", 
 					funcName));
@@ -127,7 +128,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		if (obj != null) {
 			final Class<?> clazz= getClass(obj);
 
-			if (!whiteList.isWhiteListed(clazz)) {
+			if (!sandboxRules.isWhiteListed(clazz)) {
 				throw new SecurityException(String.format(
 						"Venice Sandbox: Access denied to class %s", 
 						clazz.getName()));
@@ -138,7 +139,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 	private void validateAccessor(final Object receiver, final String accessor) {
 		if (receiver != null) {
 			final Class<?> clazz= getClass(receiver);
-			if (!whiteList.isWhiteListed(clazz, accessor)) {
+			if (!sandboxRules.isWhiteListed(clazz, accessor)) {
 				throw new SecurityException(String.format(
 						"Venice Sandbox: Access denied to accessor %s::%s", 
 						clazz.getName(), accessor));
@@ -156,5 +157,5 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 	}
 	
 	
-	private final WhiteList whiteList;
+	private final CompiledSandboxRules sandboxRules;
 }

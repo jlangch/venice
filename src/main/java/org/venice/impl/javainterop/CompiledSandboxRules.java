@@ -1,27 +1,5 @@
-/*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
- *    \ \/ / _ \ '_ \| |/ __/ _ \
- *     \  /  __/ | | | | (_|  __/
- *      \/ \___|_| |_|_|\___\___|
- *
- *
- * Copyright 2014-2018 Venice
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.venice.javainterop;
+package org.venice.impl.javainterop;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,20 +12,12 @@ import java.util.stream.Collectors;
 import org.venice.impl.CoreFunctions;
 import org.venice.impl.types.collections.VncList;
 import org.venice.impl.util.Tuple2;
+import org.venice.javainterop.SandboxRules;
 
 
-/**
- * Keeps white listed classes and tuples of white listed classes/accessors.
- * 
- * <p>If a class is white listed all its accessors are implicitly white listed.
- * Accessors are static and instance methods as well as static and instance 
- * fields.
- * 
- * <p>This class is <b>thread safe</b>!
- */
-public class WhiteList {
+public class CompiledSandboxRules {
 	
-	private WhiteList(
+	private CompiledSandboxRules(
 			final List<Pattern> whiteListClassPatterns,
 			final List<Pattern> whiteListMethodPatterns,
 			final Set<String> blackListVeniceFunctions
@@ -65,44 +35,20 @@ public class WhiteList {
 											: blackListVeniceFunctions;
 	}
 	
-	/**
-	 * Creates a new white list
-	 * 
-	 * <p>A class/accessor follows the rule 
-	 * '{path}.{className}:{methodName | fieldName}'.
-	 * The asterix may be used as a wildcard
-	 * 
-	 * <p>
-	 * E.g:
-	 * <ul>
-	 *   <li>java.lang.Long</li>
-	 *   <li>java.lang.Long:new</li>
-	 *   <li>java.lang.Math</li>
-	 *   <li>java.lang.Math:abs</li>
-	 *   <li>java.lang.Math:*</li>
-	 *   <li>java.lang.*</li>
-	 *   <li>java.lang.*:*</li>
-	 *   <li>blacklist:venice:slurp</li>
-	 *   <li>blacklist:venice:. (disables java interop)</li>
-	 * </ul>
-	 * 
-	 * @param whiteList A mandatory list of class/accessor patterns
-	 * 
-	 * @return the white list
-	 */
-	public static WhiteList create(final List<String> whiteList) {
+	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new WhiteList(null, null, null);			
+			return new CompiledSandboxRules(null, null, null);			
 		}
 		
 		final List<String> filtered = whiteList
+										.getRules()
 										.stream()
 										.filter(s -> s != null)
 										.map(s -> s.trim())
 										.filter(s -> !s.isEmpty())
 										.collect(Collectors.toList());
 		
-		return new WhiteList(
+		return new CompiledSandboxRules(
 				// whitelisted classes
 				filtered
 					.stream()
@@ -129,38 +75,6 @@ public class WhiteList {
 					.map(s -> s.equals("*io*") ? CoreFunctions.getAllIoFunctions() : toSet(s))
 					.flatMap(Set::stream)
 					.collect(Collectors.toSet()));
-	}
-	
-	public static WhiteList create(final String... whiteList) {
-		return create(whiteList == null ? null : Arrays.asList(whiteList));
-	}
-	
-	public static WhiteList create(
-			final boolean rejectAllVeniceIoFunctions,
-			final List<String> whiteList
-	) {
-		if (rejectAllVeniceIoFunctions) {
-			if (whiteList == null) {
-				return create(Arrays.asList("blacklist:venice:*io*"));
-			}
-			else {
-				final List<String> wl = new ArrayList<>(whiteList);
-				wl.add("blacklist:venice:*io*");
-				return create(wl);
-			}
-		}
-		else {
-			return create(whiteList);
-		}
-	}
-	
-	public static WhiteList create(
-			final boolean rejectAllVeniceIoFunctions,
-			final String... whiteList
-	) {
-		return create(
-				rejectAllVeniceIoFunctions, 
-				whiteList == null ? null : Arrays.asList(whiteList));
 	}
 	
 	/**
