@@ -48,15 +48,15 @@ public class SandboxExample {
 		final JavaInterceptor interceptor =
 				new JavaSandboxInterceptor(
 						new SandboxRules()
-							.rejectAllVeniceIoFunctions()
-							.add(
-								"java.lang.Long",  // Math::min, Math::max arguments/return type
-								"java.lang.Boolean",  // ArrayList::add return type
-								"java.lang.Math:min", 
-								"java.lang.Math:max", 
-								"java.time.ZonedDateTime:*", 
-								"java.util.ArrayList:new",
-								"java.util.ArrayList:add"));
+								.rejectAllVeniceIoFunctions()
+								.add(
+									"java.lang.Long",  // Math::min, Math::max arguments/return type
+									"java.lang.Boolean",  // ArrayList::add return type
+									"java.lang.Math:min", 
+									"java.lang.Math:max", 
+									"java.time.ZonedDateTime:*", 
+									"java.util.ArrayList:new",
+									"java.util.ArrayList:add"));
 
 		final Venice venice = new Venice(interceptor);
 
