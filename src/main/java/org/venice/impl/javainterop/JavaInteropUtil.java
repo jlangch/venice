@@ -22,6 +22,7 @@
 package org.venice.impl.javainterop;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.venice.impl.types.Constants;
 import org.venice.impl.types.IVncJavaObject;
 import org.venice.impl.types.Types;
 import org.venice.impl.types.VncBigDecimal;
+import org.venice.impl.types.VncByteBuffer;
 import org.venice.impl.types.VncConstant;
 import org.venice.impl.types.VncDouble;
 import org.venice.impl.types.VncLong;
@@ -149,6 +151,9 @@ public class JavaInteropUtil {
 		else if (Types.isVncDecimal(value)) {
 			return ((VncBigDecimal)value).getValue();
 		}
+		else if (Types.isVncByteBuffer(value)) {
+			return ((VncByteBuffer)value).getValue();
+		}
 		else if (Types.isVncVector(value)) {
 			return ((VncVector)value)
 						.getList()
@@ -221,6 +226,9 @@ public class JavaInteropUtil {
 		}
 		else if (ReflectionTypes.isEnumType(value.getClass())) {
 			return new VncString(value.toString());
+		}
+		else if (value instanceof ByteBuffer) {
+			return new VncByteBuffer((ByteBuffer)value);
 		}
 		else if (value instanceof List) {
 			return new VncJavaList((List<Object>)value);

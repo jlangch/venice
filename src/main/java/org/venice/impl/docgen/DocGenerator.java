@@ -83,14 +83,15 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
-				getSpecialFormsSection());
+				getIOSection());
 	}
 	
 	private List<DocSection> getRightSections() {
 		return Arrays.asList(
 				getCollectionsSection(),
+				getOtherTypesSection(),
 				getAtomsSection(),
-				getIOSection(),
+				getSpecialFormsSection(),
 				getJavaInteropSection());
 	}
 
@@ -257,6 +258,7 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("hash-map?"));
 		coll_test.addItem(getDocItem("ordered-map?"));
 		coll_test.addItem(getDocItem("sorted-map?"));
+		coll_test.addItem(getDocItem("bytebuf?"));
 
 		
 		
@@ -314,6 +316,7 @@ public class DocGenerator {
 		vec_access.addItem(getDocItem("last"));
 		vec_access.addItem(getDocItem("peek"));
 		vec_access.addItem(getDocItem("rest"));
+		vec_access.addItem(getDocItem("subvec"));
 
 		final DocSection vec_modify = new DocSection("Modify");
 		vectors.addSection(vec_modify);
@@ -386,6 +389,26 @@ public class DocGenerator {
 
 		return section;
 	}
+
+
+	private DocSection getOtherTypesSection() {
+		final DocSection section = new DocSection("Other Types");
+				
+		final DocSection bytebuf = new DocSection("ByteBuffer");
+		section.addSection(bytebuf);
+
+		final DocSection bytebuf_misc = new DocSection("Misc");
+		bytebuf.addSection(bytebuf_misc);
+		bytebuf_misc.addItem(getDocItem("count"));
+		bytebuf_misc.addItem(getDocItem("empty?"));
+		bytebuf_misc.addItem(getDocItem("not-empty?"));
+		bytebuf_misc.addItem(getDocItem("bytebuf"));
+		bytebuf_misc.addItem(getDocItem("bytebuf?"));
+		bytebuf_misc.addItem(getDocItem("subbytebuf"));
+		
+		return section;
+	}
+		
 
 	private DocSection getFunctionsSection() {
 		final DocSection section = new DocSection("Functions");

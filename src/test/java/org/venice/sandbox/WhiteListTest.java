@@ -86,4 +86,19 @@ public class WhiteListTest {
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "max"));
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "abs"));
 	}
+
+	@Test
+	public void classMethodsWildcardTest() {
+		final WhiteList wl = WhiteList.create(
+								Arrays.asList(
+									"java.lang.*:*"
+								));
+
+		assertTrue(wl.isWhiteListed(java.lang.Math.class));
+		assertTrue(wl.isWhiteListed(java.lang.Math.class, "min"));
+		assertTrue(wl.isWhiteListed(java.lang.Math.class, "max"));
+		assertTrue(wl.isWhiteListed(java.lang.Math.class, "abs"));
+		
+		assertFalse(wl.isWhiteListed(java.util.List.class, "size"));
+	}
 }

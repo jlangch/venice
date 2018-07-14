@@ -103,6 +103,7 @@ public class WhiteList {
 										.collect(Collectors.toList());
 		
 		return new WhiteList(
+				// whitelisted classes
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
@@ -110,6 +111,8 @@ public class WhiteList {
 					.map(s -> s.replaceAll("[*]", "[^.]*"))
 					.map(s -> Pattern.compile(s))
 					.collect(Collectors.toList()),
+					
+				// whitelisted methods
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
@@ -117,6 +120,8 @@ public class WhiteList {
 					.map(s -> s.replaceAll("[*]", "[^.]*"))
 					.map(s -> Pattern.compile(s))
 					.collect(Collectors.toList()),
+					
+				// blacklisted venice functions
 				filtered
 					.stream()
 					.filter(s -> s.startsWith("blacklist:venice:"))

@@ -514,18 +514,6 @@ public class ReflectionAccessor {
 		else if (paramType == boolean.class || paramType == Boolean.class) {
 			return argType == Boolean.class;
 		}
-		else if (ReflectionTypes.isArrayType(paramType)) {
-			final Class<?> paramComponentType = paramType.getComponentType();					
-			if (paramComponentType == byte.class) {
-				if (argType == String.class) {
-					return true;
-				}
-				else if (argType == ByteBuffer.class) {
-					return true;
-				}
-			}
-			return false;
-		}
 		
 		return false;
 	}

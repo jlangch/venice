@@ -70,6 +70,10 @@ public class Types {
 		return val != null && (isVncLong(val) || isVncDouble(val) || isVncDecimal(val));
 	}
 
+	public static boolean isVncByteBuffer(final VncVal val) {
+		return val != null && (val instanceof VncByteBuffer);
+	}
+
 	public static boolean isVncCollection(final VncVal val) {
 		return val != null && (val instanceof VncCollection);
 	}

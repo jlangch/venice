@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
@@ -54,6 +55,7 @@ import org.venice.impl.types.Constants;
 import org.venice.impl.types.Types;
 import org.venice.impl.types.VncAtom;
 import org.venice.impl.types.VncBigDecimal;
+import org.venice.impl.types.VncByteBuffer;
 import org.venice.impl.types.VncDouble;
 import org.venice.impl.types.VncFunction;
 import org.venice.impl.types.VncLong;
@@ -271,7 +273,23 @@ public class CoreFunctions {
 					|| Types.isVncDecimal(args.nth(0))? True : False;
 		}
 	};
+
 	
+	public static VncFunction bytebuf_Q = new VncFunction("bytebuf?") {
+		{
+			setArgLists("(bytebuf? x)");
+			
+			setDescription(
+					"Returns true if x is a bytebuf");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("bytebuf?", args, 1);
+			
+			return Types.isVncByteBuffer(args.nth(0)) ? True : False;
+		}
+	};
+
 	public static VncFunction string_Q = new VncFunction("string?") {
 		{
 			setArgLists("(string? x)");
@@ -1751,7 +1769,62 @@ public class CoreFunctions {
 			}
 		}
 	};
+
 	
+	public static VncFunction bytebuf_cast = new VncFunction("bytebuf") {
+		{
+			setArgLists("(bytebuf x)");
+			
+			setDescription(
+					"Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("bytebuf", args, 0, 1);
+
+			if (args.isEmpty()) {
+				return new VncByteBuffer(ByteBuffer.wrap(new byte[0]));
+			}
+			
+			final VncVal arg = args.nth(0);
+
+			if (Types.isVncString(arg)) {
+				try {
+					return new VncByteBuffer(
+									ByteBuffer.wrap(
+										((VncString)arg).getValue().getBytes("UTF-8")));
+				}
+				catch(Exception ex) {
+					throw new VncException(
+							"Failed to coerce string to bytebuf", ex);
+				}
+			}
+			else if (Types.isVncByteBuffer(arg)) {
+				return ((VncByteBuffer)arg).copy();
+			}
+			else if (Types.isVncList(arg)) {
+				if (!((VncList)arg).getList().stream().allMatch(v -> Types.isVncLong(v))) {
+					throw new VncException(
+							"Function 'bytebuf' a list as argument must contains long values");
+				}
+				
+				List<VncVal> list = ((VncList)arg).getList();
+				
+				final byte[] buf = new byte[list.size()];
+				for(int ii=0; ii<list.size(); ii++) {
+					buf[ii] = (byte)((VncLong)list.get(ii)).getValue().longValue();
+				}
+				
+				return new VncByteBuffer(ByteBuffer.wrap(buf));
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'bytebuf' does not allow %s as argument", 
+						Types.getClassName(arg)));
+			}
+		}
+	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// List functions
@@ -1776,6 +1849,9 @@ public class CoreFunctions {
 			}
 			else if (args.size() == 1 && Types.isVncString(args.nth(0))) {
 				return ((VncString)args.nth(0)).toVncList();
+			}
+			else if (args.size() == 1 && Types.isVncByteBuffer(args.nth(0))) {
+				return ((VncByteBuffer)args.nth(0)).toVncList();
 			}
 			else {
 				return new VncList(args.getList());
@@ -1844,6 +1920,68 @@ public class CoreFunctions {
 			assertArity("vector?", args, 1);
 			
 			return vector_Q(args.nth(0)) ? True : False;
+		}
+	};
+	
+	public static VncFunction subvec = new VncFunction("subvec") {
+		{
+			setArgLists("(subvec v start) (subvec v start end)");
+			
+			setDescription(
+					"Returns a vector of the items in vector from start (inclusive) "+
+					"to end (exclusive). If end is not supplied, defaults to " + 
+					"(count vector)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("subvec", args, 2, 3);
+
+			final VncVector vec = (VncVector)args.nth(0);		
+			final VncLong from = (VncLong)args.nth(1);
+			final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
+			
+			return new VncVector(
+							to == null
+								? vec.getList().subList(from.getValue().intValue(), vec.size())
+								: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
+		}
+	};
+
+	
+	///////////////////////////////////////////////////////////////////////////
+	// ByteBuf functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction subbytebuf = new VncFunction("subbytebuf") {
+		{
+			setArgLists("(subbytebuf x start) (subbytebuf x start end)");
+			
+			setDescription(
+					"Returns a byte buffer of the items in buffer from start (inclusive) "+
+					"to end (exclusive). If end is not supplied, defaults to " + 
+					"(count bytebuffer)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("subbytebuf", args, 2, 3);
+
+			final byte[] buf = ((VncByteBuffer)args.nth(0)).getValue().array();		
+			final VncLong from = (VncLong)args.nth(1);
+			final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
+			
+			
+			return new VncByteBuffer(
+							to == null
+								? ByteBuffer.wrap(
+										Arrays.copyOfRange(
+												buf, 
+												from.getValue().intValue(), 
+												buf.length))
+								:  ByteBuffer.wrap(
+										Arrays.copyOfRange(
+												buf, 
+												from.getValue().intValue(), 
+												to.getValue().intValue())));
 		}
 	};
 
@@ -2399,6 +2537,9 @@ public class CoreFunctions {
 			else if (Types.isVncString(arg)) {
 				return new VncLong(((VncString)arg).getValue().length());
 			}
+			else if (Types.isVncByteBuffer(arg)) {
+				return new VncLong(((VncByteBuffer)arg).size());
+			}
 			else if (Types.isVncList(arg)) {
 				return new VncLong(((VncList)arg).size());
 			}
@@ -2445,6 +2586,9 @@ public class CoreFunctions {
 			else if (exp instanceof VncCollection && ((VncCollection)exp).isEmpty()) {
 				return True;
 			} 
+			else if (exp instanceof VncByteBuffer && ((VncByteBuffer)exp).size() == 0) {
+				return True;
+			} 
 			else {
 				return False;
 			}
@@ -2470,6 +2614,9 @@ public class CoreFunctions {
 			} 
 			else if (exp instanceof VncCollection && ((VncCollection)exp).isEmpty()) {
 				return False;
+			}
+			else if (exp instanceof VncByteBuffer && ((VncByteBuffer)exp).size() != 0) {
+				return True;
 			} 
 			else {
 				return True;
@@ -4109,7 +4256,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("str/subs", args, 1, 2);
+			assertArity("str/subs", args, 2, 3);
 
 			final VncString string = (VncString)args.nth(0);		
 			final VncLong from = (VncLong)args.nth(1);
@@ -4311,6 +4458,7 @@ public class CoreFunctions {
 				.put("double?",				double_Q)
 				.put("decimal?",			decimal_Q)
 				.put("number?",				number_Q)
+				.put("bytebuf?",			bytebuf_Q)
 				.put("string?",				string_Q)
 				.put("symbol",				symbol)
 				.put("symbol?",				symbol_Q)
@@ -4358,6 +4506,7 @@ public class CoreFunctions {
 				.put("long",				long_cast)
 				.put("double",				double_cast)
 				.put("decimal",				decimal_cast)
+				.put("bytebuf",				bytebuf_cast)
 				.put("zero?",				zero_Q)
 				.put("pos?",				pos_Q)
 				.put("neg?",				neg_Q)
@@ -4390,6 +4539,8 @@ public class CoreFunctions {
 				.put("keys",				keys)
 				.put("val",					val)
 				.put("vals",				vals)
+				.put("subvec", 				subvec)
+				.put("subbytebuf", 			subbytebuf)
 		
 				.put("into",				into)
 				.put("seq?",	    		seq_Q)

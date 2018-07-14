@@ -26,10 +26,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
@@ -142,6 +143,24 @@ public class FunctionsTest {
 		assertFalse((Boolean)venice.eval("(boolean? '())"));
 		assertFalse((Boolean)venice.eval("(boolean? [])"));
 		assertFalse((Boolean)venice.eval("(boolean? {})"));
+	}
+	
+	@Test
+	public void test_bytebuf() {
+		final Venice venice = new Venice();
+
+		assertArrayEquals(new byte[0], ((ByteBuffer)venice.eval("(bytebuf)")).array());	
+		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf [0 1 2])")).array());		
+		assertEquals("(0 1 2)", venice.eval("(str (list (bytebuf [0 1 2])))"));		
+		assertEquals("(97 98 99)", venice.eval("(str (list (bytebuf \"abc\")))"));		
+	}
+	
+	@Test
+	public void test_bytebuf_Q() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(bytebuf? (bytebuf))"));		
+		assertFalse((Boolean)venice.eval("(bytebuf? 1)"));		
 	}
 
 	@Test
@@ -344,6 +363,10 @@ public class FunctionsTest {
 		assertEquals(Long.valueOf(0), venice.eval("(count \"\")"));
 		assertEquals(Long.valueOf(1), venice.eval("(count \"a\")"));
 		assertEquals(Long.valueOf(2), venice.eval("(count \"ab\")"));
+		
+		assertEquals(Long.valueOf(0L),venice.eval("(count (bytebuf))"));		
+		assertEquals(Long.valueOf(3L),venice.eval("(count (bytebuf [0 1 2]))"));		
+
 
 		// Java Interop
 		
@@ -2362,6 +2385,7 @@ public class FunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("abcdef", venice.eval("(str/subs \"abcdef\" 0)"));
+		assertEquals("ab", venice.eval("(str/subs \"abcdef\" 0 2)"));
 		assertEquals("bcdef", venice.eval("(str/subs \"abcdef\" 1)"));
 		assertEquals("f", venice.eval("(str/subs \"abcdef\" 5)"));
 		assertEquals("", venice.eval("(str/subs \"abcdef\" 6)"));
@@ -2410,6 +2434,15 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_subbytebuf() {
+		final Venice venice = new Venice();
+
+		assertArrayEquals(new byte[] {3,4,5}, ((ByteBuffer)venice.eval("(subbytebuf (bytebuf [0 1 2 3 4 5]) 3)")).array());		
+		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(subbytebuf (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
+		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(subbytebuf (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
+	}
+
+	@Test
 	public void test_subtract() {
 		final Venice venice = new Venice();
 
@@ -2433,6 +2466,15 @@ public class FunctionsTest {
 		assertEquals(new BigDecimal("2.0"), venice.eval("(- 4.0M 1.0M 1.0M)"));
 		assertEquals(new BigDecimal("2.0"), venice.eval("(- 4.0M 2)"));
 		assertEquals(new BigDecimal("2.0"), venice.eval("(- 4.0M 2.0)"));
+	}
+
+	@Test
+	public void test_subvec() {
+		final Venice venice = new Venice();
+
+		assertEquals("[3 4 5]", venice.eval("(str (subvec [0 1 2 3 4 5] 3))"));		
+		assertEquals("[0 1 2]", venice.eval("(str (subvec [0 1 2 3 4 5] 0 3))"));		
+		assertEquals("[2 3 4]", venice.eval("(str (subvec [0 1 2 3 4 5] 2 5))"));		
 	}
 
 	@Test
