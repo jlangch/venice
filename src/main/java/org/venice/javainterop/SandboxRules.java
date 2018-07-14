@@ -22,9 +22,9 @@
 package org.venice.javainterop;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -64,8 +64,7 @@ public class SandboxRules {
 	public SandboxRules() {
 	}
 	
-	
-	public SandboxRules add(final List<String> rules) {
+	public SandboxRules add(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(rules);
 		}
@@ -84,6 +83,13 @@ public class SandboxRules {
 			this.rules.add("blacklist:venice:*io*");
 		}
 		return this;
+	}
+	
+	public SandboxRules merge(final SandboxRules other) {
+		final SandboxRules merged = new SandboxRules();
+		merged.add(this.rules);
+		merged.add(other.rules);
+		return merged;
 	}
 	
 	public Set<String> getRules() {
