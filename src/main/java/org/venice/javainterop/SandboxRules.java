@@ -43,15 +43,14 @@ import java.util.Set;
  * <p>
  * E.g:
  * <ul>
- *   <li>java.lang.Long</li>
- *   <li>java.lang.Long:new</li>
- *   <li>java.lang.Math</li>
- *   <li>java.lang.Math:abs</li>
- *   <li>java.lang.Math:*</li>
- *   <li>java.lang.*</li>
- *   <li>java.lang.*:*</li>
- *   <li>blacklist:venice:slurp</li>
- *   <li>blacklist:venice:. (disables java interop)</li>
+ *   <li>java.lang.Boolean (allow calling Java methods with arguments or return values of type Boolean)</li>
+ *   <li>java.lang.* (allow calling Java methods with arguments or return values of any type in the package 'java.lang')</li>
+ *   <li>java.lang.Long:new (allow calling Long constructor)</li>
+ *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
+ *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
+ *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
+ *   <li>blacklist:venice:slurp (reject calls to 'slurp')</li>
+ *   <li>blacklist:venice:. (reject java interop)</li>
  * </ul>
  */
 public class SandboxRules {
