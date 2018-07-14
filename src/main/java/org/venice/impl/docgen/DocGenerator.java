@@ -555,6 +555,13 @@ public class DocGenerator {
 		from.addItem(getDocItem("read-string"));
 		from.addItem(getDocItem("slurp"));
 		from.addItem(getDocItem("spit"));
+		from.addItem(getDocItem("io/file"));
+		from.addItem(getDocItem("io/file?"));
+		from.addItem(getDocItem("io/exists-file?"));
+		from.addItem(getDocItem("io/delete-file"));
+		from.addItem(getDocItem("io/copy-file"));
+		from.addItem(getDocItem("io/tmp-dir"));
+		from.addItem(getDocItem("io/user-dir"));
 
 		final DocSection load = new DocSection("load");
 		all.addSection(load);

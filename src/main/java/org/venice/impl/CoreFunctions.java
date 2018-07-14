@@ -558,8 +558,21 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("slurp", args);
 			
-			try {			
-				final String fname = ((VncString)args.nth(0)).getValue();
+			try {	
+				File file;
+				
+				if (Types.isVncString(args.nth(0)) ) {
+					file = new File(((VncString)args.nth(0)).getValue());
+				}
+				else if (isJavaIoFile(args.nth(0)) ) {
+					file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'spit' does not allow %s as f",
+							Types.getClassName(args.nth(0))));
+				}
+
 				
 				final VncHashMap options = new VncHashMap(args.slice(1));
 				
@@ -567,7 +580,7 @@ public class CoreFunctions {
 					
 				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
 								
-				final byte[] data = Files.readAllBytes(new File(fname).toPath());
+				final byte[] data = Files.readAllBytes(file.toPath());
 				
 				return new VncString(new String(data, encoding));
 			} 
@@ -582,7 +595,7 @@ public class CoreFunctions {
 			setArgLists("(spit f content & options)");
 			
 			setDescription(
-					"Opens f with writer, writes content, then closes f. " +
+					"Opens f, writes content, then closes f. " +
 					"Options: :append true/false, :encoding \"UTF-8\"");
 		}
 		
@@ -592,8 +605,21 @@ public class CoreFunctions {
 			try {
 				// Currently just string content is supported!
 				
-				final String fname = ((VncString)args.nth(0)).getValue();
+				File file;
+				
+				if (Types.isVncString(args.nth(0)) ) {
+					file = new File(((VncString)args.nth(0)).getValue());
+				}
+				else if (isJavaIoFile(args.nth(0)) ) {
+					file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'spit' does not allow %s as f",
+							Types.getClassName(args.nth(0))));
+				}
 
+		
 				final VncVal content = args.nth(1);
 
 				final VncHashMap options = new VncHashMap(args.slice(2));
@@ -604,7 +630,19 @@ public class CoreFunctions {
 					
 				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
 
-				final byte[] data = ((VncString)content).getValue().getBytes(encoding);
+				byte[] data;
+				
+				if (Types.isVncString(content)) {
+					data = ((VncString)content).getValue().getBytes(encoding);
+				}
+				else if (Types.isVncByteBuffer(content)) {
+					data = ((VncByteBuffer)content).getValue().array();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'spit' does not allow %s as content",
+							Types.getClassName(content)));
+				}
 
 				final List<OpenOption> openOptions = new ArrayList<>();
 				openOptions.add(StandardOpenOption.CREATE);
@@ -615,7 +653,7 @@ public class CoreFunctions {
 				}
 				
 				Files.write(
-						new File(fname).toPath(), 
+						file.toPath(), 
 						data, 
 						openOptions.toArray(new OpenOption[0]));
 				
@@ -3912,6 +3950,208 @@ public class CoreFunctions {
 
 	
 	///////////////////////////////////////////////////////////////////////////
+	// IO functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction io_file = new VncFunction("io/file") {
+		{
+			setArgLists("(io/file path) (io/file parent child)");
+			
+			setDescription(
+					"Returns a java.io.File. path, parent, and child can be a string " +
+					"or java.io.File");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("io/file", args, 1, 2);
+						
+			if (args.size() == 1) {
+				final VncVal path = args.nth(0);
+				if (Types.isVncString(path)) {
+					return new VncJavaObject(new File(((VncString)path).getValue()));					
+				}
+				else if (isJavaIoFile(path) ) {
+					return path;
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/file' does not allow %s as path",
+							Types.getClassName(path)));
+				}
+			}
+			else {
+				final VncVal parent = args.nth(0);
+				final VncVal child = args.nth(1);
+				
+				File parentFile;
+
+				if (Types.isVncString(parent)) {
+					parentFile = new File(((VncString)parent).getValue());					
+				}
+				else if (isJavaIoFile(parent) ) {
+					parentFile = (File)((VncJavaObject)parent).getDelegate();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/file' does not allow %s as parent",
+							Types.getClassName(parent)));
+				}
+
+				if (Types.isVncString(child)) {
+					 return new VncJavaObject(new File(parentFile, ((VncString)child).getValue()));					
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/file' does not allow %s as child",
+							Types.getClassName(child)));
+				}
+			}		
+		}
+	};
+
+	public static VncFunction io_file_Q = new VncFunction("io/file?") {
+		{
+			setArgLists("(io/file? x)");
+			
+			setDescription("Returns true if x is a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("io/file?", args, 1);
+						
+			final VncVal path = args.nth(0);
+			return isJavaIoFile(path) ? True : False;
+		}
+	};
+
+
+	public static VncFunction io_exists_file_Q = new VncFunction("io/exists-file?") {
+		{
+			setArgLists("(io/exists-file? x)");
+			
+			setDescription("Returns true if the file x exists. x must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("io/exists-file?", args, 1);
+									
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/exists-file?' does not allow %s as x",
+						Types.getClassName(args.nth(0))));
+			}
+
+			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			return file.exists() ? True : False;
+		}
+	};
+
+	public static VncFunction io_delete_file = new VncFunction("io/delete-file") {
+		{
+			setArgLists("(io/delete-file x)");
+			
+			setDescription("Deletes a file. x must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/delete-file", args);
+
+			assertArity("io/delete-file", args, 1);
+
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/delete-file' does not allow %s as x",
+						Types.getClassName(args.nth(0))));
+			}
+
+			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			try {
+				Files.deleteIfExists(file.toPath());	
+			}
+			catch(Exception ex) {
+				throw new VncException(String.format(
+						"Failed to delete file %s", file.getPath()));
+			}
+			
+			return Nil;
+		}
+	};
+
+	public static VncFunction io_copy_file = new VncFunction("io/copy-file") {
+		{
+			setArgLists("(io/copy input output)");
+			
+			setDescription(
+					"Copies input to output. Returns nil or throws IOException. " + 
+					"Input and output must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/copy-file", args);
+
+			assertArity("io/copy-file", args, 2);
+
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/delete-file' does not allow %s as input",
+						Types.getClassName(args.nth(0))));
+			}
+			if (!isJavaIoFile(args.nth(1)) ) {
+				throw new VncException(String.format(
+						"Function 'io/delete-file' does not allow %s as output",
+						Types.getClassName(args.nth(1))));
+			}
+
+
+			final File from = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			final File to = (File)((VncJavaObject)args.nth(1)).getDelegate();
+			
+			try {
+				Files.copy(from.toPath(), to.toPath());
+			}
+			catch(Exception ex) {
+				throw new VncException(String.format(
+						"Failed to copy file %s to %s", from.getPath(), to.getPath()));
+			}
+			
+			return Nil;
+		}
+	};
+
+	public static VncFunction io_tmp_dir = new VncFunction("io/tmp-dir") {
+		{
+			setArgLists("(io/tmp-dir)");
+			
+			setDescription("Returns the tmp dir as a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/tmp-dir", args);
+
+			assertArity("io/tmp-dir", args, 0);
+
+			return new VncJavaObject(new File(System.getProperty("java.io.tmpdir")));
+		}
+	};
+
+	public static VncFunction io_user_dir = new VncFunction("io/user-dir") {
+		{
+			setArgLists("(io/user-dir)");
+			
+			setDescription("Returns the user dir (current working dir) as a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/user-dir", args);
+
+			assertArity("io/user-dir", args, 0);
+
+			return new VncJavaObject(new File(System.getProperty("user.dir")));
+		}
+	};
+
+	
+	///////////////////////////////////////////////////////////////////////////
 	// String functions
 	///////////////////////////////////////////////////////////////////////////
 	
@@ -4405,7 +4645,9 @@ public class CoreFunctions {
 								"readline",
 								"slurp",
 								"spit",
-								"load-file"));
+								"load-file",
+								"io/delete-file",
+								"io/copy-file"));
 	}
 	
 	
@@ -4436,7 +4678,9 @@ public class CoreFunctions {
 		throw new ArityException(arity, fnName);
 	}
 
-
+	private static boolean isJavaIoFile(final VncVal val) {
+		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
+	}
 
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -4596,6 +4840,14 @@ public class CoreFunctions {
 				
 				.put("gensym",				gensym)
 				.put("uuid",				uuid)
+				
+				.put("io/file",				io_file)
+				.put("io/file?",			io_file_Q)
+				.put("io/exists-file?",		io_exists_file_Q)
+				.put("io/delete-file",		io_delete_file)
+				.put("io/copy-file",		io_copy_file)
+				.put("io/tmp-dir",			io_tmp_dir)
+				.put("io/user-dir",			io_user_dir)
 				
 				.put("str/starts-with?",	str_starts_with)
 				.put("str/ends-with?",		str_ends_with)

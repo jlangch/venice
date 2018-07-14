@@ -1031,6 +1031,91 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_io_file() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(io/file? (io/file \"/tmp\"))"));	
+		assertTrue((Boolean)venice.eval("(io/file? (io/file \"/tmp\" \"a.txt\"))"));	
+		assertTrue((Boolean)venice.eval("(io/file? (io/file (io/file \"/tmp\") \"a.txt\"))"));	
+	}
+	
+	@Test
+	public void test_io_file_Q() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(io/file? (io/file \"/tmp\"))"));	
+	}
+	
+	@Test
+	public void test_io_delete_file() {
+		final Venice venice = new Venice();
+
+		try {
+			final File file = File.createTempFile("spit", ".txt");
+			venice.eval(
+					"(spit file \"123456789\" :append true)", 
+					Parameters.of("file", file));
+
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file)));	
+			
+			venice.eval("(io/delete-file f))", Parameters.of("f", file));	
+
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file)));	
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	@Test
+	public void test_io_copy_file() {
+		final Venice venice = new Venice();
+
+		try {
+			final File from = File.createTempFile("from__", ".txt");
+			venice.eval(
+					"(spit file \"123456789\" :append true)", 
+					Parameters.of("file", from));
+			
+			final File to = File.createTempFile("to__", ".txt");
+			to.delete();
+
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", from)));	
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", to)));	
+			
+			venice.eval("(io/copy-file from to))", Parameters.of("from", from, "to", to));	
+
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", from)));	
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", to)));	
+
+			venice.eval("(io/delete-file f))", Parameters.of("f", from));	
+			venice.eval("(io/delete-file f))", Parameters.of("f", to));	
+
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", from)));	
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", to)));	
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	@Test
+	public void test_io_tmp_dir() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(not-empty? (io/tmp-dir))"));	
+		assertTrue((Boolean)venice.eval("(io/file? (io/tmp-dir))"));	
+	}
+	
+	@Test
+	public void test_io_user_dir() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(not-empty? (io/user-dir))"));	
+		assertTrue((Boolean)venice.eval("(io/file? (io/user-dir))"));	
+	}
+	
+	@Test
 	public void test_key() {
 		final Venice venice = new Venice();
 

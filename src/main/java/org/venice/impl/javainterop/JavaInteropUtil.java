@@ -206,8 +206,11 @@ public class JavaInteropUtil {
 		else if (value instanceof Byte) {
 			return null;
 		}
+		else if (value instanceof Short) {
+			return new VncLong(((Short)value).longValue());
+		}
 		else if (value instanceof Integer) {
-			return new VncLong((Integer)value);
+			return new VncLong(((Integer)value).longValue());
 		}
 		else if (value instanceof Long) {
 			return new VncLong((Long)value);
