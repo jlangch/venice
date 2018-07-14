@@ -34,10 +34,10 @@ public class SandboxRulesTest {
 	@Test
 	public void classesTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-										new SandboxRules().add(
-											"java.lang.Math",
-											"java.math.BigDecimal"
-										));
+											new SandboxRules().add(
+												"java.lang.Math",
+												"java.math.BigDecimal"
+											));
 		
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.math.BigDecimal.class));
@@ -47,11 +47,11 @@ public class SandboxRulesTest {
 	@Test
 	public void classesWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-										new SandboxRules().add(
-											"java.lang.Math",
-											"java.lang.String:*",
-											"java.math.*"
-										));
+											new SandboxRules().add(
+												"java.lang.Math",
+												"java.lang.String:*",
+												"java.math.*"
+											));
 		
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.lang.String.class));
@@ -62,10 +62,10 @@ public class SandboxRulesTest {
 	@Test
 	public void methodsTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-										new SandboxRules().add(
-											"java.lang.Math:min",
-											"java.lang.Math:max"
-										));
+											new SandboxRules().add(
+												"java.lang.Math:min",
+												"java.lang.Math:max"
+											));
 		
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "min"));
@@ -76,9 +76,9 @@ public class SandboxRulesTest {
 	@Test
 	public void methodsWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-										new SandboxRules().add(
-											"java.lang.Math:*"
-										));
+											new SandboxRules().add(
+												"java.lang.Math:*"
+											));
 
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "min"));
@@ -89,9 +89,9 @@ public class SandboxRulesTest {
 	@Test
 	public void classMethodsWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-										new SandboxRules().add(
-											"java.lang.*:*"
-										));
+											new SandboxRules().add(
+												"java.lang.*:*"
+											));
 
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "min"));
