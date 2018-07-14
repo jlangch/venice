@@ -17,7 +17,7 @@ easily add it as standalone .jar to your classpath.
  
 ## Cheat Sheet
 
-[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/44513529/cheatsheet.html)
+[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/e80ed0ec/cheatsheet.html)
 
 
 ## REPL
