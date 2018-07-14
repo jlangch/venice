@@ -393,7 +393,7 @@ public class DocGenerator {
 
 	private DocSection getOtherTypesSection() {
 		final DocSection section = new DocSection("Other Types");
-				
+
 		final DocSection bytebuf = new DocSection("ByteBuffer");
 		section.addSection(bytebuf);
 
