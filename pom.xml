@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.venice</groupId>
+    <artifactId>venice</artifactId>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
+
+    <name>Venice</name>
+    <description>Venice a Lisp implemented in Java</description>
+    <url>https://github.com/jlangch/venice</url>
+
+    <scm>
+        <connection>scm:git:git@github.com:jlangch/venice.git</connection>
+        <developerConnection>scm:git:git@github.com:jlangch/venice.git</developerConnection>
+        <url>http://github.com:jlangch/venice/tree/master</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/jlangch/venice/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>jlangch</id>
+            <name>Juerg Lang</name>
+            <email>jlang@ggaweb.ch</email>
+            <url>https://github.com/jlangch</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+</project>
