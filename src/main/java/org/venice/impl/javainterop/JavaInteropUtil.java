@@ -75,6 +75,13 @@ public class JavaInteropUtil {
 						.getInterceptor()
 						.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
 		}
+		else if ("class".equals(methodName)) {			
+			// get class (. :java.util.String :class)
+			final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+			final Class<?> targetClass = ReflectionAccessor.classForName(className);
+			
+			return new VncJavaObject(targetClass);
+		}
 		else {
 			if (arg0 instanceof VncString) {
 				// static method / field:   (. :org.foo.Foo :getLastName)

@@ -6,11 +6,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+
 ## [Unreleased]
 
 ### Added
 
-- added ...
+- added The Java Interop function (. classname :class) returns the class for the classname
 
 ### Removed
 
@@ -19,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - fixed ...
+
 
 
 ## [0.2.0] - 2018-07-15
@@ -33,6 +35,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - fixed JavaInterop passing enums args
+
 
 
 ## [0.1.0] - 2018-07-10

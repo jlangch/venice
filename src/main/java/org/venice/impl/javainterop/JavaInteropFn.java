@@ -33,7 +33,7 @@ public class JavaInteropFn extends VncFunction {
 		
 		this.javaImports = javaImports;
 		
-		setArgLists("(. classname :new args)", "(. object method args)");
+		setArgLists("(. classname :new args)", "(. object method args)", "(. classname :class)");
 		
 		setDescription(
 				"Java interop. Calls a constructor or an object method. " +
