@@ -22,11 +22,13 @@
 package org.venice.javainterop;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -86,6 +88,15 @@ public class SandboxRules {
 		return this;
 	}
 	
+	public SandboxRules addClasses(final Collection<Class<?>> classes) {
+		if (classes != null) {
+			for(Class<?> clazz : classes) {
+				this.rules.add(clazz.getName() + ":*");
+			}
+		}
+		return this;
+	}
+	
 	public SandboxRules rejectAllVeniceIoFunctions() {
 		if (rules != null) {
 			this.rules.add("blacklist:venice:*io*");
@@ -104,6 +115,13 @@ public class SandboxRules {
 		return Collections.unmodifiableSet(rules);
 	}
 	
+	@Override
+	public String toString() {
+		return new ArrayList<String>(rules)
+					.stream()
+					.sorted()
+					.collect(Collectors.joining("\n"));
+	}
 	
 	private static final Set<String> defaultRules = 
 			new HashSet<>(

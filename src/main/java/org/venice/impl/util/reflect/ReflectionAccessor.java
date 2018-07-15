@@ -582,6 +582,7 @@ public class ReflectionAccessor {
 		return ret;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Object boxArg(final Class<?> paramType, final Object arg) {
 		if (!paramType.isPrimitive()) {
 			if (arg instanceof Number) {
@@ -605,6 +606,27 @@ public class ReflectionAccessor {
 					else if (arg.getClass() == ByteBuffer.class) {
 						return ((ByteBuffer)arg).array();
 					}
+				}
+			}
+			else if(ReflectionTypes.isEnumType(paramType)) {
+				if (arg instanceof String) {
+					final String enumName = (String)arg;
+					for(Enum<?> e : ((Class<? extends Enum<?>>)paramType).getEnumConstants()) {
+						if (enumName.equals(e.name())) {
+							return e;
+						}
+					}
+					throw new JavaMethodInvocationException(String.format(
+							"No %s enum value %s",
+							paramType.getName(),
+							enumName));
+				}
+				else {
+					throw new JavaMethodInvocationException(String.format(
+							"Cannot convert type %s to enum %s",
+							arg.getClass().getName(),
+							paramType.getName()));
+					
 				}
 			}
 		

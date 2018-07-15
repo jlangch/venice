@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- fixed ...
+- fixed JavaInterop passing enums args
 
 
 ## [0.1.0] - 2018-07-10
