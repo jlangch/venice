@@ -77,10 +77,18 @@ public class JavaInteropUtil {
 		}
 		else if ("class".equals(methodName)) {			
 			// get class (. :java.util.String :class)
-			final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
-			final Class<?> targetClass = ReflectionAccessor.classForName(className);
-			
-			return new VncJavaObject(targetClass);
+			if (arg0 instanceof VncString) {
+				final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+				final Class<?> targetClass = ReflectionAccessor.classForName(className);
+				
+				return new VncJavaObject(targetClass);
+			}
+			else if (arg0 instanceof VncJavaObject) {
+				return new VncJavaObject(((VncJavaObject)arg0).getDelegate().getClass());
+			}
+			else {
+				return new VncJavaObject(Types.getClassName(arg0));
+			}
 		}
 		else {
 			if (arg0 instanceof VncString) {
