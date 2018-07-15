@@ -21,18 +21,20 @@
  */
 package org.venice;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -2366,7 +2368,6 @@ public class FunctionsTest {
 		assertEquals("[1]", venice.eval("(str [1])"));
 		assertEquals("[1 2]", venice.eval("(str [1 2])"));
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (ordered-map :a 1 :b 2 ))"));
-		//assertEquals("{:a \"1\" :b \"2\"}", venice.eval("(str (ordered-map :a \"1\" :b \"2\"))"));
 	}
 
 	@Test
@@ -2752,6 +2753,12 @@ public class FunctionsTest {
 	@Test
 	public void test_vector() {
 		final Venice venice = new Venice();
+
+		assertEquals("[]", venice.eval("(str [])"));
+		assertEquals("[1 2 3]", venice.eval("(str [1 2 3])"));
+		
+		final Object result = venice.eval("(do [1 2 3])");
+		assertTrue(result instanceof List);
 
 		assertEquals("[]", venice.eval("(str (vector))"));
 		assertEquals("[1 2 3]", venice.eval("(str (vector 1 2 3))"));

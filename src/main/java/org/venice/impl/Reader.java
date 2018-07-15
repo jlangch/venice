@@ -127,7 +127,10 @@ public class Reader {
 		} 
 		else if (matcher.group(7) != null) {
 			return withTokenPos(
-					new VncString(StringUtil.unescape(matcher.group(7))), 
+					new VncString(
+							StringUtil.unescape(
+									StringUtil.decodeUnicode(
+											matcher.group(7)))), 
 					token);
 		} 
 		else if (matcher.group(8) != null) {

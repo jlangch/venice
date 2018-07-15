@@ -120,7 +120,7 @@ System.out.println(venice.eval(script));
 
 ## Sandbox
 
-The Venice sandbox allows a program to execute Venice in a restricted sandbox 
+The Venice sandbox allows a program to execute _Venice_ in a restricted sandbox 
 environment regarding Java interop. It is useful for applications that want 
 to provide some degree of scriptability to users, without allowing them to 
 execute System.exit(0) or any other undesirable operations.
@@ -137,7 +137,7 @@ on different threads.
 
 #### No blacklisting
 
-Unlike a sandbox provided by Java SecurityManager, this sandboxing is only a 
+Unlike a sandbox provided by _Java SecurityManager_, this sandboxing is only a 
 skin deep. In other words, even if you prohibit Venice from executing a Java 
 operation X, if an attacker finds another Java method Y that calls into X, he 
 can execute X.
@@ -155,8 +155,6 @@ final JavaInterceptor interceptor =
         new SandboxRules()
               .rejectAllVeniceIoFunctions()
               .add(
-                "java.lang.Long",  // Math::min arg type
-                "java.lang.Boolean",  // ArrayList::add return type
                 "java.lang.Math:min", 
                 "java.time.ZonedDateTime:*", 
                 "java.util.ArrayList:new",
@@ -179,7 +177,7 @@ venice.eval(
 // => FAIL (static method) with Sandbox SecurityException
 venice.eval("(. :java.lang.System :exit 0)"); 
 
-// => FAIL Venice IO function
+// => FAIL Venice I/O function
 venice.eval("(slurp \"/tmp/file\")"); 
 ```
 

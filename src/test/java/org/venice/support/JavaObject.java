@@ -133,6 +133,25 @@ public class JavaObject {
 	public void setMap(Map<?, ?> _Map) {
 		this._Map = _Map;
 	}
+	public byte[] getByteArr() {
+		return _ByteArr;
+	}
+	public void setByteArr(byte[] _ByteArr) {
+		this._ByteArr = _ByteArr;
+	}
+
+	public void setOverloaded(byte[] bytes) {
+		this._Overload = bytes;
+	}
+	public void setOverloaded(String s) {
+		this._Overload = s;
+	}
+	public void setOverloaded(Long l) {
+		this._Overload = l;
+	}
+	public Object getOverloaded() {
+		return this._Overload;
+	}
 
 	public void _void() {
 	}
@@ -160,4 +179,6 @@ public class JavaObject {
 	private List<?> _List;
 	private Set<?> _Set;
 	private Map<?,?> _Map;
+	private byte[] _ByteArr;
+	private Object _Overload;
 }

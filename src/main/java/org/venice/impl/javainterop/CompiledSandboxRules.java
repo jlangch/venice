@@ -89,10 +89,15 @@ public class CompiledSandboxRules {
 		if (clazz == null) {
 			return false;
 		}
+		else if (clazz.isArray() || clazz.isPrimitive()) {
+			// Arrays and primitives are implicitly whitelisted
+			return true;
+		}
 		else if (whiteListedClasses.containsKey(clazz)) {
 			return true;
 		}
 		else {
+			
 			final String className = clazz.getName();
 			final boolean matches = whiteListClassPatterns
 										.stream()
@@ -120,10 +125,16 @@ public class CompiledSandboxRules {
 		if (clazz == null || accessor == null) {
 			return false;
 		}
+	
+		// Check class
 		if (!isWhiteListed(clazz)) {
 			return false;
 		}
+		if (clazz.isArray()) {
+			return isWhiteListed(clazz.getComponentType());
+		}
 		
+		// Check accessor
 		final Tuple2<Class<?>,String> tuple = new Tuple2<>(clazz,accessor);
 		if (whiteListedMethods.containsKey(tuple)) {
 			return true;

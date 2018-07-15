@@ -21,6 +21,7 @@
  */
 package org.venice.javainterop;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,6 +60,7 @@ import java.util.Set;
 public class SandboxRules {
 	
 	public SandboxRules() {
+		
 	}
 	
 	public SandboxRules add(final Collection<String> rules) {
@@ -103,5 +105,17 @@ public class SandboxRules {
 	}
 	
 	
-	private final Set<String> rules = new HashSet<>();
+	private static final Set<String> defaultRules = 
+			new HashSet<>(
+				Arrays.asList(
+						Byte.class.getName(),
+						Short.class.getName(),
+						Integer.class.getName(),
+						Long.class.getName(),
+						Float.class.getName(),
+						Double.class.getName(),
+						BigDecimal.class.getName(),
+						String.class.getName()));
+	
+	private final Set<String> rules = new HashSet<>(defaultRules);
 }

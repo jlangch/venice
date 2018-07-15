@@ -170,7 +170,16 @@ public class JavaInteropTest {
 		final Object obj2 = venice.eval("(. :org.venice.support.JavaObject :new 100)", symbols());
 		assertTrue(obj2 instanceof JavaObject);
 	}
-	
+
+	@Test
+	public void testOverloadedMethod() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(. jobj :getOverloaded)", symbols()));
+		assertEquals(100L, venice.eval("(do (. jobj :setOverloaded 100) (. jobj :getOverloaded))", symbols()));
+		assertEquals("abc", venice.eval("(do (. jobj :setOverloaded \"abc\") (. jobj :getOverloaded))", symbols()));
+	}
+
 	@Test
 	public void testStaticMethod() {
 		final Venice venice = new Venice();
