@@ -42,6 +42,14 @@ public class JavaInteropFn extends VncFunction {
 		setDescription(
 				"Java interop. Calls a constructor or an object method. " +
 				"The function is sandboxed");
+		
+		setExamples(
+				"(. :java.lang.Long :new 10)", 
+				"(. (. :java.lang.Long :new 10) :toString)", 
+				"(. :java.lang.Math :min 10 20)", 
+				"(. :java.lang.Math :class)", 
+				"(. \"java.lang.Math\" :class)", 
+				"(. (. :java.io.File :new \"/temp\") :class)");
 	}
 	
 	public static JavaInteropFn create(final JavaImports javaImports) {
