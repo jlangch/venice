@@ -10,14 +10,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added line and column number to parser exception
-- added file I/O functions
-- refactored sandbox
-- supporting escaped unicode '\u0041' characters in string literals
+- added ...
 
 ### Removed
 
 - removed ...
+
+### Fixed
+
+- fixed ...
+
+
+## [0.2.0] - 2018-07-15
+
+### Added
+
+- added line and column number to parser exception
+- added file I/O functions
+- refactored sandbox
+- supporting escaped unicode '\u0041' characters in string literals
 
 ### Fixed
 
