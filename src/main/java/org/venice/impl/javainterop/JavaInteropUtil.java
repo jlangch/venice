@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.venice.JavaMethodInvocationException;
+import org.venice.impl.ErrorMessage;
 import org.venice.impl.types.Constants;
 import org.venice.impl.types.IVncJavaObject;
 import org.venice.impl.types.Types;
@@ -54,88 +56,104 @@ import org.venice.impl.util.reflect.ReflectionTypes;
 public class JavaInteropUtil {
 
 	public static VncVal applyJavaAccess(final VncList args, final JavaImports javaImports) {
-		final VncVal arg0 = args.nth(0);		
-		final VncString method = (VncString)args.nth(1);
-		final VncList params = args.slice(2);
-		
-		final String methodName = method.unkeyword().getValue();
-		
-		final Object[] methodArgs = new Object[params.size()];
-		for(int ii=0; ii<params.size(); ii++) {
-			methodArgs[ii] = JavaInteropUtil.convertToJavaObject(params.nth(ii));
-		}
-		
-		if ("new".equals(methodName)) {			
-			// call constructor (. :java.util.String :new \"abc\")
-			final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
-			final Class<?> targetClass = ReflectionAccessor.classForName(className);
+		try {
+			final VncVal arg0 = args.nth(0);		
+			final VncString method = (VncString)args.nth(1);
+			final VncList params = args.slice(2);
 			
-			return JavaInteropUtil.convertToVncVal(
-					JavaInterop
-						.getInterceptor()
-						.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
-		}
-		else if ("class".equals(methodName)) {			
-			// get class (. :java.util.String :class)
-			if (arg0 instanceof VncString) {
+			final String methodName = method.unkeyword().getValue();
+			
+			final Object[] methodArgs = new Object[params.size()];
+			for(int ii=0; ii<params.size(); ii++) {
+				methodArgs[ii] = JavaInteropUtil.convertToJavaObject(params.nth(ii));
+			}
+			
+			if ("new".equals(methodName)) {			
+				// call constructor (. :java.util.String :new \"abc\")
 				final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
 				final Class<?> targetClass = ReflectionAccessor.classForName(className);
 				
-				return new VncJavaObject(targetClass);
+				return JavaInteropUtil.convertToVncVal(
+						JavaInterop
+							.getInterceptor()
+							.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
 			}
-			else if (arg0 instanceof VncJavaObject) {
-				return new VncJavaObject(((VncJavaObject)arg0).getDelegate().getClass());
+			else if ("class".equals(methodName)) {			
+				// get class (. :java.util.String :class)
+				if (arg0 instanceof VncString) {
+					final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+					final Class<?> targetClass = ReflectionAccessor.classForName(className);
+					
+					return new VncJavaObject(targetClass);
+				}
+				else if (arg0 instanceof VncJavaObject) {
+					return new VncJavaObject(((VncJavaObject)arg0).getDelegate().getClass());
+				}
+				else {
+					return new VncJavaObject(Types.getClassName(arg0));
+				}
 			}
 			else {
-				return new VncJavaObject(Types.getClassName(arg0));
+				if (arg0 instanceof VncString) {
+					// static method / field:   (. :org.foo.Foo :getLastName)
+					final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+					final Class<?> targetClass = ReflectionAccessor.classForName(className);
+	
+					if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
+						// static method
+						return JavaInteropUtil.convertToVncVal(
+								JavaInterop
+									.getInterceptor()
+									.onInvokeStaticMethod(new Invoker(), targetClass, methodName, methodArgs));
+					}
+					else {
+						// static field
+						return JavaInteropUtil.convertToVncVal(
+								JavaInterop
+									.getInterceptor()
+									.onGetStaticField(new Invoker(), targetClass, methodName));
+					}
+				}
+				else {
+					// instance method/field:   (. person :getLastName)
+					//	                        (. person :setLastName \"john\")
+					final Object target = arg0 instanceof VncJavaObject
+											? ((VncJavaObject)arg0).getDelegate()
+											: JavaInteropUtil.convertToJavaObject(arg0);
+	
+	
+					if (methodArgs.length > 0 || ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs)) {
+						// instance method
+						return JavaInteropUtil.convertToVncVal(
+								JavaInterop
+									.getInterceptor()
+									.onInvokeInstanceMethod(new Invoker(), target, methodName, methodArgs));
+					}
+					else {
+						// instance field
+						return JavaInteropUtil.convertToVncVal(
+								JavaInterop
+									.getInterceptor()
+									.onGetInstanceField(new Invoker(), target, methodName));
+					}
+				}
 			}
 		}
-		else {
-			if (arg0 instanceof VncString) {
-				// static method / field:   (. :org.foo.Foo :getLastName)
-				final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
-				final Class<?> targetClass = ReflectionAccessor.classForName(className);
-
-				if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
-					// static method
-					return JavaInteropUtil.convertToVncVal(
-							JavaInterop
-								.getInterceptor()
-								.onInvokeStaticMethod(new Invoker(), targetClass, methodName, methodArgs));
-				}
-				else {
-					// static field
-					return JavaInteropUtil.convertToVncVal(
-							JavaInterop
-								.getInterceptor()
-								.onGetStaticField(new Invoker(), targetClass, methodName));
-				}
-			}
-			else {
-				// instance method/field:   (. person :getLastName)
-				//	                        (. person :setLastName \"john\")
-				final Object target = arg0 instanceof VncJavaObject
-										? ((VncJavaObject)arg0).getDelegate()
-										: JavaInteropUtil.convertToJavaObject(arg0);
-
-
-				if (methodArgs.length > 0 || ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs)) {
-					// instance method
-					return JavaInteropUtil.convertToVncVal(
-							JavaInterop
-								.getInterceptor()
-								.onInvokeInstanceMethod(new Invoker(), target, methodName, methodArgs));
-				}
-				else {
-					// instance field
-					return JavaInteropUtil.convertToVncVal(
-							JavaInterop
-								.getInterceptor()
-								.onGetInstanceField(new Invoker(), target, methodName));
-				}
-			}
+		catch(JavaMethodInvocationException ex) {
+			throw new JavaMethodInvocationException(
+					String.format(
+						"%s. %s", 
+						ex.getMessage(),
+						ErrorMessage.buildErrLocation(args)),
+					ex);
+		}
+		catch(RuntimeException ex) {
+			throw new JavaMethodInvocationException(String.format(
+						"JavaInterop failure. %s", 
+						ErrorMessage.buildErrLocation(args)));
 		}
 	}
+	
 	public static Object convertToJavaObject(final VncVal value) {
 		if (value instanceof VncConstant) {
 			if (((VncConstant)value) == Constants.Nil) {

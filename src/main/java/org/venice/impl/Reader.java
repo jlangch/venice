@@ -92,10 +92,8 @@ public class Reader {
 		
 		if (!matcher.find()) {
 			throw new ParseError(String.format(
-					"File %s (%d,%d): unrecognized token '%s'",
-					token.getFile(),
-					token.getLine(),
-					token.getColumn(),
+					"%s: unrecognized token '%s'",
+					ErrorMessage.buildErrLocation(token),
 					token.getToken()));
 		}
 		
@@ -145,10 +143,8 @@ public class Reader {
 		} 
 		else {
 			throw new ParseError(String.format(
-					"File %s (%d,%d): Unrecognized '%s'",
-					token.getFile(),
-					token.getLine(),
-					token.getColumn(),
+					"%s: Unrecognized '%s'",
+					ErrorMessage.buildErrLocation(token),
 					matcher.group(0)));
 		}
 	}
@@ -162,10 +158,8 @@ public class Reader {
 		Token token = rdr.next();
 		if (token.charAt(0) != start) {
 			throw new ParseError(String.format(
-					"File %s (%d,%d): Expected '%s'",
-					token.getFile(),
-					token.getLine(),
-					token.getColumn(),
+					"%s: Expected '%s'",
+					ErrorMessage.buildErrLocation(token),
 					start));
 		}
 
@@ -240,10 +234,8 @@ public class Reader {
 			
 			case ')': 
 				throw new ParseError(String.format(
-						"File %s (%d,%d): Unexpected ')'",
-						token.getFile(),
-						token.getLine(),
-						token.getColumn()));
+						"%s: Unexpected ')'",
+						ErrorMessage.buildErrLocation(token)));
 			
 			case '[': 
 				form = read_list(rdr, (VncVector)withTokenPos(new VncVector(), token), '[' , ']'); 
@@ -251,20 +243,16 @@ public class Reader {
 			
 			case ']': 
 				throw new ParseError(String.format(
-						"File %s (%d,%d): Unexpected ']'",
-						token.getFile(),
-						token.getLine(),
-						token.getColumn()));
+						"%s: Unexpected ']'",
+						ErrorMessage.buildErrLocation(token)));
 				
 			case '{': 
 				form = read_hash_map(rdr); break;
 				
 			case '}': 
 				throw new ParseError(String.format(
-						"File %s (%d,%d): Unexpected '}'",
-						token.getFile(),
-						token.getLine(),
-						token.getColumn()));
+						"%s: Unexpected '}'",
+						ErrorMessage.buildErrLocation(token)));
 				
 			default:  
 				form = read_atom(rdr);
