@@ -389,14 +389,16 @@ public class VeniceInterpreter {
 					if (!Types.isVncFunction(el.nth(0))) {
 						throw new VncException(String.format("Not a function: '%s'", PRINT(el.nth(0))));
 					}
-					final VncFunction f = Coerce.toVncFunction(el.nth(0));
+					final VncFunction f = (VncFunction)el.nth(0);
 					final VncVal fnast = f.getAst();
 					if (fnast != null) {
 						orig_ast = fnast;
 						env = f.genEnv(el.slice(1));
 					} 
 					else {
-						return f.apply(el.rest());
+						final VncList fnArgs = el.rest();
+						ReaderUtil.copyTokenPos(el, fnArgs);
+						return f.apply(fnArgs);
 					}
 			}
 		}

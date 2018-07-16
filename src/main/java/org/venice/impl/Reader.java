@@ -102,19 +102,19 @@ public class Reader {
 		}
 		
 		if (matcher.group(1) != null) {
-			return withTokenPos(
+			return ReaderUtil.withTokenPos(
 					new VncLong(Long.parseLong(matcher.group(1))), 
 					token);
 		} 
 		else if (matcher.group(2) != null) {
-			return withTokenPos(
+			return ReaderUtil.withTokenPos(
 					new VncDouble(Double.parseDouble(matcher.group(2))), 
 					token);
 		} 
 		else if (matcher.group(3) != null) {
 			String dec = matcher.group(3);
 			dec = dec.substring(0, dec.length()-1);
-			return withTokenPos(
+			return ReaderUtil.withTokenPos(
 					new VncBigDecimal(new BigDecimal(dec)), 
 					token);
 		} 
@@ -128,7 +128,7 @@ public class Reader {
 			return Constants.False;
 		} 
 		else if (matcher.group(7) != null) {
-			return withTokenPos(
+			return ReaderUtil.withTokenPos(
 					new VncString(
 							StringUtil.unescape(
 									StringUtil.decodeUnicode(
@@ -136,12 +136,12 @@ public class Reader {
 					token);
 		} 
 		else if (matcher.group(8) != null) {
-			return withTokenPos(
+			return ReaderUtil.withTokenPos(
 					VncString.keyword(matcher.group(8)), 
 					token);
 		} 
 		else if (matcher.group(9) != null) {
-			return withTokenPos(
+			return ReaderUtil.withTokenPos(
 					new VncSymbol(matcher.group(9)), 
 					token);
 		} 
@@ -160,7 +160,7 @@ public class Reader {
 			final char end
 	) {
 		Token token = rdr.next();
-		withTokenPos(lst, token);
+		ReaderUtil.withTokenPos(lst, token);
 
 		if (token.charAt(0) != start) {
 			throw new ParseError(String.format(
@@ -185,7 +185,7 @@ public class Reader {
 		final Token refToken = rdr.peek();
 		
 		final VncList lst = read_list(rdr, new VncList(), '{', '}');
-		return (VncHashMap)withTokenPos(new VncHashMap(lst), refToken);
+		return (VncHashMap)ReaderUtil.withTokenPos(new VncHashMap(lst), refToken);
 	}
 
 	private static VncVal read_form(final Reader rdr) {
@@ -199,26 +199,26 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return withTokenPos(
+				return ReaderUtil.withTokenPos(
 						new VncList(new VncSymbol("quote"), read_form(rdr)), 
 						token);
 			
 			case '`': 
 				rdr.next();
-				return withTokenPos(
+				return ReaderUtil.withTokenPos(
 						new VncList(new VncSymbol("quasiquote"), read_form(rdr)), 
 						token);
 			
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return withTokenPos(
+					return ReaderUtil.withTokenPos(
 							new VncList(new VncSymbol("unquote"), read_form(rdr)), 
 							token);
 				} 
 				else {
 					rdr.next();
-					return withTokenPos(
+					return ReaderUtil.withTokenPos(
 							new VncList(new VncSymbol("splice-unquote"), read_form(rdr)), 
 							token);
 				}
@@ -226,13 +226,13 @@ public class Reader {
 			case '^': 
 				rdr.next();
 				final VncVal meta = read_form(rdr);
-				return withTokenPos(
+				return ReaderUtil.withTokenPos(
 						new VncList(new VncSymbol("with-meta"), read_form(rdr), meta), 
 						token);
 			
 			case '@': 
 				rdr.next();
-				return withTokenPos(
+				return ReaderUtil.withTokenPos(
 						new VncList(new VncSymbol("deref"), read_form(rdr)), 
 						token);
 			
@@ -292,14 +292,7 @@ public class Reader {
 		
 		return new int[]{row,col};
 	}
-	
-	private static VncVal withTokenPos(final VncVal val, final Token token) {
-		val.setMetaVal(new VncSymbol(":file"), new VncString(token.getFile()));
-		val.setMetaVal(new VncSymbol(":line"), new VncLong(token.getLine()));
-		val.setMetaVal(new VncSymbol(":column"), new VncLong(token.getColumn()));
-		return val;
-	}
-	
+
 	// group 1: integer = "(^-?[0-9]+$)";
 	// group 2: decimal = "(^-?[0-9]+[.][0-9]*$)";
 	// group 3: bigdecimal = "(^-?[0-9]+[.][0-9]*M$)";

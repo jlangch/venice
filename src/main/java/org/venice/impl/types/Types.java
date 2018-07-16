@@ -128,67 +128,67 @@ public class Types {
 
 	public static VncString getClassName(final VncVal val) {
 		if (val == Constants.Nil) {
-			return new VncString("nil");
+			return new VncString("venice.Nil");
 		}
 		else if (val ==  Constants.True || val == Constants.False) {
-			return new VncString("boolean");
+			return new VncString("venice.Boolean");
 		}
 		else if (Types.isVncAtom(val)) {
-			return new VncString("atom");
+			return new VncString("venice.Atom");
 		}
 		else if (Types.isVncLong(val)) {
-			return new VncString("long");
+			return new VncString("venice.Long");
 		}
 		else if (Types.isVncDouble(val)) {
-			return new VncString("double");
+			return new VncString("venice.Double");
 		}
 		else if (Types.isVncBigDecimal(val)) {
-			return new VncString("decimal");
+			return new VncString("venice.Decimal");
 		}
 		else if (Types.isVncByteBuffer(val)) {
-			return new VncString("bytebuf");
+			return new VncString("venice.ByteBuffer");
 		}
 		else if (Types.isVncFunction(val)) {
-			return new VncString("function");
+			return new VncString("venice.Function");
 		}
 		else if (Types.isVncString(val)) {
-			return new VncString("string");
+			return new VncString("venice.String");
 		}
 		else if (Types.isVncSymbol(val)) {
-			return new VncString("symbol");
+			return new VncString("venice.Symbol");
 		}
 		else if (Types.isVncSet(val)) {
-			return new VncString("set");
+			return new VncString("venice.Set");
 		}
 		else if (Types.isVncVector(val)) {
-			return new VncString("vector");
+			return new VncString("venice.Vector");
 		}
 		else if (Types.isVncList(val)) {
-			return new VncString("list");
+			return new VncString("venice.List");
 		}
 		else if (Types.isVncHashMap(val)) {
-			return new VncString("hash-map");
+			return new VncString("venice.HashMap");
 		}
 		else if (Types.isVncOrderedMap(val)) {
-			return new VncString("ordered-map");
+			return new VncString("venice.OrderedMap");
 		}
 		else if (Types.isVncSortedMap(val)) {
-			return new VncString("sorted-map");
-		}
-		else if (Types.isVncMap(val)) {
-			return new VncString("map");
+			return new VncString("venice.SortedMap");
 		}
 		else if (Types.isVncJavaObject(val)) {
-			return new VncString("java-object(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString("venice.JavaObject(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
 		}
 		else if (Types.isVncJavaSet(val)) {
-			return new VncString("java-set(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString("venice.JavaSet(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
 		}
 		else if (Types.isVncJavaList(val)) {
-			return new VncString("java-list(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString("venice.JavaList(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
 		}
 		else if (Types.isVncJavaMap(val)) {
-			return new VncString("java-map(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString("venice.JavaMap(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+		}
+		else if (Types.isVncMap(val)) {
+			return new VncString("venice.Map");
 		}
 		else {
 			return new VncString(val.getClass().getName());
