@@ -646,18 +646,29 @@ public class DocGenerator {
 						runExamples(
 							"loop", 
 							Arrays.asList(
-									"(if (< 10 20) \"yes\" \"no\")"))));
+									"(loop [x 10]\n" + 
+									"  (when (> x 1)\n" + 
+									"    (println x)\n" + 
+									"    (recur (- x 2))))"))));
 		
+		generic.addItem(
+				new DocItem(
+						"defmacro", 
+						Arrays.asList("(macroexpand form)"), 
+						"If form represents a macro form, returns its expansion, " + 
+						"else returns form",
+						runExamples(
+							"defmacro", 
+							Arrays.asList(
+									"(macroexpand '(-> c (+ 3) (* 2)))"))));
+	    
 		generic.addItem(
 				new DocItem(
 						"recur", 
 						Arrays.asList("(recur expr*)"), 
 						"Evaluates the exprs and rebinds the bindings of " + 
 						"the recursion point to the values of the exprs.",
-						runExamples(
-							"recur", 
-							Arrays.asList(
-									"(if (< 10 20) \"yes\" \"no\")"))));
+						runExamples("recur", Arrays.asList())));
 		
 		generic.addItem(
 				new DocItem(
