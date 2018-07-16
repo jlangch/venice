@@ -65,5 +65,4 @@ public class Coerce {
 	public static VncByteBuffer toVncByteBuffer(final VncVal val) {
 		return (VncByteBuffer)val;
 	}
-	
 }
