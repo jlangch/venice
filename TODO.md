@@ -1,6 +1,7 @@
 # TODO
 
 1. (+) Gradle build
+1. (-) Add nfirst, nlast
 1. (+) Support Unicode encoding in string literals
 1. (-) Deploy to maven central
 1. (-) Improve error handling in the core functions
