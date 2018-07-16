@@ -48,7 +48,11 @@ public class Reader {
 		this.position = 0;
 	}
 
-	public Token peek() {
+	public static VncVal read_str(final String str, final String filename) {
+		return read_form(new Reader(tokenize(str, filename)));
+	}
+
+	private Token peek() {
 		if (position >= tokens.size()) {
 			return null;
 		} 
@@ -57,11 +61,11 @@ public class Reader {
 		}
 	}
    
-	public Token next() {
+	private Token next() {
 		return tokens.get(position++);
 	}
 	
-	public static ArrayList<Token> tokenize(final String str, final String filename) {
+	private static ArrayList<Token> tokenize(final String str, final String filename) {
 		final char[] strArr = str.toCharArray();
 		final Matcher matcher = tokenize_pattern.matcher(str);
 
@@ -86,7 +90,7 @@ public class Reader {
 		return tokens;
 	}
 
-	public static VncVal read_atom(final Reader rdr) {
+	private static VncVal read_atom(final Reader rdr) {
 		final Token token = rdr.next();
 		final Matcher matcher = atom_pattern.matcher(token.getToken());
 		
@@ -149,13 +153,15 @@ public class Reader {
 		}
 	}
 
-	public static VncVal read_list(
+	private static VncList read_list(
 			final Reader rdr, 
 			final VncList lst, 
 			final char start, 
 			final char end
 	) {
 		Token token = rdr.next();
+		withTokenPos(lst, token);
+
 		if (token.charAt(0) != start) {
 			throw new ParseError(String.format(
 					"%s: Expected '%s'",
@@ -175,12 +181,14 @@ public class Reader {
 		return lst;
 	}
 
-	public static VncVal read_hash_map(final Reader rdr) {
-		final VncList lst = (VncList)read_list(rdr, (VncList)withTokenPos(new VncList(), rdr.peek()), '{', '}');
-		return withTokenPos(new VncHashMap(lst), rdr.peek());
+	private static VncHashMap read_hash_map(final Reader rdr) {
+		final Token refToken = rdr.peek();
+		
+		final VncList lst = read_list(rdr, new VncList(), '{', '}');
+		return (VncHashMap)withTokenPos(new VncHashMap(lst), refToken);
 	}
 
-	public static VncVal read_form(final Reader rdr) {
+	private static VncVal read_form(final Reader rdr) {
 		final Token token = rdr.peek();
 		if (token == null) { 
 			throw new ContinueException(); 
@@ -229,7 +237,7 @@ public class Reader {
 						token);
 			
 			case '(': 
-				form = read_list(rdr, (VncList)withTokenPos(new VncList(), token), '(' , ')'); 
+				form = read_list(rdr, new VncList(), '(' , ')'); 
 				break;
 			
 			case ')': 
@@ -238,7 +246,7 @@ public class Reader {
 						ErrorMessage.buildErrLocation(token)));
 			
 			case '[': 
-				form = read_list(rdr, (VncVector)withTokenPos(new VncVector(), token), '[' , ']'); 
+				form = read_list(rdr, new VncVector(), '[' , ']'); 
 				break;
 			
 			case ']': 
@@ -247,7 +255,8 @@ public class Reader {
 						ErrorMessage.buildErrLocation(token)));
 				
 			case '{': 
-				form = read_hash_map(rdr); break;
+				form = read_hash_map(rdr); 
+				break;
 				
 			case '}': 
 				throw new ParseError(String.format(
@@ -260,10 +269,6 @@ public class Reader {
 		}
 		
 		return form;
-	}
-
-	public static VncVal read_str(final String str, final String filename) {
-		return read_form(new Reader(tokenize(str, filename)));
 	}
 	
 	private static int[] getTextPosition(
