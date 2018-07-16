@@ -5,7 +5,7 @@ Venice, a sandboxed Lisp interpreter running on Java.
 
 ## Overview
 
-Venice's goal is not to build another Lisp, it's born from the need of 
+Venice's goal is not to build just another Lisp, it's born from the need of 
 having a safe and powerful expression language that can be used to implement 
 configurable extension points and rules for applications.
 
@@ -17,7 +17,7 @@ easily add it as standalone .jar to your classpath.
  
 ## Cheat Sheet
 
-[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/e3dc336d/cheatsheet.html)
+[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/b418b204/cheatsheet.html)
 
 
 ## REPL
