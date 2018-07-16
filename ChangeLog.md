@@ -11,8 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added The Java Interop function (. classname :class) returns the class for the classname
-- added Improved error messages for Java Interop
+- added Java Interop function (. classname :class) returns the class for the classname
+- added improved error messages for Java Interop
 
 ### Removed
 
