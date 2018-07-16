@@ -211,7 +211,8 @@ public class Types {
 				return ((VncSymbol)a).getName().equals(((VncSymbol)b).getName());
 			} 
 			else if (a instanceof VncString) {
-				return ((VncString)a).getValue().equals(((VncString)b).getValue());
+				// allow true: (== \"aa\" \"aa\" ), (== :aa :aa ), (== :aa \"aa\" )
+				return ((VncString)a).unkeyword().getValue().equals(((VncString)b).unkeyword().getValue());
 			} 
 			else if (a instanceof VncList) {
 				if (((VncList)a).size() != ((VncList)b).size()) {
