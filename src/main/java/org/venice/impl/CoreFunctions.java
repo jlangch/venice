@@ -861,7 +861,7 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			if (args.isEmpty()) {
-				throw new ArityException(0, "-");
+				throw new ArityException(args, 0, "-");
 			}
 			else if (args.size() == 1) {
 				final VncVal first = args.nth(0);
@@ -955,7 +955,7 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			if (args.isEmpty()) {
-				throw new ArityException(0, "/");
+				throw new ArityException(args, 0, "/");
 			}
 			else if (args.size() == 1) {
 				final VncVal first = args.nth(0);
@@ -1092,7 +1092,7 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			if (args.isEmpty()) {
-				throw new ArityException(0, "max");
+				throw new ArityException(args, 0, "max");
 			}
 
 			final VncVal op1 = args.nth(0);
@@ -1129,7 +1129,7 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			if (args.isEmpty()) {
-				throw new ArityException(0, "min");
+				throw new ArityException(args, 0, "min");
 			}
 			
 			final VncVal op1 = args.nth(0);
@@ -4790,7 +4790,7 @@ public class CoreFunctions {
 		for (int a : expectedArities) {
 			if (a == arity) return;
 		}		
-		throw new ArityException(arity, fnName);
+		throw new ArityException(args, arity, fnName);
 	}
 
 	private static boolean isJavaIoFile(final VncVal val) {

@@ -21,16 +21,22 @@
  */
 package org.venice;
 
+import org.venice.impl.ErrorMessage;
+import org.venice.impl.types.collections.VncList;
 
 public class ArityException extends VncException {
 
-	public ArityException(final int arity, final String name) {
-		this(arity, name, null);
+	public ArityException(final VncList args, final int arity, final String name) {
+		this(args, arity, name, null);
 	}
 
-	public ArityException(final int actual, final String name, Throwable cause) {
+	public ArityException(final VncList args, final int actual, final String name, Throwable cause) {
 		super(
-			String.format("Wrong number of args %d passed to %s", actual, name), 
+			String.format(
+					"Wrong number of args %d passed to %s. %s",
+					actual, 
+					name,
+					ErrorMessage.buildErrLocation(args)), 
 			cause);
 		
 		this.arity = actual;
