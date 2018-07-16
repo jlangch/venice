@@ -1,6 +1,9 @@
 package org.venice.impl.types;
 
+import org.venice.VncException;
+import org.venice.impl.ErrorMessage;
 import org.venice.impl.types.collections.VncHashMap;
+import org.venice.impl.types.collections.VncJavaList;
 import org.venice.impl.types.collections.VncJavaObject;
 import org.venice.impl.types.collections.VncList;
 import org.venice.impl.types.collections.VncMap;
@@ -39,11 +42,39 @@ public class Coerce {
 	}
 	
 	public static VncList toVncList(final VncVal val) {
-		return (VncList)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncList) {
+			return (VncList)val;
+		}
+		else if (val instanceof VncJavaList) {
+			return ((VncJavaList)val).toVncList();
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to Venice list. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncVector toVncVector(final VncVal val) {
-		return (VncVector)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncVector) {
+			return (VncVector)val;
+		}
+		else if (val instanceof VncJavaList) {
+			return ((VncJavaList)val).toVncVector();
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to Venice vector. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncMap toVncMap(final VncVal val) {
