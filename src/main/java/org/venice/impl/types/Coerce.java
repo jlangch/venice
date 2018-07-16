@@ -14,31 +14,123 @@ import org.venice.impl.types.collections.VncVector;
 public class Coerce {
 
 	public static VncAtom toVncAtom(final VncVal val) {
-		return (VncAtom)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncAtom) {
+			return (VncAtom)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to atom. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 
 	public static VncSymbol toVncSymbol(final VncVal val) {
-		return (VncSymbol)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncSymbol) {
+			return (VncSymbol)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to symbol. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 
 	public static VncFunction toVncFunction(final VncVal val) {
-		return (VncFunction)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncFunction) {
+			return (VncFunction)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to function. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 
 	public static VncString toVncString(final VncVal val) {
-		return (VncString)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncString) {
+			return (VncString)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to string. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncLong toVncLong(final VncVal val) {
-		return (VncLong)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncLong) {
+			return (VncLong)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to long. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncDouble toVncDouble(final VncVal val) {
-		return (VncDouble)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncDouble) {
+			return (VncDouble)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to double. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncBigDecimal toVncBigDecimal(final VncVal val) {
-		return (VncBigDecimal)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncBigDecimal) {
+			return (VncBigDecimal)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to big-decimal. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
+	public static VncByteBuffer toVncByteBuffer(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncByteBuffer) {
+			return (VncByteBuffer)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to bytebuf. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncList toVncList(final VncVal val) {
@@ -53,7 +145,7 @@ public class Coerce {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot coerce value of type %s to Venice list. %s", 
+					"Cannot coerce value of type %s to list. %s", 
 					Types.getClassName(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
@@ -71,29 +163,69 @@ public class Coerce {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot coerce value of type %s to Venice vector. %s", 
+					"Cannot coerce value of type %s to vector. %s", 
 					Types.getClassName(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
 	
 	public static VncMap toVncMap(final VncVal val) {
-		return (VncMap)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncMap) {
+			return (VncMap)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to map. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncHashMap toVncHashMap(final VncVal val) {
-		return (VncHashMap)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncHashMap) {
+			return (VncHashMap)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to hash-map. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncSet toVncSet(final VncVal val) {
-		return (VncSet)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncSet) {
+			return (VncSet)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to set. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 	
 	public static VncJavaObject toVncJavaObject(final VncVal val) {
-		return (VncJavaObject)val;
-	}
-	
-	public static VncByteBuffer toVncByteBuffer(final VncVal val) {
-		return (VncByteBuffer)val;
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncJavaObject) {
+			return (VncJavaObject)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to java-object. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
 	}
 }
