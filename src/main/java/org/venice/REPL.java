@@ -72,7 +72,7 @@ public class REPL {
 				continue;
 			} 
 			catch (Exception t) {
-				System.out.println("Uncaught " + t + ": " + t.getMessage());
+				System.out.println("Exception: " + t.getMessage());
 				continue;
 			}
 		}

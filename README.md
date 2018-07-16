@@ -88,6 +88,9 @@ for(long ii=0; ii<100; ii++) {
 Venice supports calling constructors, static and instance methods as well as static class
 fields and instance fields.
 
+The Venice types long, double, and decimal are coerced to Java's primitive and and object types 
+byte, short, int, long, float, double, Byte, Short, Integer, Long, Float, Double, and BigDecimal.
+
 
 ```java
 import org.venice.Venice;
