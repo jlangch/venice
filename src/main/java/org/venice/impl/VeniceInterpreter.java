@@ -30,6 +30,7 @@ import org.venice.Version;
 import org.venice.VncException;
 import org.venice.impl.javainterop.JavaImports;
 import org.venice.impl.javainterop.JavaInteropFn;
+import org.venice.impl.types.Coerce;
 import org.venice.impl.types.Constants;
 import org.venice.impl.types.Types;
 import org.venice.impl.types.VncFunction;
@@ -63,15 +64,15 @@ public class VeniceInterpreter {
 			return new VncList(new VncSymbol("quote"), ast);
 		} 
 		else {
-			final VncVal a0 = ((VncList)ast).nth(0);
-			if ((a0 instanceof VncSymbol) && (((VncSymbol)a0).getName().equals("unquote"))) {
+			final VncVal a0 = Coerce.toVncList(ast).nth(0);
+			if ((a0 instanceof VncSymbol) && (Coerce.toVncSymbol(a0).getName().equals("unquote"))) {
 				return ((VncList)ast).nth(1);
 			} 
 			else if (is_pair(a0)) {
-				final VncVal a00 = ((VncList)a0).nth(0);
+				final VncVal a00 = Coerce.toVncList(a0).nth(0);
 				if ((a00 instanceof VncSymbol) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
 					return new VncList(new VncSymbol("concat"),
-									   ((VncList)a0).nth(1),
+										Coerce.toVncList(a0).nth(1),
 									   quasiquote(((VncList)ast).rest()));
 				}
 			}
@@ -93,7 +94,7 @@ public class VeniceInterpreter {
 	 */
 	public boolean is_macro_call(final VncVal ast, final Env env) {
 		if (Types.isVncList(ast) && !((VncList)ast).isEmpty()) {
-			final VncVal a0 = ((VncList)ast).nth(0);
+			final VncVal a0 = Coerce.toVncList(ast).nth(0);
 			if (Types.isVncSymbol(a0)) {
 				final VncSymbol macroName = (VncSymbol)a0;
 				if (env.find(macroName) != null) {
@@ -123,9 +124,9 @@ public class VeniceInterpreter {
 	 */
 	public VncVal macroexpand(VncVal ast, final Env env) {
 		while (is_macro_call(ast, env)) {
-			final VncSymbol macroName = (VncSymbol)((VncList)ast).nth(0);
-			final VncFunction macroFn = (VncFunction) env.get(macroName);
-			final VncList macroFnArgs =((VncList)ast).rest();
+			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncList(ast).nth(0));
+			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
+			final VncList macroFnArgs = Coerce.toVncList(ast).rest();
 			ast = macroFn.apply(macroFnArgs);
 		}
 		return ast;
@@ -192,13 +193,13 @@ public class VeniceInterpreter {
 				}
 				
 				case "eval":
-					orig_ast = ((VncList)eval_ast(ast.slice(1), env)).last();
+					orig_ast = Coerce.toVncList(eval_ast(ast.slice(1), env)).last();
 					break;
 					
 				case "let":  { // (let [bindings*] exprs*)
 					env = new Env(env);
 
-					final VncList bindings = (VncList)ast.nth(1);
+					final VncList bindings = Coerce.toVncList(ast.nth(1));
 					final VncList expressions = ast.slice(2);
 				
 					for(int i=0; i<bindings.size(); i+=2) {
@@ -224,7 +225,7 @@ public class VeniceInterpreter {
 				case "loop": { // (loop [bindings*] exprs*)
 					env = new Env(env);					
 
-					final VncList bindings = (VncList)ast.nth(1);
+					final VncList bindings = Coerce.toVncList(ast.nth(1));
 					final VncVal expressions = ast.nth(2);
 					
 					final VncList bindingNames = new VncList();
@@ -256,7 +257,7 @@ public class VeniceInterpreter {
 					final VncList recur_bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
 					for(int i=0; i<recur_bindingNames.size(); i++) {
-						final VncSymbol key = (VncSymbol)recur_bindingNames.nth(i);
+						final VncSymbol key = Coerce.toVncSymbol(recur_bindingNames.nth(i));
 						recur_env.set(key, recur_values.nth(i));
 					}
 					orig_ast = recursionPoint.getLoopExpressions();
@@ -272,7 +273,7 @@ public class VeniceInterpreter {
 	
 				case "defmacro": {
 					final VncVal macroName = ast.nth(1);
-					final VncList macroParams = (VncList)ast.nth(2);
+					final VncList macroParams = Coerce.toVncList(ast.nth(2));
 					final VncVal macroFnAst = ast.nth(3);
 	
 					final String sMacroName = Types.isVncSymbol(ast.nth(1)) 
@@ -315,7 +316,7 @@ public class VeniceInterpreter {
 							final VncList catchBlock = findFirstCatchBlock(ast.slice(2));
 							if (catchBlock != null) {
 								final VncVal result = eval_ast(catchBlock.slice(1), env);
-								return ((VncList)result).first();
+								return Coerce.toVncList(result).first();
 							}
 							else {
 								return Nil;
@@ -329,7 +330,7 @@ public class VeniceInterpreter {
 							final VncList finallyBlock = findFirstFinallyBlock(ast.slice(2));
 							if (finallyBlock != null) {
 								final VncVal result = eval_ast(finallyBlock.slice(1), env);
-								return ((VncList)result).first();
+								return Coerce.toVncList(result).first();
 							}
 						}
 					}
@@ -364,7 +365,7 @@ public class VeniceInterpreter {
 					break;
 					
 				case "fn":
-					final VncList fnParams = (VncList)ast.nth(1);
+					final VncList fnParams = Coerce.toVncList(ast.nth(1));
 					final VncVal fnAst = ast.nth(2);
 					final Env cur_env = env;
 					return new VncFunction(fnAst, env, fnParams) {
@@ -380,15 +381,15 @@ public class VeniceInterpreter {
 							};
 
 				case "import":
-					ast.slice(1).forEach(clazz -> javaImports.add(((VncString)clazz).unkeyword().getValue()));
+					ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).unkeyword().getValue()));
 					return Nil;
 
 				default:
-					final VncList el = (VncList)eval_ast(ast, env);
+					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					if (!Types.isVncFunction(el.nth(0))) {
 						throw new VncException(String.format("Not a function: '%s'", PRINT(el.nth(0))));
 					}
-					final VncFunction f = (VncFunction)el.nth(0);
+					final VncFunction f = Coerce.toVncFunction(el.nth(0));
 					final VncVal fnast = f.getAst();
 					if (fnast != null) {
 						orig_ast = fnast;
@@ -456,9 +457,9 @@ public class VeniceInterpreter {
 	
 	private VncList findFirstFinallyBlock(final VncList blocks) {
 		for(int ii=0; ii<blocks.size(); ii++) {
-			final VncList block = (VncList)blocks.nth(ii);
+			final VncList block = Coerce.toVncList(blocks.nth(ii));
 			
-			final VncSymbol sym = (VncSymbol)block.nth(0);
+			final VncSymbol sym = Coerce.toVncSymbol(block.nth(0));
 			if (sym.getName().equals("finally")) {
 				return block;
 			}

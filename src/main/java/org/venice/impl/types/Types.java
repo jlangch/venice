@@ -62,12 +62,12 @@ public class Types {
 		return val != null && (val instanceof VncDouble);
 	}
 
-	public static boolean isVncDecimal(final VncVal val) {
+	public static boolean isVncBigDecimal(final VncVal val) {
 		return val != null && (val instanceof VncBigDecimal);
 	}
 
 	public static boolean isVncNumber(final VncVal val) {
-		return val != null && (isVncLong(val) || isVncDouble(val) || isVncDecimal(val));
+		return val != null && (isVncLong(val) || isVncDouble(val) || isVncBigDecimal(val));
 	}
 
 	public static boolean isVncByteBuffer(final VncVal val) {

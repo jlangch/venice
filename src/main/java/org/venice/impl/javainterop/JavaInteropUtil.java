@@ -193,7 +193,7 @@ public class JavaInteropUtil {
 		else if (Types.isVncDouble(value)) {
 			return ((VncDouble)value).getValue();
 		}
-		else if (Types.isVncDecimal(value)) {
+		else if (Types.isVncBigDecimal(value)) {
 			return ((VncBigDecimal)value).getValue();
 		}
 		else if (Types.isVncByteBuffer(value)) {
