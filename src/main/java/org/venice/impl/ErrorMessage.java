@@ -29,7 +29,7 @@ public class ErrorMessage {
 	}
 	
 	
-	private static final VncSymbol FILE = new VncSymbol(":file"); 
-	private static final VncSymbol LINE = new VncSymbol(":line"); 
-	private static final VncSymbol COLUMN = new VncSymbol(":column"); 
+	public static final VncSymbol FILE = new VncSymbol(":file"); 
+	public static final VncSymbol LINE = new VncSymbol(":line"); 
+	public static final VncSymbol COLUMN = new VncSymbol(":column"); 
 }

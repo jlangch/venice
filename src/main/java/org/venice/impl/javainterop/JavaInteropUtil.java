@@ -106,12 +106,18 @@ public class JavaInteropUtil {
 									.getInterceptor()
 									.onInvokeStaticMethod(new Invoker(), targetClass, methodName, methodArgs));
 					}
-					else {
+					else if (ReflectionAccessor.isStaticField(targetClass, methodName)) {
 						// static field
 						return JavaInteropUtil.convertToVncVal(
 								JavaInterop
 									.getInterceptor()
 									.onGetStaticField(new Invoker(), targetClass, methodName));
+					}
+					else {
+						throw new JavaMethodInvocationException(String.format(
+								"No matching public static method or field found: '%s' for target '%s'",
+								methodName,
+								targetClass));
 					}
 				}
 				else {
@@ -129,12 +135,18 @@ public class JavaInteropUtil {
 									.getInterceptor()
 									.onInvokeInstanceMethod(new Invoker(), target, methodName, methodArgs));
 					}
-					else {
+					else if (ReflectionAccessor.isInstanceField(target, methodName)) {
 						// instance field
 						return JavaInteropUtil.convertToVncVal(
 								JavaInterop
 									.getInterceptor()
 									.onGetInstanceField(new Invoker(), target, methodName));
+					}
+					else {
+						throw new JavaMethodInvocationException(String.format(
+								"No matching public instance method or field found: '%s' for target '%s'",
+								methodName,
+								target.getClass()));
 					}
 				}
 			}
@@ -144,13 +156,13 @@ public class JavaInteropUtil {
 					String.format(
 						"%s. %s", 
 						ex.getMessage(),
-						ErrorMessage.buildErrLocation(args)),
+						ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())),
 					ex);
 		}
 		catch(RuntimeException ex) {
 			throw new JavaMethodInvocationException(String.format(
 						"JavaInterop failure. %s", 
-						ErrorMessage.buildErrLocation(args)));
+						ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())));
 		}
 	}
 	
