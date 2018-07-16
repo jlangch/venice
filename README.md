@@ -97,6 +97,7 @@ import org.venice.Venice;
 
 final Venice venice = new Venice();
 
+System.out.println(venice.eval("(. :java.lang.Math :PI)"));
 System.out.println(venice.eval("(. :java.lang.Math :min 20 30)"));
 System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"));
 ```

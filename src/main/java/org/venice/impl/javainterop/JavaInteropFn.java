@@ -44,6 +44,7 @@ public class JavaInteropFn extends VncFunction {
 				"The function is sandboxed");
 		
 		setExamples(
+				"(. :java.lang.Math :PI)",
 				"(. :java.lang.Long :new 10)", 
 				"(. (. :java.lang.Long :new 10) :toString)", 
 				"(. :java.lang.Math :min 10 20)", 
