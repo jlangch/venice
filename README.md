@@ -1,6 +1,6 @@
 # Venice
 
-Venice, a Lisp interpreter running on Java.
+Venice, a sandboxed Lisp interpreter running on Java.
 
 
 ## Overview
