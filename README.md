@@ -7,11 +7,11 @@ Venice, a sandboxed Lisp interpreter running on Java.
 
 Venice's goal is not to build just another Lisp, it's born from the need of 
 having a safe and powerful expression language that can be used to implement 
-configurable extension points and rules for applications.
+scriptable extension points and rules for applications.
 
 Venice supports macros, comes with Java interoperability, and with a configurable sandbox.
 
-Because Venice does not depend on any libraries (other than the JVM) you can 
+Because Venice does not depend on any runtime libraries (other than the JVM) you can 
 easily add it as standalone .jar to your classpath.
 
  
@@ -26,7 +26,7 @@ Venice comes with a simple REPL that does not provide command line editing.
 
 Start the REPL with `java -jar venice.jar`
 
-```sh
+```text
 venice> (+ 1 1)
 => 2
 venice>
