@@ -13,8 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added Java Interop function (. classname :class). Returns the class for the classname
 - added improved error messages for Java Interop
-- added smarter type coercion replaces simple casts and giving better error messages
+- added smarter type coercion, replaces simple casts and giving better error messages
   if the coercion is not possible
+- added interleave, interpose, nfirst, and nlast functions
+- added PDF cheatsheet
 
 ### Removed
 
