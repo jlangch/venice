@@ -4,34 +4,39 @@
         <title>Venice Cheat Sheet</title>
 
         <style type="text/css">
+            @page {
+                size: A4 portrait;
+                margin: 2cm 1.5cm;
+                padding: 0;
+            }
             body {
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
                 font-size: 16px;
-                line-height: 25px;
+                line-height: 1.5em;
                 font-weight: 400;
             }            
             h1 {
-                margin-top: 25px;
-                margin-bottom: 25px;
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
                 color: #507dca;
                 font-size: 1.8em;
-                line-height: 50px;
+                line-height: 2em;
                 font-weight: 300;
             }
             h2 {
-                margin-top: 25px;
-                margin-bottom: 25px;
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
                 color: #4165a2;
                 font-size: 1.4em;
-                line-height: 50px;
+                line-height: 2em;
                 font-weight: 400;
             }
             h3 {
-                margin-top: 25px;
-                margin-bottom: 25px;
-                line-height: 25px;
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
+                line-height: 1.5em;
                 font-weight: 400;
             }
             a {
@@ -51,9 +56,7 @@
             code {
                 display: block;
                 white-space: pre-wrap;
-
                 font-family: 'Source Code Pro', sans-serif;
-                font-size: 16px;
                 font-weight: 400;
             }
             table {
@@ -70,6 +73,9 @@
             td {
                 vertical-align: top;
                 padding: 0.5em;
+            }
+            div.header h1 {
+                font-size: 3em;
             }
             .header {
                 margin: 0 0 0 0.5em;
@@ -173,23 +179,23 @@
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Arithmetic</td>
-                                                                                                <td><code><a href="#1327de7c-0414-4fd7-8a8c-8c1c95eb650b">+</a> <a href="#1183710c-b781-4947-805d-6b74669586e8">-</a> <a href="#15730193-4282-40cf-b594-f0a67ed7bf4d">*</a> <a href="#0ffd2bad-1aed-46f5-a1ac-3d9c4913f3cc">/</a> <a href="#937c8223-ba68-4a9d-a799-a6fccd66373d">mod</a> <a href="#f765531d-0d36-4d86-be08-93455eae15a0">inc</a> <a href="#3588db7f-3544-41ab-93ca-ab78b2af1775">dec</a> <a href="#4d56d405-d537-4da8-8188-2fbf6ab2fcae">min</a> <a href="#063afb9e-308d-446c-a7ec-ba762a77cd83">max</a> <a href="#e5281145-be3b-4f93-a179-e085a9058e1b">abs</a> </code></td>
+                                                                                                <td><code><a href="#00f8b855-61bd-4e21-8c0b-6d6ebdcf858a">+</a> <a href="#921a8de3-10fc-47b5-8f8b-044c7144f88d">-</a> <a href="#8c6dc753-ebcf-4e27-8745-bc658937198f">*</a> <a href="#4dbc1d7c-f9cd-4037-9b29-3a61e1ef27a8">/</a> <a href="#eab3c37f-7006-48c7-9a76-f83f7a8ada41">mod</a> <a href="#e8b1b568-a5d4-4bce-905d-963ee16db324">inc</a> <a href="#e803e67a-c055-4c71-a42b-3bf944fd5394">dec</a> <a href="#c9985baf-64c1-4760-8fa2-3bfdec026d39">min</a> <a href="#3ee3cea2-7b37-4475-a8f7-758900deba71">max</a> <a href="#6bf51780-b0f1-4aaa-8c03-5ef0e480ae44">abs</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Compare</td>
-                                                                                                <td><code><a href="#9e438509-5fa6-4434-ab0e-275b217e83f4">==</a> <a href="#c8c6735e-5895-474f-ae83-6115e741037f">!=</a> <a href="#6eb133d6-2f45-45bf-84af-c31713f0a49c">&lt;</a> <a href="#990a7a7d-f67e-484b-b8f8-c4a3b0b6653d">&gt;</a> <a href="#7d14c0a6-1f0f-4c75-8d25-2522f30472f4">&lt;=</a> <a href="#ac7ffabb-9fa6-4251-a4e1-c8d18262f428">&gt;=</a> </code></td>
+                                                                                                <td><code><a href="#342bbd36-ff24-4cc3-8bf7-af15348448ba">==</a> <a href="#cd40ef21-a270-45b5-aa38-f540c7527c96">!=</a> <a href="#73079d5a-710e-4dbc-b046-092b03a7c495">&lt;</a> <a href="#901ecca0-ef42-4dab-a991-43df3f6f19d2">&gt;</a> <a href="#6275d646-eda2-40a4-ad95-7238a65dd8b8">&lt;=</a> <a href="#bc924669-ff88-4693-aadd-6585d4ffb05d">&gt;=</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#32d286c6-94c8-4ae3-9dc2-9339ec1a2063">nil?</a> <a href="#b7a8bcc7-5626-471c-aa86-ae2ff2226cd4">some?</a> <a href="#ff8aed8e-75df-4507-8b72-3bdece3234ad">zero?</a> <a href="#08ba984c-7934-4a0c-b642-8335b27b51a3">pos?</a> <a href="#c0ffbb3e-b187-426a-8e78-1b1617c349fd">neg?</a> <a href="#3a5cd77f-f105-49b8-b1a4-c2462060c723">even?</a> <a href="#4801f3cf-e442-4754-a8e4-3b4e177e9a7e">odd?</a> <a href="#d9dbc376-e27f-4d42-ab96-86c8b1df10c7">number?</a> <a href="#0a8255ad-b514-469e-ad8a-c7183398e13d">long?</a> <a href="#7dcfccab-9a18-435a-b57a-66ed66f76f07">double?</a> <a href="#26d892c6-55e7-4c1d-b814-535fb93b4d55">decimal?</a> </code></td>
+                                                                                                <td><code><a href="#af999fbc-9a03-45d8-ac3e-c41692fdcd5f">nil?</a> <a href="#9cb2d6af-0b3d-44d9-a9f1-b1d491dc07f3">some?</a> <a href="#9e89925f-9174-4d41-ab97-b995beceb479">zero?</a> <a href="#60f3bc3b-9583-4d89-80dc-ba460ead29c1">pos?</a> <a href="#4ffc4691-6601-4c13-bbc1-22cde55a9e28">neg?</a> <a href="#9c0cc517-f2fb-4e5b-bf56-9dcb8a7a2190">even?</a> <a href="#221639a7-8ec2-4b58-a2e2-2554278c8cab">odd?</a> <a href="#0248e0a4-bfe7-4f69-82d8-bedc1aa8a194">number?</a> <a href="#e026a95a-5be3-4369-9820-46da1f96af3e">long?</a> <a href="#e3c93e0b-0357-4034-ad9a-4c29154c9b62">double?</a> <a href="#ef96e5e5-570d-4c51-9936-e93c7971f977">decimal?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Random</td>
-                                                                                                <td><code><a href="#913ce387-341b-4448-95ce-38f66320536a">rand-long</a> <a href="#f0bdc593-c8e8-469c-8f54-10cca08fcaa6">rand-double</a> </code></td>
+                                                                                                <td><code><a href="#d70a5f16-63e3-408e-97e6-332d665b1479">rand-long</a> <a href="#c0ed6263-7bd5-4547-864a-d6b972d1953a">rand-double</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>BigDecimal</td>
-                                                                                                <td><code><a href="#74c4e720-ea6d-47cc-9448-1bc307cb741a">dec/add</a> <a href="#054365d6-8bb1-4f3a-bf73-a18ffb8d63ab">dec/sub</a> <a href="#0b2f5ae5-cc88-4b04-b15b-b4d6ed71b339">dec/mul</a> <a href="#6925bffc-e483-47ce-9199-8899338fbd41">dec/div</a> <a href="#5456d195-4768-4817-82eb-f690b4370556">dec/scale</a> </code></td>
+                                                                                                <td><code><a href="#712a2eda-7f14-4ce9-8d8a-1de824c78592">dec/add</a> <a href="#acbcb842-63c5-4cec-9e65-177cf55758e3">dec/sub</a> <a href="#1875b600-9546-4ff8-9025-88237fa4dbc7">dec/mul</a> <a href="#af427d3b-c7fd-4de3-9b65-f55645e94e4d">dec/div</a> <a href="#3466bec1-742c-4b82-a0bc-4c4f440a4ce8">dec/scale</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -199,23 +205,23 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#695a3584-0332-4ad1-80c9-5057d8928523">str</a> <a href="#a04c510d-a9ce-4316-9226-d87d67efff8a">str/format</a> </code></td>
+                                                                                                <td><code><a href="#a8b267a7-c26a-42ee-98c9-69e7cfa4bc5b">str</a> <a href="#f99482d1-b4a8-49d4-a83e-e4d045c434b8">str/format</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Use</td>
-                                                                                                <td><code><a href="#13b00b72-7b9e-4514-b903-f496e653cc56">count</a> <a href="#b9f7ac1e-3a28-408e-ad9c-2dc694829d03">empty-to-nil</a> <a href="#1ac4e013-f048-4728-abd1-28d7d3755b38">str/index-of</a> <a href="#de47374a-d139-46ec-9f47-ff6ae84bed57">str/last-index-of</a> <a href="#65a3138b-efc5-401e-b749-d5f0fee1ee87">str/replace-first</a> <a href="#be15af02-db30-4378-a986-a1e312039024">str/replace-last</a> <a href="#1cc4427d-b18e-4dc2-9d6e-1ca212b36792">str/replace-all</a> <a href="#395e5147-101f-40b2-8ce8-65815c61a51a">str/lower-case</a> <a href="#21c6c080-e75e-4d18-ba82-491358fd491f">str/upper-case</a> <a href="#b59f12eb-d36e-4a95-bbd5-18dba020cf0c">str/join</a> <a href="#51e17c48-1671-4d8a-a2ca-4bffb7e83f4b">str/subs</a> <a href="#5d7dfa09-491f-43d7-a911-076a3fe1b826">str/split</a> <a href="#266b9409-9a96-4537-b15a-b6b41ec06df5">str/truncate</a> </code></td>
+                                                                                                <td><code><a href="#75dcd3fd-5a3b-4ab5-b12c-fda23d0405fd">count</a> <a href="#c22e23f8-6e08-454d-957c-87201b0dee31">empty-to-nil</a> <a href="#f0b6055c-c0d3-4fda-bc70-0697e84fc7fe">str/index-of</a> <a href="#ddefef16-239f-4db3-aa44-227114166bf1">str/last-index-of</a> <a href="#03325402-a537-4c4c-b905-b2f3ab4a1de8">str/replace-first</a> <a href="#ea5d9096-cdb1-4dcc-8867-7fa313a4c96c">str/replace-last</a> <a href="#7e042fba-cf12-4082-af2c-da67d5f4828e">str/replace-all</a> <a href="#38554576-aa8a-4a13-ac14-b403f7799540">str/lower-case</a> <a href="#3886007d-cc3c-43c1-bee3-0033695104af">str/upper-case</a> <a href="#1ed32f66-e9b9-46bd-85c1-b25078ff10e8">str/join</a> <a href="#89771f49-3a39-4a8d-bb26-b48e23384c91">str/subs</a> <a href="#70e1fa80-3d67-416b-92ff-cf58b7305741">str/split</a> <a href="#5c01f44a-b258-4dca-b90d-01622691bd80">str/truncate</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Regex</td>
-                                                                                                <td><code><a href="#e985c1a7-4134-4be6-9f8f-046c8b5e9962">match</a> <a href="#2677fcf8-7dbe-49d4-903d-3e6ecc91b477">match-not</a> </code></td>
+                                                                                                <td><code><a href="#c6abe5ab-8a75-4e7f-8246-7cff4faf21bf">match</a> <a href="#e596ceda-daf7-45ff-846b-968bb9a0258f">match-not</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Trim</td>
-                                                                                                <td><code><a href="#da38e661-7da6-43b8-8983-1729240f7445">str/trim</a> <a href="#b7670963-9f5d-42e6-85a1-caf6975150b4">str/trim-to-nil</a> </code></td>
+                                                                                                <td><code><a href="#b9f5f157-75fc-492c-bd6b-6c1fc50918c0">str/trim</a> <a href="#29f381d1-44ef-495f-8138-236cf3d5c9d1">str/trim-to-nil</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#a3df2485-4090-48b3-8df2-df33b1631c41">string?</a> <a href="#eb14617f-5e6c-44cf-89bf-b614dfe802ac">empty?</a> <a href="#73273a24-927d-47bf-ba82-07a86d9c9c3b">str/starts-with?</a> <a href="#82a22227-f5d8-4f03-bd6e-2682e0c2e642">str/ends-with?</a> <a href="#3ca6f9c0-aa15-434a-ac26-843fa17f72b6">str/contains?</a> </code></td>
+                                                                                                <td><code><a href="#e8bfd9d4-e43d-451f-8393-ba4b4cfa2976">string?</a> <a href="#6ac72e2a-b5b7-40a6-bd11-60e0dfc154f1">empty?</a> <a href="#20996421-6d5c-4791-bf96-ff737f5ee779">str/starts-with?</a> <a href="#09f7fd1e-2ea2-45ff-804b-c8401ec4b97e">str/ends-with?</a> <a href="#08c1e288-e34d-4bc4-98f8-1cec6258fbba">str/contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -225,15 +231,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Keywords</td>
-                                                                                                <td><code><a href="#78861b64-bf63-4a4e-8bdc-a088d0485afa">keyword?</a> <a href="#ad21b435-880d-42c7-9fa6-c4db8d72533e">keyword</a> <div>literals: :a :xyz</div></code></td>
+                                                                                                <td><code><a href="#11a128cc-0aaa-4e4c-9d8d-e316dba1fb6b">keyword?</a> <a href="#bcf05b41-b7a4-495c-a583-b3477a70c6b9">keyword</a> <div>literals: :a :xyz</div></code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Symbols</td>
-                                                                                                <td><code><a href="#cc4e6d00-5a11-481b-bf93-42c4c722d6c7">symbol?</a> <a href="#53216d34-6c56-4416-8906-0c13d1cf1472">symbol</a> </code></td>
+                                                                                                <td><code><a href="#b7729836-63fa-4e1b-b995-3765b07a954a">symbol?</a> <a href="#175f36ed-88a5-4da8-9860-4d1dad100597">symbol</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Boolean</td>
-                                                                                                <td><code><a href="#96081ba6-bf3b-4ea2-965e-03dde3ae8b12">boolean?</a> <a href="#07a52151-df7f-4b3a-be6f-2606eae382d0">boolean</a> <a href="#fc53cbb8-7187-4145-addb-4c3a4ef090a0">true?</a> <a href="#ee67b5fb-4623-4e6d-8b72-8d8c73b760f3">false?</a> </code></td>
+                                                                                                <td><code><a href="#d3270bad-d2b9-4071-84f9-4672372af1f9">boolean?</a> <a href="#6b548735-ce4c-4211-9e7e-7e80eca5b2de">boolean</a> <a href="#0c32e0d9-b958-42cd-a198-0a21aed71802">true?</a> <a href="#e10f7ffe-9994-4cf3-8095-17ac6beb396f">false?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -251,27 +257,27 @@
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Call</td>
-                                                                                                <td><code><a href="#58505e29-07f5-4510-9904-48b40859b16f">apply</a> <a href="#1c57b0ac-1320-4c35-809b-6a466e28e274">memoize</a> </code></td>
+                                                                                                <td><code><a href="#774742a6-4b28-4b3b-9088-806155cda830">apply</a> <a href="#b51a2a29-9dc3-4efb-8917-da947cd27d41">memoize</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#bbd72b7c-5e75-48c3-baaf-a0cefe4d0ad8">fn?</a> </code></td>
+                                                                                                <td><code><a href="#44ac3cdd-69dd-449d-9da7-95353377caed">fn?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Exception</td>
-                                                                                                <td><code><a href="#705675cb-d20a-42b8-8997-dd4a0436b6c5">throw</a> </code></td>
+                                                                                                <td><code><a href="#5a4a90b7-24a4-4733-80a9-7a57b8cce9a5">throw</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Misc</td>
-                                                                                                <td><code><a href="#55a01e55-07f4-4c94-a12e-1adae7f7502d">class</a> <a href="#bbee41fc-c92d-414d-89b2-cd0d92ff76ef">eval</a> </code></td>
+                                                                                                <td><code><a href="#58e77128-40d4-4578-9dc9-25f3bf9393c1">class</a> <a href="#268e3655-ad1b-49de-a82d-d7ab1653aec3">eval</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Other</td>
-                                                                                                <td><code><a href="#404b56eb-9854-4916-b585-886db1bd35c8">version</a> <a href="#6c0598e2-46e7-4834-85d7-8dea4e8f9545">uuid</a> <a href="#875c79e0-a2b7-4470-a598-6ada542d38ed">time-ms</a> <a href="#c2c44681-4a0e-41c5-b3c0-5ee1c75b811e">time-ns</a> <a href="#3cfef4d4-ce1c-493c-8f45-0fe15c36657e">coalesce</a> </code></td>
+                                                                                                <td><code><a href="#27cf7b72-22ec-4f52-a2f4-845076420e9a">version</a> <a href="#3fa089b4-76f8-460e-87d2-11d4b1128880">uuid</a> <a href="#ff6d38da-e758-4378-94a7-1df977a24272">time-ms</a> <a href="#aa6f3db3-e4a2-48b4-95a5-3ac7debf73e5">time-ns</a> <a href="#58d25ad3-c046-40f4-88aa-c35328201418">coalesce</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Meta</td>
-                                                                                                <td><code><a href="#f4d2a4ae-9e71-46af-8dd8-30c3bb6cf25c">meta</a> <a href="#1b7f81e6-ffed-46f3-8772-69d4e2878922">with-meta</a> <a href="#763709f2-0061-4c5e-a6e2-6f1168557012">vary-meta</a> </code></td>
+                                                                                                <td><code><a href="#17e2f65e-78e8-4723-9dba-71cb5d873ecc">meta</a> <a href="#848a6de3-7579-4925-bb18-71058defd71b">with-meta</a> <a href="#9fc8281f-75fa-4e81-87a3-929d91eb49c2">vary-meta</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -289,27 +295,27 @@
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Branch</td>
-                                                                                                <td><code><a href="#fa62a502-8a25-4441-b98d-03ba9af25f94">and</a> <a href="#b40138ce-c8df-44bb-a16c-affed5c64fbc">or</a> <a href="#77b2d049-b72e-4772-acbd-522d161f2f4d">not</a> <a href="#f2573b0b-a152-4fe6-968a-d894364ac1f7">when</a> <a href="#9d9e3898-e406-417c-b587-a52cf5f8605c">when-not</a> <a href="#6e28c14e-47cd-4922-8652-08e8a8fe358e">if-let</a> </code></td>
+                                                                                                <td><code><a href="#c78f2944-b274-4326-b0f0-b0af6c8c0d0e">and</a> <a href="#a1c91009-c83b-4ea4-bf53-5d992b7e2d62">or</a> <a href="#f5af3492-2bba-41eb-97f8-584f2a291151">not</a> <a href="#462c2f34-2795-41fd-851b-9388aee25c4a">when</a> <a href="#fa24ff1e-d767-41ef-8237-e62a6fb79158">when-not</a> <a href="#a2de10c4-5cca-427e-967e-1b7d8244c94d">if-let</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Loop</td>
-                                                                                                <td><code><a href="#8a4261b2-a319-42e8-8887-bc13df9e3ccd">list-comp</a> <a href="#a1a2f6f8-48ac-4184-acef-505708a1a19b">dotimes</a> <a href="#44937b0b-eebb-4d24-a30f-d537f709681c">while</a> </code></td>
+                                                                                                <td><code><a href="#e2eb18a0-ced0-40e9-b628-35d0c416c5ed">list-comp</a> <a href="#81029058-22a9-4fd0-9d9a-73ca310f1c95">dotimes</a> <a href="#49321d00-3f0d-4570-986a-5b5357df538e">while</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Call</td>
-                                                                                                <td><code><a href="#5a5004f7-e8db-4cbe-96bb-153ad54573f9">doto</a> <a href="#a67a7e43-c218-4e5b-a009-354cb3e246c5">-&gt;</a> <a href="#2ccadee4-4596-4ec9-8685-f01f9f3529cf">-&gt;&gt;</a> </code></td>
+                                                                                                <td><code><a href="#8b7a879a-b894-44c3-b0eb-8f713169d4d4">doto</a> <a href="#006a55c2-9969-4de0-93a8-3b4e7529b1b2">-&gt;</a> <a href="#85866c91-d46c-4759-99d8-9bf40b939c3f">-&gt;&gt;</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#b4c6f14f-60b6-4e7d-949c-42e3a7ab213e">macro?</a> <a href="#d0bab929-e49a-46bc-a339-fe3d22c977b4">cond</a> </code></td>
+                                                                                                <td><code><a href="#a85861b6-d034-4a0e-964d-b9cedb9a8c8d">macro?</a> <a href="#748dc096-378c-4626-9567-2412df987e80">cond</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Assert</td>
-                                                                                                <td><code><a href="#117f76c4-dba3-4ec0-9441-ce73eb0ecdfd">assert</a> </code></td>
+                                                                                                <td><code><a href="#e0f456d3-bd8f-4893-930a-9bb2d3e6cefb">assert</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Util</td>
-                                                                                                <td><code><a href="#8e4c41c6-1e76-49ff-8d12-e75b52e9af5f">comment</a> <a href="#ec4cddbf-8a0f-4743-9525-a9b1494ae81f">gensym</a> <a href="#1a34b0ae-52a8-4202-86d6-2ea5d4e3995c">time</a> </code></td>
+                                                                                                <td><code><a href="#95fbdb6b-178e-42a1-876b-d360805fc40b">comment</a> <a href="#fa66eb4e-dae4-44a3-9341-5ae75fbf68cb">gensym</a> <a href="#b88fbe5b-0060-48b2-a928-03b865881059">time</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -323,23 +329,23 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>to</td>
-                                                                                                <td><code><a href="#75c798f7-ec6d-421a-b4d2-ed2220656ae7">prn</a> <a href="#2217e81d-22a2-4412-8882-a1e4160cd561">println</a> </code></td>
+                                                                                                <td><code><a href="#dd424e54-39c9-4896-af12-c4e3b623a789">prn</a> <a href="#e654f129-e614-4243-9566-6a9871c46a69">println</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>to-str</td>
-                                                                                                <td><code><a href="#c1a67505-aa93-4f74-8138-917358096a1a">pr-str</a> </code></td>
+                                                                                                <td><code><a href="#6e4f848d-aed7-406e-93e8-0ac31c00af0d">pr-str</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>from</td>
-                                                                                                <td><code><a href="#a8caa4ae-9153-4a6f-a913-5371fb797b59">readline</a> <a href="#9f39c5f8-d462-480f-a930-2fa4b42d5ee0">read-string</a> </code></td>
+                                                                                                <td><code><a href="#b0254169-5bdd-45f8-b482-655e99ae0a5c">readline</a> <a href="#05198512-e55d-4736-8f92-3aef2bd0d7f7">read-string</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>file-io</td>
-                                                                                                <td><code><a href="#756a0191-ec5a-4f42-8f36-e451e9616de0">slurp</a> <a href="#af44ec08-fef3-4614-9015-569a9264e099">spit</a> <a href="#4b7af866-af78-4b98-9928-5cc4031d1d33">io/file</a> <a href="#fdbd6f51-3524-4095-9d69-0388e24316af">io/file?</a> <a href="#2bba5296-0bf1-49c0-ad4d-b70cb0524e5f">io/exists-file?</a> <a href="#840c9ae8-25d5-46e2-979d-74453e0333f6">io/exists-dir?</a> <a href="#d609c090-d83b-4580-be55-325da5dc3aed">io/list-files</a> <a href="#c739e9f6-3f95-45ec-88df-899e225d089c">io/delete-file</a> <a href="#96f9dfc7-daa8-46da-936c-fb6d5eebe223">io/copy-file</a> <a href="#ca29369a-c8d8-4abe-88cd-7c99ed0f490f">io/tmp-dir</a> <a href="#c8d225f8-99a7-4661-bfe7-d55c31cd584c">io/user-dir</a> </code></td>
+                                                                                                <td><code><a href="#447e09d4-6e97-421e-bb4e-35ffc767ccdb">slurp</a> <a href="#0b0d5a98-5253-41bf-8e26-c5c643b7c1ba">spit</a> <a href="#ee5ab6cd-0bc4-4d91-8263-f3f0195c1405">io/file</a> <a href="#6ddb545d-7508-429b-a010-7584c9e000a0">io/file?</a> <a href="#ae319107-92b0-4303-9b32-8eac4405644f">io/exists-file?</a> <a href="#1c2a918b-b227-4974-8ca8-2785afba2000">io/exists-dir?</a> <a href="#d5963490-15f4-4159-8785-d1475794a1f6">io/list-files</a> <a href="#4683fbe8-4195-463a-9163-6b70768fdc91">io/delete-file</a> <a href="#6e04dc4d-4a28-4984-a1f6-d2a17ce50ac2">io/copy-file</a> <a href="#59856308-26e6-4c32-af5d-c5bb90501468">io/tmp-dir</a> <a href="#2ab0b2e5-fb38-471d-aab2-a4269abc2d12">io/user-dir</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>load</td>
-                                                                                                <td><code><a href="#b901057a-e4fd-4067-b9a0-bce751606ada">load-file</a> <a href="#d5a5365f-0cb1-4a19-927e-9f3168c8b947">load-string</a> </code></td>
+                                                                                                <td><code><a href="#0dac2579-6fc2-4a82-a1f5-95e9460ad0cf">load-file</a> <a href="#02a5454d-a359-4f9f-a66f-ecb57e6f155b">load-string</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -357,11 +363,11 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Generic</td>
-                                                                                                <td><code><a href="#6a8d924b-6808-42b9-8c59-3a02843385ff">count</a> <a href="#b15e8506-6983-4f2d-8c54-bcc925d01941">empty?</a> <a href="#990b6119-e60f-4325-acf5-c5a16fdc9e1c">not-empty?</a> <a href="#c5f74f75-b7db-42aa-9bc7-abbfd80e16ff">empty-to-nil</a> <a href="#ab6c6a8b-156a-43a2-81b1-8588498c4ddd">into</a> <a href="#9e66f489-f0e4-4270-ace9-e234238a0e91">conj</a> <a href="#047312f4-1b61-4941-9c12-daf87c0fcb35">remove</a> <a href="#dbb83f98-b26f-484b-882b-d9ad95a73881">repeat</a> <a href="#a4853d0c-313e-4c3a-a21b-389d21df275f">range</a> <a href="#0f047222-b26f-4fc9-8a67-e03fdba1baff">group-by</a> </code></td>
+                                                                                                <td><code><a href="#f8b2c764-7a7e-4b2f-842c-94a35bfa4170">count</a> <a href="#a299881e-d356-40c8-96ac-edd5b0d1cc6d">empty?</a> <a href="#d5872e9f-a278-4e95-808f-0879c06cc0bf">not-empty?</a> <a href="#ed985de5-c1d6-4ede-ab86-48b4be028f55">empty-to-nil</a> <a href="#d2ca8e64-b830-4df1-bd42-c700f1ffe9a5">into</a> <a href="#fb68a1c4-5b99-437d-9e29-53b11ca3b9f2">conj</a> <a href="#bef4da46-192b-4b44-a9de-1b88c91cd279">remove</a> <a href="#ce29aee9-0b2a-4c10-b779-8fbfa13a715d">repeat</a> <a href="#5556d73e-e74b-4c6c-a2da-e1b4e08d51d9">range</a> <a href="#721ee2a9-9a28-410f-8eeb-db421134f1cd">group-by</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Tests</td>
-                                                                                                <td><code><a href="#2bb2895e-6d3c-4161-8e8a-deb3f4157ba5">coll?</a> <a href="#fa0c4a5c-57c2-475c-a393-d9e6bf47bd4a">list?</a> <a href="#005a9186-2dc9-40d4-981b-10c846c94968">vector?</a> <a href="#4e736444-912c-4f71-887f-aa8cf4be79e5">set?</a> <a href="#2ae56556-632d-4750-97e9-5806e3b687dd">map?</a> <a href="#4fb482d5-8e4f-4a14-8df7-481b097b9586">seq?</a> <a href="#e4801766-ab6c-4caa-aa58-67bae011f412">hash-map?</a> <a href="#ab637d11-353e-4279-9206-4b0930a8c9da">ordered-map?</a> <a href="#438f2ecf-f125-42b4-9c15-bfa957172aec">sorted-map?</a> <a href="#86b325d6-b1f4-43a8-a91e-158384ebafc3">bytebuf?</a> </code></td>
+                                                                                                <td><code><a href="#27e779fe-15ba-49c5-9c19-c073e61f10ac">coll?</a> <a href="#6f08fc0e-77c3-4c04-8bf4-51d645a230f0">list?</a> <a href="#2ae46be3-ff04-414c-bc11-a3aef810368e">vector?</a> <a href="#050de3ec-886e-4d28-8f1c-07b1ad246c76">set?</a> <a href="#51781a20-e8b7-4f14-acee-11feba7708ae">map?</a> <a href="#f3a8043f-61c2-48ce-b613-40c42b3d5b30">seq?</a> <a href="#87563453-e03e-453d-bd9a-ce3cb28bfea7">hash-map?</a> <a href="#431be3d4-c2c7-42a0-a8f2-8c9f15792477">ordered-map?</a> <a href="#2fd0c694-2120-4894-90db-3dd18abbe222">sorted-map?</a> <a href="#a5ba3988-ff5a-40ed-9be5-300b7d3d1133">bytebuf?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -371,15 +377,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><div>()</div><a href="#113b8c0f-fd68-415c-b6de-01de7df50057">list</a> </code></td>
+                                                                                                <td><code><div>()</div><a href="#14ceac6d-f036-4abe-9ddc-a056bff74e4a">list</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#5ff40167-c638-4f94-852a-302cbdb54865">first</a> <a href="#2175acc6-f0f1-4ba5-bafa-d7e164ab3c58">second</a> <a href="#19848d85-2d0c-4ec9-8eb2-9927e3bb34a1">nth</a> <a href="#4fbecd85-6ae6-448d-8b21-d5c450e2dabb">last</a> <a href="#e5fb39dd-f975-4c17-ad2a-36573d1eee60">peek</a> <a href="#49fee958-64bb-4005-a54e-887feb6b5d37">rest</a> <a href="#9877f7db-a543-4932-8e07-a4fb9441d80e">nfirst</a> <a href="#61040b1c-6ee2-4545-b316-993f749f8c71">nlast</a> </code></td>
+                                                                                                <td><code><a href="#b09097d2-9713-4454-b7bd-039f79233d8d">first</a> <a href="#a7f0face-1472-41ff-98b7-c3e923951de0">second</a> <a href="#63479034-3b7a-4b61-a949-e5cc906cc40e">nth</a> <a href="#6716eb3a-7fae-4ac8-9aee-e1fd56eb9a97">last</a> <a href="#5dc22f61-409d-4c4c-bea3-97ccf7bb2240">peek</a> <a href="#30f4a323-bf78-4839-903c-ff58f0b937c2">rest</a> <a href="#7063e345-554e-4080-aa0c-fe25a1706a56">nfirst</a> <a href="#846f2fa4-b26a-46aa-9b6a-6b1008f603ea">nlast</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Modify</td>
-                                                                                                <td><code><a href="#dd9b12ea-17ca-4d14-b446-77f2078dc4aa">cons</a> <a href="#8eae36ad-f2ea-4ccb-89a8-78f79e5fc5ce">conj</a> <a href="#ee767ef4-afb8-49f4-9371-17844965b5d6">rest</a> <a href="#6ff8b74c-5ae7-46c0-8240-0d9e6f1811d0">pop</a> <a href="#1d09a45a-cbcc-4046-9a30-7d96d7047e19">into</a> <a href="#5f09ac6b-daca-4cbb-aca4-67ec8f2a43bd">concat</a> <a href="#92e4db12-f483-453c-ba63-f7da43b41cc7">interpose</a> <a href="#73057eea-e78f-456f-8f05-0ac72e49e82e">interleave</a> <a href="#8fc85ea1-4dd7-44d3-8617-781324239907">flatten</a> <a href="#4620e276-eb34-4403-b6c4-55f4ec1efdfc">reduce</a> <a href="#fba06b4b-b0fe-42e6-aeee-379beeae4e4d">reverse</a> <a href="#8535bfb9-dd45-455d-bf0d-b8033d0907da">sort</a> <a href="#f0d2fe39-62e1-47d1-bc40-c39b77d074fe">sort-by</a> <a href="#22c36763-2a30-45c7-b88b-1c7067d61a9c">take</a> <a href="#b4a8e5d9-6b75-4b56-8283-b004279e430e">take-while</a> <a href="#842fcef6-8c0e-4b8e-9e97-b83c02906b6f">drop</a> <a href="#7d236477-db6c-4845-8118-e9ea0a329718">drop-while</a> </code></td>
+                                                                                                <td><code><a href="#d6bdae04-b353-4a86-aed7-3d7e569d6993">cons</a> <a href="#1872c4e9-e414-4878-a9c7-bf9d75895a80">conj</a> <a href="#88f4549e-0c09-49d2-b0c4-269089803296">rest</a> <a href="#38b3b8ba-419d-4a1f-939f-c82d47fda58a">pop</a> <a href="#b1233412-328b-4206-ba11-8cf383608303">into</a> <a href="#ea8f6480-a6d0-4dee-a4cb-6f08ff9eb2d6">concat</a> <a href="#82ae3a67-0a8e-4deb-aca2-55bcf7b1c127">interpose</a> <a href="#a71d6cc5-412d-4ca5-9ac5-78971a16501e">interleave</a> <a href="#5e1e2626-d842-4658-adfe-e920d00ed942">flatten</a> <a href="#87508b94-a1bc-4806-b058-589b80916bbc">reduce</a> <a href="#866c401a-7c9f-4662-9e2b-575077baaefb">reverse</a> <a href="#e898360e-45f7-4fd0-b6e7-d2feb7c981e3">sort</a> <a href="#eecbc765-0c95-4852-b042-307e77f6d957">sort-by</a> <a href="#a0955748-98d1-49bd-bc8a-e03775ae6719">take</a> <a href="#d9fa15c5-4ba3-4411-b02c-a5df494a2b8f">take-while</a> <a href="#8bba6be2-24d6-4f9e-885e-97bb3bda273d">drop</a> <a href="#cab26e03-3870-41f9-b949-fdb688ec50e9">drop-while</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -389,19 +395,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><div>[]</div><a href="#6956bad6-c6ed-479d-9d4f-2a16fa779e71">vector</a> </code></td>
+                                                                                                <td><code><div>[]</div><a href="#07ead7fa-b924-4917-8857-52350ae53eb9">vector</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#c024141a-4501-4a4f-ad97-eb729a6773cb">first</a> <a href="#8d9bad4c-7ceb-46c4-a4ec-f217c35b9ead">second</a> <a href="#41861205-bfed-4013-bf0a-160480da4d13">nth</a> <a href="#7358d3bf-b8ef-41d7-8870-368dc7bab3aa">last</a> <a href="#169a7ab8-2c4b-4d51-9077-21f236363e97">peek</a> <a href="#f5b2c259-c91e-4c4e-88fb-23c3d053b410">rest</a> <a href="#6496a8e0-e485-4b2e-8e2d-65de65b1c2ec">nfirst</a> <a href="#fdd46214-4ef5-4ac0-bbd8-bae035cf21bb">nlast</a> <a href="#2ffb3082-feb0-4daa-8560-bdae8a57af43">subvec</a> </code></td>
+                                                                                                <td><code><a href="#07d6dad4-5057-46a0-b3fc-14d95d91990c">first</a> <a href="#51818ceb-68af-4787-b39b-865fc8018647">second</a> <a href="#dc865f40-7b1f-40f3-97c8-b0f5e3f6f47c">nth</a> <a href="#20cf6277-23bc-49c3-aaf3-5da07257cc79">last</a> <a href="#77ec7c72-e852-4a4f-94d5-0f22a6d1a996">peek</a> <a href="#d99eff0b-92bc-4568-8959-6c7d3ffd6489">rest</a> <a href="#24b39244-0dac-4eaf-ae9f-eb7bb566323f">nfirst</a> <a href="#45cbe099-6ebe-4d4c-8a20-e6700c99a421">nlast</a> <a href="#c520798a-8b06-4448-b425-b3928c205f0c">subvec</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Modify</td>
-                                                                                                <td><code><a href="#bb8d3b1b-d249-48e2-80f6-2acdab6c3ad7">cons</a> <a href="#f8f3a993-d1fa-41a6-a09c-396e8bbad134">conj</a> <a href="#1250559a-44aa-4f1f-8d7c-4e2c3d5ae7c8">rest</a> <a href="#3577baeb-63b7-4260-8205-6cc5e4faf0a8">pop</a> <a href="#b0d189be-7541-43c4-bfcb-b0aae421ee02">into</a> <a href="#50a975df-fab6-4841-b721-b69effaeeb93">concat</a> <a href="#4394a4fa-3b18-4535-9038-fac812c26f76">interpose</a> <a href="#41013ac4-f685-4538-9c87-1d1963c88e98">interleave</a> <a href="#3455b6b8-4fe2-4e1e-bfb0-a12028d41696">flatten</a> <a href="#7f725162-39b3-48ce-a514-2de4fbda5af6">reduce</a> <a href="#19279b7b-b290-460b-8e53-b4330ef48273">reverse</a> <a href="#e0d0ecca-7688-4849-adc7-6033ea40b6ee">sort</a> <a href="#c7f5330a-1ac9-4b86-a0b5-ff31a5738d6f">sort-by</a> <a href="#d8b7b614-9210-4b40-9c50-f5356b79167f">take</a> <a href="#fedcff46-e892-4757-b870-81a62c1e2130">take-while</a> <a href="#cf2a98cd-8f8c-428b-9b42-08753ad6b800">drop</a> <a href="#16463c09-9d85-4455-ae93-c94e5e14ed2f">drop-while</a> </code></td>
+                                                                                                <td><code><a href="#1edd3a65-3cf2-4914-9a96-20d061e15776">cons</a> <a href="#92eecbcd-94de-41d5-9e93-d7408e191ab6">conj</a> <a href="#27ea6c39-32a8-4be7-99ac-49ab9e8d7078">rest</a> <a href="#d149c9c2-b4fa-44a2-93d0-3f50a907a912">pop</a> <a href="#877d9c6e-ee80-4cfc-ac4f-efc437547052">into</a> <a href="#d5ac90d4-9afe-4533-8cb5-42764093ffff">concat</a> <a href="#ebc84a79-7064-4fa1-8232-ba4df5fff30f">interpose</a> <a href="#5d91d3ea-fda7-4ad9-b909-34e6ef028fc1">interleave</a> <a href="#9a2a9007-a84a-4046-b815-3e2b7e686df2">flatten</a> <a href="#b09bad0c-5d70-4023-9e7d-65b964468ca8">reduce</a> <a href="#f3b37b6d-7603-47ee-944b-0ca9811aef0c">reverse</a> <a href="#5e7c4592-d7a9-427f-9b39-db2c170cc95b">sort</a> <a href="#fc6f186d-d9a6-4760-af28-e6b69c59fdee">sort-by</a> <a href="#c2a07614-41c3-4de2-86ce-7f26dfddea50">take</a> <a href="#6463ce84-ba2f-4f6f-9b00-770f0780c6ce">take-while</a> <a href="#b07be100-9b2d-49ef-9104-73eefe848b90">drop</a> <a href="#fa49f3df-0813-4d7b-9d90-9512c4967b73">drop-while</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#7118b4a5-3f4d-479d-a41e-c99bd2d538ae">contains?</a> </code></td>
+                                                                                                <td><code><a href="#6e50df42-947c-447c-a504-1e208c74d561">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -411,11 +417,11 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#eb6530f5-d021-452a-bd65-2b8ce0de4526">set</a> </code></td>
+                                                                                                <td><code><a href="#5d30971a-5c77-451e-bca2-d87fe4cc48e6">set</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#133a9a8c-1d3a-4892-a65c-56052306445b">contains?</a> </code></td>
+                                                                                                <td><code><a href="#7ef5ea16-24bf-4540-9403-5fe913172489">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -425,19 +431,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><div>{}</div><a href="#60d091b6-5de5-480f-af7e-a902ccda2b8f">hash-map</a> <a href="#9066b0c2-f68d-4ae4-9dde-92f8d4e4e462">ordered-map</a> <a href="#97e695fc-065a-46ca-9f50-ed59c0a1438b">sorted-map</a> </code></td>
+                                                                                                <td><code><div>{}</div><a href="#f4158e10-a2d8-4c0a-8ca4-edf97630a439">hash-map</a> <a href="#e4f2e8b1-5bf8-4d2a-873e-a6be5d62507e">ordered-map</a> <a href="#fddafecf-ad5f-4155-bf41-f19113dcb138">sorted-map</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#f30a87c5-d0eb-41cb-ad1c-ed9a2e594165">find</a> <a href="#a44570b1-9b4e-4a5b-a327-61c770db33d1">get</a> <a href="#54349968-44f8-4ae9-8393-219fca494096">keys</a> <a href="#27cb908b-4547-440b-b656-c99fff1cca91">vals</a> <a href="#b7310bdc-256a-4bc5-b913-08da22fd0c4b">key</a> <a href="#8122ae17-1f0b-44d2-b4af-e551206bc389">val</a> </code></td>
+                                                                                                <td><code><a href="#754653d7-608c-4ff2-86fd-29e4e65cb35b">find</a> <a href="#a52cc168-80df-4d99-9fd3-9e770a2e6a36">get</a> <a href="#017036c3-3796-4f6b-a326-137ab8100ffd">keys</a> <a href="#41545c77-d76e-4201-8aa6-130a5ee6ead3">vals</a> <a href="#0c75d650-254e-4899-92d9-0e6743dd7fcf">key</a> <a href="#9e3b2aaa-f7e5-4fa1-a5b6-c797f1dfe8a9">val</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Modify</td>
-                                                                                                <td><code><a href="#ec351d8c-61d9-42d0-b616-cd54f0ae8563">cons</a> <a href="#3744d4fa-22c0-441a-89f6-336fd891f8fa">conj</a> <a href="#5853ed7a-a74e-4625-abb9-534e8ea275e8">assoc</a> <a href="#9058d805-9b06-491a-ba3f-44c707cd9975">into</a> <a href="#abfb3959-fb03-49c4-8e80-7b44f3d6a28e">concat</a> <a href="#78391192-564f-40d4-9bcf-8ec5838f09d6">flatten</a> <a href="#8099cd85-3979-4d0e-b14e-6fbec9c2e4b7">reduce-kv</a> </code></td>
+                                                                                                <td><code><a href="#500f1733-dd08-475a-8a95-d07b04adca85">cons</a> <a href="#bd31eb13-7202-498e-852d-a1e76dbe23c4">conj</a> <a href="#ecc6f988-a3ed-4623-bd58-c8ffce6795a4">assoc</a> <a href="#ba5a432f-3788-46d9-a38d-a4aa147cabff">into</a> <a href="#b870e79a-7a6e-4eba-96ea-43a9ae8b5c6b">concat</a> <a href="#224b4714-e2a6-4902-87e3-b386be7bbccf">flatten</a> <a href="#3ec52867-79ae-4cd7-90ab-0a44a5bc60ef">reduce-kv</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#16d2b90d-4428-41db-a6ee-6674a0804241">contains?</a> </code></td>
+                                                                                                <td><code><a href="#cedc364b-670c-4845-a1b3-d247fb4fcf84">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -451,7 +457,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Misc</td>
-                                                                                                <td><code><a href="#eae9a32d-7464-4e77-9e1d-1640b2b66118">count</a> <a href="#9e2067d7-21ce-4122-9ff8-df7caaee2df0">empty?</a> <a href="#3086bacd-eb9f-4591-857c-ccc295c1ded7">not-empty?</a> <a href="#6249c711-436f-41f8-b3a9-2e6bc2486acf">bytebuf</a> <a href="#b3d238a6-e9df-4d4f-9947-9bc7cbbe2870">bytebuf?</a> <a href="#aac3f4f7-59b3-46b6-a8b5-888be6ffd671">subbytebuf</a> </code></td>
+                                                                                                <td><code><a href="#ae2ce694-2fd7-4cc9-92df-897b878feddd">count</a> <a href="#5c8da995-47f4-443f-a888-e6e44c36621f">empty?</a> <a href="#36c5b7eb-3f8c-4bc7-8ac1-79abc3887329">not-empty?</a> <a href="#1e7ba2a8-3574-40d5-8ab8-e6a693c7a337">bytebuf</a> <a href="#1a097b15-a155-476b-b658-1825cae844d4">bytebuf?</a> <a href="#c06a2a40-d92c-4d11-9ea2-0440e876bec4">subbytebuf</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -465,15 +471,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#31c18a4b-43ee-47a9-b193-93b17438c694">atom</a> </code></td>
+                                                                                                <td><code><a href="#e81b5a67-1aa3-484b-9a42-1828349fc369">atom</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#b4b2e303-920d-4a85-9928-d53e75b77ddb">atom?</a> </code></td>
+                                                                                                <td><code><a href="#c7732e1c-679d-4b10-a420-46d46c1a482f">atom?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#315533dd-510e-4d23-b23a-983f75b923ba">deref</a> <a href="#59967602-ba8d-4496-ab35-426ed1856c64">reset!</a> <a href="#570600e4-497e-4308-9081-2dd3e7266a12">swap!</a> <a href="#75417421-cd8c-4b38-9ae3-ee01dd1158d0">compare-and-set!</a> </code></td>
+                                                                                                <td><code><a href="#1088585b-1e27-4891-a8be-a39cdac10165">deref</a> <a href="#4f90a97c-858f-4932-a1fd-6c02675b2f8a">reset!</a> <a href="#a2a13232-06b8-44ed-946c-374a628b50b0">swap!</a> <a href="#170e146f-d46f-4e52-b1e1-6f748832085a">compare-and-set!</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -487,7 +493,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Forms</td>
-                                                                                                <td><code><a href="#f7f87cca-94d6-4558-a727-4c9be1a36191">def</a> <a href="#5e165e7b-96e6-4427-9451-f0c894abf740">if</a> <a href="#b42b596e-5782-4059-8673-b79fecb4418d">do</a> <a href="#a24e4af9-7848-4c5c-806d-b6917a1b64c3">let</a> <a href="#0b83cbb5-f07e-4676-bcc2-35f01c35f8ea">fn</a> <a href="#5b0fec05-0ec6-44ea-93db-8920a65668d8">loop</a> <a href="#631a1632-9437-49e0-90a7-65e3de553e84">defmacro</a> <a href="#8020e7a2-b3b5-4d4e-8382-71eb9be6c486">recur</a> <a href="#d8f9342f-8511-4208-81c1-722a571cc747">try</a> </code></td>
+                                                                                                <td><code><a href="#110bddc7-a0ae-4aa2-9931-da57113034e1">def</a> <a href="#23c924e5-046e-42f2-a1d2-e40cacd06314">if</a> <a href="#d6971660-1f77-4daf-86c1-3d8be1da6c13">do</a> <a href="#4c5cf08f-b1c0-411f-8704-8f9048a70847">let</a> <a href="#1033e2f4-b5f7-4f1d-9182-a5606430f0f3">fn</a> <a href="#454cc599-9dcd-42fb-9770-14ea1cc26894">loop</a> <a href="#5e4507a4-8a24-4e16-8ebe-7051326ac28f">defmacro</a> <a href="#f1c53a0b-4c3e-4238-a86f-44d1117c5642">recur</a> <a href="#6cc41070-be1f-4f79-a7de-9549c94c2aba">try</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -501,7 +507,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>General</td>
-                                                                                                <td><code><a href="#e6568a63-2b7f-4d5f-9fc6-d15efb38268a">.</a> <div>Constructor: (. classname :new args)</div><div>Method call: (. object method args)</div></code></td>
+                                                                                                <td><code><a href="#12bdc10d-f8da-4b3a-9788-42488ebfd56f">.</a> <div>Constructor: (. classname :new args)</div><div>Method call: (. object method args)</div></code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -540,7 +546,7 @@
             <div class="details" style="page-break-before: always;">
                 <h1>Function details</h1>
 
-                                <div class="detail" id="c8c6735e-5895-474f-ae83-6115e741037f">
+                                <div class="detail" id="cd40ef21-a270-45b5-aa38-f540c7527c96">
                                     <h1>!=</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -554,7 +560,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="15730193-4282-40cf-b594-f0a67ed7bf4d">
+                                <div class="detail" id="8c6dc753-ebcf-4e27-8745-bc658937198f">
                                     <h1>*</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -568,7 +574,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1327de7c-0414-4fd7-8a8c-8c1c95eb650b">
+                                <div class="detail" id="00f8b855-61bd-4e21-8c0b-6d6ebdcf858a">
                                     <h1>+</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -582,7 +588,7 @@
                                         <code>(+)<br/>=&gt; 0<br/><br/>(+ 1)<br/>=&gt; 1<br/><br/>(+ 1 2)<br/>=&gt; 3<br/><br/>(+ 1 2 3 4)<br/>=&gt; 10</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1183710c-b781-4947-805d-6b74669586e8">
+                                <div class="detail" id="921a8de3-10fc-47b5-8f8b-044c7144f88d">
                                     <h1>-</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -596,7 +602,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a67a7e43-c218-4e5b-a009-354cb3e246c5">
+                                <div class="detail" id="006a55c2-9969-4de0-93a8-3b4e7529b1b2">
                                     <h1>-&gt;</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -610,7 +616,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2ccadee4-4596-4ec9-8685-f01f9f3529cf">
+                                <div class="detail" id="85866c91-d46c-4759-99d8-9bf40b939c3f">
                                     <h1>-&gt;&gt;</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -624,7 +630,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="e6568a63-2b7f-4d5f-9fc6-d15efb38268a">
+                                <div class="detail" id="12bdc10d-f8da-4b3a-9788-42488ebfd56f">
                                     <h1>.</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -638,7 +644,7 @@
                                         <code>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; 10<br/><br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="0ffd2bad-1aed-46f5-a1ac-3d9c4913f3cc">
+                                <div class="detail" id="4dbc1d7c-f9cd-4037-9b29-3a61e1ef27a8">
                                     <h1>/</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -652,7 +658,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6eb133d6-2f45-45bf-84af-c31713f0a49c">
+                                <div class="detail" id="73079d5a-710e-4dbc-b046-092b03a7c495">
                                     <h1>&lt;</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -666,7 +672,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="7d14c0a6-1f0f-4c75-8d25-2522f30472f4">
+                                <div class="detail" id="6275d646-eda2-40a4-ad95-7238a65dd8b8">
                                     <h1>&lt;=</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -680,7 +686,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="9e438509-5fa6-4434-ab0e-275b217e83f4">
+                                <div class="detail" id="342bbd36-ff24-4cc3-8bf7-af15348448ba">
                                     <h1>==</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -694,7 +700,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="990a7a7d-f67e-484b-b8f8-c4a3b0b6653d">
+                                <div class="detail" id="901ecca0-ef42-4dab-a991-43df3f6f19d2">
                                     <h1>&gt;</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -708,7 +714,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ac7ffabb-9fa6-4251-a4e1-c8d18262f428">
+                                <div class="detail" id="bc924669-ff88-4693-aadd-6585d4ffb05d">
                                     <h1>&gt;=</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -722,7 +728,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="e5281145-be3b-4f93-a179-e085a9058e1b">
+                                <div class="detail" id="6bf51780-b0f1-4aaa-8c03-5ef0e480ae44">
                                     <h1>abs</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -736,7 +742,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="fa62a502-8a25-4441-b98d-03ba9af25f94">
+                                <div class="detail" id="c78f2944-b274-4326-b0f0-b0af6c8c0d0e">
                                     <h1>and</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -750,7 +756,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="58505e29-07f5-4510-9904-48b40859b16f">
+                                <div class="detail" id="774742a6-4b28-4b3b-9088-806155cda830">
                                     <h1>apply</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -764,7 +770,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="117f76c4-dba3-4ec0-9441-ce73eb0ecdfd">
+                                <div class="detail" id="e0f456d3-bd8f-4893-930a-9bb2d3e6cefb">
                                     <h1>assert</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -778,7 +784,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5853ed7a-a74e-4625-abb9-534e8ea275e8">
+                                <div class="detail" id="ecc6f988-a3ed-4623-bd58-c8ffce6795a4">
                                     <h1>assoc</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -792,7 +798,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="31c18a4b-43ee-47a9-b193-93b17438c694">
+                                <div class="detail" id="e81b5a67-1aa3-484b-9a42-1828349fc369">
                                     <h1>atom</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -806,7 +812,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b4b2e303-920d-4a85-9928-d53e75b77ddb">
+                                <div class="detail" id="c7732e1c-679d-4b10-a420-46d46c1a482f">
                                     <h1>atom?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -820,7 +826,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="07a52151-df7f-4b3a-be6f-2606eae382d0">
+                                <div class="detail" id="6b548735-ce4c-4211-9e7e-7e80eca5b2de">
                                     <h1>boolean</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -834,7 +840,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="96081ba6-bf3b-4ea2-965e-03dde3ae8b12">
+                                <div class="detail" id="d3270bad-d2b9-4071-84f9-4672372af1f9">
                                     <h1>boolean?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -848,7 +854,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6249c711-436f-41f8-b3a9-2e6bc2486acf">
+                                <div class="detail" id="1e7ba2a8-3574-40d5-8ab8-e6a693c7a337">
                                     <h1>bytebuf</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -862,7 +868,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="86b325d6-b1f4-43a8-a91e-158384ebafc3">
+                                <div class="detail" id="a5ba3988-ff5a-40ed-9be5-300b7d3d1133">
                                     <h1>bytebuf?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -876,7 +882,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="55a01e55-07f4-4c94-a12e-1adae7f7502d">
+                                <div class="detail" id="58e77128-40d4-4578-9dc9-25f3bf9393c1">
                                     <h1>class</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -890,7 +896,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="3cfef4d4-ce1c-493c-8f45-0fe15c36657e">
+                                <div class="detail" id="58d25ad3-c046-40f4-88aa-c35328201418">
                                     <h1>coalesce</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -904,7 +910,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2bb2895e-6d3c-4161-8e8a-deb3f4157ba5">
+                                <div class="detail" id="27e779fe-15ba-49c5-9c19-c073e61f10ac">
                                     <h1>coll?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -918,7 +924,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8e4c41c6-1e76-49ff-8d12-e75b52e9af5f">
+                                <div class="detail" id="95fbdb6b-178e-42a1-876b-d360805fc40b">
                                     <h1>comment</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -932,7 +938,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="75417421-cd8c-4b38-9ae3-ee01dd1158d0">
+                                <div class="detail" id="170e146f-d46f-4e52-b1e1-6f748832085a">
                                     <h1>compare-and-set!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -946,7 +952,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5f09ac6b-daca-4cbb-aca4-67ec8f2a43bd">
+                                <div class="detail" id="ea8f6480-a6d0-4dee-a4cb-6f08ff9eb2d6">
                                     <h1>concat</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -960,7 +966,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="d0bab929-e49a-46bc-a339-fe3d22c977b4">
+                                <div class="detail" id="748dc096-378c-4626-9567-2412df987e80">
                                     <h1>cond</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -974,7 +980,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="9e66f489-f0e4-4270-ace9-e234238a0e91">
+                                <div class="detail" id="fb68a1c4-5b99-437d-9e29-53b11ca3b9f2">
                                     <h1>conj</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -988,7 +994,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="dd9b12ea-17ca-4d14-b446-77f2078dc4aa">
+                                <div class="detail" id="d6bdae04-b353-4a86-aed7-3d7e569d6993">
                                     <h1>cons</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1003,7 +1009,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="7118b4a5-3f4d-479d-a41e-c99bd2d538ae">
+                                <div class="detail" id="6e50df42-947c-447c-a504-1e208c74d561">
                                     <h1>contains?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1017,7 +1023,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="13b00b72-7b9e-4514-b903-f496e653cc56">
+                                <div class="detail" id="75dcd3fd-5a3b-4ab5-b12c-fda23d0405fd">
                                     <h1>count</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1031,7 +1037,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="3588db7f-3544-41ab-93ca-ab78b2af1775">
+                                <div class="detail" id="e803e67a-c055-4c71-a42b-3bf944fd5394">
                                     <h1>dec</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1045,7 +1051,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="74c4e720-ea6d-47cc-9448-1bc307cb741a">
+                                <div class="detail" id="712a2eda-7f14-4ce9-8d8a-1de824c78592">
                                     <h1>dec/add</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1059,7 +1065,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6925bffc-e483-47ce-9199-8899338fbd41">
+                                <div class="detail" id="af427d3b-c7fd-4de3-9b65-f55645e94e4d">
                                     <h1>dec/div</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1073,7 +1079,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="0b2f5ae5-cc88-4b04-b15b-b4d6ed71b339">
+                                <div class="detail" id="1875b600-9546-4ff8-9025-88237fa4dbc7">
                                     <h1>dec/mul</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1087,7 +1093,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5456d195-4768-4817-82eb-f690b4370556">
+                                <div class="detail" id="3466bec1-742c-4b82-a0bc-4c4f440a4ce8">
                                     <h1>dec/scale</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1101,7 +1107,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="054365d6-8bb1-4f3a-bf73-a18ffb8d63ab">
+                                <div class="detail" id="acbcb842-63c5-4cec-9e65-177cf55758e3">
                                     <h1>dec/sub</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1115,7 +1121,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="26d892c6-55e7-4c1d-b814-535fb93b4d55">
+                                <div class="detail" id="ef96e5e5-570d-4c51-9936-e93c7971f977">
                                     <h1>decimal?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1129,7 +1135,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f7f87cca-94d6-4558-a727-4c9be1a36191">
+                                <div class="detail" id="110bddc7-a0ae-4aa2-9931-da57113034e1">
                                     <h1>def</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1143,7 +1149,7 @@
                                         <code>(def val 5)<br/>=&gt; 5</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="315533dd-510e-4d23-b23a-983f75b923ba">
+                                <div class="detail" id="1088585b-1e27-4891-a8be-a39cdac10165">
                                     <h1>deref</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1157,7 +1163,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b42b596e-5782-4059-8673-b79fecb4418d">
+                                <div class="detail" id="d6971660-1f77-4daf-86c1-3d8be1da6c13">
                                     <h1>do</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1171,7 +1177,7 @@
                                         <code>(do (println &quot;Test...&quot;) (+ 1 1))<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a1a2f6f8-48ac-4184-acef-505708a1a19b">
+                                <div class="detail" id="81029058-22a9-4fd0-9d9a-73ca310f1c95">
                                     <h1>dotimes</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1185,7 +1191,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5a5004f7-e8db-4cbe-96bb-153ad54573f9">
+                                <div class="detail" id="8b7a879a-b894-44c3-b0eb-8f713169d4d4">
                                     <h1>doto</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1199,7 +1205,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="7dcfccab-9a18-435a-b57a-66ed66f76f07">
+                                <div class="detail" id="e3c93e0b-0357-4034-ad9a-4c29154c9b62">
                                     <h1>double?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1213,7 +1219,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="842fcef6-8c0e-4b8e-9e97-b83c02906b6f">
+                                <div class="detail" id="8bba6be2-24d6-4f9e-885e-97bb3bda273d">
                                     <h1>drop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1227,7 +1233,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="7d236477-db6c-4845-8118-e9ea0a329718">
+                                <div class="detail" id="cab26e03-3870-41f9-b949-fdb688ec50e9">
                                     <h1>drop-while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1241,7 +1247,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b9f7ac1e-3a28-408e-ad9c-2dc694829d03">
+                                <div class="detail" id="c22e23f8-6e08-454d-957c-87201b0dee31">
                                     <h1>empty-to-nil</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1255,7 +1261,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="eb14617f-5e6c-44cf-89bf-b614dfe802ac">
+                                <div class="detail" id="6ac72e2a-b5b7-40a6-bd11-60e0dfc154f1">
                                     <h1>empty?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1269,7 +1275,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="bbee41fc-c92d-414d-89b2-cd0d92ff76ef">
+                                <div class="detail" id="268e3655-ad1b-49de-a82d-d7ab1653aec3">
                                     <h1>eval</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1283,7 +1289,7 @@
                                         <code>(eval &apos;(let [a 10] (+ 3 4 a)))<br/>=&gt; 17<br/><br/>(eval (list + 1 2 3))<br/>=&gt; 6</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="3a5cd77f-f105-49b8-b1a4-c2462060c723">
+                                <div class="detail" id="9c0cc517-f2fb-4e5b-bf56-9dcb8a7a2190">
                                     <h1>even?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1297,7 +1303,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ee67b5fb-4623-4e6d-8b72-8d8c73b760f3">
+                                <div class="detail" id="e10f7ffe-9994-4cf3-8095-17ac6beb396f">
                                     <h1>false?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1311,7 +1317,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f30a87c5-d0eb-41cb-ad1c-ed9a2e594165">
+                                <div class="detail" id="754653d7-608c-4ff2-86fd-29e4e65cb35b">
                                     <h1>find</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1325,7 +1331,7 @@
                                         <code>(find {:a 1 :b 2} :b)<br/>=&gt; [:b 2]<br/><br/>(find {:a 1 :b 2} :z)<br/>=&gt; </code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5ff40167-c638-4f94-852a-302cbdb54865">
+                                <div class="detail" id="b09097d2-9713-4454-b7bd-039f79233d8d">
                                     <h1>first</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1339,7 +1345,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8fc85ea1-4dd7-44d3-8617-781324239907">
+                                <div class="detail" id="5e1e2626-d842-4658-adfe-e920d00ed942">
                                     <h1>flatten</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1353,7 +1359,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="bbd72b7c-5e75-48c3-baaf-a0cefe4d0ad8">
+                                <div class="detail" id="44ac3cdd-69dd-449d-9da7-95353377caed">
                                     <h1>fn?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1367,7 +1373,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ec4cddbf-8a0f-4743-9525-a9b1494ae81f">
+                                <div class="detail" id="fa66eb4e-dae4-44a3-9341-5ae75fbf68cb">
                                     <h1>gensym</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1381,7 +1387,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a44570b1-9b4e-4a5b-a327-61c770db33d1">
+                                <div class="detail" id="a52cc168-80df-4d99-9fd3-9e770a2e6a36">
                                     <h1>get</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1395,7 +1401,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="0f047222-b26f-4fc9-8a67-e03fdba1baff">
+                                <div class="detail" id="721ee2a9-9a28-410f-8eeb-db421134f1cd">
                                     <h1>group-by</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1409,7 +1415,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="60d091b6-5de5-480f-af7e-a902ccda2b8f">
+                                <div class="detail" id="f4158e10-a2d8-4c0a-8ca4-edf97630a439">
                                     <h1>hash-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1423,7 +1429,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="e4801766-ab6c-4caa-aa58-67bae011f412">
+                                <div class="detail" id="87563453-e03e-453d-bd9a-ce3cb28bfea7">
                                     <h1>hash-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1437,7 +1443,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5e165e7b-96e6-4427-9451-f0c894abf740">
+                                <div class="detail" id="23c924e5-046e-42f2-a1d2-e40cacd06314">
                                     <h1>if</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1451,7 +1457,7 @@
                                         <code>(if (&lt; 10 20) &quot;yes&quot; &quot;no&quot;)<br/>=&gt; yes</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6e28c14e-47cd-4922-8652-08e8a8fe358e">
+                                <div class="detail" id="a2de10c4-5cca-427e-967e-1b7d8244c94d">
                                     <h1>if-let</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1466,7 +1472,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f765531d-0d36-4d86-be08-93455eae15a0">
+                                <div class="detail" id="e8b1b568-a5d4-4bce-905d-963ee16db324">
                                     <h1>inc</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1480,7 +1486,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="73057eea-e78f-456f-8f05-0ac72e49e82e">
+                                <div class="detail" id="a71d6cc5-412d-4ca5-9ac5-78971a16501e">
                                     <h1>interleave</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1494,7 +1500,7 @@
                                         <code>(interleave [:a :b :c] [1 2])<br/>=&gt; (:a 1 :b 2)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="92e4db12-f483-453c-ba63-f7da43b41cc7">
+                                <div class="detail" id="82ae3a67-0a8e-4deb-aca2-55bcf7b1c127">
                                     <h1>interpose</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1508,7 +1514,7 @@
                                         <code>(interpose &quot;, &quot; [1 2 3])<br/>=&gt; (1 ,  2 ,  3)<br/><br/>(apply str (interpose &quot;, &quot; [1 2 3]))<br/>=&gt; 1, 2, 3</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ab6c6a8b-156a-43a2-81b1-8588498c4ddd">
+                                <div class="detail" id="d2ca8e64-b830-4df1-bd42-c700f1ffe9a5">
                                     <h1>into</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1522,7 +1528,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="96f9dfc7-daa8-46da-936c-fb6d5eebe223">
+                                <div class="detail" id="6e04dc4d-4a28-4984-a1f6-d2a17ce50ac2">
                                     <h1>io/copy-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1536,7 +1542,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="c739e9f6-3f95-45ec-88df-899e225d089c">
+                                <div class="detail" id="4683fbe8-4195-463a-9163-6b70768fdc91">
                                     <h1>io/delete-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1550,7 +1556,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="840c9ae8-25d5-46e2-979d-74453e0333f6">
+                                <div class="detail" id="1c2a918b-b227-4974-8ca8-2785afba2000">
                                     <h1>io/exists-dir?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1564,7 +1570,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2bba5296-0bf1-49c0-ad4d-b70cb0524e5f">
+                                <div class="detail" id="ae319107-92b0-4303-9b32-8eac4405644f">
                                     <h1>io/exists-file?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1578,7 +1584,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4b7af866-af78-4b98-9928-5cc4031d1d33">
+                                <div class="detail" id="ee5ab6cd-0bc4-4d91-8263-f3f0195c1405">
                                     <h1>io/file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1592,7 +1598,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="fdbd6f51-3524-4095-9d69-0388e24316af">
+                                <div class="detail" id="6ddb545d-7508-429b-a010-7584c9e000a0">
                                     <h1>io/file?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1606,7 +1612,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="d609c090-d83b-4580-be55-325da5dc3aed">
+                                <div class="detail" id="d5963490-15f4-4159-8785-d1475794a1f6">
                                     <h1>io/list-files</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1620,7 +1626,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ca29369a-c8d8-4abe-88cd-7c99ed0f490f">
+                                <div class="detail" id="59856308-26e6-4c32-af5d-c5bb90501468">
                                     <h1>io/tmp-dir</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1634,7 +1640,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="c8d225f8-99a7-4661-bfe7-d55c31cd584c">
+                                <div class="detail" id="2ab0b2e5-fb38-471d-aab2-a4269abc2d12">
                                     <h1>io/user-dir</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1648,7 +1654,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b7310bdc-256a-4bc5-b913-08da22fd0c4b">
+                                <div class="detail" id="0c75d650-254e-4899-92d9-0e6743dd7fcf">
                                     <h1>key</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1662,7 +1668,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="54349968-44f8-4ae9-8393-219fca494096">
+                                <div class="detail" id="017036c3-3796-4f6b-a326-137ab8100ffd">
                                     <h1>keys</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1676,7 +1682,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ad21b435-880d-42c7-9fa6-c4db8d72533e">
+                                <div class="detail" id="bcf05b41-b7a4-495c-a583-b3477a70c6b9">
                                     <h1>keyword</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1690,7 +1696,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="78861b64-bf63-4a4e-8bdc-a088d0485afa">
+                                <div class="detail" id="11a128cc-0aaa-4e4c-9d8d-e316dba1fb6b">
                                     <h1>keyword?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1704,7 +1710,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4fbecd85-6ae6-448d-8b21-d5c450e2dabb">
+                                <div class="detail" id="6716eb3a-7fae-4ac8-9aee-e1fd56eb9a97">
                                     <h1>last</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1718,7 +1724,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a24e4af9-7848-4c5c-806d-b6917a1b64c3">
+                                <div class="detail" id="4c5cf08f-b1c0-411f-8704-8f9048a70847">
                                     <h1>let</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1732,7 +1738,7 @@
                                         <code>(let [x 1] x))<br/>=&gt; 1</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="113b8c0f-fd68-415c-b6de-01de7df50057">
+                                <div class="detail" id="14ceac6d-f036-4abe-9ddc-a056bff74e4a">
                                     <h1>list</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1746,7 +1752,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8a4261b2-a319-42e8-8887-bc13df9e3ccd">
+                                <div class="detail" id="e2eb18a0-ced0-40e9-b628-35d0c416c5ed">
                                     <h1>list-comp</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1760,7 +1766,7 @@
                                         <code>(list-comp [x (range 10)] x)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(list-comp [x (range 5)] (* x 2))<br/>=&gt; (0 2 4 6 8)<br/><br/>(list-comp [x (range 10) :when (odd? x)] x)<br/>=&gt; (1 3 5 7 9)<br/><br/>(list-comp [x (range 10) :when (odd? x)] (* x 2))<br/>=&gt; (2 6 10 14 18)<br/><br/>(list-comp [x (list &quot;abc&quot;) y [0 1 2]] [x y])<br/>=&gt; ([a 0] [a 1] [a 2] [b 0] [b 1] [b 2] [c 0] [c 1] [c 2])</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="fa0c4a5c-57c2-475c-a393-d9e6bf47bd4a">
+                                <div class="detail" id="6f08fc0e-77c3-4c04-8bf4-51d645a230f0">
                                     <h1>list?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1774,7 +1780,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b901057a-e4fd-4067-b9a0-bce751606ada">
+                                <div class="detail" id="0dac2579-6fc2-4a82-a1f5-95e9460ad0cf">
                                     <h1>load-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1788,7 +1794,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="d5a5365f-0cb1-4a19-927e-9f3168c8b947">
+                                <div class="detail" id="02a5454d-a359-4f9f-a66f-ecb57e6f155b">
                                     <h1>load-string</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1802,7 +1808,7 @@
                                         <code>(load-string &quot;(def x 1)&quot;)<br/>=&gt; 1</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="0a8255ad-b514-469e-ad8a-c7183398e13d">
+                                <div class="detail" id="e026a95a-5be3-4369-9820-46da1f96af3e">
                                     <h1>long?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1816,7 +1822,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5b0fec05-0ec6-44ea-93db-8920a65668d8">
+                                <div class="detail" id="454cc599-9dcd-42fb-9770-14ea1cc26894">
                                     <h1>loop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1830,7 +1836,7 @@
                                         <code>(loop [x 10]<br/>  (when (&gt; x 1)<br/>    (println x)<br/>    (recur (- x 2))))<br/>=&gt; </code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b4c6f14f-60b6-4e7d-949c-42e3a7ab213e">
+                                <div class="detail" id="a85861b6-d034-4a0e-964d-b9cedb9a8c8d">
                                     <h1>macro?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1844,7 +1850,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2ae56556-632d-4750-97e9-5806e3b687dd">
+                                <div class="detail" id="51781a20-e8b7-4f14-acee-11feba7708ae">
                                     <h1>map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1858,7 +1864,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="e985c1a7-4134-4be6-9f8f-046c8b5e9962">
+                                <div class="detail" id="c6abe5ab-8a75-4e7f-8246-7cff4faf21bf">
                                     <h1>match</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1872,7 +1878,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2677fcf8-7dbe-49d4-903d-3e6ecc91b477">
+                                <div class="detail" id="e596ceda-daf7-45ff-846b-968bb9a0258f">
                                     <h1>match-not</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1886,7 +1892,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="063afb9e-308d-446c-a7ec-ba762a77cd83">
+                                <div class="detail" id="3ee3cea2-7b37-4475-a8f7-758900deba71">
                                     <h1>max</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1900,7 +1906,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1c57b0ac-1320-4c35-809b-6a466e28e274">
+                                <div class="detail" id="b51a2a29-9dc3-4efb-8917-da947cd27d41">
                                     <h1>memoize</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1914,7 +1920,7 @@
                                         <code>(do                                <br/>   (def test (fn [a] (+ a 100)))   <br/>   (def test-memo (memoize test))  <br/>   (test-memo 1))<br/>=&gt; 101</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f4d2a4ae-9e71-46af-8dd8-30c3bb6cf25c">
+                                <div class="detail" id="17e2f65e-78e8-4723-9dba-71cb5d873ecc">
                                     <h1>meta</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1928,7 +1934,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4d56d405-d537-4da8-8188-2fbf6ab2fcae">
+                                <div class="detail" id="c9985baf-64c1-4760-8fa2-3bfdec026d39">
                                     <h1>min</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1942,7 +1948,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="937c8223-ba68-4a9d-a799-a6fccd66373d">
+                                <div class="detail" id="eab3c37f-7006-48c7-9a76-f83f7a8ada41">
                                     <h1>mod</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1956,7 +1962,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="c0ffbb3e-b187-426a-8e78-1b1617c349fd">
+                                <div class="detail" id="4ffc4691-6601-4c13-bbc1-22cde55a9e28">
                                     <h1>neg?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1970,7 +1976,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="9877f7db-a543-4932-8e07-a4fb9441d80e">
+                                <div class="detail" id="7063e345-554e-4080-aa0c-fe25a1706a56">
                                     <h1>nfirst</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1984,7 +1990,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="32d286c6-94c8-4ae3-9dc2-9339ec1a2063">
+                                <div class="detail" id="af999fbc-9a03-45d8-ac3e-c41692fdcd5f">
                                     <h1>nil?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1998,7 +2004,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="61040b1c-6ee2-4545-b316-993f749f8c71">
+                                <div class="detail" id="846f2fa4-b26a-46aa-9b6a-6b1008f603ea">
                                     <h1>nlast</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2012,7 +2018,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="77b2d049-b72e-4772-acbd-522d161f2f4d">
+                                <div class="detail" id="f5af3492-2bba-41eb-97f8-584f2a291151">
                                     <h1>not</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2026,7 +2032,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="990b6119-e60f-4325-acf5-c5a16fdc9e1c">
+                                <div class="detail" id="d5872e9f-a278-4e95-808f-0879c06cc0bf">
                                     <h1>not-empty?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2040,7 +2046,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="19848d85-2d0c-4ec9-8eb2-9927e3bb34a1">
+                                <div class="detail" id="63479034-3b7a-4b61-a949-e5cc906cc40e">
                                     <h1>nth</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2054,7 +2060,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="d9dbc376-e27f-4d42-ab96-86c8b1df10c7">
+                                <div class="detail" id="0248e0a4-bfe7-4f69-82d8-bedc1aa8a194">
                                     <h1>number?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2068,7 +2074,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4801f3cf-e442-4754-a8e4-3b4e177e9a7e">
+                                <div class="detail" id="221639a7-8ec2-4b58-a2e2-2554278c8cab">
                                     <h1>odd?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2082,7 +2088,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b40138ce-c8df-44bb-a16c-affed5c64fbc">
+                                <div class="detail" id="a1c91009-c83b-4ea4-bf53-5d992b7e2d62">
                                     <h1>or</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2096,7 +2102,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="9066b0c2-f68d-4ae4-9dde-92f8d4e4e462">
+                                <div class="detail" id="e4f2e8b1-5bf8-4d2a-873e-a6be5d62507e">
                                     <h1>ordered-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2110,7 +2116,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ab637d11-353e-4279-9206-4b0930a8c9da">
+                                <div class="detail" id="431be3d4-c2c7-42a0-a8f2-8c9f15792477">
                                     <h1>ordered-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2124,7 +2130,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="e5fb39dd-f975-4c17-ad2a-36573d1eee60">
+                                <div class="detail" id="5dc22f61-409d-4c4c-bea3-97ccf7bb2240">
                                     <h1>peek</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2138,7 +2144,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6ff8b74c-5ae7-46c0-8240-0d9e6f1811d0">
+                                <div class="detail" id="38b3b8ba-419d-4a1f-939f-c82d47fda58a">
                                     <h1>pop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2152,7 +2158,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="08ba984c-7934-4a0c-b642-8335b27b51a3">
+                                <div class="detail" id="60f3bc3b-9583-4d89-80dc-ba460ead29c1">
                                     <h1>pos?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2166,7 +2172,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="c1a67505-aa93-4f74-8138-917358096a1a">
+                                <div class="detail" id="6e4f848d-aed7-406e-93e8-0ac31c00af0d">
                                     <h1>pr-str</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2180,7 +2186,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2217e81d-22a2-4412-8882-a1e4160cd561">
+                                <div class="detail" id="e654f129-e614-4243-9566-6a9871c46a69">
                                     <h1>println</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2194,7 +2200,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="75c798f7-ec6d-421a-b4d2-ed2220656ae7">
+                                <div class="detail" id="dd424e54-39c9-4896-af12-c4e3b623a789">
                                     <h1>prn</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2208,7 +2214,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f0bdc593-c8e8-469c-8f54-10cca08fcaa6">
+                                <div class="detail" id="c0ed6263-7bd5-4547-864a-d6b972d1953a">
                                     <h1>rand-double</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2222,7 +2228,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="913ce387-341b-4448-95ce-38f66320536a">
+                                <div class="detail" id="d70a5f16-63e3-408e-97e6-332d665b1479">
                                     <h1>rand-long</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2236,7 +2242,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a4853d0c-313e-4c3a-a21b-389d21df275f">
+                                <div class="detail" id="5556d73e-e74b-4c6c-a2da-e1b4e08d51d9">
                                     <h1>range</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2250,7 +2256,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="9f39c5f8-d462-480f-a930-2fa4b42d5ee0">
+                                <div class="detail" id="05198512-e55d-4736-8f92-3aef2bd0d7f7">
                                     <h1>read-string</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2264,7 +2270,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a8caa4ae-9153-4a6f-a913-5371fb797b59">
+                                <div class="detail" id="b0254169-5bdd-45f8-b482-655e99ae0a5c">
                                     <h1>readline</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2278,7 +2284,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8020e7a2-b3b5-4d4e-8382-71eb9be6c486">
+                                <div class="detail" id="f1c53a0b-4c3e-4238-a86f-44d1117c5642">
                                     <h1>recur</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2292,7 +2298,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4620e276-eb34-4403-b6c4-55f4ec1efdfc">
+                                <div class="detail" id="87508b94-a1bc-4806-b058-589b80916bbc">
                                     <h1>reduce</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2306,7 +2312,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8099cd85-3979-4d0e-b14e-6fbec9c2e4b7">
+                                <div class="detail" id="3ec52867-79ae-4cd7-90ab-0a44a5bc60ef">
                                     <h1>reduce-kv</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2320,7 +2326,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="047312f4-1b61-4941-9c12-daf87c0fcb35">
+                                <div class="detail" id="bef4da46-192b-4b44-a9de-1b88c91cd279">
                                     <h1>remove</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2334,7 +2340,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="dbb83f98-b26f-484b-882b-d9ad95a73881">
+                                <div class="detail" id="ce29aee9-0b2a-4c10-b779-8fbfa13a715d">
                                     <h1>repeat</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2348,7 +2354,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="59967602-ba8d-4496-ab35-426ed1856c64">
+                                <div class="detail" id="4f90a97c-858f-4932-a1fd-6c02675b2f8a">
                                     <h1>reset!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2362,7 +2368,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="49fee958-64bb-4005-a54e-887feb6b5d37">
+                                <div class="detail" id="30f4a323-bf78-4839-903c-ff58f0b937c2">
                                     <h1>rest</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2376,7 +2382,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="fba06b4b-b0fe-42e6-aeee-379beeae4e4d">
+                                <div class="detail" id="866c401a-7c9f-4662-9e2b-575077baaefb">
                                     <h1>reverse</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2390,7 +2396,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2175acc6-f0f1-4ba5-bafa-d7e164ab3c58">
+                                <div class="detail" id="a7f0face-1472-41ff-98b7-c3e923951de0">
                                     <h1>second</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2404,7 +2410,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4fb482d5-8e4f-4a14-8df7-481b097b9586">
+                                <div class="detail" id="f3a8043f-61c2-48ce-b613-40c42b3d5b30">
                                     <h1>seq?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2418,7 +2424,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="eb6530f5-d021-452a-bd65-2b8ce0de4526">
+                                <div class="detail" id="5d30971a-5c77-451e-bca2-d87fe4cc48e6">
                                     <h1>set</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2432,7 +2438,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="4e736444-912c-4f71-887f-aa8cf4be79e5">
+                                <div class="detail" id="050de3ec-886e-4d28-8f1c-07b1ad246c76">
                                     <h1>set?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2446,7 +2452,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="756a0191-ec5a-4f42-8f36-e451e9616de0">
+                                <div class="detail" id="447e09d4-6e97-421e-bb4e-35ffc767ccdb">
                                     <h1>slurp</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2460,7 +2466,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b7a8bcc7-5626-471c-aa86-ae2ff2226cd4">
+                                <div class="detail" id="9cb2d6af-0b3d-44d9-a9f1-b1d491dc07f3">
                                     <h1>some?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2474,7 +2480,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8535bfb9-dd45-455d-bf0d-b8033d0907da">
+                                <div class="detail" id="e898360e-45f7-4fd0-b6e7-d2feb7c981e3">
                                     <h1>sort</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2488,7 +2494,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f0d2fe39-62e1-47d1-bc40-c39b77d074fe">
+                                <div class="detail" id="eecbc765-0c95-4852-b042-307e77f6d957">
                                     <h1>sort-by</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2502,7 +2508,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="97e695fc-065a-46ca-9f50-ed59c0a1438b">
+                                <div class="detail" id="fddafecf-ad5f-4155-bf41-f19113dcb138">
                                     <h1>sorted-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2516,7 +2522,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="438f2ecf-f125-42b4-9c15-bfa957172aec">
+                                <div class="detail" id="2fd0c694-2120-4894-90db-3dd18abbe222">
                                     <h1>sorted-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2530,7 +2536,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="af44ec08-fef3-4614-9015-569a9264e099">
+                                <div class="detail" id="0b0d5a98-5253-41bf-8e26-c5c643b7c1ba">
                                     <h1>spit</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2544,7 +2550,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="695a3584-0332-4ad1-80c9-5057d8928523">
+                                <div class="detail" id="a8b267a7-c26a-42ee-98c9-69e7cfa4bc5b">
                                     <h1>str</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2558,7 +2564,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="3ca6f9c0-aa15-434a-ac26-843fa17f72b6">
+                                <div class="detail" id="08c1e288-e34d-4bc4-98f8-1cec6258fbba">
                                     <h1>str/contains?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2572,7 +2578,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="82a22227-f5d8-4f03-bd6e-2682e0c2e642">
+                                <div class="detail" id="09f7fd1e-2ea2-45ff-804b-c8401ec4b97e">
                                     <h1>str/ends-with?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2586,7 +2592,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a04c510d-a9ce-4316-9226-d87d67efff8a">
+                                <div class="detail" id="f99482d1-b4a8-49d4-a83e-e4d045c434b8">
                                     <h1>str/format</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2600,7 +2606,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1ac4e013-f048-4728-abd1-28d7d3755b38">
+                                <div class="detail" id="f0b6055c-c0d3-4fda-bc70-0697e84fc7fe">
                                     <h1>str/index-of</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2614,7 +2620,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b59f12eb-d36e-4a95-bbd5-18dba020cf0c">
+                                <div class="detail" id="1ed32f66-e9b9-46bd-85c1-b25078ff10e8">
                                     <h1>str/join</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2628,7 +2634,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="de47374a-d139-46ec-9f47-ff6ae84bed57">
+                                <div class="detail" id="ddefef16-239f-4db3-aa44-227114166bf1">
                                     <h1>str/last-index-of</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2643,7 +2649,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="395e5147-101f-40b2-8ce8-65815c61a51a">
+                                <div class="detail" id="38554576-aa8a-4a13-ac14-b403f7799540">
                                     <h1>str/lower-case</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2657,7 +2663,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1cc4427d-b18e-4dc2-9d6e-1ca212b36792">
+                                <div class="detail" id="7e042fba-cf12-4082-af2c-da67d5f4828e">
                                     <h1>str/replace-all</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2671,7 +2677,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="65a3138b-efc5-401e-b749-d5f0fee1ee87">
+                                <div class="detail" id="03325402-a537-4c4c-b905-b2f3ab4a1de8">
                                     <h1>str/replace-first</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2685,7 +2691,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="be15af02-db30-4378-a986-a1e312039024">
+                                <div class="detail" id="ea5d9096-cdb1-4dcc-8867-7fa313a4c96c">
                                     <h1>str/replace-last</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2699,7 +2705,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="5d7dfa09-491f-43d7-a911-076a3fe1b826">
+                                <div class="detail" id="70e1fa80-3d67-416b-92ff-cf58b7305741">
                                     <h1>str/split</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2713,7 +2719,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="73273a24-927d-47bf-ba82-07a86d9c9c3b">
+                                <div class="detail" id="20996421-6d5c-4791-bf96-ff737f5ee779">
                                     <h1>str/starts-with?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2727,7 +2733,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="51e17c48-1671-4d8a-a2ca-4bffb7e83f4b">
+                                <div class="detail" id="89771f49-3a39-4a8d-bb26-b48e23384c91">
                                     <h1>str/subs</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2741,7 +2747,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="da38e661-7da6-43b8-8983-1729240f7445">
+                                <div class="detail" id="b9f5f157-75fc-492c-bd6b-6c1fc50918c0">
                                     <h1>str/trim</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2755,7 +2761,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b7670963-9f5d-42e6-85a1-caf6975150b4">
+                                <div class="detail" id="29f381d1-44ef-495f-8138-236cf3d5c9d1">
                                     <h1>str/trim-to-nil</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2769,7 +2775,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="266b9409-9a96-4537-b15a-b6b41ec06df5">
+                                <div class="detail" id="5c01f44a-b258-4dca-b90d-01622691bd80">
                                     <h1>str/truncate</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2783,7 +2789,7 @@
                                         <code>(str/truncate &quot;abcdefghij&quot; 20 &quot;...&quot;)<br/>=&gt; abcdefghij<br/><br/>(str/truncate &quot;abcdefghij&quot; 9 &quot;...&quot;)<br/>=&gt; abcdef...<br/><br/>(str/truncate &quot;abcdefghij&quot; 4 &quot;...&quot;)<br/>=&gt; a...</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="21c6c080-e75e-4d18-ba82-491358fd491f">
+                                <div class="detail" id="3886007d-cc3c-43c1-bee3-0033695104af">
                                     <h1>str/upper-case</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2797,7 +2803,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="a3df2485-4090-48b3-8df2-df33b1631c41">
+                                <div class="detail" id="e8bfd9d4-e43d-451f-8393-ba4b4cfa2976">
                                     <h1>string?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2811,7 +2817,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="aac3f4f7-59b3-46b6-a8b5-888be6ffd671">
+                                <div class="detail" id="c06a2a40-d92c-4d11-9ea2-0440e876bec4">
                                     <h1>subbytebuf</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2825,7 +2831,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="2ffb3082-feb0-4daa-8560-bdae8a57af43">
+                                <div class="detail" id="c520798a-8b06-4448-b425-b3928c205f0c">
                                     <h1>subvec</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2839,7 +2845,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="570600e4-497e-4308-9081-2dd3e7266a12">
+                                <div class="detail" id="a2a13232-06b8-44ed-946c-374a628b50b0">
                                     <h1>swap!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2853,7 +2859,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="53216d34-6c56-4416-8906-0c13d1cf1472">
+                                <div class="detail" id="175f36ed-88a5-4da8-9860-4d1dad100597">
                                     <h1>symbol</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2867,7 +2873,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="cc4e6d00-5a11-481b-bf93-42c4c722d6c7">
+                                <div class="detail" id="b7729836-63fa-4e1b-b995-3765b07a954a">
                                     <h1>symbol?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2881,7 +2887,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="22c36763-2a30-45c7-b88b-1c7067d61a9c">
+                                <div class="detail" id="a0955748-98d1-49bd-bc8a-e03775ae6719">
                                     <h1>take</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2895,7 +2901,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="b4a8e5d9-6b75-4b56-8283-b004279e430e">
+                                <div class="detail" id="d9fa15c5-4ba3-4411-b02c-a5df494a2b8f">
                                     <h1>take-while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2909,7 +2915,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="705675cb-d20a-42b8-8997-dd4a0436b6c5">
+                                <div class="detail" id="5a4a90b7-24a4-4733-80a9-7a57b8cce9a5">
                                     <h1>throw</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2923,7 +2929,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1a34b0ae-52a8-4202-86d6-2ea5d4e3995c">
+                                <div class="detail" id="b88fbe5b-0060-48b2-a928-03b865881059">
                                     <h1>time</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2937,7 +2943,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="875c79e0-a2b7-4470-a598-6ada542d38ed">
+                                <div class="detail" id="ff6d38da-e758-4378-94a7-1df977a24272">
                                     <h1>time-ms</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2948,10 +2954,10 @@
                                         <code>Returns the current time in milliseconds</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ms)<br/>=&gt; 1531853605119</code>
+                                        <code>(time-ms)<br/>=&gt; 1531855763528</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="c2c44681-4a0e-41c5-b3c0-5ee1c75b811e">
+                                <div class="detail" id="aa6f3db3-e4a2-48b4-95a5-3ac7debf73e5">
                                     <h1>time-ns</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2962,10 +2968,10 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ns)<br/>=&gt; 413049646862939</code>
+                                        <code>(time-ns)<br/>=&gt; 415183726909002</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="fc53cbb8-7187-4145-addb-4c3a4ef090a0">
+                                <div class="detail" id="0c32e0d9-b958-42cd-a198-0a21aed71802">
                                     <h1>true?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2979,7 +2985,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="d8f9342f-8511-4208-81c1-722a571cc747">
+                                <div class="detail" id="6cc41070-be1f-4f79-a7de-9549c94c2aba">
                                     <h1>try</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2993,7 +2999,7 @@
                                         <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try (throw 100) (finally -2))<br/>=&gt; -2<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))<br/>=&gt; -2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6c0598e2-46e7-4834-85d7-8dea4e8f9545">
+                                <div class="detail" id="3fa089b4-76f8-460e-87d2-11d4b1128880">
                                     <h1>uuid</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3007,7 +3013,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="8122ae17-1f0b-44d2-b4af-e551206bc389">
+                                <div class="detail" id="9e3b2aaa-f7e5-4fa1-a5b6-c797f1dfe8a9">
                                     <h1>val</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3021,7 +3027,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="27cb908b-4547-440b-b656-c99fff1cca91">
+                                <div class="detail" id="41545c77-d76e-4201-8aa6-130a5ee6ead3">
                                     <h1>vals</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3035,7 +3041,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="763709f2-0061-4c5e-a6e2-6f1168557012">
+                                <div class="detail" id="9fc8281f-75fa-4e81-87a3-929d91eb49c2">
                                     <h1>vary-meta</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3049,7 +3055,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="6956bad6-c6ed-479d-9d4f-2a16fa779e71">
+                                <div class="detail" id="07ead7fa-b924-4917-8857-52350ae53eb9">
                                     <h1>vector</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3063,7 +3069,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="005a9186-2dc9-40d4-981b-10c846c94968">
+                                <div class="detail" id="2ae46be3-ff04-414c-bc11-a3aef810368e">
                                     <h1>vector?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3077,7 +3083,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="404b56eb-9854-4916-b585-886db1bd35c8">
+                                <div class="detail" id="27cf7b72-22ec-4f52-a2f4-845076420e9a">
                                     <h1>version</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3091,7 +3097,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="f2573b0b-a152-4fe6-968a-d894364ac1f7">
+                                <div class="detail" id="462c2f34-2795-41fd-851b-9388aee25c4a">
                                     <h1>when</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3105,7 +3111,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="9d9e3898-e406-417c-b587-a52cf5f8605c">
+                                <div class="detail" id="fa24ff1e-d767-41ef-8237-e62a6fb79158">
                                     <h1>when-not</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3119,7 +3125,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="44937b0b-eebb-4d24-a30f-d537f709681c">
+                                <div class="detail" id="49321d00-3f0d-4570-986a-5b5357df538e">
                                     <h1>while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3133,7 +3139,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1b7f81e6-ffed-46f3-8772-69d4e2878922">
+                                <div class="detail" id="848a6de3-7579-4925-bb18-71058defd71b">
                                     <h1>with-meta</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3147,7 +3153,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="ff8aed8e-75df-4507-8b72-3bdece3234ad">
+                                <div class="detail" id="9e89925f-9174-4d41-ab97-b995beceb479">
                                     <h1>zero?</h1>
                                     <div class="arglists">
                                         <div class="arglist">

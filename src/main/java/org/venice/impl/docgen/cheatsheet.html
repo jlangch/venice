@@ -4,34 +4,39 @@
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
+            @page {
+                size: A4 portrait;
+                margin: 2cm 1.5cm;
+                padding: 0;
+            }
             body {
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
-                font-size: 16px;
-                line-height: 25px;
+                font-size: $if(data.pdfmode)$12px$else$16px$endif$;
+                line-height: 1.5em;
                 font-weight: 400;
             }            
             h1 {
-                margin-top: 25px;
-                margin-bottom: 25px;
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
                 color: #507dca;
                 font-size: 1.8em;
-                line-height: 50px;
+                line-height: 2em;
                 font-weight: 300;
             }
             h2 {
-                margin-top: 25px;
-                margin-bottom: 25px;
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
                 color: #4165a2;
                 font-size: 1.4em;
-                line-height: 50px;
+                line-height: 2em;
                 font-weight: 400;
             }
             h3 {
-                margin-top: 25px;
-                margin-bottom: 25px;
-                line-height: 25px;
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
+                line-height: 1.5em;
                 font-weight: 400;
             }
             a {
@@ -51,9 +56,7 @@
             code {
                 display: block;
                 white-space: pre-wrap;
-  
                 font-family: 'Source Code Pro', sans-serif;
-                font-size: 16px;
                 font-weight: 400;
             }
             table {
@@ -70,6 +73,9 @@
             td {
                 vertical-align: top;
                 padding: 0.5em;
+            }
+            div.header h1 {
+                font-size: 3em;
             }
             .header {
                 margin: 0 0 0 0.5em;
