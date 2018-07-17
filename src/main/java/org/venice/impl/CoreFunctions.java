@@ -2817,6 +2817,72 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction interleave = new VncFunction("interleave") {
+		{
+			setArgLists("(interleave c1 c2)", "(interleave c1 c2 & colls)");
+			
+			setDescription(
+					"Returns a collection of the first item in each coll, then the second etc.");
+			
+			setExamples("(interleave [:a :b :c] [1 2])");
+			
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("interleave", args, 2);
+
+			int len = Coerce.toVncList(args.first()).size();
+			final List<VncList> lists = new ArrayList<>();
+			for(int ii=0; ii<args.size(); ii++) {
+				final VncList l = Coerce.toVncList(args.nth(ii));
+				lists.add(l);
+				len = Math.min(len, l.size());				
+			}
+
+			final VncList result = new VncList();
+			
+			for(int nn=0; nn<len; nn++) {
+				final VncList item = new VncList();
+				for(int ii=0; ii<lists.size(); ii++) {
+					item.addAtEnd(lists.get(ii).nth(nn));
+				}
+				result.addAtEnd(item);
+			}
+					
+			return result;
+		}
+	};
+
+	public static VncFunction interpose = new VncFunction("interpose") {
+		{
+			setArgLists("(interpose sep coll)");
+			
+			setDescription(
+					"Returns a collection of the elements of coll separated by sep.");
+						
+			setExamples("(interpose \", \" [1 2 3])", "(apply str (interpose \", \" [1 2 3]))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("interpose", args, 2);
+
+			final VncVal sep = args.first();
+			final VncList coll = Coerce.toVncList(args.second());
+			
+			final VncList result = new VncList();
+	
+			if (!coll.isEmpty()) {
+				result.addAtEnd(coll.first());
+				coll.rest().forEach(v -> {
+					result.addAtEnd(sep);
+					result.addAtEnd(v);
+				});
+			}
+						
+			return result;
+		}
+	};
+
 	public static VncFunction first = new VncFunction("first") {
 		{
 			setArgLists("(first coll)");
@@ -4002,11 +4068,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() < 2) {
-				throw new VncException(String.format(
-						"vary-meta requires at leat two arguments. %s",
-						ErrorMessage.buildErrLocation(args)));	
-			}
+			assertMinArity("vary-meta", args, 2);
 
 			if (!Types.isVncFunction(args.nth(1))) {
 				throw new VncException(String.format(
@@ -4102,9 +4164,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() < 2) {
-				throw new VncException("swap! requires at leat two arguments");	
-			}
+			assertMinArity("swap!", args, 2);
 			
 			final VncAtom atm = Coerce.toVncAtom(args.nth(0));		
 			final VncFunction fn = Coerce.toVncFunction(args.nth(1));
@@ -4966,6 +5026,17 @@ public class CoreFunctions {
 		}		
 		throw new ArityException(args, arity, fnName);
 	}
+	
+	private static void assertMinArity(
+			final String fnName, 
+			final VncList args, 
+			final int minArity
+	) {
+		final int arity = args.size();
+		if (arity < minArity) {		
+			throw new ArityException(args, arity, fnName);
+		}
+	}
 
 	private static boolean isJavaIoFile(final VncVal val) {
 		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
@@ -5081,6 +5152,8 @@ public class CoreFunctions {
 				.put("cons",				cons)
 				.put("co",					cons)
 				.put("concat",				concat)
+				.put("interpose",			interpose)
+				.put("interleave",			interleave)
 				.put("mapcat",				mapcat)
 				.put("nth",					nth)
 				.put("first",				first)

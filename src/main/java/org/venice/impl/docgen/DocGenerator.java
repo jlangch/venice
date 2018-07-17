@@ -311,6 +311,8 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("pop"));
 		list_modify.addItem(getDocItem("into"));
 		list_modify.addItem(getDocItem("concat"));
+		list_modify.addItem(getDocItem("interpose"));
+		list_modify.addItem(getDocItem("interleave"));
 		list_modify.addItem(getDocItem("mpacat"));
 		list_modify.addItem(getDocItem("flatten"));
 		list_modify.addItem(getDocItem("reduce"));
@@ -340,8 +342,8 @@ public class DocGenerator {
 		vec_access.addItem(getDocItem("last"));
 		vec_access.addItem(getDocItem("peek"));
 		vec_access.addItem(getDocItem("rest"));
-		list_access.addItem(getDocItem("nfirst"));
-		list_access.addItem(getDocItem("nlast"));
+		vec_access.addItem(getDocItem("nfirst"));
+		vec_access.addItem(getDocItem("nlast"));
 		vec_access.addItem(getDocItem("subvec"));
 
 		final DocSection vec_modify = new DocSection("Modify");
@@ -352,6 +354,8 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("pop"));
 		vec_modify.addItem(getDocItem("into"));
 		vec_modify.addItem(getDocItem("concat"));
+		vec_modify.addItem(getDocItem("interpose"));
+		vec_modify.addItem(getDocItem("interleave"));
 		vec_modify.addItem(getDocItem("mpacat"));
 		vec_modify.addItem(getDocItem("flatten"));
 		vec_modify.addItem(getDocItem("reduce"));

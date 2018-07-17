@@ -997,6 +997,22 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_interleave() {
+		final Venice venice = new Venice();
+		
+		assertEquals("(:a 1 :b 2)", venice.eval("(str (interleave [:a :b :c] [1 2]))"));
+		assertEquals("(:a 1 :b 2)", venice.eval("(str (interleave [:a :b] [1 2 3]))"));
+	}
+	
+	@Test
+	public void test_interpose() {
+		final Venice venice = new Venice();
+		
+		assertEquals("(1 - 2 - 3)", venice.eval("(str (interpose \"-\" [1 2 3]))"));
+		assertEquals("1-2-3", venice.eval("(apply str (interpose \"-\" [1 2 3]))"));
+	}
+		
+	@Test
 	public void test_into() {
 		final Venice venice = new Venice();
 
