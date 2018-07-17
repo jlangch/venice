@@ -26,7 +26,7 @@ Venice comes with a simple REPL that does not provide command line editing.
 
 Start the REPL with `java -jar venice.jar`
 
-```sh
+```text
 venice> (+ 1 1)
 => 2
 venice>
