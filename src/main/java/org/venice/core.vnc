@@ -127,6 +127,17 @@
 (def load-string (fn [s] (eval (read-string (str "(do " s ")")))))
 
 
+(def zipmap (fn [keys vals]
+   (loop [map (ordered-map)
+          ks (seq keys)
+          vs (seq vals)]
+      (if (and (not-empty? ks) (not-empty? vs))
+         (recur (assoc map (first ks) (first vs))
+                (rest ks)
+                (rest vs))
+         map))))
+
+
 (def memoize (fn [f]
    (let [mem (atom {})]
       (fn [& args]

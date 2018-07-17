@@ -2873,5 +2873,13 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(zero? 0.0M)"));
 		assertFalse((Boolean)venice.eval("(zero? 3.0M)"));
 	}	
+
+	@Test
+	public void test_zipmap() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a 1 :b 2 :c 3 :d 4 :e 5}", venice.eval("(str (zipmap [:a :b :c :d :e] [1 2 3 4 5]))"));
+		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (zipmap [:a :b :c] [1 2 3 4 5]))"));		
+	}	
 	
 }

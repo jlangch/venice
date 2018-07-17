@@ -392,6 +392,8 @@ public class DocGenerator {
 		maps_create.addItem(getDocItem("hash-map"));
 		maps_create.addItem(getDocItem("ordered-map"));
 		maps_create.addItem(getDocItem("sorted-map"));
+		maps_create.addItem(getDocItem("zipmap"));
+		
 
 		final DocSection map_access = new DocSection("Access");
 		maps.addSection(map_access);
@@ -754,6 +756,18 @@ public class DocGenerator {
 					runExamples(name, toStringList(f.getExamples())));
 		}
 		
+		if ("zipmap".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(zipmap keys vals)"), 
+					"Returns a map with the keys mapped to the corresponding vals.",
+					runExamples(
+							name, 
+							Arrays.asList(
+								"(zipmap [:a :b :c :d :e] [1 2 3 4 5])",
+								"(zipmap [:a :b :c] [1 2 3 4 5])")));
+		}
+
 		if ("memoize".equals(name)) {
 			return new DocItem(
 					name, 
