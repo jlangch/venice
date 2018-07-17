@@ -156,8 +156,12 @@ public class StringUtil {
 		return text.substring(0, maxLen - lenTruncationMarker) + truncationMarker;
 	}
 
-	public static boolean isEmpty(final CharSequence cs){
-		return cs == null || cs.length() == 0;
+	public static boolean isEmpty(final String s){
+		return s == null || s.length() == 0;
+	}
+
+	public static boolean isBlank(final String s){
+		return s == null || s.length() == 0 || s.trim().length() == 0;
 	}
 	
 	public static boolean isAsciiAlphaUpper(final char ch){

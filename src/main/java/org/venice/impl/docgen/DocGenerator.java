@@ -300,6 +300,8 @@ public class DocGenerator {
 		list_access.addItem(getDocItem("last"));
 		list_access.addItem(getDocItem("peek"));
 		list_access.addItem(getDocItem("rest"));
+		list_access.addItem(getDocItem("nfirst"));
+		list_access.addItem(getDocItem("nlast"));
 
 		final DocSection list_modify = new DocSection("Modify");
 		lists.addSection(list_modify);
@@ -338,6 +340,8 @@ public class DocGenerator {
 		vec_access.addItem(getDocItem("last"));
 		vec_access.addItem(getDocItem("peek"));
 		vec_access.addItem(getDocItem("rest"));
+		list_access.addItem(getDocItem("nfirst"));
+		list_access.addItem(getDocItem("nlast"));
 		vec_access.addItem(getDocItem("subvec"));
 
 		final DocSection vec_modify = new DocSection("Modify");

@@ -1683,6 +1683,26 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_nfirst() {
+		final Venice venice = new Venice();
+
+		assertEquals("()", venice.eval("(str (nfirst nil 1))"));
+		assertEquals("()", venice.eval("(str (nfirst '() 1))"));
+		assertEquals("()", venice.eval("(str (nfirst '(1 2 3) 0))"));
+		assertEquals("(1)", venice.eval("(str (nfirst '(1 2 3) 1))"));
+		assertEquals("(1 2)", venice.eval("(str (nfirst '(1 2 3) 2))"));
+		assertEquals("(1 2 3)", venice.eval("(str (nfirst '(1 2 3) 3))"));
+		assertEquals("(1 2 3)", venice.eval("(str (nfirst '(1 2 3) 4))"));
+
+		assertEquals("[]", venice.eval("(str (nfirst [] 1))"));
+		assertEquals("[]", venice.eval("(str (nfirst [1 2 3] 0))"));
+		assertEquals("[1]", venice.eval("(str (nfirst [1 2 3] 1))"));
+		assertEquals("[1 2]", venice.eval("(str (nfirst [1 2 3] 2))"));
+		assertEquals("[1 2 3]", venice.eval("(str (nfirst [1 2 3] 3))"));
+		assertEquals("[1 2 3]", venice.eval("(str (nfirst [1 2 3] 4))"));
+	}
+
+	@Test
 	public void test_nil_Q() {
 		final Venice venice = new Venice();
 
@@ -1690,6 +1710,26 @@ public class FunctionsTest {
 		assertFalse((Boolean)venice.eval("(nil? true)"));	
 		assertFalse((Boolean)venice.eval("(nil? false)"));	
 		assertFalse((Boolean)venice.eval("(nil? 1)"));	
+	}
+	
+	@Test
+	public void test_nlast() {
+		final Venice venice = new Venice();
+
+		assertEquals("()", venice.eval("(str (nlast nil 1))"));
+		assertEquals("()", venice.eval("(str (nlast '() 1))"));
+		assertEquals("()", venice.eval("(str (nlast '(1 2 3) 0))"));
+		assertEquals("(3)", venice.eval("(str (nlast '(1 2 3) 1))"));
+		assertEquals("(2 3)", venice.eval("(str (nlast '(1 2 3) 2))"));
+		assertEquals("(1 2 3)", venice.eval("(str (nlast '(1 2 3) 3))"));
+		assertEquals("(1 2 3)", venice.eval("(str (nlast '(1 2 3) 4))"));
+
+		assertEquals("[]", venice.eval("(str (nlast [] 1))"));
+		assertEquals("[]", venice.eval("(str (nlast [1 2 3] 0))"));
+		assertEquals("[3]", venice.eval("(str (nlast [1 2 3] 1))"));
+		assertEquals("[2 3]", venice.eval("(str (nlast [1 2 3] 2))"));
+		assertEquals("[1 2 3]", venice.eval("(str (nlast [1 2 3] 3))"));
+		assertEquals("[1 2 3]", venice.eval("(str (nlast [1 2 3] 4))"));
 	}
 
 	@Test

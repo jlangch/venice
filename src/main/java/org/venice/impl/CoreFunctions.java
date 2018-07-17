@@ -2963,6 +2963,78 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction nfirst = new VncFunction("nfirst") {
+		{
+			setArgLists("(nfirst coll n)");
+			
+			setDescription("Returns a collection of the first n items");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("nfirst", args, 2);
+
+			if (args.nth(0) == Nil) {
+				return new VncList();
+			}
+			else if (Types.isVncVector(args.nth(0))) {
+				final VncVector vec = Coerce.toVncVector(args.nth(0));		
+				final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				return vec.isEmpty() 
+						? new VncVector() 
+						: new VncVector(vec.getList().subList(0, n));
+			}
+			else if (Types.isVncList(args.nth(0))) {
+				final VncList list = Coerce.toVncList(args.nth(0));		
+				final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				return list.isEmpty() 
+						? new VncList() 
+						: new VncList(list.getList().subList(0, n));
+			}
+			else {
+				throw new VncException(String.format(
+						"nfirst: type %s not supported. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args.nth(0))));
+			}
+		}
+	};
+
+	public static VncFunction nlast = new VncFunction("nlast") {
+		{
+			setArgLists("(nlast coll n)");
+			
+			setDescription("Returns a collection of the last n items");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("nlast", args, 2);
+
+			if (args.nth(0) == Nil) {
+				return new VncList();
+			}
+			else if (Types.isVncVector(args.nth(0))) {
+				final VncVector vec = Coerce.toVncVector(args.nth(0));		
+				final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				return vec.isEmpty() 
+						? new VncVector() 
+						: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
+			}
+			else if (Types.isVncList(args.nth(0))) {
+				final VncList list = Coerce.toVncList(args.nth(0));		
+				final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				return list.isEmpty() 
+						? new VncList() 
+						: new VncList(list.getList().subList(list.size()-n, list.size()));
+			}
+			else {
+				throw new VncException(String.format(
+						"nlast: type %s not supported. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args.nth(0))));
+			}
+		}
+	};
+
 	public static VncFunction coalesce = new VncFunction("coalesce") {
 		{
 			setArgLists("(coalesce args*)");
@@ -5015,6 +5087,8 @@ public class CoreFunctions {
 				.put("second",				second)
 				.put("last",				last)
 				.put("rest",				rest)
+				.put("nfirst",				nfirst)
+				.put("nlast",				nlast)
 				.put("empty-to-nil",		emptyToNil)
 				.put("pop",					pop)
 				.put("peek",				peek)
