@@ -8,5 +8,8 @@
 	<classpathentry kind="lib" path="lib/docgen/ST-4.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/commons-text-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/commons-lang3-3.7.jar"/>
+	<classpathentry kind="lib" path="lib/docgen/flying-saucer-core-9.1.14.jar"/>
+	<classpathentry kind="lib" path="lib/docgen/flying-saucer-pdf-openpdf-9.1.14.jar"/>
+	<classpathentry kind="lib" path="lib/docgen/openpdf-1.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
