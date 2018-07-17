@@ -11,7 +11,7 @@ scriptable extension points and rules for applications.
 
 Venice supports macros, comes with Java interoperability, and with a configurable sandbox.
 
-Because Venice does not depend on any libraries (other than the JVM) you can 
+Because Venice does not depend on any runtime libraries (other than the JVM) you can 
 easily add it as standalone .jar to your classpath.
 
  
