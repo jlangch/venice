@@ -219,10 +219,7 @@
             <div class="details" style="page-break-before: always;">
                 <h1>Function details</h1>
                 
-                $data.sections:{s1|
-                $s1.sections:{s2|
-                $s2.sections:{s3|
-                $s3.items:{it|
+                $data.details:{it|
                 $if(it.id)$
                 <div class="detail" id="$it.id$">
                     <h1>$it.name; format="xml"$</h1>
@@ -239,9 +236,6 @@
                     </div>
                 </div>
                 $endif$
-                }$
-                }$
-                }$
                 }$             
             </div>
         </div>

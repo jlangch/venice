@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +66,7 @@ public class DocGenerator {
 			data.put("sections", concat(left, right));
 			data.put("left", left);
 			data.put("right", right);
+			data.put("details", getDocItems(concat(left, right)));
 			data.put("snippets", getCodeSnippet());
 			
 			// HTML
@@ -101,6 +104,18 @@ public class DocGenerator {
 				getJavaInteropSection());
 	}
 
+	private List<DocItem> getDocItems(List<DocSection> sections) {
+		final List<DocItem> items = new ArrayList<>();
+		
+		sections.forEach(s1 -> 
+			s1.getSections().forEach(s2 -> 
+				s2.getSections().forEach(s3 -> items.addAll(s3.getItems()))));
+		
+		Collections.sort(items, Comparator.comparing(DocItem::getName));
+	
+		return items;
+	}
+	
 	private DocSection getPrimitivesSection() {
 		final DocSection section = new DocSection("Primitives");
 
