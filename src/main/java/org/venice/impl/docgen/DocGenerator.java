@@ -66,12 +66,18 @@ public class DocGenerator {
 			data.put("right", right);
 			data.put("snippets", getCodeSnippet());
 			
+			// HTML
+			data.put("pdfmode", false);
 			final String html = HtmlRenderer.renderCheatSheet(data);
+			save(new File(getUserDir(), "cheatsheet.html"), html);
 			
-			final File file = new File(getUserDir(), "cheatsheet.html");
-			save(file, html);
+			// PDF
+			data.put("pdfmode", true);
+			final String xhtml = HtmlRenderer.renderCheatSheet(data);
+			final byte[] pdf = PdfRenderer.renderCheatSheet(xhtml);
+			save(new File(getUserDir(), "cheatsheet.pdf"), pdf);
 			
-			System.out.println("Genereated Cheat Sheet: " + file.getPath());
+			System.out.println("Genereated Cheat Sheet at: " + getUserDir());
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -853,8 +859,11 @@ public class DocGenerator {
 	}
 	
 	private void save(final File file, final String text) throws Exception {
+		save(file, text.getBytes("UTF-8"));
+	}
+	
+	private void save(final File file, final byte[] data) throws Exception {
 		try(FileOutputStream fos = new FileOutputStream(file)) {
-			final byte[] data = text.getBytes("UTF-8");
 			fos.write(data, 0, data.length);					
 			fos.flush();
 		}

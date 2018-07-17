@@ -144,15 +144,17 @@
                 padding: 0.5em;
             }                            
         </style>
+        $if(!data.pdfmode)$
         <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500"/>
         <script>
             WebFont.load({
                 google: {
                     families: ["Open Sans:300,300italic,400,400italic,600,600italic","PT Serif:400,400italic,700,700italic","Source Code Pro:regular,500"]
                 }
             });
-          </script>
+        </script>
+        $endif$
     </head>
 
     <body>
@@ -203,18 +205,18 @@
                 }$            
             </div>
  
-            <div class="embedding">    
+            <div class="embedding" style="page-break-before: always;">    
                <h1>Embedding in Java</h1>
                 
                $data.snippets:{s|
-               <h2>$s.title; format="xml"$</h1>
+               <h2>$s.title; format="xml"$</h2>
                <div class="code-snippet">
                <code>$s.code; format="xml:multiline"$</code>                
                </div>
                }$
             </div>
             
-            <div class="details">
+            <div class="details" style="page-break-before: always;">
                 <h1>Function details</h1>
                 
                 $data.sections:{s1|

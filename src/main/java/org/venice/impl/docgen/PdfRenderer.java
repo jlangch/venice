@@ -28,10 +28,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 public class PdfRenderer {
 
-	public byte[] renderPDF(
-			final String documentName,
-			final String xhtml
-	) {
+	public static byte[] renderCheatSheet(final String xhtml) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			
 			final ITextRenderer renderer = new ITextRenderer(DOTS_PER_POINT, DOTS_PER_PIXEL);
@@ -46,8 +43,7 @@ public class PdfRenderer {
 			return os.toByteArray();
 		}
 		catch(Exception ex) {
-			throw new RuntimeException(
-					"Failed to render PDF report '" + documentName + "'.", ex);
+			throw new RuntimeException("Failed to render PDF cheatsheet.", ex);
 		}		
 	}
 
