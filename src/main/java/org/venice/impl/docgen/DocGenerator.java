@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -105,15 +104,17 @@ public class DocGenerator {
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
-		final List<DocItem> items = new ArrayList<>();
-		
-		sections.forEach(s1 -> 
-			s1.getSections().forEach(s2 -> 
-				s2.getSections().forEach(s3 -> items.addAll(s3.getItems()))));
-		
-		Collections.sort(items, Comparator.comparing(DocItem::getName));
-	
-		return items;
+		return sections
+				.stream()
+				.map(s -> s.getSections())
+				.flatMap(List::stream)
+				.map(s -> s.getSections())
+				.flatMap(List::stream)
+				.map(s -> s.getItems())
+				.flatMap(List::stream)
+				.distinct()
+				.sorted(Comparator.comparing(DocItem::getName))
+				.collect(Collectors.toList());
 	}
 	
 	private DocSection getPrimitivesSection() {
