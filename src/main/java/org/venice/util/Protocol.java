@@ -21,21 +21,17 @@ public class Protocol {
 	
 	
 	public Protocol() {
-		this(true, true);
+		this(true);
 	}
 
-	public Protocol(final boolean enabled) {
-		this(enabled, false);
-	}
-
-	public Protocol(
-			final boolean enabled, 
-			final boolean decorateWithTimestamp
-	) {
-		this.enabled = enabled;
+	public Protocol(final boolean decorateWithTimestamp) {
 		this.decorateWithTimestamp = decorateWithTimestamp;
 	}
-	
+
+	public void enable(final boolean enable) {
+		this.enabled.set(enable);
+	}
+
 	public void debugOn() {
 		debugOn.set(true);
 	}
@@ -105,7 +101,7 @@ public class Protocol {
 	}
 
 	public boolean isEnabled() {
-		return enabled;
+		return enabled.get();
 	}
 	
 	public boolean isEmpty() {
@@ -268,7 +264,6 @@ public class Protocol {
 	
 	private final int MAX_PROTOCOL_SIZE = 20 * 1024 * 1024; // 20MB
 	
-	private final boolean enabled;
 	private final boolean decorateWithTimestamp;
 
 	// thread safety: the sb object is used as monitor
@@ -278,6 +273,7 @@ public class Protocol {
 	private final Map<String,Integer> statistics = new HashMap<>();
 	
 	private final AtomicBoolean debugOn = new AtomicBoolean(false);
+	private final AtomicBoolean enabled = new AtomicBoolean(true);
 
 	private final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 }
