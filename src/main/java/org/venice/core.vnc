@@ -127,6 +127,9 @@
 (def load-string (fn [s] (eval (read-string (str "(do " s ")")))))
 
 
+(def identity (fn [x] x))
+
+
 (def zipmap (fn [keys vals]
    (loop [map (ordered-map)
           ks (seq keys)

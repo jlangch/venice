@@ -3654,7 +3654,7 @@ public class CoreFunctions {
 			for(int i=0; i<coll.size(); i++) {
 				final VncVal val = coll.nth(i);
 				final VncVal keep = predicate.apply(new VncList(val));
-				if (keep == True) {
+				if (!(keep == False || keep == Nil)) {
 					result.getList().add(val);
 				}				
 			}

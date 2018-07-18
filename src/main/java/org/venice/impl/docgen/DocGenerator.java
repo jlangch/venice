@@ -451,6 +451,7 @@ public class DocGenerator {
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
 		create.addItem(new DocItem("fn"));
+		create.addItem(getDocItem("identity"));
 
 
 		final DocSection call = new DocSection("Call");
@@ -754,6 +755,18 @@ public class DocGenerator {
 					toStringList(f.getArgLists()), 
 					((VncString)f.getDescription()).getValue(),
 					runExamples(name, toStringList(f.getExamples())));
+		}
+		
+		if ("identity".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(identity x)"), 
+					"Returns its argument.",
+					runExamples(
+							name, 
+							Arrays.asList(
+								"(identity 4)",
+								"(filter identity [1 2 3 nil 4 false true 1234])")));
 		}
 		
 		if ("zipmap".equals(name)) {

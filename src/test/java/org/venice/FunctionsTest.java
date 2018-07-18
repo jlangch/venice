@@ -986,6 +986,14 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_identity() {
+		final Venice venice = new Venice();
+
+		assertEquals("4", venice.eval("(str (identity 4))"));
+		assertEquals("[1 2 3 4 true 1234]", venice.eval("(str (filter identity [1 2 3 nil 4 false true 1234]))"));		
+	}	
+
+	@Test
 	public void test_inc() {
 		final Venice venice = new Venice();
 
