@@ -16,8 +16,8 @@ import org.venice.impl.types.VncVal;
 public class BugsTest {
 
 	@Test
-	public void test_meta_for_vectors() {	
-		// Create a VeniceInterpreter without 'core.vnc' for simpler testing
+	public void test_0_2_0_meta_for_vectors() {	
+		// Create a VeniceInterpreter without 'core.venice' for simpler testing
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		final Env env = new Env(null);
 		
@@ -30,8 +30,8 @@ public class BugsTest {
 	}
 
 	@Test
-	public void test_str_unicode() {
-		// Create a VeniceInterpreter without 'core.vnc' for simpler testing
+	public void test_0_2_0_str_unicode() {
+		// Create a VeniceInterpreter without 'core.venice' for simpler testing
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		final Env env = new Env(null);
 		

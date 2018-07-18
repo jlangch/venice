@@ -440,7 +440,7 @@ public class VeniceInterpreter {
 
 		// load core.vnc 
 		final String core = loadCore();
-		RE("(eval " + core + ")", "core.vnc", env);
+		RE("(eval " + core + ")", "core.venice", env);
 		
 		return env;
 	}
@@ -472,13 +472,13 @@ public class VeniceInterpreter {
 	private String loadCore() {
 		try {
 			if (veniceCore.get() == null) {
-				veniceCore.set(new ClassPathResource("org/venice/core.vnc")
+				veniceCore.set(new ClassPathResource("org/venice/core.venice")
 										.getResourceAsString("UTF-8"));
 			}
 			return veniceCore.get();
 		}
 		catch(Exception ex) {
-			throw new RuntimeException("Failed to load 'core.vnc'", ex);
+			throw new RuntimeException("Failed to load 'core.venice'", ex);
 		}
 	}
 	

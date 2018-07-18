@@ -36,11 +36,11 @@ public class ErrorMessageTest {
 	public void test_err_location() {
 		final VncVal val = new VncLong(0);
 		
-		val.setMetaVal(new VncSymbol(":file"), new VncString("core.vnc"));
+		val.setMetaVal(new VncSymbol(":file"), new VncString("core.venice"));
 		val.setMetaVal(new VncSymbol(":line"), new VncLong(10));
 		val.setMetaVal(new VncSymbol(":column"), new VncLong(42));
 
-		assertEquals("core.vnc", ((VncString)val.getMetaVal(ErrorMessage.FILE)).getValue());
+		assertEquals("core.venice", ((VncString)val.getMetaVal(ErrorMessage.FILE)).getValue());
 		assertEquals(Long.valueOf(10L), ((VncLong)val.getMetaVal(ErrorMessage.LINE)).getValue());
 		assertEquals(Long.valueOf(42L), ((VncLong)val.getMetaVal(ErrorMessage.COLUMN)).getValue());
 	}
