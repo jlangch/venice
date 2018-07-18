@@ -119,18 +119,22 @@ public class DocGenerator {
 	
 	private DocSection getPrimitivesSection() {
 		final DocSection section = new DocSection("Primitives");
-
-		final DocSection numbers = new DocSection("Numbers");
-		section.addSection(numbers);
+		
+		final DocSection lit = new DocSection("Literals");
+		section.addSection(lit);
 		
 		final DocSection literals = new DocSection("Literals");
-		numbers.addSection(literals);
+		lit.addSection(literals);
+
 		literals.addItem(new DocItem("Nil: nil"));
 		literals.addItem(new DocItem("Long: 1500"));
 		literals.addItem(new DocItem("Double: 3.569"));
 		literals.addItem(new DocItem("Boolean: true, false"));
 		literals.addItem(new DocItem("BigDecimal: 6.897M"));
 		literals.addItem(new DocItem("String: \"abcde\""));
+
+		final DocSection numbers = new DocSection("Numbers");
+		section.addSection(numbers);
 
 		final DocSection arithmetic = new DocSection("Arithmetic");
 		numbers.addSection(arithmetic);
@@ -284,6 +288,11 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("ordered-map?"));
 		coll_test.addItem(getDocItem("sorted-map?"));
 		coll_test.addItem(getDocItem("bytebuf?"));
+
+		final DocSection coll_process = new DocSection("Process");
+		collections.addSection(coll_process);
+		coll_process.addItem(getDocItem("map"));
+		coll_process.addItem(getDocItem("filter"));
 
 		
 		

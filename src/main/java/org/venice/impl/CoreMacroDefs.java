@@ -103,7 +103,10 @@ public class CoreMacroDefs {
 				"Evaluates x then calls all of the methods and functions with the " + 
 				"value of x supplied at the front of the given arguments.  The forms " + 
 				"are evaluated in order. Returns x.",
-				null));		
+				Arrays.asList(
+						"(doto (. :java.util.HashMap :new)  \n" +
+						"      (. :put :a 1)                \n" +
+						"      (. :put :b 2))                 ")));		
 		
 		macros.add(new MacroDef(
 				"->", 
@@ -112,7 +115,8 @@ public class CoreMacroDefs {
 				"second item in the first form, making a list of it if it is not a " + 
 				"list already. If there are more forms, inserts the first form as the " + 
 				"second item in second form, etc.",
-				null));		
+				Arrays.asList(
+						"(-> 5 (+ 3) (/ 2) (- 1))")));		
 		
 		macros.add(new MacroDef(
 				"->>", 
@@ -121,7 +125,12 @@ public class CoreMacroDefs {
 				"last item in the first form, making a list of it if it is not a " + 
 				"list already. If there are more forms, inserts the first form as the " + 
 				"last item in second form, etc.",
-				null));	
+				Arrays.asList(
+						"(->> 5 (+ 3) (/ 32) (- 1))",
+						"(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ] \n" +
+						"     (map (fn [x] (get x :b)))                           \n" +
+						"     (filter (fn [x] (> x 4)))                           \n" +
+						"     (map inc))))                                          ")));
 		
 		macros.add(new MacroDef(
 				"list-comp", 

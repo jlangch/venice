@@ -340,7 +340,16 @@ public class MacroTest {
 	
 		// (- 1 (/ 32 (+ 3 5)))
 		assertEquals(Long.valueOf(-3L), venice.eval("(->> 5 (+ 3) (/ 32) (- 1))"));
-	}
+
+		assertEquals(
+				"(7 9)", 
+				venice.eval(
+						"(str                                                      " +
+						"   (->> [{:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8}] " +
+						"        (map (fn [x] (get x :b)))                         " +
+						"        (filter (fn [x] (> x 4)))                         " +
+						"        (map inc))))                                      "));
+}
 
 	@Test
 	public void test_macroexpand() {
