@@ -159,6 +159,12 @@ public class JavaInteropUtil {
 						ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())),
 					ex);
 		}
+		catch(SecurityException ex) {
+			throw new SecurityException(String.format(
+					"%s. %s", 
+					ex.getMessage(),
+					ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())));
+		}
 		catch(RuntimeException ex) {
 			throw new JavaMethodInvocationException(String.format(
 						"JavaInterop failure. %s", 

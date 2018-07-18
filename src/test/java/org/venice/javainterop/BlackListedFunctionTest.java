@@ -73,5 +73,10 @@ public class BlackListedFunctionTest {
 
 		new Venice(interceptor).eval("(prn 100)");
 	}
+	
+	@Test(expected = SecurityException.class)
+	public void test_system_exit() {
+		new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
+	}
 
 }

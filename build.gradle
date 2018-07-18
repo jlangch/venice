@@ -17,7 +17,7 @@ sourceSets {
 
 jar {
     from('src/main/java') {
-        include 'org/venice/**/*.vnc'
+        include 'org/venice/**/*.venice'
     }
     
     manifest {
