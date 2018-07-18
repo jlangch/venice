@@ -6,13 +6,14 @@ Venice, a sandboxed Lisp interpreter running on Java.
 ## Overview
 
 Venice's goal is not to build just another Lisp, it's born from the need of 
-having a safe and powerful expression language that can be used to implement 
-scriptable extension points and rules for applications.
+having a safe and powerful scripting and expression language that can be used 
+to scriptable extension points and rules for applications.
 
-Venice supports macros, comes with Java interoperability, and with a configurable sandbox.
+Venice supports macros, comes with Java interoperability, and with a configurable 
+sandbox.
 
-Because Venice does not depend on any runtime libraries (other than the JVM) you can 
-easily add it as standalone .jar to your classpath.
+Because Venice does not depend on any runtime libraries (other than the JVM) you 
+can easily add it as standalone .jar to your classpath.
 
  
 ## Cheat Sheet
@@ -180,10 +181,10 @@ venice.eval(
     "      (. :add 1)                     " +
     "      (. :add 2))                    ");
 
-// => FAIL (static method) with Sandbox SecurityException
+// => FAIL (call to non white listed static method)
 venice.eval("(. :java.lang.System :exit 0)"); 
 
-// => FAIL Venice I/O function
+// => FAIL (call to rejected Venice I/O function)
 venice.eval("(slurp \"/tmp/file\")"); 
 ```
 
