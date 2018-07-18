@@ -203,7 +203,9 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/join"));
 		use.addItem(getDocItem("str/subs"));
 		use.addItem(getDocItem("str/split"));
-		use.addItem(getDocItem("str/lines"));
+		use.addItem(getDocItem("str/split-lines"));
+		use.addItem(getDocItem("str/strip-start"));
+		use.addItem(getDocItem("str/strip-end"));
 		use.addItem(getDocItem("str/truncate"));
 
 		final DocSection regex = new DocSection("Regex");

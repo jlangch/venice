@@ -293,15 +293,15 @@ public class Reader {
 		return new int[]{row,col};
 	}
 
-	// group 1: integer = "(^-?[0-9]+$)";
-	// group 2: decimal = "(^-?[0-9]+[.][0-9]*$)";
-	// group 3: bigdecimal = "(^-?[0-9]+[.][0-9]*M$)";
-	// group 4: nil = "(^nil$)";
-	// group 5: true = "(^true$)";
-	// group 6: false = "(^false$)";
-	// group 7: string_escaped = "^\"(.*)\"$";
-	// group 8: string = ":(.*)";
-	// group 9: symbol = "(^[^\"]*$)";	
+	// group 1: integer => (^-?[0-9]+$)
+	// group 2: decimal => (^-?[0-9]+[.][0-9]*$)
+	// group 3: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
+	// group 4: nil => (^nil$)
+	// group 5: true => (^true$)
+	// group 6: false => (^false$)
+	// group 7: string_escaped => ^\"(.*)\"$
+	// group 8: string => :(.*)
+	// group 9: symbol => (^[^\"]*$)
 	private static final Pattern atom_pattern = Pattern.compile("(?s)(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^-?[0-9][0-9.]*M$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|:(.*)|(^[^\"]*$)");
 	
 	private static final Pattern tokenize_pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");

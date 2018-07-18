@@ -4930,6 +4930,58 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction str_strip_start = new VncFunction("str/strip-start") {
+		{
+			setArgLists("(str/strip-start s substr)");
+			
+			setDescription(
+					"Removes a substr only if it is at the beginning of a s, otherwise returns s.");
+			
+			setExamples(
+					"(str/strip-start \"abcdef\" \"abc\")",
+					"(str/strip-start \"abcdef\" \"def\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/strip-start", args, 2);
+			
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			final String s = Coerce.toVncString(args.nth(0)).getValue();
+			final String substr = Coerce.toVncString(args.nth(1)).getValue();
+			
+			return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);		
+		}
+	};
+
+	public static VncFunction str_strip_end = new VncFunction("str/strip-end") {
+		{
+			setArgLists("(str/strip-end s substr)");
+			
+			setDescription(
+					"Removes a substr only if it is at the end of a s, otherwise returns s.");
+			
+			setExamples(
+					"(str/strip-end \"abcdef\" \"def\")",
+					"(str/strip-end \"abcdef\" \"abc\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/strip-end", args, 2);
+			
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			final String s = Coerce.toVncString(args.nth(0)).getValue();
+			final String substr = Coerce.toVncString(args.nth(1)).getValue();
+			
+			return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);		
+		}
+	};
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// Utilities
@@ -5234,7 +5286,9 @@ public class CoreFunctions {
 				.put("str/split-lines",		str_split_lines)
 				.put("str/format",			str_format)
 				.put("str/truncate",		str_truncate)
-
+				.put("str/strip-start",		str_strip_start)
+				.put("str/strip-end",		str_strip_end)
+				
 				.toMap();
 
 	
