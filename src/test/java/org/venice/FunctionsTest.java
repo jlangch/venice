@@ -2532,6 +2532,7 @@ public class FunctionsTest {
 
 		assertEquals("", venice.eval("(str/repeat \"abc\" 0)"));
 		assertEquals("abcabcabc", venice.eval("(str/repeat \"abc\" 3)"));
+		assertEquals("abc-abc-abc", venice.eval("(str/repeat \"abc\" 3  \"-\")"));
 	}
 
 	@Test

@@ -4984,18 +4984,19 @@ public class CoreFunctions {
 
 	public static VncFunction str_repeat = new VncFunction("str/repeat") {
 		{
-			setArgLists("(str/repeat s n)");
+			setArgLists("(str/repeat s n)", "(str/repeat s n sep)");
 			
 			setDescription(
-					"Repeats s n times.");
+					"Repeats s n times with an optional separator.");
 			
 			setExamples(
 					"(str/repeat \"abc\" 0)",
-					"(str/repeat \"abc\" 3)");
+					"(str/repeat \"abc\" 3)",
+					"(str/repeat \"abc\" 3 \"-\")");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("str/repeat", args, 2);
+			assertArity("str/repeat", args, 2, 3);
 			
 			if (args.nth(0) == Nil) {
 				return Nil;
@@ -5003,9 +5004,11 @@ public class CoreFunctions {
 			
 			final String s = Coerce.toVncString(args.nth(0)).getValue();
 			final int times = Coerce.toVncLong(args.nth(1)).getValue().intValue();
+			final String sep = args.size() == 3 ? Coerce.toVncString(args.nth(2)).getValue() : "";
 			
 			final StringBuilder sb = new StringBuilder();
 			for(int ii=0; ii<times; ii++) {
+				if (ii>0)sb.append(sep);
 				sb.append(s);
 			}			
 			return new VncString(sb.toString());		
