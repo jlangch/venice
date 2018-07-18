@@ -1259,7 +1259,7 @@ public class CoreFunctions {
 			setArgLists("(== x y)");
 			
 			setDescription(
-					"Returns true of both operands have the equivalent type");
+					"Returns true if both operands have the equivalent type");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1274,7 +1274,7 @@ public class CoreFunctions {
 			setArgLists("(!= x y)");
 			
 			setDescription(
-					"Returns true of both operands do not have the equivalent type");
+					"Returns true if both operands do not have the equivalent type");
 		}
 		
 		public VncVal apply(final VncList args) {

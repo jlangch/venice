@@ -7,7 +7,7 @@ Venice, a sandboxed Lisp interpreter running on Java.
 
 Venice's goal is not to build just another Lisp, it's born from the need of 
 having a safe and powerful scripting and expression language that can be used 
-to scriptable extension points and rules for applications.
+to implement scriptable extension points and rules for applications.
 
 Venice supports macros, comes with Java interoperability, and with a configurable 
 sandbox.
@@ -25,7 +25,7 @@ can easily add it as standalone .jar to your classpath.
 
 ## REPL
 
-Venice comes with a simple REPL that does not provide command line editing.
+Venice comes with a simple REPL.
 
 Start the REPL with `java -jar venice.jar`
 
@@ -88,11 +88,12 @@ for(long ii=0; ii<100; ii++) {
 
 ## Java Interop
 
-Venice supports calling constructors, static and instance methods as well as static class
-fields and instance fields.
+Venice supports calling constructors, static and instance methods as well as 
+static class fields and instance fields.
 
-The Venice types long, double, and decimal are coerced to Java's primitive and and object types 
-byte, short, int, long, float, double, Byte, Short, Integer, Long, Float, Double, and BigDecimal.
+The Venice types long, double, and decimal are coerced to Java's primitive and
+object types byte, short, int, long, float, double, Byte, Short, Integer, Long, 
+Float, Double, and BigDecimal.
 
 
 ```java
