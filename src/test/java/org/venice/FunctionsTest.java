@@ -2584,6 +2584,22 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_str_strip_start() {
+		final Venice venice = new Venice();
+
+		assertEquals("def", venice.eval("(str/strip-start \"abcdef\" \"abc\")"));
+		assertEquals("abcdef", venice.eval("(str/strip-start \"abcdef\" \"def\")"));
+	}
+
+	@Test
+	public void test_str_strip_end() {
+		final Venice venice = new Venice();
+
+		assertEquals("abc", venice.eval("(str/strip-end \"abcdef\" \"def\")"));
+		assertEquals("abcdef", venice.eval("(str/strip-end \"abcdef\" \"abc\")"));
+	}
+
+	@Test
 	public void test_str_subs() {
 		final Venice venice = new Venice();
 
