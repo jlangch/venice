@@ -4982,6 +4982,36 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction str_repeat = new VncFunction("str/repeat") {
+		{
+			setArgLists("(str/repeat s n)");
+			
+			setDescription(
+					"Repeats s n times.");
+			
+			setExamples(
+					"(str/repeat \"abc\" 0)",
+					"(str/repeat \"abc\" 3)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/repeat", args, 2);
+			
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			final String s = Coerce.toVncString(args.nth(0)).getValue();
+			final int times = Coerce.toVncLong(args.nth(1)).getValue().intValue();
+			
+			final StringBuilder sb = new StringBuilder();
+			for(int ii=0; ii<times; ii++) {
+				sb.append(s);
+			}			
+			return new VncString(sb.toString());		
+		}
+	};
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// Utilities
@@ -5288,6 +5318,8 @@ public class CoreFunctions {
 				.put("str/truncate",		str_truncate)
 				.put("str/strip-start",		str_strip_start)
 				.put("str/strip-end",		str_strip_end)
+				.put("str/repeat",		    str_repeat)
+				
 				
 				.toMap();
 

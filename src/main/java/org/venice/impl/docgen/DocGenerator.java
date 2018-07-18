@@ -206,6 +206,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/split-lines"));
 		use.addItem(getDocItem("str/strip-start"));
 		use.addItem(getDocItem("str/strip-end"));
+		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/truncate"));
 
 		final DocSection regex = new DocSection("Regex");

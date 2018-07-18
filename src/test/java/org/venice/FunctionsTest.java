@@ -2527,6 +2527,14 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_str_repeat() {
+		final Venice venice = new Venice();
+
+		assertEquals("", venice.eval("(str/repeat \"abc\" 0)"));
+		assertEquals("abcabcabc", venice.eval("(str/repeat \"abc\" 3)"));
+	}
+
+	@Test
 	public void test_str_replace_all() {
 		final Venice venice = new Venice();
 
