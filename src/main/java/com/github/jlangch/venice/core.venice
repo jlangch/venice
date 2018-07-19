@@ -1,0 +1,156 @@
+
+(defmacro comment [& body] nil)
+
+
+(defmacro assert [expr message]
+   `(if ~message
+       (when-not ~expr
+           (throw (. :com.github.jlangch.venice.AssertionException 
+                     :new 
+                     (str "Assert failed (" ~message "): " (pr-str '~expr)))))
+       (when-not ~expr
+           (throw (. :com.github.jlangch.venice.AssertionException 
+                     :new 
+                     (str "Assert failed: " (pr-str '~expr)))))
+    ))
+    
+
+(defmacro and [x & next]
+    (let [arity_ (inc (count next))]
+        `(if (== 1 ~arity_)
+            ~x  
+            (let [cond_ ~x]
+                (if cond_ (and ~@next) cond_)))))
+
+
+(defmacro or [x & next]
+    (let [arity_ (inc (count next))]
+        `(if (== 1 ~arity_)
+            ~x 
+            (let [cond_ ~x]
+                (if cond_ cond_ (or ~@next))))))
+
+
+(defmacro cond [& clauses]
+    (when clauses 
+        (list 'if (first clauses) 
+            (if (rest clauses) 
+                (second clauses) 
+                (throw "cond requires an even number of forms")) 
+            (cons 'cond (rest (rest clauses))))))
+
+
+(defmacro when [test & body]
+    (list 'if test (cons 'do body)))
+
+
+(defmacro when-not [test & body]
+    (list 'if test nil (cons 'do body)))
+
+
+(defmacro if-let [bindings then else]
+   (let [form (first bindings) tst (second bindings)]
+     `(let [temp_ ~tst]
+        (if temp_
+          (let [~form temp_]
+            ~then)
+          ~else))))
+
+
+(defmacro dotimes [bindings & body]
+    (let [i (first bindings) 
+          n (second bindings)] 
+       `(let [k (long ~n)] 
+           (loop [~i 0] 
+              (when (< ~i k) 
+                 ~@body 
+                 (recur (inc ~i)))))))
+
+
+(defmacro while [test & body]
+    `(loop [] 
+        (when ~test 
+            ~@body 
+            (recur))))
+
+
+(defmacro doto [x & forms]
+    (let [gx (gensym)] 
+       `(let [~gx ~x] 
+          ~@(map (fn [f] `(~(first f) ~gx ~@(rest f))) forms) 
+          ~gx)))
+
+
+(defmacro -> [x & forms]
+    (loop [x x, forms forms]
+        (if forms
+            (let [form (first forms)
+                  threaded (if (list? form)
+                              `(~(first form) ~x ~@(empty-to-nil(rest form)))
+                              (list form x))]
+               (recur threaded (empty-to-nil(rest forms))))
+            x)))
+
+
+(defmacro ->> [x & forms]
+    (loop [x x, forms forms]
+        (if forms
+            (let [form (first forms)
+                  threaded (if (list? form)
+                         `(~(first form) ~@(empty-to-nil(rest form)) ~x)
+                         (list form x))]
+               (recur threaded (empty-to-nil(rest forms))))
+            x)))
+
+
+(defmacro list-comp [[binding coll-expr & bindings] body-expr]
+    (cond (not binding)
+        `(list ~body-expr)
+
+        (== :when binding)
+        `(when ~coll-expr (list-comp ~bindings ~body-expr))
+
+        :else
+        `(mapcat (fn [~binding] (list-comp ~bindings ~body-expr))
+                 ~coll-expr)))
+
+
+(defmacro time [expr]
+    `(let [start_ (time-ns)
+           ret_ ~expr]
+         (prn (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
+         ret_))
+
+
+(def load-file (fn [f] (eval (read-string (str "(do " (slurp f) ")")))))
+
+
+(def load-string (fn [s] (eval (read-string (str "(do " s ")")))))
+
+
+(def not (fn [x] (if x false true)))
+
+
+(def identity (fn [x] x))
+
+
+(def zipmap (fn [keys vals]
+   (loop [map (ordered-map)
+          ks (seq keys)
+          vs (seq vals)]
+      (if (and (not-empty? ks) (not-empty? vs))
+         (recur (assoc map (first ks) (first vs))
+                (rest ks)
+                (rest vs))
+         map))))
+
+
+(def memoize (fn [f]
+   (let [mem (atom {})]
+      (fn [& args]
+         (if-let [e (find @mem args)]
+            (val e)
+            (let [ret (apply f args)]
+               (swap! mem assoc args ret)
+               ret))))))
+ 
