@@ -130,6 +130,31 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((delegate == null) ? 0 : delegate.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		VncJavaObject other = (VncJavaObject) obj;
+		if (delegate == null) {
+			if (other.delegate != null)
+				return false;
+		} else if (!delegate.equals(other.delegate))
+			return false;
+		return true;
+	}
+
+	@Override
 	public String toString(final boolean print_readably) {
 		return delegate.toString();
 	}
