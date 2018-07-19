@@ -1887,6 +1887,16 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_partial() {
+		final Venice venice = new Venice();
+		
+		assertEquals("500", venice.eval(
+								"(do " +
+								"   (def hundred-times (partial * 100)) " +
+								"   (str (hundred-times 5)))"));
+	}
+	
+	@Test
 	public void test_peek() {
 		final Venice venice = new Venice();
 

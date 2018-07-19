@@ -3607,7 +3607,7 @@ public class CoreFunctions {
 						.map(v -> Coerce.toVncFunction(v))
 						.collect(Collectors.toList());
 			
-			final VncFunction compFn = new VncFunction() {
+			return new VncFunction() {
 				public VncVal apply(final VncList args) {
 					VncList args_ = args;
 					VncVal result = Nil;
@@ -3619,10 +3619,39 @@ public class CoreFunctions {
 					return result;
 				}
 			};
-			
-			return compFn;
 		}
 	};
+	
+	public static VncFunction partial = new VncFunction("partial") {
+		{
+			setArgLists("(partial f arg1 args*)");
+			
+			setDescription(
+					"Takes a function f and fewer than the normal arguments to f, and " + 
+					"returns a fn that takes a variable number of additional args. When " + 
+					"called, the returned function calls f with args + additional args.");
+			
+			setExamples(
+					"(filter (comp not zero?) [0 1 0 2 0 3 0 4])", 
+					"(do \n" +
+					"   (def fifth (comp first rest rest rest rest)) \n" +
+					"   (fifth [1 2 3 4 5]))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("partial", args, 2);
+			
+			final VncFunction fn = Coerce.toVncFunction(args.first());
+			final VncList fnArgs = new VncList(args.second());
+			
+			return new VncFunction() {
+				public VncVal apply(final VncList args) {
+					return fn.apply(fnArgs.addAtEnd(args));
+				}
+			};
+		}
+	};
+
 
 	public static VncFunction map = new VncFunction("map") {
 		{
@@ -5297,6 +5326,7 @@ public class CoreFunctions {
 				.put("count",				count)
 				.put("apply",				apply)
 				.put("comp",				comp)
+				.put("partial",				partial)
 				.put("map",					map)
 				.put("filter",				filter)
 				.put("remove",				remove)

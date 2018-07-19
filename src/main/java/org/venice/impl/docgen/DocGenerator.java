@@ -470,6 +470,7 @@ public class DocGenerator {
 		all.addSection(call);
 		call.addItem(getDocItem("apply"));
 		call.addItem(getDocItem("comp"));
+		call.addItem(getDocItem("partial"));
 		call.addItem(getDocItem("memoize"));
 
 
