@@ -10,18 +10,18 @@ sourceSets {
     main {
         java {
             srcDirs = ['src/main/java']
-            exclude 'org/venice/impl/docgen/**'
+            exclude 'com/github/jlangch/venice/impl/docgen/**'
         }
     }
 }
 
 jar {
     from('src/main/java') {
-        include 'org/venice/**/*.venice'
+        include 'com/github/jlangch/venice/**/*.venice'
     }
     
     manifest {
-        attributes 'Main-Class': 'org.venice.REPL'
+        attributes 'Main-Class': 'com.github.jlangch.venice.REPL'
     }
     
     archiveName = "venice-${version}.jar"

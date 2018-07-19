@@ -38,7 +38,7 @@ venice>
 ## Venice as expression engine
 
 ```java
-import org.venice.Venice;
+import com.github.jlangch.venice.Venice;
 
 final Venice venice = new Venice();
 
@@ -57,8 +57,8 @@ getters can be accessed simply through `(get bean :getterName)`
 
 
 ```java
-import org.venice.Venice;
-import org.venice.Parameters;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.Parameters;
 
 final Venice venice = new Venice();
 
@@ -72,9 +72,9 @@ Precompiling Venice speeds up evaluation significantly when calling many
 times an expression with different parameters:
 
 ```java
-import org.venice.Venice;
-import org.venice.PreCompiled;
-import org.venice.Parameters;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.PreCompiled;
+import com.github.jlangch.venice.Parameters;
 
 final Venice venice = new Venice();
 
@@ -97,7 +97,7 @@ Float, Double, and BigDecimal.
 
 
 ```java
-import org.venice.Venice;
+import com.github.jlangch.venice.Venice;
 
 final Venice venice = new Venice();
 
@@ -108,7 +108,7 @@ System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5
 
 
 ```java
-import org.venice.Venice;
+import com.github.jlangch.venice.Venice;
 
 final Venice venice = new Venice();
 
@@ -158,6 +158,9 @@ that are available to the script in the JVM!
 #### Example
 
 ```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.javainterop.*;
+
 final JavaInterceptor interceptor =
     new JavaSandboxInterceptor(
         new SandboxRules()
