@@ -42,7 +42,6 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -66,7 +65,7 @@ public class DocGenerator {
 			data.put("left", left);
 			data.put("right", right);
 			data.put("details", getDocItems(concat(left, right)));
-			data.put("snippets", getCodeSnippet());
+			data.put("snippets", new CodeSnippetReader().readSnippets());
 			
 			// HTML
 			data.put("pdfmode", false);
@@ -987,39 +986,5 @@ public class DocGenerator {
 		return new File(System.getProperty("user.dir"));
 	}
 		
-	private List<CodeSnippet> getCodeSnippet() {
-		try {
-			final List<String> lines = 
-					StringUtil.splitIntoLines(
-									new ClassPathResource(
-											"com/github/jlangch/venice/impl/docgen/cheatsheet.snippets")
-							  .getResourceAsString("UTF-8"));
-			
-			final List<Integer> snippetStartLines = new ArrayList<>();			
-			for(int ii=0; ii<lines.size(); ii++) {
-				if (lines.get(ii).startsWith("**")) {
-					snippetStartLines.add(ii);
-				}
-			}
-			snippetStartLines.add(lines.size());
-			
-			final List<CodeSnippet> snippets = new ArrayList<>(); 
-			for(int ii=0; ii<snippetStartLines.size()-1; ii++) {
-				snippets.add(
-						new CodeSnippet(
-								lines.get(snippetStartLines.get(ii)).substring(2),
-								lines
-									.subList(snippetStartLines.get(ii)+1, snippetStartLines.get(ii+1))
-									.stream()
-									.collect(Collectors.joining("\n"))
-									.trim()));
-			}
-
-			return snippets;
-		}
-		catch(Exception ex) {
-			throw new RuntimeException("Failed to load code snippets", ex);
-		}
-	}
 	
 }
