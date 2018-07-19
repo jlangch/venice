@@ -12,19 +12,19 @@
     
 
 (defmacro and [x & next]
-    (let [arity (inc (count next))]
-        `(if (== 1 ~arity)
+    (let [arity_ (inc (count next))]
+        `(if (== 1 ~arity_)
             ~x  
-            (let [cond ~x]
-                (if cond (and ~@next) cond)))))
+            (let [cond_ ~x]
+                (if cond_ (and ~@next) cond_)))))
 
 
 (defmacro or [x & next]
-    (let [arity (inc (count next))]
-        `(if (== 1 ~arity)
+    (let [arity_ (inc (count next))]
+        `(if (== 1 ~arity_)
             ~x 
-            (let [cond ~x]
-                (if cond cond (or ~@next))))))
+            (let [cond_ ~x]
+                (if cond_ cond_ (or ~@next))))))
 
 
 (defmacro cond [& clauses]

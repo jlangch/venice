@@ -112,7 +112,8 @@ public class StringUtil {
 					case 'n': sb.append('\n'); break;
 					case 'r': sb.append('\r'); break;
 					case 't': sb.append('\t'); break;
-					case '"':  sb.append('\"'); break;
+					case '"':  sb.append('"'); break;
+					case '\'':  sb.append('\''); break;
 					case '\\': sb.append('\\'); break;
 					default:  break;
 				}

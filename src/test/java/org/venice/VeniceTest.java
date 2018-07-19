@@ -81,7 +81,7 @@ public class VeniceTest {
 		final Venice venice = new Venice();
 		
 
-		String script = 
+		final String script = 
 				"(or (match (get event :eventName) \"webapp[.](started|stopped)\") " +
 				"    (== (get event :eventKey) \"superuser\") " +
 				"    (== (get event :eventType) \"ALERT\") " +

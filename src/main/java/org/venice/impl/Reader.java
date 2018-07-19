@@ -137,12 +137,20 @@ public class Reader {
 		} 
 		else if (matcher.group(8) != null) {
 			return ReaderUtil.withTokenPos(
-					VncString.keyword(matcher.group(8)), 
+					new VncString(
+							StringUtil.unescape(
+									StringUtil.decodeUnicode(
+											matcher.group(8)))), 
 					token);
 		} 
 		else if (matcher.group(9) != null) {
 			return ReaderUtil.withTokenPos(
-					new VncSymbol(matcher.group(9)), 
+					VncString.keyword(matcher.group(9)), 
+					token);
+		} 
+		else if (matcher.group(10) != null) {
+			return ReaderUtil.withTokenPos(
+					new VncSymbol(matcher.group(10)), 
 					token);
 		} 
 		else {
@@ -290,7 +298,7 @@ public class Reader {
 			}
 		}
 		
-		return new int[]{row,col};
+		return new int[] {row,col};
 	}
 
 	// group 1: integer => (^-?[0-9]+$)
@@ -299,10 +307,11 @@ public class Reader {
 	// group 4: nil => (^nil$)
 	// group 5: true => (^true$)
 	// group 6: false => (^false$)
-	// group 7: string_escaped => ^\"(.*)\"$
-	// group 8: string => :(.*)
-	// group 9: symbol => (^[^\"]*$)
-	private static final Pattern atom_pattern = Pattern.compile("(?s)(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^-?[0-9][0-9.]*M$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|:(.*)|(^[^\"]*$)");
+	// group 7: string_escaped => ^"(.*)"$
+	// group 8: string_escaped => ^'(.*)'$
+	// group 9: string => :(.*)
+	// group 10: symbol => (^[^"]*$)
+	private static final Pattern atom_pattern = Pattern.compile("(?s)(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^-?[0-9][0-9.]*M$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|^'(.*)'$|:(.*)|(^[^\"]*$)");
 	
 	private static final Pattern tokenize_pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
 
