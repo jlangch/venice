@@ -210,9 +210,15 @@ public class MacroTest {
 
 		assertEquals(false, (Boolean)venice.eval("(not true))"));
 		assertEquals(true,  (Boolean)venice.eval("(not false))"));
-		
+
+		assertEquals(true,  (Boolean)venice.eval("(not (not true)))"));
+		assertEquals(false, (Boolean)venice.eval("(not (not (not true))))"));
+
 		assertEquals(false, (Boolean)venice.eval("(not (== 1 1))"));
 		assertEquals(true,  (Boolean)venice.eval("(not (== 1 2)))"));
+
+		assertEquals(true,  (Boolean)venice.eval("(not (not (== 1 1)))"));
+		assertEquals(false, (Boolean)venice.eval("(not (not (== 1 2))))"));
 	}
 	
 	@Test

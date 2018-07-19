@@ -9,10 +9,7 @@
        (when-not ~expr
            (throw (. :org.venice.AssertionException :new (str "Assert failed: " (pr-str '~expr)))))
     ))
-
-
-(defmacro not [x]  `(if ~x false true))
-
+    
 
 (defmacro and [x & next]
     (let [arity (inc (count next))]
@@ -125,6 +122,9 @@
 
 
 (def load-string (fn [s] (eval (read-string (str "(do " s ")")))))
+
+
+(def not (fn [x] (if x false true)))
 
 
 (def identity (fn [x] x))

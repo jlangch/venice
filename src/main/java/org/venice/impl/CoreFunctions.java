@@ -3580,6 +3580,49 @@ public class CoreFunctions {
 			return fn.apply(fn_args);
 		}
 	};
+	
+	public static VncFunction comp = new VncFunction("comp") {
+		{
+			setArgLists("(comp f*)");
+			
+			setDescription(
+					"Takes a set of functions and returns a fn that is the composition " + 
+					"of those fns. The returned fn takes a variable number of args, " + 
+					"applies the rightmost of fns to the args, the next " + 
+					"fn (right-to-left) to the result, etc. ");
+			
+			setExamples(
+					"(filter (comp not zero?) [0 1 0 2 0 3 0 4])", 
+					"(do \n" +
+					"   (def fifth (comp first rest rest rest rest)) \n" +
+					"   (fifth [1 2 3 4 5]))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("comp", args, 1);
+			
+			final List<VncFunction> fns = 
+					args.getList()
+						.stream()
+						.map(v -> Coerce.toVncFunction(v))
+						.collect(Collectors.toList());
+			
+			final VncFunction compFn = new VncFunction() {
+				public VncVal apply(final VncList args) {
+					VncList args_ = args;
+					VncVal result = Nil;
+					for(int ii=fns.size()-1; ii>=0; ii--) {
+						final VncFunction fn = fns.get(ii);
+						result = fn.apply(args_);
+						args_ = new VncList(result);
+					}
+					return result;
+				}
+			};
+			
+			return compFn;
+		}
+	};
 
 	public static VncFunction map = new VncFunction("map") {
 		{
@@ -3592,10 +3635,10 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			final VncFunction fn = (VncFunction)args.nth(0);
+			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
 			final VncList lists = (VncList)args.slice(1);
 			final VncList result = new VncList();
-	
+			
 			int index = 0;
 			boolean hasMore = true;
 			while(hasMore) {
@@ -5126,7 +5169,6 @@ public class CoreFunctions {
 	private static boolean isJavaIoFile(final VncVal val) {
 		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
 	}
-
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -5254,6 +5296,7 @@ public class CoreFunctions {
 				.put("not-empty?",			not_empty_Q)
 				.put("count",				count)
 				.put("apply",				apply)
+				.put("comp",				comp)
 				.put("map",					map)
 				.put("filter",				filter)
 				.put("remove",				remove)

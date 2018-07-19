@@ -207,7 +207,23 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(coll? (sorted-map :a 1 :b 2))"));	
 		assertTrue((Boolean)venice.eval("(coll? (set 1 2))"));	
 	}
+	
+	@Test
+	public void test_comp() {
+		final Venice venice = new Venice();
 
+		assertEquals("(1 2 3)", venice.eval("(str (map (comp inc) [0 1 2]))"));
+
+		assertEquals("[false false]", venice.eval("(str (filter (comp not) [false true false]))"));
+
+		assertEquals("[1 2 3]", venice.eval("(str (filter (comp not zero?) [0 1 0 2 0 3]))"));
+		
+		assertEquals("5", venice.eval(
+								"(do " +
+								"   (def fifth (comp first rest rest rest rest)) " +
+								"   (str (fifth [1 2 3 4 5])))"));
+	}
+	
 	@Test
 	public void test_conj() {
 		final Venice venice = new Venice();
@@ -1475,9 +1491,11 @@ public class FunctionsTest {
 		assertEquals("(12 15 18)", venice.eval("(str (map + [1 2 3] [4 5 6 9] [7 8 9]))"));
 
 		assertEquals("(1 3)", venice.eval("(str (map (fn [x] (get x :a)) [{:a 1 :b 2} {:a 3 :b 4}]))"));
-}
+		
+		assertEquals("(true false true)", venice.eval("(str (map not [false, true, false]))"));
+	}
 	
-	
+
 	@Test
 	public void test_mapcat() {
 		final Venice venice = new Venice();
