@@ -133,15 +133,15 @@ environment regarding Java interop. It is useful for applications that want
 to provide some degree of scriptability to users, without allowing them to 
 execute System.exit(0) or any other undesirable operations.
 
+
 #### Multi-Threading
 
 The sandbox is local to a thread. This allows multi-threaded applications to 
 isolate execution properly, but it also means you cannot let Venice to create 
 threads, or else it will escape the sandbox.
 
-The easiest way to do this is to ensure you prohibit the use of Thread, and 
-prevent Venice from accessing Executor-like services that let closures executed 
-on different threads.
+The easiest way to do this is to ensure you prohibit the use of threads.
+
 
 #### No blacklisting
 
@@ -191,6 +191,5 @@ venice.eval("(. :java.lang.System :exit 0)");
 // => FAIL (call to rejected Venice I/O function)
 venice.eval("(slurp \"/tmp/file\")"); 
 ```
-
 
 

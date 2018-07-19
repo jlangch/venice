@@ -131,7 +131,7 @@ public class DocGenerator {
 		literals.addItem(new DocItem("Double: 3.569"));
 		literals.addItem(new DocItem("Boolean: true, false"));
 		literals.addItem(new DocItem("BigDecimal: 6.897M"));
-		literals.addItem(new DocItem("String: \"abcde\""));
+		literals.addItem(new DocItem("String: \"abcde\" 'abcde'"));
 
 		final DocSection numbers = new DocSection("Numbers");
 		section.addSection(numbers);
@@ -301,7 +301,7 @@ public class DocGenerator {
 
 		final DocSection list_create = new DocSection("Create");
 		lists.addSection(list_create);
-		list_create.addItem(new DocItem("()"));
+		list_create.addItem(getDocItem("()"));
 		list_create.addItem(getDocItem("list"));
 
 		final DocSection list_access = new DocSection("Access");
@@ -343,7 +343,7 @@ public class DocGenerator {
 
 		final DocSection vec_create = new DocSection("Create");
 		vectors.addSection(vec_create);
-		vec_create.addItem(new DocItem("[]"));
+		vec_create.addItem(getDocItem("[]"));
 		vec_create.addItem(getDocItem("vector"));
 
 		final DocSection vec_access = new DocSection("Access");
@@ -403,7 +403,7 @@ public class DocGenerator {
 
 		final DocSection maps_create = new DocSection("Create");
 		maps.addSection(maps_create);
-		maps_create.addItem(new DocItem("{}"));
+		maps_create.addItem(getDocItem("{}"));
 		maps_create.addItem(getDocItem("hash-map"));
 		maps_create.addItem(getDocItem("ordered-map"));
 		maps_create.addItem(getDocItem("sorted-map"));
@@ -465,7 +465,7 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
-		create.addItem(new DocItem("fn"));
+		create.addItem(getDocItem("fn"));
 		create.addItem(getDocItem("identity"));
 
 
@@ -773,7 +773,53 @@ public class DocGenerator {
 					((VncString)f.getDescription()).getValue(),
 					runExamples(name, toStringList(f.getExamples())));
 		}
-		
+	
+
+		if ("()".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList(""), 
+					"Creates a list.",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "'(10 20 30)")));
+		}
+
+		if ("[]".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList(""), 
+					"Creates a vector",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "[10 20]")));
+		}
+
+		if ("{}".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList(""), 
+					"Creates a hash map.",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "{:a 10 b: 20}")));
+		}
+
+		if ("fn".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(fn [params*] expr)"), 
+					"Creates a function.",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "(fn [x y] (+ x y))",
+							 "(def sum (fn [x y] (+ x y)))")));
+		}
+
 		if ("identity".equals(name)) {
 			return new DocItem(
 					name, 

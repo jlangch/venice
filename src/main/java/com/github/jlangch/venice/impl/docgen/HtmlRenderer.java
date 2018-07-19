@@ -52,7 +52,7 @@ public class HtmlRenderer {
 	}
 	
 	private static String loadCheatSheetTemplate() throws Exception  {
-		return new ClassPathResource("com/github/jlangch/venice/docgen/cheatsheet.html")
+		return new ClassPathResource("com/github/jlangch/venice/impl/docgen/cheatsheet.html")
 						.getResourceAsString("UTF-8");
 	}
 }
