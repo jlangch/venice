@@ -3624,7 +3624,7 @@ public class CoreFunctions {
 	
 	public static VncFunction partial = new VncFunction("partial") {
 		{
-			setArgLists("(partial f arg1 args*)");
+			setArgLists("(partial f args*)");
 			
 			setDescription(
 					"Takes a function f and fewer than the normal arguments to f, and " + 
@@ -3641,7 +3641,7 @@ public class CoreFunctions {
 			assertMinArity("partial", args, 2);
 			
 			final VncFunction fn = Coerce.toVncFunction(args.first());
-			final VncList fnArgs = new VncList(args.second());
+			final VncList fnArgs = args.slice(1);
 			
 			return new VncFunction() {
 				public VncVal apply(final VncList args) {
