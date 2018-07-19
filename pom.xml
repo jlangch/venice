@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.venice</groupId>
+    <groupId>com.github.jlangch</groupId>
     <artifactId>venice</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>Venice</name>
-    <description>Venice a Lisp implemented in Java</description>
+    <description>Venice, a Lisp implemented in Java</description>
     <url>https://github.com/jlangch/venice</url>
 
     <scm>
