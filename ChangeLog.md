@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - fixed SecurityException handling
-- fixed made not a function so it can be used within higher order functions
+- made 'not' a function (instead of a macro) so it can be used from higher order functions
 
 
 
