@@ -27,7 +27,7 @@ can easily add it as standalone .jar to your classpath.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice.jar`
+Start the REPL with `java -jar venice-0.4.0.jar`
 
 ```text
 venice> (+ 1 1)
