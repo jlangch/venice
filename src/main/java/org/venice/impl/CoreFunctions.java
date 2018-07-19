@@ -3632,10 +3632,9 @@ public class CoreFunctions {
 					"called, the returned function calls f with args + additional args.");
 			
 			setExamples(
-					"(filter (comp not zero?) [0 1 0 2 0 3 0 4])", 
 					"(do \n" +
-					"   (def fifth (comp first rest rest rest rest)) \n" +
-					"   (fifth [1 2 3 4 5]))");
+					"   (def hundred-times (partial * 100)) \n" +
+					"   (hundred-times 5))");
 		}
 		
 		public VncVal apply(final VncList args) {
