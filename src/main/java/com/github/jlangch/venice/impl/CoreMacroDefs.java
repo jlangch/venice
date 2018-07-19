@@ -57,12 +57,6 @@ public class CoreMacroDefs {
 				null));
 		
 		macros.add(new MacroDef(
-				"not",
-				Arrays.asList("(not x)"), 
-				"Returns true if x is logical false, false otherwise.",
-				null));
-		
-		macros.add(new MacroDef(
 				"cond",
 				Arrays.asList("(cond & clauses)"), 
 				"Takes a set of test/expr pairs. It evaluates each test one at a " + 

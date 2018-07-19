@@ -830,6 +830,18 @@ public class DocGenerator {
 								"(identity 4)",
 								"(filter identity [1 2 3 nil 4 false true 1234])")));
 		}
+
+		if ("not".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList("(not x)"), 
+					"Returns true if x is logical false, false otherwise.",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "(not true)",
+							 "(not (== 1 2))")));
+		}
 		
 		if ("zipmap".equals(name)) {
 			return new DocItem(
