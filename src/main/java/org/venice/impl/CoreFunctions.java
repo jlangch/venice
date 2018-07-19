@@ -3101,6 +3101,121 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction distinct = new VncFunction("distinct") {
+		{
+			setArgLists("(distinct coll)");
+			
+			setDescription("Returns a collection with all duplicates removed");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("distinct", args, 1);
+
+			if (args.nth(0) == Nil) {
+				return new VncList();
+			}
+			
+			final VncList result = ((VncList)args.nth(0)).empty();
+			
+			result.getList().addAll(
+					Coerce
+						.toVncList(args.nth(0))
+						.getList()
+						.stream()
+						.distinct()
+						.collect(Collectors.toList()));
+			
+			return result;
+		}
+	};
+
+	public static VncFunction dedupe = new VncFunction("dedupe") {
+		{
+			setArgLists("(dedupe coll)");
+			
+			setDescription("Returns a collection with all consecutive duplicates removed");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("dedupe", args, 1);
+
+			if (args.nth(0) == Nil) {
+				return new VncList();
+			}
+			
+			final VncList result = ((VncList)args.nth(0)).empty();
+			
+			VncVal seen = null;
+			
+			for(VncVal val : Coerce.toVncList(args.nth(0)).getList()) {
+				if (seen == null || !val.equals(seen)) {
+					result.addAtEnd(val);
+					seen = val;
+				}
+			}
+			
+			return result;
+		}
+	};
+
+
+	public static VncFunction partition = new VncFunction("partition") {
+		{
+			setArgLists("(partition n coll)", "(partition n step coll)", "(partition n step padcoll coll)");
+			
+			setDescription(
+					"Returns a collection of lists of n items each, at offsets step " + 
+					"apart. If step is not supplied, defaults to n, i.e. the partitions " + 
+					"do not overlap. If a padcoll collection is supplied, use its elements as " + 
+					"necessary to complete last partition upto n items. In case there are " + 
+					"not enough padding elements, return a partition with less than n items.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("partition", args, 2, 3 ,4);
+
+			final int n = Coerce.toVncLong(args.nth(0)).getValue().intValue();
+			final int step = args.size() > 2 ? Coerce.toVncLong(args.nth(1)).getValue().intValue() : n;
+			final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncList(args.nth(2)).getList() : new ArrayList<>();
+			final List<VncVal> coll = Coerce.toVncList(args.nth(args.size()-1)).getList();
+			
+			if (n <= 0) {
+				throw new VncException(String.format(
+						"partition: n must be a positive number. %s",
+						ErrorMessage.buildErrLocation(args.nth(0))));
+			}
+			if (step <= 0) {
+				throw new VncException(String.format(
+						"partition: step must be a positive number. %s",
+						ErrorMessage.buildErrLocation(args.nth(0))));
+			}
+			
+			// split at 'step'
+			final List<List<VncVal>> splits = new ArrayList<>();
+			for (int ii=0; ii<coll.size(); ii += step) {			
+				splits.add(coll.subList(ii, Math.min(ii + step, coll.size())));
+			}
+			
+			final VncList result = new VncList();
+			for(List<VncVal> split : splits) {
+				if (n == split.size()) {
+					result.addList(new VncList(split));
+				}
+				else if (n < split.size()) {
+					result.addList(new VncList(split.subList(0, n)));
+				}
+				else {
+					final List<VncVal> split_ = new ArrayList<>(split);
+					for(int ii=0; ii<(n-split.size()) && ii<padcoll.size(); ii++) {
+						split_.add(padcoll.get(ii));
+					}
+					result.addList(new VncList(split_));
+				}
+			}
+			return result;
+		}
+	};
+
 	public static VncFunction coalesce = new VncFunction("coalesce") {
 		{
 			setArgLists("(coalesce args*)");
@@ -5328,6 +5443,9 @@ public class CoreFunctions {
 				.put("partial",				partial)
 				.put("map",					map)
 				.put("filter",				filter)
+				.put("distinct",			distinct)
+				.put("dedupe",				dedupe)
+				.put("partition",			partition)
 				.put("remove",				remove)
 				.put("reduce",				reduce)
 				.put("reduce-kv", 			reduce_kv)

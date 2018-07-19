@@ -149,6 +149,11 @@ public class VncList extends VncCollection {
 		value.addAll(list.getList());
 		return this;
 	}
+	
+	public VncList addList(final VncList list) {
+		value.add(list);
+		return this;
+	}
 
 	@Override
 	public int compareTo(final VncVal o) {

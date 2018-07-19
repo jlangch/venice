@@ -366,6 +366,9 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("pop"));
 		vec_modify.addItem(getDocItem("into"));
 		vec_modify.addItem(getDocItem("concat"));
+		vec_modify.addItem(getDocItem("distinct"));
+		vec_modify.addItem(getDocItem("dedupe"));
+		vec_modify.addItem(getDocItem("partition"));
 		vec_modify.addItem(getDocItem("interpose"));
 		vec_modify.addItem(getDocItem("interleave"));
 		vec_modify.addItem(getDocItem("mpacat"));
