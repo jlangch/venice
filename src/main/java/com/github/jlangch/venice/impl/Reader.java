@@ -308,8 +308,8 @@ public class Reader {
 	// group 4: nil => (^nil$)
 	// group 5: true => (^true$)
 	// group 6: false => (^false$)
-	// group 7: string_escaped => ^"(.*)"$
-	// group 8: string_escaped => ^'(.*)'$
+	// group 7: string => ^"(.*)"$
+	// group 8: string => ^'(.*)'$
 	// group 9: keyword => :(.*)
 	// group 10: symbol => (^[^"]*$)
 	private static final Pattern atom_pattern = Pattern.compile("(?s)(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^-?[0-9][0-9.]*M$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|^'(.*)'$|:(.*)|(^[^\"]*$)");
