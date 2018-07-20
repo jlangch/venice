@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.javainterop.Invoker;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -56,7 +57,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 					.onGetBeanProperty(
 							new Invoker(), 
 							delegate, 
-							name.unkeyword().getValue()));
+							name.getValue()));
 	}
 
 	public void setProperty(final VncString name, final VncVal value) {
@@ -66,7 +67,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 				.onSetBeanProperty(
 						new Invoker(), 
 						delegate, 
-						name.unkeyword().getValue(), 
+						name.getValue(), 
 						JavaInteropUtil.convertToJavaObject(value)));
 	}
 	
@@ -171,7 +172,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 			.forEach(property -> {
 				try {
 					builder.put(
-							VncString.keyword(property), 
+							new VncKeyword(property), 
 							JavaInteropUtil.convertToVncVal(
 									interceptor.onGetBeanProperty(
 											invoker, delegate, property)));

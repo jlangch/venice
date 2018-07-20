@@ -35,11 +35,11 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Types;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
-import com.github.jlangch.venice.javainterop.JavaSandboxRecorder;
 import com.github.jlangch.venice.support.AuditEvent;
 import com.github.jlangch.venice.support.AuditEventType;
 import com.github.jlangch.venice.support.JavaObject;
@@ -62,13 +62,13 @@ public class JavaInteropTest {
 		
 		final VncJavaObject javaObj = (VncJavaObject)val;
 		assertEquals(7, javaObj.size());
-		assertEquals("su", ((VncString)javaObj.get(VncString.keyword("principal"))).getValue());
-		assertEquals(2000L, ((VncLong)javaObj.get(VncString.keyword("elapsedTimeMillis"))).getValue().longValue());
-		assertEquals("ALERT", ((VncString)javaObj.get(VncString.keyword("eventType"))).getValue());
-		assertEquals("superuser", ((VncString)javaObj.get(VncString.keyword("eventKey"))).getValue());
-		assertEquals("webapp.started", ((VncString)javaObj.get(VncString.keyword("eventName"))).getValue());
-		assertEquals("text", ((VncString)javaObj.get(VncString.keyword("eventMessage"))).getValue());
-		assertEquals(AuditEvent.class.getName(), ((VncString)javaObj.get(VncString.keyword("class"))).getValue());
+		assertEquals("su", ((VncString)javaObj.get(new VncKeyword("principal"))).getValue());
+		assertEquals(2000L, ((VncLong)javaObj.get(new VncKeyword("elapsedTimeMillis"))).getValue().longValue());
+		assertEquals("ALERT", ((VncString)javaObj.get(new VncKeyword("eventType"))).getValue());
+		assertEquals("superuser", ((VncString)javaObj.get(new VncKeyword("eventKey"))).getValue());
+		assertEquals("webapp.started", ((VncString)javaObj.get(new VncKeyword("eventName"))).getValue());
+		assertEquals("text", ((VncString)javaObj.get(new VncKeyword("eventMessage"))).getValue());
+		assertEquals(AuditEvent.class.getName(), ((VncString)javaObj.get(new VncKeyword("class"))).getValue());
 		
 		final Object obj = JavaInteropUtil.convertToJavaObject(val);
 		assertTrue(obj instanceof AuditEvent);

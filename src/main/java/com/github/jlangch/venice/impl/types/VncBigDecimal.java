@@ -215,7 +215,7 @@ public class VncBigDecimal extends VncVal {
 	}
 
 	public static RoundingMode toRoundingMode(final VncString val) {
-		return RoundingMode.valueOf(RoundingMode.class, val.unkeyword().getValue());
+		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
 	}
 
 	@Override 

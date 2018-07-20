@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -61,7 +62,7 @@ public class JavaInteropUtil {
 			final VncString method = (VncString)args.nth(1);
 			final VncList params = args.slice(2);
 			
-			final String methodName = method.unkeyword().getValue();
+			final String methodName = method.getValue();
 			
 			final Object[] methodArgs = new Object[params.size()];
 			for(int ii=0; ii<params.size(); ii++) {
@@ -70,7 +71,7 @@ public class JavaInteropUtil {
 			
 			if ("new".equals(methodName)) {			
 				// call constructor (. :java.util.String :new \"abc\")
-				final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+				final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 				final Class<?> targetClass = ReflectionAccessor.classForName(className);
 				
 				return JavaInteropUtil.convertToVncVal(
@@ -81,7 +82,7 @@ public class JavaInteropUtil {
 			else if ("class".equals(methodName)) {			
 				// get class (. :java.util.String :class)
 				if (arg0 instanceof VncString) {
-					final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					final Class<?> targetClass = ReflectionAccessor.classForName(className);
 					
 					return new VncJavaObject(targetClass);
@@ -96,7 +97,7 @@ public class JavaInteropUtil {
 			else {
 				if (arg0 instanceof VncString) {
 					// static method / field:   (. :org.foo.Foo :getLastName)
-					final String className = javaImports.resolveClassName(((VncString)arg0).unkeyword().getValue());
+					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					final Class<?> targetClass = ReflectionAccessor.classForName(className);
 	
 					if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
@@ -187,11 +188,14 @@ public class JavaInteropUtil {
 		else if (value instanceof IVncJavaObject) {
 			return ((IVncJavaObject)value).getDelegate();
 		}
-		else if (Types.isVncString(value)) {
-			return ((VncString)value).unkeyword().getValue();
+		else if (Types.isVncKeyword(value)) {
+			return ((VncKeyword)value).getValue();
 		}
 		else if (Types.isVncSymbol(value)) {
 			return ((VncSymbol)value).getName();
+		}
+		else if (Types.isVncString(value)) {
+			return ((VncString)value).getValue();
 		}
 		else if (Types.isVncLong(value)) {
 			return ((VncLong)value).getValue();

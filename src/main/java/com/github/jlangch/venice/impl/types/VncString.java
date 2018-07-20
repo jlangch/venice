@@ -35,14 +35,6 @@ public class VncString extends VncVal {
 	public String getValue() { 
 		return value; 
 	}
-
-	public static VncString keyword(final String s) { 
-		return new VncString(String.valueOf(Constants.KEYWORD_PREFIX) + s);
-	}
-	
-	public VncString unkeyword() { 
-		return isKeyword() ? new VncString(value.substring(1)) : this;
-	}
 	
 	public VncString copy() { 
 		final VncString v = new VncString(value); 
@@ -90,12 +82,8 @@ public class VncString extends VncVal {
 		return list;
 	}
 
-	public boolean isKeyword() {
-		return Types.isVncKeyword(value);
-	}
-
 	public VncSymbol toSymbol() {
-		return new VncSymbol(unkeyword().getValue());
+		return new VncSymbol(getValue());
 	}
 
 	@Override 
@@ -134,10 +122,7 @@ public class VncString extends VncVal {
 	}
 	
 	public String toString(final boolean print_readably) {
-		if (isKeyword()) {
-			return ":" + value.substring(1);
-		} 
-		else if (print_readably) {
+		if (print_readably) {
 			return "\"" + StringUtil.escape(value) + "\"";
 		} 
 		else {

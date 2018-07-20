@@ -50,6 +50,10 @@ public class Types {
 		return s.length() != 0 && s.charAt(0) == Constants.KEYWORD_PREFIX;
 	}
 
+	public static boolean isVncKeyword(final VncVal val) {
+		return val != null && (val instanceof VncKeyword);
+	}
+
 	public static boolean isVncSymbol(final VncVal val) {
 		return val != null && (val instanceof VncSymbol);
 	}
@@ -218,7 +222,7 @@ public class Types {
 			} 
 			else if (a instanceof VncString) {
 				// allow true: (== \"aa\" \"aa\" ), (== :aa :aa ), (== :aa \"aa\" )
-				return ((VncString)a).unkeyword().getValue().equals(((VncString)b).unkeyword().getValue());
+				return ((VncString)a).getValue().equals(((VncString)b).getValue());
 			} 
 			else if (a instanceof VncList) {
 				if (((VncList)a).size() != ((VncList)b).size()) {

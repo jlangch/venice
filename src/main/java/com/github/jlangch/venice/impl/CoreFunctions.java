@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -303,11 +304,14 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("string?", args, 1);
 			
-			if (!(args.nth(0) instanceof VncString)) { 
+			if (args.nth(0) instanceof VncKeyword) { 
 				return False; 
 			}
+			if (args.nth(0) instanceof VncString) { 
+				return True; 
+			}
 			else {
-				return ((VncString)args.nth(0)).isKeyword() ? False : True;
+				return False;
 			}
 		}
 	};
@@ -351,11 +355,17 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("keyword", args, 1);
 			
-			if (Types.isVncString(args.nth(0)) && ((VncString)args.nth(0)).isKeyword()) {
+			if (Types.isVncKeyword(args.nth(0))) {
 				return args.nth(0);
 			} 
+			else if (Types.isVncString(args.nth(0))) {
+				return new VncKeyword(((VncString)args.nth(0)).getValue());
+			} 
 			else {
-				return VncString.keyword(((VncString)args.nth(0)).getValue());
+				throw new VncException(String.format(
+						"Function 'keyword' does not allow %s name. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
 			}
 		}
 	};
@@ -371,12 +381,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("keyword?", args, 1);
 			
-			if (!Types.isVncString(args.nth(0))) { 
-				return False; 
-			}
-			
-			final String s = ((VncString)args.nth(0)).getValue();
-			return Types.isVncKeyword(s) ? True : False;
+			return Types.isVncKeyword(args.nth(0)) ? True : False;
 		}
 	};
 	
@@ -591,7 +596,7 @@ public class CoreFunctions {
 				
 				final VncHashMap options = new VncHashMap(args.slice(1));
 
-				final VncVal binary = options.get(VncString.keyword("binary")); 
+				final VncVal binary = options.get(new VncKeyword("binary")); 
 				
 				if (binary == True) {
 					final byte[] data = Files.readAllBytes(file.toPath());
@@ -599,7 +604,7 @@ public class CoreFunctions {
 					return new VncByteBuffer(ByteBuffer.wrap(data));
 				}
 				else {
-					final VncVal encVal = options.get(VncString.keyword("encoding")); 
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 
 					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 									
@@ -650,9 +655,9 @@ public class CoreFunctions {
 
 				final VncHashMap options = new VncHashMap(args.slice(2));
 
-				final VncVal append = options.get(VncString.keyword("append")); 
+				final VncVal append = options.get(new VncKeyword("append")); 
 				
-				final VncVal encVal = options.get(VncString.keyword("encoding")); 
+				final VncVal encVal = options.get(new VncKeyword("encoding")); 
 					
 				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
 
@@ -1745,7 +1750,7 @@ public class CoreFunctions {
 				return new VncLong(((VncBigDecimal)op1).getValue().longValue());
 			}
 			else if (Types.isVncString(op1)) {
-				final String s = ((VncString)op1).unkeyword().getValue();
+				final String s = ((VncString)op1).getValue();
 				try {
 					return new VncLong(Long.parseLong(s));
 				}
@@ -1795,7 +1800,7 @@ public class CoreFunctions {
 				return new VncDouble(((VncBigDecimal)op1).getValue().doubleValue());
 			}
 			else if (Types.isVncString(op1)) {
-				final String s = ((VncString)op1).unkeyword().getValue();
+				final String s = ((VncString)op1).getValue();
 				try {
 					return new VncDouble(Double.parseDouble(s));
 				}
@@ -1848,7 +1853,7 @@ public class CoreFunctions {
 					return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 				}
 				else if (Types.isVncString(arg)) {
-					final BigDecimal dec = new BigDecimal(((VncString)arg).unkeyword().getValue());
+					final BigDecimal dec = new BigDecimal(((VncString)arg).getValue());
 					return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 				}
 				else if (Types.isVncLong(arg)) {
@@ -5083,7 +5088,7 @@ public class CoreFunctions {
 										.map(v -> JavaInteropUtil.convertToJavaObject(v))
 										.collect(Collectors.toList());
 			
-			return new VncString(String.format(fmt.unkeyword().getValue(), fmtArgs.toArray()));		
+			return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));		
 		}
 	};
 	

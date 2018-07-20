@@ -31,6 +31,7 @@ import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -145,7 +146,7 @@ public class Reader {
 		} 
 		else if (matcher.group(9) != null) {
 			return ReaderUtil.withTokenPos(
-					VncString.keyword(matcher.group(9)), 
+					new VncKeyword(matcher.group(9)), 
 					token);
 		} 
 		else if (matcher.group(10) != null) {
@@ -309,7 +310,7 @@ public class Reader {
 	// group 6: false => (^false$)
 	// group 7: string_escaped => ^"(.*)"$
 	// group 8: string_escaped => ^'(.*)'$
-	// group 9: string => :(.*)
+	// group 9: keyword => :(.*)
 	// group 10: symbol => (^[^"]*$)
 	private static final Pattern atom_pattern = Pattern.compile("(?s)(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^-?[0-9][0-9.]*M$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|^'(.*)'$|:(.*)|(^[^\"]*$)");
 	

@@ -381,7 +381,7 @@ public class VeniceInterpreter {
 							};
 
 				case "import":
-					ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).unkeyword().getValue()));
+					ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).getValue()));
 					return Nil;
 
 				default:

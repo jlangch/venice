@@ -614,13 +614,7 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(== \"aa\" \"aa\")"));
 		assertFalse((Boolean)venice.eval("(== \"aa\" \"zz\")"));
 
-		// String - Keyword
-		assertTrue((Boolean)venice.eval("(== :aa \"aa\" )"));
-		assertTrue((Boolean)venice.eval("(== \"aa\" :aa)"));
-		assertFalse((Boolean)venice.eval("(== :aa \"zz\" )"));
-		assertFalse((Boolean)venice.eval("(== \"zz\" :aa)"));
-
-		// Symbol
+		// Keyword
 		assertTrue((Boolean)venice.eval("(== :a :a)"));
 		assertFalse((Boolean)venice.eval("(== :a :b)"));
 
@@ -1824,13 +1818,7 @@ public class FunctionsTest {
 		assertFalse((Boolean)venice.eval("(!= \"aa\" \"aa\")"));
 		assertTrue((Boolean)venice.eval("(!= \"aa\" \"zz\")"));
 
-		// String - Keyword
-		assertFalse((Boolean)venice.eval("(!= :aa \"aa\" )"));
-		assertTrue((Boolean)venice.eval("(!= :aa \"zz\" )"));
-		assertFalse((Boolean)venice.eval("(!= \"aa\" :aa)"));
-		assertTrue((Boolean)venice.eval("(!= \"zz\" :aa)"));
-
-		// Symbol
+		// Keyword
 		assertFalse((Boolean)venice.eval("(!= :a :a)"));
 		assertTrue((Boolean)venice.eval("(!= :a :b)"));
 
