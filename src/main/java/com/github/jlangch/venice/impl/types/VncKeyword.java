@@ -21,12 +21,25 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-public class VncKeyword extends VncString {
+import java.util.function.Function;
+
+import com.github.jlangch.venice.impl.CoreFunctions;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+
+
+public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	
 	public VncKeyword(final String v) { 
 		super(v.startsWith(":") ? v.substring(1): v); 
 	}
 
+	public VncVal apply(final VncList args) {
+		CoreFunctions.assertArity("keyword", args, 1);
+		
+		final VncMap map = Coerce.toVncMap(args.nth(0));
+		return map.get(this);
+	}
 	
 	public VncKeyword copy() { 
 		final VncKeyword v = new VncKeyword(getValue()); 

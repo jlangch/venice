@@ -114,6 +114,10 @@ public class Types {
 		return val != null && (val instanceof VncFunction);
 	}
 
+	public static boolean isVncFunctionOrKeyword(final VncVal val) {
+		return val != null && ((val instanceof VncFunction) || (val instanceof VncKeyword));
+	}
+
 	public static boolean isVncJavaObject(final VncVal val) {
 		return val != null && (val instanceof VncJavaObject);
 	}

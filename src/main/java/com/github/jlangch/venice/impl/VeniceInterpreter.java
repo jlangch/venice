@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -386,19 +387,28 @@ public class VeniceInterpreter {
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
-					if (!Types.isVncFunction(el.nth(0))) {
-						throw new VncException(String.format("Not a function: '%s'", PRINT(el.nth(0))));
+					if (Types.isVncFunction(el.nth(0))) {
+						final VncFunction f = (VncFunction)el.nth(0);
+						final VncVal fnast = f.getAst();
+						if (fnast != null) {
+							orig_ast = fnast;
+							env = f.genEnv(el.slice(1));
+						} 
+						else {
+							final VncList fnArgs = el.rest();
+							ReaderUtil.copyTokenPos(el, fnArgs);
+							return f.apply(fnArgs);
+						}
 					}
-					final VncFunction f = (VncFunction)el.nth(0);
-					final VncVal fnast = f.getAst();
-					if (fnast != null) {
-						orig_ast = fnast;
-						env = f.genEnv(el.slice(1));
-					} 
-					else {
+					else if (Types.isVncKeyword(el.nth(0))) {
+						// keyword as function to access map: (:a {:a 100})
+						final VncKeyword k = (VncKeyword)el.nth(0);
 						final VncList fnArgs = el.rest();
 						ReaderUtil.copyTokenPos(el, fnArgs);
-						return f.apply(fnArgs);
+						return k.apply(fnArgs);
+					}
+					else {
+						throw new VncException(String.format("Not a function or keyword: '%s'", PRINT(el.nth(0))));
 					}
 			}
 		}

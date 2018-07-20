@@ -2425,6 +2425,10 @@ public class CoreFunctions {
 			setArgLists("(get map key)", "(get map key not-found)");
 			
 			setDescription("Returns the value mapped to key, not-found or nil if key not present.");
+			
+			setExamples(
+					"(get {:a 1 :b 2} :b)",
+					";; keywords act like functions on maps \n(:b {:a 1 :b 2})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5291,7 +5295,7 @@ public class CoreFunctions {
 		}
 	}
 	
-	private static void assertArity(
+	public static void assertArity(
 			final String fnName, 
 			final VncList args, 
 			final int...expectedArities

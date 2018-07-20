@@ -1248,6 +1248,9 @@ public class FunctionsTest {
 		assertEquals(":a", venice.eval("(str (keyword \"a\"))"));
 		assertTrue((Boolean)venice.eval("(keyword? (keyword :a))"));	
 		assertTrue((Boolean)venice.eval("(keyword? (keyword \"a\"))"));	
+		
+		// keywords act like functions on maps
+		assertEquals(Long.valueOf(100), venice.eval("(:a {:a 100 :b 200})"));
 	}
 	
 	@Test
