@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added functions partition, distinct, and dedupe
 - added an explicit Venice type for keywords
 - added keywords to act like functions on maps: (:b {:a 1 :b 2}) => 2
+- added JSON util functions (requires Jackson lib at runtime on classpath)
 
 ### Removed
 
