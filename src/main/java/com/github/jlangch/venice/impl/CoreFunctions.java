@@ -78,6 +78,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 public class CoreFunctions {
@@ -3280,6 +3281,24 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction classForName = new VncFunction("class-for-name") {
+		{
+			setArgLists("(class-for-name x)");
+			
+			setDescription("Returns the java class for the given name");
+			
+			setExamples("(class-for-name :java.util.Date)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("class", args, 1);
+			
+			return new VncJavaObject(
+							ReflectionUtil.classForName(
+								Coerce.toVncString(args.nth(0)).getValue()));
+		}
+	};
+
 	public static VncFunction pop = new VncFunction("pop") {
 		{
 			setArgLists("(pop coll)");
@@ -5370,6 +5389,7 @@ public class CoreFunctions {
 				.put("match-not",			match_not_Q)
 
 				.put("class",				className)
+				.put("class-for-name",		classForName)
 				.put("dec/scale",			decimalScale)
 				.put("dec/add",				decimalAdd)
 				.put("dec/sub",				decimalSubtract)
