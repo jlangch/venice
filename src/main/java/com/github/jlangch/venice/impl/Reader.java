@@ -302,8 +302,8 @@ public class Reader {
 		return new int[] {row,col};
 	}
 
-	// group 1: integer => (^-?[0-9]+$)
-	// group 2: decimal => (^-?[0-9]+[.][0-9]*$)
+	// group 1: long => (^-?[0-9]+$)
+	// group 2: double => (^-?[0-9]+[.][0-9]*$)
 	// group 3: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
 	// group 4: nil => (^nil$)
 	// group 5: true => (^true$)
