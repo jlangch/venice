@@ -99,7 +99,8 @@ public class DocGenerator {
 				getOtherTypesSection(),
 				getAtomsSection(),
 				getSpecialFormsSection(),
-				getJavaInteropSection());
+				getJavaInteropSection(),
+				getMiscellaneousSection());
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
@@ -743,7 +744,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getJavaInteropSection() {
-		final DocSection section = new DocSection("Java Interoperabilty");
+		final DocSection section = new DocSection("Java Interoperability");
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -760,6 +761,26 @@ public class DocGenerator {
 						runExamples(fn.getName(), toStringList(fn.getExamples()))));
 		general.addItem(new DocItem("Constructor: (. classname :new args)"));
 		general.addItem(new DocItem("Method call: (. object method args)"));
+		general.addItem(new DocItem("Field access: (. object field)"));
+
+		return section;
+	}
+
+	private DocSection getMiscellaneousSection() {
+		final DocSection section = new DocSection("Miscellaneous");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+		
+		final DocSection general = new DocSection("JSON");
+		all.addSection(general);
+		general.addItem(new DocItem(""));
+		general.addItem(new DocItem("(json/pretty-print json)"));
+		general.addItem(new DocItem("(json/to-json val)"));
+		general.addItem(new DocItem("(json/to-pretty-json val)"));
+		general.addItem(new DocItem("(json/parse json)"));
+		general.addItem(new DocItem(" "));
+		general.addItem(new DocItem("Available if Jackson lib is on runtime classpath"));
 
 		return section;
 	}
