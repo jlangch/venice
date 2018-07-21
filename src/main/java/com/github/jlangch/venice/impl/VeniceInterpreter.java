@@ -186,10 +186,10 @@ public class VeniceInterpreter {
 			
 			switch (a0sym) {
 				case "def": {
-					final VncVal a1 = ast.nth(1);
-					final VncVal a2 = ast.nth(2);
-					final VncVal res = EVAL(a2, env);
-					env.set((VncSymbol)a1, res);
+					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = EVAL(defVal, env);
+					env.set(defName, res);
 					return res;
 				}
 				
@@ -396,7 +396,7 @@ public class VeniceInterpreter {
 						} 
 						else {
 							final VncList fnArgs = el.rest();
-							ReaderUtil.copyTokenPos(el, fnArgs);
+							MetaUtil.copyTokenPos(el, fnArgs);
 							return f.apply(fnArgs);
 						}
 					}
@@ -404,7 +404,7 @@ public class VeniceInterpreter {
 						// keyword as function to access map: (:a {:a 100})
 						final VncKeyword k = (VncKeyword)el.nth(0);
 						final VncList fnArgs = el.rest();
-						ReaderUtil.copyTokenPos(el, fnArgs);
+						MetaUtil.copyTokenPos(el, fnArgs);
 						return k.apply(fnArgs);
 					}
 					else {

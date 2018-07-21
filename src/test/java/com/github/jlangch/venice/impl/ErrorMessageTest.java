@@ -25,10 +25,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.impl.ErrorMessage;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -38,13 +36,13 @@ public class ErrorMessageTest {
 	public void test_err_location() {
 		final VncVal val = new VncLong(0);
 		
-		val.setMetaVal(new VncSymbol(":file"), new VncString("core.venice"));
-		val.setMetaVal(new VncSymbol(":line"), new VncLong(10));
-		val.setMetaVal(new VncSymbol(":column"), new VncLong(42));
+		val.setMetaVal(MetaUtil.FILE, new VncString("core.venice"));
+		val.setMetaVal(MetaUtil.LINE, new VncLong(10));
+		val.setMetaVal(MetaUtil.COLUMN, new VncLong(42));
 
-		assertEquals("core.venice", ((VncString)val.getMetaVal(ErrorMessage.FILE)).getValue());
-		assertEquals(Long.valueOf(10L), ((VncLong)val.getMetaVal(ErrorMessage.LINE)).getValue());
-		assertEquals(Long.valueOf(42L), ((VncLong)val.getMetaVal(ErrorMessage.COLUMN)).getValue());
+		assertEquals("core.venice", ((VncString)val.getMetaVal(MetaUtil.FILE)).getValue());
+		assertEquals(Long.valueOf(10L), ((VncLong)val.getMetaVal(MetaUtil.LINE)).getValue());
+		assertEquals(Long.valueOf(42L), ((VncLong)val.getMetaVal(MetaUtil.COLUMN)).getValue());
 	}
 	
 }

@@ -9,7 +9,7 @@ Venice's goal is not to build just another Lisp, it's born from the need of
 having a safe, powerful scripting and expression language that can be used 
 to implement scriptable extension points and rules for applications.
 
-Venice supports macros, comes with Java interoperability, and with a configurable 
+Venice supports macros, comes with Java interoperability and a configurable 
 sandbox.
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
@@ -83,6 +83,24 @@ final PreCompiled precompiled = venice.precompile("(+ 1 x)");
 for(long ii=0; ii<100; ii++) {
     System.out.println(venice.eval(precompiled, Parameters.of("x", ii)));
 }
+```
+
+### Json Support
+
+Venice supports JSON natively if the Jackson libs are on the runtime classpath
+
+```java
+;; build json from a map (returns a json string)
+(json/to-json {:a 100 :b 100})
+
+;; build json from a map (returns a json string)
+(json/to-pretty-json {:a 100 :b 100})
+
+;; pretty print json (returns a json string)
+(json/pretty-print (json/to-json {:a 100 :b 100}))
+
+;; parse json from a string (returns a map)
+(json/parse (json/to-json {:a 100 :b 100}))
 ```
 
 

@@ -103,19 +103,19 @@ public class Reader {
 		}
 		
 		if (matcher.group(1) != null) {
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncLong(Long.parseLong(matcher.group(1))), 
 					token);
 		} 
 		else if (matcher.group(2) != null) {
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncDouble(Double.parseDouble(matcher.group(2))), 
 					token);
 		} 
 		else if (matcher.group(3) != null) {
 			String dec = matcher.group(3);
 			dec = dec.substring(0, dec.length()-1);
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncBigDecimal(new BigDecimal(dec)), 
 					token);
 		} 
@@ -129,7 +129,7 @@ public class Reader {
 			return Constants.False;
 		} 
 		else if (matcher.group(7) != null) {
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncString(
 							StringUtil.unescape(
 									StringUtil.decodeUnicode(
@@ -137,7 +137,7 @@ public class Reader {
 					token);
 		} 
 		else if (matcher.group(8) != null) {
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncString(
 							StringUtil.unescape(
 									StringUtil.decodeUnicode(
@@ -145,12 +145,12 @@ public class Reader {
 					token);
 		} 
 		else if (matcher.group(9) != null) {
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncKeyword(matcher.group(9)), 
 					token);
 		} 
 		else if (matcher.group(10) != null) {
-			return ReaderUtil.withTokenPos(
+			return MetaUtil.withTokenPos(
 					new VncSymbol(matcher.group(10)), 
 					token);
 		} 
@@ -169,7 +169,7 @@ public class Reader {
 			final char end
 	) {
 		final Token lstToken = rdr.next();
-		ReaderUtil.withTokenPos(lst, lstToken);
+		MetaUtil.withTokenPos(lst, lstToken);
 
 		if (lstToken.charAt(0) != start) {
 			throw new ParseError(String.format(
@@ -197,7 +197,7 @@ public class Reader {
 		final Token refToken = rdr.peek();
 		
 		final VncList lst = read_list(rdr, new VncList(), '{', '}');
-		return (VncHashMap)ReaderUtil.withTokenPos(new VncHashMap(lst), refToken);
+		return (VncHashMap)MetaUtil.withTokenPos(new VncHashMap(lst), refToken);
 	}
 
 	private static VncVal read_form(final Reader rdr) {
@@ -211,26 +211,26 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return ReaderUtil.withTokenPos(
+				return MetaUtil.withTokenPos(
 						new VncList(new VncSymbol("quote"), read_form(rdr)), 
 						token);
 			
 			case '`': 
 				rdr.next();
-				return ReaderUtil.withTokenPos(
+				return MetaUtil.withTokenPos(
 						new VncList(new VncSymbol("quasiquote"), read_form(rdr)), 
 						token);
 			
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return ReaderUtil.withTokenPos(
+					return MetaUtil.withTokenPos(
 							new VncList(new VncSymbol("unquote"), read_form(rdr)), 
 							token);
 				} 
 				else {
 					rdr.next();
-					return ReaderUtil.withTokenPos(
+					return MetaUtil.withTokenPos(
 							new VncList(new VncSymbol("splice-unquote"), read_form(rdr)), 
 							token);
 				}
@@ -238,13 +238,13 @@ public class Reader {
 			case '^': 
 				rdr.next();
 				final VncVal meta = read_form(rdr);
-				return ReaderUtil.withTokenPos(
+				return MetaUtil.withTokenPos(
 						new VncList(new VncSymbol("with-meta"), read_form(rdr), meta), 
 						token);
 			
 			case '@': 
 				rdr.next();
-				return ReaderUtil.withTokenPos(
+				return MetaUtil.withTokenPos(
 						new VncList(new VncSymbol("deref"), read_form(rdr)), 
 						token);
 			
