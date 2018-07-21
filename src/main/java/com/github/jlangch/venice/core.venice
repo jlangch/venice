@@ -160,16 +160,16 @@
    (json/to-pretty-json (json/parse json))))
    
 (def json/to-json (fn [val]
-    (doto (. :com.fasterxml.jackson.databind.ObjectMapper :new)
-          (. :writeValueAsString val)))))
+    (-> (. :com.fasterxml.jackson.databind.ObjectMapper :new)
+        (. :writeValueAsString val))))
    
 (def json/to-pretty-json (fn [val]
-    (doto (. :com.fasterxml.jackson.databind.ObjectMapper :new)
-          (. :writerWithDefaultPrettyPrinter)
-          (. :writeValueAsString val))))
+    (-> (. :com.fasterxml.jackson.databind.ObjectMapper :new)
+        (. :writerWithDefaultPrettyPrinter)
+        (. :writeValueAsString val))))
 
 (def json/parse (fn [text]
-    (doto (. :com.fasterxml.jackson.databind.ObjectMapper :new)
-          (. :readValue text (class-for-name :java.lang.Object))))
+    (-> (. :com.fasterxml.jackson.databind.ObjectMapper :new)
+        (. :readValue text (class-for-name :java.lang.Object)))))
 
 

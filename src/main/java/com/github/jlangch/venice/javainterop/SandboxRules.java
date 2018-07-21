@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -126,6 +128,8 @@ public class SandboxRules {
 	private static final Set<String> defaultRules = 
 			new HashSet<>(
 				Arrays.asList(
+						"java.lang.Object:class",
+						
 						Byte.class.getName(),
 						Short.class.getName(),
 						Integer.class.getName(),
@@ -133,7 +137,12 @@ public class SandboxRules {
 						Float.class.getName(),
 						Double.class.getName(),
 						BigDecimal.class.getName(),
-						String.class.getName()));
+						String.class.getName(),
+						
+						ArrayList.class.getName(),
+						HashSet.class.getName(),
+						HashMap.class.getName(),
+						LinkedHashMap.class.getName()));
 	
 	private final Set<String> rules = new HashSet<>(defaultRules);
 }

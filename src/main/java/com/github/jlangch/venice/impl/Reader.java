@@ -97,9 +97,9 @@ public class Reader {
 		
 		if (!matcher.find()) {
 			throw new ParseError(String.format(
-					"%s: unrecognized token '%s'",
-					ErrorMessage.buildErrLocation(token),
-					token.getToken()));
+					"Unrecognized token '%s'. %s",
+					token.getToken(),
+					ErrorMessage.buildErrLocation(token)));
 		}
 		
 		if (matcher.group(1) != null) {
@@ -156,9 +156,9 @@ public class Reader {
 		} 
 		else {
 			throw new ParseError(String.format(
-					"%s: Unrecognized '%s'",
-					ErrorMessage.buildErrLocation(token),
-					matcher.group(0)));
+					"Unrecognized '%s'. %s",
+					matcher.group(0),
+					ErrorMessage.buildErrLocation(token)));
 		}
 	}
 
@@ -168,22 +168,25 @@ public class Reader {
 			final char start, 
 			final char end
 	) {
-		Token token = rdr.next();
-		ReaderUtil.withTokenPos(lst, token);
+		final Token lstToken = rdr.next();
+		ReaderUtil.withTokenPos(lst, lstToken);
 
-		if (token.charAt(0) != start) {
+		if (lstToken.charAt(0) != start) {
 			throw new ParseError(String.format(
-					"%s: Expected '%s'",
-					ErrorMessage.buildErrLocation(token),
-					start));
+					"Expected '%s'. %s",
+					start,
+					ErrorMessage.buildErrLocation(lstToken)));
 		}
 
+		Token token = lstToken;
 		while ((token = rdr.peek()) != null && token.charAt(0) != end) {
 			lst.addAtEnd(read_form(rdr));
 		}
 
 		if (token == null) {
-			throw new ParseError("expected '" + end + "', got EOF");
+			throw new ParseError(String.format(
+					"Expected '" + end + "', got EOF. %s",
+					ErrorMessage.buildErrLocation(lstToken)));
 		}
 		rdr.next();
 
@@ -251,7 +254,7 @@ public class Reader {
 			
 			case ')': 
 				throw new ParseError(String.format(
-						"%s: Unexpected ')'",
+						"Unexpected ')'. %s",
 						ErrorMessage.buildErrLocation(token)));
 			
 			case '[': 
@@ -260,7 +263,7 @@ public class Reader {
 			
 			case ']': 
 				throw new ParseError(String.format(
-						"%s: Unexpected ']'",
+						"Unexpected ']'. %s",
 						ErrorMessage.buildErrLocation(token)));
 				
 			case '{': 
@@ -269,7 +272,7 @@ public class Reader {
 				
 			case '}': 
 				throw new ParseError(String.format(
-						"%s: Unexpected '}'",
+						"Unexpected '}'. %s",
 						ErrorMessage.buildErrLocation(token)));
 				
 			default:  
