@@ -35,9 +35,12 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.CoreFunctions;
 import com.github.jlangch.venice.impl.CoreMacroDefs;
+import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.MacroDef;
+import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -56,6 +59,8 @@ public class DocGenerator {
 	
 	private void run() {
 		try {	
+			loadFunctionsAndMacros();
+			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
 			
@@ -1019,6 +1024,27 @@ public class DocGenerator {
 	private File getUserDir() {
 		return new File(System.getProperty("user.dir"));
 	}
+
+	private void loadFunctionsAndMacros() {
+		final VeniceInterpreter vi = new VeniceInterpreter();
+		final Env env = vi.createEnv();
 		
+		env.getEntries()
+		   .stream()
+		   .filter(e -> Types.isVncFunction(e.getValue()))
+		   .filter(e -> !((VncFunction)e.getValue()).getName().startsWith("anonymous"))
+		   .filter(e -> !((VncFunction)e.getValue()).isMacro())
+		   .forEach(e -> vncFunctions.put(e.getKey(), (VncFunction)e.getValue()));
+		
+		env.getEntries()
+		   .stream()
+		   .filter(e -> Types.isVncFunction(e.getValue()))
+		   .filter(e -> !((VncFunction)e.getValue()).getName().startsWith("anonymous"))
+		   .filter(e -> ((VncFunction)e.getValue()).isMacro())
+		   .forEach(e -> vncMacros.put(e.getKey(), (VncFunction)e.getValue()));
+	}			
+
 	
+	final Map<String,VncFunction> vncFunctions = new HashMap<>();
+	final Map<String,VncFunction> vncMacros = new HashMap<>();
 }

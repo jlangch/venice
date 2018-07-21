@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -70,6 +71,10 @@ public class Env {
 	public Env set(final VncSymbol key, final VncVal value) {
 		data.put(key.getName(), value);
 		return this;
+	}
+	
+	public Set<Map.Entry<String,VncVal>> getEntries() {
+		return data.entrySet();
 	}
 	
 	@Override

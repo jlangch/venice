@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
@@ -186,10 +187,12 @@ public class VeniceInterpreter {
 			
 			switch (a0sym) {
 				case "def": {
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
-					final VncVal defVal = ast.nth(2);
+					final boolean hasMeta = ast.size() > 3;
+					final VncMap defMeta = hasMeta ? Coerce.toVncMap(ast.nth(1)) : new VncHashMap();
+					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
-					env.set(defName, res);
+					env.set(defName, MetaUtil.addDefMeta(res, defMeta));
 					return res;
 				}
 				
@@ -273,13 +276,15 @@ public class VeniceInterpreter {
 					break;
 	
 				case "defmacro": {
-					final VncVal macroName = ast.nth(1);
-					final VncList macroParams = Coerce.toVncList(ast.nth(2));
-					final VncVal macroFnAst = ast.nth(3);
+					final boolean hasMeta = ast.size() > 4;
+					final VncMap defMeta = hasMeta ? Coerce.toVncMap(ast.nth(1)) : new VncHashMap();
+					final VncVal macroName = ast.nth(hasMeta ? 2 : 1);
+					final VncList macroParams = Coerce.toVncList(ast.nth(hasMeta ? 3 : 2));
+					final VncVal macroFnAst = ast.nth(hasMeta ? 4 : 3);
 	
-					final String sMacroName = Types.isVncSymbol(ast.nth(1)) 
-												? ((VncSymbol)ast.nth(1)).getName() 
-												: ((VncString)ast.nth(1)).getValue();
+					final String sMacroName = Types.isVncSymbol(macroName) 
+												? ((VncSymbol)macroName).getName() 
+												: ((VncString)macroName).getValue();
 
 					final Env _env = env;
 					final VncFunction macroFn = 
@@ -299,7 +304,7 @@ public class VeniceInterpreter {
 							};
 
 					macroFn.setMacro();
-					env.set((VncSymbol)macroName, macroFn);
+					env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
 					return macroFn;
 				}
 

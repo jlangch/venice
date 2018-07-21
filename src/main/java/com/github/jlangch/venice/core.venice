@@ -1,8 +1,17 @@
 
-(defmacro comment [& body] nil)
+(defmacro
+   { :arglists '(& body)
+     :doc "Ignores body, yields nil" }
+    
+   comment [& body] nil)
 
 
-(defmacro assert [expr message]
+(defmacro 
+   { :arglists '(expr message?)
+     :doc "Evaluates expr and throws an exception if it does not evaluate " + 
+		  "to logical true." }
+
+   assert [expr message]
    `(if ~message
        (when-not ~expr
            (throw (. :com.github.jlangch.venice.AssertionException 
@@ -15,7 +24,11 @@
     ))
     
 
-(defmacro and [x & next]
+(defmacro 
+   { :arglists '(& pred-forms)
+     :doc "Ands the predicate forms" }
+
+   and [x & next]
     (let [arity_ (inc (count next))]
         `(if (== 1 ~arity_)
             ~x  
@@ -23,7 +36,11 @@
                 (if cond_ (and ~@next) cond_)))))
 
 
-(defmacro or [x & next]
+(defmacro 
+   { :arglists '(& pred-forms)
+     :doc "Ors the predicate forms" }
+
+   or [x & next]
     (let [arity_ (inc (count next))]
         `(if (== 1 ~arity_)
             ~x 
@@ -31,7 +48,15 @@
                 (if cond_ cond_ (or ~@next))))))
 
 
-(defmacro cond [& clauses]
+(defmacro 
+   { :arglists '(& clauses)
+     :doc 
+     	"Takes a set of test/expr pairs. It evaluates each test one at a " + 
+		"time.  If a test returns logical true, cond evaluates and returns " + 
+		"the value of the corresponding expr and doesn't evaluate any of the " + 
+		"other tests or exprs. (cond) returns nil." }
+
+   cond [& clauses]
     (when clauses 
         (list 'if (first clauses) 
             (if (rest clauses) 
@@ -40,15 +65,30 @@
             (cons 'cond (rest (rest clauses))))))
 
 
-(defmacro when [test & body]
+(defmacro 
+   { :arglists '(test & body)
+     :doc "Evaluates test. If logical true, evaluates body in an implicit do." }
+
+   when [test & body]
     (list 'if test (cons 'do body)))
 
 
-(defmacro when-not [test & body]
+(defmacro 
+   { :arglists '(test & body)
+     :doc "Evaluates test. If logical false, evaluates body in an implicit do." }
+
+   when-not [test & body]
     (list 'if test nil (cons 'do body)))
 
 
-(defmacro if-let [bindings then else]
+(defmacro 
+   { :arglists '(bindings then else)
+     :doc 
+     	"bindings is a vector with 2 elements: binding-form test. \n" + 
+		"If test is true, evaluates then with binding-form bound to the value of " + 
+		"test, if not, yields else" }
+
+   if-let [bindings then else]
    (let [form (first bindings) tst (second bindings)]
      `(let [temp_ ~tst]
         (if temp_
@@ -57,7 +97,11 @@
           ~else))))
 
 
-(defmacro dotimes [bindings & body]
+(defmacro 
+   { :arglists '(bindings & body)
+     :doc "Repeatedly executes body with name bound to integers from 0 through n-1." }
+
+   dotimes [bindings & body]
     (let [i (first bindings) 
           n (second bindings)] 
        `(let [k (long ~n)] 
@@ -67,21 +111,47 @@
                  (recur (inc ~i)))))))
 
 
-(defmacro while [test & body]
+(defmacro 
+   { :arglists '(test & body)
+     :doc 
+     	"Repeatedly executes body while test expression is true. Presumes " +
+		"some side-effect will cause test to become false/nil. Returns nil" }
+
+   while [test & body]
     `(loop [] 
         (when ~test 
             ~@body 
             (recur))))
 
 
-(defmacro doto [x & forms]
+(defmacro 
+   { :arglists '(x & forms)
+     :doc 
+     	"Evaluates x then calls all of the methods and functions with the " + 
+		"value of x supplied at the front of the given arguments.  The forms " + 
+		"are evaluated in order. Returns x." 
+	 :examples 
+	 	'("(doto (. :java.util.HashMap :new) \n" +
+		  "      (. :put :a 1) \n" +
+		  "      (. :put :b 2))") }
+
+   doto [x & forms]
     (let [gx (gensym)] 
        `(let [~gx ~x] 
           ~@(map (fn [f] `(~(first f) ~gx ~@(rest f))) forms) 
           ~gx)))
 
 
-(defmacro -> [x & forms]
+(defmacro 
+   { :arglists '(x & forms)
+     :doc 
+     	"Threads the expr through the forms. Inserts x as the " + 
+		"second item in the first form, making a list of it if it is not a " + 
+		"list already. If there are more forms, inserts the first form as the " + 
+		"second item in second form, etc." 
+	 :examples '("(-> 5 (+ 3) (/ 2) (- 1))") }
+
+   -> [x & forms]
     (loop [x x, forms forms]
         (if forms
             (let [form (first forms)
@@ -92,7 +162,22 @@
             x)))
 
 
-(defmacro ->> [x & forms]
+(defmacro 
+   { :arglists '(x & forms)
+     :doc 
+     	"Threads the expr through the forms. Inserts x as the " + 
+		"last item in the first form, making a list of it if it is not a " + 
+		"list already. If there are more forms, inserts the first form as the " + 
+		"last item in second form, etc." 
+	 :examples 
+	 	'("(->> 5 (+ 3) (/ 32) (- 1))"
+	 	
+		  "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ] \n" +
+		  "     (map (fn [x] (get x :b))) \n" +
+		  "     (filter (fn [x] (> x 4))) \n" +
+		  "     (map inc)))) ") }
+
+   ->> [x & forms]
     (loop [x x, forms forms]
         (if forms
             (let [form (first forms)
@@ -103,7 +188,21 @@
             x)))
 
 
-(defmacro list-comp [[binding coll-expr & bindings] body-expr]
+(defmacro 
+   { :arglists '(seq-exprs body-expr)
+     :doc 
+     	"List comprehension. Takes a vector of one or more " + 
+		"binding-form/collection-expr pairs, each followed by zero or more " + 
+		"modifiers, and yields a collection of evaluations of expr. " + 
+		"Supported modifiers are: :when test." 
+	 :examples 
+	 	'("(list-comp [x (range 10)] x)"
+		  "(list-comp [x (range 5)] (* x 2))"
+		  "(list-comp [x (range 10) :when (odd? x)] x)"
+		  "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
+		  "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
+
+   list-comp [[binding coll-expr & bindings] body-expr]
     (cond (not binding)
         `(list ~body-expr)
 
@@ -115,7 +214,11 @@
                  ~coll-expr)))
 
 
-(defmacro time [expr]
+(defmacro 
+   { :arglists '(expr)
+     :doc "Evaluates expr and prints the time it took.  Returns the value of expr." }
+
+   time [expr]
     `(let [start_ (time-ns)
            ret_ ~expr]
          (prn (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
@@ -131,7 +234,11 @@
 (def not (fn [x] (if x false true)))
 
 
-(def identity (fn [x] x))
+(def 
+   { :arglists '(x)
+     :doc "Returns its argument." }
+     
+   identity (fn [x] x))
 
 
 (def zipmap (fn [keys vals]
