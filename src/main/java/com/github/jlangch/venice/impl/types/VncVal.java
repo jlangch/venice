@@ -36,7 +36,7 @@ abstract public class VncVal implements Comparable<VncVal> {
 		meta = m == null ? Constants.Nil : m; 
 	}
 
-	public VncVal getMetaVal(final VncSymbol key) {
+	public VncVal getMetaVal(final VncString key) {
 		if (meta == Constants.Nil) {
 			return Constants.Nil;
 		}
@@ -48,7 +48,12 @@ abstract public class VncVal implements Comparable<VncVal> {
 		}
 	}
 
-	public void setMetaVal(final VncSymbol key, final VncVal val) {
+	public VncVal getMetaVal(final VncString key, final VncVal defaultValue) {
+		final VncVal val = getMetaVal(key);
+		return val == Constants.Nil ? defaultValue : val;
+	}
+
+	public void setMetaVal(final VncString key, final VncVal val) {
 		if (meta == Constants.Nil) {
 			meta = new VncHashMap();
 			((VncHashMap)meta).getMap().put(key, val);	

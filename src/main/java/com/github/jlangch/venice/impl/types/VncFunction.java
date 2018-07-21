@@ -21,14 +21,13 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
@@ -107,33 +106,27 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	}
 
 	public VncList getArgLists() { 
-		final VncVal paramDefs = getMetaVal(new VncSymbol(":argslists")); 
-		return paramDefs == Constants.Nil ? new VncList() : (VncList)paramDefs;
+		return (VncList)getMetaVal(MetaUtil.ARGLIST, new VncList());
 	}
 	
-	public void setArgLists(final String... argslists) { 
-		setMetaVal(
-				new VncSymbol(":argslists"), 
-				new VncList(Arrays.stream(argslists).map(s -> new VncString(s)).collect(Collectors.toList())));
+	public void setArgLists(final String... arglists) {
+		MetaUtil.setArgList(this, arglists);
 	}
 	
 	public VncVal getDescription() { 
-		return getMetaVal(new VncSymbol(":description")); 
+		return getMetaVal(MetaUtil.DOC); 
 	}
 	
 	public void setDescription(final String description) { 
-		setMetaVal(new VncSymbol(":description"), new VncString(description));
+		MetaUtil.setDoc(this, description);
 	}
 	
 	public VncList getExamples() { 
-		final VncVal paramDefs = getMetaVal(new VncSymbol(":examples")); 
-		return paramDefs == Constants.Nil ? new VncList() : (VncList)paramDefs;
+		return (VncList)getMetaVal(MetaUtil.EXAMPLES, new VncList());
 	}
 	
 	public void setExamples(final String... examples) { 
-		setMetaVal(
-				new VncSymbol(":examples"), 
-				new VncList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
+		MetaUtil.setExamples(this, examples);
 	}
 
 	@Override 

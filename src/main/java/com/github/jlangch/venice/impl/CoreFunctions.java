@@ -283,8 +283,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(bytebuf? x)");
 			
-			setDescription(
-					"Returns true if x is a bytebuf");
+			setDescription("Returns true if x is a bytebuf");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -298,8 +297,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(string? x)");
 			
-			setDescription(
-					"Returns true if x is a string");
+			setDescription("Returns true if x is a string");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -335,8 +333,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(symbol? x)");
 			
-			setDescription(
-					"Returns true if x is a symbol");
+			setDescription("Returns true if x is a symbol");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -375,8 +372,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(keyword? x)");
 			
-			setDescription(
-					"Returns true if x is a keyword");
+			setDescription("Returns true if x is a keyword");
 		}
 		
 		public VncVal apply(final VncList args) {

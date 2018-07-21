@@ -33,14 +33,16 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Version;
-import com.github.jlangch.venice.impl.CoreFunctions;
-import com.github.jlangch.venice.impl.CoreMacroDefs;
-import com.github.jlangch.venice.impl.MacroDef;
+import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -48,6 +50,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class DocGenerator {
 
 	public DocGenerator() {
+		this.env = new VeniceInterpreter().createEnv();
 	}
 
 	public static void main(final String[] args) {
@@ -56,6 +59,7 @@ public class DocGenerator {
 	
 	private void run() {
 		try {	
+			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
 			
@@ -325,7 +329,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("concat"));
 		list_modify.addItem(getDocItem("interpose"));
 		list_modify.addItem(getDocItem("interleave"));
-		list_modify.addItem(getDocItem("mpacat"));
+		list_modify.addItem(getDocItem("mapcat"));
 		list_modify.addItem(getDocItem("flatten"));
 		list_modify.addItem(getDocItem("reduce"));
 		list_modify.addItem(getDocItem("reverse"));
@@ -371,7 +375,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("partition"));
 		vec_modify.addItem(getDocItem("interpose"));
 		vec_modify.addItem(getDocItem("interleave"));
-		vec_modify.addItem(getDocItem("mpacat"));
+		vec_modify.addItem(getDocItem("mapcat"));
 		vec_modify.addItem(getDocItem("flatten"));
 		vec_modify.addItem(getDocItem("reduce"));
 		vec_modify.addItem(getDocItem("reverse"));
@@ -424,7 +428,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("cons"));
 		map_modify.addItem(getDocItem("conj"));
 		map_modify.addItem(getDocItem("assoc"));
-		map_modify.addItem(getDocItem("disassoc"));
+		map_modify.addItem(getDocItem("dissoc"));
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));
 		map_modify.addItem(getDocItem("flatten"));
@@ -786,16 +790,6 @@ public class DocGenerator {
 	}
 
 	private DocItem getDocItem(final String name) {
-		final VncFunction f = (VncFunction)CoreFunctions.ns.get(new VncSymbol(name));
-		if (f != null) {
-			return new DocItem(
-					name, 
-					toStringList(f.getArgLists()), 
-					((VncString)f.getDescription()).getValue(),
-					runExamples(name, toStringList(f.getExamples())));
-		}
-	
-
 		if ("()".equals(name)) {
 			return new DocItem(
 					name, 
@@ -841,77 +835,6 @@ public class DocGenerator {
 							 "(def sum (fn [x y] (+ x y)))")));
 		}
 
-		if ("identity".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(identity x)"), 
-					"Returns its argument.",
-					runExamples(
-							name, 
-							Arrays.asList(
-								"(identity 4)",
-								"(filter identity [1 2 3 nil 4 false true 1234])")));
-		}
-
-		if ("not".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(not x)"), 
-					"Returns true if x is logical false, false otherwise.",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "(not true)",
-							 "(not (== 1 2))")));
-		}
-		
-		if ("zipmap".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(zipmap keys vals)"), 
-					"Returns a map with the keys mapped to the corresponding vals.",
-					runExamples(
-							name, 
-							Arrays.asList(
-								"(zipmap [:a :b :c :d :e] [1 2 3 4 5])",
-								"(zipmap [:a :b :c] [1 2 3 4 5])")));
-		}
-
-		if ("memoize".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(memoize f)"), 
-					"Returns a memoized version of a referentially transparent function.",
-					runExamples(
-							name, 
-							Arrays.asList(
-								"(do                                \n" +
-								"   (def test (fn [a] (+ a 100)))   \n" +
-								"   (def test-memo (memoize test))  \n" +
-								"   (test-memo 1))")));
-		}
-
-		if ("load-file".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(load-file name)"), 
-					"Sequentially read and evaluate the set of forms contained in the file.",
-					runExamples(
-							name, 
-							Arrays.asList()));
-		}
-
-		if ("load-string".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(load-string s)"), 
-					"Sequentially read and evaluate the set of forms contained in the string.",
-					runExamples(
-							name, 
-							Arrays.asList(
-									"(load-string \"(def x 1)\")")));
-		}
-
 		if ("eval".equals(name)) {
 			return new DocItem(
 					name, 
@@ -924,21 +847,15 @@ public class DocGenerator {
 							 "(eval (list + 1 2 3))")));
 		}
 
-	
-		final MacroDef m = CoreMacroDefs
-							.getMacros()
-							.stream()
-							.filter(n -> n.getName().equals(name))
-							.findFirst()
-							.orElse(null);
-		if (m != null) {
+		final VncFunction f = getFunction(name);
+		if (f != null) {
 			return new DocItem(
 					name, 
-					m.getSignatures(), 
-					m.getDescription(),
-					runExamples(name, m.getExamples()));
+					toStringList(f.getArgLists()), 
+					f.getDescription() == Constants.Nil ? "" : ((VncString)f.getDescription()).getValue(),
+					runExamples(name, toStringList(f.getExamples())));
 		}
-		
+	
 		return null;
 	}
 
@@ -991,11 +908,16 @@ public class DocGenerator {
 	}
 
 	private List<String> toStringList(final VncList list) {
-		return list
-				.getList()
-				.stream()
-				.map(s -> ((VncString)s).getValue())
-				.collect(Collectors.toList());
+		try {
+			return list
+					.getList()
+					.stream()
+					.map(s -> ((VncString)s).getValue())
+					.collect(Collectors.toList());
+		}
+		catch(Exception ex) {
+			throw ex;
+		}
 	}
 
 	private List<DocSection> concat(final List<DocSection> l1, final List<DocSection> l2) {
@@ -1019,6 +941,12 @@ public class DocGenerator {
 	private File getUserDir() {
 		return new File(System.getProperty("user.dir"));
 	}
-		
+
+	private VncFunction getFunction(final String name) {
+		final VncVal val = env.get(new VncSymbol(name));
+		return Types.isVncFunction(val) ? (VncFunction)val : null;
+	}
 	
+
+	final Env env;
 }
