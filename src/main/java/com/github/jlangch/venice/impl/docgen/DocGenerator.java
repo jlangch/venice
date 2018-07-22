@@ -785,6 +785,9 @@ public class DocGenerator {
 		general.addItem(new DocItem("(json/to-pretty-json val)"));
 		general.addItem(new DocItem("(json/parse json)"));
 		general.addItem(new DocItem(" "));
+		general.addItem(new DocItem("(json/avail?)"));
+		general.addItem(new DocItem("(json/avail-jdk8-module?)"));
+		general.addItem(new DocItem(" "));
 		general.addItem(new DocItem("Available if Jackson lib is on runtime classpath"));
 
 		return section;

@@ -70,6 +70,15 @@ public class ReflectionAccessor {
 		}
 	}
 
+	public static Class<?> classExists(final String className) {
+		try {
+			return memoizedClassForName(className);
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
 	public static Object invokeConstructor(final Class<?> clazz, final Object[] args) {
 		try {
 			final List<Constructor<?>> ctors = memoizedPublicConstructors(clazz, args.length);

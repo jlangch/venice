@@ -87,7 +87,14 @@ for(long ii=0; ii<100; ii++) {
 
 ### Json Support
 
-Venice supports JSON if the Jackson libs are on the runtime classpath
+Venice supports JSON if the Jackson libs are on the runtime classpath:
+
+ - jackson-core-2.9.x.jar
+ - jackson-databind-2.9.x.jar
+ - jackson-datatype-jdk8-2.9.x.jar (optional Jdk8 module)
+ 
+The Jackson Jdk8 module is loaded automatically if it is available
+ 
 
 ```clojure
 ;; build json from a map (returns a json string)
