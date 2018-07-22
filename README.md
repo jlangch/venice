@@ -85,7 +85,7 @@ for(long ii=0; ii<100; ii++) {
 }
 ```
 
-### Json Support
+### Json support
 
 Venice supports JSON if the Jackson libs are on the runtime classpath:
 
