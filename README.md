@@ -1,6 +1,6 @@
 # Venice
 
-Venice, a sandboxed Lisp interpreter running on Java.
+Venice, a sandboxed Lisp running on Java.
 
 
 ## Overview
@@ -68,8 +68,7 @@ System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
 
 ### Precompiling Venice
 
-Precompiling Venice speeds up evaluation significantly when calling many 
-times an expression with different parameters:
+Precompiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -131,7 +130,7 @@ System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5
 ```
 
 
-Java enum values can be passed as simple keywords or as scoped keywords:
+Java enum values can be passed as simple or scoped keywords:
 
 ```java
 import com.github.jlangch.venice.Venice;
