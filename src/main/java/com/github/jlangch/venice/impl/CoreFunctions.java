@@ -5219,7 +5219,8 @@ public class CoreFunctions {
 			setArgLists("(str/strip-margin s)");
 			
 			setDescription(
-					"Strips leading whitespaces upto the margin '|' from each line in a multi-line string.");
+					"Strips leading whitespaces upto and including the margin '|' " +
+					"from each line in a multi-line string.");
 			
 			setExamples(
 					"(str/strip-margin \"line1\n  |  line2\n  |  line3\")");
