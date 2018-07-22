@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 
 public class StringUtil {
 	
@@ -133,7 +131,7 @@ public class StringUtil {
 		if (text == null) {
 			throw new IllegalArgumentException("A text must not be null");
 		}
-		if (StringUtils.isEmpty(searchChars)) {
+		if (isEmpty(searchChars)) {
 			throw new IllegalArgumentException("A searchChars must not be empty");
 		}
 		if (startPos < 0) {

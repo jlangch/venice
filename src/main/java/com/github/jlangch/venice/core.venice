@@ -284,15 +284,20 @@
    
 (def json/to-json (fn [val]
     (-> (. :com.fasterxml.jackson.databind.ObjectMapper :new)
+        ;; (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        ;; (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
         (. :writeValueAsString val))))
    
 (def json/to-pretty-json (fn [val]
     (-> (. :com.fasterxml.jackson.databind.ObjectMapper :new)
+        ;; (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        ;; (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
         (. :writerWithDefaultPrettyPrinter)
         (. :writeValueAsString val))))
 
 (def json/parse (fn [text]
     (-> (. :com.fasterxml.jackson.databind.ObjectMapper :new)
+        ;; (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
         (. :readValue text (class-for-name :java.lang.Object)))))
 
 

@@ -463,11 +463,35 @@ public class ReflectionAccessor {
 				final Object arg = args[ii];
 				final Class<?> argType = (arg == null) ? null : arg.getClass();
 				final Class<?> paramType = params[ii];
-				final boolean match = exactMatch 
-										? paramArgTypeMatchExact(paramType, argType)
-										: paramArgTypeMatch(paramType, argType);
-				if (!match) {
-					return false;
+				
+				if (ReflectionTypes.isEnumType(paramType)) {
+					if (arg != null) {
+						if (arg instanceof String) {
+							// the name is scoped -> test for the enum class
+							final int pos = ((String)arg).lastIndexOf('.');
+							if (pos > 0) {
+								final String enumTypeName = ((String)arg).substring(0, pos);
+								if (!enumTypeName.equals(paramType.getName())) {
+									return false; // enum type not matching
+								}
+							}
+							else {
+								// non scoped enum name -> compatible test while boxing
+							}
+						}
+						else {
+							// an arg other than string can not be converted to an enum value
+							return false;
+						}
+					}
+				}
+				else {
+					final boolean match = exactMatch 
+											? paramArgTypeMatchExact(paramType, argType)
+											: paramArgTypeMatch(paramType, argType);
+					if (!match) {
+						return false;
+					}
 				}
 			}
 			return true;
@@ -610,7 +634,14 @@ public class ReflectionAccessor {
 			}
 			else if(ReflectionTypes.isEnumType(paramType)) {
 				if (arg instanceof String) {
-					final String enumName = (String)arg;
+					String enumName = (String)arg;
+					
+					// scoped enum name?
+					final int pos = enumName.lastIndexOf('.');
+					if (pos > 0) {
+						enumName = enumName.substring(pos+1);
+					}
+
 					for(Enum<?> e : ((Class<? extends Enum<?>>)paramType).getEnumConstants()) {
 						if (enumName.equals(e.name())) {
 							return e;
