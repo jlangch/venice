@@ -89,7 +89,7 @@ for(long ii=0; ii<100; ii++) {
 
 Venice supports JSON if the Jackson libs are on the runtime classpath
 
-```java
+```clojure
 ;; build json from a map (returns a json string)
 (json/to-json {:a 100 :b 100})
 (json/to-pretty-json {:a 100 :b 100})
