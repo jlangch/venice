@@ -58,8 +58,7 @@ public class DocGenerator {
 	}
 	
 	private void run() {
-		try {	
-			
+		try {			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
 			
@@ -947,6 +946,7 @@ public class DocGenerator {
 		return Types.isVncFunction(val) ? (VncFunction)val : null;
 	}
 	
+
 
 	final Env env;
 }
