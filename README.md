@@ -130,8 +130,8 @@ import com.github.jlangch.venice.Venice;
 
 final Venice venice = new Venice();
 
-System.out.println(venice.eval("(. :LocalDate :of 1994 :JANUARY 21)"));
-System.out.println(venice.eval("(. :LocalDate :of 1994 :java.time.Month.JANUARY 21)"));
+System.out.println(venice.eval("(. :java.time.LocalDate :of 1994 :JANUARY 21)"));
+System.out.println(venice.eval("(. :java.time.LocalDate :of 1994 :java.time.Month.JANUARY 21)"));
 ```
 
 A more comprehensive example:
