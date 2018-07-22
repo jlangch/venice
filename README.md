@@ -87,13 +87,11 @@ for(long ii=0; ii<100; ii++) {
 
 ### Json Support
 
-Venice supports JSON natively if the Jackson libs are on the runtime classpath
+Venice supports JSON if the Jackson libs are on the runtime classpath
 
 ```java
 ;; build json from a map (returns a json string)
 (json/to-json {:a 100 :b 100})
-
-;; build json from a map (returns a json string)
 (json/to-pretty-json {:a 100 :b 100})
 
 ;; pretty print json (returns a json string)
