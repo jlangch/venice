@@ -213,6 +213,8 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/split-lines"));
 		use.addItem(getDocItem("str/strip-start"));
 		use.addItem(getDocItem("str/strip-end"));
+		use.addItem(getDocItem("str/strip-indent"));
+		use.addItem(getDocItem("str/strip-margin"));
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/truncate"));
 
@@ -871,6 +873,7 @@ public class DocGenerator {
 			examples
 				.stream()
 				.filter(e -> !StringUtil.isEmpty(e))
+				.map(e -> StringUtil.stripMargin(e, '|'))
 				.forEach(e -> {
 					try {
 						final String result = (String)runner.eval("(str " + e + ")");

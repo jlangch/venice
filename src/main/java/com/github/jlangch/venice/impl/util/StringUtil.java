@@ -26,7 +26,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 
 public class StringUtil {
@@ -124,6 +127,72 @@ public class StringUtil {
 		}
 		
 		return sb.toString();
+	}
+	
+	public static int indexNotOf(final String text, final String searchChars, final int startPos) {
+		if (text == null) {
+			throw new IllegalArgumentException("A text must not be null");
+		}
+		if (StringUtils.isEmpty(searchChars)) {
+			throw new IllegalArgumentException("A searchChars must not be empty");
+		}
+		if (startPos < 0) {
+			throw new IllegalArgumentException("A startPos must not be negativ");
+		}
+		
+		
+		if (startPos >= text.length()) {
+			return -1;
+		}
+	
+		final Set<Character> chars = searchChars.chars().mapToObj(c -> (char)c).collect(Collectors.toSet());
+
+		int pos = startPos;
+		while(pos < text.length()) {
+			if (chars.contains(text.charAt(pos))) {
+				pos++;
+			}
+			else {
+				return pos;
+			}
+		}
+		
+		return -1;
+	}
+	
+	public static String stripIndent(final String text) {
+		if (text == null || text.isEmpty()) {
+			return text;
+		}
+		
+		final List<String> lines = StringUtil.splitIntoLines(text);
+		final String first = lines.get(0);
+		
+		final int pos = StringUtil.indexNotOf(first, " \t", 0);
+		if (pos < 0) {
+			return text;
+		}
+		else {
+			final String indent = first.substring(0, pos);				
+			return lines
+					.stream()
+					.map(s -> s.startsWith(indent) ? s.substring(pos) : s)
+					.collect(Collectors.joining("\n"));
+		}
+	}
+
+	
+	public static String stripMargin(final String text, final char margin) {
+		if (text == null || text.isEmpty()) {
+			return text;
+		}
+		
+		final List<String> lines = StringUtil.splitIntoLines(text);
+		return stripIndent(
+				lines
+					.stream()
+					.map(s -> { int pos = s.indexOf(margin); return pos < 0 ? s : s.substring(pos+1); })
+					.collect(Collectors.joining("\n")));
 	}
 
 	/**

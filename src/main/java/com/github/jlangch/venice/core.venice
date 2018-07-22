@@ -117,10 +117,9 @@
 (defmacro 
    { :arglists '("(doto x & forms)")
      :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x." 
-	 :examples '(
-"(doto (. :java.util.HashMap :new)
-      (. :put :a 1)
-      (. :put :b 2))" ) }
+     :examples '("(doto (. :java.util.HashMap :new)
+                 |      (. :put :a 1)
+                 |      (. :put :b 2))" ) }
 
    doto [x & forms]
     (let [gx (gensym)] 
@@ -132,7 +131,7 @@
 (defmacro 
    { :arglists '("(-> x & forms)")
      :doc "Threads the expr through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
-	 :examples '("(-> 5 (+ 3) (/ 2) (- 1))") }
+     :examples '("(-> 5 (+ 3) (/ 2) (- 1))") }
 
    -> [x & forms]
     (loop [x x, forms forms]
@@ -148,13 +147,12 @@
 (defmacro 
    { :arglists '("(->> x & forms)")
      :doc "Threads the expr through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
-	 :examples '(
-"(->> 5 (+ 3) (/ 32) (- 1))"
-	 	
-"(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
-     (map (fn [x] (get x :b)))
-     (filter (fn [x] (> x 4)))
-     (map inc)))) " ) }
+     :examples '("(->> 5 (+ 3) (/ 32) (- 1))"
+
+                 "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
+                 |     (map (fn [x] (get x :b)))
+                 |     (filter (fn [x] (> x 4)))
+                 |     (map inc)))) " ) }
 
    ->> [x & forms]
     (loop [x x, forms forms]
@@ -170,12 +168,11 @@
 (defmacro 
    { :arglists '("(list-comp seq-exprs body-expr)")
      :doc "List comprehension. Takes a vector of one or more binding-form/collection-expr pairs, each followed by zero or more modifiers, and yields a collection of evaluations of expr. Supported modifiers are: :when test." 
-	 :examples 
-	 	'("(list-comp [x (range 10)] x)"
-		  "(list-comp [x (range 5)] (* x 2))"
-		  "(list-comp [x (range 10) :when (odd? x)] x)"
-		  "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
-		  "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
+     :examples '("(list-comp [x (range 10)] x)"
+                 "(list-comp [x (range 5)] (* x 2))"
+                 "(list-comp [x (range 10) :when (odd? x)] x)"
+                 "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
+                 "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
 
    list-comp [[binding coll-expr & bindings] body-expr]
     (cond (not binding)
@@ -213,8 +210,7 @@
 (def 
    { :arglists '("(load-string s)")
      :doc "Sequentially read and evaluate the set of forms contained in the string." 
-     :examples 
- 	 	'("(load-string \"(def x 1)\")") }
+     :examples '("(load-string \"(def x 1)\")") }
    
    load-string 
    
@@ -224,9 +220,8 @@
 (def 
    { :arglists '("(not x)")
      :doc "Returns true if x is logical false, false otherwise." 
-     :examples 
- 	 	'("(not true)"
-		  "(not (== 1 2))") }
+     :examples '("(not true)"
+                 "(not (== 1 2))") }
      
    not 
    
@@ -236,9 +231,8 @@
 (def 
    { :arglists '("(identity x)")
      :doc "Returns its argument." 
-     :examples 
- 	 	'("(identity 4)"
-		  "(filter identity [1 2 3 nil 4 false true 1234])") }
+     :examples '("(identity 4)"
+                 "(filter identity [1 2 3 nil 4 false true 1234])") }
      
    identity 
    
@@ -248,9 +242,8 @@
 (def 
    { :arglists '("(zipmap keys vals)")
      :doc "Returns a map with the keys mapped to the corresponding vals." 
-     :examples 
- 	 	'("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
-		  "(zipmap [:a :b :c] [1 2 3 4 5])") }
+     :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
+                 "(zipmap [:a :b :c] [1 2 3 4 5])") }
 
    zipmap
    
@@ -268,11 +261,10 @@
 (def 
    { :arglists '("(memoize f)")
      :doc "Returns a memoized version of a referentially transparent function." 
-     :examples '(
-"(do
-   (def test (fn [a] (+ a 100)))
-   (def test-memo (memoize test))
-   (test-memo 1))" ) }
+     :examples '( "(do
+                  |   (def test (fn [a] (+ a 100)))
+                  |   (def test-memo (memoize test))
+                  |   (test-memo 1))" ) }
      
    memoize
    

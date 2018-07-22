@@ -2685,19 +2685,38 @@ public class FunctionsTest {
 	}
 
 	@Test
-	public void test_str_strip_start() {
-		final Venice venice = new Venice();
-
-		assertEquals("def", venice.eval("(str/strip-start \"abcdef\" \"abc\")"));
-		assertEquals("abcdef", venice.eval("(str/strip-start \"abcdef\" \"def\")"));
-	}
-
-	@Test
 	public void test_str_strip_end() {
 		final Venice venice = new Venice();
 
 		assertEquals("abc", venice.eval("(str/strip-end \"abcdef\" \"def\")"));
 		assertEquals("abcdef", venice.eval("(str/strip-end \"abcdef\" \"abc\")"));
+	}
+
+	@Test
+	public void test_str_strip_indent() {
+		final Venice venice = new Venice();
+
+		assertEquals("abc", venice.eval("(str/strip-indent \"abc\")"));
+		assertEquals("abc", venice.eval("(str/strip-indent \"  abc\")"));
+		assertEquals("line1\n  line2\n  line3", venice.eval("(str/strip-indent \"  line1\n    line2\n    line3\")"));
+	}
+
+	@Test
+	public void test_str_strip_margin() {
+		final Venice venice = new Venice();
+
+		assertEquals("abc", venice.eval("(str/strip-margin \"abc\")"));
+		assertEquals("abc", venice.eval("(str/strip-margin \"  abc\")"));
+		assertEquals("line1\n  line2\n  line3", venice.eval("(str/strip-margin \"line1\n  |  line2\n  |  line3\")"));
+		assertEquals("line1\n line2\n line3", venice.eval("(str/strip-margin \" line1\n  |  line2\n  |  line3\")"));
+	}
+
+	@Test
+	public void test_str_strip_start() {
+		final Venice venice = new Venice();
+
+		assertEquals("def", venice.eval("(str/strip-start \"abcdef\" \"abc\")"));
+		assertEquals("abcdef", venice.eval("(str/strip-start \"abcdef\" \"def\")"));
 	}
 
 	@Test

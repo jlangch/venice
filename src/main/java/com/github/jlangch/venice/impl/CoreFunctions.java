@@ -5192,6 +5192,50 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction str_strip_indent = new VncFunction("str/strip-indent") {
+		{
+			setArgLists("(str/strip-indent s)");
+			
+			setDescription(
+					"Strip the indent of a multi-line string. The first line's leading whitespaces define the indent.");
+			
+			setExamples(
+					"(str/strip-indent \"  line1\n    line2\n    line3\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/strip-indent", args, 1);
+			
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			return new VncString(StringUtil.stripIndent(Coerce.toVncString(args.first()).getValue()));
+		}
+	};
+
+	public static VncFunction str_strip_margin = new VncFunction("str/strip-margin") {
+		{
+			setArgLists("(str/strip-margin s)");
+			
+			setDescription(
+					"Strips leading whitespaces upto the margin '|' from each line in a multi-line string.");
+			
+			setExamples(
+					"(str/strip-margin \"line1\n  |  line2\n  |  line3\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/strip-margin", args, 1);
+			
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			return new VncString(StringUtil.stripMargin(Coerce.toVncString(args.first()).getValue(), '|'));
+		}
+	};
+
 	public static VncFunction str_repeat = new VncFunction("str/repeat") {
 		{
 			setArgLists("(str/repeat s n)", "(str/repeat s n sep)");
@@ -5536,6 +5580,8 @@ public class CoreFunctions {
 				.put("str/truncate",		str_truncate)
 				.put("str/strip-start",		str_strip_start)
 				.put("str/strip-end",		str_strip_end)
+				.put("str/strip-indent",	str_strip_indent)
+				.put("str/strip-margin",	str_strip_margin)
 				.put("str/repeat",		    str_repeat)
 				
 				
