@@ -91,8 +91,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(doc name)");
 			
-			setDescription(
-				"Returns the documentation for the function/macro with the given name");
+			setDoc("Returns the documentation for the function/macro with the given name");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("doc", args, 1);
@@ -111,7 +110,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(throw)", "(throw x)");
 			
-			setDescription("Throws exception with passed value x");
+			setDoc("Throws exception with passed value x");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -145,8 +144,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(nil? x)");
 			
-			setDescription(
-					"Returns true if x is nil, false otherwise");
+			setDoc("Returns true if x is nil, false otherwise");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -160,8 +158,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(some? x)");
 			
-			setDescription(
-					"Returns true if x is not nil, false otherwise");
+			setDoc("Returns true if x is not nil, false otherwise");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -175,8 +172,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(true? x)");
 			
-			setDescription(
-					"Returns true if x is true, false otherwise");
+			setDoc("Returns true if x is true, false otherwise");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -190,8 +186,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(false? x)");
 			
-			setDescription(
-					"Returns true if x is false, false otherwise");
+			setDoc("Returns true if x is false, false otherwise");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -205,8 +200,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(boolean? n)");
 			
-			setDescription(
-					"Returns true if n is a boolean");
+			setDoc("Returns true if n is a boolean");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -220,8 +214,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(long? n)");
 			
-			setDescription(
-					"Returns true if n is a long");
+			setDoc("Returns true if n is a long");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -235,8 +228,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(double? n)");
 			
-			setDescription(
-					"Returns true if n is a double");
+			setDoc("Returns true if n is a double");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -250,8 +242,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(decimal? n)");
 			
-			setDescription(
-					"Returns true if n is a decimal");
+			setDoc("Returns true if n is a decimal");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -265,8 +256,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(number? n)");
 			
-			setDescription(
-					"Returns true if n is a number (long, double, or decimal)");
+			setDoc("Returns true if n is a number (long, double, or decimal)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -283,7 +273,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(bytebuf? x)");
 			
-			setDescription("Returns true if x is a bytebuf");
+			setDoc("Returns true if x is a bytebuf");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -297,7 +287,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(string? x)");
 			
-			setDescription("Returns true if x is a string");
+			setDoc("Returns true if x is a string");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -319,7 +309,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(symbol name)");
 			
-			setDescription("Returns a symbol from the given name");
+			setDoc("Returns a symbol from the given name");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -333,7 +323,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(symbol? x)");
 			
-			setDescription("Returns true if x is a symbol");
+			setDoc("Returns true if x is a symbol");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -347,7 +337,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(keyword name)");
 			
-			setDescription("Returns a keyword from the given name");
+			setDoc("Returns a keyword from the given name");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -372,7 +362,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(keyword? x)");
 			
-			setDescription("Returns true if x is a keyword");
+			setDoc("Returns true if x is a keyword");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -386,7 +376,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(fn? x)");
 			
-			setDescription("Returns true if x is a function");
+			setDoc("Returns true if x is a function");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -403,7 +393,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(macro? x)");
 			
-			setDescription("Returns true if x is a macro");
+			setDoc("Returns true if x is a macro");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -425,8 +415,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(pr_str & xs)");
 			
-			setDescription(
-					"With no args, returns the empty string. With one arg x, returns " + 
+			setDoc( "With no args, returns the empty string. With one arg x, returns " + 
 					"x.toString(). With more than one arg, returns the concatenation " +
 					"of the str values of the args with delimiter ' '.");
 		}
@@ -446,8 +435,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str & xs)");
 			
-			setDescription(
-					"With no args, returns the empty string. With one arg x, returns " + 
+			setDoc( "With no args, returns the empty string. With one arg x, returns " + 
 					"x.toString(). (str nil) returns the empty string. With more than " + 
 					"one arg, returns the concatenation of the str values of the args.");
 		}
@@ -468,8 +456,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(prn & xs)");
 			
-			setDescription(
-					"Prints to stdout, with no args, prints the empty string. With one arg x, " + 
+			setDoc( "Prints to stdout, with no args, prints the empty string. With one arg x, " + 
 					"prints x.toString(). With more than one arg, prints the concatenation " +
 					"of the str values of the args with delimiter ' '." +
 					"The function is sandboxed.");
@@ -495,8 +482,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(println & xs)");
 			
-			setDescription(
-					"Prints to stdout with a tailing linefeed, with no args, prints the " + 
+			setDoc( "Prints to stdout with a tailing linefeed, with no args, prints the " + 
 					"empty string. With one arg x, prints x.toString(). With more than " +
 					"one arg, prints the concatenation of the str values of the args with " +
 					"delimiter ' '." +
@@ -523,7 +509,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(readline prompt)");
 			
-			setDescription("Reads the next line from stdin. The function is sandboxed");
+			setDoc("Reads the next line from stdin. The function is sandboxed");
 		}
 	
 		public VncVal apply(final VncList args) {
@@ -546,7 +532,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(read-string x)");
 			
-			setDescription("Reads from x");
+			setDoc("Reads from x");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -565,8 +551,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(slurp file & options)");
 			
-			setDescription(
-					"Returns the file's content as text (string) or binary (bytebuf). " +
+			setDoc( "Returns the file's content as text (string) or binary (bytebuf). " +
 					"Defaults to binary=false and encoding=UTF-8. " +
 					"Options: :encoding \"UTF-8\" :binary true/false. ");
 		}
@@ -620,8 +605,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(spit f content & options)");
 			
-			setDescription(
-					"Opens f, writes content, and then closes f. Defaults to append=true " +
+			setDoc( "Opens f, writes content, and then closes f. Defaults to append=true " +
 					"and encoding=UTF-8. " +
 					"Options: :append true/false, :encoding \"UTF-8\"");
 		}
@@ -703,8 +687,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dec/scale x scale rounding-mode)");
 			
-			setDescription(
-					"Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
+			setDoc( "Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
 		}
 		
@@ -732,8 +715,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dec/add x y scale rounding-mode)");
 			
-			setDescription(
-					"Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
+			setDoc( "Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
 		}
 		
@@ -755,8 +737,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dec/sub x y scale rounding-mode)");
 			
-			setDescription(
-					"Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
+			setDoc( "Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
 		}
 		
@@ -776,8 +757,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dec/mul x y scale rounding-mode)");
 			
-			setDescription(
-					"Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
+			setDoc( "Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
 		}
 		
@@ -797,8 +777,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dec/div x y scale rounding-mode)");
 			
-			setDescription(
-					"Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
+			setDoc( "Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
 		}
 		
@@ -818,7 +797,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(+)", "(+ x)", "(+ x y)", "(+ x y & more)");
 			
-			setDescription("Returns the sum of the numbers. (+) returns 0.");
+			setDoc("Returns the sum of the numbers. (+) returns 0.");
 			
 			setExamples("(+)", "(+ 1)", "(+ 1 2)", "(+ 1 2 3 4)");
 		}
@@ -861,8 +840,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(- x)", "(- x y)", "(- x y & more)");
 			
-			setDescription(
-					"If one number is supplied, returns the negation, else subtracts " +
+			setDoc( "If one number is supplied, returns the negation, else subtracts " +
 					"the numbers from x and returns the result.");
 		}
 		
@@ -916,7 +894,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(*)", "(* x)", "(* x y)", "(* x y & more)");
 			
-			setDescription("Returns the product of numbers. (*) returns 1");
+			setDoc("Returns the product of numbers. (*) returns 1");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -957,8 +935,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(/ x)", "(/ x y)", "(/ x y & more)");
 			
-			setDescription(
-					"If no denominators are supplied, returns 1/numerator, " + 
+			setDoc( "If no denominators are supplied, returns 1/numerator, " + 
 					"else returns numerator divided by all of the denominators.");
 		}
 		
@@ -1012,7 +989,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(mod n d)");
 			
-			setDescription("Modulus of n and d.");
+			setDoc("Modulus of n and d.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1042,7 +1019,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(inc x)");
 			
-			setDescription("Increments the number x");
+			setDoc("Increments the number x");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1071,7 +1048,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dec x)");
 			
-			setDescription("Decrements the number x");
+			setDoc("Decrements the number x");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1100,8 +1077,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(max x)", "(max x y)", "(max x y & more)");
 			
-			setDescription(
-					"Returns the greatest of the values");
+			setDoc("Returns the greatest of the values");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1138,8 +1114,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(min x)", "(min x y)", "(min x y & more)");
 			
-			setDescription(
-					"Returns the smallest of the values");
+			setDoc("Returns the smallest of the values");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1176,8 +1151,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(abs x)");
 			
-			setDescription(
-					"Returns the absolute value of the number");
+			setDoc("Returns the absolute value of the number");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1207,8 +1181,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(rand-long)", "(rand-long max)");
 			
-			setDescription(
-					"Without argument returns a random long between 0 and MAX_LONG. " +
+			setDoc( "Without argument returns a random long between 0 and MAX_LONG. " +
 					"Without argument max returns a random long between 0 and max exclusive.");
 		}
 		
@@ -1232,8 +1205,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(rand-double)", "(rand-double max)");
 			
-			setDescription(
-					"Without argument returns a double long between 0.0 and 1.0. " +
+			setDoc( "Without argument returns a double long between 0.0 and 1.0. " +
 					"Without argument max returns a random long between 0.0 and max.");
 		}
 		
@@ -1260,8 +1232,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(== x y)");
 			
-			setDescription(
-					"Returns true if both operands have the equivalent type");
+			setDoc("Returns true if both operands have the equivalent type");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1275,8 +1246,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(!= x y)");
 			
-			setDescription(
-					"Returns true if both operands do not have the equivalent type");
+			setDoc("Returns true if both operands do not have the equivalent type");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1290,7 +1260,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(match s regex)");
 			
-			setDescription("Returns true if the string s matches the regular expression regex");
+			setDoc("Returns true if the string s matches the regular expression regex");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1317,7 +1287,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(match-not s regex)");
 			
-			setDescription("Returns true if the string s does not match the regular expression regex");
+			setDoc("Returns true if the string s does not match the regular expression regex");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1344,8 +1314,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(< x y)");
 			
-			setDescription(
-					"Returns true if x is smaller than y");
+			setDoc("Returns true if x is smaller than y");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1388,8 +1357,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(<= x y)");
 			
-			setDescription(
-					"Returns true if x is smaller or equal to y");
+			setDoc("Returns true if x is smaller or equal to y");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1432,8 +1400,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(> x y)");
 			
-			setDescription(
-					"Returns true if x is greater than y");
+			setDoc("Returns true if x is greater than y");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1476,8 +1443,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(>= x y)");
 			
-			setDescription(
-					"Returns true if x is greater or equal to y");
+			setDoc("Returns true if x is greater or equal to y");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1520,8 +1486,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(zero? x)");
 			
-			setDescription(
-					"Returns true if x zero else false");
+			setDoc("Returns true if x zero else false");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1550,8 +1515,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(pos? x)");
 			
-			setDescription(
-					"Returns true if x greater than zero else false");
+			setDoc("Returns true if x greater than zero else false");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1580,8 +1544,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(neg? x)");
 			
-			setDescription(
-					"Returns true if x smaller than zero else false");
+			setDoc("Returns true if x smaller than zero else false");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1610,8 +1573,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(even? n)");
 			
-			setDescription(
-					"Returns true if n is even, throws an exception if n is not an integer");
+			setDoc("Returns true if n is even, throws an exception if n is not an integer");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1634,8 +1596,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(odd? n)");
 			
-			setDescription(
-					"Returns true if n is odd, throws an exception if n is not an integer");
+			setDoc("Returns true if n is odd, throws an exception if n is not an integer");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1658,7 +1619,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(time-ms)");
 			
-			setDescription("Returns the current time in milliseconds");
+			setDoc("Returns the current time in milliseconds");
 			
 			setExamples("(time-ms)");
 		}
@@ -1674,8 +1635,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(time-ns)");
 			
-			setDescription(
-					"Returns the current value of the running Java Virtual Machine's " +
+			setDoc( "Returns the current value of the running Java Virtual Machine's " +
 					"high-resolution time source, in nanoseconds.");
 			
 			setExamples("(time-ns)");
@@ -1698,7 +1658,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(boolean x)");
 			
-			setDescription("Converts to boolean. Everything except 'false' and 'nil' is true in boolean context.");
+			setDoc("Converts to boolean. Everything except 'false' and 'nil' is true in boolean context.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1721,7 +1681,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(long x)");
 			
-			setDescription("Converts to long");
+			setDoc("Converts to long");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1771,7 +1731,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(double x)");
 			
-			setDescription("Converts to double");
+			setDoc("Converts to double");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1821,8 +1781,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(decimal x) (decimal x scale rounding-mode)");
 			
-			setDescription(
-					"Converts to decimal. rounding-mode is one of (:CEILING, :DOWN, " +
+			setDoc( "Converts to decimal. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
 		}
 		
@@ -1880,8 +1839,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(bytebuf x)");
 			
-			setDescription(
-					"Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string");
+			setDoc( "Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1941,7 +1899,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(list & items)");
 			
-			setDescription("Creates a new list containing the items.");
+			setDoc("Creates a new list containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1974,7 +1932,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(list? obj)");
 			
-			setDescription("Returns true if obj is a list");
+			setDoc("Returns true if obj is a list");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1993,7 +1951,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(vector & items)");
 			
-			setDescription("Creates a new vector containing the items.");
+			setDoc("Creates a new vector containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2020,7 +1978,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(vector? obj)");
 			
-			setDescription("Returns true if obj is a vector");
+			setDoc("Returns true if obj is a vector");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2034,8 +1992,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(subvec v start) (subvec v start end)");
 			
-			setDescription(
-					"Returns a vector of the items in vector from start (inclusive) "+
+			setDoc( "Returns a vector of the items in vector from start (inclusive) "+
 					"to end (exclusive). If end is not supplied, defaults to " + 
 					"(count vector)");
 		}
@@ -2063,8 +2020,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(subbytebuf x start) (subbytebuf x start end)");
 			
-			setDescription(
-					"Returns a byte buffer of the items in buffer from start (inclusive) "+
+			setDoc( "Returns a byte buffer of the items in buffer from start (inclusive) "+
 					"to end (exclusive). If end is not supplied, defaults to " + 
 					"(count bytebuffer)");
 		}
@@ -2101,7 +2057,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(set & items)");
 			
-			setDescription("Creates a new set containing the items.");
+			setDoc("Creates a new set containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2124,7 +2080,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(set? obj)");
 			
-			setDescription("Returns true if obj is a set");
+			setDoc("Returns true if obj is a set");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2143,7 +2099,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(hash-map & keyvals)");
 			
-			setDescription("Creates a new hash map containing the items.");
+			setDoc("Creates a new hash map containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2163,7 +2119,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(ordered-map & keyvals)");
 			
-			setDescription("Creates a new ordered map containing the items.");
+			setDoc("Creates a new ordered map containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2180,7 +2136,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(sorted-map & keyvals)");
 			
-			setDescription("Creates a new sorted map containing the items.");
+			setDoc("Creates a new sorted map containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2197,7 +2153,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(map? obj)");
 			
-			setDescription("Returns true if obj is a map");
+			setDoc("Returns true if obj is a map");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2211,7 +2167,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(hash-map? obj)");
 			
-			setDescription("Returns true if obj is a hash map");
+			setDoc("Returns true if obj is a hash map");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2225,7 +2181,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(ordered-map? obj)");
 			
-			setDescription("Returns true if obj is an ordered map");
+			setDoc("Returns true if obj is an ordered map");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2239,8 +2195,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(sorted-map? obj)");
 			
-			setDescription(
-					"Returns true if obj is a sorted map");
+			setDoc("Returns true if obj is a sorted map");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2254,8 +2209,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(contains? coll key)");
 			
-			setDescription(
-					"Returns true if key is present in the given collection, otherwise " + 
+			setDoc( "Returns true if key is present in the given collection, otherwise " + 
 					"returns false.");
 		}
 		
@@ -2297,8 +2251,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(assoc coll key val)", "(assoc coll key val & kvs)");
 			
-			setDescription(
-					"When applied to a map, returns a new map of the " + 
+			setDoc( "When applied to a map, returns a new map of the " + 
 					"same type, that contains the mapping of key(s) to " + 
 					"val(s). When applied to a vector, returns a new vector that " + 
 					"contains val at index. Note - index must be <= (count vector).");
@@ -2364,8 +2317,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dissoc coll key)", "(dissoc coll key & ks)");
 			
-			setDescription(
-					"Returns a new coll of the same type, " + 
+			setDoc( "Returns a new coll of the same type, " + 
 					"that does not contain a mapping for key(s)");
 		}
 		
@@ -2421,7 +2373,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(get map key)", "(get map key not-found)");
 			
-			setDescription("Returns the value mapped to key, not-found or nil if key not present.");
+			setDoc("Returns the value mapped to key, not-found or nil if key not present.");
 			
 			setExamples(
 					"(get {:a 1 :b 2} :b)",
@@ -2449,7 +2401,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(find map key)");
 			
-			setDescription("Returns the map entry for key, or nil if key not present.");
+			setDoc("Returns the map entry for key, or nil if key not present.");
 					
 			setExamples("(find {:a 1 :b 2} :b)", "(find {:a 1 :b 2} :z)");
 
@@ -2475,7 +2427,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(key e)");
 			
-			setDescription("Returns the key of the map entry.");
+			setDoc("Returns the key of the map entry.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2490,7 +2442,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(keys map)");
 			
-			setDescription("Returns a collection of the map's keys.");
+			setDoc("Returns a collection of the map's keys.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2510,7 +2462,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(val e)");
 			
-			setDescription("Returns the val of the map entry.");
+			setDoc("Returns the val of the map entry.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2525,7 +2477,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(vals map)");
 			
-			setDescription("Returns a collection of the map's values.");
+			setDoc("Returns a collection of the map's values.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2551,8 +2503,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(into to-coll from-coll)");
 			
-			setDescription(
-					"Returns a new coll consisting of to-coll with all of the items of" + 
+			setDoc( "Returns a new coll consisting of to-coll with all of the items of" + 
 					"from-coll conjoined.");
 		}
 		
@@ -2608,7 +2559,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(seq? obj)");
 			
-			setDescription("Returns true if obj is a sequential collection");
+			setDoc("Returns true if obj is a sequential collection");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2622,7 +2573,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(coll? obj)");
 			
-			setDescription("Returns true if obj is a collection");
+			setDoc("Returns true if obj is a collection");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2636,8 +2587,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(count coll)");
 			
-			setDescription(
-					"Returns the number of items in the collection. (count nil) returns " + 
+			setDoc( "Returns the number of items in the collection. (count nil) returns " + 
 					"0. Also works on strings, and Java Collections");
 		}
 		
@@ -2685,7 +2635,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(empty? x)");
 			
-			setDescription("Returns true if x is empty");
+			setDoc("Returns true if x is empty");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2714,7 +2664,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(not-empty? x)");
 			
-			setDescription("Returns true if x is not empty");
+			setDoc("Returns true if x is not empty");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2743,8 +2693,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(cons x coll)");
 			
-			setDescription(
-					"Returns a new collection where x is the first element and coll is\n" + 
+			setDoc( "Returns a new collection where x is the first element and coll is\n" + 
 					"the rest");
 		}
 
@@ -2775,8 +2724,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(concat coll)", "(concat coll & colls)");
 			
-			setDescription(
-					"Returns a collection of the concatenation of the elements " +
+			setDoc( "Returns a collection of the concatenation of the elements " +
 					"in the supplied colls.");
 		}
 		
@@ -2827,8 +2775,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(interleave c1 c2)", "(interleave c1 c2 & colls)");
 			
-			setDescription(
-					"Returns a collection of the first item in each coll, then the second etc.");
+			setDoc("Returns a collection of the first item in each coll, then the second etc.");
 			
 			setExamples("(interleave [:a :b :c] [1 2])");
 			
@@ -2863,8 +2810,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(interpose sep coll)");
 			
-			setDescription(
-					"Returns a collection of the elements of coll separated by sep.");
+			setDoc("Returns a collection of the elements of coll separated by sep.");
 						
 			setExamples("(interpose \", \" [1 2 3])", "(apply str (interpose \", \" [1 2 3]))");
 		}
@@ -2893,7 +2839,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(first coll)");
 			
-			setDescription("Returns the first element of coll.");
+			setDoc("Returns the first element of coll.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2923,7 +2869,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(second coll)");
 			
-			setDescription("Returns the second element of coll.");
+			setDoc("Returns the second element of coll.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2954,7 +2900,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(nth coll idx)");
 			
-			setDescription("Returns the nth element of coll.");
+			setDoc("Returns the nth element of coll.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2986,7 +2932,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(last coll)");
 			
-			setDescription("Returns the last element of coll.");
+			setDoc("Returns the last element of coll.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3016,7 +2962,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(rest coll)");
 			
-			setDescription("Returns a collection with second to list element");
+			setDoc("Returns a collection with second to list element");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3039,7 +2985,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(nfirst coll n)");
 			
-			setDescription("Returns a collection of the first n items");
+			setDoc("Returns a collection of the first n items");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3075,7 +3021,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(nlast coll n)");
 			
-			setDescription("Returns a collection of the last n items");
+			setDoc("Returns a collection of the last n items");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3111,7 +3057,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(distinct coll)");
 			
-			setDescription("Returns a collection with all duplicates removed");
+			setDoc("Returns a collection with all duplicates removed");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3139,7 +3085,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(dedupe coll)");
 			
-			setDescription("Returns a collection with all consecutive duplicates removed");
+			setDoc("Returns a collection with all consecutive duplicates removed");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3169,8 +3115,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(partition n coll)", "(partition n step coll)", "(partition n step padcoll coll)");
 			
-			setDescription(
-					"Returns a collection of lists of n items each, at offsets step " + 
+			setDoc( "Returns a collection of lists of n items each, at offsets step " + 
 					"apart. If step is not supplied, defaults to n, i.e. the partitions " + 
 					"do not overlap. If a padcoll collection is supplied, use its elements as " + 
 					"necessary to complete last partition upto n items. In case there are " + 
@@ -3226,7 +3171,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(coalesce args*)");
 			
-			setDescription("Returns the first non nil arg");
+			setDoc("Returns the first non nil arg");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3238,7 +3183,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(empty-to-nil x)");
 			
-			setDescription("Returns nil if x is empty");
+			setDoc("Returns nil if x is empty");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3267,7 +3212,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(class x)");
 			
-			setDescription("Returns the class of x");
+			setDoc("Returns the class of x");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3281,7 +3226,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(class-for-name x)");
 			
-			setDescription("Returns the java class for the given name");
+			setDoc("Returns the java class for the given name");
 			
 			setExamples("(class-for-name :java.util.Date)");
 		}
@@ -3299,8 +3244,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(pop coll)");
 			
-			setDescription(
-					"For a list, returns a new list without the first item, " + 
+			setDoc( "For a list, returns a new list without the first item, " + 
 					"for a vector, returns a new vector without the last item.");
 		}
 		
@@ -3326,7 +3270,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(peek coll)");
 			
-			setDescription("For a list, same as first, for a vector, same as last");
+			setDoc("For a list, same as first, for a vector, same as last");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3351,8 +3295,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(take-while predicate coll)");
 			
-			setDescription(
-					"Returns a list of successive items from coll while " + 
+			setDoc( "Returns a list of successive items from coll while " + 
 					"(predicate item) returns logical true.");
 		}
 		
@@ -3376,8 +3319,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(take n coll)");
 			
-			setDescription(
-					"Returns a collection of the first n items in coll, or all items if " + 
+			setDoc( "Returns a collection of the first n items in coll, or all items if " + 
 					"there are fewer than n.");
 		}
 		
@@ -3395,8 +3337,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(drop-while predicate coll)");
 			
-			setDescription(
-					"Returns a list of the items in coll starting from the " + 
+			setDoc( "Returns a list of the items in coll starting from the " + 
 					"first item for which (predicate item) returns logical false.");
 		}
 		
@@ -3420,8 +3361,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(drop n coll)");
 			
-			setDescription(
-					"Returns a collection of all but the first n items in coll");
+			setDoc("Returns a collection of all but the first n items in coll");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3438,8 +3378,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(flatten coll)");
 			
-			setDescription(
-					"Takes any nested combination of collections (lists, vectors, " + 
+			setDoc( "Takes any nested combination of collections (lists, vectors, " + 
 					"etc.) and returns their contents as a single, flat sequence. " + 
 					"(flatten nil) returns an empty list.");
 		}
@@ -3459,8 +3398,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(reverse coll)");
 			
-			setDescription(
-					" Returns a collection of the items in coll in reverse order");
+			setDoc("Returns a collection of the items in coll in reverse order");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3481,8 +3419,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(sort coll)", "(sort compfn coll)");
 			
-			setDescription(
-					"Returns a sorted list of the items in coll. If no compare function " + 
+			setDoc( "Returns a sorted list of the items in coll. If no compare function " + 
 					"compfn is supplied, uses the natural compare. The compare function " + 
 					"takes two arguments and returns -1, 0, or 1");
 		}
@@ -3569,8 +3506,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)");
 			
-			setDescription(
-					"Returns a sorted sequence of the items in coll, where the sort " + 
+			setDoc( "Returns a sorted sequence of the items in coll, where the sort " + 
 					"order is determined by comparing (keyfn item).  If no comparator is " + 
 					"supplied, uses compare.");
 		}
@@ -3674,8 +3610,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(group-by f coll)");
 			
-			setDescription(
-					"Returns a map of the elements of coll keyed by the result of " + 
+			setDoc( "Returns a map of the elements of coll keyed by the result of " + 
 					"f on each element. The value at each key will be a vector of the " + 
 					"corresponding elements, in the order they appeared in coll.");
 		}
@@ -3708,7 +3643,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(apply f args* coll)");
 			
-			setDescription("Applies f to all arguments composed of args and coll");
+			setDoc("Applies f to all arguments composed of args and coll");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3724,8 +3659,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(comp f*)");
 			
-			setDescription(
-					"Takes a set of functions and returns a fn that is the composition " + 
+			setDoc( "Takes a set of functions and returns a fn that is the composition " + 
 					"of those fns. The returned fn takes a variable number of args, " + 
 					"applies the rightmost of fns to the args, the next " + 
 					"fn (right-to-left) to the result, etc. ");
@@ -3765,8 +3699,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(partial f args*)");
 			
-			setDescription(
-					"Takes a function f and fewer than the normal arguments to f, and " + 
+			setDoc( "Takes a function f and fewer than the normal arguments to f, and " + 
 					"returns a fn that takes a variable number of additional args. When " + 
 					"called, the returned function calls f with args + additional args.");
 			
@@ -3795,8 +3728,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(map f coll colls*)");
 			
-			setDescription(
-					"Applys f to the set of first items of each coll, followed by applying " + 
+			setDoc( "Applys f to the set of first items of each coll, followed by applying " + 
 					"f to the set of second items in each coll, until any one of the colls " + 
 					"is exhausted.  Any remaining items in other colls are ignored. ");
 		}
@@ -3836,8 +3768,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(mapcat fn & colls)");
 			
-			setDescription(
-					"Returns the result of applying concat to the result of applying map " + 
+			setDoc( "Returns the result of applying concat to the result of applying map " + 
 					"to fn and colls. Thus function fn should return a collection.");
 		}
 		
@@ -3850,8 +3781,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(filter predicate coll)");
 			
-			setDescription(
-					"Returns a collection of the items in coll for which " + 
+			setDoc( "Returns a collection of the items in coll for which " + 
 					"(predicate item) returns logical true. ");
 		}
 		
@@ -3876,8 +3806,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(remove predicate coll)");
 			
-			setDescription(
-					"Returns a collection of the items in coll for which " + 
+			setDoc( "Returns a collection of the items in coll for which " + 
 					"(predicate item) returns logical false. ");
 		}
 		
@@ -3902,8 +3831,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(reduce f coll)", "(reduce f val coll)");
 			
-			setDescription(
-					"f should be a function of 2 arguments. If val is not supplied, " + 
+			setDoc( "f should be a function of 2 arguments. If val is not supplied, " + 
 					"returns the result of applying f to the first 2 items in coll, then " + 
 					"applying f to that result and the 3rd item, etc. If coll contains no " + 
 					"items, f must accept no arguments as well, and reduce returns the " + 
@@ -3956,8 +3884,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(reduce-kv f init coll))");
 			
-			setDescription(
-					"Reduces an associative collection. f should be a function of 3 " + 
+			setDoc( "Reduces an associative collection. f should be a function of 3 " + 
 					"arguments. Returns the result of applying f to init, the first key " + 
 					"and the first value in coll, then applying f to that result and the " + 
 					"2nd key and value, etc. If coll contains no entries, returns init " + 
@@ -3993,8 +3920,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(conj coll x)", "(conj coll x & xs)");
 			
-			setDescription(
-					"Returns a new collection with the x, xs " + 
+			setDoc( "Returns a new collection with the x, xs " + 
 					"'added'. (conj nil item) returns (item).  The 'addition' may " + 
 					"happen at different 'places' depending on the concrete type.");
 		}
@@ -4052,8 +3978,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(seq coll)");
 			
-			setDescription(
-					"Returns a seq on the collection. If the collection is " + 
+			setDoc( "Returns a seq on the collection. If the collection is " + 
 					"empty, returns nil.  (seq nil) returns nil. seq also works on " + 
 					"Strings.");
 		}
@@ -4112,8 +4037,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(range end)", "(range start end)", "(range start end step)");
 			
-			setDescription(
-					"Returns a collection of numbers from start (inclusive) to end " + 
+			setDoc( "Returns a collection of numbers from start (inclusive) to end " + 
 					"(exclusive), by step, where start defaults to 0 and step defaults to 1. " +
 					"When start is equal to end, returns empty list.");
 		}
@@ -4199,7 +4123,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(repeat n x)");
 			
-			setDescription("Returns a collection with the value x repeated n times");
+			setDoc("Returns a collection with the value x repeated n times");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4235,8 +4159,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(meta obj)");
 			
-			setDescription(
-					"Returns the metadata of obj, returns nil if there is no metadata.");
+			setDoc("Returns the metadata of obj, returns nil if there is no metadata.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4250,8 +4173,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(with-meta obj m)");
 			
-			setDescription(
-					"Returns a copy of the object obj, with a map m as its metadata.");
+			setDoc("Returns a copy of the object obj, with a map m as its metadata.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4273,8 +4195,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(vary-meta obj f & args)");
 			
-			setDescription(
-					"Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.");
+			setDoc("Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4306,7 +4227,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(atom x)");
 			
-			setDescription("Creates an atom with the initial value x");
+			setDoc("Creates an atom with the initial value x");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4320,7 +4241,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(atom? x)");
 			
-			setDescription("Returns true if x is an atom, otherwise false");
+			setDoc("Returns true if x is an atom, otherwise false");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4334,7 +4255,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(deref atom)");
 			
-			setDescription("Dereferences an atom, returns its value");
+			setDoc("Dereferences an atom, returns its value");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4349,8 +4270,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(reset! atom newval)");
 			
-			setDescription(
-					"Sets the value of atom to newval without regard for the " + 
+			setDoc( "Sets the value of atom to newval without regard for the " + 
 					"current value. Returns newval.");
 		}
 		
@@ -4366,8 +4286,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(swap! atom f & args)");
 			
-			setDescription(
-					"Atomically swaps the value of atom to be: " + 
+			setDoc( "Atomically swaps the value of atom to be: " + 
 					"(apply f current-value-of-atom args). Note that f may be called " + 
 					"multiple times, and thus should be free of side effects.  Returns " + 
 					"the value that was swapped in.");
@@ -4388,8 +4307,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(compare-and-set! atom oldval newval)");
 			
-			setDescription(
-					"Atomically sets the value of atom to newval if and only if the " + 
+			setDoc( "Atomically sets the value of atom to newval if and only if the " + 
 					"current value of the atom is identical to oldval. Returns true if " + 
 					"set happened, else false");
 		}
@@ -4412,8 +4330,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/file path) (io/file parent child)");
 			
-			setDescription(
-					"Returns a java.io.File. path, parent, and child can be a string " +
+			setDoc( "Returns a java.io.File. path, parent, and child can be a string " +
 					"or java.io.File");
 		}
 		
@@ -4471,7 +4388,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/file? x)");
 			
-			setDescription("Returns true if x is a java.io.File.");
+			setDoc("Returns true if x is a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4486,7 +4403,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/exists-file? x)");
 			
-			setDescription("Returns true if the file x exists. x must be a java.io.File.");
+			setDoc("Returns true if the file x exists. x must be a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4508,7 +4425,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/exists-dir? x)");
 			
-			setDescription("Returns true if the file x exists and is a directory. x must be a java.io.File.");
+			setDoc("Returns true if the file x exists and is a directory. x must be a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4530,7 +4447,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/delete-file x)");
 			
-			setDescription("Deletes a file. x must be a java.io.File.");
+			setDoc("Deletes a file. x must be a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4563,8 +4480,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/list-files dir filterFn?)");
 			
-			setDescription(
-					"Lists files in a directory. dir must be a java.io.File. filterFn " +
+			setDoc( "Lists files in a directory. dir must be a java.io.File. filterFn " +
 					"is an optional filter that filters the files found");
 		}
 		
@@ -4612,8 +4528,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/copy input output)");
 			
-			setDescription(
-					"Copies input to output. Returns nil or throws IOException. " + 
+			setDoc( "Copies input to output. Returns nil or throws IOException. " + 
 					"Input and output must be a java.io.File.");
 		}
 		
@@ -4660,7 +4575,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/tmp-dir)");
 			
-			setDescription("Returns the tmp dir as a java.io.File.");
+			setDoc("Returns the tmp dir as a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4676,7 +4591,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/user-dir)");
 			
-			setDescription("Returns the user dir (current working dir) as a java.io.File.");
+			setDoc("Returns the user dir (current working dir) as a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4697,7 +4612,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/starts-with? s substr)");
 			
-			setDescription("True if s starts with substr.");
+			setDoc("True if s starts with substr.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4718,7 +4633,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/ends-with? s substr)");
 			
-			setDescription("True if s ends with substr.");
+			setDoc("True if s ends with substr.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4739,7 +4654,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/contains? s substr)");
 			
-			setDescription("True if s contains with substr.");
+			setDoc("True if s contains with substr.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4760,7 +4675,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/trim s substr)");
 			
-			setDescription("Trims leading and trailing spaces from s.");
+			setDoc("Trims leading and trailing spaces from s.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4778,8 +4693,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/trim-to-nil s substr)");
 			
-			setDescription(
-					"Trims leading and trailing spaces from s. " +
+			setDoc( "Trims leading and trailing spaces from s. " +
 					"Returns nil if the rewsulting string is empry");
 		}
 		
@@ -4799,8 +4713,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/index-of s value)", "(str/index-of s value from-index)");
 			
-			setDescription(
-					"Return index of value (string or char) in s, optionally searching " + 
+			setDoc( "Return index of value (string or char) in s, optionally searching " + 
 					"forward from from-index. Return nil if value not found.");
 		}
 		
@@ -4826,8 +4739,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/last-index-of s value)", "(str/last-index-of s value from-index)");
 			
-			setDescription(
-					"Return last index of value (string or char) in s, optionally\n" + 
+			setDoc( "Return last index of value (string or char) in s, optionally\n" + 
 					"searching backward from from-index. Return nil if value not found.");
 		}
 		
@@ -4857,8 +4769,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/replace-first s search replacement)");
 			
-			setDescription(
-					"Replaces the first occurrance of search in s");
+			setDoc("Replaces the first occurrance of search in s");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4890,8 +4801,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/replace-last s search replacement)");
 			
-			setDescription(
-					"Replaces the last occurrance of search in s");
+			setDoc("Replaces the last occurrance of search in s");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4923,8 +4833,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/replace-all s search replacement)");
 			
-			setDescription(
-					"Replaces the all occurrances of search in s");
+			setDoc("Replaces the all occurrances of search in s");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4964,7 +4873,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/lower-case s)");
 			
-			setDescription("Converts s to lowercase");
+			setDoc("Converts s to lowercase");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4984,7 +4893,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/upper-case s)");
 			
-			setDescription("Converts s to uppercase");
+			setDoc("Converts s to uppercase");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5004,7 +4913,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/join coll)", "(str/join separator coll)");
 			
-			setDescription("Joins all elements in coll separated by an optional separator.");
+			setDoc("Joins all elements in coll separated by an optional separator.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5028,8 +4937,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/subs s start)", "(str/subs s start end)");
 			
-			setDescription(
-					"Returns the substring of s beginning at start inclusive, and ending " + 
+			setDoc( "Returns the substring of s beginning at start inclusive, and ending " + 
 					"at end (defaults to length of string), exclusive.");
 		}
 		
@@ -5051,8 +4959,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/split s regex)");
 			
-			setDescription(
-					"Splits string on a regular expression.");
+			setDoc("Splits string on a regular expression.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5074,7 +4981,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/split-lines s)");
 			
-			setDescription("Splits s into lines.");
+			setDoc("Splits s into lines.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5095,7 +5002,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/format s format args*)");
 			
-			setDescription("Returns a formatted string using the specified format string and arguments.");
+			setDoc("Returns a formatted string using the specified format string and arguments.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5115,8 +5022,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/truncate s maxlen marker)");
 			
-			setDescription(
-					"Truncates a string to the max lenght maxlen and adds the " +
+			setDoc( "Truncates a string to the max lenght maxlen and adds the " +
 					"marker to the end if the string needs to be truncated");
 			
 			setExamples(
@@ -5144,8 +5050,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/strip-start s substr)");
 			
-			setDescription(
-					"Removes a substr only if it is at the beginning of a s, otherwise returns s.");
+			setDoc("Removes a substr only if it is at the beginning of a s, otherwise returns s.");
 			
 			setExamples(
 					"(str/strip-start \"abcdef\" \"abc\")",
@@ -5170,8 +5075,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/strip-end s substr)");
 			
-			setDescription(
-					"Removes a substr only if it is at the end of a s, otherwise returns s.");
+			setDoc("Removes a substr only if it is at the end of a s, otherwise returns s.");
 			
 			setExamples(
 					"(str/strip-end \"abcdef\" \"def\")",
@@ -5196,8 +5100,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/strip-indent s)");
 			
-			setDescription(
-					"Strip the indent of a multi-line string. The first line's leading whitespaces define the indent.");
+			setDoc("Strip the indent of a multi-line string. The first line's leading whitespaces define the indent.");
 			
 			setExamples(
 					"(str/strip-indent \"  line1\n    line2\n    line3\")");
@@ -5218,8 +5121,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/strip-margin s)");
 			
-			setDescription(
-					"Strips leading whitespaces upto and including the margin '|' " +
+			setDoc("Strips leading whitespaces upto and including the margin '|' " +
 					"from each line in a multi-line string.");
 			
 			setExamples(
@@ -5241,8 +5143,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(str/repeat s n)", "(str/repeat s n sep)");
 			
-			setDescription(
-					"Repeats s n times with an optional separator.");
+			setDoc("Repeats s n times with an optional separator.");
 			
 			setExamples(
 					"(str/repeat \"abc\" 0)",
@@ -5279,7 +5180,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(version)");
 			
-			setDescription("Returns the version.");
+			setDoc("Returns the version.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5293,7 +5194,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(gensym)", "(gensym prefix)");
 			
-			setDescription("Generates a symbol.");
+			setDoc("Generates a symbol.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5313,7 +5214,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(uuid)");
 			
-			setDescription("Generates a UUID.");
+			setDoc("Generates a UUID.");
 		}
 		
 		public VncVal apply(final VncList args) {

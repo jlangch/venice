@@ -762,7 +762,7 @@ public class DocGenerator {
 				new DocItem(
 						fn.getName(), 
 						toStringList(fn.getArgLists()), 
-						((VncString)fn.getDescription()).getValue(),
+						((VncString)fn.getDoc()).getValue(),
 						runExamples(fn.getName(), toStringList(fn.getExamples()))));
 		general.addItem(new DocItem("Constructor: (. classname :new args)"));
 		general.addItem(new DocItem("Method call: (. object method args)"));
@@ -856,7 +856,7 @@ public class DocGenerator {
 			return new DocItem(
 					name, 
 					toStringList(f.getArgLists()), 
-					f.getDescription() == Constants.Nil ? "" : ((VncString)f.getDescription()).getValue(),
+					f.getDoc() == Constants.Nil ? "" : ((VncString)f.getDoc()).getValue(),
 					runExamples(name, toStringList(f.getExamples())));
 		}
 	

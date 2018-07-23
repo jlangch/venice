@@ -39,7 +39,7 @@ public class JavaInteropFn extends VncFunction {
 				"(. classname :class)", 
 				"(. object :class)");
 		
-		setDescription(
+		setDoc(
 				"Java interop. Calls a constructor or an object method. " +
 				"The function is sandboxed");
 		

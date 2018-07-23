@@ -41,7 +41,7 @@ public class Doc {
 			final StringBuilder sb =  new StringBuilder();
 			sb.append(func.getArgLists().getList().stream().map(s -> toString(s)).collect(Collectors.joining(", ")));
 			sb.append("\n");
-			sb.append(toString(func.getDescription()));
+			sb.append(toString(func.getDoc()));
 			return sb.toString();			
 		}
 		
