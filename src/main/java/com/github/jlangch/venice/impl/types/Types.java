@@ -205,7 +205,10 @@ public class Types {
 
 	public static boolean _equal_Q(VncVal a, VncVal b) {
 		final Class<?> ota = a.getClass(), otb = b.getClass();
-		if (!((ota == otb) || (a instanceof VncList && b instanceof VncList))) {
+		if (!((ota == otb) 
+				|| (a instanceof VncString && b instanceof VncString) 
+				|| (a instanceof VncList && b instanceof VncList))
+		) {
 			return false;
 		} 
 		else {

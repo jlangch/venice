@@ -615,6 +615,10 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(== :a :a)"));
 		assertFalse((Boolean)venice.eval("(== :a :b)"));
 
+		// String/Keyword
+		assertTrue((Boolean)venice.eval("(== \"aa\" :aa)"));
+		assertTrue((Boolean)venice.eval("(== :aa \"aa\")"));
+
 		// List
 		assertTrue((Boolean)venice.eval("(== '(1 2) '(1 2))"));
 		assertFalse((Boolean)venice.eval("(== '(1 2) '(1 4))"));
