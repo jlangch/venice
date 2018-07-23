@@ -1,6 +1,6 @@
 # Venice
 
-Venice, a sandboxed Lisp running on Java.
+Venice, a sandboxed Lisp with Java interoperability implemented in Java.
 
 
 ## Overview
