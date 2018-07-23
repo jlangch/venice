@@ -356,6 +356,22 @@ public class ReflectionUtil {
 		return Modifier.isStatic(method.getModifiers());
 	}
 
+	public static boolean isVarArgs(final Method method) {
+		return method.isVarArgs();
+	}
+
+	public static Class<?> getVarArgType(final Method method) {
+		if (method.isVarArgs()) {
+			final Class<?>[] paramTypes = method.getParameterTypes();
+			return paramTypes[paramTypes.length-1];
+		}
+		else {
+			throw new RuntimeException(String.format(
+					"The method %s does not have varargs", 
+					method.getName()));
+		}
+	}
+
 	public static boolean isPublic(final Method method) {
 		return Modifier.isPublic(method.getModifiers());
 	}

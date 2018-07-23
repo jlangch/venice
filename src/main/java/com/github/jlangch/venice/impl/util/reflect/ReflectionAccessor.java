@@ -640,48 +640,7 @@ public class ReflectionAccessor {
 				}
 			}
 			else if(ReflectionTypes.isEnumType(paramType)) {
-				if (arg instanceof String) {
-					final ScopedEnumValue scopedEnum = new ScopedEnumValue((String)arg);
-					if (scopedEnum.isScoped()) {
-						if (scopedEnum.isCompatible(paramType)) {
-							final Enum<?> e = scopedEnum.getEnum((Class<? extends Enum<?>>)paramType);
-							if (e != null) {
-								return e;
-							}
-							else {
-								throw new JavaMethodInvocationException(String.format(
-										"Enum %s does not define value %s",
-										paramType.getName(),
-										scopedEnum.getEnumValue()));
-							}
-						}
-						else {
-							throw new JavaMethodInvocationException(String.format(
-									"Enum %s is not compatible with %s",
-									scopedEnum.getScopedEnumValue(),
-									paramType.getName()));
-						}
-					}
-					else {
-						final Enum<?> e = scopedEnum.getEnum((Class<? extends Enum<?>>)paramType);
-						if (e != null) {
-							return e;
-						}
-						else {
-							throw new JavaMethodInvocationException(String.format(
-									"Enum %s does not define value %s",
-									paramType.getName(),
-									scopedEnum.getEnumValue()));
-						}
-					}
-				}
-				else {
-					throw new JavaMethodInvocationException(String.format(
-							"Cannot convert type %s to enum %s",
-							arg.getClass().getName(),
-							paramType.getName()));
-					
-				}
+				return boxEnumArg((Class<? extends Enum<?>>)paramType, arg);
 			}
 		
 			return paramType.cast(arg); // try to cast
@@ -728,6 +687,51 @@ public class ReflectionAccessor {
 			return null;
 		}
 	}
+	
+	private static Enum<?> boxEnumArg(final Class<? extends Enum<?>> enumType, final Object arg) {
+		if (arg instanceof String) {
+			final ScopedEnumValue scopedEnum = new ScopedEnumValue((String)arg);
+			if (scopedEnum.isScoped()) {
+				if (scopedEnum.isCompatible(enumType)) {
+					final Enum<?> e = scopedEnum.getEnum(enumType);
+					if (e != null) {
+						return e;
+					}
+					else {
+						throw new JavaMethodInvocationException(String.format(
+								"Enum %s does not define value %s",
+								enumType.getName(),
+								scopedEnum.getEnumValue()));
+					}
+				}
+				else {
+					throw new JavaMethodInvocationException(String.format(
+							"Enum %s is not compatible with %s",
+							scopedEnum.getScopedEnumValue(),
+							enumType.getName()));
+				}
+			}
+			else {
+				final Enum<?> e = scopedEnum.getEnum(enumType);
+				if (e != null) {
+					return e;
+				}
+				else {
+					throw new JavaMethodInvocationException(String.format(
+							"Enum %s does not define value %s",
+							enumType.getName(),
+							scopedEnum.getEnumValue()));
+				}
+			}
+		}
+		else {
+			throw new JavaMethodInvocationException(String.format(
+					"Cannot convert type %s to enum %s",
+					arg.getClass().getName(),
+					enumType.getName()));	
+		}
+	}
+
 
 	private static String noMatchingFieldErrMsg(final String fieldName, final Object target) {
 		return String.format(
