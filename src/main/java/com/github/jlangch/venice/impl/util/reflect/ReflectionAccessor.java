@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.reflect;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -87,7 +88,7 @@ public class ReflectionAccessor {
 			} 
 			else if (ctors.size() == 1) {
 				final Constructor<?> ctor = (Constructor<?>)ctors.get(0);
-				return ctor.newInstance(boxArgs(ctor.getParameterTypes(), args));
+				return ctor.newInstance(boxArgs(ctor.getParameterTypes(), ctor.isVarArgs(), args));
 			} 
 			else {
 				// overloaded
@@ -97,7 +98,7 @@ public class ReflectionAccessor {
 					final Class<?>[] params = ctor.getParameterTypes();
 					
 					if (isCongruent(params, args, true)) {
-						Object[] boxedArgs = boxArgs(params, args);
+						Object[] boxedArgs = boxArgs(params, ctor.isVarArgs(), args);
 						return ctor.newInstance(boxedArgs);
 					}
 				}
@@ -107,7 +108,7 @@ public class ReflectionAccessor {
 					final Class<?>[] params = ctor.getParameterTypes();
 										
 					if (isCongruent(params, args, false)) {
-						Object[] boxedArgs = boxArgs(params, args);
+						Object[] boxedArgs = boxArgs(params, ctor.isVarArgs(), args);
 						return ctor.newInstance(boxedArgs);
 					}
 				}
@@ -419,7 +420,7 @@ public class ReflectionAccessor {
 		} 
 		else if (methods.size() == 1) {
 			final Method m = (Method)methods.get(0);
-			final Object[] boxedArgs = boxArgs(m.getParameterTypes(), args);
+			final Object[] boxedArgs = boxArgs(m.getParameterTypes(), m.isVarArgs(), args);
 			return invoke(m, target, boxedArgs);
 		} 
 		else { 
@@ -430,7 +431,7 @@ public class ReflectionAccessor {
 				final Class<?>[] params = m.getParameterTypes();
 				
 				if (isCongruent(params, args, true)) {
-					final Object[] boxedArgs = boxArgs(params, args);
+					final Object[] boxedArgs = boxArgs(params, m.isVarArgs(), args);
 					return invoke(m, target, boxedArgs);
 				}
 			}
@@ -440,7 +441,7 @@ public class ReflectionAccessor {
 				final Class<?>[] params = m.getParameterTypes();
 				
 				if (isCongruent(params, args, false)) {
-					final Object[] boxedArgs = boxArgs(params, args);
+					final Object[] boxedArgs = boxArgs(params, m.isVarArgs(), args);
 					return invoke(m, target, boxedArgs);
 				}
 			}
@@ -601,15 +602,36 @@ public class ReflectionAccessor {
 		return false;
 	}
 
-	private static Object[] boxArgs(final Class<?>[] params, final Object[] args) {
+	private static Object[] boxArgs(final Class<?>[] params, final boolean varArgs, final Object[] args) {
 		if (params.length == 0) {
 			return null;
 		}
 		
 		final Object[] ret = new Object[params.length];
-		for (int ii=0; ii<params.length; ii++) {
-			ret[ii] = boxArg(params[ii], args[ii]);
+		
+		if (varArgs) {
+			// regular args
+			for(int ii=0; ii<params.length-1; ii++) {
+				ret[ii] = boxArg(params[ii], args[ii]);
+			}
+			
+			// varargs
+			final Class<?> varArgType = params[params.length-1];
+			final int varArgArrayLen = args.length - (params.length - 1);
+			final Object varArgArray = Array.newInstance(varArgType, varArgArrayLen);
+			ret[params.length-1] = varArgArray;
+			
+			for(int ii=0; ii<varArgArrayLen; ii++) {
+				final Object arg = args[ii+params.length-1];
+				Array.set(varArgArray, ii, boxArg(varArgType, arg));
+			}
 		}
+		else {
+			for (int ii=0; ii<params.length; ii++) {
+				ret[ii] = boxArg(params[ii], args[ii]);
+			}
+		}
+		
 		return ret;
 	}
 
