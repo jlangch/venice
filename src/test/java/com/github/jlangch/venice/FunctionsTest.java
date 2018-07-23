@@ -38,9 +38,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.Venice;
-
 
 public class FunctionsTest {
 
@@ -1170,12 +1167,13 @@ public class FunctionsTest {
 	}
 	
 	@Test
-	public void test_io_list_files() {
+	public void test_io_list_files() throws Exception{
 		final Venice venice = new Venice();
 
+		final File file1 = File.createTempFile("spit-", "-1.txt");
+		final File file2 = File.createTempFile("spit-", "-2.txt");
+
 		try {
-			final File file1 = File.createTempFile("spit-", "-1.txt");
-			final File file2 = File.createTempFile("spit-", "-2.txt");
 			venice.eval("(spit file \"123\" :append true)", Parameters.of("file", file1));
 			venice.eval("(spit file \"123\" :append true)", Parameters.of("file", file2));
 
@@ -1194,12 +1192,15 @@ public class FunctionsTest {
 							"         dir " +
 							"         (fn [f] (match (get f :name) \"spit-.*[.]txt\"))))", 
 							Parameters.of("dir", dir)));
-			
-			venice.eval("(io/delete-file f))", Parameters.of("f", file1));	
-			venice.eval("(io/delete-file f))", Parameters.of("f", file2));	
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
+		}
+		finally {			
+			Files.list(file1.getParentFile().toPath())
+				 .filter(f -> f.toFile().isFile())
+				 .filter(f -> f.toFile().getName().matches("spit.*[.]txt"))
+				 .forEach(f -> f.toFile().delete());
 		}
 	}
 	

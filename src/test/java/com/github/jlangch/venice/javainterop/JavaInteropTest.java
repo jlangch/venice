@@ -159,7 +159,6 @@ public class JavaInteropTest {
 		assertEquals(null, venice.eval("(. jobj :getJavaEnum)", symbols()));
 		assertEquals("one", venice.eval("(do (. jobj :setJavaEnum \"one\") (. jobj :getJavaEnum))", symbols()));
 	}
-
 	
 	@Test
 	public void testScopedEnumAccessor() {
@@ -167,6 +166,7 @@ public class JavaInteropTest {
 
 		assertEquals(null, venice.eval("(. jobj :getJavaEnum)", symbols()));
 		assertEquals("one", venice.eval("(do (. jobj :setJavaEnum \"com.github.jlangch.venice.support.JavaObject.JavaEnum.one\") (. jobj :getJavaEnum))", symbols()));
+		assertEquals("one", venice.eval("(do (. jobj :setJavaEnum \"JavaEnum.one\") (. jobj :getJavaEnum))", symbols()));
 	}
 
 	@Test

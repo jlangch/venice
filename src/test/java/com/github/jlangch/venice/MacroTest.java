@@ -29,9 +29,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.AssertionException;
-import com.github.jlangch.venice.Venice;
-
 
 public class MacroTest {
 

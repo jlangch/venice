@@ -26,9 +26,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
-
 
 public class SpecialFormsTest {
 

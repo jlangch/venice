@@ -25,9 +25,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.PreCompiled;
-import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.support.AuditEvent;
 import com.github.jlangch.venice.support.AuditEventType;

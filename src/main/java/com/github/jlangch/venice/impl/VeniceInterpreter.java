@@ -24,7 +24,8 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
@@ -454,8 +455,7 @@ public class VeniceInterpreter {
 		env.set(new VncSymbol("*VERSION*"), new VncString(Version.VERSION));
 
 		// load core.vnc 
-		final String core = loadCore();
-		RE("(eval " + core + ")", "core.venice", env);
+		RE("(eval " + loadScript("core.venice") + ")", "core.venice", env);
 		
 		return env;
 	}
@@ -484,20 +484,23 @@ public class VeniceInterpreter {
 		return null;
 	}
 	
-	private String loadCore() {
+	private String loadScript(final String script) {
+		return scripts.computeIfAbsent(
+				script, 
+				k -> loadClassPathResource("com/github/jlangch/venice/" + script));
+	}
+	
+	private String loadClassPathResource(final String resource) {
 		try {
-			if (veniceCore.get() == null) {
-				veniceCore.set(new ClassPathResource("com/github/jlangch/venice/core.venice")
-										.getResourceAsString("UTF-8"));
-			}
-			return veniceCore.get();
+			return new ClassPathResource(resource).getResourceAsString("UTF-8");
 		}
 		catch(Exception ex) {
-			throw new RuntimeException("Failed to load 'core.venice'", ex);
+			throw new RuntimeException(String.format("Failed to load '%s'", resource), ex);
 		}
 	}
 	
 	
+	private static final Map<String,String> scripts = new HashMap<>();
+
 	private final JavaImports javaImports = new JavaImports();
-	private final AtomicReference<String> veniceCore = new AtomicReference<>();
 }

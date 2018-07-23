@@ -27,8 +27,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.Venice;
-
 
 public class AtomTest {
 

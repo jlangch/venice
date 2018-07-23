@@ -24,10 +24,6 @@ package com.github.jlangch.venice.javainterop;
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.JavaInterceptor;
-import com.github.jlangch.venice.javainterop.JavaSandboxInterceptor;
-import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
-import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class BlackListedFunctionTest {

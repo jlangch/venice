@@ -435,7 +435,7 @@ public class ReflectionAccessor {
 				}
 			}
 
-			// try widened match first
+			// try widened match second
 			for (Method m : methods) {
 				final Class<?>[] params = m.getParameterTypes();
 				
@@ -476,16 +476,14 @@ public class ReflectionAccessor {
 				if (ReflectionTypes.isEnumType(paramType)) {
 					if (arg != null) {
 						if (arg instanceof String) {
-							// the name is scoped -> test for the enum class
-							final int pos = ((String)arg).lastIndexOf('.');
-							if (pos > 0) {
-								final String enumTypeName = ((String)arg).substring(0, pos);
-								if (!enumTypeName.equals(paramType.getName())) {
+							final ScopedEnumValue scopedEnum = new ScopedEnumValue((String)arg);
+							if (scopedEnum.isScoped()) {
+								if (!scopedEnum.isCompatible(paramType)) {
 									return false; // enum type not matching
 								}
 							}
 							else {
-								// non scoped enum name -> compatible test while boxing
+								// non scoped enum name -> test compatibility while boxing
 							}
 						}
 						else {
@@ -643,23 +641,39 @@ public class ReflectionAccessor {
 			}
 			else if(ReflectionTypes.isEnumType(paramType)) {
 				if (arg instanceof String) {
-					String enumName = (String)arg;
-					
-					// scoped enum name?
-					final int pos = enumName.lastIndexOf('.');
-					if (pos > 0) {
-						enumName = enumName.substring(pos+1);
-					}
-
-					for(Enum<?> e : ((Class<? extends Enum<?>>)paramType).getEnumConstants()) {
-						if (enumName.equals(e.name())) {
-							return e;
+					final ScopedEnumValue scopedEnum = new ScopedEnumValue((String)arg);
+					if (scopedEnum.isScoped()) {
+						if (scopedEnum.isCompatible(paramType)) {
+							final Enum<?> e = scopedEnum.getEnum((Class<? extends Enum<?>>)paramType);
+							if (e != null) {
+								return e;
+							}
+							else {
+								throw new JavaMethodInvocationException(String.format(
+										"Enum %s does not define value %s",
+										paramType.getName(),
+										scopedEnum.getEnumValue()));
+							}
+						}
+						else {
+							throw new JavaMethodInvocationException(String.format(
+									"Enum %s is not compatible with %s",
+									scopedEnum.getScopedEnumValue(),
+									paramType.getName()));
 						}
 					}
-					throw new JavaMethodInvocationException(String.format(
-							"No %s enum value %s",
-							paramType.getName(),
-							enumName));
+					else {
+						final Enum<?> e = scopedEnum.getEnum((Class<? extends Enum<?>>)paramType);
+						if (e != null) {
+							return e;
+						}
+						else {
+							throw new JavaMethodInvocationException(String.format(
+									"Enum %s does not define value %s",
+									paramType.getName(),
+									scopedEnum.getEnumValue()));
+						}
+					}
 				}
 				else {
 					throw new JavaMethodInvocationException(String.format(
@@ -822,7 +836,6 @@ public class ReflectionAccessor {
 					k ->  ReflectionUtil.getAllPublicInstanceMethods(k._1, k._2, k._3, k._4))
 				: ReflectionUtil.getAllPublicInstanceMethods(clazz,methodName,arity,includeInheritedClasses);
 	}
-
 
 	private static final AtomicBoolean cachingEnabled = new AtomicBoolean(true);
 	

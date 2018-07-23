@@ -28,8 +28,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.Binding;
-import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncSymbol;

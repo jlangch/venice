@@ -277,8 +277,9 @@
                (let [ret (apply f args)]
                   (swap! mem assoc args ret)
                   ret))))))
- 
- 
+
+
+
 ;; JSON utils (requires Jackson JSON on classpath)
 
 (def json/avail? (fn [json]
