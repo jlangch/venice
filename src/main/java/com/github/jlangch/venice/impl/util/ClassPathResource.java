@@ -102,24 +102,30 @@ public class ClassPathResource {
 		return url;
 	}
 
-	public byte[] getResourceAsBinary() throws IOException {  
+	public byte[] getResourceAsBinary() {  
 		try(InputStream is = getInputStream()) {
 			return is == null ? null : toByteArray(getInputStream());
 		}
+		catch(Exception ex) {
+			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
+		}
 	 }
 
-	public ByteBuffer getResourceAsByteBuffer() throws IOException {  
+	public ByteBuffer getResourceAsByteBuffer() {  
 		final byte[] data = getResourceAsBinary();
 		return data == null ? null : ByteBuffer.wrap(data);
 	 }
 
-	public String getResourceAsString(final String charsetName) throws IOException {		
+	public String getResourceAsString(final String charsetName) {		
 		try(InputStream is = getInputStream()) {
 			return is == null ? null : new String(toByteArray(getInputStream()), charsetName);
 		}
+		catch(Exception ex) {
+			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
+		}
 	}
 
-    public static byte[] toByteArray(final InputStream input) throws IOException {
+    private static byte[] toByteArray(final InputStream input) throws IOException{
     	try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
         	final byte[] buffer = new byte[16 * 1024];
         	int n;

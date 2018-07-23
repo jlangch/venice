@@ -41,7 +41,7 @@ public class CodeSnippetReader {
 		}
 	}
 	
-	private List<String> load() throws Exception {
+	private List<String> load() {
 		return StringUtil.splitIntoLines(
 				new ClassPathResource(
 							"com/github/jlangch/venice/impl/docgen/cheatsheet.snippets")

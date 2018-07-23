@@ -485,17 +485,14 @@ public class VeniceInterpreter {
 	}
 	
 	private String loadScript(final String script) {
-		return scripts.computeIfAbsent(
-				script, 
-				k -> loadClassPathResource("com/github/jlangch/venice/" + script));
-	}
-	
-	private String loadClassPathResource(final String resource) {
 		try {
-			return new ClassPathResource(resource).getResourceAsString("UTF-8");
+			return scripts.computeIfAbsent(
+					script, 
+					k -> new ClassPathResource("com/github/jlangch/venice/" + k)
+								.getResourceAsString("UTF-8"));
 		}
 		catch(Exception ex) {
-			throw new RuntimeException(String.format("Failed to load '%s'", resource), ex);
+			throw new RuntimeException(String.format("Failed to load '%s'", script), ex);
 		}
 	}
 	
