@@ -253,6 +253,13 @@ public class JavaInteropTest {
 		assertEquals(today.plusDays(5), venice.eval("(. (. :java.time.LocalDate :now) :plusDays 5)"));
 
 	}
+
+	@Test
+	public void testVarargs() {
+		final Venice venice = new Venice();
+
+		assertEquals("abc: 100", venice.eval("(. :java.lang.String :format \"%s: %d\" '(\"abc\" 100))", symbols()));
+	}
 	
 	@Test
 	@Ignore

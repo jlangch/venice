@@ -141,6 +141,18 @@ System.out.println(venice.eval("(. :java.time.LocalDate :of 1994 :JANUARY 21)"))
 System.out.println(venice.eval("(. :java.time.LocalDate :of 1994 :java.time.Month.JANUARY 21)"));
 ```
 
+
+Java VarArgs:
+
+```java
+import com.github.jlangch.venice.Venice;
+
+final Venice venice = new Venice();
+
+System.out.println(venice.eval("(. :java.lang.String :format \"%s: %d\" '(\"abc\" 100))"));
+```
+
+
 A more comprehensive example:
 
 ```java
