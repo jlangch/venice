@@ -11,6 +11,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
+- added ...
+
+### Removed
+
+- removed ...
+
+### Fixed
+
+- ...
+
+
+
+## [0.5.0] - 2018-07-24
+
+### Fixed
+
+- OSS release
+
+
+
+## [0.4.0] - 2018-07-24
+
+### Added
+
 - added function composition
 - added partial functions
 - added functions partition, distinct, and dedupe
@@ -19,10 +43,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added JSON util functions (requires Jackson lib at runtime on classpath)
 - added support for scoped enum values while interacting with Java objects 
 - added support for Java arrays
-
-### Removed
-
-- removed ...
 
 ### Fixed
 
