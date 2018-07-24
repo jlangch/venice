@@ -161,15 +161,15 @@ import com.github.jlangch.venice.Venice;
 final Venice venice = new Venice();
 
 final String script =
-         "(do                                                                  " +
-         "   (import :org.test.User :java.time.LocalDate)                      " +
-         "                                                                     " +
-         "   (def users [                                                      " +
-         "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     " +
-         "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12))) ])  " +
-         "                                                                     " +
-         "   (str (filter (fn [u] (> (get u :age) 30)) users))                 " + 
-         ")                                                                    ";
+         "(do                                                                  \n" +
+         "   (import :org.test.User :java.time.LocalDate)                      \n" +
+         "                                                                     \n" +
+         "   (def users [                                                      \n" +
+         "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     \n" +
+         "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12))) ])  \n" +
+         "                                                                     \n" +
+         "   (str (filter (fn [u] (> (get u :age) 30)) users))                 \n" + 
+         ")";
          
 System.out.println(venice.eval(script));
 ```
