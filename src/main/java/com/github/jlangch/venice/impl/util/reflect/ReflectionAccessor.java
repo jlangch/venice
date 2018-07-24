@@ -26,9 +26,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.impl.util.Tuple2;
@@ -88,7 +90,7 @@ public class ReflectionAccessor {
 			} 
 			else if (ctors.size() == 1) {
 				final Constructor<?> ctor = (Constructor<?>)ctors.get(0);
-				return ctor.newInstance(boxArgs(ctor.getParameterTypes(), ctor.isVarArgs(), args));
+				return ctor.newInstance(boxArgs(ctor.getParameterTypes(), args));
 			} 
 			else {
 				// overloaded
@@ -97,8 +99,8 @@ public class ReflectionAccessor {
 				for(Constructor<?> ctor : ctors) {
 					final Class<?>[] params = ctor.getParameterTypes();
 					
-					if (isCongruent(params, args, true)) {
-						Object[] boxedArgs = boxArgs(params, ctor.isVarArgs(), args);
+					if (isCongruent(params, args, true, ctor.isVarArgs())) {
+						Object[] boxedArgs = boxArgs(params, args);
 						return ctor.newInstance(boxedArgs);
 					}
 				}
@@ -107,8 +109,8 @@ public class ReflectionAccessor {
 				for(Constructor<?> ctor : ctors) {
 					final Class<?>[] params = ctor.getParameterTypes();
 										
-					if (isCongruent(params, args, false)) {
-						Object[] boxedArgs = boxArgs(params, ctor.isVarArgs(), args);
+					if (isCongruent(params, args, false, ctor.isVarArgs())) {
+						Object[] boxedArgs = boxArgs(params, args);
 						return ctor.newInstance(boxedArgs);
 					}
 				}
@@ -420,7 +422,7 @@ public class ReflectionAccessor {
 		} 
 		else if (methods.size() == 1) {
 			final Method m = (Method)methods.get(0);
-			final Object[] boxedArgs = boxArgs(m.getParameterTypes(), m.isVarArgs(), args);
+			final Object[] boxedArgs = boxArgs(m.getParameterTypes(), args);
 			return invoke(m, target, boxedArgs);
 		} 
 		else { 
@@ -430,8 +432,8 @@ public class ReflectionAccessor {
 			for (Method m : methods) {
 				final Class<?>[] params = m.getParameterTypes();
 				
-				if (isCongruent(params, args, true)) {
-					final Object[] boxedArgs = boxArgs(params, m.isVarArgs(), args);
+				if (isCongruent(params, args, true, m.isVarArgs())) {
+					final Object[] boxedArgs = boxArgs(params, args);
 					return invoke(m, target, boxedArgs);
 				}
 			}
@@ -440,8 +442,8 @@ public class ReflectionAccessor {
 			for (Method m : methods) {
 				final Class<?>[] params = m.getParameterTypes();
 				
-				if (isCongruent(params, args, false)) {
-					final Object[] boxedArgs = boxArgs(params, m.isVarArgs(), args);
+				if (isCongruent(params, args, false, m.isVarArgs())) {
+					final Object[] boxedArgs = boxArgs(params, args);
 					return invoke(m, target, boxedArgs);
 				}
 			}
@@ -464,7 +466,12 @@ public class ReflectionAccessor {
 		}
 	}
 
-	private static boolean isCongruent(final Class<?>[] params, Object[] args, boolean exactMatch) {
+	private static boolean isCongruent(
+			final Class<?>[] params, 
+			final Object[] args,
+			final boolean exactMatch,
+			final boolean varargs
+	) {
 		if (args == null) {
 			return params.length == 0;
 		}
@@ -602,63 +609,28 @@ public class ReflectionAccessor {
 		return false;
 	}
 
-	private static Object[] boxArgs(final Class<?>[] params, final boolean varArgs, final Object[] args) {
+	private static Object[] boxArgs(final Class<?>[] params, final Object[] args) {
 		if (params.length == 0) {
 			return null;
 		}
 		
 		final Object[] ret = new Object[params.length];
-		
-		if (varArgs) {
-			// regular args
-			for(int ii=0; ii<params.length-1; ii++) {
-				ret[ii] = boxArg(params[ii], args[ii]);
-			}
-			
-			// varargs
-			final Class<?> varArgType = params[params.length-1];
-			final int varArgArrayLen = args.length - (params.length - 1);
-			final Object varArgArray = Array.newInstance(varArgType, varArgArrayLen);
-			ret[params.length-1] = varArgArray;
-			
-			for(int ii=0; ii<varArgArrayLen; ii++) {
-				final Object arg = args[ii+params.length-1];
-				Array.set(varArgArray, ii, boxArg(varArgType, arg));
-			}
+		for (int ii=0; ii<params.length; ii++) {
+			ret[ii] = boxArg(params[ii], args[ii]);
 		}
-		else {
-			for (int ii=0; ii<params.length; ii++) {
-				ret[ii] = boxArg(params[ii], args[ii]);
-			}
-		}
-		
 		return ret;
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Object boxArg(final Class<?> paramType, final Object arg) {
 		if (!paramType.isPrimitive()) {
-			if (arg instanceof Number) {
+			if (ReflectionTypes.isArrayType(paramType)) {
+				return boxArrayArg(paramType, arg);		
+			}
+			else if (arg instanceof Number) {
 				final Object boxed = boxNumberArg(paramType, (Number)arg);		
 				if (boxed != null) {
 					return boxed;
-				}
-			}
-			else if (ReflectionTypes.isArrayType(paramType)) {
-				final Class<?> paramComponentType = paramType.getComponentType();					
-				if (paramComponentType == byte.class) {
-					if (arg.getClass() == String.class) {
-						try {
-							return ((String)arg).getBytes("UTF-8");
-						}
-						catch(Exception ex) {
-							throw new JavaMethodInvocationException(
-									"Failed to box arg of type String to byte[]", ex);
-						}
-					}
-					else if (arg.getClass() == ByteBuffer.class) {
-						return ((ByteBuffer)arg).array();
-					}
 				}
 			}
 			else if(ReflectionTypes.isEnumType(paramType)) {
@@ -754,6 +726,48 @@ public class ReflectionAccessor {
 		}
 	}
 
+	private static Object boxArrayArg(Class<?> type, final Object arg) {
+		final Class<?> componentType = type.getComponentType();					
+		if (componentType == byte.class) {
+			if (arg.getClass() == String.class) {
+				return boxStringToByteArray((String)arg);
+			}
+			else if (arg.getClass() == ByteBuffer.class) {
+				return ((ByteBuffer)arg).array();
+			}
+		}
+		
+		if (ReflectionTypes.isListOrSet(arg.getClass())) {
+			final int size = ((Collection<?>)arg).size();
+			final Object arr = Array.newInstance(componentType, size);
+			
+			final AtomicInteger idx = new AtomicInteger(0);
+			((Collection<?>)arg).forEach(v -> {
+				Array.set(arr, idx.getAndIncrement(), boxArg(componentType, v));
+			});
+			
+			return arr;
+		}
+		else if (ReflectionTypes.isMap(arg.getClass())) {
+			throw new JavaMethodInvocationException("Cannot box map to array");	
+		}
+		else {
+			// scalar type
+			final Object arr = Array.newInstance(componentType, 1);			
+			Array.set(arr, 0, boxArg(componentType, arg));
+			return arr;
+		}
+	}
+	
+	private static byte[] boxStringToByteArray(final String str) {
+		try {
+			return ((String)str).getBytes("UTF-8");
+		}
+		catch(Exception ex) {
+			throw new JavaMethodInvocationException(
+					"Failed to box arg of type String to byte[]", ex);
+		}
+	}
 
 	private static String noMatchingFieldErrMsg(final String fieldName, final Object target) {
 		return String.format(

@@ -139,6 +139,24 @@ public class JavaObject {
 	public void setByteArr(byte[] _ByteArr) {
 		this._ByteArr = _ByteArr;
 	}
+	public void setIntArray(int[] _IntArr) {
+		this._IntArr = _IntArr;
+	}
+	public int[] getIntArray() {
+		return _IntArr;
+	}
+	public void setIntegerArray(Integer[] _IntegerArr) {
+		this._IntegerArr = _IntegerArr;
+	}
+	public Integer[] getIntegerArray() {
+		return _IntegerArr;
+	}
+	public void setStringArray(String[] _StringArr) {
+		this._StringArr = _StringArr;
+	}
+	public String[] getStringArray() {
+		return _StringArr;
+	}
 
 	public void setOverloaded(byte[] bytes) {
 		this._Overload = bytes;
@@ -180,5 +198,8 @@ public class JavaObject {
 	private Set<?> _Set;
 	private Map<?,?> _Map;
 	private byte[] _ByteArr;
+	private int[] _IntArr;
+	private Integer[] _IntegerArr;
+	private String[] _StringArr;
 	private Object _Overload;
 }
