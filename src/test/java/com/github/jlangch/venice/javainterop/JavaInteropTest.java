@@ -185,6 +185,7 @@ public class JavaInteropTest {
 
 		assertEquals(null, venice.eval("(. jobj :getIntArray)", symbols()));
 		assertArrayEquals(new int[] {1,2,3}, (int[])venice.eval("(do (. jobj :setIntArray '(1 2 3)) (. jobj :getIntArray))", symbols()));
+		assertArrayEquals(new int[] {}, (int[])venice.eval("(do (. jobj :setIntArray '()) (. jobj :getIntArray))", symbols()));
 		assertArrayEquals(new int[] {1}, (int[])venice.eval("(do (. jobj :setIntArray 1) (. jobj :getIntArray))", symbols()));
 	}
 
@@ -194,6 +195,7 @@ public class JavaInteropTest {
 
 		assertEquals(null, venice.eval("(. jobj :getIntegerArray)", symbols()));
 		assertArrayEquals(new Integer[] {1,2,3}, (Integer[])venice.eval("(do (. jobj :setIntegerArray '(1 2 3)) (. jobj :getIntegerArray))", symbols()));
+		assertArrayEquals(new Integer[] {}, (Integer[])venice.eval("(do (. jobj :setIntegerArray '()) (. jobj :getIntegerArray))", symbols()));
 		assertArrayEquals(new Integer[] {1}, (Integer[])venice.eval("(do (. jobj :setIntegerArray 1) (. jobj :getIntegerArray))", symbols()));
 	}
 
@@ -203,6 +205,7 @@ public class JavaInteropTest {
 
 		assertEquals(null, venice.eval("(. jobj :getStringArray)", symbols()));
 		assertArrayEquals(new String[] {"a", "b", "c"}, (String[])venice.eval("(do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray))", symbols()));
+		assertArrayEquals(new String[] {}, (String[])venice.eval("(do (. jobj :setStringArray '()) (. jobj :getStringArray))", symbols()));
 		assertArrayEquals(new String[] {"a"}, (String[])venice.eval("(do (. jobj :setStringArray \"a\") (. jobj :getStringArray))", symbols()));
 	}
 
