@@ -36,6 +36,8 @@ public class StopWatch {
 
 	/**
 	 * Create a new stop watch. Start time is now
+	 * 
+	 * @param resolution the resolution
 	 */
 	public StopWatch(final Resolution resolution) {
 		this.resolution = resolution;
@@ -44,6 +46,8 @@ public class StopWatch {
 
 	/**
 	 * Create a new stop watch (with milliseconds resolution). Start time is now
+	 * 
+	 * @return a StopWatch with milliseconds resolution
 	 */
 	public static StopWatch millis() {
 		return new StopWatch(Resolution.MILLIS);
@@ -51,6 +55,8 @@ public class StopWatch {
 
 	/**
 	 * Create a new stop watch (with nanoseconds resolution). Start time is now
+	 * 
+	 * @return a StopWatch with nanoseconds resolution
 	 */
 	public static StopWatch nanos() {
 		return new StopWatch(Resolution.NANOS);
@@ -117,9 +123,9 @@ public class StopWatch {
 	 * 
 	 * <p>Formats chosen
 	 * <ul>
-	 *   <li>245ms - for elapsed times < 1s</li>
-	 *   <li>45s 245ms - for elapsed times < 1m</li>
-	 *   <li>10m 45s - for elapsed times >= 1m</li>
+	 *   <li>245ms - for elapsed times &lt; 1s</li>
+	 *   <li>45s 245ms - for elapsed times &lt; 1m</li>
+	 *   <li>10m 45s - for elapsed times &gt;= 1m</li>
 	 * </ul>      
 	 * 
 	 * @param millis a duration in milliseconds
@@ -144,10 +150,10 @@ public class StopWatch {
 	 * 
 	 * <p>Formats chosen
 	 * <ul>
-	 *   <li>245ns - for elapsed times < 1us</li>
-	 *   <li>45.245us - for elapsed times < 1ms</li>
-	 *   <li>45.245ms- for elapsed times < 1s</li>
-	 *   <li>45s 245ms - for elapsed times > 1s</li>
+	 *   <li>245ns - for elapsed times &lt; 1us</li>
+	 *   <li>45.245us - for elapsed times &lt; 1ms</li>
+	 *   <li>45.245ms- for elapsed times &lt; 1s</li>
+	 *   <li>45s 245ms - for elapsed times &gt; 1s</li>
 	 * </ul>      
 	 * 
 	 * @param nanos a duration in nanoseconds

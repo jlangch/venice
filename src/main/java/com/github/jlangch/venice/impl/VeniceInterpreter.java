@@ -91,8 +91,8 @@ public class VeniceInterpreter {
 	 * function has the is_macro attribute set to true. 
 	 * Otherwise, it returns false.
 	 * 
-	 * @param ast
-	 * @param env
+	 * @param ast ast
+	 * @param env env
 	 * @return true if the ast starts with a macro
 	 */
 	public boolean is_macro_call(final VncVal ast, final Env env) {
@@ -121,9 +121,9 @@ public class VeniceInterpreter {
 	 * When the loop completes because ast no longer represents a macro call, 
 	 * the current value of ast is returned.
 	 * 
-	 * @param ast
-	 * @param env
-	 * @return
+	 * @param ast ast
+	 * @param env env
+	 * @return the expanded macro
 	 */
 	public VncVal macroexpand(VncVal ast, final Env env) {
 		while (is_macro_call(ast, env)) {

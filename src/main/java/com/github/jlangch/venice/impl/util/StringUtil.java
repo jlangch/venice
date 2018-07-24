@@ -65,7 +65,7 @@ public class StringUtil {
 	 * Double quote is replaced with \"
 	 * Backslash is replaced with \\
 	 *
-	 * @param text
+	 * @param text text to escape
 	 * @return the escaped text
 	 */
 	public static String escape(final String text) {
@@ -92,7 +92,7 @@ public class StringUtil {
 	/**
 	 * Unescapes a text
 	 *
-	 * @param text
+	 * @param text the text to unescape
 	 * @return the unescaped text
 	 */
 	public static String unescape(final String text) {
