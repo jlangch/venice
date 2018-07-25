@@ -192,7 +192,7 @@ System.out.println(venice.eval(script));
 The Venice sandbox allows a program to execute _Venice_ in a restricted sandbox 
 environment regarding Java interop. It is useful for applications that want 
 to provide some degree of scriptability to users, without allowing them to 
-execute System.exit(0) or any other undesirable operations.
+execute `System.exit(0)` or any other undesirable operations.
 
 
 #### Multi-Threading
