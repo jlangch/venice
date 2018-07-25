@@ -69,8 +69,6 @@ import com.github.jlangch.venice.javainterop.*;
 
 public class Example {
    public static void main(String[] args) {
-      Venice venice = new Venice();
-
       JavaInterceptor interceptor =
          new JavaSandboxInterceptor(
             WhiteList.create(
@@ -78,6 +76,9 @@ public class Example {
                 "java.lang.Math:max",
                 "java.time.ZonedDateTime:*",
                 "java.util.ArrayList:new"));
+
+      Venice venice = new Venice(interceptor);
+
 
       venice.eval("(. :java.lang.Math :min 20 30)"); // =>  OK
       venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"); // => OK
