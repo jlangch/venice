@@ -128,9 +128,18 @@ import com.github.jlangch.venice.Venice;
 
 final Venice venice = new Venice();
 
+// static field
 System.out.println(venice.eval("(. :java.lang.Math :PI)"));
+
+// static method
 System.out.println(venice.eval("(. :java.lang.Math :min 20 30)"));
+
+// constructor and instance method
 System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"));
+
+// class object
+System.out.println(venice.eval("(. :java.lang.Math :class)"));
+System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :class)"));
 ```
 
 
