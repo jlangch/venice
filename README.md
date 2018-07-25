@@ -1,3 +1,7 @@
+[![](https://cdn.rawgit.com/jlangch/venice/cd3133bb/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/cd3133bb/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+
+
 # Venice
 
 Venice, a sandboxed Lisp with Java interoperability implemented in Java.
@@ -238,6 +242,31 @@ venice.eval("(. :java.lang.System :exit 0)");
 
 // => FAIL (call to rejected Venice I/O function)
 venice.eval("(slurp \"/tmp/file\")"); 
+```
+
+
+## Build Dependencies
+
+
+#### Gradle
+
+```groovy
+dependencies {
+    compile 'com.github.jlangch:venice:0.5.0'
+}
+```
+
+
+#### Maven
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.github.jlangch</groupId>
+        <artifactId>venice</artifactId>
+        <version>0.5.0</version>
+    </dependency>
+</dependencies>
 ```
 
 
