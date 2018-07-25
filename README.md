@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/cd3133bb/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/cd3133bb/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/d08f68aa/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/d08f68aa/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -22,9 +22,9 @@ can easily add it as standalone .jar to your classpath.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/cd3133bb/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/d08f68aa/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/cd3133bb/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/d08f68aa/cheatsheet.pdf)
 
 
 ## REPL
