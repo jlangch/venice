@@ -3,16 +3,17 @@ plugins {
 }
 
 compileJava {
-		sourceCompatibility = 1.8
-		targetCompatibility = 1.8
-		options.encoding = 'UTF-8'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.encoding = 'UTF-8'
+    options.compilerArgs += "-parameters"
 }
 
 compileTestJava {
-		sourceCompatibility = 1.8
-		targetCompatibility = 1.8
-		options.encoding = 'UTF-8'
-		options.compilerArgs += "-parameters"
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.encoding = 'UTF-8'
+    options.compilerArgs += "-parameters"
 }
 
 repositories {
