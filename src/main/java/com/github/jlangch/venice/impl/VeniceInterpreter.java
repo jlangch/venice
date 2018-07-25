@@ -148,15 +148,15 @@ public class VeniceInterpreter {
 			return new_lst;
 		} 
 		else if (ast instanceof VncMap) {
-			final VncMap old_hm = (VncMap)ast;
-			final VncMap new_hm = (VncMap)old_hm.empty();
-			new_hm.setMeta(old_hm.getMeta().copy());
+			final VncMap old_map = (VncMap)ast;
+			final VncMap new_map = (VncMap)old_map.empty();
+			new_map.setMeta(old_map.getMeta().copy());
 
 			((VncMap)ast).getMap().entrySet().forEach(entry ->
-				new_hm.getMap().put(
+				new_map.getMap().put(
 						entry.getKey(), 
 						EVAL((VncVal)entry.getValue(), env)));
-			return new_hm;
+			return new_map;
 		} 
 		else {
 			return ast;
