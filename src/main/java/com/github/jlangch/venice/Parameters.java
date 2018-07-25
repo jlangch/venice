@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * A script parameter builder
+ */
 public class Parameters {
 	
 	public Parameters() {

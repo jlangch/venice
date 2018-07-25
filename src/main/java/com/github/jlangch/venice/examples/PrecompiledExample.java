@@ -31,7 +31,7 @@ public class PrecompiledExample {
 	public static void main(final String[] args) {
 		final Venice venice = new Venice();
 		
-		final PreCompiled precompiled = venice.precompile("(+ 1 x)");
+		final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 		
 		for(int ii=0; ii<100; ii++) {
 			System.out.println(

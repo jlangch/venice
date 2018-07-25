@@ -26,9 +26,14 @@ import com.github.jlangch.venice.impl.Env;
 
 public class PreCompiled {
 	
-	public PreCompiled(final Object precompiled, final Env env) {
+	public PreCompiled(final String name, final Object precompiled, final Env env) {
+		this.name = name;
 		this.precompiled = precompiled;
 		this.env = env;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public Object getPrecompiled() {
@@ -40,6 +45,7 @@ public class PreCompiled {
 	}
 	
 	
+	private final String name;
 	private final Object precompiled;
 	private final Env env;
 }

@@ -33,11 +33,12 @@ public class Readline {
 	public static String readline(String prompt) throws EofException, IOException {
 		System.out.print(prompt);
 		
-		final BufferedReader buffer=new BufferedReader(new InputStreamReader(System.in));
-		final String line=buffer.readLine();
-		if (line == null) {
-			throw new EofException();
+		try (BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in))) {
+			final String line=buffer.readLine();
+			if (line == null) {
+				throw new EofException();
+			}
+			return line;
 		}
-		return line;
 	}
 }

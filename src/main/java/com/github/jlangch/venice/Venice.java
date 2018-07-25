@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.JavaInterceptor;
 
@@ -41,25 +42,65 @@ public class Venice {
 		this(null);
 	}
 
+	/**
+	 * Create new sandboxed Venice instance
+	 * 
+	 * @param interceptor an interceptor that defines the sandbox 
+	 */
 	public Venice(final JavaInterceptor interceptor) {
 		this.interceptor = interceptor;
 	}
 	
 	
-	public PreCompiled precompile(final String script) {
+	/**
+	 * Pre-compiles a Venice script.
+	 * 
+	 * @param scriptName A mandatory script name
+	 * @param script A mandatory script
+	 * @return the pre-compiled script
+	 */
+	public PreCompiled precompile(final String scriptName, final String script) {
+		if (StringUtil.isBlank(scriptName)) {
+			throw new IllegalArgumentException("A 'scriptName' must not be blank");
+		}
+		if (StringUtil.isBlank(script)) {
+			throw new IllegalArgumentException("A 'script' must not be blank");
+		}
+		
 		final VeniceInterpreter venice = new VeniceInterpreter();
 
-		return new PreCompiled(venice.READ(script, null), createEnv(venice, null));
+		return new PreCompiled(scriptName, venice.READ(script, scriptName), createEnv(venice, null));
 	}
 
+	/**
+	 * Evaluates a pre-compiled script without passing any parameters.
+	 * 
+	 * @param precompiled A mandatory pre-compiled script
+	 * @return the result
+	 */
 	public Object eval(final PreCompiled precompiled) {		
+		if (precompiled == null) {
+			throw new IllegalArgumentException("A 'precompiled' script must not be null");
+		}
+
 		return eval(precompiled, null);
 	}
 	
+	/**
+	 * Evaluates a pre-compiled script with parameters.
+	 * 
+	 * @param precompiled A mandatory pre-compiled script
+	 * @param params Optional parameters
+	 * @return the result
+	 */
 	public Object eval(
 			final PreCompiled precompiled, 
 			final Map<String,Object> params
 	) {
+		if (precompiled == null) {
+			throw new IllegalArgumentException("A 'precompiled' script must not be null");
+		}
+
 		try {
 			JavaInterop.register(interceptor);
 			
@@ -86,11 +127,48 @@ public class Venice {
 		}
 	}
 
+	/**
+	 * Evaluates a script.
+	 * 
+	 * @param script A mandatory script
+	 * @return The result
+	 */
 	public Object eval(final String script) {
-		return eval(script, null);
+		if (StringUtil.isBlank(script)) {
+			throw new IllegalArgumentException("A 'script' must not be blank");
+		}
+
+		return eval(null, script, null);
 	}
 
+	/**
+	 * Evaluates a script with parameters
+	 * 
+	 * @param script A mandatory script
+	 * @param params Optional parameters
+	 * @return The result
+	 */
 	public Object eval(final String script, final Map<String,Object> params) {
+		if (StringUtil.isBlank(script)) {
+			throw new IllegalArgumentException("A 'script' must not be blank");
+		}
+
+		return eval(null, script, params);
+	}
+
+	/**
+	 * Evaluates a script with parameters
+	 * 
+	 * @param scriptName An optional scriptName
+	 * @param script A mandatory script
+	 * @param params The optional parameters
+	 * @return The result
+	 */
+	public Object eval(final String scriptName, final String script, final Map<String,Object> params) {
+		if (StringUtil.isBlank(script)) {
+			throw new IllegalArgumentException("A 'script' must not be blank");
+		}
+
 		try {
 			JavaInterop.register(interceptor);
 			
@@ -98,7 +176,7 @@ public class Venice {
 
 			final Env env = createEnv(venice, params);
 			
-			final VncVal result = venice.RE(script, null, env);
+			final VncVal result = venice.RE(script, scriptName, env);
 			
 			return JavaInteropUtil.convertToJavaObject(result);
 		}
@@ -117,6 +195,9 @@ public class Venice {
 		}
 	}
 	
+	/**
+	 * @return the Venice version
+	 */
 	public static String getVersion() {
 		return Version.VERSION;
 	}

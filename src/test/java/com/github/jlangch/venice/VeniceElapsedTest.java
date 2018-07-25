@@ -56,13 +56,13 @@ public class VeniceElapsedTest {
 				"    (== eventType \"ALERT\") " +
 				")";       
 
-		final PreCompiled compiled1 = venice.precompile(script1);
-		final PreCompiled compiled2 = venice.precompile(script2);
+		final PreCompiled compiled1 = venice.precompile("script1", script1);
+		final PreCompiled compiled2 = venice.precompile("script2", script2);
 
 		// warm up
 		for(int ii=0; ii<100; ii++) {
 			venice.eval(script1, Parameters.of("event", event));
-			venice.eval(venice.precompile(script1), Parameters.of("event", event));
+			venice.eval(venice.precompile("script1", script1), Parameters.of("event", event));
 		}
 		
 		

@@ -292,4 +292,53 @@ public class SpecialFormsTest {
 		assertEquals(Long.valueOf(50005000), venice.eval(lisp));
 	}
 
+	@Test
+	public void test_loop_fib() {
+		final Venice venice = new Venice();
+		
+		final String lisp = 
+				"(do                                                            " +
+				"  (def fib                                                     " +
+				"    (fn [n]                                                    " +
+				"      (loop [x [0 1]]                                          " +
+				"          (if (>= (count x) n)                                 " +
+				"              x                                                " +
+				"              (recur (conj x (+ (last x)                       " +
+				"                                (nth x (- (count x) 2))))))))) " +
+				"                                                               " +
+				"   (str (fib 10))                                              " +
+				")                                                              ";
+
+		assertEquals("[0 1 1 2 3 5 8 13 21 34]", venice.eval(lisp).toString());
+	}
+
+	@Test
+	public void test_loop_nested() {
+		final Venice venice = new Venice();
+		
+		final String lisp = 
+				"(do                                                            " +
+				"                                                               " +
+				"  (def fib                                                     " +
+				"    (fn [n]                                                    " +
+				"      (loop [x [0 1]]                                          " +
+				"          (if (>= (count x) n)                                 " +
+				"              x                                                " +
+				"              (recur (conj x (+ (last x)                       " +
+				"                                (nth x (- (count x) 2))))))))) " +
+				"                                                               " +
+				"  (def sum-fib                                                 " +
+				"    (fn [n]                                                    " +
+				"      (loop [cnt n                                             " +
+				"             acc 0]                                            " +
+				"          (if (zero? cnt)                                      " +
+				"              acc                                              " +
+				"              (recur (dec cnt) (+ acc (last (fib cnt))))))))   " +
+				"                                                               " +
+				"   (sum-fib 10)                                                " +
+				")                                                              ";
+
+		assertEquals(Long.valueOf(89L), venice.eval(lisp));
+	}
+
 }

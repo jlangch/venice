@@ -258,7 +258,7 @@ public class VeniceInterpreter {
 					for(int i=1; i<ast.size(); i++) {
 						recur_values.addAtEnd(EVAL(ast.nth(i), env));
 					}
-					// [2]bind the values
+					// [2] bind the values
 					final VncList recur_bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
 					for(int i=0; i<recur_bindingNames.size(); i++) {
