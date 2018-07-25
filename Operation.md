@@ -9,4 +9,6 @@
 
 [OSSRH Guide](https://central.sonatype.org/pages/ossrh-guide.html)
 
+[OSSRH Manual Deploy](https://central.sonatype.org/pages/manual-staging-bundle-creation-and-deployment.html)
+
 [Project Euler](https://projecteuler.net/)
