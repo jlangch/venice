@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Removed
 
-- removed ...
+- removed function 'class-for-name'. (. :java.lang.Math :class) is providing it already
 
 ### Fixed
 
