@@ -180,6 +180,16 @@ public class JavaInteropTest {
 	}
 
 	@Test
+	public void testByteArray() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(. jobj :getByteArray)", symbols()));
+		assertArrayEquals(new byte[] {1,2,3}, (byte[])venice.eval("(do (. jobj :setByteArray (bytebuf '(1 2 3))) (. jobj :getByteArray))", symbols()));
+		assertArrayEquals(new byte[] {}, (byte[])venice.eval("(do (. jobj :setByteArray (bytebuf '())) (. jobj :getByteArray))", symbols()));
+		assertArrayEquals(new byte[] {1}, (byte[])venice.eval("(do (. jobj :setByteArray 1) (. jobj :getByteArray))", symbols()));
+	}
+
+	@Test
 	public void testIntArray() {
 		final Venice venice = new Venice();
 

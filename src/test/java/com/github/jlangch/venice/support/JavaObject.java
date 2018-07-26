@@ -133,10 +133,10 @@ public class JavaObject {
 	public void setMap(Map<?, ?> _Map) {
 		this._Map = _Map;
 	}
-	public byte[] getByteArr() {
+	public byte[] getByteArray() {
 		return _ByteArr;
 	}
-	public void setByteArr(byte[] _ByteArr) {
+	public void setByteArray(byte[] _ByteArr) {
 		this._ByteArr = _ByteArr;
 	}
 	public void setIntArray(int[] _IntArr) {

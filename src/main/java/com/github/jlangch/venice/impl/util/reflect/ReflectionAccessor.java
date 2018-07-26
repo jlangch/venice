@@ -732,7 +732,10 @@ public class ReflectionAccessor {
 			if (arg.getClass() == String.class) {
 				return boxStringToByteArray((String)arg);
 			}
-			else if (arg.getClass() == ByteBuffer.class) {
+			else if (arg.getClass() == byte[].class) {
+				return (byte[])arg;
+			}
+			else if (arg instanceof ByteBuffer) {
 				return ((ByteBuffer)arg).array();
 			}
 		}

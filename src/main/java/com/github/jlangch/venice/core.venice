@@ -292,13 +292,13 @@
 
 ;; Protocol
 
-(def *PROTOCOL* (atom (. :com.github.jlangch.venice.util.Protocol :new)))
+(def *PROTOCOL* (. :com.github.jlangch.venice.util.Protocol :new))
 
-(def protocol/open (fn [] (do (. (deref *PROTOCOL*) :clear) (. (deref *PROTOCOL*) :log :INFO "opened"))))
+(def protocol/open (fn [] (do (. *PROTOCOL* :clear) (. *PROTOCOL* :log :INFO "opened"))))
 
-(def protocol/log (fn [lvl msg] (. (deref *PROTOCOL*) :log lvl msg)))
+(def protocol/log (fn [lvl msg] (. *PROTOCOL* :log lvl msg)))
 
-(def protocol/to-string (fn [] (str (deref *PROTOCOL*))))
+(def protocol/to-string (fn [] (str *PROTOCOL*)))
 
 
 
