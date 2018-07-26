@@ -7,11 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [Unreleased]
-
-### Added
-
-- added ...
+## [0.6.0] - 2018-07-28
 
 ### Removed
 
@@ -19,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
+- fixed loading forms from strings, files, and modules 
 - fixed JavaInterop. Invoking methods with byte array parameters
 
 

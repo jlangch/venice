@@ -33,7 +33,14 @@ public class JsonModuleTest {
 	public void test_json_parse() {
 		final Venice venice = new Venice();
 
-		venice.eval("(json/parse {:a 100})");
+		final String script =
+				"(do                                     " +
+				"   (load-module :json)                  " +
+				"                                        " +
+				"   (json/parse {:a 100})                " + 
+				") ";
+
+		venice.eval("(str " + script + ")");
 	}
 
 }

@@ -1,0 +1,39 @@
+;; JSON utils (requires Jackson JSON on classpath)
+
+(def json/avail? (fn [json]
+   (try
+     (some? (class-for-name :com.fasterxml.jackson.databind.ObjectMapper))
+     (catch false))))
+
+(def json/avail-jdk8-module? (fn [json]
+   (try
+     (some? (class-for-name :com.fasterxml.jackson.datatype.jdk8.Jdk8Module))
+     (catch false))))
+
+(def json/pretty-print (fn [json]
+   (json/to-pretty-json (json/parse json))))
+   
+(def json/to-json (fn [val]
+   (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
+        (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
+        (-> mapper
+            (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
+            (. :writeValueAsString val)))))
+   
+(def json/to-pretty-json (fn [val]
+   (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
+        (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
+        (-> mapper
+            (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
+            (. :writerWithDefaultPrettyPrinter)
+            (. :writeValueAsString val)))))
+
+(def json/parse (fn [text]
+   (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
+        (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
+        (-> mapper
+            (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
+            (. :readValue text (class-for-name :java.lang.Object))))))
+
+

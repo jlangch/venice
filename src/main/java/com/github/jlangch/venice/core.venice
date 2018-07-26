@@ -196,36 +196,37 @@
            ret_ ~expr]
          (prn (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
          ret_))
+         
+         
+(defmacro
+   { :arglists '("(load-string s)")
+     :doc "Sequentially read and evaluate the set of forms contained in the string." 
+     :examples '("(do \n  (load-string \"(def x 1)\")\n  (+ x 2))") }
+   
+   load-string [s]
+   
+   `(eval (read-string (str "(do " ~s ")"))))
 
 
-(def 
+(defmacro
+
    { :arglists '("(load-file name)")
      :doc "Sequentially read and evaluate the set of forms contained in the file." 
      :examples '() }
 
-   load-file 
+   load-file [f]
    
-   (fn [f] (eval (read-string (str "(do " (slurp f) ")")))))
+   `(eval (read-string (str "(do " (slurp ~f) ")"))))
 
 
-(def 
+(defmacro 
    { :arglists '("(load-module s)")
-     :doc "Loads a Venice extension module." 
-     :examples '("(load-module \"json\")") }
+     :doc "Loads a Venice predefined extension module." 
+     :examples '() }
    
-   load-module 
+   load-module [s]
    
-   (fn [s] (eval (read-string (str "(do " (load-core-module s) ")")))))
-
-
-(def 
-   { :arglists '("(load-string s)")
-     :doc "Sequentially read and evaluate the set of forms contained in the string." 
-     :examples '("(load-string \"(def x 1)\")") }
-   
-   load-string 
-   
-   (fn [s] (eval (read-string (str "(do " s ")")))))
+   `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
 
 
 (def 
@@ -287,57 +288,4 @@
                (let [ret (apply f args)]
                   (swap! mem assoc args ret)
                   ret))))))
-
-
-
-;; Protocol
-
-(def *PROTOCOL* (. :com.github.jlangch.venice.util.Protocol :new))
-
-(def protocol/open (fn [] (do (. *PROTOCOL* :clear) (. *PROTOCOL* :log :INFO "opened"))))
-
-(def protocol/log (fn [lvl msg] (. *PROTOCOL* :log lvl msg)))
-
-(def protocol/to-string (fn [] (str *PROTOCOL*)))
-
-
-
-;; JSON utils (requires Jackson JSON on classpath)
-
-(def json/avail? (fn [json]
-   (try
-     (some? (class-for-name :com.fasterxml.jackson.databind.ObjectMapper))
-     (catch false))))
-
-(def json/avail-jdk8-module? (fn [json]
-   (try
-     (some? (class-for-name :com.fasterxml.jackson.datatype.jdk8.Jdk8Module))
-     (catch false))))
-
-(def json/pretty-print (fn [json]
-   (json/to-pretty-json (json/parse json))))
-   
-(def json/to-json (fn [val]
-   (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-        (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
-        (-> mapper
-            (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
-            (. :writeValueAsString val)))))
-   
-(def json/to-pretty-json (fn [val]
-   (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-        (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
-        (-> mapper
-            (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
-            (. :writerWithDefaultPrettyPrinter)
-            (. :writeValueAsString val)))))
-
-(def json/parse (fn [text]
-   (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-        (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
-        (-> mapper
-            (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
-            (. :readValue text (class-for-name :java.lang.Object))))))
-
 

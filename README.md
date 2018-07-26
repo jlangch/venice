@@ -100,16 +100,21 @@ The Jackson Jdk8 module is loaded automatically if it is available
  
 
 ```clojure
-;; build json from a map (returns a json string)
-(json/to-json {:a 100 :b 100 c: [10 20 30]})
-(json/to-pretty-json [{:a 100 :b 100}, {:a 200 :b 200}])
+(do
+   ;; load the Venice JSON extension module
+   (load-module :json)
+   
+   ;; build json from a map (returns a json string)
+   (json/to-json {:a 100 :b 100 c: [10 20 30]})
+   (json/to-pretty-json [{:a 100 :b 100}, {:a 200 :b 200}])
 
-;; pretty print json (returns a json string)
-(json/pretty-print (json/to-json {:a 100 :b 100}))
+   ;; pretty print json (returns a json string)
+   (json/pretty-print (json/to-json {:a 100 :b 100}))
 
-;; parse json from a string (returns a map/list)
-(json/parse (json/to-json {:a 100 :b 100 c: [10 20 30]}))
-(json/parse (json/to-json [{:a 100 :b 100}, {:a 200 :b 200}]))
+   ;; parse json from a string (returns a map/list)
+   (json/parse (json/to-json {:a 100 :b 100 c: [10 20 30]}))
+   (json/parse (json/to-json [{:a 100 :b 100}, {:a 200 :b 200}]))
+)
 ```
 
 
@@ -261,7 +266,7 @@ venice.eval("(slurp \"/tmp/file\")");
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.5.0'
+    compile 'com.github.jlangch:venice:0.6.0'
 }
 ```
 
@@ -273,7 +278,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
     </dependency>
 </dependencies>
 ```

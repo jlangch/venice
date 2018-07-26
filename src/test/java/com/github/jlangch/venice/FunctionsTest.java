@@ -1379,17 +1379,17 @@ public class FunctionsTest {
 		assertEquals(Long.valueOf(3), venice.eval(script));
 	}
 
-//	@Test
-//	public void test_load_string2() {
-//		final Venice venice = new Venice();
-//
-//		final String script =
-//				"(do                               " +
-//				"   (load-string \" (def x 1) \")  " + 
-//				"   (+ x 2))                       ";
-//
-//		assertEquals(Long.valueOf(3), venice.eval(script));
-//	}
+	@Test
+	public void test_load_string2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                               " +
+				"   (load-string \" (def x 1) \")  " + 
+				"   (+ x 2))                       ";
+
+		assertEquals(Long.valueOf(3), venice.eval(script));
+	}
 
 	@Test
 	public void test_long() {

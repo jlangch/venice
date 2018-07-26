@@ -548,6 +548,12 @@ public class DocGenerator {
 		call.addItem(getDocItem("->"));
 		call.addItem(getDocItem("->>"));
 
+		final DocSection loading = new DocSection("Loading");
+		all.addSection(loading);
+		loading.addItem(getDocItem("load-string"));
+		loading.addItem(getDocItem("load-file"));
+		loading.addItem(getDocItem("load-module"));
+
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);
 		test.addItem(getDocItem("macro?"));

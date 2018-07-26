@@ -36,6 +36,8 @@ public class ProtocolModuleTest {
 
 		final String script =
 				"(do                                     " +
+				"   (load-module :protocol)              " +
+				"                                        " +
 				"   (protocol/open)                      " + 
 				"   (protocol/log :INFO \"test 1\")      " + 
 				"   (protocol/log :INFO \"test 2\")      " + 
