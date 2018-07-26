@@ -15,11 +15,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Removed
 
-- removed function 'class-for-name'. (. :java.lang.Math :class) is providing it already
+- removed function 'class-for-name'. The JavaInterop function already provides that. E.g.: (. :java.lang.Math :class)
 
 ### Fixed
 
-- fixed JavaInterop. Invoking methods with byte array parameters
+- fixed JavaInterop on invoking methods with byte array parameters
 
 
 
