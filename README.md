@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/d08f68aa/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/d08f68aa/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/5e07a8ae/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/5e07a8ae/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -22,16 +22,16 @@ can easily add it as standalone .jar to your classpath.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/d08f68aa/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/5e07a8ae/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/d08f68aa/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/5e07a8ae/cheatsheet.pdf)
 
 
 ## REPL
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.4.0.jar`
+Start the REPL with `java -jar venice-0.6.0.jar`
 
 ```text
 venice> (+ 1 1)
