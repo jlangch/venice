@@ -7,6 +7,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [UNRELEASED]
+
+### Added
+
+- added ...
+
+### Removed
+
+- removed ...
+
+### Fixed
+
+- fixed ...
+
+
+
 ## [0.6.0] - 2018-07-28
 
 ### Removed
