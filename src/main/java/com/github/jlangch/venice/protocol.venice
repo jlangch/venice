@@ -1,0 +1,11 @@
+;; Venice protocol & functions
+
+
+(def *PROTOCOL* (atom (. :com.github.jlangch.venice.util.Protocol :new)))
+
+(def protocol/open (fn [] (do (. (deref *PROTOCOL*) :clear) (. (deref *PROTOCOL*) :log :INFO "opened"))))
+
+(def protocol/log (fn [lvl msg] (. (deref *PROTOCOL*) :log lvl msg)))
+
+(def protocol/to-string (fn [] (str (deref *PROTOCOL*))))
+

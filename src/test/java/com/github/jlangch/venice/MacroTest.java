@@ -54,7 +54,7 @@ public class MacroTest {
 		
 		assertEquals("(1 2 (4 (+ 3 2)))",          venice.eval("(str `(1 2 ~(list 4 `(+ 3 2))))"));
 		assertEquals("(1 2 4 (+ 3 2))",            venice.eval("(str `(1 2 ~@(list 4 `(+ 3 2))))"));
-}
+	}
 
 	@Test
 	public void testGensym() {
@@ -232,7 +232,7 @@ public class MacroTest {
 				"                (cond                      " +
 				"   		        (< n 0) \"negative\"    " +
 				"                   (> n 0) \"positive\"    " +
-				"                  :else \"zero\")))        " +
+				"                   :else \"zero\")))       " +
 				"                                           " +
 				"   (pos-neg-or-zero 5)                     " +
 				")                                          ";
@@ -244,7 +244,7 @@ public class MacroTest {
 				"                (cond                      " +
 				"   		        (< n 0) \"negative\"    " +
 				"                   (> n 0) \"positive\"    " +
-				"                  :else \"zero\")))        " +
+				"                   :else \"zero\")))       " +
 				"                                           " +
 				"   (pos-neg-or-zero -5)                    " +
 				")                                          ";
@@ -256,7 +256,7 @@ public class MacroTest {
 				"                (cond                      " +
 				"   		        (< n 0) \"negative\"    " +
 				"                   (> n 0) \"positive\"    " +
-				"                  :else \"zero\")))        " +
+				"                   :else \"zero\")))       " +
 				"                                           " +
 				"   (pos-neg-or-zero 0)                     " +
 				")                                          ";
@@ -315,6 +315,20 @@ public class MacroTest {
 				") ";
 
 		assertEquals(Long.valueOf(10L), venice.eval(lisp));
+	}
+
+	@Test
+	public void test_dotimes2() {
+		final Venice venice = new Venice();
+
+		final String lisp =
+				"(do                                                   " +
+				"    (def counter (atom 0))                            " + 
+				"    (dotimes [n 10] (swap! counter (fn [x] (+ x n)))) " + 
+				"    (deref counter)                                   " + 
+				") ";
+
+		assertEquals(Long.valueOf(45L), venice.eval(lisp));
 	}
 
 	@Test

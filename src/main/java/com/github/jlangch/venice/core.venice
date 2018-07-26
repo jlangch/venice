@@ -209,6 +209,16 @@
 
 
 (def 
+   { :arglists '("(load-module s)")
+     :doc "Loads a Venice extension module." 
+     :examples '("(load-module \"json\")") }
+   
+   load-module 
+   
+   (fn [s] (eval (read-string (str "(do " (load-core-module s) ")")))))
+
+
+(def 
    { :arglists '("(load-string s)")
      :doc "Sequentially read and evaluate the set of forms contained in the string." 
      :examples '("(load-string \"(def x 1)\")") }
@@ -277,6 +287,18 @@
                (let [ret (apply f args)]
                   (swap! mem assoc args ret)
                   ret))))))
+
+
+
+;; Protocol
+
+(def *PROTOCOL* (atom (. :com.github.jlangch.venice.util.Protocol :new)))
+
+(def protocol/open (fn [] (do (. (deref *PROTOCOL*) :clear) (. (deref *PROTOCOL*) :log :INFO "opened"))))
+
+(def protocol/log (fn [lvl msg] (. (deref *PROTOCOL*) :log lvl msg)))
+
+(def protocol/to-string (fn [] (str (deref *PROTOCOL*))))
 
 
 

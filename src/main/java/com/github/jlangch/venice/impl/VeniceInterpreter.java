@@ -24,9 +24,6 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
@@ -42,7 +39,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 
 public class VeniceInterpreter {
@@ -454,8 +450,8 @@ public class VeniceInterpreter {
 		// set version
 		env.set(new VncSymbol("*VERSION*"), new VncString(Version.VERSION));
 
-		// load core.vnc 
-		RE("(eval " + loadScript("core.venice") + ")", "core.venice", env);
+		// load core.venice 
+		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
 		
 		return env;
 	}
@@ -484,20 +480,7 @@ public class VeniceInterpreter {
 		return null;
 	}
 	
-	private String loadScript(final String script) {
-		try {
-			return scripts.computeIfAbsent(
-					script, 
-					k -> new ClassPathResource("com/github/jlangch/venice/" + k)
-								.getResourceAsString("UTF-8"));
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(String.format("Failed to load '%s'", script), ex);
-		}
-	}
 	
-	
-	private static final Map<String,String> scripts = new HashMap<>();
 
 	private final JavaImports javaImports = new JavaImports();
 }

@@ -536,7 +536,7 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			try {
-				assertArity("read-string ", args, 1);
+				assertArity("read-string", args, 1);
 
 				return Reader.read_str(Coerce.toVncString(args.nth(0)).getValue(), null);
 			} 
@@ -677,6 +677,30 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction loadCoreModule = new VncFunction("load-core-module") {
+		public VncVal apply(final VncList args) {
+			try {	
+				assertArity("load-core-module", args, 1);
+				
+				final VncVal name = args.first();
+				
+				if (Types.isVncString(name)) {
+					final String module = ModuleLoader.load(((VncString)args.first()).getValue());
+					return new VncString(module);
+				}
+				else if (Types.isVncSymbol(name)) {
+					final String module = ModuleLoader.load(((VncSymbol)args.first()).getName());
+					return new VncString(module);
+				}
+				else {
+					return Nil;
+				}
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Number functions
@@ -5465,7 +5489,8 @@ public class CoreFunctions {
 				.put("str/strip-margin",	str_strip_margin)
 				.put("str/repeat",		    str_repeat)
 
-				.put("class",				className)				
+				.put("class",				className)	
+				.put("load-core-module",	loadCoreModule)
 				
 				.toMap();
 

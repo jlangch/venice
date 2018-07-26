@@ -25,15 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class Protocol {
@@ -59,6 +51,12 @@ public class Protocol {
 
 	public void debugOff() {
 		debugOn.set(false);
+	}
+
+	public void clear() {
+		synchronized(sb) {
+			sb.setLength(0);
+		}
 	}
 
 	public void log(final Level level, final String text) {
@@ -88,39 +86,6 @@ public class Protocol {
 		}
 	}
 
-	public void setStatistics(final String name, final int value) {
-		if (!StringUtil.isBlank(name) && value >= 0) {
-			synchronized(statistics) {
-				statistics.put(name, value);
-			}
-		}
-	}
-
-	public void incStatistics(final String name) {
-		incStatistics(name, 1);
-	}
-	
-	public void incStatistics(final String name, final int value) {
-		if (!StringUtil.isBlank(name) && value > 0) {
-			synchronized(statistics) {
-				final Integer val = statistics.get(name);
-				statistics.put(name, val==null ? value : val.intValue() + value);
-			}
-		}
-	}
-
-	public int getStatistics(final String name) {
-		if (!StringUtil.isBlank(name)) {
-			synchronized(statistics) {
-				final Integer val = statistics.get(name);
-				return val == null ? 0 : val.intValue();
-			}
-		}
-		else {
-			return 0;
-		}
-	}
-
 	public boolean isEnabled() {
 		return enabled.get();
 	}
@@ -131,62 +96,11 @@ public class Protocol {
 		}
 	}
 
-	public String mergeWithText(final Object text, final boolean addStatistics) {
-		final StringBuilder sb = new StringBuilder();
-		
-		sb.append(text == null ? "No result" : text.toString());
-		
-		if (isEnabled()) {
-			synchronized(statistics) {
-				if (addStatistics && !statistics.isEmpty()) {
-					sb.append("\n\n\n")
-					  .append(formatStatistics(statistics));
-				}
-			}
-			if (!isEmpty()) {
-				sb.append("\n\n\n")
-				  .append("Protocol:\n")
-				  .append(this);
-			} 
-		}
-		
-		return sb.toString();
-	}
-	
-	public String mergeWithText(final Object text) {
-		return mergeWithText(text, false);
-	}
-
 	@Override
 	public String toString() {
 		synchronized(sb) {
 			return sb.toString();
 		}
-	}
-	
-	private List<String> getSortedStatisticsKeys() {
-		final List<String> keys = new ArrayList<>(getStatisticsKeys());
-		Collections.sort(keys);
-		return keys;
-	}
-
-	private Set<String> getStatisticsKeys() {
-		synchronized(statistics) {
-			return statistics.keySet();
-		}
-	}
-
-	
-	private String formatStatistics(final Map<String,Integer> statistics) {
-		final StringBuilder sb = new StringBuilder();
-		
-		sb.append("Statistics:\n");
-		for(String key : getSortedStatisticsKeys()) {
-			sb.append(key).append(": ")
-			  .append(statistics.get(key)).append("\n");
-		}
-		
-		return sb.toString();
 	}
 	
 	private String filter(final String text) {
@@ -289,9 +203,6 @@ public class Protocol {
 
 	// thread safety: the sb object is used as monitor
 	private final StringBuilder sb = new StringBuilder();
-	
-	// thread safety: the statistics object is used as monitor
-	private final Map<String,Integer> statistics = new HashMap<>();
 	
 	private final AtomicBoolean debugOn = new AtomicBoolean(false);
 	private final AtomicBoolean enabled = new AtomicBoolean(true);

@@ -19,21 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.javainterop;
+package com.github.jlangch.venice;
+
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.JavaMethodInvocationException;
-import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class JsonTest {
+public class ProtocolModuleTest {
 
-	@Test(expected = JavaMethodInvocationException.class)
-	public void test_json_parse() {
+	@Test
+	public void test_protocol() {
 		final Venice venice = new Venice();
 
-		venice.eval("(json/parse {:a 100})");
+		final String script =
+				"(do                                     " +
+				"   (protocol/open)                      " + 
+				"   (protocol/log :INFO \"test 1\")      " + 
+				"   (protocol/log :INFO \"test 2\")      " + 
+				"   (protocol/to-string)                 " + 
+				") ";
+
+		final String protocol = (String)venice.eval("(str " + script + ")");
+		assertEquals(3, StringUtil.splitIntoLines(protocol).size());
 	}
 
 }
