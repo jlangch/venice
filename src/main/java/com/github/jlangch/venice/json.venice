@@ -34,6 +34,6 @@
         (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
         (-> mapper
             (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
-            (. :readValue text (class-for-name :java.lang.Object))))))
+            (. :readValue text (. :java.lang.Object :class))))))
 
 
