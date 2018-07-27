@@ -182,6 +182,13 @@ final String script =
          "(do                                                                  \n" +
          "   (import :org.test.User :java.time.LocalDate)                      \n" +
          "                                                                     \n" +
+         "   (first                                                            \n" +
+         "      (list                                                          \n" +
+         "         (doto (. :java.util.ArrayList :new)                         \n" +
+         "               (. :add 1)                                            \n" +
+         "               (. :add 2)                                            \n" +
+         "               (identity ))))                                        \n" +
+         "                                                                     \n" +
          "   (def users [                                                      \n" +
          "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     \n" +
          "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12))) ])  \n" +
