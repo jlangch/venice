@@ -2,12 +2,12 @@
 
 (def json/avail? (fn [json]
    (try
-     (some? (class-for-name :com.fasterxml.jackson.databind.ObjectMapper))
+     (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class))
      (catch false))))
 
 (def json/avail-jdk8-module? (fn [json]
    (try
-     (some? (class-for-name :com.fasterxml.jackson.datatype.jdk8.Jdk8Module))
+     (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class))
      (catch false))))
 
 (def json/pretty-print (fn [json]
