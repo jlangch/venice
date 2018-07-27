@@ -437,15 +437,6 @@ public class VeniceInterpreter {
 				
 		// JavaInterop function
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
-				
-//		// eval function
-//		env.set(
-//			new VncSymbol("eval"), 
-//			new VncFunction("eval") {
-//				public VncVal apply(final VncList args) {
-//					return EVAL(args.nth(0), env);
-//				}
-//			});
 
 		// set version
 		env.set(new VncSymbol("*VERSION*"), new VncString(Version.VERSION));
