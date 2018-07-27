@@ -7,23 +7,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [UNRELEASED]
-
-### Added
-
-- added ...
-
-### Removed
-
-- removed ...
+## [0.6.1] - 2018-07-271
 
 ### Fixed
 
 - fixed CheatSheet: not is function not a macro
+- fixed JSON lib detection
 
 
-
-## [0.6.0] - 2018-07-28
+## [0.6.0] - 2018-07-26
 
 ### Removed
 
