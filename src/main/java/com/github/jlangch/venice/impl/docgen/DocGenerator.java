@@ -253,8 +253,9 @@ public class DocGenerator {
 
 		final DocSection boolean_ = new DocSection("Boolean");
 		other.addSection(boolean_);
-		boolean_.addItem(getDocItem("boolean?"));
 		boolean_.addItem(getDocItem("boolean"));
+		boolean_.addItem(getDocItem("not"));
+		boolean_.addItem(getDocItem("boolean?"));
 		boolean_.addItem(getDocItem("true?"));
 		boolean_.addItem(getDocItem("false?"));
 
@@ -531,7 +532,6 @@ public class DocGenerator {
 		all.addSection(branch);
 		branch.addItem(getDocItem("and"));
 		branch.addItem(getDocItem("or"));
-		branch.addItem(getDocItem("not"));
 		branch.addItem(getDocItem("when"));
 		branch.addItem(getDocItem("when-not"));
 		branch.addItem(getDocItem("if-let"));
