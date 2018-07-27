@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.6.1] - 2018-07-271
+## [0.6.1] - 2018-07-27
 
 ### Fixed
 
