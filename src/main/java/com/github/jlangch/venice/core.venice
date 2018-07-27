@@ -132,7 +132,16 @@
 (defmacro 
    { :arglists '("(-> x & forms)")
      :doc "Threads the expr through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
-     :examples '("(-> 5 (+ 3) (/ 2) (- 1))") }
+     :examples '("(-> 5 (+ 3) (/ 2) (- 1))"
+     
+                 "(do
+                 |   (def person 
+                 |        {:name \"Peter Meier\"
+                 |         :address {:street \"Lindenstrasse 45\"
+                 |                   :city \"Bern\"
+                 |                   :zip 3000}})
+                 |
+                 |   (-> person :address :street)) " ) }
 
    -> [x & forms]
     (loop [x x, forms forms]
@@ -201,7 +210,9 @@
 (defmacro
    { :arglists '("(load-string s)")
      :doc "Sequentially read and evaluate the set of forms contained in the string." 
-     :examples '("(do \n  (load-string \"(def x 1)\")\n  (+ x 2))") }
+     :examples '("(do 
+                 |   (load-string \"(def x 1)\")
+                 |   (+ x 2))") }
    
    load-string [s]
    
