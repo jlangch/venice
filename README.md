@@ -273,7 +273,7 @@ venice.eval("(slurp \"/tmp/file\")");
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.6.0'
+    compile 'com.github.jlangch:venice:0.6.1'
 }
 ```
 
@@ -285,7 +285,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.6.0</version>
+        <version>0.6.1</version>
     </dependency>
 </dependencies>
 ```
