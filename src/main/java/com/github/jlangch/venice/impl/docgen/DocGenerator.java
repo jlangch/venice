@@ -195,6 +195,7 @@ public class DocGenerator {
 		strings.addSection(create);
 		create.addItem(getDocItem("str"));
 		create.addItem(getDocItem("str/format"));
+		create.addItem(getDocItem("str/quote"));
 
 		final DocSection use = new DocSection("Use");
 		strings.addSection(use);

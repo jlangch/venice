@@ -1885,6 +1885,15 @@ public class CoreFunctions {
 							"Failed to coerce string to bytebuf", ex);
 				}
 			}
+			else if (Types.isVncJavaObject(arg)) {
+				final Object delegate = ((VncJavaObject)arg).getDelegate();
+				if (delegate.getClass() == byte[].class) {
+					return new VncByteBuffer(ByteBuffer.wrap((byte[])delegate));
+				}
+				else if (delegate instanceof ByteBuffer) {
+					return new VncByteBuffer((ByteBuffer)delegate);
+				}
+			}
 			else if (Types.isVncByteBuffer(arg)) {
 				return ((VncByteBuffer)arg).copy();
 			}
@@ -1904,10 +1913,73 @@ public class CoreFunctions {
 				
 				return new VncByteBuffer(ByteBuffer.wrap(buf));
 			}
-			else {
-				throw new VncException(String.format(
+
+			throw new VncException(String.format(
 						"Function 'bytebuf' does not allow %s as argument. %s", 
 						Types.getClassName(arg),
+						ErrorMessage.buildErrLocation(args)));
+		}
+	};
+
+	public static VncFunction bytebuf_from_string = new VncFunction("bytebuf-from-string") {
+		{
+			setArgLists("(bytebuf-from-string s encoding)");
+			
+			setDoc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to UTF-8");
+			
+			setExamples("bytebuf-from-string \"abcdef\" :UTF-8");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("bytebuf-from-string", args, 1, 2);
+
+			final String s = Coerce.toVncString(args.first()).getValue();
+
+			final VncVal encVal = args.size() == 2 ? args.second() : Nil;
+			final String encoding = encVal == Nil 
+										? "UTF-8" 
+										: Types.isVncKeyword(encVal)
+											? Coerce.toVncKeyword(encVal).getValue()
+											: Coerce.toVncString(encVal).getValue();
+			
+			try {
+				return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(encoding)));				
+			}
+			catch(Exception ex) {
+				throw new VncException(String.format(
+						"Failed to convert string to bytebuffer. %s",
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction bytebuf_to_string = new VncFunction("bytebuf-to-string") {
+		{
+			setArgLists("(bytebuf-to-string buf encoding)");
+			
+			setDoc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to UTF-8");
+			
+			setExamples("bytebuf-to-string \"abcdef\" :UTF-8");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("bytebuf-to-string", args, 1, 2);
+
+			final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+			final VncVal encVal = args.size() == 2 ? args.second() : Nil;
+			final String encoding = encVal == Nil 
+										? "UTF-8" 
+										: Types.isVncKeyword(encVal)
+											? Coerce.toVncKeyword(encVal).getValue()
+											: Coerce.toVncString(encVal).getValue();
+			
+			try {
+				return new VncString(new String(buf.array(), encoding));				
+			}
+			catch(Exception ex) {
+				throw new VncException(String.format(
+						"Failed to convert bytebuffer to string. %s",
 						ErrorMessage.buildErrLocation(args)));
 			}
 		}
@@ -5005,7 +5077,7 @@ public class CoreFunctions {
 	
 	public static VncFunction str_format = new VncFunction("str/format") {
 		{
-			setArgLists("(str/format s format args*)");
+			setArgLists("(str/format format args*)");
 			
 			setDoc("Returns a formatted string using the specified format string and arguments.");
 		}
@@ -5020,6 +5092,30 @@ public class CoreFunctions {
 										.collect(Collectors.toList());
 			
 			return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));		
+		}
+	};
+	
+	public static VncFunction str_quote = new VncFunction("str/quote") {
+		{
+			setArgLists("(str/quote str q)", "(str/quote str start end)");
+			
+			setDoc("Quotes a string.");
+			
+			setExamples(
+					"(str/quote \"abc\" \"-\")",
+					"(str/quote \"abc\" \"<\" \">\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/quote", args, 2, 3);
+
+			final String s = Coerce.toVncString(args.nth(0)).getValue();
+			final String start = Coerce.toVncString(args.nth(1)).getValue();
+			final String end = (args.size() == 2) 
+									? start 
+									: Coerce.toVncString(args.nth(2)).getValue();
+
+			return new VncString(start + s + end);
 		}
 	};
 	
@@ -5355,6 +5451,8 @@ public class CoreFunctions {
 				.put("double",				double_cast)
 				.put("decimal",				decimal_cast)
 				.put("bytebuf",				bytebuf_cast)
+				.put("bytebuf-to-string",	bytebuf_to_string)
+				.put("bytebuf-from-string",	bytebuf_from_string)			
 				.put("zero?",				zero_Q)
 				.put("pos?",				pos_Q)
 				.put("neg?",				neg_Q)
@@ -5482,6 +5580,7 @@ public class CoreFunctions {
 				.put("str/split",			str_split)
 				.put("str/split-lines",		str_split_lines)
 				.put("str/format",			str_format)
+				.put("str/quote",			str_quote)
 				.put("str/truncate",		str_truncate)
 				.put("str/strip-start",		str_strip_start)
 				.put("str/strip-end",		str_strip_end)

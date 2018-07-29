@@ -49,6 +49,21 @@ public class Coerce {
 		}
 	}
 
+	public static VncKeyword toVncKeyword(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncKeyword) {
+			return (VncKeyword)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to keyword. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
 	public static VncSymbol toVncSymbol(final VncVal val) {
 		if (val == null) {
 			return null;

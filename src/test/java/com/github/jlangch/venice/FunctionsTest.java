@@ -2641,6 +2641,14 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_str_quote() {
+		final Venice venice = new Venice();
+
+		assertEquals("|abc|", venice.eval("(str/quote \"abc\" \"|\")"));
+		assertEquals("<abc>", venice.eval("(str/quote \"abc\" \"<\" \">\")"));
+	}
+
+	@Test
 	public void test_str_repeat() {
 		final Venice venice = new Venice();
 
