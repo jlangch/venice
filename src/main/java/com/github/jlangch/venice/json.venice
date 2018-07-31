@@ -1,9 +1,9 @@
 ;; JSON utils (requires Jackson JSON on classpath)
 
-(def json/avail? (fn [json]
+(def json/avail? (fn []
    (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class))))
 
-(def json/avail-jdk8-module? (fn [json]
+(def json/avail-jdk8-module? (fn []
    (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class))))
 
 (def json/pretty-print (fn [json]
