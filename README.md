@@ -128,95 +128,75 @@ object types byte, short, int, long, float, double, Byte, Short, Integer, Long,
 Float, Double, and BigDecimal.
 
 
-```java
-import com.github.jlangch.venice.Venice;
+```clojure
+(do
+   ;; static field
+   (. :java.lang.Math :PI)
 
-final Venice venice = new Venice();
+   ;; static method
+   (. :java.lang.Math :min 20 30)
 
-// static field
-System.out.println(venice.eval("(. :java.lang.Math :PI)"));
+   ;; constructor and instance method
+   (. (. :java.time.ZonedDateTime :now) :plusDays 5)
 
-// static method
-System.out.println(venice.eval("(. :java.lang.Math :min 20 30)"));
-
-// constructor and instance method
-System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"));
-
-// class object
-System.out.println(venice.eval("(. :java.lang.Math :class)"));
-System.out.println(venice.eval("(. (. :java.time.ZonedDateTime :now) :class)"));
+   ;; class object
+   (. :java.lang.Math :class)
+   (. (. :java.time.ZonedDateTime :now) :class)
+)
 ```
 
 
 Java enum values can be passed as simple or scoped keywords:
 
-```java
-import com.github.jlangch.venice.Venice;
-
-final Venice venice = new Venice();
-
-System.out.println(venice.eval("(. :java.time.LocalDate :of 1994 :JANUARY 21)"));
-System.out.println(venice.eval("(. :java.time.LocalDate :of 1994 :java.time.Month.JANUARY 21)"));
+```clojure
+(do
+   (. :java.time.LocalDate :of 1994 :JANUARY 21)
+   
+   (. :java.time.LocalDate :of 1994 :java.time.Month.JANUARY 21)
+)
 ```
 
 
 Java VarArgs:
 
-```java
-import com.github.jlangch.venice.Venice;
-
-final Venice venice = new Venice();
-
-System.out.println(venice.eval("(. :java.lang.String :format \"%s: %d\" '(\"abc\" 100))"));
+```clojure
+(. :java.lang.String :format "%s: %d" '("abc" 100))
 ```
 
 
 Java Callbacks:
 
-```java
-import com.github.jlangch.venice.Venice;
+```clojure
+(do
+  (def file-filter
+       (fn [dir name] (string/ends-with? name ".txt")))
 
-final Venice venice = new Venice();
-
-final String script =
-		"(do                                                        \n" +
-		"  (def file-filter                                         \n" +
-		"       (fn [dir name] (string/ends-with? name \".txt\")))  \n" +
-		"                                                           \n" +
-		"  (let [dir (. :java.io.File :new \"/tmp\")]               \n" +
-		"       (. dir :list                                        \n" +
-		"              (proxify                                     \n" +
-		"                 :java.io.FilenameFilter                   \n" +
-		"                 {:accept file-filter})))                  \n" +
-		") ";
+  (let [dir (. :java.io.File :new "/tmp")]
+       (. dir :list
+              (proxify
+                 :java.io.FilenameFilter {:accept file-filter})))
+)
 ```
 
 
 A more comprehensive example:
 
-```java
-import com.github.jlangch.venice.Venice;
+```clojure
+(do
+   (import :org.test.User :java.time.LocalDate)
 
-final Venice venice = new Venice();
+   (first
+      (list
+         (doto (. :java.util.ArrayList :new)
+               (. :add 1)
+               (. :add 2))))
 
-final String script =
-         "(do                                                                  \n" +
-         "   (import :org.test.User :java.time.LocalDate)                      \n" +
-         "                                                                     \n" +
-         "   (first                                                            \n" +
-         "      (list                                                          \n" +
-         "         (doto (. :java.util.ArrayList :new)                         \n" +
-         "               (. :add 1)                                            \n" +
-         "               (. :add 2))))                                         \n" +
-         "                                                                     \n" +
-         "   (def users [                                                      \n" +
-         "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     \n" +
-         "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12))) ])  \n" +
-         "                                                                     \n" +
-         "   (str (filter (fn [u] (> (get u :age) 30)) users))                 \n" + 
-         ")";
-         
-System.out.println(venice.eval(script));
+   (def users [
+        (. :User :new "john" 24 (. :LocalDate :of 1994 7 21)))
+        (. :User :new "pete" 48 (. :LocalDate :of 1970 1 12))) ])
+
+   (str (filter (fn [u] (> (get u :age) 30)) users))
+)
 ```
 
 ## Sandbox
