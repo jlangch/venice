@@ -148,8 +148,8 @@
         (if forms
             (let [form (first forms)
                   threaded (if (list? form)
-                              `(~(first form) ~x ~@(empty-to-nil(rest form)))
-                              (list form x))]
+                               `(~(first form) ~x ~@(empty-to-nil(rest form)))
+                               (list form x))]
                (recur threaded (empty-to-nil(rest forms))))
             x)))
 
@@ -169,8 +169,8 @@
         (if forms
             (let [form (first forms)
                   threaded (if (list? form)
-                         `(~(first form) ~@(empty-to-nil(rest form)) ~x)
-                         (list form x))]
+                               `(~(first form) ~@(empty-to-nil(rest form)) ~x)
+                               (list form x))]
                (recur threaded (empty-to-nil(rest forms))))
             x)))
 
