@@ -31,7 +31,7 @@ can easily add it as standalone .jar to your classpath.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.6.0.jar`
+Start the REPL with `java -jar venice-0.7.0.jar`
 
 ```text
 venice> (+ 1 1)
@@ -160,7 +160,7 @@ Java enum values can be passed as simple or scoped keywords:
 Java VarArgs:
 
 ```clojure
-(. :java.lang.String :format "%s: %d" '("abc" 100))
+(. :java.lang.String :format "%s: %d" ["abc" 100])
 ```
 
 
