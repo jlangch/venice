@@ -4685,6 +4685,26 @@ public class CoreFunctions {
 	// String functions
 	///////////////////////////////////////////////////////////////////////////
 	
+	public static VncFunction str_blank = new VncFunction("str/blank?") {
+		{
+			setArgLists("(str/blank? s)");
+			
+			setDoc("True if s is blank.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/blank?", args, 1);
+
+			if (args.nth(0) == Nil) {
+				return True;
+			}
+			
+			final String s = Coerce.toVncString(args.nth(0)).getValue();		
+
+			return StringUtil.isBlank(s) ? True : False;
+		}
+	};
+	
 	public static VncFunction str_starts_with = new VncFunction("str/starts-with?") {
 		{
 			setArgLists("(str/starts-with? s substr)");
@@ -5563,6 +5583,8 @@ public class CoreFunctions {
 				.put("io/tmp-dir",			io_tmp_dir)
 				.put("io/user-dir",			io_user_dir)
 				
+				
+				.put("str/blank?",			str_blank)
 				.put("str/starts-with?",	str_starts_with)
 				.put("str/ends-with?",		str_ends_with)
 				.put("str/contains?",		str_contains)

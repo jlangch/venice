@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [UNRELEASED]
 
+### Added
+
+- added function str/blank?
+
 ### fixed
 
 - fixed Java Interop callbacks to support import statements

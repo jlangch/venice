@@ -234,6 +234,7 @@ public class DocGenerator {
 		strings.addSection(str_test);
 		str_test.addItem(getDocItem("string?"));
 		str_test.addItem(getDocItem("empty?"));
+		str_test.addItem(getDocItem("str/blank?"));
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
