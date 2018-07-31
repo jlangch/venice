@@ -128,6 +128,9 @@ public class SandboxRules {
 	private static final Set<String> defaultRules = 
 			new HashSet<>(
 				Arrays.asList(
+						// Dynamic proxies based on venice' DynamicInvocationHandler
+						"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
+						
 						"java.lang.Object:class",
 						
 						Byte.class.getName(),

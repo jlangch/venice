@@ -438,7 +438,7 @@ public class VeniceInterpreter {
 				
 		// JavaInterop function
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
-		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn()); 
+		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
 
 		// set version
 		env.set(new VncSymbol("*VERSION*"), new VncString(Version.VERSION));

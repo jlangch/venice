@@ -23,17 +23,21 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.Coerce;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
 
 
 public class JavaInteropProxifyFn extends VncFunction {
 
-	public JavaInteropProxifyFn() {
+	public JavaInteropProxifyFn(final JavaImports javaImports) {
 		super("proxify");
+		
+		this.javaImports = javaImports;
 		
 		setArgLists("(proxify classname method-map)");
 		
@@ -50,9 +54,19 @@ public class JavaInteropProxifyFn extends VncFunction {
 			throw new ArityException(args, 2, "proxify");
 		}
 
+		final VncVal clazzVal = args.first();
+		final String className = Types.isVncKeyword(clazzVal)
+				? Coerce.toVncKeyword(clazzVal).getValue()
+				: Coerce.toVncString(clazzVal).getValue();
+
+		final Class<?> clazz = ReflectionUtil.classForName(javaImports.resolveClassName(className));
+
 		return new VncJavaObject(
 					DynamicInvocationHandler.proxify(
-							args.first(), 
+							clazz, 
 							Coerce.toVncMap(args.second())));
 	}
+	
+	
+	private final JavaImports javaImports;
 }

@@ -760,9 +760,11 @@ public class DocGenerator {
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
-
-		final VncFunction javaDot = JavaInteropFn.create(new JavaImports());
-		final VncFunction javaProxify = new JavaInteropProxifyFn();
+		
+		
+		final JavaImports javaImports = new JavaImports();
+		final VncFunction javaDot = JavaInteropFn.create(javaImports);
+		final VncFunction javaProxify = new JavaInteropProxifyFn(javaImports);
 		
 		final DocSection general = new DocSection("General");
 		all.addSection(general);

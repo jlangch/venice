@@ -207,8 +207,7 @@ final String script =
          "      (list                                                          \n" +
          "         (doto (. :java.util.ArrayList :new)                         \n" +
          "               (. :add 1)                                            \n" +
-         "               (. :add 2)                                            \n" +
-         "               (identity ))))                                        \n" +
+         "               (. :add 2))))                                         \n" +
          "                                                                     \n" +
          "   (def users [                                                      \n" +
          "        (. :User :new \"john\" 24 (. :LocalDate :of 1994 7 21)))     \n" +

@@ -13,7 +13,6 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 /**
@@ -65,7 +64,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	}
 	
 	public static Object proxify(
-			final VncVal clazz, 
+			final Class<?> clazz, 
 			final VncMap handlers
 	) {
 		final Map<String, VncFunction> handlerMap = new HashMap<>();
@@ -77,15 +76,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					Coerce.toVncFunction(entry.getValue()));
 		}
 		
-		final String className = Types.isVncKeyword(clazz)
-									? Coerce.toVncKeyword(clazz).getValue()
-									: Coerce.toVncString(clazz).getValue();
-		
-		final Class<?> c = ReflectionUtil.classForName(className);
-		
 		return Proxy.newProxyInstance(
 				DynamicInvocationHandler.class.getClassLoader(), 
-				new Class[] { c }, 
+				new Class[] { clazz }, 
 				new DynamicInvocationHandler(handlerMap));
 	}
 	

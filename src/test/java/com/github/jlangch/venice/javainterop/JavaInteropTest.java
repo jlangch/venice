@@ -398,7 +398,7 @@ public class JavaInteropTest {
 	}
 
 	@Test
-	public void test_proxy() {
+	public void test_proxy_FilenameFilter() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -413,7 +413,55 @@ public class JavaInteropTest {
 
 		venice.eval(script);
 	}
-	
+
+	@Test
+	public void test_proxy_Predicate() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :com.github.jlangch.venice.support.Functions)        " +
+				"    (import :java.util.function.Predicate)                       " +
+			    "                                                                 " +
+			    "    (def pred-fn (fn[x] (== x \"abc\")))                         " +
+			    "                                                                 " +
+			    "    (def pred-fn-proxy (proxify :Predicate { :test pred-fn }))   " +
+			    "                                                                 " +
+				"    (let [functions (. :Functions :new)]                         " +
+			    "         (. functions :evalPredicate                             " +
+			    "                      pred-fn-proxy                              " +
+			    "                      \"abc\" ))                                 " +
+				") ";
+
+		assertEquals(true, (Boolean)venice.eval(script));
+	}
+
+//	@Test
+//	public void test_proxy_Streams_Filter() {
+//		final Venice venice = new Venice();
+//
+//		final String script =
+//				"(do                                                              " +
+//				"    (import :java.util.ArrayList)                                " +
+//				"    (import :java.util.function.Predicate)                       " +
+//			    "                                                                 " +
+//			    "    (def pred-fn (fn[x] (> x 2)))                                " +
+//			    "                                                                 " +
+//			    "    (def pred-fn-proxy (proxify :Predicate { :test pred-fn }))   " +
+//			    "                                                                 " +
+//				"    (let [ data (doto (. :ArrayList :new)                        " +
+//			    "                      (. :add 1)                                 " +
+//			    "                      (. :add 2)                                 " +
+//			    "                      (. :add 3)                                 " +
+//			    "                      (. :add 4)) ]                              " +
+//			    "                                                                 " +
+//			    "         (-> (. data :stream)                                    " +
+//			    "             (. :filter pred-fn-proxy)))                         " +
+//				") ";
+//
+//		venice.eval(script);
+//	}
+
 	
 	private Map<String, Object> symbols() {
 		return Parameters.of("jobj", new JavaObject());
