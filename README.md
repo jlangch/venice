@@ -171,6 +171,27 @@ System.out.println(venice.eval("(. :java.lang.String :format \"%s: %d\" '(\"abc\
 ```
 
 
+Java Callbacks:
+
+```java
+import com.github.jlangch.venice.Venice;
+
+final Venice venice = new Venice();
+
+final String script =
+		"(do                                                        \n" +
+		"  (def file-filter                                         \n" +
+		"       (fn [dir name] (string/ends-with? name \".txt\")))  \n" +
+		"                                                           \n" +
+		"  (let [dir (. :java.io.File :new \"/tmp\")]               \n" +
+		"       (. dir :list                                        \n" +
+		"              (proxify                                     \n" +
+		"                 :java.io.FilenameFilter                   \n" +
+		"                 {:accept file-filter})))                  \n" +
+		") ";
+```
+
+
 A more comprehensive example:
 
 ```java
