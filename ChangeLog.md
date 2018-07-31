@@ -7,21 +7,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [UNRELEASED]
+## [0.7.0] - 2018-07-31
 
 ### Added
 
 - added function str/quote
 - added function bytebuf-from-string, bytebuf-to-string
 - added support for Java callbacks
-
-### Removed
-
-- removed ...
-
-### Fixed
-
-- fixed ...
 
 
 
