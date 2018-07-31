@@ -160,7 +160,7 @@ Java enum values can be passed as simple or scoped keywords:
 Java VarArgs:
 
 ```clojure
-(. :java.lang.String :format "%s: %d" '("abc" 100))
+(. :java.lang.String :format "%s: %d" ["abc" 100])
 ```
 
 
