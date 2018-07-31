@@ -31,5 +31,3 @@
         (-> mapper
             (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
             (. :readValue text (. :java.lang.Object :class))))))
-
-
