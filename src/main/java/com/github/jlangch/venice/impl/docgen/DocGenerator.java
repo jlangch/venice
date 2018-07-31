@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -760,16 +761,23 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 
-		final JavaInteropFn fn = JavaInteropFn.create(new JavaImports());
+		final VncFunction javaDot = JavaInteropFn.create(new JavaImports());
+		final VncFunction javaProxify = new JavaInteropProxifyFn();
 		
 		final DocSection general = new DocSection("General");
 		all.addSection(general);
 		general.addItem(
 				new DocItem(
-						fn.getName(), 
-						toStringList(fn.getArgLists()), 
-						((VncString)fn.getDoc()).getValue(),
-						runExamples(fn.getName(), toStringList(fn.getExamples()))));
+						javaDot.getName(), 
+						toStringList(javaDot.getArgLists()), 
+						((VncString)javaDot.getDoc()).getValue(),
+						runExamples(javaDot.getName(), toStringList(javaDot.getExamples()))));
+		general.addItem(
+				new DocItem(
+						javaProxify.getName(), 
+						toStringList(javaProxify.getArgLists()), 
+						((VncString)javaProxify.getDoc()).getValue(),
+						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples()))));
 		general.addItem(new DocItem("Constructor: (. classname :new args)"));
 		general.addItem(new DocItem("Method call: (. object method args)"));
 		general.addItem(new DocItem("Field access: (. object field)"));

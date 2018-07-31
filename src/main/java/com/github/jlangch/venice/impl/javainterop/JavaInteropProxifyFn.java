@@ -37,29 +37,22 @@ public class JavaInteropProxifyFn extends VncFunction {
 		
 		setArgLists("(proxify classname method-map)");
 		
-		setDoc("Proxifies a Java Interface implemented with Venice functions");
+		setDoc(
+				"Proxifies a Java interface to be passed as a Callback object to " +
+				"Java functions. The interface's methods are implemented by Venice " +
+				"functions.");
 		
 		setExamples();
 	}
 
 	public VncVal apply(final VncList args) {
-		assertArity("proxify", args, 2);
+		if (args.size() != 2) {
+			throw new ArityException(args, 2, "proxify");
+		}
 
 		return new VncJavaObject(
 					DynamicInvocationHandler.proxify(
 							args.first(), 
 							Coerce.toVncMap(args.second())));
-	}
-	
-	public static void assertArity(
-			final String fnName, 
-			final VncList args, 
-			final int...expectedArities
-	) {
-		final int arity = args.size();
-		for (int a : expectedArities) {
-			if (a == arity) return;
-		}		
-		throw new ArityException(args, arity, fnName);
 	}
 }
