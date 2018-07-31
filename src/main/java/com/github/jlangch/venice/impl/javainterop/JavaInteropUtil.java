@@ -102,7 +102,7 @@ public class JavaInteropUtil {
 					// static method / field:   (. :org.foo.Foo :getLastName)
 					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					final Class<?> targetClass = ReflectionAccessor.classForName(className);
-	
+
 					if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
 						// static method
 						return JavaInteropUtil.convertToVncVal(
@@ -130,7 +130,6 @@ public class JavaInteropUtil {
 					final Object target = arg0 instanceof VncJavaObject
 											? ((VncJavaObject)arg0).getDelegate()
 											: JavaInteropUtil.convertToJavaObject(arg0);
-	
 	
 					if (methodArgs.length > 0 || ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs)) {
 						// instance method

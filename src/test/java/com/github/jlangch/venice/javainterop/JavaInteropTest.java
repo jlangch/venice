@@ -21,8 +21,9 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -396,6 +397,23 @@ public class JavaInteropTest {
 		assertEquals("venice.SortedMap", venice.eval(map2).toString());
 	}
 
+	@Test
+	public void test_proxy() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           " +
+				"  (def filter (fn [dir name] true))           " +
+				"  (def dir (. :java.io.File :new \"/tmp\"))   " +
+				"  (. dir :list                                " +
+				"         (proxify                             " +
+				"             :java.io.FilenameFilter          " +
+				"             {:accept filter}))               " +
+				") ";
+
+		venice.eval(script);
+	}
+	
 	
 	private Map<String, Object> symbols() {
 		return Parameters.of("jobj", new JavaObject());

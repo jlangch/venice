@@ -13,6 +13,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 /**
@@ -34,8 +35,11 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	}
 		 
 	@Override
-	public Object invoke(final Object proxy, final Method method, final Object[] args) 
-	throws Throwable { 
+	public Object invoke(
+			final Object proxy, 
+			final Method method, 
+			final Object[] args
+	) throws Throwable { 
 		final VncFunction fn = methods.get(method.getName());
 		if (fn != null) {
 			final VncList vncArgs = new VncList();
@@ -45,18 +49,25 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
 		}
 		else {
-			throw new UnsupportedOperationException(String.format("ProxyMethod ", args));
+			throw new UnsupportedOperationException(
+					String.format("ProxyMethod %s", method.getName()));
 		}
 	}
 	
-	public static Object proxify(final Class<?> clazz, final Map<String, VncFunction> handlers) {
+	public static Object proxify(
+			final Class<?> clazz, 
+			final Map<String, VncFunction> handlers
+	) {
 		return Proxy.newProxyInstance(
 				DynamicInvocationHandler.class.getClassLoader(), 
 				new Class[] { clazz }, 
 				new DynamicInvocationHandler(handlers));
 	}
 	
-	public static Object proxify(final Class<?> clazz, final VncMap handlers) {
+	public static Object proxify(
+			final VncVal clazz, 
+			final VncMap handlers
+	) {
 		final Map<String, VncFunction> handlerMap = new HashMap<>();
 		for(Map.Entry<VncVal,VncVal> entry : handlers.entries()) {
 			handlerMap.put(
@@ -66,9 +77,15 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					Coerce.toVncFunction(entry.getValue()));
 		}
 		
+		final String className = Types.isVncKeyword(clazz)
+									? Coerce.toVncKeyword(clazz).getValue()
+									: Coerce.toVncString(clazz).getValue();
+		
+		final Class<?> c = ReflectionUtil.classForName(className);
+		
 		return Proxy.newProxyInstance(
 				DynamicInvocationHandler.class.getClassLoader(), 
-				new Class[] { clazz }, 
+				new Class[] { c }, 
 				new DynamicInvocationHandler(handlerMap));
 	}
 	

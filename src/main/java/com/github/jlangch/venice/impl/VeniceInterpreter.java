@@ -28,6 +28,7 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
@@ -437,6 +438,7 @@ public class VeniceInterpreter {
 				
 		// JavaInterop function
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
+		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn()); 
 
 		// set version
 		env.set(new VncSymbol("*VERSION*"), new VncString(Version.VERSION));

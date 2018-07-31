@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added function str/quote
 - added function bytebuf-from-string, bytebuf-to-string
+- added support for Java callbacks
 
 ### Removed
 
