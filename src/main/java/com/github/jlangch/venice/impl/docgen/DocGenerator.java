@@ -278,6 +278,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("empty?"));
 		generic.addItem(getDocItem("not-empty?"));
 		generic.addItem(getDocItem("empty-to-nil"));
+		generic.addItem(getDocItem("empty"));
 		generic.addItem(getDocItem("into"));
 		generic.addItem(getDocItem("conj"));
 		generic.addItem(getDocItem("remove"));

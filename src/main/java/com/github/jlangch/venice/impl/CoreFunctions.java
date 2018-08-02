@@ -2726,6 +2726,38 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction empty = new VncFunction("empty") {
+		{
+			setArgLists("(empty coll)");
+			
+			setDoc("Returns an empty collection of the same category as coll, or nil");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("empty", args, 1);
+
+			final VncVal coll = args.first();
+			if (coll == Nil) {
+				return Nil;
+			} 
+			else if (coll instanceof VncVector) {
+				return ((VncVector)coll).empty();
+			} 
+			else if (coll instanceof VncList) {
+				return ((VncList)coll).empty();
+			} 
+			else if (coll instanceof VncMap) {
+				return ((VncMap)coll).empty();
+			} 
+			else {
+				throw new VncException(String.format(
+						"Invalid argument type %s while calling function 'empty'. %s",
+						Types.getClassName(coll),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	public static VncFunction empty_Q = new VncFunction("empty?") {
 		{
 			setArgLists("(empty? x)");
@@ -5507,6 +5539,7 @@ public class CoreFunctions {
 				.put("vals",				vals)
 				.put("subvec", 				subvec)
 				.put("subbytebuf", 			subbytebuf)
+				.put("empty", 				empty)
 		
 				.put("into",				into)
 				.put("seq?",	    		seq_Q)
