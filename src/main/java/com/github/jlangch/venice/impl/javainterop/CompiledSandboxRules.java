@@ -75,9 +75,7 @@ public class CompiledSandboxRules {
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
 					.map(s -> { int pos = s.indexOf(':'); return pos < 0 ? s : s.substring(0, pos); })
-					.map(s -> s.replace("$", "[$]"))
-					.map(s -> s.replaceAll("[*]", "[^.]*"))
-					.map(s -> Pattern.compile(s))
+					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
 				// whitelisted methods
@@ -85,9 +83,7 @@ public class CompiledSandboxRules {
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
 					.filter(s -> s.indexOf(':') >= 0)
-					.map(s -> s.replace("$", "[$]"))
-					.map(s -> s.replaceAll("[*]", "[^.]*"))
-					.map(s -> Pattern.compile(s))
+					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
 				// blacklisted venice functions
