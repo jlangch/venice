@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - added function str/blank?
+- added support for `**` pattern in sandbox rules: E.g.: `org.apache.commons.text.**:*`
 
 ### fixed
 
