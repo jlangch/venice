@@ -150,9 +150,11 @@ Java enum values can be passed as simple or scoped keywords:
 
 ```clojure
 (do
-   (. :java.time.LocalDate :of 1994 :JANUARY 21)
+   (import :java.time.LocalDate)
+
+   (. :LocalDate :of 1994 :JANUARY 21)
    
-   (. :java.time.LocalDate :of 1994 :java.time.Month.JANUARY 21)
+   (. :LocalDate :of 1994 :java.time.Month.JANUARY 21)
 )
 ```
 
@@ -168,13 +170,13 @@ Java Callbacks:
 
 ```clojure
 (do
-  (def file-filter
-       (fn [dir name] (string/ends-with? name ".txt")))
+   (import :java.io.File :java.io.FilenameFilter)
 
-  (let [dir (. :java.io.File :new "/tmp")]
-       (. dir :list
-              (proxify
-                 :java.io.FilenameFilter {:accept file-filter})))
+   (def file-filter
+        (fn [dir name] (string/ends-with? name ".txt")))
+
+   (let [dir (. :File :new "/tmp")]
+        (. dir :list (proxify :FilenameFilter {:accept file-filter})))
 )
 ```
 
