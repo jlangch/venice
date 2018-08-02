@@ -130,12 +130,12 @@ public class DocGenerator {
 		final DocSection literals = new DocSection("Literals");
 		lit.addSection(literals);
 
-		literals.addItem(new DocItem("Nil: nil"));
-		literals.addItem(new DocItem("Long: 1500"));
-		literals.addItem(new DocItem("Double: 3.569"));
-		literals.addItem(new DocItem("Boolean: true, false"));
-		literals.addItem(new DocItem("BigDecimal: 6.897M"));
-		literals.addItem(new DocItem("String: \"abcde\" 'abcde'"));
+		literals.addItem(new DocItem("Nil: nil", idgen.id()));
+		literals.addItem(new DocItem("Long: 1500", idgen.id()));
+		literals.addItem(new DocItem("Double: 3.569", idgen.id()));
+		literals.addItem(new DocItem("Boolean: true, false", idgen.id()));
+		literals.addItem(new DocItem("BigDecimal: 6.897M", idgen.id()));
+		literals.addItem(new DocItem("String: \"abcde\" 'abcde'", idgen.id()));
 
 		final DocSection numbers = new DocSection("Numbers");
 		section.addSection(numbers);
@@ -247,7 +247,7 @@ public class DocGenerator {
 		other.addSection(keywords);
 		keywords.addItem(getDocItem("keyword?"));
 		keywords.addItem(getDocItem("keyword"));
-		keywords.addItem(new DocItem("literals: :a :xyz"));
+		keywords.addItem(new DocItem("literals: :a :xyz", idgen.id()));
 
 		final DocSection symbols = new DocSection("Symbols");
 		other.addSection(symbols);
@@ -528,7 +528,7 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
-		create.addItem(new DocItem("defmacro"));
+		create.addItem(new DocItem("defmacro", idgen.id()));
 
 
 		final DocSection branch = new DocSection("Branch");
@@ -658,7 +658,8 @@ public class DocGenerator {
 						runExamples(
 							"def", 
 							Arrays.asList(
-									"(def val 5)"))));
+									"(def val 5)")),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -668,7 +669,8 @@ public class DocGenerator {
 					runExamples(
 						"if", 
 						Arrays.asList(
-								"(if (< 10 20) \"yes\" \"no\")"))));
+								"(if (< 10 20) \"yes\" \"no\")")),
+					idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -678,7 +680,8 @@ public class DocGenerator {
 						runExamples(
 							"do", 
 							Arrays.asList(
-									"(do (println \"Test...\") (+ 1 1))"))));
+									"(do (println \"Test...\") (+ 1 1))")),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -688,7 +691,8 @@ public class DocGenerator {
 						runExamples(
 							"let", 
 							Arrays.asList(
-									"(let [x 1] x))"))));
+									"(let [x 1] x))")),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -699,7 +703,8 @@ public class DocGenerator {
 							"fn", 
 							Arrays.asList(
 									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-									"(map (fn [x] (* 2 x)) (range 1 5))"))));
+									"(map (fn [x] (* 2 x)) (range 1 5))")),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -713,7 +718,8 @@ public class DocGenerator {
 									"(loop [x 10]\n" + 
 									"  (when (> x 1)\n" + 
 									"    (println x)\n" + 
-									"    (recur (- x 2))))"))));
+									"    (recur (- x 2))))")),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -724,7 +730,8 @@ public class DocGenerator {
 						runExamples(
 							"defmacro", 
 							Arrays.asList(
-									"(macroexpand '(-> c (+ 3) (* 2)))"))));
+									"(macroexpand '(-> c (+ 3) (* 2)))")),
+						idgen.id()));
 	    
 		generic.addItem(
 				new DocItem(
@@ -732,7 +739,8 @@ public class DocGenerator {
 						Arrays.asList("(recur expr*)"), 
 						"Evaluates the exprs and rebinds the bindings of " + 
 						"the recursion point to the values of the exprs.",
-						runExamples("recur", Arrays.asList())));
+						runExamples("recur", Arrays.asList()),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(
@@ -751,7 +759,8 @@ public class DocGenerator {
 									"(try (throw 100) (catch (do (+ 1 2) -1)))",
 									"(try (throw 100) (finally -2))",
 									"(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))"),
-							true)));
+							true),
+						idgen.id()));
 
 		return section;
 	}
@@ -774,16 +783,18 @@ public class DocGenerator {
 						javaDot.getName(), 
 						toStringList(javaDot.getArgLists()), 
 						((VncString)javaDot.getDoc()).getValue(),
-						runExamples(javaDot.getName(), toStringList(javaDot.getExamples()))));
+						runExamples(javaDot.getName(), toStringList(javaDot.getExamples())),
+						idgen.id()));
 		general.addItem(
 				new DocItem(
 						javaProxify.getName(), 
 						toStringList(javaProxify.getArgLists()), 
 						((VncString)javaProxify.getDoc()).getValue(),
-						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples()))));
-		general.addItem(new DocItem("Constructor: (. classname :new args)"));
-		general.addItem(new DocItem("Method call: (. object method args)"));
-		general.addItem(new DocItem("Field access: (. object field)"));
+						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples())),
+						idgen.id()));
+		general.addItem(new DocItem("Constructor: (. classname :new args)", idgen.id()));
+		general.addItem(new DocItem("Method call: (. object method args)", idgen.id()));
+		general.addItem(new DocItem("Field access: (. object field)", idgen.id()));
 
 		return section;
 	}
@@ -796,16 +807,16 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(new DocItem(""));
-		general.addItem(new DocItem("(json/pretty-print json)"));
-		general.addItem(new DocItem("(json/to-json val)"));
-		general.addItem(new DocItem("(json/to-pretty-json val)"));
-		general.addItem(new DocItem("(json/parse json)"));
-		general.addItem(new DocItem(" "));
-		general.addItem(new DocItem("(json/avail?)"));
-		general.addItem(new DocItem("(json/avail-jdk8-module?)"));
-		general.addItem(new DocItem(" "));
-		general.addItem(new DocItem("Available if Jackson lib is on runtime classpath"));
+		general.addItem(new DocItem("", idgen.id()));
+		general.addItem(new DocItem("(json/pretty-print json)", idgen.id()));
+		general.addItem(new DocItem("(json/to-json val)", idgen.id()));
+		general.addItem(new DocItem("(json/to-pretty-json val)", idgen.id()));
+		general.addItem(new DocItem("(json/parse json)", idgen.id()));
+		general.addItem(new DocItem(" ", idgen.id()));
+		general.addItem(new DocItem("(json/avail?)", idgen.id()));
+		general.addItem(new DocItem("(json/avail-jdk8-module?)", idgen.id()));
+		general.addItem(new DocItem(" ", idgen.id()));
+		general.addItem(new DocItem("Available if Jackson lib is on runtime classpath", idgen.id()));
 
 		return section;
 	}
@@ -819,7 +830,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "'(10 20 30)")));
+							 "'(10 20 30)")),
+					idgen.id());
 		}
 
 		if ("[]".equals(name)) {
@@ -830,7 +842,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "[10 20]")));
+							 "[10 20]")),
+					idgen.id());
 		}
 
 		if ("{}".equals(name)) {
@@ -841,7 +854,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "{:a 10 b: 20}")));
+							 "{:a 10 b: 20}")),
+					idgen.id());
 		}
 
 		if ("fn".equals(name)) {
@@ -853,7 +867,8 @@ public class DocGenerator {
 							name, 
 							Arrays.asList(
 							 "(fn [x y] (+ x y))",
-							 "(def sum (fn [x y] (+ x y)))")));
+							 "(def sum (fn [x y] (+ x y)))")),
+					idgen.id());
 		}
 
 		if ("eval".equals(name)) {
@@ -865,7 +880,8 @@ public class DocGenerator {
 							name, 
 							Arrays.asList(
 							 "(eval '(let [a 10] (+ 3 4 a)))",
-							 "(eval (list + 1 2 3))")));
+							 "(eval (list + 1 2 3))")),
+					idgen.id());
 		}
 
 		final VncFunction f = getFunction(name);
@@ -874,7 +890,8 @@ public class DocGenerator {
 					name, 
 					toStringList(f.getArgLists()), 
 					f.getDoc() == Constants.Nil ? "" : ((VncString)f.getDoc()).getValue(),
-					runExamples(name, toStringList(f.getExamples())));
+					runExamples(name, toStringList(f.getExamples())),
+					idgen.id());
 		}
 	
 		return null;
@@ -971,5 +988,6 @@ public class DocGenerator {
 	
 
 
-	final Env env;
+	private final Env env;
+	private final IdGen idgen = new IdGen();
 }

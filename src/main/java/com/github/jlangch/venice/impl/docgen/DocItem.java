@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.docgen;
 
 import java.util.List;
-import java.util.UUID;
 
 
 public class DocItem {
@@ -31,17 +30,18 @@ public class DocItem {
 			final String name, 
 			final List<String> signatures,
 			final String description,
-			final String examples
+			final String examples,
+			final String id
 	) {
 		this.name = name;
 		this.signatures = signatures;
 		this.description = description;
 		this.examples = examples;
-		this.id = description == null ? null : UUID.randomUUID().toString();
+		this.id = id;
 	}
 
-	public DocItem(final String name) {
-		this(name, null, null, null);
+	public DocItem(final String name, final String id) {
+		this(name, null, null, null, id);
 	}
 
 	
@@ -91,6 +91,8 @@ public class DocItem {
 		return true;
 	}
 
+	
+	
 
 	private final String name;
 	private final String id;
