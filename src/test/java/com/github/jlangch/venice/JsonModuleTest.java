@@ -23,9 +23,6 @@ package com.github.jlangch.venice;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.JavaMethodInvocationException;
-import com.github.jlangch.venice.Venice;
-
 
 public class JsonModuleTest {
 

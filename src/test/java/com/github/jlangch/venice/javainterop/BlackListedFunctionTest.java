@@ -27,52 +27,37 @@ import com.github.jlangch.venice.Venice;
 
 
 public class BlackListedFunctionTest {
-	
-	@Test(expected = SecurityException.class)
-	public void test_prn() {
-		new Venice(new RejectAllInterceptor()).eval("(prn 100)");
-	}
-	
-	@Test(expected = SecurityException.class)
-	public void test_println() {
-		new Venice(new RejectAllInterceptor()).eval("(println 100)");
-	}
-	
-	@Test(expected = SecurityException.class)
-	public void test_readline() {
-		new Venice(new RejectAllInterceptor()).eval("(readline \"> \")");
-	}
-	
+		
 	@Test(expected = SecurityException.class)
 	public void test_slurp() {
 		new Venice(new RejectAllInterceptor()).eval("(slurp \"/tmp/test\")");
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_prn_blacklisted() {
+	public void test_print_blacklisted() {
 		// all venice 'prn' function blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
-													new SandboxRules().add("blacklist:venice:prn"));
+													new SandboxRules().add("blacklist:venice:slurp"));
 		
-		new Venice(interceptor).eval("(prn 100)");
+		new Venice(interceptor).eval("(slurp \"/tmp/test\")");
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_prn_blacklisted_io_1() {
+	public void test_print_blacklisted_io_1() {
 		// all venice IO functions blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:*io*"));
 
-		new Venice(interceptor).eval("(prn 100)");
+		new Venice(interceptor).eval("(slurp \"/tmp/test\")");
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_prn_blacklisted_io_2() {
+	public void test_print_blacklisted_io_2() {
 		// all venice IO functions blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
 													new SandboxRules().rejectAllVeniceIoFunctions());
 
-		new Venice(interceptor).eval("(prn 100)");
+		new Venice(interceptor).eval("(slurp \"/tmp/test\")");
 	}
 	
 	@Test(expected = SecurityException.class)

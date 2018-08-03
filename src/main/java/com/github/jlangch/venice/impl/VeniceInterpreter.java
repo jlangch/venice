@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.PrintStream;
+
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
@@ -38,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
@@ -427,7 +430,7 @@ public class VeniceInterpreter {
 		return EVAL(ast, env);
 	}
 
-	public Env createEnv() {
+	public Env createEnv(final PrintStream stdout) {
 		final Env env = new Env(null);
 
 		// core functions defined in Java
@@ -440,8 +443,14 @@ public class VeniceInterpreter {
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
 		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
 
-		// set version
-		env.set(new VncSymbol("*VERSION*"), new VncString(Version.VERSION));
+		// set Venice version
+		env.set(new VncSymbol("*version*"), new VncString(Version.VERSION));
+
+		// set system newline
+		env.set(new VncSymbol("*newline*"), new VncString(System.lineSeparator()));
+
+		// set system stdout
+		env.set(new VncSymbol("*out*"), new VncJavaObject(stdout == null ? new PrintStream(System.out) : stdout));
 
 		// load core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);

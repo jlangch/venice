@@ -203,7 +203,7 @@
    time [expr]
     `(let [start_ (time-ns)
            ret_ ~expr]
-         (prn (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
+         (print (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
          ret_))
          
          
@@ -238,6 +238,28 @@
    load-module [s]
    
    `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
+
+
+
+
+(def  
+   { :arglists '("(newline)")
+     :doc "Writes a platform-specific newline to *out*"
+     :examples '() }
+    
+   newline 
+   
+   (fn [] (do (. *out* :append "\n") nil)))
+
+
+(def  
+   { :arglists '("(flush)")
+     :doc "Flushes the output stream that is the current value of *out*"
+     :examples '() }
+    
+   flush 
+   
+   (fn [] (do (. *out* :flush) nil)))
 
 
 (def 

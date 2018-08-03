@@ -412,7 +412,7 @@ public class CoreFunctions {
 
 	public static VncFunction pr_str = new VncFunction("pr-str") {
 		{
-			setArgLists("(pr_str & xs)");
+			setArgLists("(pr-str & xs)");
 			
 			setDoc( "With no args, returns the empty string. With one arg x, returns " + 
 					"x.toString(). With more than one arg, returns the concatenation " +
@@ -451,9 +451,9 @@ public class CoreFunctions {
 		}
 	};
 
-	public static VncFunction prn = new VncFunction("prn") {
+	public static VncFunction print = new VncFunction("print") {
 		{
-			setArgLists("(prn & xs)");
+			setArgLists("(print & xs)");
 			
 			setDoc( "Prints to stdout, with no args, prints the empty string. With one arg x, " + 
 					"prints x.toString(). With more than one arg, prints the concatenation " +
@@ -462,8 +462,6 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("prn", args);
-			
 			System.out.print(
 					args.isEmpty()
 						? new VncString("")
@@ -489,8 +487,6 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("println", args);
-			
 			System.out.println(
 					args.isEmpty()
 						? new VncString("")
@@ -511,9 +507,7 @@ public class CoreFunctions {
 			setDoc("Reads the next line from stdin. The function is sandboxed");
 		}
 	
-		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("readline", args);
-			
+		public VncVal apply(final VncList args) {			
 			final String prompt = Coerce.toVncString(args.nth(0)).getValue();
 			try {
 				return new VncString(Readline.readline(prompt));
@@ -5433,9 +5427,6 @@ public class CoreFunctions {
 	
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
-								"prn",
-								"println",
-								"readline",
 								"slurp",
 								"spit",
 								"load-file",
@@ -5521,7 +5512,7 @@ public class CoreFunctions {
 		
 				.put("pr-str",				pr_str)
 				.put("str",					str)
-				.put("prn",					prn)
+				.put("print",				print)
 				.put("println",				println)
 				.put("readline",			readline)
 				.put("read-string",			read_string)

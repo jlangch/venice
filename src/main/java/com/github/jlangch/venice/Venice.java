@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.Env;
@@ -34,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.JavaInterceptor;
+import com.github.jlangch.venice.util.NullOutputStream;
 
 
 public class Venice {
@@ -212,7 +215,7 @@ public class Venice {
 
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		final Env env = venice.createEnv();
+		final Env env = venice.createEnv(new PrintStream(System.out));
 		
 		addParams(env, params);
 		
@@ -224,23 +227,37 @@ public class Venice {
 			params.entrySet().forEach(entry -> {
 				final String key = entry.getKey();
 				final Object val = entry.getValue();
-				
-				final VncVal malVal = JavaInteropUtil.convertToVncVal(val); 	
-				if (malVal != null) {
-					final VncSymbol symbol = new VncSymbol(key);
+
+				final VncSymbol symbol = new VncSymbol(key);
+
+				if (key.equals("*out*")) {
+					if (val == null) {
+						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream(new NullOutputStream())));
+					}
+					else if (val instanceof PrintStream) {
+						env.set(symbol, JavaInteropUtil.convertToVncVal(val));
+					}
+					else if (val instanceof OutputStream) {
+						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream((OutputStream)val)));
+					}
+					else {
+						throw new VncException("The *out* parameter value must be an instance of OutputStream");
+					}
+				}
+				else {
 					if (env.find(symbol) != null) {
 						throw new VncException(String.format(
 								"A parameter with the name '%' already exists", 
 								symbol.getName()));
 					}
-					env.set(symbol, malVal);
+					env.set(symbol, JavaInteropUtil.convertToVncVal(val));
 				}
 			});
 		}
 		
 		return env;
 	}
-	
+
 	
 	private final JavaInterceptor interceptor;
 }

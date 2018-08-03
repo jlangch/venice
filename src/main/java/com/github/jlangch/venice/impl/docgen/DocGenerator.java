@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.docgen;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,7 +52,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class DocGenerator {
 
 	public DocGenerator() {
-		this.env = new VeniceInterpreter().createEnv();
+		this.env = new VeniceInterpreter().createEnv(new PrintStream(System.out));
 	}
 
 	public static void main(final String[] args) {
@@ -609,8 +610,10 @@ public class DocGenerator {
 
 		final DocSection to = new DocSection("to");
 		all.addSection(to);
-		to.addItem(getDocItem("prn"));
+		to.addItem(getDocItem("print"));
 		to.addItem(getDocItem("println"));
+		to.addItem(getDocItem("flush"));
+		to.addItem(getDocItem("newline"));
 
 		final DocSection to_str = new DocSection("to-str");
 		all.addSection(to_str);

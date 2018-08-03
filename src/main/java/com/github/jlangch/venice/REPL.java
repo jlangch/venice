@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.PrintStream;
+
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Readline;
@@ -35,7 +37,7 @@ public class REPL {
 	public static void main(final String[] args) {
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		
-		final Env env = venice.createEnv();
+		final Env env = venice.createEnv(new PrintStream(System.out));
 
 		final VncList argv = new VncList();
 		for (int ii=1; ii<args.length; ii++) {
