@@ -355,6 +355,7 @@ public class DocGenerator {
 		vectors.addSection(vec_create);
 		vec_create.addItem(getDocItem("[]"));
 		vec_create.addItem(getDocItem("vector"));
+		vec_create.addItem(getDocItem("mapv"));
 
 		final DocSection vec_access = new DocSection("Access");
 		vectors.addSection(vec_access);

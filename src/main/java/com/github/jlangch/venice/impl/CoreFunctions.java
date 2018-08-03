@@ -1228,8 +1228,8 @@ public class CoreFunctions {
 		{
 			setArgLists("(rand-double)", "(rand-double max)");
 			
-			setDoc( "Without argument returns a double long between 0.0 and 1.0. " +
-					"Without argument max returns a random long between 0.0 and max.");
+			setDoc( "Without argument returns a double between 0.0 and 1.0. " +
+					"Without argument max returns a random double between 0.0 and max.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3832,7 +3832,6 @@ public class CoreFunctions {
 		}
 	};
 
-
 	public static VncFunction map = new VncFunction("map") {
 		{
 			setArgLists("(map f coll colls*)");
@@ -3846,6 +3845,47 @@ public class CoreFunctions {
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
 			final VncList lists = (VncList)args.slice(1);
 			final VncList result = new VncList();
+			
+			int index = 0;
+			boolean hasMore = true;
+			while(hasMore) {
+				final VncList fnArgs = new VncList();
+				
+				for(int ii=0; ii<lists.size(); ii++) {
+					final VncList nthList = Coerce.toVncList(lists.nth(ii));
+					if (nthList.size() > index) {
+						fnArgs.addAtEnd(nthList.nth(index));
+					}
+					else {
+						hasMore = false;
+						break;
+					}
+				}
+
+				if (hasMore) {
+					result.getList().add(fn.apply(fnArgs));			
+					index += 1;
+				}
+			}
+	
+			return result;
+		}
+	};
+
+	public static VncFunction mapv = new VncFunction("mapv") {
+		{
+			setArgLists("(mapv f coll colls*)");
+			
+			setDoc( "Returns a vector consisting of the result of applying f " +
+					"to the set of first items of each coll, followed by applying " + 
+					"f to the set of second items in each coll, until any one of the colls " + 
+					"is exhausted.  Any remaining items in other colls are ignored. ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
+			final VncList lists = (VncList)args.slice(1);
+			final VncVector result = new VncVector();
 			
 			int index = 0;
 			boolean hasMore = true;
@@ -5567,6 +5607,7 @@ public class CoreFunctions {
 				.put("comp",				comp)
 				.put("partial",				partial)
 				.put("map",					map)
+				.put("mapv",				mapv)
 				.put("filter",				filter)
 				.put("distinct",			distinct)
 				.put("dedupe",				dedupe)
