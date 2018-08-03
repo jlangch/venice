@@ -3926,6 +3926,21 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction doseq = new VncFunction("doseq") {
+		{
+			setArgLists("(doseq seq-exprs & body)");
+			
+			setDoc( "Repeatedly executes body (presumably for side-effects) with " + 
+					"bindings. Returns nil.");
+			
+			setExamples("");
+		}
+		
+		public VncVal apply(final VncList args) {			
+			return Nil;
+		}
+	};
+
 	public static VncFunction filter = new VncFunction("filter") {
 		{
 			setArgLists("(filter predicate coll)");
@@ -5590,6 +5605,7 @@ public class CoreFunctions {
 				.put("interpose",			interpose)
 				.put("interleave",			interleave)
 				.put("mapcat",				mapcat)
+				.put("doseq",				doseq)
 				.put("nth",					nth)
 				.put("first",				first)
 				.put("second",				second)

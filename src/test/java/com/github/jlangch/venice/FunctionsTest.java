@@ -1533,8 +1533,9 @@ public class FunctionsTest {
 		assertEquals("(1 3)", venice.eval("(str (map (fn [x] (get x :a)) [{:a 1 :b 2} {:a 3 :b 4}]))"));
 		
 		assertEquals("(true false true)", venice.eval("(str (map not [false, true, false]))"));
-	}
-	
+		
+		assertEquals("((1 1) (2 2) (3 3))", venice.eval("(str (map list [1 2 3] [1 2 3]))"));	
+	}	
 
 	@Test
 	public void test_mapcat() {
@@ -1555,6 +1556,29 @@ public class FunctionsTest {
 				"(0 1 2 3 4 5 6 7 8 9)",
 				venice.eval("(str (mapcat reverse [[3 2 1 0] [6 5 4] [9 8 7]]))"));
 	}
+	
+	@Test
+	public void test_mapv() {
+		final Venice venice = new Venice();
+
+		assertEquals("[2 3 4 5 6]", venice.eval("(str (mapv inc '(1 2 3 4 5)))"));
+
+		assertEquals("[2 3 4 5 6]", venice.eval("(str (mapv inc [1 2 3 4 5]))"));
+
+		assertEquals("[5 7 9]", venice.eval("(str (mapv + [1 2 3] [4 5 6]))"));
+
+		assertEquals("[12 15 18]", venice.eval("(str (mapv + [1 2 3] [4 5 6] [7 8 9]))"));
+
+		assertEquals("[12 15 18]", venice.eval("(str (mapv + [1 2 3 9 9] [4 5 6 9] [7 8 9]))"));
+
+		assertEquals("[12 15 18]", venice.eval("(str (mapv + [1 2 3] [4 5 6 9] [7 8 9]))"));
+
+		assertEquals("[1 3]", venice.eval("(str (mapv (fn [x] (get x :a)) [{:a 1 :b 2} {:a 3 :b 4}]))"));
+		
+		assertEquals("[true false true]", venice.eval("(str (mapv not [false, true, false]))"));
+		
+		assertEquals("[(1 1) (2 2) (3 3)]", venice.eval("(str (mapv list [1 2 3] [1 2 3]))"));	
+	}	
 		
 	@Test
 	public void test_map_Q() {
