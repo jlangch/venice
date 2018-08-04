@@ -59,7 +59,6 @@ and unboxes Java to/from Venice data types implicitly.
 Java bean parameters expose its getters as Map keys in Venice, so the 
 getters can be accessed simply through `(get bean :getterName)`
 
-
 ```java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
@@ -72,7 +71,6 @@ System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
 
 ### Prevent Venice from writing to stdout
 
-
 ```java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
@@ -84,8 +82,7 @@ System.out.println(venice.eval("(println [100 200])", Parameters.of("*out*", nul
 ```
 
 
-### Capturing Venice stdout data
-
+### Capturing Venice data written to stdout
 
 ```java
 import com.github.jlangch.venice.Venice;
