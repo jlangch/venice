@@ -3858,6 +3858,44 @@ public class CoreFunctions {
 		}
 	};
 
+
+	public static VncFunction docoll = new VncFunction("docoll") {
+		{
+			setArgLists("(docoll f coll)");
+			
+			setDoc( "Applies f to the items of the collection presumably for side effects. " +
+					"Returns nil. ");
+			
+			setExamples(
+					"(docoll (fn [x] (println x)) [1 2 3 4])",
+					"(docoll (fn [[k v] x] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("docoll", args, 2);
+
+			final VncFunction fn = Coerce.toVncFunction(args.first());
+			final VncVal coll = args.second();
+			
+			if (Types.isVncList(coll)) {
+				((VncList)coll).forEach(v -> fn.apply(new VncList(v)));
+			}
+			else if (Types.isVncJavaList(coll)) {
+				((VncJavaList)coll).forEach(v -> fn.apply(new VncList(v)));
+			}
+			else if (Types.isVncMap(coll)) {
+				((VncMap)coll).entries().forEach(v -> fn.apply(new VncList(new VncVector(v.getKey(), v.getValue()))));
+			}
+			else {
+				throw new VncException(String.format(
+						"docoll: collection type not supported. %s",
+						ErrorMessage.buildErrLocation(args)));
+			}
+				
+			return Nil;
+		}
+	};
+
 	public static VncFunction mapcat = new VncFunction("mapcat") {
 		{
 			setArgLists("(mapcat fn & colls)");
@@ -3868,21 +3906,6 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {			
 			return concat.apply(Coerce.toVncList(map.apply(args)));
-		}
-	};
-
-	public static VncFunction doseq = new VncFunction("doseq") {
-		{
-			setArgLists("(doseq seq-exprs & body)");
-			
-			setDoc( "Repeatedly executes body (presumably for side-effects) with " + 
-					"bindings. Returns nil.");
-			
-			setExamples("");
-		}
-		
-		public VncVal apply(final VncList args) {			
-			return Nil;
 		}
 	};
 
@@ -5545,7 +5568,7 @@ public class CoreFunctions {
 				.put("interpose",			interpose)
 				.put("interleave",			interleave)
 				.put("mapcat",				mapcat)
-				.put("doseq",				doseq)
+				.put("docoll",				docoll)
 				.put("nth",					nth)
 				.put("first",				first)
 				.put("second",				second)

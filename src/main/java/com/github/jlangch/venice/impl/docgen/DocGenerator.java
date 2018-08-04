@@ -306,6 +306,7 @@ public class DocGenerator {
 		collections.addSection(coll_process);
 		coll_process.addItem(getDocItem("map"));
 		coll_process.addItem(getDocItem("filter"));
+		coll_process.addItem(getDocItem("docoll"));
 
 		
 		

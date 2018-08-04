@@ -489,7 +489,51 @@ public class FunctionsTest {
 				"(and & pred-forms)\nAnds the predicate forms", 
 				venice.eval("(str (doc \"and\"))"));
 	}
+	
+	@Test
+	public void test_docoll() {
+		final Venice venice = new Venice();
 
+		// docoll on list
+		final String script1 = 
+				"(do                                                      " +
+				"   (def counter (atom 0))                                " +
+				"                                                         " +
+				"   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))   " +
+				"                                                         " +
+				"   (docoll sum '(1 2 3 4))                               " +
+				"   (deref counter)                                       " +
+				") ";
+
+		assertEquals(Long.valueOf(10), venice.eval(script1));
+
+		// docoll on vector
+		final String script2 = 
+				"(do                                                      " +
+				"   (def counter (atom 0))                                " +
+				"                                                         " +
+				"   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))   " +
+				"                                                         " +
+				"   (docoll sum [1 2 3 4])                                " +
+				"   (deref counter)                                       " +
+				") ";
+
+		assertEquals(Long.valueOf(10), venice.eval(script2));
+
+		// docoll on map
+		final String script3 = 
+				"(do                                                          " +
+				"   (def counter (atom 0))                                    " +
+				"                                                             " +
+				"   (def sum (fn [[k v] x] (swap! counter (fn [n] (+ n v))))) " +
+				"                                                             " +
+				"   (docoll sum {:a 1 :b 2 :c 3 :d 4})                        " +
+				"   (deref counter)                                           " +
+				") ";
+
+		assertEquals(Long.valueOf(10), venice.eval(script3));
+	}
+	
 	@Test
 	public void test_dedupe() {
 		final Venice venice = new Venice();
