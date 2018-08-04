@@ -4,7 +4,7 @@
 
 # Venice
 
-Venice, a sandboxed Lisp with Java interoperability implemented in Java.
+Venice, a sandboxed Lisp with Java interoperability.
 
 
 ## Overview
@@ -18,6 +18,8 @@ sandbox.
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
+
+Venice requires Java 8 or newer.
 
  
 ## Cheat Sheet
