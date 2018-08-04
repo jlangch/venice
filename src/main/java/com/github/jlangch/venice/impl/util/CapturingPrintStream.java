@@ -26,9 +26,12 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 
-public class CaputringPrintStream extends PrintStream {
+/**
+ * Captures the output written to this <tt>PrintStream</tt>.
+ */
+public class CapturingPrintStream extends PrintStream {
 
-	private CaputringPrintStream(
+	private CapturingPrintStream(
 			final String encoding,
 			final ByteArrayOutputStream boas
 	) throws UnsupportedEncodingException {
@@ -37,16 +40,16 @@ public class CaputringPrintStream extends PrintStream {
 		this.boas = boas;
 	}
 	
-	public CaputringPrintStream create(final String encoding) {
+	public CapturingPrintStream create(final String encoding) {
 		try {
-			return new CaputringPrintStream(encoding, new ByteArrayOutputStream());
+			return new CapturingPrintStream(encoding, new ByteArrayOutputStream());
 		}
 		catch(UnsupportedEncodingException ex) {
 			throw new RuntimeException("Unsupported encoding: " + encoding, ex);
 		}
 	}
 
-	public CaputringPrintStream create() {
+	public CapturingPrintStream create() {
 		return create("UTF-8");
 	}
 
