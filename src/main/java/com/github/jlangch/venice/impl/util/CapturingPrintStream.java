@@ -70,6 +70,10 @@ public class CapturingPrintStream extends PrintStream {
 		}
 	}
 	
+	public byte[] getOutputAsBytes() {
+		return boas.toByteArray();
+	}
+	
 	
 	private final String encoding;
 	private final ByteArrayOutputStream boas;
