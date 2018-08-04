@@ -451,55 +451,6 @@ public class CoreFunctions {
 		}
 	};
 
-	public static VncFunction print = new VncFunction("print") {
-		{
-			setArgLists("(print & xs)");
-			
-			setDoc( "Prints to stdout, with no args, prints the empty string. With one arg x, " + 
-					"prints x.toString(). With more than one arg, prints the concatenation " +
-					"of the str values of the args with delimiter ' '." +
-					"The function is sandboxed.");
-		}
-		
-		public VncVal apply(final VncList args) {
-			System.out.print(
-					args.isEmpty()
-						? new VncString("")
-						: new VncString(
-								args.getList()
-									.stream()
-									.map(v -> Printer._pr_str(v, true))
-									.collect(Collectors.joining(" "))));
-			
-			return Nil;
-		}
-	};
-
-	public static VncFunction println = new VncFunction("println") {
-		{
-			setArgLists("(println & xs)");
-			
-			setDoc( "Prints to stdout with a tailing linefeed, with no args, prints the " + 
-					"empty string. With one arg x, prints x.toString(). With more than " +
-					"one arg, prints the concatenation of the str values of the args with " +
-					"delimiter ' '." +
-					"The function is sandboxed.");
-		}
-		
-		public VncVal apply(final VncList args) {
-			System.out.println(
-					args.isEmpty()
-						? new VncString("")
-						: new VncString(
-								args.getList()
-									.stream()
-									.map(v -> Printer._pr_str(v, true))
-									.collect(Collectors.joining(" "))));
-			
-			return Nil;
-		}
-	};
-
 	public static VncFunction readline = new VncFunction("readline") {
 		{
 			setArgLists("(readline prompt)");
@@ -5512,8 +5463,6 @@ public class CoreFunctions {
 		
 				.put("pr-str",				pr_str)
 				.put("str",					str)
-				.put("print",				print)
-				.put("println",				println)
 				.put("readline",			readline)
 				.put("read-string",			read_string)
 				.put("slurp",				slurp)

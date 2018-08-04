@@ -514,7 +514,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("time-ms"));
 		util.addItem(getDocItem("time-ns"));
 		util.addItem(getDocItem("coalesce"));
-
+		
 
 		final DocSection meta = new DocSection("Meta");
 		all.addSection(meta);

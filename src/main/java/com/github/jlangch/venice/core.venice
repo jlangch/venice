@@ -198,7 +198,8 @@
 
 (defmacro 
    { :arglists '("(time expr)")
-     :doc "Evaluates expr and prints the time it took.  Returns the value of expr." }
+     :doc "Evaluates expr and prints the time it took.  Returns the value of expr." 
+     :examples '("(time (println [100 200]))") }
 
    time [expr]
     `(let [start_ (time-ns)
@@ -240,6 +241,30 @@
    `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
 
 
+
+(def
+   { :arglists '("(print & xs)")
+     :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+     :examples '("(print [10 20 30])") }
+
+   print
+   
+   (fn [& xs] (do 
+               (cond
+                 (empty? xs)  nil
+                 (== 1 (count xs))  (. *out* :append (str (first xs)))
+                 :default (. *out* :append (str/join " " (map (fn [y] (str y)) xs))))
+                 
+               nil)))
+   
+(def
+   { :arglists '("(println & xs)")
+     :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+     :examples '("(do (println 200) (println [10 20 30]))") }
+
+   println
+   
+   (fn [& xs] (do (apply print xs) (newline) nil)))
 
 
 (def  
