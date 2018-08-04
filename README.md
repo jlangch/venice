@@ -199,7 +199,7 @@ Java Callbacks:
 ```
 
 
-A more comprehensive example:
+A larger example:
 
 ```clojure
 (do
