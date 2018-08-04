@@ -47,8 +47,8 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.CapturingPrintStream;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class DocGenerator {

@@ -70,6 +70,38 @@ System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
 ```
 
 
+### Prevent Venice from writing to stdout
+
+
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.Parameters;
+
+final Venice venice = new Venice();
+
+// redirect stdout to a <null> device
+System.out.println(venice.eval("(println [100 200])", Parameters.of("*out*", null)));
+```
+
+
+### Capturing Venice stdout data
+
+
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.util.CapturingPrintStream;
+
+final Venice venice = new Venice();
+
+// capturing data written to stdout
+final CapturingPrintStream ps = CapturingPrintStream.create();
+venice.eval("(do (println 10) (println [100 200]))", Parameters.of("*out*", ps));
+
+System.out.println(ps.getOutput());
+```
+
+
 ### Precompiling Venice
 
 Precompiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
