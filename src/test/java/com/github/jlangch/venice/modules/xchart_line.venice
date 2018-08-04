@@ -1,0 +1,18 @@
+;; XChart line chart
+
+(do
+   (load-module :xchart)
+ 
+   { "Maxime" { :x (range 10)
+                :y (mapv (fn [x] (+ x (rand-double 3.0)))
+                         (range 10)) }
+     "Tyrone" { :x (range 10)
+                :y (mapv (fn [x] (+ 2 x (rand-double 4.0)))
+                         (range 0 5 0.5)) } }
+                         
+   { :title "Longest running distance"
+     :x-axis { :title "Months (since start)" }
+     :y-axis { :title "Distance"
+               :decimal-pattern "##.## km" }
+     :theme :matlab}
+)

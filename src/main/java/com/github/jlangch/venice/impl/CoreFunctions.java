@@ -778,29 +778,9 @@ public class CoreFunctions {
 				return args.nth(0);
 			}
 
-			final VncVal first = args.nth(0);
-			final VncList rest = args.slice(1);
-			if (Types.isVncLong(first)) {
-				VncLong val = (VncLong)first;
-				for(VncVal v : rest.getList()) { val = val.add(v); }
-				return val;
-			}
-			else if (Types.isVncDouble(first)) {
-				VncDouble val = (VncDouble)first;
-				for(VncVal v : rest.getList()) { val = val.add(v); }
-				return val;
-			}
-			else if (Types.isVncBigDecimal(first)) {
-				VncBigDecimal val = (VncBigDecimal)first;
-				for(VncVal v : rest.getList()) { val = val.add(v); }
-				return val;
-			}
-			else {
-				throw new VncException(String.format(
-						"Invalid argument type %s while calling function '+'. %s",
-						Types.getClassName(first),
-						ErrorMessage.buildErrLocation(args)));
-			}
+			VncVal val = args.first();
+			for(VncVal v : args.slice(1).getList()) { val = Calc.add(val, v); }
+			return val;
 		}
 	};
 	
@@ -819,42 +799,22 @@ public class CoreFunctions {
 			else if (args.size() == 1) {
 				final VncVal first = args.nth(0);
 				if (Types.isVncLong(first)) {
-					return  ((VncLong)first).multiply(new VncLong(-1L));
+					return Calc.mul(first, new VncLong(-1L));
 				}
 				else if (Types.isVncDouble(first)) {
-					return ((VncDouble)first).multiply(new VncDouble(-1D));
+					return Calc.mul(first, new VncDouble(-1D));
 				}
 				else if (Types.isVncBigDecimal(first)) {
-					return ((VncBigDecimal)first).multiply(new VncBigDecimal(new BigDecimal("-1.0")));
+					return Calc.mul(first, new VncBigDecimal(new BigDecimal("-1.0")));
 				}
 				else {
 					return first;
 				}
 			}
 
-			final VncVal first = args.nth(0);
-			final VncList rest = args.slice(1);
-			if (Types.isVncLong(first)) {
-				VncLong val = (VncLong)first;
-				for(VncVal v : rest.getList()) { val = val.subtract(v); }
-				return val;
-			}
-			else if (Types.isVncDouble(first)) {
-				VncDouble val = (VncDouble)first;
-				for(VncVal v : rest.getList()) { val = val.subtract(v); }
-				return val;
-			}
-			else if (Types.isVncBigDecimal(first)) {
-				VncBigDecimal val = (VncBigDecimal)first;
-				for(VncVal v : rest.getList()) { val = val.subtract(v); }
-				return val;
-			}
-			else {
-				throw new VncException(String.format(
-						"Invalid argument type %s while calling function '-'. %s",
-						Types.getClassName(first),
-						ErrorMessage.buildErrLocation(args)));
-			}
+			VncVal val = args.first();
+			for(VncVal v : args.slice(1).getList()) { val = Calc.sub(val, v); }
+			return val;
 		}
 	};
 	
@@ -873,29 +833,9 @@ public class CoreFunctions {
 				return args.nth(0);
 			}
 
-			final VncVal first = args.nth(0);
-			final VncList rest = args.slice(1);
-			if (Types.isVncLong(first)) {
-				VncLong val = (VncLong)first;
-				for(VncVal v : rest.getList()) { val = val.multiply(v); }
-				return val;
-			}
-			else if (Types.isVncDouble(first)) {
-				VncDouble val = (VncDouble)first;
-				for(VncVal v : rest.getList()) { val = val.multiply(v); }
-				return val;
-			}
-			else if (Types.isVncBigDecimal(first)) {
-				VncBigDecimal val = (VncBigDecimal)first;
-				for(VncVal v : rest.getList()) { val = val.multiply(v); }
-				return val;
-			}
-			else {
-				throw new VncException(String.format(
-						"Invalid argument type %s while calling function '*'. %s",
-						Types.getClassName(first),
-						ErrorMessage.buildErrLocation(args)));
-			}
+			VncVal val = args.first();
+			for(VncVal v : args.slice(1).getList()) { val = Calc.mul(val, v); }
+			return val;
 		}
 	};
 	
@@ -914,42 +854,22 @@ public class CoreFunctions {
 			else if (args.size() == 1) {
 				final VncVal first = args.nth(0);
 				if (Types.isVncLong(first)) {
-					return new VncLong(1L).divide((VncLong)first);
+					return Calc.div(new VncLong(1L), first);
 				}
 				else if (Types.isVncDouble(first)) {
-					return new VncDouble(1D).divide((VncDouble)first);
+					return Calc.div(new VncDouble(1D), first);
 				}
 				else if (Types.isVncBigDecimal(first)) {
-					return new VncBigDecimal(BigDecimal.ONE).divide((VncBigDecimal)first);
+					return Calc.div(new VncBigDecimal(BigDecimal.ONE), first);
 				}
 				else {
 					return first;
 				}
 			}
 
-			final VncVal first = args.nth(0);
-			final VncList rest = args.slice(1);
-			if (Types.isVncLong(first)) {
-				VncLong val = (VncLong)first;
-				for(VncVal v : rest.getList()) { val = val.divide(v); }
-				return val;
-			}
-			else if (Types.isVncDouble(first)) {
-				VncDouble val = (VncDouble)first;
-				for(VncVal v : rest.getList()) { val = val.divide(v); }
-				return val;
-			}
-			else if (Types.isVncBigDecimal(first)) {
-				VncBigDecimal val = (VncBigDecimal)first;
-				for(VncVal v : rest.getList()) { val = val.divide(v); }
-				return val;
-			}
-			else {
-				throw new VncException(String.format(
-						"Invalid argument type %s while calling function '/'. %s",
-						Types.getClassName(first),
-						ErrorMessage.buildErrLocation(args)));
-			}
+			VncVal val = args.first();
+			for(VncVal v : args.slice(1).getList()) { val = Calc.div(val, v); }
+			return val;
 		}
 	};
 	

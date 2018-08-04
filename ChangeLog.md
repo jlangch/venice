@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added function docoll
 - added support to change 'stdout' stream by adding the variable `*out*`
 
+### fixed
+
+- fixed mixed precision math (+, -, *, /). Implicitly coerce values to higher 
+  precision operand type. As a result (range 0 5 0.5) emits correct values and 
+  does not loop anymore.
+
 
 
 ## [0.7.1] - 2018-08-02

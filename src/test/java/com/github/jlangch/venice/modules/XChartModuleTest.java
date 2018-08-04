@@ -19,25 +19,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.modules;
 
 import org.junit.Test;
 
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
 
-public class JsonModuleTest {
 
-	@Test(expected = JavaMethodInvocationException.class)
-	public void test_json_parse() {
+public class XChartModuleTest {
+
+	@Test
+	public void test_line_chart() {
 		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                     " +
-				"   (load-module :json)                  " +
-				"                                        " +
-				"   (json/parse {:a 100})                " + 
-				") ";
+		final String script = new ClassPathResource("com/github/jlangch/venice/modules/xchart_line.venice")
+										.getResourceAsString();
 
-		venice.eval("(str " + script + ")");
+		System.out.println(venice.eval("(str " + script + ")"));
 	}
 
 }

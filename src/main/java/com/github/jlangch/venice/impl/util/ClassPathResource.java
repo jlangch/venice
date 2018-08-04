@@ -114,7 +114,11 @@ public class ClassPathResource {
 	public ByteBuffer getResourceAsByteBuffer() {  
 		final byte[] data = getResourceAsBinary();
 		return data == null ? null : ByteBuffer.wrap(data);
-	 }
+	}
+
+	public String getResourceAsString() {		
+		return getResourceAsString("UTF-8");
+	}
 
 	public String getResourceAsString(final String charsetName) {		
 		try(InputStream is = getInputStream()) {
