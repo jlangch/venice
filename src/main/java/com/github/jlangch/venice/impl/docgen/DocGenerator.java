@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.Env;
@@ -46,6 +47,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.CapturingPrintStream;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -918,12 +920,22 @@ public class DocGenerator {
 				.map(e -> StringUtil.stripMargin(e, '|'))
 				.forEach(e -> {
 					try {
-						final String result = (String)runner.eval("(str " + e + ")");
+						final CapturingPrintStream ps = CapturingPrintStream.create();
+						
+						final String result = (String)runner.eval(
+													"(str " + e + ")",
+													Parameters.of("*out*", ps));
 						
 						if (sb.length() > 0) {
 							sb.append("\n\n");
 						}
-						sb.append(e).append("\n").append("=> ").append(result);
+						sb.append(e).append("\n");
+						if (!ps.isEmpty()) {
+							final String out = ps.getOutput();
+							sb.append(out);
+							if (!out.endsWith("\n")) sb.append("\n");
+						}
+						sb.append("=> ").append(result);
 					}
 					catch(Exception ex) {
 						if (catchEx) {

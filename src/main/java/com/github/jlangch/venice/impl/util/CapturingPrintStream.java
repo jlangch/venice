@@ -40,7 +40,7 @@ public class CapturingPrintStream extends PrintStream {
 		this.boas = boas;
 	}
 	
-	public CapturingPrintStream create(final String encoding) {
+	public static CapturingPrintStream create(final String encoding) {
 		try {
 			return new CapturingPrintStream(encoding, new ByteArrayOutputStream());
 		}
@@ -49,7 +49,7 @@ public class CapturingPrintStream extends PrintStream {
 		}
 	}
 
-	public CapturingPrintStream create() {
+	public static CapturingPrintStream create() {
 		return create("UTF-8");
 	}
 
@@ -57,7 +57,7 @@ public class CapturingPrintStream extends PrintStream {
 		boas.reset();
 	}
 
-	public boolean empty() {
+	public boolean isEmpty() {
 		return boas.size() == 0;
 	}
 
