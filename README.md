@@ -33,7 +33,7 @@ Venice requires Java 8 or newer.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.7.1.jar`
+Start the REPL with `java -jar venice-0.7.2.jar`
 
 ```text
 venice> (+ 1 1)
@@ -295,7 +295,7 @@ venice.eval("(slurp \"/tmp/file\")");
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.7.1'
+    compile 'com.github.jlangch:venice:0.7.2'
 }
 ```
 
@@ -307,7 +307,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.7.1</version>
+        <version>0.7.2</version>
     </dependency>
 </dependencies>
 ```
