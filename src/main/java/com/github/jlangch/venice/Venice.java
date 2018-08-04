@@ -238,7 +238,7 @@ public class Venice {
 						env.set(symbol, JavaInteropUtil.convertToVncVal(val));
 					}
 					else if (val instanceof OutputStream) {
-						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream((OutputStream)val)));
+						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream((OutputStream)val, true)));
 					}
 					else {
 						throw new VncException("The *out* parameter value must be an instance of OutputStream");

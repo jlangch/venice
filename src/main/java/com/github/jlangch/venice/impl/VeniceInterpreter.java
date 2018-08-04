@@ -450,7 +450,7 @@ public class VeniceInterpreter {
 		env.set(new VncSymbol("*newline*"), new VncString(System.lineSeparator()));
 
 		// set system stdout
-		env.set(new VncSymbol("*out*"), new VncJavaObject(stdout == null ? new PrintStream(System.out) : stdout));
+		env.set(new VncSymbol("*out*"), new VncJavaObject(stdout == null ? new PrintStream(System.out, true) : stdout));
 
 		// load core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
