@@ -56,7 +56,11 @@ public class CapturingPrintStream extends PrintStream {
 	public void reset() {
 		boas.reset();
 	}
-	
+
+	public boolean empty() {
+		return boas.size() == 0;
+	}
+
 	public String getOutput() {
 		try {
 			return boas.toString(encoding);
