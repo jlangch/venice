@@ -288,6 +288,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("repeat"));
 		generic.addItem(getDocItem("range"));
 		generic.addItem(getDocItem("group-by"));
+		generic.addItem(getDocItem("get-in"));
 
 		final DocSection coll_test = new DocSection("Tests");
 		collections.addSection(coll_test);

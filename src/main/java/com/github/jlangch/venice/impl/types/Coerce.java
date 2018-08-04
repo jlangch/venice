@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ErrorMessage;
+import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
@@ -164,6 +165,21 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to bytebuf. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
+	public static VncCollection toVncCollection(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncCollection) {
+			return (VncCollection)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to collection. %s", 
 					Types.getClassName(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

@@ -937,6 +937,80 @@ public class FunctionsTest {
 		assertEquals(Long.valueOf(9L), venice.eval("(get (sorted-map :a 1 :b 2) :z 9)"));
 		assertEquals(Long.valueOf(9L), venice.eval("(get (sorted-map ) :z 9)"));
 	}
+	
+	@Test
+	public void test_get_in() {
+		final Venice venice = new Venice();
+		
+		// map
+		assertEquals("", venice.eval("(str (get-in {:a 1} [:b]))"));
+		assertEquals("1", venice.eval("(str (get-in {:a 1} [:a]))"));
+		assertEquals("2", venice.eval("(str (get-in {:a 1 :b {:c 2}} [:b :c]))"));
+
+		assertEquals("9", venice.eval("(str (get-in {:a 1} [:b] 9))"));
+		assertEquals("1", venice.eval("(str (get-in {:a 1} [:a] 9))"));
+		assertEquals("2", venice.eval("(str (get-in {:a 1 :b {:c 2}} [:b :c] 9))"));
+
+		assertEquals("", venice.eval("(str (get-in {:a 1} '(:b)))"));
+		assertEquals("1", venice.eval("(str (get-in {:a 1} '(:a)))"));
+		assertEquals("2", venice.eval("(str (get-in {:a 1 :b {:c 2}} '(:b :c)))"));
+
+		assertEquals("9", venice.eval("(str (get-in {:a 1} '(:b) 9))"));
+		assertEquals("1", venice.eval("(str (get-in {:a 1} '(:a) 9))"));
+		assertEquals("2", venice.eval("(str (get-in {:a 1 :b {:c 2}} '(:b :c) 9))"));
+		
+		// list
+		assertEquals("", venice.eval("(str (get-in '() [0]))"));
+		assertEquals("1", venice.eval("(str (get-in '(1) [0]))"));
+		assertEquals("1", venice.eval("(str (get-in '(1 2) [0]))"));
+		assertEquals("2", venice.eval("(str (get-in '(1 2) [1]))"));
+		assertEquals("", venice.eval("(str (get-in '(1 2) [2]))"));
+		assertEquals("", venice.eval("(str (get-in '(1 2) [0 0]))"));
+		assertEquals("1", venice.eval("(str (get-in '((1) 2) [0 0]))"));
+		assertEquals("2", venice.eval("(str (get-in '((1 2) 2) [0 1]))"));
+		assertEquals("", venice.eval("(str (get-in '((1 2) 2) [0 2]))"));
+
+		assertEquals("9", venice.eval("(str (get-in '() [0] 9))"));
+		assertEquals("1", venice.eval("(str (get-in '(1) [0] 9))"));
+		assertEquals("1", venice.eval("(str (get-in '(1 2) [0] 9))"));
+		assertEquals("2", venice.eval("(str (get-in '(1 2) [1] 9))"));
+		assertEquals("9", venice.eval("(str (get-in '(1 2) [2] 9))"));
+		assertEquals("9", venice.eval("(str (get-in '(1 2) [0 0] 9))"));
+		assertEquals("1", venice.eval("(str (get-in '((1) 2) [0 0] 9))"));
+		assertEquals("2", venice.eval("(str (get-in '((1 2) 2) [0 1] 9))"));
+		assertEquals("9", venice.eval("(str (get-in '((1 2) 2) [0 2] 9))"));
+		
+		// vector
+		assertEquals("", venice.eval("(str (get-in [] [0]))"));
+		assertEquals("1", venice.eval("(str (get-in [1] [0]))"));
+		assertEquals("1", venice.eval("(str (get-in [1 2] [0]))"));
+		assertEquals("2", venice.eval("(str (get-in [1 2] [1]))"));
+		assertEquals("", venice.eval("(str (get-in [1 2] [2]))"));
+		assertEquals("", venice.eval("(str (get-in [1 2] [0 0]))"));
+		assertEquals("1", venice.eval("(str (get-in ['(1) 2] [0 0]))"));
+		assertEquals("2", venice.eval("(str (get-in ['(1 2) 2] [0 1]))"));
+		assertEquals("", venice.eval("(str (get-in ['(1 2) 2] [0 2]))"));
+
+		assertEquals("9", venice.eval("(str (get-in [] [0] 9))"));
+		assertEquals("1", venice.eval("(str (get-in [1] [0] 9))"));
+		assertEquals("1", venice.eval("(str (get-in [1 2] [0] 9))"));
+		assertEquals("2", venice.eval("(str (get-in [1 2] [1] 9))"));
+		assertEquals("9", venice.eval("(str (get-in [1 2] [2] 9))"));
+		assertEquals("9", venice.eval("(str (get-in [1 2] [0 0] 9))"));
+		assertEquals("1", venice.eval("(str (get-in ['(1) 2] [0 0] 9))"));
+		assertEquals("2", venice.eval("(str (get-in ['(1 2) 2] [0 1] 9))"));
+		assertEquals("9", venice.eval("(str (get-in ['(1 2) 2] [0 2] 9))"));
+		
+		// map / vector
+		assertEquals(":y", venice.eval("(str (get-in {:a 1 :b [:x :y :z]} [:b 1]))"));
+		assertEquals("", venice.eval("(str (get-in {:a 1 :b [:x :y :z]} [:b 5]))"));
+		assertEquals("9", venice.eval("(str (get-in {:a 1 :b [:x :y :z]} [:b 5] 9))"));
+		
+		// vector / map
+		assertEquals("1", venice.eval("(str (get-in [:a :b {:c 1 :d 2} :e] [2 :c]))"));
+		assertEquals("", venice.eval("(str (get-in [:a :b {:c 1 :d 2} :e] [2 :x]))"));
+		assertEquals("9", venice.eval("(str (get-in [:a :b {:c 1 :d 2} :e] [2 :x] 9))"));
+	}
 
 	@Test
 	public void test_gt() {

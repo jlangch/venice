@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [unreleased]
+
+### Added
+
+- added function get-in
+
+
+
 ## [0.7.2] - 2018-08-04
 
 ### Added

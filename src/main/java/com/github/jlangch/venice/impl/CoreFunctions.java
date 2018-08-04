@@ -2357,6 +2357,73 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction get_in = new VncFunction("get-in") {
+		{
+			setArgLists("(get-in m ks)", "(get-in m ks not-found)");
+			
+			setDoc( "Returns the value in a nested associative structure, " + 
+					"where ks is a sequence of keys. Returns nil if the key " + 
+					"is not present, or the not-found value if supplied.");
+			
+			setExamples(
+					"(get-in {:a 1 :b {:c 2 :d 3}} [:b :c])",
+					"(get-in [:a :b :c] [0])",
+					"(get-in [:a :b [:c :d :e]] [2 1])",
+					"(get-in {:a 1 :b {:c [4 5 6]}} [:b :c 1])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("get-in", args, 2, 3);
+			
+			VncCollection coll = Coerce.toVncCollection(args.nth(0));
+			VncList keys = Coerce.toVncList(args.nth(1));
+			VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+			
+			while(!keys.isEmpty()) {
+				final VncVal key = keys.first();
+				keys = keys.rest();
+					
+				if (Types.isVncMap(coll)) {
+					final VncVal val = ((VncMap)coll).get(key);
+					if (val == Nil) {
+						return key_not_found;
+					}
+					else if (keys.isEmpty()) {
+						return val;
+					}
+					else if (Types.isVncCollection(val)) {
+						coll = (VncCollection)val;
+					}
+					else {
+						return key_not_found;
+					}
+				}
+				else {
+					if (Types.isVncLong(key)) {
+						final VncVal val = ((VncList)coll).nthOrDefault(((VncLong)key).getValue().intValue(), Nil);
+						if (val == Nil) {
+							return key_not_found;
+						}
+						else if (keys.isEmpty()) {
+							return val;
+						}
+						else if (Types.isVncCollection(val)) {
+							coll = (VncCollection)val;
+						}
+						else {
+							return key_not_found;
+						}
+					}
+					else {
+						return key_not_found;
+					}
+				}
+			}
+			
+			return key_not_found;
+		}
+	};
+
 	public static VncFunction find = new VncFunction("find") {
 		{
 			setArgLists("(find map key)");
@@ -3112,6 +3179,12 @@ public class CoreFunctions {
 					"do not overlap. If a padcoll collection is supplied, use its elements as " + 
 					"necessary to complete last partition upto n items. In case there are " + 
 					"not enough padding elements, return a partition with less than n items.");
+			
+			setExamples(
+					"(partition 4 (range 20))",
+					"(partition 4 6 (range 20))",
+					"(partition 3 6 [\"a\"] (range 20))",
+					"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5471,6 +5544,7 @@ public class CoreFunctions {
 				.put("contains?", 			contains_Q)
 				.put("find",				find)
 				.put("get",					get)
+				.put("get-in",				get_in)
 				.put("key",					key)
 				.put("keys",				keys)
 				.put("val",					val)
