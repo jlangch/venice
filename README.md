@@ -143,7 +143,7 @@ The Jackson Jdk8 module is loaded automatically if it is available
 ## Java Interop
 
 Venice supports calling constructors, static and instance methods as well as 
-static class fields and instance fields.
+accessing static class and instance fields.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
 object types byte, short, int, long, float, double, Byte, Short, Integer, Long, 
@@ -287,6 +287,18 @@ venice.eval("(. :java.lang.System :exit 0)");
 
 // => FAIL (call to rejected Venice I/O function)
 venice.eval("(slurp \"/tmp/file\")"); 
+```
+
+Prohibit Venice I/O functions and Java Interop:
+
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.javainterop.*;
+
+final Venice venice = new Venice(new RejectAllInterceptor());
+
+...
+
 ```
 
 
