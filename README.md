@@ -143,7 +143,7 @@ The Jackson Jdk8 module is loaded automatically if it is available
 ## Java Interop
 
 Venice supports calling constructors, static and instance methods as well as 
-static class fields and instance fields.
+accessing static class and instance fields.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
 object types byte, short, int, long, float, double, Byte, Short, Integer, Long, 
