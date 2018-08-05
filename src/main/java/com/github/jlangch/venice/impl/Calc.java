@@ -203,14 +203,14 @@ public class Calc {
 	private static void validateNumericTypes(final String fn, final VncVal op1, final VncVal op2) {
 		if (!Types.isVncNumber(op1)) {
 			throw new VncException(String.format(
-					"Function '%s' operand 1 (%s) is not numeric type", 
+					"Function '%s' operand 1 (%s) is not a numeric type", 
 					fn,
 					Types.getClassName(op1)));
 		}
 
 		if (!Types.isVncNumber(op2)) {
 			throw new VncException(String.format(
-					"Function '%s' operand 2 (%s) is not numeric type", 
+					"Function '%s' operand 2 (%s) is not a numeric type", 
 					fn,
 					Types.getClassName(op2)));
 		}
