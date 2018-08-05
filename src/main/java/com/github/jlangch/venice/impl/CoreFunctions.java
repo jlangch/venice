@@ -2272,6 +2272,28 @@ public class CoreFunctions {
 			}
 		}
 	};
+
+	public static VncFunction assoc_in = new VncFunction("assoc-in") {
+		{
+			setArgLists("(assoc-in m ks v)");
+			
+			setDoc( "Associates a value in a nested associative structure, where ks is a " + 
+					"sequence of keys and v is the new value and returns a new nested structure. " + 
+					"If any levels do not exist, hash-maps will be created.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("get", args, 3);
+						
+			VncCollection coll = Coerce.toVncCollection(args.nth(0)).copy();
+			VncList keys = Coerce.toVncList(args.nth(1));
+			VncVal new_val = args.nth(2);
+			
+			
+			
+			return Nil;
+		}
+	};
 	
 	public static VncFunction dissoc = new VncFunction("dissoc") {
 		{
@@ -5540,6 +5562,7 @@ public class CoreFunctions {
 				.put("ordered-map",			new_ordered_map)
 				.put("sorted-map",			new_sorted_map)
 				.put("assoc",				assoc)
+				.put("assoc-in",			assoc_in)				
 				.put("dissoc",				dissoc)
 				.put("contains?", 			contains_Q)
 				.put("find",				find)
