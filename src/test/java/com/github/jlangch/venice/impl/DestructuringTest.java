@@ -29,16 +29,20 @@ import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 public class DestructuringTest {
 
 	@Test
-	public void test_single() {
+	public void test_sequential_single() {
 		final VncVal symVal = new VncSymbol("n");
 		final VncVal bindVal = new VncLong(10);
 		
@@ -51,7 +55,7 @@ public class DestructuringTest {
 	}
 
 	@Test
-	public void test_multiple() {
+	public void test_sequential_multiple() {
 		// [[x y] [10 20]]
 
 		final VncVal symVal = new VncList(new VncSymbol("x"), new VncSymbol("y"));
@@ -69,7 +73,7 @@ public class DestructuringTest {
 	}
 
 	@Test
-	public void test_multiple_empty_1() {
+	public void test_sequential_multiple_empty_1() {
 		// [[x y] []]
 
 		final VncVal symVal = new VncList(new VncSymbol("x"), new VncSymbol("y"));
@@ -87,7 +91,7 @@ public class DestructuringTest {
 	}
 
 	@Test
-	public void test_multiple_empty_2() {
+	public void test_sequential_multiple_empty_2() {
 		// [[x & y] []]
 
 		final VncVal symVal = new VncList(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
@@ -105,7 +109,7 @@ public class DestructuringTest {
 	}
 	
 	@Test
-	public void test_multiple_empty_all() {
+	public void test_sequential_multiple_empty_all() {
 		// [[] []]
 
 		final VncVal symVal = new VncList();
@@ -117,7 +121,7 @@ public class DestructuringTest {
 	}
 
 	@Test
-	public void test_multiple_fill_up_1() {
+	public void test_sequential_multiple_fill_up_1() {
 		// [[x y & z] [10 20 30 40 50]]
 
 		final VncVal symVal = new VncList(new VncSymbol("x"), new VncSymbol("y"), new VncSymbol("&"), new VncSymbol("z"));
@@ -141,7 +145,7 @@ public class DestructuringTest {
 	}
 
 	@Test
-	public void test_multiple_fill_up_2() {
+	public void test_sequential_multiple_fill_up_2() {
 		// [[x y & z] [10 20]]
 
 		final VncVal symVal = new VncList(new VncSymbol("x"), new VncSymbol("y"), new VncSymbol("&"), new VncSymbol("z"));
@@ -162,7 +166,7 @@ public class DestructuringTest {
 	}
 	
 	@Test
-	public void test_nested() {
+	public void test_sequential_nested() {
 		// [[[v x & y] z] [[10 20 30 40] 50]]
 
 		final VncVal symNestedVal = new VncList(new VncSymbol("v"), new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
@@ -188,6 +192,69 @@ public class DestructuringTest {
 		
 		assertEquals("z", bindings.get(3).sym.getName());
 		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(3).val).getValue());
+	}
+	
+	@Test
+	public void test_associative_keys() {
+		// [{:keys [a b]} {:a 1 :b 2 :c 3}]  ->  a: 1, b: 2
+
+		final VncVal symVal = new VncHashMap(new VncKeyword(":keys"), new VncVector(new VncSymbol("a"), new VncSymbol("b")));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":c"), new VncLong(3));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(2, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+	}
+	
+	@Test
+	public void test_associative_syms() {
+		// [{:syms [a b]} {'a 1 'b 2 'c 3}]  ->  a: 1, b: 2
+
+		final VncVal symVal = new VncHashMap(new VncKeyword(":syms"), new VncVector(new VncSymbol("a"), new VncSymbol("b")));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncSymbol("a"), new VncLong(1),
+										new VncSymbol("b"), new VncLong(2),
+										new VncSymbol("c"), new VncLong(3));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(2, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+	}
+	
+	@Test
+	public void test_associative_strs() {
+		// [{:strs [a b]} {"a" 1 "b" 2 "c" 3}]  ->  a: 1, b: 2
+
+		final VncVal symVal = new VncHashMap(new VncKeyword(":strs"), new VncVector(new VncSymbol("a"), new VncSymbol("b")));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncString("a"), new VncLong(1),
+										new VncString("b"), new VncLong(2),
+										new VncString("c"), new VncLong(3));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(2, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
 	}
 
 

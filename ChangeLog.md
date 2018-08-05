@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added function assoc-in
 - added function get-in
+- added associative destructuring 
+    - [{:keys [a b]} {:a 1 :b 2}]   
+    - [{:syms [a b]} {'a 1 'b 2}]	
+    - [{:strs [a b]} {"a" 1 "b" 2}]
+  
 
 
 
