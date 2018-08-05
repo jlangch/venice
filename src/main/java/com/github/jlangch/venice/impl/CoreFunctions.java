@@ -2334,7 +2334,7 @@ public class CoreFunctions {
 							}
 							else {
 								final VncVal val = ((VncList)coll).nth(idx);
-								if (Types.isVncList(val)) {
+								if (Types.isVncCollection(val)) {
 									coll = ((VncCollection)val);
 								}
 								else {
