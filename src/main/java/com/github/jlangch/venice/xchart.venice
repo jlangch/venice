@@ -1,1 +1,208 @@
-;; Charts
+;; XChart
+
+(import :org.knowm.xchart.BubbleChart)
+(import :org.knowm.xchart.XYChart)
+(import :org.knowm.xchart.PieChart)
+(import :org.knowm.xchart.CategoryChart)
+(import :org.knowm.xchart.BubbleSeries$BubbleSeriesRenderStyle)
+(import :org.knowm.xchart.CategorySeries$CategorySeriesRenderStyle)
+(import :org.knowm.xchart.PieSeries$PieSeriesRenderStyle)
+(import :org.knowm.xchart.XYSeries$XYSeriesRenderStyle)
+(import :org.knowm.xchart.XChartPanel)
+(import :org.knowm.xchart.BitmapEncoder)
+(import :org.knowm.xchart.BitmapEncoder$BitmapFormat)
+    
+(import :org.knowm.xchart.style.Styler)
+(import :org.knowm.xchart.style.AxesChartStyler)
+(import :org.knowm.xchart.style.Styler$LegendPosition)
+(import :org.knowm.xchart.style.Styler$TextAlignment)
+(import :org.knowm.xchart.style.PieStyler$AnnotationType)
+(import :org.knowm.xchart.style.GGPlot2Theme)
+(import :org.knowm.xchart.style.MatlabTheme)
+(import :org.knowm.xchart.style.XChartTheme)
+    
+(import :org.knowm.xchart.style.markers.Circle)
+(import :org.knowm.xchart.style.markers.Diamond)
+(import :org.knowm.xchart.style.markers.None)
+(import :org.knowm.xchart.style.markers.Square)
+(import :org.knowm.xchart.style.markers.TriangleDown)
+(import :org.knowm.xchart.style.markers.TriangleUp)
+    
+(import :org.knowm.xchart.style.lines.SeriesLines)
+   
+(import :java.io.FileOutputStream)
+   
+(import :java.awt.Color)
+(import :java.awt.GridLayout)
+   
+(import :javax.swing.JPanel)
+(import :javax.swing.JFrame)
+(import :javax.swing.SwingUtilities)
+
+
+(def colors
+   { :blue       (. :Color :BLUE)
+     :black      (. :Color :BLACK)
+     :cyan       (. :Color :CYAN)
+     :dark-gray  (. :Color :DARK_GRAY)
+     :gray       (. :Color :GRAY)
+     :green      (. :Color :GREEN)
+     :light-gray (. :Color :LIGHT_GRAY)
+     :magenta    (. :Color :MAGENTA)
+     :orange     (. :Color :ORANGE)
+     :pink       (. :Color :PINK)
+     :red        (. :Color :RED)
+     :white      (. :Color :WHITE)
+     :yellow     (. :Color :YELLOW) })
+
+(def strokes
+   { :none      (. :SeriesLines :NONE)
+     :solid     (. :SeriesLines :SOLID)
+     :dash-dot  (. :SeriesLines :DASH_DOT)
+     :dash-dash (. :SeriesLines :DASH_DASH)
+     :dot-dot   (. :SeriesLines :DOT_DOT) })
+    
+(def markers
+   { :circle        (. :Circle :new)
+     :diamond       (. :Diamond :new)
+     :none          (. :None :new)
+     :square        (. :Square :new)
+     :triangle-up   (. :TriangleUp :new)
+     :triangle-down (. :TriangleDown :new) })    
+
+(def xy-render-styles
+   { :area    (. :XYSeries$XYSeriesRenderStyle :Area)
+     :scatter (. :XYSeries$XYSeriesRenderStyle :Scatter)
+     :line    (. :XYSeries$XYSeriesRenderStyle :Line) })
+
+(def pie-render-styles
+   { :pie   (. :PieSeries$PieSeriesRenderStyle :Pie)
+     :donut (. :PieSeries$PieSeriesRenderStyle :Donut) })
+    
+(def pie-annotation-types
+   { :label                (. :PieStyler$AnnotationType :Label)
+     :label-and-percentage (. :PieStyler$AnnotationType :LabelAndPercentage)
+     :percentage           (. :PieStyler$AnnotationType :Percentage) })
+
+(def category-render-styles
+   { :area    (. :CategorySeries$CategorySeriesRenderStyle :Area)
+     :bar     (. :CategorySeries$CategorySeriesRenderStyle :Bar)
+     :line    (. :CategorySeries$CategorySeriesRenderStyle :Line)
+     :scatter (. :CategorySeries$CategorySeriesRenderStyle :Scatter)
+     :stick   (. :CategorySeries$CategorySeriesRenderStyle :Stick) })
+
+(def bubble-render-styles
+   { :round (. :BubbleSeries$BubbleSeriesRenderStyle :Round) })
+
+(def text-alignments
+   { :centre (. :Styler$TextAlignment :Centre)
+     :left   (. :Styler$TextAlignment :Left)
+     :right  (. :Styler$TextAlignment :Right) })
+
+(def legend-positions
+   { :inside-n  (. :Styler$LegendPosition :InsideN)
+     :inside-ne (. :Styler$LegendPosition :InsideNE)
+     :inside-nw (. :Styler$LegendPosition :InsideNW)
+     :inside-se (. :Styler$LegendPosition :InsideSE)
+     :inside-sw (. :Styler$LegendPosition :InsideSW)
+     :outside-e (. :Styler$LegendPosition :OutsideE) })
+
+(def themes
+   { :ggplot2 (. :GGPlot2Theme :new)
+     :matlab  (. :MatlabTheme :new)
+     :xchart  (. :XChartTheme :new) }) 
+ 
+  
+ 
+;; Example: (doto-cond              =>    (let [e expr]
+;;             expr                          (when cond1 (my e call))
+;;             cond1 (my call)               (when cond2 (my2 e call2)))
+;;             cond2 (my2 call2))
+(defmacro doto-cond 
+   [expr & clauses]
+   (let [pairs (partition 2 clauses)
+         expr-sym (gensym "expr")]
+       `(let [~expr-sym ~expr]
+          ~@(map (fn [[cond clause]]
+                      `(when ~cond
+                           (~(first clause) ~expr-sym ~@(rest clause))))
+                  pairs)
+       ~expr-sym)))
+
+(def assoc-in-nonexisting  
+  (fn [m ks v]
+      (cond->
+         m
+         (== (get-in m ks ::not-found) ::not-found)
+         (assoc-in ks v))))
+
+(def attach-default-font
+   (fn [style-map]
+       (if-let [font (:font style-map)]
+          (-> s
+          tyle-map
+              (dissoc style-map :font)
+              (assoc-in-nonexisting [:axis :ticks :labels :font] font)
+              (assoc-in-nonexisting [:axis :title :font] font)
+              (assoc-in-nonexisting [:legend :font] font)
+              (assoc-in-nonexisting [:annotations-font] font)
+              (assoc-in-nonexisting [:chart :title :font] font))
+          style-map)))       
+
+
+
+
+(def set-legend!
+   (fn [styler
+        {:keys [background-color border-color font padding
+                position series-line-length visible?]}]
+       (doto-cond
+          styler
+          background-color      (. :setLegendBackgroundColor (get colors background-color background-color))
+          border-color          (. :setLegendBorderColor (get colors border-color border-color))
+          font                  (. :setLegendFont font)
+          padding               (. :setLegendPadding padding)
+          position              (. :setLegendPosition (get legend-positions position))
+          series-line-length    (. :setLegendSeriesLineLength series-line-length)
+          (not (nil? visible?)) (. :setLegendVisible visible?))))
+
+(def set-chart-title-style!
+   (fn [styler
+        {:keys [box font padding visible?]}]
+       (let [ box-background-color (:background-color box)
+              box-border-color (:color box)
+              box-visible? (:visible? box) ]
+            (doto-cond
+               styler
+               box-background-color      (. :setChartTitleBoxBackgroundColor (get colors box-background-color box-background-color))
+               box-border-color          (. :setChartTitleBoxBorderColor (get colors box-border-color box-border-color))
+               (not (nil? box-visible?)) (. :setChartTitleBoxVisible box-visible?)
+               font                      (. :setChartTitleFont font)
+               padding                   (. :setChartTitlePadding padding)
+               (not (nil? visible?))     (. :setChartTitleVisible visible?)))))
+
+(def set-chart-style!
+   (fn [styler
+        {:keys [background-color font-color padding title]}]
+       (doto-cond
+          styler
+          background-color (. :setChartBackgroundColor (get colors background-color background-color))
+          font-color       (. :setChartFontColor (get colors font-color font-color))
+          padding          (. :setChartPadding padding)
+          title            (set-chart-title-style! title))))
+
+(def set-plot-style!
+   (fn [styler
+        {:keys [background-color border-color border-visible? content-size]}]
+       (doto-cond
+          styler
+          background-color             (. :setPlotBackgroundColor (get colors background-color background-color))
+          border-color                 (. :setPlotBorderColor (get colors border-color border-color))
+          (not (nil? border-visible?)) (. :setPlotBorderVisible border-visible?)
+          content-size                 (. :setPlotContentSize content-size))))
+
+
+
+
+
+
