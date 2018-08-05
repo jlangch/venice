@@ -81,11 +81,13 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 final Venice venice = new Venice();
 
 // prevent writing to stdout by redirect to the <null> device
-System.out.println(venice.eval("(println [100 200])", Parameters.of("*out*", null)));
+venice.eval("(println [1 2])", Parameters.of("*out*", null));
 
 // capturing data written to stdout
 final CapturingPrintStream ps = CapturingPrintStream.create();
-venice.eval("(do (println 10) (println [100 200]))", Parameters.of("*out*", ps));
+venice.eval(
+    "(do (println 1) (println [4 5]))", 
+    Parameters.of("*out*", ps));
 System.out.println(ps.getOutput());
 ```
 
