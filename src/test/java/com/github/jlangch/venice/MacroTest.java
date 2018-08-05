@@ -425,9 +425,7 @@ public class MacroTest {
 	public void test_time() {
 		final Venice venice = new Venice();
 
-		assertEquals(
-				"(0 1 2 3 4 5 6 7 8 9)", 
-				venice.eval("(str (time (list-comp [x (range 10)] x)))"));
+		assertEquals("2", venice.eval("(str (time (+ 1 1)))"));
 	}
 
 	@Test
