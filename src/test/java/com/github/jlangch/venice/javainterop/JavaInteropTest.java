@@ -252,6 +252,10 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 				
 		assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. :java.lang.Math :PI)"), 0.0000001D);
+		
+		assertEquals(0L, venice.eval("(:red (. :java.awt.Color :BLUE))"));		
+		assertEquals(0L, venice.eval("(:green (. :java.awt.Color :BLUE))"));		
+		assertEquals(255L, venice.eval("(:blue (. :java.awt.Color :BLUE))"));		
 	}
 	
 	@Test
