@@ -120,6 +120,7 @@ public class DocGenerator {
 				.map(s -> s.getItems())
 				.flatMap(List::stream)
 				.distinct()
+				.filter(i -> !StringUtil.isBlank(i.getName()))
 				.sorted(Comparator.comparing(DocItem::getName))
 				.collect(Collectors.toList());
 	}
@@ -817,15 +818,15 @@ public class DocGenerator {
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
 		general.addItem(new DocItem("", idgen.id()));
-		general.addItem(new DocItem("(json/pretty-print json)", idgen.id()));
-		general.addItem(new DocItem("(json/to-json val)", idgen.id()));
-		general.addItem(new DocItem("(json/to-pretty-json val)", idgen.id()));
-		general.addItem(new DocItem("(json/parse json)", idgen.id()));
+		general.addItem(new DocItem("json/pretty-print", Arrays.asList("(json/pretty-print json)"), "Pretty print a JSON string", "", idgen.id()));
+		general.addItem(new DocItem("json/to-json", Arrays.asList("(json/to-json val)"), "Convert the value to JSON", "", idgen.id()));
+		general.addItem(new DocItem("json/to-pretty-json", Arrays.asList("(json/to-pretty-json val)"), "Convert the value to pretty-printed JSON", "", idgen.id()));
+		general.addItem(new DocItem("json/parse", Arrays.asList("(json/parse json)"), "Parse a JSON string", "", idgen.id()));
 		general.addItem(new DocItem(" ", idgen.id()));
-		general.addItem(new DocItem("(json/avail?)", idgen.id()));
-		general.addItem(new DocItem("(json/avail-jdk8-module?)", idgen.id()));
+		general.addItem(new DocItem("json/avail?", Arrays.asList("(json/avail?)"), "Checks if the Jackson JSON libs are on the classpath", "", idgen.id()));
+		general.addItem(new DocItem("json/avail-jdk8-module?", Arrays.asList("(json/avail-jdk8-module?)"), "Checks if the Jackson JSON JDK8 module is on the classpath", "", idgen.id()));
 		general.addItem(new DocItem(" ", idgen.id()));
-		general.addItem(new DocItem("Available if Jackson lib is on runtime classpath", idgen.id()));
+		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", idgen.id()));
 
 		return section;
 	}
