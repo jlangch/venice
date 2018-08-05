@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
     - `(let [{:keys [a b]} {:a 1 :b 2}] (+ a b))`
     - `(let [{:syms [a b]} {'a 1 'b 2}] (+ a b))`
     - `(let [{:strs [a b]} {"a" 1 "b" 2}] (+ a b))`
-    - limitation: mixed sequential / associative destructuring is not yet supported
+    - `(fn [x {:keys [a b]}] (+ x a b))`
 
 
 
