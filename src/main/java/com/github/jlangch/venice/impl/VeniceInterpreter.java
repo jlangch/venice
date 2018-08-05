@@ -292,7 +292,7 @@ public class VeniceInterpreter {
 							new VncFunction(sMacroName, macroFnAst, env, macroParams) {
 								public VncVal apply(final VncList args) {
 									final Env localEnv = new Env(_env);
-									
+
 									// destructuring macro params -> args
 									Destructuring
 										.destructure(macroParams, args)
@@ -373,17 +373,18 @@ public class VeniceInterpreter {
 					
 				case "fn":
 					final VncList fnParams = Coerce.toVncList(ast.nth(1));
-					final VncVal fnAst = ast.nth(2);
+					final VncVal fnBody = ast.nth(2);
 					final Env cur_env = env;
-					return new VncFunction(fnAst, env, fnParams) {
+					return new VncFunction(fnBody, env, fnParams) {
 								public VncVal apply(final VncList args) {
 									final Env localEnv = new Env(cur_env);
 									
+									// destructuring fn params -> args
 									Destructuring
 										.destructure(fnParams, args)
 										.forEach(b -> localEnv.set(b.sym, b.val));
 
-									return EVAL(fnAst, localEnv);
+									return EVAL(fnBody, localEnv);
 								}
 							};
 

@@ -38,14 +38,18 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 public class Destructuring {
 	
-	// [x 10]                              -> x: 10
-	// [[x y] [10 20]]                     -> x: 10, y: 20
-	// [[x _ y] [10 20 30]]                -> x: 10, y: 30
-	// [[x y & z] [10 20 30 40 50]]        -> x: 10, y: 20, z: [30 40 50]
-	// [[[v x & y] z] [[10 20 30 40] 50]]  -> v: 10, x: 20, y: [30 40], z: 50
-	// [{:keys [a b]} {:a 1 :b 2 :c 3}]     -> a: 1, b: 2
-	// [{:syms [a b]} {'a 1 'b 2 'c 3}]     -> a: 1, b: 2
-	// [{:strs [a b]} {"a" 1 "b" 2 "c" 3}]  -> a: 1, b: 2
+	// [x 10]                                     -> x: 10
+	
+	// [[x y] [10 20]]                            -> x: 10, y: 20
+	// [[x _ y] [10 20 30]]                       -> x: 10, y: 30
+	// [[x y & z] [10 20 30 40 50]]               -> x: 10, y: 20, z: [30 40 50]
+	// [[[v x & y] z] [[10 20 30 40] 50]]         -> v: 10, x: 20, y: [30 40], z: 50
+
+	// [{:keys [a b]} {:a 1 :b 2 :c 3}]           -> a: 1, b: 2
+	// [{:syms [a b]} {'a 1 'b 2 'c 3}]           -> a: 1, b: 2
+	// [{:strs [a b]} {"a" 1 "b" 2 "c" 3}]        -> a: 1, b: 2
+	
+	// [[x {:keys [a b]}] [10 {:a 1 :b 2 :c 3}]]  -> a: 1, b: 2
 
 	public static List<Binding> destructure(
 			final VncVal symVal, 

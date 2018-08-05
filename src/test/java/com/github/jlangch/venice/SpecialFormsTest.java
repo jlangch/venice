@@ -213,6 +213,38 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_fn_destructuring_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def test                           \n" +
+				"        (fn [x [u v w]]                \n" +
+				"            (+ x u v w)))              \n" +
+				"                                       \n" +
+				"   (test 2 [3 4 5])                    \n" +
+				") ";
+
+		assertEquals(Long.valueOf(14), venice.eval(script));
+	}
+
+	@Test
+	public void test_fn_destructuring_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def test                           \n" +
+				"        (fn [x {:keys [u v w]}]        \n" +
+				"            (+ x u v w)))              \n" +
+				"                                       \n" +
+				"   (test 2 {:u 3 :v 4 :w 5})           \n" +
+				") ";
+
+		assertEquals(Long.valueOf(14), venice.eval(script));
+	}
+
+	@Test
 	public void test_let() {
 		final Venice venice = new Venice();
 		
@@ -249,7 +281,36 @@ public class SpecialFormsTest {
 				"         (swap! counter inc)               " +
 				"         (deref counter))                  " +
 				")                                          ";
+		
 		assertEquals(5L, venice.eval(sideeffect));
+	}
+	
+	@Test
+	public void test_let_destructuring_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                           " +
+				"   (let [x 2                                  " +
+				"         [u v w] [3 4 5] ]                    " +
+				"        (+ x u v w))                          " +
+				")                                             ";
+		
+		assertEquals(14L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_let_destructuring_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                           " +
+				"   (let [x 2                                  " +
+				"         {:keys [u v w]} {:u 3 :v 4 :w 5} ]   " +
+				"        (+ x u v w))                          " +
+				")                                             ";
+		
+		assertEquals(14L, venice.eval(script));
 	}
 
 	@Test
