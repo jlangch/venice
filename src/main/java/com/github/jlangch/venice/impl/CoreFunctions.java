@@ -2266,7 +2266,7 @@ public class CoreFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Function 'assoc' does not allow %s as coll. %s", 
+						"Function 'assoc' does not allow %s as collection. %s", 
 						Types.getClassName(args.nth(0)),
 						ErrorMessage.buildErrLocation(args)));
 			}
@@ -2279,19 +2279,81 @@ public class CoreFunctions {
 			
 			setDoc( "Associates a value in a nested associative structure, where ks is a " + 
 					"sequence of keys and v is the new value and returns a new nested structure. " + 
-					"If any levels do not exist, hash-maps will be created.");
+					"If any levels do not exist, hash-maps or vectors will be created.");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("get", args, 3);
+			assertArity("assoc-in", args, 3);
 						
-			VncCollection coll = Coerce.toVncCollection(args.nth(0)).copy();
+			final VncCollection coll_copy = Coerce.toVncCollection(args.nth(0)).copy();
 			VncList keys = Coerce.toVncList(args.nth(1));
-			VncVal new_val = args.nth(2);
+			final VncVal new_val = args.nth(2);
 			
+			VncCollection coll = coll_copy;
+			while(!keys.isEmpty()) {
+				final VncVal key = keys.first();
+				keys = keys.rest();
+					
+				if (Types.isVncMap(coll)) {
+					final VncVal val = ((VncMap)coll).get(key);
+					if (val == Nil) {
+						if (keys.isEmpty()) {
+							((VncMap)coll).assoc(key, new_val);
+						}
+						else {
+							final VncMap newMap = new VncHashMap();
+							((VncMap)coll).assoc(key, newMap);
+							coll = newMap;
+						}
+					}
+					else if (keys.isEmpty()) {
+						((VncMap)coll).assoc(key, new_val);
+					}
+					else if (Types.isVncCollection(val)) {
+						coll = (VncCollection)val;
+					}
+					else {
+						break;
+					}
+				}
+				else {
+					if (Types.isVncLong(key)) {
+						final int idx = ((VncLong)key).getValue().intValue();
+						final int len = ((VncList)coll).size();
+											
+						if (idx < 0 || idx > len) {
+							throw new VncException(String.format(
+									"Function 'assoc-in' index %d out of bounds. %s",
+									idx,
+									ErrorMessage.buildErrLocation(args)));
+						}
+						else if (idx < len) {
+							if (keys.isEmpty()) {
+								((VncList)coll).getList().set(idx, new_val);
+								break;
+							}
+							else {
+								final VncVal val = ((VncList)coll).nth(idx);
+								if (Types.isVncList(val)) {
+									coll = ((VncCollection)val);
+								}
+								else {
+									break;
+								}								
+							}
+						}
+						else {
+							((VncList)coll).addAtEnd(new_val);
+							break;
+						}
+					}
+					else {
+						break;
+					}
+				}
+			}
 			
-			
-			return Nil;
+			return coll_copy;
 		}
 	};
 	
@@ -2422,7 +2484,8 @@ public class CoreFunctions {
 				}
 				else {
 					if (Types.isVncLong(key)) {
-						final VncVal val = ((VncList)coll).nthOrDefault(((VncLong)key).getValue().intValue(), Nil);
+						final int index = ((VncLong)key).getValue().intValue();
+						final VncVal val = ((VncList)coll).nthOrDefault(index, Nil);
 						if (val == Nil) {
 							return key_not_found;
 						}

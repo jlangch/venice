@@ -117,6 +117,30 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_assoc_in() {
+		final Venice venice = new Venice();
+
+		// map
+		assertEquals("{:a 100}", venice.eval("(str (assoc-in {} [:a] 100))"));
+		assertEquals("{:a {:b {:c 100}}}", venice.eval("(str (assoc-in {} [:a :b :c] 100))"));
+		assertEquals("{:a {:b 1 :c 100}}", venice.eval("(str (assoc-in {:a {:b 1}} [:a :c] 100))"));
+
+		// vector
+		assertEquals("[100]", venice.eval("(str (assoc-in [] [0] 100))"));
+		assertEquals("[0 100]", venice.eval("(str (assoc-in [0] [1] 100))"));
+		assertEquals("[0 100]", venice.eval("(str (assoc-in [0 1] [1] 100))"));
+		assertEquals("[[0 1] [2 100]]", venice.eval("(str (assoc-in [[0 1] [2 3]] [1 1] 100))"));
+		assertEquals("[[0 1] [2 3 100]]", venice.eval("(str (assoc-in [[0 1] [2 3]] [1 2] 100))"));
+		
+		// map / vector
+		assertEquals("{:a {:b [0 9 2]}}", venice.eval("(str (assoc-in {:a {:b [0 1 2]}} [:a :b 1] 9))"));
+		assertEquals("{:a {:b [0 1 2 9]}}", venice.eval("(str (assoc-in {:a {:b [0 1 2]}} [:a :b 3] 9))"));
+		
+		// vector / map
+		assertEquals("[0 1 {:a 1 :b {:c 9}}]", venice.eval("(str (assoc-in [0 1 {:a 1 :b {:c 2}}] [2 :b :c] 9))"));
+	}
+	
+	@Test
 	public void test_boolean() {
 		final Venice venice = new Venice();
 
