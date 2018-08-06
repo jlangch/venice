@@ -2802,17 +2802,23 @@ public class CoreFunctions {
 		}
 	};
 
-	public static VncFunction seq_Q = new VncFunction("seq?") {
+	public static VncFunction sequental_Q = new VncFunction("sequental?") {
 		{
-			setArgLists("(seq? obj)");
+			setArgLists("(sequental? obj)");
 			
 			setDoc("Returns true if obj is a sequential collection");
+			
+			setExamples("(sequental? '(1))", 
+						"(sequental? [1])", 
+						"(sequental? {:a 1})", 
+						"(sequental? nil)", 
+						"(sequental? \"abc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("seq?", args, 1);
+			assertArity("sequental?", args, 1);
 			
-			return Types.isVncList(args.nth(0)) ? True : False;
+			return Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0)) ? True : False;
 		}
 	};
 
@@ -2824,7 +2830,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("seq?", args, 1);
+			assertArity("coll?", args, 1);
 			
 			return Types.isVncCollection(args.nth(0)) ? True : False;
 		}
@@ -4081,7 +4087,7 @@ public class CoreFunctions {
 			
 			setExamples(
 					"(docoll (fn [x] (println x)) [1 2 3 4])",
-					"(docoll (fn [[k v] x] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
+					"(docoll (fn [[k v]] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5797,7 +5803,7 @@ public class CoreFunctions {
 				.put("empty", 				empty)
 		
 				.put("into",				into)
-				.put("seq?",	    		seq_Q)
+				.put("sequental?",	    	sequental_Q)
 				.put("coll?",	    		coll_Q)
 				.put("cons",				cons)
 				.put("co",					cons)
