@@ -74,6 +74,7 @@
         let [format (get bitmap-formats type)]
             (BitmapEncoder/getBitmapBytes chart format))))
 
+<<<<<<< HEAD
 (def xchart/swing-open-window
    (fn [chart title]
        (doto (. :JFrame :new title)
@@ -86,6 +87,20 @@
    (fn [chart title]
        (. :SwingUtilities :invokeLater
                (proxify :Runnable { :run (xchart/swing-open-window chart title) }))))
+=======
+(def swing-create-and-show
+   (fn [chart title]
+       (doto (. :JFrame :new title)
+             (. :setDefaultCloseOperation :EXIT_ON_CLOSE)
+             (. :add (. :XChartPanel :new chart))
+             (. :pack)
+             (. :setVisible true))))
+
+(def swing-view
+   (fn [chart title]
+       (. :SwingUtilities :invokeLater
+               (proxify :Runnable { :run (swing-create-and-show chart title) }))))
+>>>>>>> branch 'master' of https://github.com/jlangch/venice.git
                        
  
 
