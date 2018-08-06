@@ -18,4 +18,6 @@
            :y-axis { :title "Distance"
                      :decimal-pattern "##.## km" }
            :theme :matlab } ))
+           
+    (sleep 20000)
 )
