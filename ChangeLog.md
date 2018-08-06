@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
     - `(let [{:strs [a b]} {"a" 1 "b" 2}] (+ a b))`
     - `(fn [x {:keys [a b]}] (+ x a b))`
 - improved Java interop with Java functions returning arrays
-    - `byte[]` are converted to bytebuf
+    - `byte[]` is converted to bytebuf
     - all other arrays are converted to vector
 
 
