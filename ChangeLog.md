@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
     - `(let [{:syms [a b]} {'a 1 'b 2}] (+ a b))`
     - `(let [{:strs [a b]} {"a" 1 "b" 2}] (+ a b))`
     - `(fn [x {:keys [a b]}] (+ x a b))`
+    - `(fn [x {:keys [a b] :or {b 2} :as params}] (+ x a b))`
+    - `(let [[x y :as coords] [1 2 3 4]] (str "x:" x ", y:" y ", dim:" (count coords))`
 - improved Java interop with Java functions returning arrays
     - `byte[]` is converted to bytebuf
     - all other arrays are converted to vector
