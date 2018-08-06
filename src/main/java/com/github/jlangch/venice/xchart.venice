@@ -72,35 +72,21 @@
 (def to-bytes
    (fn [chart type]
         let [format (get bitmap-formats type)]
-            (BitmapEncoder/getBitmapBytes chart format))))
+            (BitmapEncoder/getBitmapBytes chart format)))
 
-<<<<<<< HEAD
 (def xchart/swing-open-window
    (fn [chart title]
-       (doto (. :JFrame :new title)
-             (. :setDefaultCloseOperation :EXIT_ON_CLOSE)
-             (. :add (. :XChartPanel :new chart))
-             (. :pack)
-             (. :setVisible true))))
+       (let [frame (. :JFrame :new title)
+             closeOP (. :JFrame :EXIT_ON_CLOSE)]
+            (. frame :setDefaultCloseOperation closeOP)
+            (. frame :add (. :XChartPanel :new chart))
+            (. frame :setSize 200 200)
+            (. frame :setVisible true))))
 
 (def xchart/swing-view-chart
    (fn [chart title]
        (. :SwingUtilities :invokeLater
-               (proxify :Runnable { :run (xchart/swing-open-window chart title) }))))
-=======
-(def swing-create-and-show
-   (fn [chart title]
-       (doto (. :JFrame :new title)
-             (. :setDefaultCloseOperation :EXIT_ON_CLOSE)
-             (. :add (. :XChartPanel :new chart))
-             (. :pack)
-             (. :setVisible true))))
-
-(def swing-view
-   (fn [chart title]
-       (. :SwingUtilities :invokeLater
-               (proxify :Runnable { :run (swing-create-and-show chart title) }))))
->>>>>>> branch 'master' of https://github.com/jlangch/venice.git
+               (proxify :Runnable { :run (fn [] (xchart/swing-open-window chart title)) }))))
                        
  
 
@@ -436,16 +422,16 @@
        (let [chart (. :XYChart :new width height)
              styling (attach-default-font styling)]
           (doto-cond
-             (.getStyler chart)
+             (. chart :getStyler)
              theme        (. :setTheme (get themes theme theme))
              render-style (. :setDefaultSeriesRenderStyle (get xy-render-styles render-style)))
           (docoll [[s-name data] series] (xchart/xy-chart-add-series! chart s-name data))
-          (doto (. :getStyler chart)
+          (doto (. chart :getStyler)
                 (set-default-style! styling)
                 (set-axes-style! styling))
           (doto-cond
               chart
-              title (.setTitle title)
+              title (. :setTitle title)
               (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
               (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title))))))
 

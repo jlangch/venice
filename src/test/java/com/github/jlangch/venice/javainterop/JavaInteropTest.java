@@ -30,6 +30,9 @@ import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.Map;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -442,7 +445,65 @@ public class JavaInteropTest {
 
 		assertEquals(true, (Boolean)venice.eval(script));
 	}
+	
+	@Test
+	@Ignore
+	public void test_proxy_SwingInvoker() {
+		final Venice venice = new Venice();
 
+		final String script =
+				"(do                                                                              " +
+				"   (import :java.lang.Runnable)                                                  " +
+				"   (import :javax.swing.JPanel)                                                  " +
+				"   (import :javax.swing.JFrame)                                                  " +
+				"   (import :javax.swing.JLabel)                                                  " +
+				"   (import :javax.swing.SwingUtilities)                                          " +
+				"                                                                                 " +
+				"   (def swing-open-window                                                        " +
+				"        (fn [title]                                                              " +
+				"            (let [frame (. :JFrame :new title)                                   " +
+				"                  label (. :JLabel :new \"Hello World\")                         " +
+				"                  closeOP (. :JFrame :EXIT_ON_CLOSE)]                            " +
+				"                 (. frame :setDefaultCloseOperation closeOP)                     " +
+				"                 (. frame :add label)                                            " +
+				"                 (. frame :setSize 200 200)                                      " +
+				"                 (. frame :setVisible true))))                                   " +
+				"                                                                                 " +
+				"   (def swing-view                                                               " +
+				"        (fn [title]                                                              " +
+				"            (. :SwingUtilities :invokeLater                                      " +
+				"               (proxify :Runnable { :run (fn [] (swing-open-window title))}))))  " +
+				"                                                                                 " +
+				"   (swing-view \"test\")                                                         " +
+				"   (sleep 20000)                                                                 " +
+				") ";
+
+		venice.eval(script);
+	}
+	@Test
+	public void test_swingInvoker() {
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                //Make sure we have nice window decorations.
+                JFrame.setDefaultLookAndFeelDecorated(true);
+
+                //Create and set up the window.
+                JFrame frame = new JFrame("HelloWorldSwing");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                //Add the ubiquitous "Hello World" label.
+                JLabel label = new JLabel("Hello World");
+                frame.add(label);
+
+                //Display the window.
+                frame.pack();
+                frame.setVisible(true);
+                
+           }});	
+		
+        try { Thread.sleep(20_000); } catch(Exception ex) {}	
+	}
+			
 //	@Test
 //	public void test_proxy_Streams_Filter() {
 //		final Venice venice = new Venice();

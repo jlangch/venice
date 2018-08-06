@@ -5611,6 +5611,25 @@ public class CoreFunctions {
 			return new VncString(UUID.randomUUID().toString());
 		}
 	};
+
+	public static VncFunction sleep = new VncFunction("sleep") {
+		{
+			setArgLists("(sleep n)");
+			
+			setDoc("Sleep for n milliseconds.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("sleep", args, 1);
+			
+			try { 
+				Thread.sleep(Coerce.toVncLong(args.first()).getValue());
+			} catch(Exception ex) {
+			}
+			
+			return Nil;
+		}
+	};
 	
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
@@ -5842,6 +5861,7 @@ public class CoreFunctions {
 				
 				.put("gensym",				gensym)
 				.put("uuid",				uuid)
+				.put("sleep",				sleep)
 				.put("version",				version)
 				
 				.put("io/file",				io_file)
