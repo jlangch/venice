@@ -201,6 +201,23 @@
           (not (nil? border-visible?)) (. :setPlotBorderVisible border-visible?)
           content-size                 (. :setPlotContentSize content-size))))
 
+(def set-series-style!
+   (fn [styler series]
+       (let [series-colors  (. styler :getSeriesColors)
+             series-lines   (. styler :getSeriesLines)
+             series-markers (. styler :getSeriesMarkers)
+             series         (vec series)]
+          (dotimes [i (count series)]
+              (let [{:keys [color stroke marker]} (nth series i)]
+                   (when color
+                         (update! series-colors i (fn [x] (get colors color color))))
+                   (when stroke
+                         (update! series-lines i (fn [x] (get strokes stroke stroke))))
+                   (when marker
+                         (update! series-markers i (fn [x] (get markers marker marker))))))
+          (. styler :setSeriesColors series-colors)
+          (. styler :setSeriesLines series-lines)
+          (. styler :setSeriesMarkers series-markers))))
 
 
 
