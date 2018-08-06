@@ -37,8 +37,13 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	public VncVal apply(final VncList args) {
 		CoreFunctions.assertArity("keyword", args, 1);
 		
-		final VncMap map = Coerce.toVncMap(args.nth(0));
-		return map.get(this);
+		if (args.first() == Constants.Nil) {
+			return Constants.Nil;
+		}
+		else {
+			final VncMap map = Coerce.toVncMap(args.first());
+			return map.get(this);
+		}
 	}
 	
 	public VncKeyword copy() { 
