@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
     - `(fn [x {:keys [a b]}] (+ x a b))`
 - added destructuring `:as` and `:or`options
     - `(fn [x {:keys [a b] :or {b 2} :as params}] (+ x a b))`
-    - `(let [[x y :as coords] [1 2 3 4]] (str "x:" x ", y:" y ", dim:" (count coords))`
+    - `(let [[x y :as coords] [1 2 3 4]] (str "x:" x ", y:" y ", dim:" (count coords)))`
 - improved Java interop with Java functions returning arrays
     - `byte[]` is converted to bytebuf
     - all other arrays are converted to vector
