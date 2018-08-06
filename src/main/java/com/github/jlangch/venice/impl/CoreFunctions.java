@@ -1907,6 +1907,42 @@ public class CoreFunctions {
 	// Vector functions
 	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction new_vec = new VncFunction("vec") {
+		{
+			setArgLists("(vec coll)");
+			
+			setDoc("Creates a new vector with the items of the collection");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("vec", args, 1);
+
+			final VncVal coll = args.first();
+			
+			if (Types.isVncList(coll)) {
+				return ((VncList)coll).toVncVector();
+			}
+			if (Types.isVncMap(coll)) {
+				return ((VncMap)coll).toVncVector();
+			}
+			else if (Types.isVncJavaList(coll)) {
+				return ((VncJavaList)coll).toVncVector();
+			}
+			else if (Types.isVncJavaSet(coll)) {
+				return ((VncJavaSet)coll).toVncVector();
+			}
+			else if (Types.isVncSet(coll)) {
+				return ((VncSet)coll).toVncVector();
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'vec': %s is not a collection. %s", 
+						Types.getClassName(coll),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	public static VncFunction new_vector = new VncFunction("vector") {
 		{
 			setArgLists("(vector & items)");
@@ -1915,18 +1951,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() == 1 && Types.isVncJavaList(args.nth(0))) {
-				return ((VncJavaList)args.nth(0)).toVncVector();
-			}
-			else if (args.size() == 1 && Types.isVncJavaSet(args.nth(0))) {
-				return ((VncJavaSet)args.nth(0)).toVncVector();
-			}
-			else if (args.size() == 1 && Types.isVncSet(args.nth(0))) {
-				return ((VncSet)args.nth(0)).toVncVector();
-			}
-			else {
-				return new VncVector(args.getList());
-			}
+			return new VncVector(args.getList());
 		}
 	};
 
@@ -5613,6 +5638,7 @@ public class CoreFunctions {
 		
 				.put("list",				new_list)
 				.put("list?",				list_Q)
+				.put("vec",					new_vec)
 				.put("vector",				new_vector)
 				.put("vector?",				vector_Q)
 				.put("set?",				set_Q)

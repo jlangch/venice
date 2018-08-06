@@ -130,6 +130,17 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override
+	public VncVector toVncVector() {
+		return new VncVector(value
+							.entrySet()
+							.stream()
+							.map(e -> new VncVector(
+										JavaInteropUtil.convertToVncVal(e.getKey()), 
+										JavaInteropUtil.convertToVncVal(e.getValue())))
+							.collect(Collectors.toList()));
+	}
+	
+	@Override
 	public int size() {
 		return value.size();
 	}

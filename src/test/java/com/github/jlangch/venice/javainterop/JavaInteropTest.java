@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -185,9 +186,9 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(. jobj :getByteArray)", symbols()));
-		assertArrayEquals(new byte[] {1,2,3}, (byte[])venice.eval("(do (. jobj :setByteArray (bytebuf '(1 2 3))) (. jobj :getByteArray))", symbols()));
-		assertArrayEquals(new byte[] {}, (byte[])venice.eval("(do (. jobj :setByteArray (bytebuf '())) (. jobj :getByteArray))", symbols()));
-		assertArrayEquals(new byte[] {1}, (byte[])venice.eval("(do (. jobj :setByteArray 1) (. jobj :getByteArray))", symbols()));
+		assertArrayEquals(new byte[] {1,2,3}, ((ByteBuffer)venice.eval("(do (. jobj :setByteArray (bytebuf '(1 2 3))) (. jobj :getByteArray))", symbols())).array());
+		assertArrayEquals(new byte[] {}, ((ByteBuffer)venice.eval("(do (. jobj :setByteArray (bytebuf '())) (. jobj :getByteArray))", symbols())).array());
+		assertArrayEquals(new byte[] {1}, ((ByteBuffer)venice.eval("(do (. jobj :setByteArray 1) (. jobj :getByteArray))", symbols())).array());
 	}
 
 	@Test
@@ -195,9 +196,9 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(. jobj :getIntArray)", symbols()));
-		assertArrayEquals(new int[] {1,2,3}, (int[])venice.eval("(do (. jobj :setIntArray '(1 2 3)) (. jobj :getIntArray))", symbols()));
-		assertArrayEquals(new int[] {}, (int[])venice.eval("(do (. jobj :setIntArray '()) (. jobj :getIntArray))", symbols()));
-		assertArrayEquals(new int[] {1}, (int[])venice.eval("(do (. jobj :setIntArray 1) (. jobj :getIntArray))", symbols()));
+		assertEquals("[1 2 3]", venice.eval("(str (do (. jobj :setIntArray '(1 2 3)) (. jobj :getIntArray)))", symbols()));
+		assertEquals("[]", venice.eval("(str (do (. jobj :setIntArray '()) (. jobj :getIntArray)))", symbols()));
+		assertEquals("[1]", venice.eval("(str (do (. jobj :setIntArray 1) (. jobj :getIntArray)))", symbols()));
 	}
 
 	@Test
@@ -205,9 +206,9 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(. jobj :getIntegerArray)", symbols()));
-		assertArrayEquals(new Integer[] {1,2,3}, (Integer[])venice.eval("(do (. jobj :setIntegerArray '(1 2 3)) (. jobj :getIntegerArray))", symbols()));
-		assertArrayEquals(new Integer[] {}, (Integer[])venice.eval("(do (. jobj :setIntegerArray '()) (. jobj :getIntegerArray))", symbols()));
-		assertArrayEquals(new Integer[] {1}, (Integer[])venice.eval("(do (. jobj :setIntegerArray 1) (. jobj :getIntegerArray))", symbols()));
+		assertEquals("[1 2 3]", venice.eval("(str (do (. jobj :setIntegerArray '(1 2 3)) (. jobj :getIntegerArray)))", symbols()));
+		assertEquals("[]", venice.eval("(str (do (. jobj :setIntegerArray '()) (. jobj :getIntegerArray)))", symbols()));
+		assertEquals("[1]", venice.eval("(str (do (. jobj :setIntegerArray 1) (. jobj :getIntegerArray)))", symbols()));
 	}
 
 	@Test
@@ -215,9 +216,11 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(. jobj :getStringArray)", symbols()));
-		assertArrayEquals(new String[] {"a", "b", "c"}, (String[])venice.eval("(do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray))", symbols()));
-		assertArrayEquals(new String[] {}, (String[])venice.eval("(do (. jobj :setStringArray '()) (. jobj :getStringArray))", symbols()));
-		assertArrayEquals(new String[] {"a"}, (String[])venice.eval("(do (. jobj :setStringArray \"a\") (. jobj :getStringArray))", symbols()));
+		assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray)))", symbols()));
+		assertEquals("[]", venice.eval("(str (do (. jobj :setStringArray '()) (. jobj :getStringArray)))", symbols()));
+		assertEquals("[a]", venice.eval("(str (do (. jobj :setStringArray \"a\") (. jobj :getStringArray)))", symbols()));
+		
+		assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray)))", symbols()));
 	}
 
 	@Test

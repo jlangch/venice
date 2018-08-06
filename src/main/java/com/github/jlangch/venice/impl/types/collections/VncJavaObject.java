@@ -116,6 +116,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 		return new VncList();
 	}
 
+	@Override
+	public VncVector toVncVector() {
+		return new VncVector();
+	}
+
 	public VncMap toVncMap() {
 		return new VncHashMap(getMap());
 	}

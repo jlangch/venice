@@ -42,4 +42,9 @@ public abstract class VncMap extends VncCollection {
 	public abstract VncMap assoc(VncList lst);
 
 	public abstract VncMap dissoc(VncList lst);
+	
+	public abstract VncList toVncList();
+	
+	public abstract VncVector toVncVector();
+
 }

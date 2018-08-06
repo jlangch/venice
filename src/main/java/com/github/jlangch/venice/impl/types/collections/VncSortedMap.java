@@ -114,6 +114,15 @@ public class VncSortedMap extends VncMap {
 	}
 	
 	@Override
+	public VncVector toVncVector() {
+		return new VncVector(value
+							.entrySet()
+							.stream()
+							.map(e -> new VncVector(e.getKey(), e.getValue()))
+							.collect(Collectors.toList()));
+	}
+	
+	@Override
 	public int size() {
 		return value.size();
 	}
