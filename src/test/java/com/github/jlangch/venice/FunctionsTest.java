@@ -3128,6 +3128,29 @@ public class FunctionsTest {
 		assertFalse((Boolean)venice.eval("(true? false)"));	
 		assertFalse((Boolean)venice.eval("(true? 1)"));	
 	}
+	
+	@Test
+	public void test_update() {
+		final Venice venice = new Venice();
+		
+		// list
+		assertEquals("(3)", venice.eval("(str (update '() 0 (fn [x] 3)))"));
+		assertEquals("(0 1)", venice.eval("(str (update '(0) 1 (fn [x] 1)))"));
+		assertEquals("(3 1)", venice.eval("(str (update '(0 1) 0 (fn [x] 3)))"));
+		assertEquals("(4 1)", venice.eval("(str (update '(0 1) 0 (fn [x] (+ x 4))))"));
+		
+		// vector
+		assertEquals("[3]", venice.eval("(str (update [] 0 (fn [x] 3)))"));
+		assertEquals("[0 1]", venice.eval("(str (update [0] 1 (fn [x] 1)))"));
+		assertEquals("[3 1]", venice.eval("(str (update [0 1] 0 (fn [x] 3)))"));
+		assertEquals("[4 1]", venice.eval("(str (update [0 1] 0 (fn [x] (+ x 4))))"));
+		
+		// map
+		assertEquals("{:a 0}", venice.eval("(str (update {} :a (fn [x] 0)))"));
+		assertEquals("{:a 1 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] 1)))"));
+		assertEquals("{:a 3 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] 3)))"));
+		assertEquals("{:a 4 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] (+ x 4))))"));		
+	}
 
 	@Test
 	public void test_uuid() {

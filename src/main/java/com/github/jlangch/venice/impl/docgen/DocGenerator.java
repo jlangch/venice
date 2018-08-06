@@ -399,6 +399,10 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("take-while"));
 		vec_modify.addItem(getDocItem("drop"));
 		vec_modify.addItem(getDocItem("drop-while"));
+		vec_modify.addItem(getDocItem("assoc-in"));
+		vec_modify.addItem(getDocItem("get-in"));
+		vec_modify.addItem(getDocItem("update"));
+		
 		
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
@@ -443,6 +447,8 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("conj"));
 		map_modify.addItem(getDocItem("assoc"));
 		map_modify.addItem(getDocItem("assoc-in"));
+		map_modify.addItem(getDocItem("get-in"));
+		map_modify.addItem(getDocItem("update"));
 		map_modify.addItem(getDocItem("dissoc"));
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));
