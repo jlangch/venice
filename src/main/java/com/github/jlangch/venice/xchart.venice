@@ -394,7 +394,7 @@
 
 (def xchart/xy-chart-add-series!
    (fn [chart s-name data]
-       (if (sequental? data)
+       (if (sequential? data)
            (apply add-raw-series chart s-name data)
            (let [{:keys [x y error-bars style]} data
                  {:keys [marker-color marker-type

@@ -2802,21 +2802,21 @@ public class CoreFunctions {
 		}
 	};
 
-	public static VncFunction sequental_Q = new VncFunction("sequental?") {
+	public static VncFunction sequential_Q = new VncFunction("sequential?") {
 		{
-			setArgLists("(sequental? obj)");
+			setArgLists("(sequential? obj)");
 			
 			setDoc("Returns true if obj is a sequential collection");
 			
-			setExamples("(sequental? '(1))", 
-						"(sequental? [1])", 
-						"(sequental? {:a 1})", 
-						"(sequental? nil)", 
-						"(sequental? \"abc\")");
+			setExamples("(sequential? '(1))", 
+						"(sequential? [1])", 
+						"(sequential? {:a 1})", 
+						"(sequential? nil)", 
+						"(sequential? \"abc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("sequental?", args, 1);
+			assertArity("sequential?", args, 1);
 			
 			return Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0)) ? True : False;
 		}
@@ -5803,7 +5803,7 @@ public class CoreFunctions {
 				.put("empty", 				empty)
 		
 				.put("into",				into)
-				.put("sequental?",	    	sequental_Q)
+				.put("sequential?",	    	sequential_Q)
 				.put("coll?",	    		coll_Q)
 				.put("cons",				cons)
 				.put("co",					cons)

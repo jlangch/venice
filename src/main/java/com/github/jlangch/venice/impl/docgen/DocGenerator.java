@@ -298,7 +298,7 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("vector?"));
 		coll_test.addItem(getDocItem("set?"));
 		coll_test.addItem(getDocItem("map?"));
-		coll_test.addItem(getDocItem("sequental?"));
+		coll_test.addItem(getDocItem("sequential?"));
 		coll_test.addItem(getDocItem("hash-map?"));
 		coll_test.addItem(getDocItem("ordered-map?"));
 		coll_test.addItem(getDocItem("sorted-map?"));

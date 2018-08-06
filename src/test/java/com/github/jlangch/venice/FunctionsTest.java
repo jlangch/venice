@@ -2404,18 +2404,18 @@ public class FunctionsTest {
 	}
 	
 	@Test
-	public void test_sequental_Q() {
+	public void test_sequential_Q() {
 		final Venice venice = new Venice();
 
-		assertFalse((Boolean)venice.eval("(sequental? nil)"));	
-		assertFalse((Boolean)venice.eval("(sequental? 1)"));	
-		assertTrue((Boolean)venice.eval("(sequental? '(1 2))"));	
-		assertTrue((Boolean)venice.eval("(sequental? [1 2])"));	
-		assertFalse((Boolean)venice.eval("(sequental? {:a 1 :b 2})"));	
-		assertFalse((Boolean)venice.eval("(sequental? (hash-map :a 1 :b 2))"));	
-		assertFalse((Boolean)venice.eval("(sequental? (ordered-map :a 1 :b 2))"));	
-		assertFalse((Boolean)venice.eval("(sequental? (sorted-map :a 1 :b 2))"));	
-		assertFalse((Boolean)venice.eval("(sequental? (set 1 2))"));	
+		assertFalse((Boolean)venice.eval("(sequential? nil)"));	
+		assertFalse((Boolean)venice.eval("(sequential? 1)"));	
+		assertTrue((Boolean)venice.eval("(sequential? '(1 2))"));	
+		assertTrue((Boolean)venice.eval("(sequential? [1 2])"));	
+		assertFalse((Boolean)venice.eval("(sequential? {:a 1 :b 2})"));	
+		assertFalse((Boolean)venice.eval("(sequential? (hash-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(sequential? (ordered-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(sequential? (sorted-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(sequential? (set 1 2))"));	
 	}
 	
 	@Test
