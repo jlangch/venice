@@ -30,9 +30,6 @@ import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.Map;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -479,29 +476,6 @@ public class JavaInteropTest {
 				") ";
 
 		venice.eval(script);
-	}
-	@Test
-	public void test_swingInvoker() {
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                //Make sure we have nice window decorations.
-                JFrame.setDefaultLookAndFeelDecorated(true);
-
-                //Create and set up the window.
-                JFrame frame = new JFrame("HelloWorldSwing");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                //Add the ubiquitous "Hello World" label.
-                JLabel label = new JLabel("Hello World");
-                frame.add(label);
-
-                //Display the window.
-                frame.pack();
-                frame.setVisible(true);
-                
-           }});	
-		
-        try { Thread.sleep(20_000); } catch(Exception ex) {}	
 	}
 			
 //	@Test
