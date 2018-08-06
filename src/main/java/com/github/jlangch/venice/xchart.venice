@@ -358,7 +358,7 @@
                ;; colour, but if you specify something else, you cannot match the series!
                (and ebc (not= ebc :match-series)) (. :setErrorBarsColor (colors ebc ebc))
                (and ebc (not= ebc :match-series)) (. :setErrorBarsColorSeriesColor false)
-               (= ebc :match-series)              (. :setErrorBarsColorSeriesColor true)
+               (== ebc :match-series)             (. :setErrorBarsColorSeriesColor true)
                
                locale      (. :setLocale locale)
                marker-size (. :setMarkerSize marker-size)
@@ -370,8 +370,8 @@
 (def add-raw-series
    (fn [chart s-name x-data y-data error-bars]
        (if (some? error-bars)
-           (. :addSeries chart s-name x-data y-data error-bars)
-           (. :addSeries chart s-name x-data y-data))))
+           (. chart :addSeries s-name x-data y-data error-bars)
+           (. chart :addSeries s-name x-data y-data))))
 
 (def attach-default-font
    (fn [style-map]
