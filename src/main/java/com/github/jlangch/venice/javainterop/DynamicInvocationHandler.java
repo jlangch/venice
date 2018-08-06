@@ -42,8 +42,10 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		final VncFunction fn = methods.get(method.getName());
 		if (fn != null) {
 			final VncList vncArgs = new VncList();
-			for(Object arg : args) {
-				vncArgs.addAtEnd(JavaInteropUtil.convertToVncVal(arg));
+			if (args != null) {
+				for(Object arg : args) {
+					vncArgs.addAtEnd(JavaInteropUtil.convertToVncVal(arg));
+				}
 			}
 			return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
 		}
