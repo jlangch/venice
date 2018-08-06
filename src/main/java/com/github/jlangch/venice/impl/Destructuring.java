@@ -92,7 +92,7 @@ public class Destructuring {
 			// [[x y & z] [10 20 30 40 50]]
 			// [[x y :as coords] [10 20 30 40 50]]
 			final List<VncVal> symbols = symVal.getList();
-			final List<VncVal> values = ((VncList)bindVal).getList();
+			final List<VncVal> values = bindVal == Nil ? new ArrayList<>() : ((VncList)bindVal).getList();
 			for(int ii=0; ii<symbols.size(); ii++) {
 				if (isIgnoreBindingSymbol(symbols.get(ii))) {
 					continue;
@@ -126,10 +126,10 @@ public class Destructuring {
 			}
 		}
 		else if (Types.isVncString(bindVal)) {
-			// [[x y] [10 20]]
-			// [[x y & z] [10 20 30 40 50]]
+			// [[x y] "abcdef"]
+			// [[x y & z] "abcdef"]
 			final List<VncVal> symbols = symVal.getList();
-			final List<VncVal> values = ((VncString)bindVal).toVncList().getList();
+			final List<VncVal> values = bindVal == Nil ? new ArrayList<>() : ((VncString)bindVal).toVncList().getList();
 			for(int ii=0; ii<symbols.size(); ii++) {
 				if (isIgnoreBindingSymbol(symbols.get(ii))) {
 					continue;
