@@ -221,71 +221,164 @@ public class DestructuringTest {
 	
 	@Test
 	public void test_associative_keys() {
-		// [{:keys [a b]} {:a 1 :b 2 :c 3}]  ->  a: 1, b: 2
+		// [{:keys [a b c]} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
 
 		final VncVal symVal = new VncHashMap(
 									new VncKeyword(":keys"), 
-									new VncVector(new VncSymbol("a"), new VncSymbol("b")));
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
 		final VncVal bindVal = new VncHashMap(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
-										new VncKeyword(":c"), new VncLong(3));
+										new VncKeyword(":d"), new VncLong(4));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
-		assertEquals(2, bindings.size());
+		assertEquals(3, bindings.size());
 		
 		assertEquals("a", bindings.get(0).sym.getName());
 		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
 		
 		assertEquals("b", bindings.get(1).sym.getName());
 		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Constants.Nil, bindings.get(2).val);
 	}
-	
+
+	@Test
+	public void test_associative_keys_with_or() {
+		// [{:keys [a b c] :or {c 3}} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: 3
+
+		final VncVal symVal = new VncHashMap(
+									new VncKeyword(":keys"), 
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									new VncKeyword(":or"),
+									new VncHashMap(new VncSymbol("c"), new VncLong(3)));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":d"), new VncLong(4));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
+	}
+
 	@Test
 	public void test_associative_syms() {
-		// [{:syms [a b]} {'a 1 'b 2 'c 3}]  ->  a: 1, b: 2
+		// [{:syms [a b]} {'a 1 'b 2 'd 4}]  ->  'a 1, 'b 2, 'c nil
 
 		final VncVal symVal = new VncHashMap(
 									new VncKeyword(":syms"), 
-									new VncVector(new VncSymbol("a"), new VncSymbol("b")));
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
 		final VncVal bindVal = new VncHashMap(
 										new VncSymbol("a"), new VncLong(1),
 										new VncSymbol("b"), new VncLong(2),
-										new VncSymbol("c"), new VncLong(3));
+										new VncSymbol("d"), new VncLong(4));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
-		assertEquals(2, bindings.size());
+		assertEquals(3, bindings.size());
 		
 		assertEquals("a", bindings.get(0).sym.getName());
 		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
 		
 		assertEquals("b", bindings.get(1).sym.getName());
 		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Constants.Nil, bindings.get(2).val);
+	}
+
+	@Test
+	public void test_associative_syms_with_or() {
+		// [{:syms [a b] :or {c 3}} {'a 1 'b 2 'd 4}]  ->  'a 1, 'b 2, 'c 3
+
+		final VncVal symVal = new VncHashMap(
+									new VncKeyword(":syms"), 
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									new VncKeyword(":or"),
+									new VncHashMap(new VncSymbol("c"), new VncLong(3)));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncSymbol("a"), new VncLong(1),
+										new VncSymbol("b"), new VncLong(2),
+										new VncSymbol("d"), new VncLong(4));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
 	}
 	
 	@Test
 	public void test_associative_strs() {
-		// [{:strs [a b]} {"a" 1 "b" 2 "c" 3}]  ->  a: 1, b: 2
+		// [{:strs [a b c]} {"a" 1 "b" 2 "d" 4}]  ->  "a" 1, "b" 2, "c" nil
 
 		final VncVal symVal = new VncHashMap(
 									new VncKeyword(":strs"), 
-									new VncVector(new VncSymbol("a"), new VncSymbol("b")));
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
 		final VncVal bindVal = new VncHashMap(
 										new VncString("a"), new VncLong(1),
 										new VncString("b"), new VncLong(2),
-										new VncString("c"), new VncLong(3));
+										new VncString("d"), new VncLong(4));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
-		assertEquals(2, bindings.size());
+		assertEquals(3, bindings.size());
 		
 		assertEquals("a", bindings.get(0).sym.getName());
 		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
 		
 		assertEquals("b", bindings.get(1).sym.getName());
 		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Constants.Nil, bindings.get(2).val);
+	}
+	
+	@Test
+	public void test_associative_strs_with_or() {
+		// [{:strs [a b c] :or {c 3}} {"a" 1 "b" 2 "d" 4}]  ->  "a" 1, "b" 2, "c" 3
+
+		final VncVal symVal = new VncHashMap(
+									new VncKeyword(":strs"), 
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									new VncKeyword(":or"),
+									new VncHashMap(new VncSymbol("c"), new VncLong(3)));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncString("a"), new VncLong(1),
+										new VncString("b"), new VncLong(2),
+										new VncString("d"), new VncLong(4));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
 	}
 
 
