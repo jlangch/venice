@@ -392,10 +392,9 @@
 ;; XY chart
 ;; ---------------------------------------------------------------------------
 
-
 (def xchart/xy-chart-add-series!
    (fn [chart s-name data]
-       (if (coll? data)
+       (if (sequental? data)
            (apply add-raw-series chart s-name data)
            (let [{:keys [x y error-bars style]} data
                  {:keys [marker-color marker-type
@@ -425,7 +424,9 @@
              (. chart :getStyler)
              theme        (. :setTheme (get themes theme theme))
              render-style (. :setDefaultSeriesRenderStyle (get xy-render-styles render-style)))
-          (docoll [[s-name data] series] (xchart/xy-chart-add-series! chart s-name data))
+             
+          (docoll (fn [[s-name data]] (xchart/xy-chart-add-series! chart s-name data)) series)
+             
           (doto (. chart :getStyler)
                 (set-default-style! styling)
                 (set-axes-style! styling))
