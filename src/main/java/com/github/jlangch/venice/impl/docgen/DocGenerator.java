@@ -402,6 +402,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("assoc-in"));
 		vec_modify.addItem(getDocItem("get-in"));
 		vec_modify.addItem(getDocItem("update"));
+		vec_modify.addItem(getDocItem("update!"));
 		
 		
 		final DocSection vec_test = new DocSection("Test");
@@ -449,6 +450,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("assoc-in"));
 		map_modify.addItem(getDocItem("get-in"));
 		map_modify.addItem(getDocItem("update"));
+		map_modify.addItem(getDocItem("update!"));
 		map_modify.addItem(getDocItem("dissoc"));
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));

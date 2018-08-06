@@ -2685,6 +2685,61 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction update_BANG = new VncFunction("update!") {
+		{
+			setArgLists("(update! m k f)");
+			
+			setDoc("Updates a value in an associative structure, where k is a " + 
+					"key and f is a function that will take the old value " + 
+					"return the new value.");
+			
+			setExamples(
+					"(update! [] 0 (fn [x] 5))",
+					"(update! [0 1 2] 0 (fn [x] 5))",
+					"(update! [0 1 2] 0 (fn [x] (+ x 1)))",
+					"(update! {} :a (fn [x] 5))",
+					"(update! {:a 0} :b (fn [x] 5))",
+					"(update! {:a 0 :b 1} :a (fn [x] 5))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("update!", args, 3);
+			
+			if (Types.isVncList(args.first())) {
+				final VncList list = (VncList)args.first();
+				final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
+				final VncFunction fn = Coerce.toVncFunction(args.nth(2));
+						
+				if (idx < 0 || idx > list.size()) {
+					throw new VncException(String.format(
+							"Function 'update' index %d out of bounds. %s",
+							idx,
+							ErrorMessage.buildErrLocation(args)));
+				}
+				else if (idx < list.size()) {
+					list.getList().set(idx, fn.apply(new VncList(list.nth(idx))));
+				}
+				else {
+					list.addAtEnd(fn.apply(new VncList(Nil)));
+				}			
+				return list;
+			}
+			else if (Types.isVncMap(args.first())) {
+				final VncMap map = (VncMap)args.first();
+				final VncVal key = args.second();
+				final VncFunction fn = Coerce.toVncFunction(args.nth(2));
+				map.assoc(key, fn.apply(new VncList(map.get(key))));
+				return map;
+			}
+			else {
+				throw new VncException(String.format(
+						"'update' does not allow %s as associative structure. %s", 
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Sequence functions
@@ -5717,6 +5772,7 @@ public class CoreFunctions {
 				.put("val",					val)
 				.put("vals",				vals)
 				.put("update",				update)
+				.put("update!",				update_BANG)
 				.put("subvec", 				subvec)
 				.put("subbytebuf", 			subbytebuf)
 				.put("empty", 				empty)
