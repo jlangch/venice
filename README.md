@@ -191,6 +191,7 @@ Java VarArgs:
 Java Callbacks:
 
 ```clojure
+;; File filter
 (do
    (import :java.io.File :java.io.FilenameFilter)
 
@@ -202,6 +203,32 @@ Java Callbacks:
 )
 ```
 
+```clojure
+;; Swing GUI (demonstrates passing parameter across callbacks)
+(do
+   (import :java.lang.Runnable)
+   (import :javax.swing.JPanel)
+   (import :javax.swing.JFrame)
+   (import :javax.swing.JLabel)
+   (import :javax.swing.SwingUtilities)
+
+   (def swing-open-window
+        (fn [title]
+            (let [frame (. :JFrame :new title)
+                  label (. :JLabel :new "Hello World")
+                  closeOP (. :JFrame :EXIT_ON_CLOSE)]
+                 (. frame :setDefaultCloseOperation closeOP)
+                 (. frame :add label)
+                 (. frame :setSize 200 200)
+                 (. frame :setVisible true))))
+
+   (def swing-gui
+        (fn [title]
+            (. :SwingUtilities :invokeLater
+               (proxify :Runnable { :run (fn [] (swing-open-window title)) } ))))
+
+   (swing-gui "Test"))
+```
 
 A larger example:
 
