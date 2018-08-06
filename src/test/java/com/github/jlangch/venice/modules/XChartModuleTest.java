@@ -24,18 +24,81 @@ package com.github.jlangch.venice.modules;
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 
 public class XChartModuleTest {
 
 	@Test
-	public void test_line_chart() {
+	public void test_xy_chart() {
 		final Venice venice = new Venice();
 
-		final String script = new ClassPathResource("com/github/jlangch/venice/modules/xchart_line.venice")
-										.getResourceAsString();
+		final String script =
+			"(do                                                                   \n" +
+			"	(load-module :xchart)                                              \n" +
+			"                                                                      \n" +
+			"	(xchart/swing-view-chart                                           \n" +
+			"	   (xchart/xy-chart                                                \n" +
+			"	       { \"Maxime\" { :x (range 10)                                \n" +
+			"	                      :y (mapv (fn [x] (+ x (rand-double 3.0)))    \n" +
+			"	                             (range 10)) }                         \n" +
+			"            \"Tyrone\" { :x (range 10)                                \n" +
+			"	                      :y (mapv (fn [x] (+ 2 x (rand-double 4.0)))  \n" +
+			"	                            (range 0 5 0.5)) }}                    \n" +
+			"                                                                      \n" +
+			"	      { :title \"Longest running distance\"                        \n" +
+			"	        :x-axis { :title \"Months (since start)\" }                \n" +
+			"	        :y-axis { :title \"Distance\"                              \n" +
+			"	                  :decimal-pattern \"##.## km\" }                  \n" +
+			"	        :theme :matlab } ))                                        \n" +
+			"	                                                                   \n" +
+			"	 (sleep 20000)                                                     \n" +
+			") ";
+		
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
 
+	@Test
+	public void test_pie_chart() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                   \n" +
+			"	(load-module :xchart)                                              \n" +
+			"                                                                      \n" +
+			"	(xchart/swing-view-chart                                           \n" +
+			"	   (xchart/pie-chart                                               \n" +
+			"	       { \"Spaces\" 400                                            \n" + 
+			"            \"Tabs\" 310                                              \n" + 
+			"            \"A mix of both\" 50 }))                                  \n" +
+			"	                                                                   \n" +
+			"	 (sleep 20000)                                                     \n" +
+			") ";
+		
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	public void test_pie_chart_donut() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                   \n" +
+			"	(load-module :xchart)                                              \n" +
+			"                                                                      \n" +
+			"	(xchart/swing-view-chart                                           \n" +
+			"	   (xchart/pie-chart                                               \n" +
+			"	       { \":none\" 845                                             \n" + 
+			"            \":simple\" 371                                           \n" + 
+			"            \":whitespace\" 303                                       \n" +
+			"            \":advanced\" 1013 }                                      \n" +
+			"	       { :title (str \"Which ClojureScript optimization \"         \n" + 
+			"			             \"settings do you use?\")                     \n" + 
+			"            :render-style :donut                                      \n" +
+			"            :annotation-distance 0.82 }))                             \n" +
+			"	                                                                   \n" +
+			"	 (sleep 20000)                                                     \n" +
+			") ";
+		
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
 

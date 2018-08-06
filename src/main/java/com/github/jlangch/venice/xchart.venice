@@ -430,10 +430,70 @@
           (doto (. chart :getStyler)
                 (set-default-style! styling)
                 (set-axes-style! styling))
+                
           (doto-cond
               chart
               title (. :setTitle title)
               (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
               (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title))))))
 
+ 
+ 
+ 
+;; ---------------------------------------------------------------------------
+;; Pie chart
+;; ---------------------------------------------------------------------------
+
+(def attach-default-annotation-distance
+   (fn [styling]
+       (if (and (== :donut (:render-style styling))
+                (not (:annotation-distance styling)))
+          (assoc styling :annotation-distance
+                (- 1.0 (/ (:donut-thickness styling 0.33) 2)))
+          styling)))
+
+(def xchart/pie-chart-add-series!
+   (fn [chart s-name data]
+       (if (number? data)
+           (. chart :addSeries s-name data)
+           (let [{:keys [render-style fill-color show-in-legend?]} (:style data)
+                 val (:value data)]
+              (doto-cond
+                 (. chart :addSeries s-name val)
+                 render-style                 (. :setChartPieSeriesRenderStyle (get pie-render-styles render-style))
+                 fill-color                   (. :setFillColor (get colors fill-color fill-color))
+                 (not (nil? show-in-legend?)) (. :setShowInLegend show-in-legend?))))))           
+
+(def xchart/pie-chart
+   (fn [series
+        {:keys [width height title circular? theme render-style annotation-distance
+                start-angle draw-all-annotations? donut-thickness annotation-type]
+         :or {width 640 height 500}
+         :as styling}]
+       (let [chart (. :PieChart :new width height)
+             styling (-> styling
+                         attach-default-font
+                         attach-default-annotation-distance)
+             annotation-distance (:annotation-distance styling)]
+             
+          (docoll (fn [[s-name data]] (xchart/pie-chart-add-series! chart s-name data)) series)
+          
+          (doto-cond
+             (. chart :getStyler)
+             theme                              (. :setTheme (get themes theme theme))
+             render-style                       (. :setDefaultSeriesRenderStyle (get pie-render-styles render-style))
+             (not (nil? circular?))             (. :setCircular circular?)
+             (not (nil? draw-all-annotations?)) (. :setDrawAllAnnotations draw-all-annotations?)
+             annotation-distance                (. :setAnnotationDistance annotation-distance)
+             donut-thickness                    (. :setDonutThickness donut-thickness)
+             start-angle                        (. :setStartAngleInDegrees start-angle)
+             annotation-type                    (. :setAnnotationType (get pie-annotation-types annotation-type)))
+             
+          (set-default-style! (. chart :getStyler) styling)
+                
+          (doto-cond
+              chart
+              title (. :setTitle title)
+              (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
+              (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title))))))
  
