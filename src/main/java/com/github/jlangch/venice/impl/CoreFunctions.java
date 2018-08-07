@@ -35,6 +35,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -2083,16 +2084,16 @@ public class CoreFunctions {
 
 	public static VncFunction new_hash_map = new VncFunction("hash-map") {
 		{
-			setArgLists("(hash-map & keyvals)");
+			setArgLists("(hash-map & keyvals)", "(hash-map map)");
 			
 			setDoc("Creates a new hash map containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() == 1 && Types.isVncJavaMap(args.nth(0))) {
-				return ((VncJavaMap)args.nth(0)).toVncHashMap();
+			if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
+				return new VncHashMap(((VncMap)args.nth(0)).getMap());
 			}
-			if (args.size() == 1 && Types.isVncJavaObject(args.nth(0))) {
+			else if (args.size() == 1 && Types.isVncJavaObject(args.nth(0))) {
 				return ((VncJavaObject)args.nth(0)).toVncMap();
 			}
 			else {
@@ -2103,14 +2104,14 @@ public class CoreFunctions {
 
 	public static VncFunction new_ordered_map = new VncFunction("ordered-map") {
 		{
-			setArgLists("(ordered-map & keyvals)");
+			setArgLists("(ordered-map & keyvals)", "(ordered-map map)");
 			
 			setDoc("Creates a new ordered map containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() == 1 && Types.isVncJavaMap(args.nth(0))) {
-				return ((VncJavaMap)args.nth(0)).toVncOrderedMap();
+			if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
+				return new VncOrderedMap(((VncMap)args.nth(0)).getMap());
 			}
 			else {
 				return new VncOrderedMap(args);
@@ -2120,14 +2121,14 @@ public class CoreFunctions {
 
 	public static VncFunction new_sorted_map = new VncFunction("sorted-map") {
 		{
-			setArgLists("(sorted-map & keyvals)");
+			setArgLists("(sorted-map & keyvals)", "(sorted-map map)");
 			
 			setDoc("Creates a new sorted map containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() == 1 && Types.isVncJavaMap(args.nth(0))) {
-				return ((VncJavaMap)args.nth(0)).toVncSortedMap();
+			if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
+				return new VncSortedMap(((VncMap)args.nth(0)).getMap());
 			}
 			else {
 				return new VncSortedMap(args);
@@ -4341,6 +4342,40 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction merge = new VncFunction("merge") {
+		{
+			setArgLists("(merge & maps)");
+			
+			setDoc( "Returns a map that consists of the rest of the maps conj-ed onto " +
+					"the first.  If a key occurs in more than one map, the mapping from " +
+					"the latter (left-to-right) will be the mapping in the result.");
+			
+			setExamples(
+					"(merge {:a 1 :b 2 :c 3} {:b 9 :d 4})",
+					"(merge {:a 1} nil)",
+					"(merge nil {:a 1})",
+					"(merge nil nil)");
+		}
+
+		public VncVal apply(final VncList args) {	
+			assertMinArity("merge", args, 1);
+			
+			// remove Nil		
+			final List<VncVal> maps = args.stream()
+										  .filter(v -> v != Nil)
+										  .collect(Collectors.toList());
+			
+			if (maps.isEmpty()) {
+				return Nil;
+			}
+			else {
+				final Map<VncVal,VncVal> map = new HashMap<>();
+				maps.stream().forEach(v -> map.putAll(Coerce.toVncMap(v).getMap()));
+				return new VncHashMap(map);
+			}
+		}
+	};
+
 	public static VncFunction conj = new VncFunction("conj") {
 		{
 			setArgLists("(conj coll x)", "(conj coll x & xs)");
@@ -5923,6 +5958,7 @@ public class CoreFunctions {
 				.put("sort", 				sort)
 				.put("sort-by", 			sort_by)
 		
+				.put("merge",				merge)
 				.put("conj",				conj)
 				.put("seq",					seq)
 				.put("range",				range)

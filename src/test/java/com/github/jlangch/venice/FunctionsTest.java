@@ -1858,6 +1858,16 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_merge() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a 1 :b 9 :c 3 :d 4}", venice.eval("(str (sorted-map (merge {:a 1 :b 2 :c 3} {:b 9 :d 4})))"));
+		assertEquals("{:a 1}", venice.eval("(str (merge {:a 1} nil))"));
+		assertEquals("{:a 1}", venice.eval("(str (merge nil {:a 1}))"));
+		assertEquals(null, venice.eval("(merge nil nil)"));
+	}
+
+	@Test
 	public void test_meta() {
 		final Venice venice = new Venice();
 

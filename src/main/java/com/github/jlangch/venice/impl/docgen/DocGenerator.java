@@ -352,6 +352,10 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("drop"));
 		list_modify.addItem(getDocItem("drop-while"));
 	
+		final DocSection list_test = new DocSection("Test");
+		lists.addSection(list_test);
+		list_test.addItem(getDocItem("every?"));
+		list_test.addItem(getDocItem("any?"));
 		
 		
 		final DocSection vectors = new DocSection("Vectors");
@@ -408,6 +412,8 @@ public class DocGenerator {
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
 		vec_test.addItem(getDocItem("contains?"));
+		vec_test.addItem(getDocItem("every?"));
+		vec_test.addItem(getDocItem("any?"));
 	
 		final DocSection sets = new DocSection("Sets");
 		section.addSection(sets);
@@ -456,6 +462,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("concat"));
 		map_modify.addItem(getDocItem("flatten"));
 		map_modify.addItem(getDocItem("reduce-kv"));
+		map_modify.addItem(getDocItem("merge"));
 		
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);
