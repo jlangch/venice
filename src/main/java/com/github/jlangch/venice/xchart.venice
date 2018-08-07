@@ -441,6 +441,66 @@
  
  
 ;; ---------------------------------------------------------------------------
+;; Bubble chart
+;; ---------------------------------------------------------------------------
+
+(def max-bubble-value 
+   (fn [series]
+       (reduce max (mapcat :bubble (vals series)))))
+
+(def scale-bubbles
+   (fn [series in-val out-val]
+       (let [bubble-fn (fn [x] (* out-val (Math/sqrt (/ x in-val))))]
+            (map-vals
+               (fn [data] (update data :bubble (fn [x] (map bubble-fn x))))
+               series))))
+
+(def xchart/bubble-add-series! 
+   (fn [chart s-name data]
+       (if (sequential? data)
+         (apply add-raw-series chart s-name data)
+         (let [{:keys [x y bubble style]} data
+               {:keys [marker-color marker-type
+                       line-color line-style line-width
+                       fill-color show-in-legend? render-style]} style]
+           (doto-cond
+              (add-raw-series chart s-name x y bubble)
+              render-style                 (. :setBubbleSeriesRenderStyle (get bubble-render-styles render-style))
+              line-color                   (. :setLineColor (get colors line-color line-color))
+              line-style                   (. :setLineStyle (get strokes line-style line-style))
+              line-width                   (. :setLineWidth line-width)
+              fill-color                   (. :setFillColor (get colors fill-color fill-color))
+              (not (nil? show-in-legend?)) (. :setShowInLegend show-in-legend?))))))
+         
+(def xchart/bubble-chart*
+   (fn [series
+        {:keys [width height title theme render-style]
+         :or {width 640 height 500}
+         :as styling}]
+          
+       (let [chart (. :BubbleChart :new width height)
+             styling (attach-default-font styling)]
+       
+          (docoll (fn [[s-name data]] (xchart/bubble-add-series! chart s-name data)) series)
+           
+          (doto-cond
+             (. chart :getStyler)
+             theme        (. :setTheme (get themes theme theme))
+             render-style (. :setDefaultSeriesRenderStyle (get bubble-render-styles render-style)))
+     
+          (doto (. chart :getStyler)
+                (set-default-style! styling)
+                (set-axes-style! styling))
+    
+          (doto-cond
+             chart
+             title (. :setTitle title)
+             (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
+             (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title))))))
+ 
+ 
+ 
+;; ---------------------------------------------------------------------------
 ;; Pie chart
 ;; ---------------------------------------------------------------------------
 
