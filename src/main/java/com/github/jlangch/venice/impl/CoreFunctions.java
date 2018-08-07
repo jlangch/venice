@@ -3822,6 +3822,14 @@ public class CoreFunctions {
 								.sorted()
 								.collect(Collectors.toList()));
 				}
+				else if (Types.isVncSet(coll)) {
+					return new VncList(
+							((VncSet)coll)
+								.getList()
+								.stream()
+								.sorted()
+								.collect(Collectors.toList()));
+				}
 				else if (Types.isVncMap(coll)) {
 					return new VncList(
 							 ((VncMap)coll).toVncList()
@@ -3851,6 +3859,14 @@ public class CoreFunctions {
 				else if (Types.isVncList(coll)) {
 					return new VncList(
 							((VncList)coll)
+								.getList()
+								.stream()
+								.sorted((x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue())
+								.collect(Collectors.toList()));
+				}
+				else if (Types.isVncSet(coll)) {
+					return new VncList(
+							((VncSet)coll)
 								.getList()
 								.stream()
 								.sorted((x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue())

@@ -2557,10 +2557,12 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(some? false)"));	
 		assertTrue((Boolean)venice.eval("(some? 1)"));	
 	}
+	
 	@Test
 	public void test_sort() {
 		final Venice venice = new Venice();
 
+		// list
 		assertEquals("()", venice.eval("(str (sort '()))"));
 		assertEquals("(1)", venice.eval("(str (sort '(1)))"));
 		assertEquals("(1 2)", venice.eval("(str (sort '(2 1)))"));
@@ -2576,7 +2578,14 @@ public class FunctionsTest {
 		assertEquals("(a b)", venice.eval("(str (sort '(\"b\" \"a\")))"));
 		assertEquals("(a b c)", venice.eval("(str (sort '(\"c\" \"b\" \"a\")))"));
 
+		assertEquals("(1)", venice.eval("(str (sort '(1)))"));
+		assertEquals("(1 2)", venice.eval("(str (sort '(2 1)))"));
+		assertEquals("(1 2 3)", venice.eval("(str (sort '(3 2 1)))"));
+
+		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2))", venice.eval("(str (sort '((1 2) (1 1) (2 1) (1 3) (2 2))))"));
+
 		
+		// vector
 		assertEquals("[]", venice.eval("(str (sort []))"));
 		assertEquals("[1]", venice.eval("(str (sort [1]))"));
 		assertEquals("[1 2]", venice.eval("(str (sort [2 1]))"));
@@ -2591,13 +2600,16 @@ public class FunctionsTest {
 		assertEquals("[a]", venice.eval("(str (sort [\"a\"]))"));
 		assertEquals("[a b]", venice.eval("(str (sort [\"b\" \"a\"]))"));
 		assertEquals("[a b c]", venice.eval("(str (sort [\"c\" \"b\" \"a\"]))"));
-
-		assertEquals("(1)", venice.eval("(str (sort '(1)))"));
-		assertEquals("(1 2)", venice.eval("(str (sort '(2 1)))"));
-		assertEquals("(1 2 3)", venice.eval("(str (sort '(3 2 1)))"));
-
-		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2))", venice.eval("(str (sort '((1 2) (1 1) (2 1) (1 3) (2 2))))"));
 	
+		
+		// set
+		assertEquals("()", venice.eval("(str (sort (set [])))"));
+		assertEquals("(1)", venice.eval("(str (sort (set [1])))"));
+		assertEquals("(1 2)", venice.eval("(str (sort (set [2 1])))"));
+		assertEquals("(1 2 3 4 5)", venice.eval("(str (sort (set [5 2 1 4 3])))"));
+	
+		
+		// map
 		assertEquals("()", venice.eval("(str (sort {}))"));
 		assertEquals("([:a 1])", venice.eval("(str (sort {:a 1}))"));
 		assertEquals("([:a 1] [:b 2])", venice.eval("(str (sort {:b 2 :a 1}))"));
