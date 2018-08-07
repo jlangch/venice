@@ -444,7 +444,39 @@
 ;; Area chart
 ;; ---------------------------------------------------------------------------
  
+(def xchart/normalize-category-series
+   (fn [series-data]
+       (cond (and (map? series-data)
+                  (contains? series-data :x)
+                  (contains? series-data :y)) series-data
+                  
+             (and (map? series-data)
+                  (contains? series-data :content)) (-> (:content series-data)
+                                                        (xchart/normalize-category-series)
+                                                         ;; retain styling data:
+                                                        (merge (dissoc series-data :content)))
+             ;; Assuming keys are strings/vals
+             (and (map? series-data)
+                  (every? (comp not keyword?)
+                          (keys series-data))) {:x (keys series-data)
+                                                :y (vals series-data)}
+             (sequential? series-data) {:x (first series-data)
+                                        :y (second series-data)})))
  
+(def category-series-xs
+   (fn [series]
+       (->> (vals series)
+            (mapcat :x)
+            set)))
+
+(def reorder-series
+   (fn [{:keys [x y] :as series} x-order]
+       (let [mapping (zipmap x y)]
+            (assoc series
+                   :x x-order
+                   :y (mapv (fn [x] (get mapping x 0.0)) x-order))))
+
+
  
 ;; ---------------------------------------------------------------------------
 ;; Bubble chart
