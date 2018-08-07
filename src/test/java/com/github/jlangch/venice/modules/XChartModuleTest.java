@@ -102,7 +102,7 @@ public class XChartModuleTest {
 			"           :bubble (map (fn [t] (:bubble t)) series)}))               \n" +
 			"                                                                      \n" +			
 			"   (xchart/swing-view-chart                                           \n" +
-			"      (xchart/bubble-chart*                                           \n" +
+			"      (xchart/bubble-chart                                            \n" +
 			"          {\"Series 1\" (bubblify series1)                            \n" +
 			"           \"Series 2\" (bubblify series2) }                          \n" +
 			"          {:title \"Bubble Chart\"                                    \n" +

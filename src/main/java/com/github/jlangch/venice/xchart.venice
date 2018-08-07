@@ -420,6 +420,7 @@
          :as styling}]
        (let [chart (. :XYChart :new width height)
              styling (attach-default-font styling)]
+          
           (doto-cond
              (. chart :getStyler)
              theme        (. :setTheme (get themes theme theme))
@@ -437,6 +438,11 @@
               (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
               (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title))))))
 
+ 
+ 
+;; ---------------------------------------------------------------------------
+;; Area chart
+;; ---------------------------------------------------------------------------
  
  
  
@@ -472,7 +478,7 @@
               fill-color                   (. :setFillColor (get colors fill-color fill-color))
               (not (nil? show-in-legend?)) (. :setShowInLegend show-in-legend?))))))
          
-(def xchart/bubble-chart*
+(def xchart/bubble-chart
    (fn [series
         {:keys [width height title theme render-style]
          :or {width 640 height 500}
