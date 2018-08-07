@@ -58,6 +58,30 @@ public class XChartModuleTest {
 	}
 
 	@Test
+	public void test_category_chart() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                               \n" +
+			"   (load-module :xchart)                                                          \n" +
+			"                                                                                  \n" +
+			"   (xchart/swing-view-chart                                                       \n" +
+			"      (xchart/category-chart                                                      \n" +
+			"          {\"Bananas\" {\"Mon\" 6, \"Tue\" 2, \"Fri\" 3, \"Wed\" 1, \"Thur\" 3}   \n" +
+			"           \"Apples\" {\"Tue\" 3, \"Wed\" 5, \"Fri\" 1, \"Mon\" 1}                \n" +
+			"           \"Pears\" {\"Thur\" 1, \"Mon\" 3, \"Fri\" 4, \"Wed\" 1}}               \n" +
+			"          {:title \"Weekly Fruit Sales\"                                          \n" +
+			"           :theme :ggplot2                                                        \n" +
+			"           :x-axis {:order [\"Mon\" \"Tue\" \"Wed\" \"Thur\" \"Fri\"]}} ))        \n" +
+			"                                                                                  \n" +
+			"    (sleep 20000)                                                                 \n" +
+			") ";
+		  
+		  
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
+	@Test
 	public void test_pie_chart() {
 		final Venice venice = new Venice();
 
