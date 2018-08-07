@@ -11,9 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function merge, assoc-in, and get-in
-- added function update
-- added function vec
+- added function merge, assoc-in, get-in
+- added function update, vec, difference
 - added function every? and any? operating on sequential collections
 - added associative destructuring 
     - `(let [{:keys [a b]} {:a 1 :b 2}] (+ a b))`

@@ -407,21 +407,25 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("get-in"));
 		vec_modify.addItem(getDocItem("update"));
 		vec_modify.addItem(getDocItem("update!"));
-		
-		
+			
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
 		vec_test.addItem(getDocItem("contains?"));
 		vec_test.addItem(getDocItem("every?"));
 		vec_test.addItem(getDocItem("any?"));
 	
+		
 		final DocSection sets = new DocSection("Sets");
 		section.addSection(sets);
 
 		final DocSection set_create = new DocSection("Create");
 		sets.addSection(set_create);
 		set_create.addItem(getDocItem("set"));
-		
+
+		final DocSection set_modify = new DocSection("Modify");
+		sets.addSection(set_modify);
+		set_modify.addItem(getDocItem("difference"));
+
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);
 		set_test.addItem(getDocItem("contains?"));

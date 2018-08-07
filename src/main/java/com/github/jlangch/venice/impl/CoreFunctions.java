@@ -2443,6 +2443,31 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction difference = new VncFunction("difference") {
+		{
+			setArgLists("(difference s1)", "(difference s1 s2)", "(difference s1 s2 & sets)");
+			
+			setDoc("Return a set that is the first set without elements of the remaining sets");
+			
+			setExamples(
+					"(difference (set [1 2 3]))",
+					"(difference (set [1 2]) (set [2 3]))",
+					"(difference (set [1 2 3]) (set [1]) (set [1 4]) (set [3]))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("difference", args, 1);
+			
+			final Set<VncVal> set = Coerce.toVncSet(args.first()).getSet();
+			
+			for(int ii=1; ii<args.size(); ii++) {
+				set.removeAll(Coerce.toVncSet(args.nth(ii)).getSet());
+			}
+			
+			return new VncSet(set);
+		}
+	};
+
 	public static VncFunction get = new VncFunction("get") {
 		{
 			setArgLists("(get map key)", "(get map key not-found)");
@@ -5913,6 +5938,7 @@ public class CoreFunctions {
 				.put("subvec", 				subvec)
 				.put("subbytebuf", 			subbytebuf)
 				.put("empty", 				empty)
+				.put("difference", 			difference)
 		
 				.put("into",				into)
 				.put("sequential?",	    	sequential_Q)

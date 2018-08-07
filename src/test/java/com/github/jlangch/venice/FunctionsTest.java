@@ -589,6 +589,15 @@ public class FunctionsTest {
 	}
 
 	@Test
+	public void test_difference() {
+		final Venice venice = new Venice();
+
+		assertEquals("#{1 2 3}", venice.eval("(str (difference (set [1 2 3])))"));
+		assertEquals("#{1}", venice.eval("(str (difference (set [1 2]) (set [2 3])))"));
+		assertEquals("#{2}", venice.eval("(str (difference (set [1 2 3]) (set [1]) (set [1 4]) (set [3])))"));
+	}
+
+	@Test
 	public void test_dissoc() {
 		final Venice venice = new Venice();
 
