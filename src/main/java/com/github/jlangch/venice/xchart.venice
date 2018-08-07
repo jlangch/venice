@@ -47,11 +47,11 @@
 ;; utils
 ;; ---------------------------------------------------------------------------
 
-;; Example: (doto-cond              =>    (let [e expr]
+;; Example: (xchart/doto-cond              =>    (let [e expr]
 ;;             expr                          (when cond1 (my e call))
 ;;             cond1 (my call)               (when cond2 (my2 e call2)))
 ;;             cond2 (my2 call2))
-(defmacro doto-cond 
+(defmacro xchart/doto-cond 
    [expr & clauses]
    (let [pairs (partition 2 clauses)
          expr-sym (gensym "expr")]
@@ -62,16 +62,16 @@
                   pairs)
        ~expr-sym)))
 
-(def assoc-in-nonexisting  
+(def xchart/assoc-in-nonexisting  
    (fn [m ks v]
        (cond->
           m
           (== (get-in m ks ::not-found) ::not-found)
           (assoc-in ks v))))
 
-(def to-bytes
+(def xchart/to-bytes
    (fn [chart type]
-        let [format (get bitmap-formats type)]
+        let [format (get xchart/bitmap-formats type)]
             (BitmapEncoder/getBitmapBytes chart format)))
 
 (def xchart/swing-open-window
@@ -96,7 +96,7 @@
 ;; constants
 ;; ---------------------------------------------------------------------------
 
-(def colors
+(def xchart/colors
    { :blue       (. :Color :BLUE)
      :black      (. :Color :BLACK)
      :cyan       (. :Color :CYAN)
@@ -111,14 +111,14 @@
      :white      (. :Color :WHITE)
      :yellow     (. :Color :YELLOW) })
 
-(def strokes
+(def xchart/strokes
    { :none      (. :SeriesLines :NONE)
      :solid     (. :SeriesLines :SOLID)
      :dash-dot  (. :SeriesLines :DASH_DOT)
      :dash-dash (. :SeriesLines :DASH_DASH)
      :dot-dot   (. :SeriesLines :DOT_DOT) })
     
-(def markers
+(def xchart/markers
    { :circle        (. :Circle :new)
      :diamond       (. :Diamond :new)
      :none          (. :None :new)
@@ -126,36 +126,36 @@
      :triangle-up   (. :TriangleUp :new)
      :triangle-down (. :TriangleDown :new) })    
 
-(def xy-render-styles
+(def xchart/xy-render-styles
    { :area    (. :XYSeries$XYSeriesRenderStyle :Area)
      :scatter (. :XYSeries$XYSeriesRenderStyle :Scatter)
      :line    (. :XYSeries$XYSeriesRenderStyle :Line) })
 
-(def pie-render-styles
+(def xchart/pie-render-styles
    { :pie   (. :PieSeries$PieSeriesRenderStyle :Pie)
      :donut (. :PieSeries$PieSeriesRenderStyle :Donut) })
     
-(def pie-annotation-types
+(def xchart/pie-annotation-types
    { :label                (. :PieStyler$AnnotationType :Label)
      :label-and-percentage (. :PieStyler$AnnotationType :LabelAndPercentage)
      :percentage           (. :PieStyler$AnnotationType :Percentage) })
 
-(def category-render-styles
+(def xchart/category-render-styles
    { :area    (. :CategorySeries$CategorySeriesRenderStyle :Area)
      :bar     (. :CategorySeries$CategorySeriesRenderStyle :Bar)
      :line    (. :CategorySeries$CategorySeriesRenderStyle :Line)
      :scatter (. :CategorySeries$CategorySeriesRenderStyle :Scatter)
      :stick   (. :CategorySeries$CategorySeriesRenderStyle :Stick) })
 
-(def bubble-render-styles
+(def xchart/bubble-render-styles
    { :round (. :BubbleSeries$BubbleSeriesRenderStyle :Round) })
 
-(def text-alignments
+(def xchart/text-alignments
    { :centre (. :Styler$TextAlignment :Centre)
      :left   (. :Styler$TextAlignment :Left)
      :right  (. :Styler$TextAlignment :Right) })
 
-(def legend-positions
+(def xchart/legend-positions
    { :inside-n  (. :Styler$LegendPosition :InsideN)
      :inside-ne (. :Styler$LegendPosition :InsideNE)
      :inside-nw (. :Styler$LegendPosition :InsideNW)
@@ -163,12 +163,12 @@
      :inside-sw (. :Styler$LegendPosition :InsideSW)
      :outside-e (. :Styler$LegendPosition :OutsideE) })
 
-(def themes
+(def xchart/themes
    { :ggplot2 (. :GGPlot2Theme :new)
      :matlab  (. :MatlabTheme :new)
      :xchart  (. :XChartTheme :new) }) 
  
-(def bitmap-formats
+(def xchart/bitmap-formats
    { :png  (. :BitmapEncoder$BitmapFormat :PNG)
      :gif  (. :BitmapEncoder$BitmapFormat :GIF)
      :bmp  (. :BitmapEncoder$BitmapFormat :BMP)
@@ -180,56 +180,56 @@
 ;; chart styling
 ;; ---------------------------------------------------------------------------
 
-(def set-legend!
+(def xchart/set-legend!
    (fn [styler
         {:keys [background-color border-color font padding
                 position series-line-length visible?]}]
-       (doto-cond
+       (xchart/doto-cond
           styler
-          background-color      (. :setLegendBackgroundColor (get colors background-color background-color))
-          border-color          (. :setLegendBorderColor (get colors border-color border-color))
+          background-color      (. :setLegendBackgroundColor (get xchart/colors background-color background-color))
+          border-color          (. :setLegendBorderColor (get xchart/colors border-color border-color))
           font                  (. :setLegendFont font)
           padding               (. :setLegendPadding padding)
-          position              (. :setLegendPosition (get legend-positions position))
+          position              (. :setLegendPosition (get xchart/legend-positions position))
           series-line-length    (. :setLegendSeriesLineLength series-line-length)
           (not (nil? visible?)) (. :setLegendVisible visible?))))
 
-(def set-chart-title-style!
+(def xchart/set-chart-title-style!
    (fn [styler
         {:keys [box font padding visible?]}]
        (let [ box-background-color (:background-color box)
               box-border-color (:color box)
               box-visible? (:visible? box) ]
-            (doto-cond
+            (xchart/doto-cond
                styler
-               box-background-color      (. :setChartTitleBoxBackgroundColor (get colors box-background-color box-background-color))
-               box-border-color          (. :setChartTitleBoxBorderColor (get colors box-border-color box-border-color))
+               box-background-color      (. :setChartTitleBoxBackgroundColor (get xchart/colors box-background-color box-background-color))
+               box-border-color          (. :setChartTitleBoxBorderColor (get xchart/colors box-border-color box-border-color))
                (not (nil? box-visible?)) (. :setChartTitleBoxVisible box-visible?)
                font                      (. :setChartTitleFont font)
                padding                   (. :setChartTitlePadding padding)
                (not (nil? visible?))     (. :setChartTitleVisible visible?)))))
 
-(def set-chart-style!
+(def xchart/set-chart-style!
    (fn [styler
         {:keys [background-color font-color padding title]}]
-       (doto-cond
+       (xchart/doto-cond
           styler
-          background-color (. :setChartBackgroundColor (get colors background-color background-color))
-          font-color       (. :setChartFontColor (get colors font-color font-color))
+          background-color (. :setChartBackgroundColor (get xchart/colors background-color background-color))
+          font-color       (. :setChartFontColor (get xchart/colors font-color font-color))
           padding          (. :setChartPadding padding)
-          title            (set-chart-title-style! title))))
+          title            (xchart/set-chart-title-style! title))))
 
-(def set-plot-style!
+(def xchart/set-plot-style!
    (fn [styler
         {:keys [background-color border-color border-visible? content-size]}]
-       (doto-cond
+       (xchart/doto-cond
           styler
-          background-color             (. :setPlotBackgroundColor (get colors background-color background-color))
-          border-color                 (. :setPlotBorderColor (get colors border-color border-color))
+          background-color             (. :setPlotBackgroundColor (get xchart/colors background-color background-color))
+          border-color                 (. :setPlotBorderColor (get xchart/colors border-color border-color))
           (not (nil? border-visible?)) (. :setPlotBorderVisible border-visible?)
           content-size                 (. :setPlotContentSize content-size))))
 
-(def set-series-style!
+(def xchart/set-series-style!
    (fn [styler series]
        (let [series-colors  (. styler :getSeriesColors)
              series-lines   (. styler :getSeriesLines)
@@ -238,79 +238,79 @@
           (dotimes [i (count series)]
               (let [{:keys [color stroke marker]} (nth series i)]
                    (when color
-                         (update! series-colors i (fn [x] (get colors color color))))
+                         (update! series-colors i (fn [x] (get xchart/colors color color))))
                    (when stroke
-                         (update! series-lines i (fn [x] (get strokes stroke stroke))))
+                         (update! series-lines i (fn [x] (get xchart/strokes stroke stroke))))
                    (when marker
-                         (update! series-markers i (fn [x] (get markers marker marker))))))
+                         (update! series-markers i (fn [x] (get xchart/markers marker marker))))))
           (. styler :setSeriesColors series-colors)
           (. styler :setSeriesLines series-lines)
           (. styler :setSeriesMarkers series-markers))))
 
-(def set-default-style!
+(def xchart/set-default-style!
    (fn [styler {:keys [annotations-font annotations? chart plot legend series]}]
-       (doto-cond
+       (xchart/doto-cond
           styler
           annotations-font          (. :setAnnotationsFont annotations-font)
           (not (nil? annotations?)) (. :setHasAnnotations (annotations?)
-          chart                     (set-chart-style! chart)
-          legend                    (set-legend! legend)
-          plot                      (set-plot-style! plot)
-          series                    (set-series-style! series)))))
+          chart                     (xchart/set-chart-style! chart)
+          legend                    (xchart/set-legend! legend)
+          plot                      (xchart/set-plot-style! plot)
+          series                    (xchart/set-series-style! series)))))
 
-(def set-axis-ticks!
+(def xchart/set-axis-ticks!
    (fn [styler {:keys [labels marks padding visible? line-visible?]}]
        (let [{:keys [color font]} labels]
-          (doto-cond
+          (xchart/doto-cond
              styler
-             color (. :setAxisTickLabelsColor (colors color color))
+             color (. :setAxisTickLabelsColor (get xchart/colors color color))
              font  (. :setAxisTickLabelsFont font)))
        (let [{:keys [length color stroke visible?]} marks]
-          (doto-cond
+          (xchart/doto-cond
              styler
              length                (. :setAxisTickMarkLength length)
-             color                 (. :setAxisTickMarksColor (colors color color))
-             stroke                (. :setAxisTickMarksStroke (strokes stroke stroke))
+             color                 (. :setAxisTickMarksColor (get xchart/colors color color))
+             stroke                (. :setAxisTickMarksStroke (get xchart/strokes stroke stroke))
              (not (nil? visible?)) (. :setAxisTicksMarksVisible visible?)))
-       (doto-cond
+       (xchart/doto-cond
           styler
           padding                    (. :setAxisTickPadding padding)
           (not (nil? line-visible?)) (. :setAxisTicksLineVisible line-visible?)
           (not (nil? visible?))      (. :setAxisTicksVisible visible?))))
 
-(def set-axis-title!
+(def xchart/set-axis-title!
    (fn [styler {:keys [font visible? padding]}]
-       (doto-cond
+       (xchart/doto-cond
           styler
           font                  (. :setAxisTitleFont font)
           padding               (. :setAxisTitlePadding padding)
           (not (nil? visible?)) (. :setAxisTitleVisible visible?))))
 
-(def set-axis-plot!
+(def xchart/set-axis-plot!
    (fn [styler {:keys [grid-lines margin tick-marks?]}]
        (let [{:keys [horizontal? vertical? visible? color stroke]} grid-lines]
-          (doto-cond
+          (xchart/doto-cond
              styler
              (not (nil? visible?))    (. :setPlotGridLinesVisible visible?)
-             color                    (. :setPlotGridLinesColor (get colors color color))
-             stroke                   (. :setPlotGridLinesStroke (get strokes stroke stroke))
+             color                    (. :setPlotGridLinesColor (get xchart/colors color color))
+             stroke                   (. :setPlotGridLinesStroke (get xchart/strokes stroke stroke))
              (not (nil? horizontal?)) (. :setPlotGridHorizontalLinesVisible horizontal?)
              (not (nil? vertical?))   (. :setPlotGridVerticalLinesVisible vertical?)))
-       (doto-cond
+       (xchart/doto-cond
           styler
           margin                   (. :setPlotMargin margin)
           (not (nil? tick-marks?)) (. :setPlotTicksMarksVisible tick-marks?))))
 
-(def set-x-axis-style!
+(def xchart/set-x-axis-style!
    (fn [styler
         {:keys [label logarithmic? max min decimal-pattern
                 tick-mark-spacing-hint ticks-visible? title-visible?]}]
        (let [{:keys [alignment rotation]} label]
-          (doto-cond
+          (xchart/doto-cond
              styler
-             alignment (. :setXAxisLabelAlignment (get text-alignments alignment alignment))
+             alignment (. :setXAxisLabelAlignment (get xchart/text-alignments alignment alignment))
              rotation  (. :setXAxisLabelRotation rotation)))
-       (doto-cond
+       (xchart/doto-cond
           styler
           decimal-pattern             (. :setXAxisDecimalPattern decimal-pattern)
           (not (nil? logarithmic?))   (. :setXAxisLogarithmic logarithmic?)
@@ -320,15 +320,15 @@
           (not (nil? ticks-visible?)) (. :setXAxisTicksVisible ticks-visible?)
           (not (nil? title-visible?)) (. :setXAxisTitleVisible title-visible?))))
 
-(def set-y-axis-style!
+(def xchart/set-y-axis-style!
    (fn [styler
         {:keys [label logarithmic? max min decimal-pattern
                 tick-mark-spacing-hint ticks-visible? title-visible?]}]
        (let [{:keys [alignment rotation]} label]
-          (doto-cond
+          (xchart/doto-cond
              styler
-             alignment (. :setYAxisLabelAlignment (get text-alignments alignment alignment))))
-          (doto-cond
+             alignment (. :setYAxisLabelAlignment (get xchart/text-alignments alignment alignment))))
+          (xchart/doto-cond
              styler
              decimal-pattern             (. :setYAxisDecimalPattern decimal-pattern)
              (not (nil? logarithmic?))   (. :setYAxisLogarithmic logarithmic?)
@@ -338,7 +338,7 @@
              (not (nil? ticks-visible?)) (. :setYAxisTicksVisible ticks-visible?)
              (not (nil? title-visible?)) (. :setYAxisTitleVisible title-visible?))))
 
-(def set-axes-style!
+(def xchart/set-axes-style!
    (fn [styler
         {:keys [axis error-bars-color plot x-axis y-axis
                 date-pattern decimal-pattern locale marker timezone]}]
@@ -346,43 +346,43 @@
              axis-ticks (:ticks axis)
              axis-title (:title axis)
              marker-size (:size marker)]
-            (doto-cond
+            (xchart/doto-cond
                styler
-               axis-ticks      (set-axis-ticks! axis-ticks)
-               axis-title      (set-axis-title! axis-title)
+               axis-ticks      (xchart/set-axis-ticks! axis-ticks)
+               axis-title      (xchart/set-axis-title! axis-title)
                date-pattern    (. :setDatePattern date-pattern)
                decimal-pattern (. :setDecimalPattern decimal-pattern)
                
                ;; The logic here is as follows: You can specify a colour for the error
                ;; bars. If the colour is :match-series, then the colour matches the series
                ;; colour, but if you specify something else, you cannot match the series!
-               (and ebc (not= ebc :match-series)) (. :setErrorBarsColor (colors ebc ebc))
+               (and ebc (not= ebc :match-series)) (. :setErrorBarsColor (get xchart/colors ebc ebc))
                (and ebc (not= ebc :match-series)) (. :setErrorBarsColorSeriesColor false)
                (== ebc :match-series)             (. :setErrorBarsColorSeriesColor true)
                
                locale      (. :setLocale locale)
                marker-size (. :setMarkerSize marker-size)
-               plot        (set-axis-plot! plot)
+               plot        (xchart/set-axis-plot! plot)
                timezone    (. :setTimezone timezone)
-               x-axis      (set-x-axis-style! x-axis)
-               y-axis      (set-y-axis-style! y-axis)))))
+               x-axis      (xchart/set-x-axis-style! x-axis)
+               y-axis      (xchart/set-y-axis-style! y-axis)))))
 
-(def add-raw-series
+(def xchart/add-raw-series
    (fn [chart s-name x-data y-data error-bars]
        (if (some? error-bars)
            (. chart :addSeries s-name x-data y-data error-bars)
            (. chart :addSeries s-name x-data y-data))))
 
-(def attach-default-font
+(def xchart/attach-default-font
    (fn [style-map]
        (if-let [font (:font style-map)]
           (-> style-map
               (dissoc style-map :font)
-              (assoc-in-nonexisting [:axis :ticks :labels :font] font)
-              (assoc-in-nonexisting [:axis :title :font] font)
-              (assoc-in-nonexisting [:legend :font] font)
-              (assoc-in-nonexisting [:annotations-font] font)
-              (assoc-in-nonexisting [:chart :title :font] font))
+              (xchart/assoc-in-nonexisting [:axis :ticks :labels :font] font)
+              (xchart/assoc-in-nonexisting [:axis :title :font] font)
+              (xchart/assoc-in-nonexisting [:legend :font] font)
+              (xchart/assoc-in-nonexisting [:annotations-font] font)
+              (xchart/assoc-in-nonexisting [:chart :title :font] font))
           style-map)))       
 
  
@@ -395,22 +395,22 @@
 (def xchart/xy-chart-add-series!
    (fn [chart s-name data]
        (if (sequential? data)
-           (apply add-raw-series chart s-name data)
+           (apply xchart/add-raw-series chart s-name data)
            (let [{:keys [x y error-bars style]} data
                  {:keys [marker-color marker-type
                          line-color line-style line-width
                          fill-color show-in-legend? render-style]} style]
-                (doto-cond
+                (xchart/doto-cond
                    (if error-bars
-                       (add-raw-series chart s-name x y error-bars)
-                       (add-raw-series chart s-name x y))
-                   render-style                 (. :setXYSeriesRenderStyle (get xy-render-styles render-style))
-                   marker-color                 (. :setMarkerColor (get colors marker-color marker-color))
-                   marker-type                  (. :setMarker (get markers marker-type marker-type))
-                   line-color                   (. :setLineColor (get colors line-color line-color))
-                   line-style                   (. :setLineStyle (get strokes line-style line-style))
+                       (xchart/add-raw-series chart s-name x y error-bars)
+                       (xchart/add-raw-series chart s-name x y))
+                   render-style                 (. :setXYSeriesRenderStyle (get xchart/xy-render-styles render-style))
+                   marker-color                 (. :setMarkerColor (get xchart/colors marker-color marker-color))
+                   marker-type                  (. :setMarker (get xchart/markers marker-type marker-type))
+                   line-color                   (. :setLineColor (get xchart/colors line-color line-color))
+                   line-style                   (. :setLineStyle (get xchart/strokes line-style line-style))
                    line-width                   (. :setLineWidth line-width)
-                   fill-color                   (. :setFillColor (get colors fill-color fill-color))
+                   fill-color                   (. :setFillColor (get xchart/colors fill-color fill-color))
                    (not (nil? show-in-legend?)) (. :setShowInLegend show-in-legend?))))))
 
 (def xchart/xy-chart
@@ -419,20 +419,20 @@
          :or {width 640 height 500}
          :as styling}]
        (let [chart (. :XYChart :new width height)
-             styling (attach-default-font styling)]
+             styling (xchart/set-legend! styling)]
           
-          (doto-cond
+          (xchart/doto-cond
              (. chart :getStyler)
-             theme        (. :setTheme (get themes theme theme))
-             render-style (. :setDefaultSeriesRenderStyle (get xy-render-styles render-style)))
+             theme        (. :setTheme (get xchart/themes theme theme))
+             render-style (. :setDefaultSeriesRenderStyle (get xchart/xy-render-styles render-style)))
              
           (docoll (fn [[s-name data]] (xchart/xy-chart-add-series! chart s-name data)) series)
              
           (doto (. chart :getStyler)
-                (set-default-style! styling)
-                (set-axes-style! styling))
+                (xchart/set-default-style! styling)
+                (xchart/set-axes-style! styling))
                 
-          (doto-cond
+          (xchart/doto-cond
               chart
               title (. :setTitle title)
               (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
@@ -450,11 +450,11 @@
 ;; Bubble chart
 ;; ---------------------------------------------------------------------------
 
-(def max-bubble-value 
+(def xchart/max-bubble-value 
    (fn [series]
        (reduce max (mapcat :bubble (vals series)))))
 
-(def scale-bubbles
+(def xchart/scale-bubbles
    (fn [series in-val out-val]
        (let [bubble-fn (fn [x] (* out-val (Math/sqrt (/ x in-val))))]
             (map-vals
@@ -464,18 +464,18 @@
 (def xchart/bubble-add-series! 
    (fn [chart s-name data]
        (if (sequential? data)
-         (apply add-raw-series chart s-name data)
+         (apply xchart/add-raw-series chart s-name data)
          (let [{:keys [x y bubble style]} data
                {:keys [marker-color marker-type
                        line-color line-style line-width
                        fill-color show-in-legend? render-style]} style]
-           (doto-cond
-              (add-raw-series chart s-name x y bubble)
-              render-style                 (. :setBubbleSeriesRenderStyle (get bubble-render-styles render-style))
-              line-color                   (. :setLineColor (get colors line-color line-color))
-              line-style                   (. :setLineStyle (get strokes line-style line-style))
+           (xchart/doto-cond
+              (xchart/add-raw-series chart s-name x y bubble)
+              render-style                 (. :setBubbleSeriesRenderStyle (get xchart/bubble-render-styles render-style))
+              line-color                   (. :setLineColor (get xchart/colors line-color line-color))
+              line-style                   (. :setLineStyle (get xchart/strokes line-style line-style))
               line-width                   (. :setLineWidth line-width)
-              fill-color                   (. :setFillColor (get colors fill-color fill-color))
+              fill-color                   (. :setFillColor (get xchart/colors fill-color fill-color))
               (not (nil? show-in-legend?)) (. :setShowInLegend show-in-legend?))))))
          
 (def xchart/bubble-chart
@@ -485,20 +485,20 @@
          :as styling}]
           
        (let [chart (. :BubbleChart :new width height)
-             styling (attach-default-font styling)]
+             styling (xchart/attach-default-font styling)]
        
           (docoll (fn [[s-name data]] (xchart/bubble-add-series! chart s-name data)) series)
            
-          (doto-cond
+          (xchart/doto-cond
              (. chart :getStyler)
-             theme        (. :setTheme (get themes theme theme))
-             render-style (. :setDefaultSeriesRenderStyle (get bubble-render-styles render-style)))
+             theme        (. :setTheme (get xchart/themes theme theme))
+             render-style (. :setDefaultSeriesRenderStyle (get xchart/bubble-render-styles render-style)))
      
           (doto (. chart :getStyler)
-                (set-default-style! styling)
-                (set-axes-style! styling))
+                (xchart/set-default-style! styling)
+                (xchart/set-axes-style! styling))
     
-          (doto-cond
+          (xchart/doto-cond
              chart
              title (. :setTitle title)
              (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
@@ -510,7 +510,7 @@
 ;; Pie chart
 ;; ---------------------------------------------------------------------------
 
-(def attach-default-annotation-distance
+(def xchart/attach-default-annotation-distance
    (fn [styling]
        (if (and (== :donut (:render-style styling))
                 (not (:annotation-distance styling)))
@@ -524,10 +524,10 @@
            (. chart :addSeries s-name data)
            (let [{:keys [render-style fill-color show-in-legend?]} (:style data)
                  val (:value data)]
-              (doto-cond
+              (xchart/doto-cond
                  (. chart :addSeries s-name val)
-                 render-style                 (. :setChartPieSeriesRenderStyle (get pie-render-styles render-style))
-                 fill-color                   (. :setFillColor (get colors fill-color fill-color))
+                 render-style                 (. :setChartPieSeriesRenderStyle (get xchart/pie-render-styles render-style))
+                 fill-color                   (. :setFillColor (get xchart/colors fill-color fill-color))
                  (not (nil? show-in-legend?)) (. :setShowInLegend show-in-legend?))))))           
 
 (def xchart/pie-chart
@@ -538,26 +538,26 @@
          :as styling}]
        (let [chart (. :PieChart :new width height)
              styling (-> styling
-                         attach-default-font
-                         attach-default-annotation-distance)
+                         xchart/attach-default-font
+                         xchart/attach-default-annotation-distance)
              annotation-distance (:annotation-distance styling)]
              
           (docoll (fn [[s-name data]] (xchart/pie-chart-add-series! chart s-name data)) series)
           
-          (doto-cond
+          (xchart/doto-cond
              (. chart :getStyler)
-             theme                              (. :setTheme (get themes theme theme))
-             render-style                       (. :setDefaultSeriesRenderStyle (get pie-render-styles render-style))
+             theme                              (. :setTheme (get xchart/themes theme theme))
+             render-style                       (. :setDefaultSeriesRenderStyle (get xchart/pie-render-styles render-style))
              (not (nil? circular?))             (. :setCircular circular?)
              (not (nil? draw-all-annotations?)) (. :setDrawAllAnnotations draw-all-annotations?)
              annotation-distance                (. :setAnnotationDistance annotation-distance)
              donut-thickness                    (. :setDonutThickness donut-thickness)
              start-angle                        (. :setStartAngleInDegrees start-angle)
-             annotation-type                    (. :setAnnotationType (get pie-annotation-types annotation-type)))
+             annotation-type                    (. :setAnnotationType (get xchart/pie-annotation-types annotation-type)))
              
-          (set-default-style! (. chart :getStyler) styling)
+          (xchart/set-default-style! (. chart :getStyler) styling)
                 
-          (doto-cond
+          (xchart/doto-cond
               chart
               title (. :setTitle title)
               (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))

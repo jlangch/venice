@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
@@ -180,6 +181,21 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to collection. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
+	public static VncSequence toVncSequence(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncSequence) {
+			return (VncSequence)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to a sequential collection. %s", 
 					Types.getClassName(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

@@ -11,10 +11,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function assoc-in
-- added function get-in
+- added function assoc-in and get-in
 - added function update
 - added function vec
+- added function every? and any? operating on sequential collections
 - added associative destructuring 
     - `(let [{:keys [a b]} {:a 1 :b 2}] (+ a b))`
     - `(let [{:syms [a b]} {'a 1 'b 2}] (+ a b))`

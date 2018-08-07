@@ -74,6 +74,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -161,7 +162,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("nil?", args, 1);
+			assertArity("some?", args, 1);
 			
 			return args.nth(0) == Nil ? False : True;
 		}
@@ -2818,7 +2819,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("sequential?", args, 1);
 			
-			return Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0)) ? True : False;
+			return Types.isVncSequence(args.first()) ? True : False;
 		}
 	};
 
@@ -2832,9 +2833,82 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("coll?", args, 1);
 			
-			return Types.isVncCollection(args.nth(0)) ? True : False;
+			return Types.isVncCollection(args.first()) ? True : False;
 		}
 	};
+	
+	public static VncFunction every_Q = new VncFunction("every?") {
+		{
+			setArgLists("(every? pred coll)");
+			
+			setDoc( "Returns true if the predicate is true for all collection items, " +
+					"false otherwise");
+			
+			setExamples(
+					"(every? (fn [x] (number? x)) nil)",
+					"(every? (fn [x] (number? x)) [])",
+					"(every? (fn [x] (number? x)) [1 2 3 4])",
+					"(every? (fn [x] (number? x)) [1 2 3 :a])",
+					"(every? (fn [x] (>= x 10)) [10 11 12])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("every?", args, 2);
+			
+			if (args.second() == Nil) {
+				return False;
+			}
+			else {				
+				final VncFunction pred = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
+
+				if (coll.isEmpty()) {
+					return False;
+				}
+				
+				return coll.getList()
+						   .stream()
+						   .allMatch(v -> pred.apply(new VncList(v)) == True) ? True : False;
+			}
+		}
+	};
+	
+	public static VncFunction any_Q = new VncFunction("any?") {
+		{
+			setArgLists("(any? pred coll)");
+			
+			setDoc( "Returns true if the predicate is true for at least one collection item, " +
+					"false otherwise");
+			
+			setExamples(
+					"(any? (fn [x] (number? x)) nil)",
+					"(any? (fn [x] (number? x)) [])",
+					"(any? (fn [x] (number? x)) [1 :a :b])",
+					"(any? (fn [x] (number? x)) [1 2 3])",
+					"(any? (fn [x] (>= x 10)) [1 5 10])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("any?", args, 2);
+			
+			if (args.second() == Nil) {
+				return False;
+			}
+			else {
+				final VncFunction pred = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
+				
+				if (coll.isEmpty()) {
+					return False;
+				}
+								
+				return coll.getList()
+						   .stream()
+						   .anyMatch(v -> pred.apply(new VncList(v)) == True) ? True : False;
+			}
+		}
+	};
+
 
 	public static VncFunction count = new VncFunction("count") {
 		{
@@ -5824,6 +5898,8 @@ public class CoreFunctions {
 				.put("peek",				peek)
 				.put("empty?",				empty_Q)
 				.put("not-empty?",			not_empty_Q)
+				.put("every?",				every_Q)
+				.put("any?",				any_Q)
 				.put("count",				count)
 				.put("apply",				apply)
 				.put("comp",				comp)

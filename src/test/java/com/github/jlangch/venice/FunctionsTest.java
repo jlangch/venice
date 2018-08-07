@@ -87,6 +87,18 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_any_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(any? (fn [x] (number? x)) nil)"));	
+		assertFalse((Boolean)venice.eval("(any? (fn [x] (number? x)) [])"));	
+		assertFalse((Boolean)venice.eval("(any? (fn [x] (number? x)) [:a])"));	
+		assertTrue((Boolean)venice.eval("(any? (fn [x] (number? x)) [:a 1 2])"));	
+		assertTrue((Boolean)venice.eval("(any? (fn [x] (number? x)) [1])"));	
+		assertTrue((Boolean)venice.eval("(any? (fn [x] (number? x)) [1 2])"));	
+	}
+	
+	@Test
 	public void test_apply() {
 		final Venice venice = new Venice();
 		
@@ -829,6 +841,18 @@ public class FunctionsTest {
 		catch(RuntimeException ex) {
 			assertTrue(true);
 		}
+	}
+	
+	@Test
+	public void test_every_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) nil)"));	
+		assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) [])"));	
+		assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) [:a])"));	
+		assertFalse((Boolean)venice.eval("(every? (fn [x] (number? x)) [:a 1 2])"));	
+		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [1])"));	
+		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [1 2])"));	
 	}
 	
 	@Test

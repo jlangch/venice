@@ -34,7 +34,7 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class VncJavaList extends VncCollection implements IVncJavaObject {
+public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	public VncJavaList(final List<Object> val) {
 		value = val;

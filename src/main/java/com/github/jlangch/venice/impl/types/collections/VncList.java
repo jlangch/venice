@@ -33,7 +33,7 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class VncList extends VncCollection {
+public class VncList extends VncSequence {
 	
 	public VncList(final List<VncVal> val) {
 		value = new ArrayList<VncVal>(val);
