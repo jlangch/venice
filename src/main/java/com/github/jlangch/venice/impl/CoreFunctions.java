@@ -4203,6 +4203,50 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction keep = new VncFunction("keep") {
+		{
+			setArgLists("(keep f coll)");
+			
+			setDoc( "Returns a sequence of the non-nil results of (f item). Note, " + 
+					"this means false return values will be included. f must be free of " + 
+					"side-effects.");
+			
+			// FIXME
+			setExamples(
+					"(docoll (fn [x] (println x)) [1 2 3 4])",
+					"(docoll (fn [[k v]] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("keep", args, 2);
+
+			final VncFunction fn = Coerce.toVncFunction(args.first());
+			final VncVal coll = args.second();
+			
+			// FIXME
+			
+			if (coll == Nil) {
+				// ok do nothing
+			}
+			else if (Types.isVncList(coll)) {
+				((VncList)coll).forEach(v -> fn.apply(new VncList(v)));
+			}
+			else if (Types.isVncJavaList(coll)) {
+				((VncJavaList)coll).forEach(v -> fn.apply(new VncList(v)));
+			}
+			else if (Types.isVncMap(coll)) {
+				((VncMap)coll).entries().forEach(v -> fn.apply(new VncList(new VncVector(v.getKey(), v.getValue()))));
+			}
+			else {
+				throw new VncException(String.format(
+						"keep: collection type %s not supported. %s",
+						Types.getClassName(coll),
+						ErrorMessage.buildErrLocation(args)));
+			}
+				
+			return Nil;
+		}
+	};
 
 	public static VncFunction docoll = new VncFunction("docoll") {
 		{
@@ -5976,6 +6020,7 @@ public class CoreFunctions {
 				.put("interpose",			interpose)
 				.put("interleave",			interleave)
 				.put("mapcat",				mapcat)
+				.put("keep",				keep)
 				.put("docoll",				docoll)
 				.put("nth",					nth)
 				.put("first",				first)
