@@ -29,7 +29,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed Java interop proxifying interfaces with void functions (e.g. Runnable)
-- fixed sort to work on sets as well
+- fixed sort function to work on sets as well
+- fixed apply function to handle coll with nil value correctly
 
 
 ## [0.7.2] - 2018-08-04

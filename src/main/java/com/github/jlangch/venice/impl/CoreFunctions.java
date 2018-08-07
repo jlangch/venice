@@ -4040,9 +4040,16 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
-			final VncList fn_args = args.slice(1,args.size()-1);	
-			final List<VncVal> tailArgs = Coerce.toVncList(args.last()).getList();
-			fn_args.getList().addAll(tailArgs);
+			final VncList fn_args = args.slice(1,args.size()-1);
+			
+			final VncVal coll = args.last();
+			if (coll == Nil) {
+				fn_args.getList().add(Nil);
+			}
+			else {
+				final List<VncVal> tailArgs = Coerce.toVncList(args.last()).getList();
+				fn_args.getList().addAll(tailArgs);				
+			}
 			return fn.apply(fn_args);
 		}
 	};
@@ -4215,7 +4222,10 @@ public class CoreFunctions {
 			final VncFunction fn = Coerce.toVncFunction(args.first());
 			final VncVal coll = args.second();
 			
-			if (Types.isVncList(coll)) {
+			if (coll == Nil) {
+				// ok do nothing
+			}
+			else if (Types.isVncList(coll)) {
 				((VncList)coll).forEach(v -> fn.apply(new VncList(v)));
 			}
 			else if (Types.isVncJavaList(coll)) {
@@ -4226,7 +4236,8 @@ public class CoreFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"docoll: collection type not supported. %s",
+						"docoll: collection type %s not supported. %s",
+						Types.getClassName(coll),
 						ErrorMessage.buildErrLocation(args)));
 			}
 				
