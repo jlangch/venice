@@ -2042,7 +2042,7 @@ public class CoreFunctions {
 
 	public static VncFunction new_set = new VncFunction("set") {
 		{
-			setArgLists("(set & items)");
+			setArgLists("(set & items)", "(set coll)");
 			
 			setDoc("Creates a new set containing the items.");
 		}
@@ -2050,6 +2050,9 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			if (args.size() == 1 && Types.isVncJavaSet(args.nth(0))) {
 				return ((VncJavaSet)args.nth(0)).toVncSet();
+			}
+			if (args.size() == 1 && Types.isVncSet(args.nth(0))) {
+				return new VncSet(((VncSet)args.nth(0)).toVncList());
 			}
 			else if (args.size() == 1 && Types.isVncJavaList(args.nth(0))) {
 				return ((VncJavaList)args.nth(0)).toVncSet();
