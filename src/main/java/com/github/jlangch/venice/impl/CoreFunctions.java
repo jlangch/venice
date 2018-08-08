@@ -4211,40 +4211,24 @@ public class CoreFunctions {
 					"this means false return values will be included. f must be free of " + 
 					"side-effects.");
 			
-			// FIXME
 			setExamples(
-					"(docoll (fn [x] (println x)) [1 2 3 4])",
-					"(docoll (fn [[k v]] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
+					"(keep even? (range 1 4))",
+					"(keep (fn [x] (if (odd? x) x)) (range 4))");
 		}
 		
 		public VncVal apply(final VncList args) {
 			assertArity("keep", args, 2);
-
-			final VncFunction fn = Coerce.toVncFunction(args.first());
-			final VncVal coll = args.second();
 			
-			// FIXME
+			final VncVal result = map.apply(args);
+			if (result == Nil) {
+				return Nil;
+			}
 			
-			if (coll == Nil) {
-				// ok do nothing
-			}
-			else if (Types.isVncList(coll)) {
-				((VncList)coll).forEach(v -> fn.apply(new VncList(v)));
-			}
-			else if (Types.isVncJavaList(coll)) {
-				((VncJavaList)coll).forEach(v -> fn.apply(new VncList(v)));
-			}
-			else if (Types.isVncMap(coll)) {
-				((VncMap)coll).entries().forEach(v -> fn.apply(new VncList(new VncVector(v.getKey(), v.getValue()))));
-			}
-			else {
-				throw new VncException(String.format(
-						"keep: collection type %s not supported. %s",
-						Types.getClassName(coll),
-						ErrorMessage.buildErrLocation(args)));
-			}
-				
-			return Nil;
+			return new VncList(
+							Coerce.toVncList(result)
+								  .stream()
+								  .filter(v -> v != Nil)
+								  .collect(Collectors.toList()));
 		}
 	};
 
