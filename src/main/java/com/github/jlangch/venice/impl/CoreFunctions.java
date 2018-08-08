@@ -4132,9 +4132,17 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			if (args.size() < 2) {
+				return Nil;
+			}
+			
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
-			final VncList lists = (VncList)args.slice(1);
+			final VncList lists = removeNilValues((VncList)args.slice(1));
 			final VncList result = new VncList();
+						
+			if (lists.isEmpty()) {
+				return Nil;
+			}
 			
 			int index = 0;
 			boolean hasMore = true;
@@ -4220,15 +4228,10 @@ public class CoreFunctions {
 			assertArity("keep", args, 2);
 			
 			final VncVal result = map.apply(args);
-			if (result == Nil) {
-				return Nil;
-			}
-			
-			return new VncList(
-							Coerce.toVncList(result)
-								  .stream()
-								  .filter(v -> v != Nil)
-								  .collect(Collectors.toList()));
+
+			return result == Nil
+					? Nil
+					: removeNilValues(Coerce.toVncList(result));
 		}
 	};
 
@@ -5885,6 +5888,17 @@ public class CoreFunctions {
 	private static boolean isJavaIoFile(final VncVal val) {
 		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
 	}
+
+	private static VncList removeNilValues(final VncList list) {		
+		return new VncList(removeNilValues(list.getList()));
+	}
+
+	private static List<VncVal> removeNilValues(final List<VncVal> items) {		
+		return items.stream()
+				    .filter(v -> v != Nil)
+				    .collect(Collectors.toList());
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
