@@ -237,7 +237,7 @@ A larger example:
    (import :org.test.User :java.time.LocalDate)
 
    (first
-      (list
+      (into '() 
          (doto (. :java.util.ArrayList :new)
                (. :add 1)
                (. :add 2))))
