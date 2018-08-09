@@ -336,7 +336,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.7.2'
+    compile 'com.github.jlangch:venice:0.8.0'
 }
 ```
 
@@ -348,7 +348,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.7.2</version>
+        <version>0.8.0</version>
     </dependency>
 </dependencies>
 ```
