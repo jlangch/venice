@@ -310,10 +310,12 @@ Extension Modules are plain Venice scripts and must be loaded
 explicitely.
 
 Venice supports
+
   - JSON
   - Protocol/Logger
   - Charts
   - Http/Rest Client (planned for Venice 1.0)
+  
 through extension modules
   
 
