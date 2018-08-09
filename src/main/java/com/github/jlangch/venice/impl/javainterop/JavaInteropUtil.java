@@ -160,19 +160,19 @@ public class JavaInteropUtil {
 					String.format(
 						"%s. %s", 
 						ex.getMessage(),
-						ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())),
+						ErrorMessage.buildErrLocation(args)),
 					ex);
 		}
 		catch(SecurityException ex) {
 			throw new SecurityException(String.format(
 					"%s. %s", 
 					ex.getMessage(),
-					ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())));
+					ErrorMessage.buildErrLocation(args)));
 		}
 		catch(RuntimeException ex) {
 			throw new JavaMethodInvocationException(String.format(
 						"JavaInterop failure. %s", 
-						ErrorMessage.buildErrLocation(args.isEmpty() ? args : args.first())));
+						ErrorMessage.buildErrLocation(args)));
 		}
 	}
 	
