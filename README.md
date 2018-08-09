@@ -33,7 +33,7 @@ Venice requires Java 8 or newer.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.7.2.jar`
+Start the REPL with `java -jar venice-0.x.y.jar`
 
 ```text
 venice> (+ 1 1)

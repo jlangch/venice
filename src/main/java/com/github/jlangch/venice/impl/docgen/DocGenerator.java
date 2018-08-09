@@ -139,7 +139,7 @@ public class DocGenerator {
 		literals.addItem(new DocItem("Double: 3.569", idgen.id()));
 		literals.addItem(new DocItem("Boolean: true, false", idgen.id()));
 		literals.addItem(new DocItem("BigDecimal: 6.897M", idgen.id()));
-		literals.addItem(new DocItem("String: \"abcde\" 'abcde'", idgen.id()));
+		literals.addItem(new DocItem("String: \"abcde\"", idgen.id()));
 
 		final DocSection numbers = new DocSection("Numbers");
 		section.addSection(numbers);
