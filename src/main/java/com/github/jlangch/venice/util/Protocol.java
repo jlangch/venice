@@ -77,12 +77,7 @@ public class Protocol {
 				m.append(getExceptionStackTrace(ex)).append('\n');
 			}
 			
-			synchronized(sb) {
-				// A very simple protection against malicious scripts
-				if (sb.length() + m.length() < MAX_PROTOCOL_SIZE) {
-					sb.append(m);
-				}
-			}
+			logMsg(m.toString());
 		}
 	}
 
@@ -100,6 +95,15 @@ public class Protocol {
 	public String toString() {
 		synchronized(sb) {
 			return sb.toString();
+		}
+	}
+	
+	private void logMsg(final String msg) {
+		synchronized(msg) {
+			// A very simple protection against malicious scripts
+			if (sb.length() + msg.length() < MAX_PROTOCOL_SIZE) {
+				sb.append(msg);
+			}
 		}
 	}
 	
