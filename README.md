@@ -313,6 +313,7 @@ Venice supports
   - JSON
   - Protocol/Logger
   - Charts
+  - Http/Rest Client (planned for Venice 1.0)
 through extension modules
   
 
