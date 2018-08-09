@@ -2,7 +2,9 @@
 
 (def *PROTOCOL* (. :com.github.jlangch.venice.util.Protocol :new))
 
-(def protocol/open (fn [] (do (. *PROTOCOL* :clear) (. *PROTOCOL* :log :INFO "opened") nil)))
+(def protocol/open (fn [] (do (. *PROTOCOL* :clear) nil)))
+
+(def protocol/attach-os (fn [os] (do (. *PROTOCOL* :attachOutputStream os) nil)))
 
 (def protocol/log (fn [lvl msg] (do (. *PROTOCOL* :log lvl msg) nil)))
 

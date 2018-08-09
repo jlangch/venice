@@ -21,11 +21,15 @@
  */
 package com.github.jlangch.venice.util;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class Protocol {
@@ -34,11 +38,14 @@ public class Protocol {
 	
 	
 	public Protocol() {
-		this(true);
+	}
+	
+	public void attachOutputStream(final OutputStream os) {
+		this.ps.set(os == null ? null : createPrintStream(os));
 	}
 
-	public Protocol(final boolean decorateWithTimestamp) {
-		this.decorateWithTimestamp = decorateWithTimestamp;
+	public void decorateWithTimestamp(final boolean enable) {
+		this.decorateWithTimestamp.set(enable);
 	}
 
 	public void enable(final boolean enable) {
@@ -104,19 +111,23 @@ public class Protocol {
 			if (sb.length() + msg.length() < MAX_PROTOCOL_SIZE) {
 				sb.append(msg);
 			}
+			
+			if (ps.get() != null) {
+				ps.get().print(msg);
+			}
 		}
 	}
 	
 	private String filter(final String text) {
 		return text.replace("\r", "")
-				   .replace("\n", "\n" + leftPad("", decorateWithTimestamp ? 31 : 7));
+				   .replace("\n", "\n" + leftPad("", decorateWithTimestamp.get() ? 31 : 7));
 	}
 	
 	private String getPrefix(final Level level) {
 		final StringBuilder sb = new StringBuilder();		
 		sb.append("[");
 		
-		if (decorateWithTimestamp) {
+		if (decorateWithTimestamp.get()) {
 			// timestamp
 			sb.append(LocalDateTime.now().format(dtFormatter)).append("|");
 		}
@@ -200,16 +211,26 @@ public class Protocol {
     	return level == null ? Level.DEBUG : level;
     }
 
+    private PrintStream createPrintStream(final OutputStream os) {
+		try {
+			return new PrintStream(os, true, "UTF-8");
+		}
+		catch(UnsupportedEncodingException ex) {
+			throw new RuntimeException("Unsupported encoding UTF-8", ex);
+		}
+    }
+    
 	
 	private final int MAX_PROTOCOL_SIZE = 20 * 1024 * 1024; // 20MB
 	
-	private final boolean decorateWithTimestamp;
-
 	// thread safety: the sb object is used as monitor
 	private final StringBuilder sb = new StringBuilder();
 	
+	private final AtomicReference<PrintStream> ps = new AtomicReference<>();
+	
 	private final AtomicBoolean debugOn = new AtomicBoolean(false);
 	private final AtomicBoolean enabled = new AtomicBoolean(true);
+	private final AtomicBoolean decorateWithTimestamp = new AtomicBoolean(true);
 
 	private final DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 }
