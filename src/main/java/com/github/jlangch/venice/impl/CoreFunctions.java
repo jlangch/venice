@@ -2787,6 +2787,9 @@ public class CoreFunctions {
 			else if (Types.isVncList(to)) {
 				from.toVncList().getList().forEach(v -> ((VncList)to).addAtStart(v));
 			}
+			else if (Types.isVncSet(to)) {
+				from.toVncList().getList().forEach(v -> ((VncSet)to).add(v));
+			}
 			else if (Types.isVncMap(to)) {
 				if (Types.isVncSequence(from)) {
 					((VncList)from).getList().forEach(it -> {
@@ -4169,7 +4172,7 @@ public class CoreFunctions {
 			if (lists.isEmpty()) {
 				return Nil;
 			}
-
+			
 			int index = 0;
 			boolean hasMore = true;
 			while(hasMore) {
@@ -5798,6 +5801,19 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction type = new VncFunction("type") {
+		{
+			setArgLists("(type x)");
+			
+			setDoc("Retruns the type of x.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("type", args, 1);
+			return Types.getClassName(args.first());
+		}
+	};
+
 	public static VncFunction sleep = new VncFunction("sleep") {
 		{
 			setArgLists("(sleep n)");
@@ -6064,6 +6080,7 @@ public class CoreFunctions {
 				.put("uuid",				uuid)
 				.put("sleep",				sleep)
 				.put("version",				version)
+				.put("type",				type)
 				
 				.put("io/file",				io_file)
 				.put("io/file?",			io_file_Q)

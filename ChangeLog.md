@@ -11,7 +11,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added ...
+- added function type to reveal the type of an item
+
+### fixed
+
+- fixed function 'into'.
+- fixed adding elements to data type 'set'.
+- fixed README Java Interop example
 
 
 
