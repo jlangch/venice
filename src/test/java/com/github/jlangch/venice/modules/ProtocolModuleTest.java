@@ -46,7 +46,7 @@ public class ProtocolModuleTest {
 				") ";
 
 		final String protocol = (String)venice.eval("(str " + script + ")");
-		assertEquals(3, StringUtil.splitIntoLines(protocol).size());
+		assertEquals(2, StringUtil.splitIntoLines(protocol).size());
 	}
 
 }
