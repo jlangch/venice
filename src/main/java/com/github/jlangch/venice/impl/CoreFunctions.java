@@ -1865,24 +1865,7 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() == 1 && Types.isVncJavaList(args.nth(0))) {
-				return ((VncJavaList)args.nth(0)).toVncList();
-			}
-			else if (args.size() == 1 && Types.isVncJavaSet(args.nth(0))) {
-				return ((VncJavaSet)args.nth(0)).toVncList();
-			}
-			else if (args.size() == 1 && Types.isVncSet(args.nth(0))) {
-				return ((VncSet)args.nth(0)).toVncList();
-			}
-			else if (args.size() == 1 && Types.isVncString(args.nth(0))) {
-				return ((VncString)args.nth(0)).toVncList();
-			}
-			else if (args.size() == 1 && Types.isVncByteBuffer(args.nth(0))) {
-				return ((VncByteBuffer)args.nth(0)).toVncList();
-			}
-			else {
-				return new VncList(args.getList());
-			}
+			return new VncList(args.getList());
 		}
 	};
 
@@ -1908,46 +1891,6 @@ public class CoreFunctions {
 	///////////////////////////////////////////////////////////////////////////
 	// Vector functions
 	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction new_vec = new VncFunction("vec") {
-		{
-			setArgLists("(vec coll)");
-			
-			setDoc("Creates a new vector with the items of the collection");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("vec", args, 1);
-
-			final VncVal coll = args.first();
-			
-			if (coll == Nil) {
-				return Nil;
-			}
-			else if (Types.isVncList(coll)) {
-				return ((VncList)coll).toVncVector();
-			}
-			else if (Types.isVncMap(coll)) {
-				return ((VncMap)coll).toVncVector();
-			}
-			else if (Types.isVncJavaList(coll)) {
-				return ((VncJavaList)coll).toVncVector();
-			}
-			else if (Types.isVncJavaSet(coll)) {
-				return ((VncJavaSet)coll).toVncVector();
-			}
-			else if (Types.isVncSet(coll)) {
-				return ((VncSet)coll).toVncVector();
-			}
-			else {
-				throw new VncException(String.format(
-						"Function 'vec': %s is not a collection. %s", 
-						Types.getClassName(coll),
-						ErrorMessage.buildErrLocation(args)));
-			}
-		}
-	};
-
 	public static VncFunction new_vector = new VncFunction("vector") {
 		{
 			setArgLists("(vector & items)");
@@ -2045,27 +1988,13 @@ public class CoreFunctions {
 
 	public static VncFunction new_set = new VncFunction("set") {
 		{
-			setArgLists("(set & items)", "(set coll)");
+			setArgLists("(set & items)");
 			
 			setDoc("Creates a new set containing the items.");
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (args.size() == 1 && Types.isVncJavaSet(args.nth(0))) {
-				return ((VncJavaSet)args.nth(0)).toVncSet();
-			}
-			if (args.size() == 1 && Types.isVncSet(args.nth(0))) {
-				return new VncSet(((VncSet)args.nth(0)).toVncList());
-			}
-			else if (args.size() == 1 && Types.isVncJavaList(args.nth(0))) {
-				return ((VncJavaList)args.nth(0)).toVncSet();
-			}
-			else if (args.size() == 1 && Types.isVncList(args.nth(0))) {
-				return ((VncList)args.nth(0)).toVncSet();
-			}
-			else {
-				return new VncSet(args);
-			}
+			return new VncSet(args);
 		}
 	};
 
@@ -2785,41 +2714,84 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a new coll consisting of to-coll with all of the items of" + 
 					"from-coll conjoined.");
+			
+			setExamples(
+					"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )",
+					"(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )",
+					"(into [] {1 2, 3 4})",
+					"(into '() '(1 2 3))",
+					"(into [1 2 3] '(4 5 6))",
+					"(into '() (bytebuf [0 1 2]))",
+					"(into [] (bytebuf [0 1 2]))",
+					"(into '() \"abc\")",
+					"(into [] \"abc\")",
+					"(into (sorted-map) {:b 2 :c 3 :a 1})");
 		}
 		
 		public VncVal apply(final VncList args) {
 			assertArity("into", args, 2);
 			
-			final VncVal to = args.nth(0);
-			final VncVal from = args.nth(1);
+			if (args.second() == Nil) {
+				return args.first();
+			}
+	
+			final VncCollection to = Coerce.toVncCollection(args.first()).copy();
+
+			if (Types.isVncByteBuffer(args.second())) {
+				final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
+			
+				if (Types.isVncVector(to)) {
+					byteList.forEach(v -> ((VncVector)to).addAtEnd(v));
+				}
+				else if (Types.isVncList(to)) {
+					byteList.forEach(v -> ((VncList)to).addAtEnd(v));
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'into' does only allow list and vector as to-coll if from-coll " +
+							"is a bytebuf. %s", 
+							ErrorMessage.buildErrLocation(args)));
+				}
+				return to;
+			}
+			else if (Types.isVncString(args.second())) {
+				final VncList charList = ((VncString)args.second()).toVncList();
+				
+				
+				if (Types.isVncVector(to)) {
+					charList.forEach(v -> ((VncVector)to).addAtEnd(v));
+				}
+				else if (Types.isVncList(to)) {
+					charList.forEach(v -> ((VncList)to).addAtEnd(v));
+				}
+				else if (Types.isVncSet(to)) {
+					charList.forEach(v -> ((VncSet)to).add(v));
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'into' does only allow list, vector, and set as to-coll if from-coll " +
+							"is a string. %s", 
+							ErrorMessage.buildErrLocation(args)));
+				}
+				
+				return to;
+			}
+
+
+
+			final VncCollection from = Coerce.toVncCollection(args.second());
 			
 			if (Types.isVncVector(to)) {
-				if (Types.isVncSet(from)) {
-					((VncSet)from).getList().forEach(v -> ((VncVector)to).addAtEnd(v));
-				}
-				else if (Types.isVncList(from)) {
-					((VncList)from).getList().forEach(v -> ((VncVector)to).addAtEnd(v));
-				}
-				else if (Types.isVncMap(from)) {
-					((VncMap)from).toVncList().getList().forEach(v -> ((VncVector)to).addAtEnd(v));
-				}				
+				from.toVncList().getList().forEach(v -> ((VncVector)to).addAtEnd(v));
 			}
 			else if (Types.isVncList(to)) {
-				if (Types.isVncSet(from)) {
-					((VncSet)from).getList().forEach(v -> ((VncList)to).addAtStart(v));
-				}
-				else if (Types.isVncList(from)) {
-					((VncList)from).getList().forEach(v -> ((VncList)to).addAtStart(v));
-				}
-				else if (Types.isVncMap(from)) {
-					((VncMap)from).toVncList().getList().forEach(v -> ((VncVector)to).addAtStart(v));
-				}				
+				from.toVncList().getList().forEach(v -> ((VncList)to).addAtStart(v));
 			}
 			else if (Types.isVncMap(to)) {
-				if (Types.isVncList(from)) {
+				if (Types.isVncSequence(from)) {
 					((VncList)from).getList().forEach(it -> {
-						if (Types.isVncList(it)) {
-							((VncMap)to).assoc((VncList)it);
+						if (Types.isVncSequence(it)) {
+							((VncMap)to).assoc(((VncSequence)it).toVncList());
 						}
 						else if (Types.isVncMap(it)) {
 							((VncMap)to).getMap().putAll(((VncMap)it).getMap());
@@ -2829,6 +2801,12 @@ public class CoreFunctions {
 				else if (Types.isVncMap(from)) {
 					 ((VncMap)to).getMap().putAll(((VncMap)from).getMap());
 				}				
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'into' does not allow %s as to-coll. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
 			}
 			
 			return to;
@@ -5986,7 +5964,6 @@ public class CoreFunctions {
 		
 				.put("list",				new_list)
 				.put("list?",				list_Q)
-				.put("vec",					new_vec)
 				.put("vector",				new_vector)
 				.put("vector?",				vector_Q)
 				.put("set?",				set_Q)

@@ -72,7 +72,7 @@ public class VncSet extends VncCollection {
 	}
 
 	public Set<VncVal> getSet() { 
-		return new HashSet<VncVal>(value); 
+		return value; 
 	}
 
 	public List<VncVal> getList() { 

@@ -189,8 +189,10 @@ public class FunctionsTest {
 
 		assertArrayEquals(new byte[0], ((ByteBuffer)venice.eval("(bytebuf)")).array());	
 		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf [0 1 2])")).array());		
-		assertEquals("(0 1 2)", venice.eval("(str (list (bytebuf [0 1 2])))"));		
-		assertEquals("(97 98 99)", venice.eval("(str (list (bytebuf \"abc\")))"));		
+		assertEquals("(0 1 2)", venice.eval("(str (into '() (bytebuf [0 1 2])))"));		
+		assertEquals("(97 98 99)", venice.eval("(str (into '() (bytebuf \"abc\")))"));		
+		assertEquals("[0 1 2]", venice.eval("(str (into [] (bytebuf [0 1 2])))"));		
+		assertEquals("[97 98 99]", venice.eval("(str (into [] (bytebuf \"abc\")))"));		
 	}
 	
 	@Test
@@ -592,9 +594,9 @@ public class FunctionsTest {
 	public void test_difference() {
 		final Venice venice = new Venice();
 
-		assertEquals("#{1 2 3}", venice.eval("(str (difference (set [1 2 3])))"));
-		assertEquals("#{1}", venice.eval("(str (difference (set [1 2]) (set [2 3])))"));
-		assertEquals("#{2}", venice.eval("(str (difference (set [1 2 3]) (set [1]) (set [1 4]) (set [3])))"));
+		assertEquals("#{1 2 3}", venice.eval("(str (difference (set 1 2 3)))"));
+		assertEquals("#{1}", venice.eval("(str (difference (set 1 2) (set 2 3)))"));
+		assertEquals("#{2}", venice.eval("(str (difference (set 1 2 3) (set 1) (set 1 4) (set 3)))"));
 	}
 
 	@Test
@@ -1255,7 +1257,14 @@ public class FunctionsTest {
 		assertEquals("(0)", venice.eval("(str (into '(0) []))"));
 		assertEquals("(1 0)", venice.eval("(str (into '(0) [1]))"));
 		assertEquals("(2 1 0)", venice.eval("(str (into '(0) [1 2]))"));
+		assertEquals("(3 2 1)", venice.eval("(str (into '() '(1 2 3)))"));
+		assertEquals("([3 4] [1 2])", venice.eval("(str (into '() {1 2, 3 4}))"));
+		assertEquals("(6 5 4 1 2 3)", venice.eval("(str (into '(1 2 3) '(4 5 6)))"));
+		assertEquals("(6 5 4 1 2 3)", venice.eval("(str (into '(1 2 3) [4 5 6]))"));
 
+		assertEquals("(a b c)", venice.eval("(str (into '() \"abc\"))"));
+		
+				
 		assertEquals("[0]", venice.eval("(str (into [0] '()))"));
 		assertEquals("[0 1]", venice.eval("(str (into [0] '(1)))"));
 		assertEquals("[0 1 2]", venice.eval("(str (into [0] '(1 2)))"));
@@ -1263,9 +1272,14 @@ public class FunctionsTest {
 		assertEquals("[0]", venice.eval("(str (into [0] []))"));
 		assertEquals("[0 1]", venice.eval("(str (into [0] [1]))"));
 		assertEquals("[0 1 2]", venice.eval("(str (into [0] [1 2]))"));
+		assertEquals("[[1 2] [3 4]]", venice.eval("(str (into [] {1 2, 3 4}))"));
+		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (into [1 2 3] '(4 5 6)))"));
+		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (into [1 2 3] [4 5 6]))"));
+		assertEquals("[a b c]", venice.eval("(str (into [] \"abc\"))"));
 		
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) [[:a 1] [:b 2] [:c 3]] ))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) [{:a 1} {:b 2} {:c 3}] ))"));
+		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) { :a 1 :b 2 :c 3} ))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) (ordered-map :a 1 :b 2 :c 3) ))"));
 	}
 	
@@ -2465,11 +2479,9 @@ public class FunctionsTest {
 	public void test_set() {
 		final Venice venice = new Venice();
 
-		assertEquals("#{}", venice.eval("(str (set))"));
+		assertEquals("#{}", venice.eval("(str (set ))"));
 		assertEquals("#{1 2 3}", venice.eval("(str (set 1 2 3))"));
-		assertEquals("#{}", venice.eval("(str (set []))"));
-		assertEquals("#{}", venice.eval("(str (set '()))"));
-		assertEquals("#{1 2}", venice.eval("(str (set [1 2]))"));
+		assertEquals("#{[1 2]}", venice.eval("(str (set [1 2]))"));
 		assertEquals("#{[1 2] 4}", venice.eval("(str (set [1 2] 4))"));
 	}
 	
@@ -2603,10 +2615,10 @@ public class FunctionsTest {
 	
 		
 		// set
-		assertEquals("()", venice.eval("(str (sort (set [])))"));
-		assertEquals("(1)", venice.eval("(str (sort (set [1])))"));
-		assertEquals("(1 2)", venice.eval("(str (sort (set [2 1])))"));
-		assertEquals("(1 2 3 4 5)", venice.eval("(str (sort (set [5 2 1 4 3])))"));
+		assertEquals("()", venice.eval("(str (sort (set )))"));
+		assertEquals("(1)", venice.eval("(str (sort (set 1)))"));
+		assertEquals("(1 2)", venice.eval("(str (sort (set 2 1)))"));
+		assertEquals("(1 2 3 4 5)", venice.eval("(str (sort (set 5 4 3 2 1)))"));
 	
 		
 		// map
@@ -3173,7 +3185,7 @@ public class FunctionsTest {
 
 		assertEquals("[1 2]", venice.eval("(str (take-while (fn [x] (< x 3)) [1 2 3 2 1 0]))"));
 	}
-	
+
 	@Test
 	public void test_true_Q() {
 		final Venice venice = new Venice();
