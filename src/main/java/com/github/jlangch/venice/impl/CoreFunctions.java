@@ -2021,7 +2021,7 @@ public class CoreFunctions {
 			setExamples(
 					"(difference (set 1 2 3))",
 					"(difference (set 1 2) (set 2 3))",
-					"(difference (set 1 2 ]) (set 1) (set 1 4) (set 3))");
+					"(difference (set 1 2) (set 1) (set 1 4) (set 3))");
 		}
 		
 		public VncVal apply(final VncList args) {
