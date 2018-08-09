@@ -2012,6 +2012,94 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction difference = new VncFunction("difference") {
+		{
+			setArgLists("(difference s1)", "(difference s1 s2)", "(difference s1 s2 & sets)");
+			
+			setDoc("Return a set that is the first set without elements of the remaining sets");
+			
+			setExamples(
+					"(difference (set 1 2 3))",
+					"(difference (set 1 2) (set 2 3))",
+					"(difference (set 1 2 ]) (set 1) (set 1 4) (set 3))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("difference", args, 1);
+			
+			final Set<VncVal> set = Coerce.toVncSet(args.first()).getSet();
+			
+			for(int ii=1; ii<args.size(); ii++) {
+				set.removeAll(Coerce.toVncSet(args.nth(ii)).getSet());
+			}
+			
+			return new VncSet(set);
+		}
+	};
+
+	public static VncFunction union = new VncFunction("union") {
+		{
+			setArgLists("(union s1)", "(union s1 s2)", "(union s1 s2 & sets)");
+			
+			setDoc("Return a set that is the union of the input sets");
+			
+			setExamples(
+					"(union (set 1 2 3))",
+					"(union (set 1 2) (set 2 3))",
+					"(union (set 1 2 3) (set 1 2) (set 1 4) (set 3))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("union", args, 1);
+			
+			final Set<VncVal> set = Coerce.toVncSet(args.first()).getSet();
+			
+			for(int ii=1; ii<args.size(); ii++) {
+				set.addAll(Coerce.toVncSet(args.nth(ii)).getSet());
+			}
+			
+			return new VncSet(set);
+		}
+	};
+
+	public static VncFunction intersection = new VncFunction("intersection") {
+		{
+			setArgLists("(intersection s1)", "(intersection s1 s2)", "(intersection s1 s2 & sets)");
+			
+			setDoc("Return a set that is the intersection of the input sets");
+			
+			setExamples(
+					"(intersection (set 1))",
+					"(intersection (set 1 2) (set 2 3))",
+					"(intersection (set 1 2) (set 3 4))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("intersection", args, 1);
+			
+			final Set<VncVal> intersection = new HashSet<>();
+		
+			final Set<VncVal> first = Coerce.toVncSet(args.first()).getSet();
+			
+			first.forEach(v -> {
+				boolean intersect = true;
+				
+				for(int ii=1; ii<args.size(); ii++) {
+					if (!Coerce.toVncSet(args.nth(ii)).getSet().contains(v)) {
+						intersect = false;
+						break;
+					}
+				}
+			
+				if (intersect) {
+					intersection.add(v);
+				}	
+			});
+			
+			return new VncSet(intersection);
+		}
+	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// HashMap functions
@@ -2372,31 +2460,6 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0)),
 						ErrorMessage.buildErrLocation(args)));
 			}
-		}
-	};
-
-	public static VncFunction difference = new VncFunction("difference") {
-		{
-			setArgLists("(difference s1)", "(difference s1 s2)", "(difference s1 s2 & sets)");
-			
-			setDoc("Return a set that is the first set without elements of the remaining sets");
-			
-			setExamples(
-					"(difference (set [1 2 3]))",
-					"(difference (set [1 2]) (set [2 3]))",
-					"(difference (set [1 2 3]) (set [1]) (set [1 4]) (set [3]))");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertMinArity("difference", args, 1);
-			
-			final Set<VncVal> set = Coerce.toVncSet(args.first()).getSet();
-			
-			for(int ii=1; ii<args.size(); ii++) {
-				set.removeAll(Coerce.toVncSet(args.nth(ii)).getSet());
-			}
-			
-			return new VncSet(set);
 		}
 	};
 
@@ -5982,12 +6045,10 @@ public class CoreFunctions {
 				.put("list?",				list_Q)
 				.put("vector",				new_vector)
 				.put("vector?",				vector_Q)
-				.put("set?",				set_Q)
 				.put("map?",				map_Q)
 				.put("hash-map?",			hash_map_Q)
 				.put("ordered-map?",		ordered_map_Q)
 				.put("sorted-map?",			sorted_map_Q)
-				.put("set",					new_set)
 				.put("hash-map",			new_hash_map)
 				.put("ordered-map",			new_ordered_map)
 				.put("sorted-map",			new_sorted_map)
@@ -6007,8 +6068,13 @@ public class CoreFunctions {
 				.put("subvec", 				subvec)
 				.put("subbytebuf", 			subbytebuf)
 				.put("empty", 				empty)
+
+				.put("set?",				set_Q)
+				.put("set",					new_set)
 				.put("difference", 			difference)
-		
+				.put("union", 				union)
+				.put("intersection", 		intersection)
+
 				.put("into",				into)
 				.put("sequential?",	    	sequential_Q)
 				.put("coll?",	    		coll_Q)

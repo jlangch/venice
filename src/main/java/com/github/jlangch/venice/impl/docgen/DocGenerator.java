@@ -425,6 +425,8 @@ public class DocGenerator {
 		final DocSection set_modify = new DocSection("Modify");
 		sets.addSection(set_modify);
 		set_modify.addItem(getDocItem("difference"));
+		set_modify.addItem(getDocItem("union"));
+		set_modify.addItem(getDocItem("intersection"));
 
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);

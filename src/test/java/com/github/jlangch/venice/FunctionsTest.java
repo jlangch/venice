@@ -1228,6 +1228,16 @@ public class FunctionsTest {
 		assertEquals("(1 - 2 - 3)", venice.eval("(str (interpose \"-\" [1 2 3]))"));
 		assertEquals("1-2-3", venice.eval("(apply str (interpose \"-\" [1 2 3]))"));
 	}
+
+	@Test
+	public void test_intersection() {
+		final Venice venice = new Venice();
+
+		assertEquals("#{1}", venice.eval("(str (intersection (set 1)))"));
+		assertEquals("#{2}", venice.eval("(str (intersection (set 1 2) (set 2 3)))"));
+		assertEquals("#{2}", venice.eval("(str (intersection (set 1 2) (set 2 3) (set 2 4)))"));
+		assertEquals("#{}", venice.eval("(str (intersection (set 1 2) (set 3 4)))"));
+	}
 		
 	@Test
 	public void test_into() {
@@ -3196,6 +3206,15 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(true? true)"));	
 		assertFalse((Boolean)venice.eval("(true? false)"));	
 		assertFalse((Boolean)venice.eval("(true? 1)"));	
+	}
+
+	@Test
+	public void test_union() {
+		final Venice venice = new Venice();
+
+		assertEquals("#{1 2 3}", venice.eval("(str (union (set 1 2 3)))"));
+		assertEquals("#{1 2 3}", venice.eval("(str (union (set 1 2) (set 2 3)))"));
+		assertEquals("#{1 2 3 4}", venice.eval("(str (union (set 1 2 3) (set 1 2) (set 1 4) (set 3)))"));
 	}
 	
 	@Test
