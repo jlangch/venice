@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -58,7 +57,7 @@ public class VncSet extends VncCollection {
 	}
 	
 	public void add(final VncVal val) {
-		value.add(JavaInteropUtil.convertToVncVal(val));
+		value.add(val);
 	}
 	
 	public boolean contains(final VncVal val) {
