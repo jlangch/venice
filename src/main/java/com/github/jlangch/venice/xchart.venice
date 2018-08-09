@@ -66,6 +66,30 @@
 (def xchart/map-vals
    (fn [f coll]
        (reduce-kv (fn [m k v] (assoc m k (f v))) {} coll)))
+       
+(def xchart/transpose-single
+   (fn [acc k1 v1]
+       (reduce-kv (fn [m k2 v2] (assoc-in m [k2 k1] v2))
+                  acc v1)))
+
+(def xchart/transpose-map
+   (fn [series]
+       (reduce-kv xchart/transpose-single {} series)))
+
+(def xchart/extract-series
+   (fn [keymap coll]
+       (xchart/map-vals (fn [x] (map x coll)) keymap)))
+
+(def xchart/normalize-group
+   (fn [m]
+       (let [sum (reduce + (vals m))]
+            (xchart/map-vals (fn [x] (/ x sum)) m))))
+
+(def xchart/normalize-categories
+   (fn [m]
+       (->> (xchart/transpose-map m)
+            (map-vals normalize-group)
+            xchart/transpose-map)))
 
 (def xchart/assoc-in-nonexisting  
    (fn [m ks v]

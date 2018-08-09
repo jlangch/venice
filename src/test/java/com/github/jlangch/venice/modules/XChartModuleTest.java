@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -29,6 +30,7 @@ import com.github.jlangch.venice.Venice;
 public class XChartModuleTest {
 
 	@Test
+	@Ignore
 	public void test_xy_chart() {
 		final Venice venice = new Venice();
 
@@ -58,6 +60,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
+	@Ignore
 	public void test_category_chart() {
 		final Venice venice = new Venice();
 
@@ -82,6 +85,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
+	@Ignore
 	public void test_category_chart_overlapping() {
 		final Venice venice = new Venice();
 
@@ -114,32 +118,9 @@ public class XChartModuleTest {
 
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
-	
-	@Test
-	public void test_category_chart_overlapping___() {
-		final Venice venice = new Venice();
-
-		final String script =
-			"(do                                                  \n" +
-			"   (load-module :xchart)                             \n" +
-			"                                                     \n" +
-			"      (xchart/category-chart!                        \n" +
-			"          {\"A\" {:x [14 15 16 17]                   \n" +
-			"                   :y [2 7 17 25]}                   \n" +
-			"           \"B\" {:x [14 15 16 17]                   \n" +
-			"                   :y [1 1 1 5]}}                    \n" +
-			"          {:title \"Store sales on Monday\"          \n" +
-			"           :overlap? true                            \n" +
-			"           :theme :xchart                            \n" +
-			"           :series-order [\"A\" \"B\"]               \n" +
-			"           :y-axis {:ticks-visible? false}           \n" +
-			"           :x-axis {:decimal-pattern \"##.00\"}})    \n" +
-			") ";
-
-		System.out.println(venice.eval("(str " + script + ")"));
-	}
 
 	@Test
+	@Ignore
 	public void test_pie_chart() {
 		final Venice venice = new Venice();
 
@@ -160,6 +141,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
+	@Ignore
 	public void test_bubble_chart() {
 		final Venice venice = new Venice();
 
@@ -194,6 +176,76 @@ public class XChartModuleTest {
 			"                                                                      \n" +
 			"    (sleep 20000)                                                     \n" +
 			") ";
+
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	@Ignore
+	public void test_sticks_chart() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                   \n" +
+			"   (load-module :xchart)                                              \n" +
+			"                                                                      \n" +			
+			"   (xchart/swing-view-chart                                           \n" +
+			"      (xchart/category-chart                                          \n" +
+			"         (xchart/transpose-map                                        \n" +
+			"          {\"Group 1\" {\"A\" 1329,                                   \n" +
+			"                        \"B\" 47,                                     \n" +
+			"                        \"C\" 830}                                    \n" +
+			"           \"Group 2\" {\"A\" 1049,                                   \n" +
+			"                        \"B\" 32,                                     \n" +
+			"                        \"C\" 1015}                                   \n" +
+			"           \"Group 3\" {\"A\" 435,                                    \n" +
+			"                        \"B\" 295,                                    \n" +
+			"                        \"C\" 1463}                                   \n" +
+			"           \"Group 4\" {\"A\" 1221,                                   \n" +
+			"                        \"B\" 36,                                     \n" +
+			"                        \"C\" 910}})                                  \n" +
+			"          {:title \"Stick Chart\"                                     \n" +
+			"           :render-style :stick                                       \n" +
+			"           :y-axis {:ticks-visible? false}                            \n" +
+			"           :x-axis {:label {:rotation 0}}}))                          \n" +
+			"                                                                      \n" +
+			"    (sleep 20000)                                                     \n" +
+			") ";
+
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	@Ignore
+	public void test_misc_chart() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                             \n" +
+			"   (import :java.lang.Math)                                                     \n" +
+			"                                                                                \n" +
+			"   (load-module :xchart)                                                        \n" +
+			"                                                                                \n" +
+			"   (def log-spiral-x (fn [a b t]                                                \n" +
+			"        (* a (. :Math :exp (* b t)) (. :Math :cos t))))                         \n" +
+			"                                                                                \n" +
+			"   (def log-spiral-y (fn [a b t]                                                \n" +
+			"        (* a (. :Math :exp (* b t)) (. :Math :sin t))))                         \n" +
+			"                                                                                \n" +
+			"   (xchart/swing-view-chart                                                     \n" +
+			"      (xchart/xy-chart                                                          \n" +
+			"          {\"curve\" {:x (cons 0 (map (fn [x] (+ 2 (log-spiral-x -0.2 0.2 x)))  \n" +
+			"                                 (range 10.5 0 -0.1)))                          \n" +
+			"                      :y (cons 0 (map (fn [x] (+ 4 (log-spiral-y 0.2 0.2 x)))   \n" +
+			"                                 (range 10.5 0 -0.1)))                          \n" +
+			"                      :style {:marker-type :none}}}                             \n" +
+			"          {:title \"Spiral\"                                                    \n" +
+			"           :legend {:visible? false}                                            \n" +
+			"           :axis {:ticks {:visible? false}}}))                                  \n" +
+			"                                                                                \n" +
+			"    (sleep 20000)                                                               \n" +
+			") ";
+
 
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
