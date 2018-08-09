@@ -239,7 +239,7 @@
        (let [series-colors  (. styler :getSeriesColors)
              series-lines   (. styler :getSeriesLines)
              series-markers (. styler :getSeriesMarkers)
-             series         (vec series)]
+             series         (into [] series)]
           (dotimes [i (count series)]
               (let [{:keys [color stroke marker]} (nth series i)]
                    (when color
@@ -449,6 +449,19 @@
 ;; Area chart
 ;; ---------------------------------------------------------------------------
  
+(def xchart/category-series-xs
+   (fn [series]
+       (->> (vals series)
+            (mapcat (fn [m] (:x m)) )
+            (into (set )))))
+
+(def xchart/reorder-category-series
+   (fn [{:keys [x y] :as series} x-order]
+       (let [mapping (zipmap x y)]
+            (assoc series
+                   :x x-order
+                   :y (mapv (fn [x] (get mapping x 0.0)) x-order)))))
+
 (def xchart/normalize-category-series
    (fn [series-data]
        (cond (and (map? series-data)
@@ -468,25 +481,12 @@
              (sequential? series-data) {:x (first series-data)
                                         :y (second series-data)})))
  
-(def xchart/category-series-xs
-   (fn [series]
-       (->> (vals series)
-            (mapcat (fn [m] (:x m)) )
-            set)))
-
-(def xchart/reorder-category-series
-   (fn [{:keys [x y] :as series} x-order]
-       (let [mapping (zipmap x y)]
-            (assoc series
-                   :x x-order
-                   :y (mapv (fn [x] (get mapping x 0.0)) x-order)))))
-
 (def xchart/normalize-category-series-map
    (fn [series-map x-order]
        (let [series-map (xchart/map-vals xchart/normalize-category-series series-map)
-             x-order (vec x-order)
+             x-order (into [] x-order)
              extra-xs (sort (difference (xchart/category-series-xs series-map)
-                                        (set x-order)))
+                                        (into (set ) x-order)))
              x-order (into x-order extra-xs)]
           (xchart/map-vals (fn [x] (xchart/reorder-category-series x x-order)) series-map))))
 
