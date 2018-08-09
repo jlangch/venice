@@ -25,8 +25,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class ProtocolModuleTest {
@@ -36,17 +38,42 @@ public class ProtocolModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                     " +
-				"   (load-module :protocol)              " +
-				"                                        " +
-				"   (protocol/open)                      " + 
-				"   (protocol/log :INFO \"test 1\")      " + 
-				"   (protocol/log :INFO \"test 2\")      " + 
-				"   (protocol/to-string)                 " + 
+				"(do                                          " +
+				"   (load-module :protocol)                   " +
+				"                                             " +
+				"   (protocol/open)                           " + 
+				"   (protocol/log :INFO \"test 1\")           " + 
+				"   (protocol/log :INFO \"test 2\")           " + 
+				"   (protocol/to-string)                      " + 
 				") ";
 
 		final String protocol = (String)venice.eval("(str " + script + ")");
 		assertEquals(2, StringUtil.splitIntoLines(protocol).size());
+	}
+
+	@Test
+	public void test_protocol_stdout() {
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                          " +
+				"   (load-module :protocol)                   " +
+				"                                             " +
+				"   (protocol/open)                           " + 
+				"   (protocol/attach-os *out*)                " + 
+				"   (protocol/log :INFO \"test 1\")           " + 
+				"   (protocol/log :INFO \"test 2\")           " + 
+				"   (protocol/to-string)                      " + 
+				") ";
+
+		final String protocol = (String)venice.eval(
+											"(str " + script + ")",
+											Parameters.of("*out*", ps));
+		
+		assertEquals(2, StringUtil.splitIntoLines(protocol).size());
+		assertEquals(2, StringUtil.splitIntoLines(ps.getOutput()).size());
 	}
 
 }

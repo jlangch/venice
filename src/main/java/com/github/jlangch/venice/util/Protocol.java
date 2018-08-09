@@ -213,7 +213,9 @@ public class Protocol {
 
     private PrintStream createPrintStream(final OutputStream os) {
 		try {
-			return new PrintStream(os, true, "UTF-8");
+			return (os instanceof PrintStream)
+						? (PrintStream)os
+						: new PrintStream(os, true, "UTF-8");
 		}
 		catch(UnsupportedEncodingException ex) {
 			throw new RuntimeException("Unsupported encoding UTF-8", ex);
