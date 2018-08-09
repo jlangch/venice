@@ -165,7 +165,7 @@
         <div class="main">
             <div class="header">    
                 <h1>Cheatsheet</h1>
-                <h2>Venice 0.7.2 Cheat Sheet</h2>
+                <h2>Venice 0.8.0 Cheat Sheet</h2>
             </div>
             <div class="column">
                                 <div class="section">
@@ -373,15 +373,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Generic</td>
-                                                                                                <td><code><a href="#1141">count</a> <a href="#1142">empty?</a> <a href="#1143">not-empty?</a> <a href="#1144">empty-to-nil</a> <a href="#1145">empty</a> <a href="#1146">into</a> <a href="#1147">conj</a> <a href="#1148">remove</a> <a href="#1149">repeat</a> <a href="#1150">range</a> <a href="#1151">group-by</a> </code></td>
+                                                                                                <td><code><a href="#1141">count</a> <a href="#1142">empty?</a> <a href="#1143">not-empty?</a> <a href="#1144">empty-to-nil</a> <a href="#1145">empty</a> <a href="#1146">into</a> <a href="#1147">conj</a> <a href="#1148">remove</a> <a href="#1149">repeat</a> <a href="#1150">range</a> <a href="#1151">group-by</a> <a href="#1152">get-in</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Tests</td>
-                                                                                                <td><code><a href="#1152">coll?</a> <a href="#1153">list?</a> <a href="#1154">vector?</a> <a href="#1155">set?</a> <a href="#1156">map?</a> <a href="#1157">seq?</a> <a href="#1158">hash-map?</a> <a href="#1159">ordered-map?</a> <a href="#1160">sorted-map?</a> <a href="#1161">bytebuf?</a> </code></td>
+                                                                                                <td><code><a href="#1153">coll?</a> <a href="#1154">list?</a> <a href="#1155">vector?</a> <a href="#1156">set?</a> <a href="#1157">map?</a> <a href="#1158">sequential?</a> <a href="#1159">hash-map?</a> <a href="#1160">ordered-map?</a> <a href="#1161">sorted-map?</a> <a href="#1162">bytebuf?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Process</td>
-                                                                                                <td><code><a href="#1162">map</a> <a href="#1163">filter</a> <a href="#1164">docoll</a> </code></td>
+                                                                                                <td><code><a href="#1163">map</a> <a href="#1164">filter</a> <a href="#1165">keep</a> <a href="#1166">docoll</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -391,15 +391,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#1165">()</a> <a href="#1166">list</a> </code></td>
+                                                                                                <td><code><a href="#1167">()</a> <a href="#1168">list</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#1167">first</a> <a href="#1168">second</a> <a href="#1169">nth</a> <a href="#1170">last</a> <a href="#1171">peek</a> <a href="#1172">rest</a> <a href="#1173">nfirst</a> <a href="#1174">nlast</a> </code></td>
+                                                                                                <td><code><a href="#1169">first</a> <a href="#1170">second</a> <a href="#1171">nth</a> <a href="#1172">last</a> <a href="#1173">peek</a> <a href="#1174">rest</a> <a href="#1175">nfirst</a> <a href="#1176">nlast</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Modify</td>
-                                                                                                <td><code><a href="#1175">cons</a> <a href="#1176">conj</a> <a href="#1177">rest</a> <a href="#1178">pop</a> <a href="#1179">into</a> <a href="#1180">concat</a> <a href="#1181">interpose</a> <a href="#1182">interleave</a> <a href="#1183">mapcat</a> <a href="#1184">flatten</a> <a href="#1185">reduce</a> <a href="#1186">reverse</a> <a href="#1187">sort</a> <a href="#1188">sort-by</a> <a href="#1189">take</a> <a href="#1190">take-while</a> <a href="#1191">drop</a> <a href="#1192">drop-while</a> </code></td>
+                                                                                                <td><code><a href="#1177">cons</a> <a href="#1178">conj</a> <a href="#1179">rest</a> <a href="#1180">pop</a> <a href="#1181">into</a> <a href="#1182">concat</a> <a href="#1183">interpose</a> <a href="#1184">interleave</a> <a href="#1185">mapcat</a> <a href="#1186">flatten</a> <a href="#1187">reduce</a> <a href="#1188">reverse</a> <a href="#1189">sort</a> <a href="#1190">sort-by</a> <a href="#1191">take</a> <a href="#1192">take-while</a> <a href="#1193">drop</a> <a href="#1194">drop-while</a> </code></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Test</td>
+                                                                                                <td><code><a href="#1195">every?</a> <a href="#1196">any?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -409,19 +413,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#1193">[]</a> <a href="#1194">vector</a> <a href="#1195">mapv</a> </code></td>
+                                                                                                <td><code><a href="#1197">[]</a> <a href="#1198">vector</a> <a href="#1199">vec</a> <a href="#1200">mapv</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#1196">first</a> <a href="#1197">second</a> <a href="#1198">nth</a> <a href="#1199">last</a> <a href="#1200">peek</a> <a href="#1201">rest</a> <a href="#1202">nfirst</a> <a href="#1203">nlast</a> <a href="#1204">subvec</a> </code></td>
+                                                                                                <td><code><a href="#1201">first</a> <a href="#1202">second</a> <a href="#1203">nth</a> <a href="#1204">last</a> <a href="#1205">peek</a> <a href="#1206">rest</a> <a href="#1207">nfirst</a> <a href="#1208">nlast</a> <a href="#1209">subvec</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Modify</td>
-                                                                                                <td><code><a href="#1205">cons</a> <a href="#1206">conj</a> <a href="#1207">rest</a> <a href="#1208">pop</a> <a href="#1209">into</a> <a href="#1210">concat</a> <a href="#1211">distinct</a> <a href="#1212">dedupe</a> <a href="#1213">partition</a> <a href="#1214">interpose</a> <a href="#1215">interleave</a> <a href="#1216">mapcat</a> <a href="#1217">flatten</a> <a href="#1218">reduce</a> <a href="#1219">reverse</a> <a href="#1220">sort</a> <a href="#1221">sort-by</a> <a href="#1222">take</a> <a href="#1223">take-while</a> <a href="#1224">drop</a> <a href="#1225">drop-while</a> </code></td>
+                                                                                                <td><code><a href="#1210">cons</a> <a href="#1211">conj</a> <a href="#1212">rest</a> <a href="#1213">pop</a> <a href="#1214">into</a> <a href="#1215">concat</a> <a href="#1216">distinct</a> <a href="#1217">dedupe</a> <a href="#1218">partition</a> <a href="#1219">interpose</a> <a href="#1220">interleave</a> <a href="#1221">mapcat</a> <a href="#1222">flatten</a> <a href="#1223">reduce</a> <a href="#1224">reverse</a> <a href="#1225">sort</a> <a href="#1226">sort-by</a> <a href="#1227">take</a> <a href="#1228">take-while</a> <a href="#1229">drop</a> <a href="#1230">drop-while</a> <a href="#1231">assoc-in</a> <a href="#1232">get-in</a> <a href="#1233">update</a> <a href="#1234">update!</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#1226">contains?</a> </code></td>
+                                                                                                <td><code><a href="#1235">contains?</a> <a href="#1236">every?</a> <a href="#1237">any?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -431,11 +435,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#1227">set</a> </code></td>
+                                                                                                <td><code><a href="#1238">set</a> </code></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Modify</td>
+                                                                                                <td><code><a href="#1239">difference</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#1228">contains?</a> </code></td>
+                                                                                                <td><code><a href="#1240">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -445,19 +453,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#1229">{}</a> <a href="#1230">hash-map</a> <a href="#1231">ordered-map</a> <a href="#1232">sorted-map</a> <a href="#1233">zipmap</a> </code></td>
+                                                                                                <td><code><a href="#1241">{}</a> <a href="#1242">hash-map</a> <a href="#1243">ordered-map</a> <a href="#1244">sorted-map</a> <a href="#1245">zipmap</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#1234">find</a> <a href="#1235">get</a> <a href="#1236">keys</a> <a href="#1237">vals</a> <a href="#1238">key</a> <a href="#1239">val</a> </code></td>
+                                                                                                <td><code><a href="#1246">find</a> <a href="#1247">get</a> <a href="#1248">keys</a> <a href="#1249">vals</a> <a href="#1250">key</a> <a href="#1251">val</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Modify</td>
-                                                                                                <td><code><a href="#1240">cons</a> <a href="#1241">conj</a> <a href="#1242">assoc</a> <a href="#1243">dissoc</a> <a href="#1244">into</a> <a href="#1245">concat</a> <a href="#1246">flatten</a> <a href="#1247">reduce-kv</a> </code></td>
+                                                                                                <td><code><a href="#1252">cons</a> <a href="#1253">conj</a> <a href="#1254">assoc</a> <a href="#1255">assoc-in</a> <a href="#1256">get-in</a> <a href="#1257">update</a> <a href="#1258">update!</a> <a href="#1259">dissoc</a> <a href="#1260">into</a> <a href="#1261">concat</a> <a href="#1262">flatten</a> <a href="#1263">reduce-kv</a> <a href="#1264">merge</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#1248">contains?</a> </code></td>
+                                                                                                <td><code><a href="#1265">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -471,7 +479,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Misc</td>
-                                                                                                <td><code><a href="#1249">count</a> <a href="#1250">empty?</a> <a href="#1251">not-empty?</a> <a href="#1252">bytebuf</a> <a href="#1253">bytebuf?</a> <a href="#1254">subbytebuf</a> </code></td>
+                                                                                                <td><code><a href="#1266">count</a> <a href="#1267">empty?</a> <a href="#1268">not-empty?</a> <a href="#1269">bytebuf</a> <a href="#1270">bytebuf?</a> <a href="#1271">subbytebuf</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -485,15 +493,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Create</td>
-                                                                                                <td><code><a href="#1255">atom</a> </code></td>
+                                                                                                <td><code><a href="#1272">atom</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Test</td>
-                                                                                                <td><code><a href="#1256">atom?</a> </code></td>
+                                                                                                <td><code><a href="#1273">atom?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td>Access</td>
-                                                                                                <td><code><a href="#1257">deref</a> <a href="#1258">reset!</a> <a href="#1259">swap!</a> <a href="#1260">compare-and-set!</a> </code></td>
+                                                                                                <td><code><a href="#1274">deref</a> <a href="#1275">reset!</a> <a href="#1276">swap!</a> <a href="#1277">compare-and-set!</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -507,7 +515,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Forms</td>
-                                                                                                <td><code><a href="#1261">def</a> <a href="#1262">if</a> <a href="#1263">do</a> <a href="#1264">let</a> <a href="#1265">fn</a> <a href="#1266">loop</a> <a href="#1267">defmacro</a> <a href="#1268">recur</a> <a href="#1269">try</a> </code></td>
+                                                                                                <td><code><a href="#1278">def</a> <a href="#1279">if</a> <a href="#1280">do</a> <a href="#1281">let</a> <a href="#1282">fn</a> <a href="#1283">loop</a> <a href="#1284">defmacro</a> <a href="#1285">recur</a> <a href="#1286">try</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -521,7 +529,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>General</td>
-                                                                                                <td><code><a href="#1270">.</a> <a href="#1271">proxify</a> <a href="#1272">Constructor: (. classname :new args)</a> <a href="#1273">Method call: (. object method args)</a> <a href="#1274">Field access: (. object field)</a> </code></td>
+                                                                                                <td><code><a href="#1287">.</a> <a href="#1288">proxify</a> <a href="#1289">Constructor: (. classname :new args)</a> <a href="#1290">Method call: (. object method args)</a> <a href="#1291">Field access: (. object field)</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -535,7 +543,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>JSON</td>
-                                                                                                <td><code><a href="#1275"></a> <a href="#1276">(json/pretty-print json)</a> <a href="#1277">(json/to-json val)</a> <a href="#1278">(json/to-pretty-json val)</a> <a href="#1279">(json/parse json)</a> <a href="#1280"> </a> <a href="#1281">(json/avail?)</a> <a href="#1282">(json/avail-jdk8-module?)</a> <a href="#1283"> </a> <a href="#1284">Available if Jackson lib is on runtime classpath</a> </code></td>
+                                                                                                <td><code><a href="#1292"></a> <a href="#1293">json/pretty-print</a> <a href="#1294">json/to-json</a> <a href="#1295">json/to-pretty-json</a> <a href="#1296">json/parse</a> <a href="#1297"> </a> <a href="#1298">json/avail?</a> <a href="#1299">json/avail-jdk8-module?</a> <a href="#1300"> </a> <a href="#1301">Available if Jackson libs are on runtime classpath</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -574,34 +582,6 @@
             <div class="details" style="page-break-before: always;">
                 <h1>Function details</h1>
 
-                                <div class="detail" id="1275">
-                                    <h1></h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1280">
-                                    <h1> </h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
                                 <div class="detail" id="1017">
                                     <h1>!=</h1>
                                     <div class="arglists">
@@ -616,7 +596,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1165">
+                                <div class="detail" id="1167">
                                     <h1>()</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -628,90 +608,6 @@
                                     </div>
                                     <div class="examples">
                                         <code>&apos;(10 20 30)<br/>=&gt; (10 20 30)</code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1282">
-                                    <h1>(json/avail-jdk8-module?)</h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1281">
-                                    <h1>(json/avail?)</h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1279">
-                                    <h1>(json/parse json)</h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1276">
-                                    <h1>(json/pretty-print json)</h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1277">
-                                    <h1>(json/to-json val)</h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
-                                    </div>
-                                </div>
-                                <div class="detail" id="1278">
-                                    <h1>(json/to-pretty-json val)</h1>
-                                    <div class="arglists">
-                                        <div class="arglist">
-                                            <code></code>
-                                        </div>
-                                    </div>
-                                    <div class="descr">
-                                        <code></code>
-                                    </div>
-                                    <div class="examples">
-                                        <code></code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1008">
@@ -784,7 +680,7 @@
                                         <code>(-&gt;&gt; 5 (+ 3) (/ 32) (- 1))<br/>=&gt; -3<br/><br/>(-&gt;&gt; [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]<br/>     (map (fn [x] (get x :b)))<br/>     (filter (fn [x] (&gt; x 4)))<br/>     (map inc)))) <br/>=&gt; (7 9)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1270">
+                                <div class="detail" id="1287">
                                     <h1>.</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -882,8 +778,8 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1284">
-                                    <h1>Available if Jackson lib is on runtime classpath</h1>
+                                <div class="detail" id="1301">
+                                    <h1>Available if Jackson libs are on runtime classpath</h1>
                                     <div class="arglists">
                                         <div class="arglist">
                                             <code></code>
@@ -924,7 +820,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1272">
+                                <div class="detail" id="1289">
                                     <h1>Constructor: (. classname :new args)</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -952,7 +848,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1274">
+                                <div class="detail" id="1291">
                                     <h1>Field access: (. object field)</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -980,7 +876,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1273">
+                                <div class="detail" id="1290">
                                     <h1>Method call: (. object method args)</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1022,7 +918,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1193">
+                                <div class="detail" id="1197">
                                     <h1>[]</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1064,6 +960,20 @@
                                         <code></code>
                                     </div>
                                 </div>
+                                <div class="detail" id="1196">
+                                    <h1>any?</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(any? pred coll) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns true if the predicate is true for at least one collection item, false otherwise</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(any? (fn [x] (number? x)) nil)<br/>=&gt; false<br/><br/>(any? (fn [x] (number? x)) [])<br/>=&gt; false<br/><br/>(any? (fn [x] (number? x)) [1 :a :b])<br/>=&gt; true<br/><br/>(any? (fn [x] (number? x)) [1 2 3])<br/>=&gt; true<br/><br/>(any? (fn [x] (&gt;= x 10)) [1 5 10])<br/>=&gt; true</code>
+                                    </div>
+                                </div>
                                 <div class="detail" id="1084">
                                     <h1>apply</h1>
                                     <div class="arglists">
@@ -1092,7 +1002,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1242">
+                                <div class="detail" id="1254">
                                     <h1>assoc</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1106,7 +1016,21 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1255">
+                                <div class="detail" id="1231">
+                                    <h1>assoc-in</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(assoc-in m ks v) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Associates a value in a nested associative structure, where ks is a sequence of keys and v is the new value and returns a new nested structure. If any levels do not exist, hash-maps or vectors will be created.</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1272">
                                     <h1>atom</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1120,7 +1044,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1256">
+                                <div class="detail" id="1273">
                                     <h1>atom?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1162,7 +1086,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1252">
+                                <div class="detail" id="1269">
                                     <h1>bytebuf</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1176,7 +1100,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1161">
+                                <div class="detail" id="1162">
                                     <h1>bytebuf?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1218,7 +1142,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1152">
+                                <div class="detail" id="1153">
                                     <h1>coll?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1260,7 +1184,7 @@
                                         <code>(filter (comp not zero?) [0 1 0 2 0 3 0 4])<br/>=&gt; [1 2 3 4]<br/><br/>(do <br/>   (def fifth (comp first rest rest rest rest)) <br/>   (fifth [1 2 3 4 5]))<br/>=&gt; 5</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1260">
+                                <div class="detail" id="1277">
                                     <h1>compare-and-set!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1274,7 +1198,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1180">
+                                <div class="detail" id="1182">
                                     <h1>concat</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1316,7 +1240,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1175">
+                                <div class="detail" id="1177">
                                     <h1>cons</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1331,7 +1255,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1226">
+                                <div class="detail" id="1235">
                                     <h1>contains?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1457,7 +1381,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1212">
+                                <div class="detail" id="1217">
                                     <h1>dedupe</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1471,7 +1395,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1261">
+                                <div class="detail" id="1278">
                                     <h1>def</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1499,7 +1423,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1257">
+                                <div class="detail" id="1274">
                                     <h1>deref</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1513,7 +1437,21 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1243">
+                                <div class="detail" id="1239">
+                                    <h1>difference</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(difference s1) (difference s1 s2) (difference s1 s2 &amp; sets) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Return a set that is the first set without elements of the remaining sets</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(difference (set [1 2 3]))<br/>=&gt; #{1 2 3}<br/><br/>(difference (set [1 2]) (set [2 3]))<br/>=&gt; #{1}<br/><br/>(difference (set [1 2 3]) (set [1]) (set [1 4]) (set [3]))<br/>=&gt; #{2}</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1259">
                                     <h1>dissoc</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1527,7 +1465,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1211">
+                                <div class="detail" id="1216">
                                     <h1>distinct</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1541,7 +1479,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1263">
+                                <div class="detail" id="1280">
                                     <h1>do</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1555,7 +1493,7 @@
                                         <code>(do (println &quot;Test...&quot;) (+ 1 1))<br/>Test...<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1164">
+                                <div class="detail" id="1166">
                                     <h1>docoll</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1566,7 +1504,7 @@
                                         <code>Applies f to the items of the collection presumably for side effects. Returns nil. </code>
                                     </div>
                                     <div class="examples">
-                                        <code>(docoll (fn [x] (println x)) [1 2 3 4])<br/>1<br/>2<br/>3<br/>4<br/>=&gt; <br/><br/>(docoll (fn [[k v] x] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})<br/>:a 1<br/>:b 2<br/>:c 3<br/>:d 4<br/>=&gt; </code>
+                                        <code>(docoll (fn [x] (println x)) [1 2 3 4])<br/>1<br/>2<br/>3<br/>4<br/>=&gt; <br/><br/>(docoll (fn [[k v]] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})<br/>:a 1<br/>:b 2<br/>:c 3<br/>:d 4<br/>=&gt; </code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1107">
@@ -1611,7 +1549,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1191">
+                                <div class="detail" id="1193">
                                     <h1>drop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1625,7 +1563,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1192">
+                                <div class="detail" id="1194">
                                     <h1>drop-while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1709,6 +1647,20 @@
                                         <code></code>
                                     </div>
                                 </div>
+                                <div class="detail" id="1195">
+                                    <h1>every?</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(every? pred coll) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns true if the predicate is true for all collection items, false otherwise</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(every? (fn [x] (number? x)) nil)<br/>=&gt; false<br/><br/>(every? (fn [x] (number? x)) [])<br/>=&gt; false<br/><br/>(every? (fn [x] (number? x)) [1 2 3 4])<br/>=&gt; true<br/><br/>(every? (fn [x] (number? x)) [1 2 3 :a])<br/>=&gt; false<br/><br/>(every? (fn [x] (&gt;= x 10)) [10 11 12])<br/>=&gt; true</code>
+                                    </div>
+                                </div>
                                 <div class="detail" id="1081">
                                     <h1>false?</h1>
                                     <div class="arglists">
@@ -1723,7 +1675,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1163">
+                                <div class="detail" id="1164">
                                     <h1>filter</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1737,7 +1689,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1234">
+                                <div class="detail" id="1246">
                                     <h1>find</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1751,7 +1703,7 @@
                                         <code>(find {:a 1 :b 2} :b)<br/>=&gt; [:b 2]<br/><br/>(find {:a 1 :b 2} :z)<br/>=&gt; </code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1167">
+                                <div class="detail" id="1169">
                                     <h1>first</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1765,7 +1717,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1184">
+                                <div class="detail" id="1186">
                                     <h1>flatten</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1804,7 +1756,7 @@
                                         <code>Creates a function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-53ac79cf-ca0b-464e-a527-20f2b2089570<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-0f56c65d-d79f-4e2c-94f5-078faf37e0e7</code>
+                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-f1b4edc6-2bbb-4201-bb9f-8c93b8e53932<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-09590fa9-ef8a-4dd2-b757-efed1a7f4df5</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1088">
@@ -1835,7 +1787,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1235">
+                                <div class="detail" id="1247">
                                     <h1>get</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1847,6 +1799,20 @@
                                     </div>
                                     <div class="examples">
                                         <code>(get {:a 1 :b 2} :b)<br/>=&gt; 2<br/><br/>;; keywords act like functions on maps <br/>(:b {:a 1 :b 2})<br/>=&gt; 2</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1152">
+                                    <h1>get-in</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(get-in m ks) (get-in m ks not-found) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns the value in a nested associative structure, where ks is a sequence of keys. Returns nil if the key is not present, or the not-found value if supplied.</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(get-in {:a 1 :b {:c 2 :d 3}} [:b :c])<br/>=&gt; 2<br/><br/>(get-in [:a :b :c] [0])<br/>=&gt; :a<br/><br/>(get-in [:a :b [:c :d :e]] [2 1])<br/>=&gt; :d<br/><br/>(get-in {:a 1 :b {:c [4 5 6]}} [:b :c 1])<br/>=&gt; 5</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1151">
@@ -1863,11 +1829,11 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1230">
+                                <div class="detail" id="1242">
                                     <h1>hash-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                            <code>(hash-map &amp; keyvals) </code>
+                                            <code>(hash-map &amp; keyvals) (hash-map map) </code>
                                         </div>
                                     </div>
                                     <div class="descr">
@@ -1877,7 +1843,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1158">
+                                <div class="detail" id="1159">
                                     <h1>hash-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1905,7 +1871,7 @@
                                         <code>(identity 4)<br/>=&gt; 4<br/><br/>(filter identity [1 2 3 nil 4 false true 1234])<br/>=&gt; [1 2 3 4 true 1234]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1262">
+                                <div class="detail" id="1279">
                                     <h1>if</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1948,7 +1914,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1182">
+                                <div class="detail" id="1184">
                                     <h1>interleave</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1962,7 +1928,7 @@
                                         <code>(interleave [:a :b :c] [1 2])<br/>=&gt; (:a 1 :b 2)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1181">
+                                <div class="detail" id="1183">
                                     <h1>interpose</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2116,7 +2082,105 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1238">
+                                <div class="detail" id="1299">
+                                    <h1>json/avail-jdk8-module?</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(json/avail-jdk8-module?) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Checks if the Jackson JSON JDK8 module is on the classpath</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1298">
+                                    <h1>json/avail?</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(json/avail?) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Checks if the Jackson JSON libs are on the classpath</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1296">
+                                    <h1>json/parse</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(json/parse json) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Parse a JSON string</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1293">
+                                    <h1>json/pretty-print</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(json/pretty-print json) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Pretty print a JSON string</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1294">
+                                    <h1>json/to-json</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(json/to-json val) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Convert the value to JSON</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1295">
+                                    <h1>json/to-pretty-json</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(json/to-pretty-json val) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Convert the value to pretty-printed JSON</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1165">
+                                    <h1>keep</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(keep f coll) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns a sequence of the non-nil results of (f item). Note, this means false return values will be included. f must be free of side-effects.</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(keep even? (range 1 4))<br/>=&gt; (false true false)<br/><br/>(keep (fn [x] (if (odd? x) x)) (range 4))<br/>=&gt; (1 3)</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1250">
                                     <h1>key</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2130,7 +2194,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1236">
+                                <div class="detail" id="1248">
                                     <h1>keys</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2172,7 +2236,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1170">
+                                <div class="detail" id="1172">
                                     <h1>last</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2186,7 +2250,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1264">
+                                <div class="detail" id="1281">
                                     <h1>let</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2200,7 +2264,7 @@
                                         <code>(let [x 1] x))<br/>=&gt; 1</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1166">
+                                <div class="detail" id="1168">
                                     <h1>list</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2228,7 +2292,7 @@
                                         <code>(list-comp [x (range 10)] x)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(list-comp [x (range 5)] (* x 2))<br/>=&gt; (0 2 4 6 8)<br/><br/>(list-comp [x (range 10) :when (odd? x)] x)<br/>=&gt; (1 3 5 7 9)<br/><br/>(list-comp [x (range 10) :when (odd? x)] (* x 2))<br/>=&gt; (2 6 10 14 18)<br/><br/>(list-comp [x (list &quot;abc&quot;) y [0 1 2]] [x y])<br/>=&gt; ([a 0] [a 1] [a 2] [b 0] [b 1] [b 2] [c 0] [c 1] [c 2])</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1153">
+                                <div class="detail" id="1154">
                                     <h1>list?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2312,7 +2376,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1266">
+                                <div class="detail" id="1283">
                                     <h1>loop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2340,7 +2404,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1162">
+                                <div class="detail" id="1163">
                                     <h1>map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2354,7 +2418,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1156">
+                                <div class="detail" id="1157">
                                     <h1>map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2368,7 +2432,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1183">
+                                <div class="detail" id="1185">
                                     <h1>mapcat</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2382,7 +2446,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1195">
+                                <div class="detail" id="1200">
                                     <h1>mapv</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2450,6 +2514,20 @@
                                     </div>
                                     <div class="examples">
                                         <code>(do<br/>   (def test (fn [a] (+ a 100)))<br/>   (def test-memo (memoize test))<br/>   (test-memo 1))<br/>=&gt; 101</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1264">
+                                    <h1>merge</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(merge &amp; maps) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the mapping from the latter (left-to-right) will be the mapping in the result.</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(merge {:a 1 :b 2 :c 3} {:b 9 :d 4})<br/>=&gt; {:a 1 :b 9 :c 3 :d 4}<br/><br/>(merge {:a 1} nil)<br/>=&gt; {:a 1}<br/><br/>(merge nil {:a 1})<br/>=&gt; {:a 1}<br/><br/>(merge nil nil)<br/>=&gt; </code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1097">
@@ -2522,7 +2600,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1173">
+                                <div class="detail" id="1175">
                                     <h1>nfirst</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2550,7 +2628,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1174">
+                                <div class="detail" id="1176">
                                     <h1>nlast</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2592,7 +2670,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1169">
+                                <div class="detail" id="1171">
                                     <h1>nth</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2648,11 +2726,11 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1231">
+                                <div class="detail" id="1243">
                                     <h1>ordered-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                            <code>(ordered-map &amp; keyvals) </code>
+                                            <code>(ordered-map &amp; keyvals) (ordered-map map) </code>
                                         </div>
                                     </div>
                                     <div class="descr">
@@ -2662,7 +2740,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1159">
+                                <div class="detail" id="1160">
                                     <h1>ordered-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2690,7 +2768,7 @@
                                         <code>(do <br/>   (def hundred-times (partial * 100)) <br/>   (hundred-times 5))<br/>=&gt; 500</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1213">
+                                <div class="detail" id="1218">
                                     <h1>partition</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2701,10 +2779,10 @@
                                         <code>Returns a collection of lists of n items each, at offsets step apart. If step is not supplied, defaults to n, i.e. the partitions do not overlap. If a padcoll collection is supplied, use its elements as necessary to complete last partition upto n items. In case there are not enough padding elements, return a partition with less than n items.</code>
                                     </div>
                                     <div class="examples">
-                                        <code></code>
+                                        <code>(partition 4 (range 20))<br/>=&gt; ((0 1 2 3) (4 5 6 7) (8 9 10 11) (12 13 14 15) (16 17 18 19))<br/><br/>(partition 4 6 (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19))<br/><br/>(partition 3 6 [&quot;a&quot;] (range 20))<br/>=&gt; ((0 1 2) (6 7 8) (12 13 14) (18 19 a))<br/><br/>(partition 4 6 [&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;] (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19 a b))</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1171">
+                                <div class="detail" id="1173">
                                     <h1>peek</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2718,7 +2796,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1178">
+                                <div class="detail" id="1180">
                                     <h1>pop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2788,7 +2866,7 @@
                                         <code>(do (println 200) (println [10 20 30]))<br/>200<br/>[10 20 30]<br/>=&gt; </code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1271">
+                                <div class="detail" id="1288">
                                     <h1>proxify</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2872,7 +2950,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1268">
+                                <div class="detail" id="1285">
                                     <h1>recur</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2886,7 +2964,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1185">
+                                <div class="detail" id="1187">
                                     <h1>reduce</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2900,7 +2978,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1247">
+                                <div class="detail" id="1263">
                                     <h1>reduce-kv</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2942,7 +3020,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1258">
+                                <div class="detail" id="1275">
                                     <h1>reset!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2956,7 +3034,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1172">
+                                <div class="detail" id="1174">
                                     <h1>rest</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2970,7 +3048,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1186">
+                                <div class="detail" id="1188">
                                     <h1>reverse</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2984,7 +3062,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1168">
+                                <div class="detail" id="1170">
                                     <h1>second</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2998,25 +3076,25 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1157">
-                                    <h1>seq?</h1>
+                                <div class="detail" id="1158">
+                                    <h1>sequential?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                            <code>(seq? obj) </code>
+                                            <code>(sequential? obj) </code>
                                         </div>
                                     </div>
                                     <div class="descr">
                                         <code>Returns true if obj is a sequential collection</code>
                                     </div>
                                     <div class="examples">
-                                        <code></code>
+                                        <code>(sequential? &apos;(1))<br/>=&gt; true<br/><br/>(sequential? [1])<br/>=&gt; true<br/><br/>(sequential? {:a 1})<br/>=&gt; false<br/><br/>(sequential? nil)<br/>=&gt; false<br/><br/>(sequential? &quot;abc&quot;)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1227">
+                                <div class="detail" id="1238">
                                     <h1>set</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                            <code>(set &amp; items) </code>
+                                            <code>(set &amp; items) (set coll) </code>
                                         </div>
                                     </div>
                                     <div class="descr">
@@ -3026,7 +3104,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1155">
+                                <div class="detail" id="1156">
                                     <h1>set?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3068,7 +3146,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1187">
+                                <div class="detail" id="1189">
                                     <h1>sort</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3082,7 +3160,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1188">
+                                <div class="detail" id="1190">
                                     <h1>sort-by</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3096,11 +3174,11 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1232">
+                                <div class="detail" id="1244">
                                     <h1>sorted-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                            <code>(sorted-map &amp; keyvals) </code>
+                                            <code>(sorted-map &amp; keyvals) (sorted-map map) </code>
                                         </div>
                                     </div>
                                     <div class="descr">
@@ -3110,7 +3188,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1160">
+                                <div class="detail" id="1161">
                                     <h1>sorted-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3517,7 +3595,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1254">
+                                <div class="detail" id="1271">
                                     <h1>subbytebuf</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3531,7 +3609,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1204">
+                                <div class="detail" id="1209">
                                     <h1>subvec</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3545,7 +3623,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1259">
+                                <div class="detail" id="1276">
                                     <h1>swap!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3587,7 +3665,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1189">
+                                <div class="detail" id="1191">
                                     <h1>take</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3601,7 +3679,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1190">
+                                <div class="detail" id="1192">
                                     <h1>take-while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3640,7 +3718,7 @@
                                         <code>Evaluates expr and prints the time it took.  Returns the value of expr.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time (println [100 200]))<br/>[100 200]<br/>Elapsed time: 1 msecs<br/>=&gt; </code>
+                                        <code>(time (println [100 200]))<br/>[100 200]<br/>Elapsed time: 3 msecs<br/>=&gt; </code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1094">
@@ -3654,7 +3732,7 @@
                                         <code>Returns the current time in milliseconds</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ms)<br/>=&gt; 1533401651490</code>
+                                        <code>(time-ms)<br/>=&gt; 1533798567356</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1095">
@@ -3668,7 +3746,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ns)<br/>=&gt; 187602801801772</code>
+                                        <code>(time-ns)<br/>=&gt; 18616695242569</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1080">
@@ -3685,7 +3763,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1269">
+                                <div class="detail" id="1286">
                                     <h1>try</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3697,6 +3775,34 @@
                                     </div>
                                     <div class="examples">
                                         <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try (throw 100) (finally -2))<br/>=&gt; -2<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))<br/>=&gt; -2</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1233">
+                                    <h1>update</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(update m k f) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Updates a value in an associative structure, where k is a key and f is a function that will take the old value return the new value. Returns a new structure.</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(update [] 0 (fn [x] 5))<br/>=&gt; [5]<br/><br/>(update [0 1 2] 0 (fn [x] 5))<br/>=&gt; [5 1 2]<br/><br/>(update [0 1 2] 0 (fn [x] (+ x 1)))<br/>=&gt; [1 1 2]<br/><br/>(update {} :a (fn [x] 5))<br/>=&gt; {:a 5}<br/><br/>(update {:a 0} :b (fn [x] 5))<br/>=&gt; {:a 0 :b 5}<br/><br/>(update {:a 0 :b 1} :a (fn [x] 5))<br/>=&gt; {:a 5 :b 1}</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1234">
+                                    <h1>update!</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(update! m k f) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Updates a value in an associative structure, where k is a key and f is a function that will take the old value return the new value.</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(update! [] 0 (fn [x] 5))<br/>=&gt; [5]<br/><br/>(update! [0 1 2] 0 (fn [x] 5))<br/>=&gt; [5 1 2]<br/><br/>(update! [0 1 2] 0 (fn [x] (+ x 1)))<br/>=&gt; [1 1 2]<br/><br/>(update! {} :a (fn [x] 5))<br/>=&gt; {:a 5}<br/><br/>(update! {:a 0} :b (fn [x] 5))<br/>=&gt; {:a 0 :b 5}<br/><br/>(update! {:a 0 :b 1} :a (fn [x] 5))<br/>=&gt; {:a 5 :b 1}</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1093">
@@ -3713,7 +3819,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1239">
+                                <div class="detail" id="1251">
                                     <h1>val</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3727,7 +3833,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1237">
+                                <div class="detail" id="1249">
                                     <h1>vals</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3755,7 +3861,21 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1194">
+                                <div class="detail" id="1199">
+                                    <h1>vec</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                            <code>(vec coll) </code>
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Creates a new vector with the items of the collection</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1198">
                                     <h1>vector</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3769,7 +3889,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1154">
+                                <div class="detail" id="1155">
                                     <h1>vector?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3867,7 +3987,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1233">
+                                <div class="detail" id="1245">
                                     <h1>zipmap</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3881,7 +4001,7 @@
                                         <code>(zipmap [:a :b :c :d :e] [1 2 3 4 5])<br/>=&gt; {:a 1 :b 2 :c 3 :d 4 :e 5}<br/><br/>(zipmap [:a :b :c] [1 2 3 4 5])<br/>=&gt; {:a 1 :b 2 :c 3}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1229">
+                                <div class="detail" id="1241">
                                     <h1>{}</h1>
                                     <div class="arglists">
                                         <div class="arglist">

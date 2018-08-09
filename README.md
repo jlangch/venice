@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/3f1de09a/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/3f1de09a/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/483313d5/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/483313d5/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -24,16 +24,16 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/3f1de09a/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/483313d5/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/3f1de09a/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/483313d5/cheatsheet.pdf)
 
 
 ## REPL
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.7.2.jar`
+Start the REPL with `java -jar venice-0.x.y.jar`
 
 ```text
 venice> (+ 1 1)
@@ -336,7 +336,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.7.2'
+    compile 'com.github.jlangch:venice:0.8.0'
 }
 ```
 
@@ -348,7 +348,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.7.2</version>
+        <version>0.8.0</version>
     </dependency>
 </dependencies>
 ```

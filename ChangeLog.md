@@ -7,7 +7,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.7.3] - 2018-08-08
+## [unreleased]
+
+### Added
+
+- added ...
+
+
+
+## [0.8.0] - 2018-08-09
 
 ### Added
 
@@ -31,6 +39,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - fixed Java interop proxifying interfaces with void functions (e.g. Runnable)
 - fixed sort function to work on sets as well
 - fixed apply function to handle coll with nil value correctly
+
 
 
 ## [0.7.2] - 2018-08-04
