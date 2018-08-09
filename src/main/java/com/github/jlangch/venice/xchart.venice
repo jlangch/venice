@@ -540,18 +540,18 @@
              (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
              (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title))))))
 
-
 (def xchart/category-chart
    (fn [series {:keys [x-axis series-order] :as styling}]
        (let [x-order (:order x-axis)
              normalized-map (xchart/normalize-category-series-map series x-order)
              extra-categories (->> (apply dissoc normalized-map series-order)
                                    (sort-by key))
-              normalized-seq (concat (keep (fn [x] (find normalized-map x)) series-order) 
+             normalized-seq (concat (keep (fn [x] (find normalized-map x)) series-order) 
                                      extra-categories)]
      (xchart/category-chart* normalized-seq styling))))
-     
 
+
+     
 
 ;; ---------------------------------------------------------------------------
 ;; Bubble chart

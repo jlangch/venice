@@ -71,13 +71,71 @@ public class XChartModuleTest {
 			"           \"Apples\" {\"Tue\" 3, \"Wed\" 5, \"Fri\" 1, \"Mon\" 1}                \n" +
 			"           \"Pears\" {\"Thur\" 1, \"Mon\" 3, \"Fri\" 4, \"Wed\" 1}}               \n" +
 			"          {:title \"Weekly Fruit Sales\"                                          \n" +
-			"           :theme :ggplot2                                                        \n" +
+			"           :theme :xchart                                                        \n" +
 			"           :x-axis {:order [\"Mon\" \"Tue\" \"Wed\" \"Thur\" \"Fri\"]}} ))        \n" +
 			"                                                                                  \n" +
 			"    (sleep 20000)                                                                 \n" +
 			") ";
 		  
 		  
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	public void test_category_chart_overlapping() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                               \n" +
+			"   (load-module :xchart)                                                          \n" +
+			"                                                                                  \n" +
+			"   (def my-red (. :Color :getHSBColor 0.0 0.8 0.9))                               \n" +
+			"   (def my-darker-red (. my-red :darker ))                                        \n" +
+			"                                                                                  \n" +
+			"   (xchart/swing-view-chart                                                       \n" +
+			"      (xchart/category-chart                                                      \n" +
+			"          {\"A\" {:x [14 15 16 17 18 19 20 21 22]                                 \n" +
+			"                   :y [2.03 7.39 17.20 25.66 24.55                                \n" +
+			"                       15.05 5.92 1.49 0.24]                                      \n" +
+			"                   :style {:fill-color my-red}}                                   \n" +
+			"           \"B\" {:x [14 15 16 17 18 19 20 21 22]                                 \n" +
+			"                   :y [0.01 0.03 0.67 5.54 16.66                                  \n" +
+			"                       14.41 5.48 1.11 0.06]                                      \n" +
+			"                   :style {:fill-color my-darker-red}}}                           \n" +
+			"          {:title \"Store sales on Monday\"                                       \n" +
+			"           :overlap? true                                                         \n" +
+			"           :theme :xchart                                                         \n" +
+			"           :series-order [\"A\" \"B\"]                                            \n" +
+			"           :y-axis {:ticks-visible? false}                                        \n" +
+			"           :x-axis {:decimal-pattern \"##.00\"}}))                                \n" +
+			"                                                                                  \n" +
+			"    (sleep 20000)                                                                 \n" +
+			") ";
+
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+	
+	@Test
+	public void test_category_chart_overlapping___() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                  \n" +
+			"   (load-module :xchart)                             \n" +
+			"                                                     \n" +
+			"      (xchart/category-chart!                        \n" +
+			"          {\"A\" {:x [14 15 16 17]                   \n" +
+			"                   :y [2 7 17 25]}                   \n" +
+			"           \"B\" {:x [14 15 16 17]                   \n" +
+			"                   :y [1 1 1 5]}}                    \n" +
+			"          {:title \"Store sales on Monday\"          \n" +
+			"           :overlap? true                            \n" +
+			"           :theme :xchart                            \n" +
+			"           :series-order [\"A\" \"B\"]               \n" +
+			"           :y-axis {:ticks-visible? false}           \n" +
+			"           :x-axis {:decimal-pattern \"##.00\"}})    \n" +
+			") ";
+
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
 

@@ -1921,10 +1921,13 @@ public class CoreFunctions {
 
 			final VncVal coll = args.first();
 			
-			if (Types.isVncList(coll)) {
+			if (coll == Nil) {
+				return Nil;
+			}
+			else if (Types.isVncList(coll)) {
 				return ((VncList)coll).toVncVector();
 			}
-			if (Types.isVncMap(coll)) {
+			else if (Types.isVncMap(coll)) {
 				return ((VncMap)coll).toVncVector();
 			}
 			else if (Types.isVncJavaList(coll)) {
@@ -4182,9 +4185,13 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
-			final VncList lists = (VncList)args.slice(1);
+			final VncList lists = removeNilValues((VncList)args.slice(1));
 			final VncVector result = new VncVector();
-			
+
+			if (lists.isEmpty()) {
+				return Nil;
+			}
+
 			int index = 0;
 			boolean hasMore = true;
 			while(hasMore) {
