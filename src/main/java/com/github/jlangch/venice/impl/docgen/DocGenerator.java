@@ -251,6 +251,7 @@ public class DocGenerator {
 		other.addSection(keywords);
 		keywords.addItem(getDocItem("keyword?"));
 		keywords.addItem(getDocItem("keyword"));
+		keywords.addItem(new DocItem(" ", null));
 		keywords.addItem(new DocItem("literals: :a :xyz", null));
 
 		final DocSection symbols = new DocSection("Symbols");
@@ -827,6 +828,10 @@ public class DocGenerator {
 						((VncString)javaProxify.getDoc()).getValue(),
 						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples())),
 						idgen.id()));
+		general.addItem(new DocItem(" ", null));
+		general.addItem(new DocItem("Invoke constructors, invoke static or instance methods, "
+										+ "and access static or instance fields", 
+									null));
 
 		return section;
 	}
@@ -839,15 +844,15 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(new DocItem("", null));
+		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("json/pretty-print", Arrays.asList("(json/pretty-print json)"), "Pretty print a JSON string", "", idgen.id()));
 		general.addItem(new DocItem("json/to-json", Arrays.asList("(json/to-json val)"), "Convert the value to JSON", "", idgen.id()));
 		general.addItem(new DocItem("json/to-pretty-json", Arrays.asList("(json/to-pretty-json val)"), "Convert the value to pretty-printed JSON", "", idgen.id()));
 		general.addItem(new DocItem("json/parse", Arrays.asList("(json/parse json)"), "Parse a JSON string", "", idgen.id()));
-		general.addItem(new DocItem("", null));
+		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("json/avail?", Arrays.asList("(json/avail?)"), "Checks if the Jackson JSON libs are on the classpath", "", idgen.id()));
 		general.addItem(new DocItem("json/avail-jdk8-module?", Arrays.asList("(json/avail-jdk8-module?)"), "Checks if the Jackson JSON JDK8 module is on the classpath", "", idgen.id()));
-		general.addItem(new DocItem("", null));
+		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", null));
 
 		return section;
