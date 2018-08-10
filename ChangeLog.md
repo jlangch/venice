@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added dpi scaling to charts 
+- added dpi scaling to charts (high-res charts)
 - added sandboxing for created temp files 
 
 ### fixed
