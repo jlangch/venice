@@ -100,8 +100,8 @@
 
 (def xchart/to-bytes
    (fn [chart type]
-        let [format (get xchart/bitmap-formats type)]
-            (BitmapEncoder/getBitmapBytes chart format)))
+        (let [format (get xchart/bitmap-formats type)]
+            (. :BitmapEncoder :getBitmapBytes chart format))))
 
 (def xchart/swing-open-window
    (fn [chart title]
