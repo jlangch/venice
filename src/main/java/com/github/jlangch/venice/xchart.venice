@@ -48,7 +48,7 @@
 ;; utils
 ;; ---------------------------------------------------------------------------
 
-;; Example: (xchart/doto-cond              =>    (let [e expr]
+;; Example: (xchart/doto-cond       =>    (let [e expr]
 ;;             expr                          (when cond1 (my e call))
 ;;             cond1 (my call)               (when cond2 (my2 e call2)))
 ;;             cond2 (my2 call2))
