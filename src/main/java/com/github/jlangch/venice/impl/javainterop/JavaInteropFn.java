@@ -44,14 +44,22 @@ public class JavaInteropFn extends VncFunction {
 				"The function is sandboxed");
 		
 		setExamples(
-				"(. :java.lang.Math :PI)",
-				"(. :java.lang.Long :new 10)", 
-				"(. (. :java.lang.Long :new 10) :toString)", 
-				"(. :java.lang.Math :min 10 20)", 
-				"(. :java.lang.Math :class)", 
-				"(. \"java.lang.Math\" :class)", 
-				"(. (. :java.io.File :new \"/temp\") :class)");
+				";; access static field \n"
+					+ "(. :java.lang.Math :PI)",
+				";; invoke constructor \n"
+						+ "(. :java.time.ZonedDateTime :now)",
+				";; invoke constructor with param \n"
+						+ "(. (. :java.lang.Long :new 10) :toString)", 
+				";; invoke static method \n"
+						+ "(. :java.lang.Math :min 10 20)", 
+				";; get class name \n"
+						+ "(. :java.lang.Math :class)", 
+				";; get class name \n"
+						+ "(. \"java.lang.Math\" :class)", 
+				";; get class name \n"
+						+ "(. (. :java.io.File :new \"/temp\") :class)");
 	}
+
 	
 	public static JavaInteropFn create(final JavaImports javaImports) {
 		return new JavaInteropFn(javaImports);

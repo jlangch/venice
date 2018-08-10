@@ -1997,6 +1997,8 @@ public class CoreFunctions {
 			setArgLists("(set & items)");
 			
 			setDoc("Creates a new set containing the items.");
+			
+			setExamples("(set )", "(set nil)", "(set 1)", "(set 1 2 3)", "(set [1 2] 3)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2009,6 +2011,8 @@ public class CoreFunctions {
 			setArgLists("(set? obj)");
 			
 			setDoc("Returns true if obj is a set");
+			
+			setExamples("(set? (set 1))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5179,6 +5183,13 @@ public class CoreFunctions {
 			setArgLists("(io/temp-file prefix suffix)");
 			
 			setDoc("Creates an empty temp file with prefix and suffix");
+			
+			setExamples(
+				"(do \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (spit file \"123456789\" :append true) \n" +
+				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
+				")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5234,6 +5245,13 @@ public class CoreFunctions {
 			setArgLists("(io/slurp-temp-file file & options)");
 			
 			setDoc("slurps a previously created temp file");
+			
+			setExamples(
+				"(do \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (spit file \"123456789\" :append true) \n" +
+				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
+				")");
 		}
 		
 		public VncVal apply(final VncList args) {

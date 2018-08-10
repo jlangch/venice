@@ -134,12 +134,12 @@ public class DocGenerator {
 		final DocSection literals = new DocSection("Literals");
 		lit.addSection(literals);
 
-		literals.addItem(new DocItem("Nil: nil", idgen.id()));
-		literals.addItem(new DocItem("Long: 1500", idgen.id()));
-		literals.addItem(new DocItem("Double: 3.569", idgen.id()));
-		literals.addItem(new DocItem("Boolean: true, false", idgen.id()));
-		literals.addItem(new DocItem("BigDecimal: 6.897M", idgen.id()));
-		literals.addItem(new DocItem("String: \"abcde\"", idgen.id()));
+		literals.addItem(new DocItem("Nil: nil", null));
+		literals.addItem(new DocItem("Long: 1500", null));
+		literals.addItem(new DocItem("Double: 3.569", null));
+		literals.addItem(new DocItem("Boolean: true, false", null));
+		literals.addItem(new DocItem("BigDecimal: 6.897M", null));
+		literals.addItem(new DocItem("String: \"abcde\"", null));
 
 		final DocSection numbers = new DocSection("Numbers");
 		section.addSection(numbers);
@@ -251,7 +251,7 @@ public class DocGenerator {
 		other.addSection(keywords);
 		keywords.addItem(getDocItem("keyword?"));
 		keywords.addItem(getDocItem("keyword"));
-		keywords.addItem(new DocItem("literals: :a :xyz", idgen.id()));
+		keywords.addItem(new DocItem("literals: :a :xyz", null));
 
 		final DocSection symbols = new DocSection("Symbols");
 		other.addSection(symbols);
@@ -663,7 +663,9 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/list-files"));
 		io.addItem(getDocItem("io/delete-file"));
 		io.addItem(getDocItem("io/copy-file"));
+		io.addItem(getDocItem("io/temp-file"));
 		io.addItem(getDocItem("io/tmp-dir"));
+		io.addItem(getDocItem("io/slurp-temp-file"));
 		io.addItem(getDocItem("io/user-dir"));
 
 		final DocSection load = new DocSection("load");
@@ -825,9 +827,6 @@ public class DocGenerator {
 						((VncString)javaProxify.getDoc()).getValue(),
 						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples())),
 						idgen.id()));
-		general.addItem(new DocItem("Constructor: (. classname :new args)", idgen.id()));
-		general.addItem(new DocItem("Method call: (. object method args)", idgen.id()));
-		general.addItem(new DocItem("Field access: (. object field)", idgen.id()));
 
 		return section;
 	}
@@ -840,16 +839,16 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(new DocItem("", idgen.id()));
+		general.addItem(new DocItem("", null));
 		general.addItem(new DocItem("json/pretty-print", Arrays.asList("(json/pretty-print json)"), "Pretty print a JSON string", "", idgen.id()));
 		general.addItem(new DocItem("json/to-json", Arrays.asList("(json/to-json val)"), "Convert the value to JSON", "", idgen.id()));
 		general.addItem(new DocItem("json/to-pretty-json", Arrays.asList("(json/to-pretty-json val)"), "Convert the value to pretty-printed JSON", "", idgen.id()));
 		general.addItem(new DocItem("json/parse", Arrays.asList("(json/parse json)"), "Parse a JSON string", "", idgen.id()));
-		general.addItem(new DocItem(" ", idgen.id()));
+		general.addItem(new DocItem("", null));
 		general.addItem(new DocItem("json/avail?", Arrays.asList("(json/avail?)"), "Checks if the Jackson JSON libs are on the classpath", "", idgen.id()));
 		general.addItem(new DocItem("json/avail-jdk8-module?", Arrays.asList("(json/avail-jdk8-module?)"), "Checks if the Jackson JSON JDK8 module is on the classpath", "", idgen.id()));
-		general.addItem(new DocItem(" ", idgen.id()));
-		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", idgen.id()));
+		general.addItem(new DocItem("", null));
+		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", null));
 
 		return section;
 	}
