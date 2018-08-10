@@ -1416,6 +1416,20 @@ public class FunctionsTest {
 	}
 	
 	@Test
+	public void test_io_slurp_temp_file() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                          " +
+				"   (let [file (io/temp-file \"xchart-\", \".chart\")]           " +
+				"        (spit file \"123456789\" :append true)               " +
+				"        (io/slurp-temp-file file :binary false :remove true))   " +
+				") ";
+				
+				assertEquals("123456789",venice.eval(script));					
+	}
+	
+	@Test
 	public void test_io_user_dir() {
 		final Venice venice = new Venice();
 
@@ -2555,20 +2569,6 @@ public class FunctionsTest {
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-	
-	@Test
-	public void test_slurp_temp_file() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                          " +
-				"   (let [file (temp-file \"xchart-\", \".chart\")]           " +
-				"        (spit file \"123456789\" :append true)               " +
-				"        (slurp-temp-file file :binary false :remove true))   " +
-				") ";
-				
-				assertEquals("123456789",venice.eval(script));					
 	}
 	
 	@Test

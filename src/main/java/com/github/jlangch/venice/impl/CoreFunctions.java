@@ -493,102 +493,6 @@ public class CoreFunctions {
 		}
 	};
 
-	public static VncFunction temp_file = new VncFunction("temp-file") {
-		{
-			setArgLists("(temp-file prefix suffix)");
-			
-			setDoc("Creates an empty temp file with prefix and suffix");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("temp-file", args, 2);
-
-			final String prefix = Coerce.toVncString(args.first()).getValue();
-			final String suffix = Coerce.toVncString(args.second()).getValue();
-			try {
-				final String path = File.createTempFile(prefix, suffix).getPath();
-				tempFiles.add(path);
-				return new VncString(path);
-			}
-			catch (Exception ex) {
-				throw new VncException(ex.getMessage(), ex);
-			}
-		}
-	};
-
-	public static VncFunction slurp_temp_file = new VncFunction("slurp-temp-file") {
-		{
-			setArgLists("(slurp-temp-file file & options)");
-			
-			setDoc("slurps a previously created temp file");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertMinArity("slurp-temp-file", args, 1);
-
-			try {	
-				File file;
-				
-				if (Types.isVncString(args.nth(0)) ) {
-					file = new File(((VncString)args.nth(0)).getValue());
-				}
-				else if (isJavaIoFile(args.nth(0)) ) {
-					file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'slurp-temp-file' does not allow %s as f. %s",
-							Types.getClassName(args.nth(0)),
-							ErrorMessage.buildErrLocation(args)));
-				}
-
-				
-				if (!tempFiles.contains(file.getPath())) {
-					throw new VncException(String.format(
-							"Function 'slurp-temp-file' tries to access the unknown temp file '%s'. %s",
-							file.getPath(),
-							ErrorMessage.buildErrLocation(args)));
-				}
-				
-				final VncHashMap options = new VncHashMap(args.slice(1));
-
-				final VncVal binary = options.get(new VncKeyword("binary")); 
-	
-				final VncVal remove = options.get(new VncKeyword("remove")); 
-
-				if (binary == True) {
-					final byte[] data = Files.readAllBytes(file.toPath());
-					
-					if (remove == True) {
-						file.delete();
-						tempFiles.remove(file.getPath());
-					}
-					
-					return new VncByteBuffer(ByteBuffer.wrap(data));
-				}
-				else {
-					final VncVal encVal = options.get(new VncKeyword("encoding")); 
-					
-					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-									
-					final byte[] data = Files.readAllBytes(file.toPath());
-
-					if (remove == True) {
-						file.delete();
-						tempFiles.remove(file.getPath());
-					}
-
-					return new VncString(new String(data, encoding));
-				}
-			} 
-			catch (VncException ex) {
-				throw ex;
-			}
-			catch (Exception ex) {
-				throw new VncException(ex.getMessage(), ex);
-			}
-		}
-	};
 
 	public static VncFunction slurp = new VncFunction("slurp") {
 		{
@@ -5270,6 +5174,29 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction io_temp_file = new VncFunction("io/temp-file") {
+		{
+			setArgLists("(io/temp-file prefix suffix)");
+			
+			setDoc("Creates an empty temp file with prefix and suffix");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("io/temp-file", args, 2);
+
+			final String prefix = Coerce.toVncString(args.first()).getValue();
+			final String suffix = Coerce.toVncString(args.second()).getValue();
+			try {
+				final String path = File.createTempFile(prefix, suffix).getPath();
+				tempFiles.add(path);
+				return new VncString(path);
+			}
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
 	public static VncFunction io_tmp_dir = new VncFunction("io/tmp-dir") {
 		{
 			setArgLists("(io/tmp-dir)");
@@ -5302,6 +5229,79 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction io_slurp_temp_file = new VncFunction("io/slurp-temp-file") {
+		{
+			setArgLists("(io/slurp-temp-file file & options)");
+			
+			setDoc("slurps a previously created temp file");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("io/slurp-temp-file", args, 1);
+
+			try {	
+				File file;
+				
+				if (Types.isVncString(args.nth(0)) ) {
+					file = new File(((VncString)args.nth(0)).getValue());
+				}
+				else if (isJavaIoFile(args.nth(0)) ) {
+					file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/slurp-temp-file' does not allow %s as f. %s",
+							Types.getClassName(args.nth(0)),
+							ErrorMessage.buildErrLocation(args)));
+				}
+
+				
+				if (!tempFiles.contains(file.getPath())) {
+					throw new VncException(String.format(
+							"Function 'io/slurp-temp-file' tries to access the unknown temp file '%s'. %s",
+							file.getPath(),
+							ErrorMessage.buildErrLocation(args)));
+				}
+				
+				final VncHashMap options = new VncHashMap(args.slice(1));
+
+				final VncVal binary = options.get(new VncKeyword("binary")); 
+	
+				final VncVal remove = options.get(new VncKeyword("remove")); 
+
+				if (binary == True) {
+					final byte[] data = Files.readAllBytes(file.toPath());
+					
+					if (remove == True) {
+						file.delete();
+						tempFiles.remove(file.getPath());
+					}
+					
+					return new VncByteBuffer(ByteBuffer.wrap(data));
+				}
+				else {
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 
+					
+					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+									
+					final byte[] data = Files.readAllBytes(file.toPath());
+
+					if (remove == True) {
+						file.delete();
+						tempFiles.remove(file.getPath());
+					}
+
+					return new VncString(new String(data, encoding));
+				}
+			} 
+			catch (VncException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
 	
 	///////////////////////////////////////////////////////////////////////////
 	// String functions
@@ -6100,8 +6100,6 @@ public class CoreFunctions {
 				.put("read-string",			read_string)
 				.put("slurp",				slurp)
 				.put("spit",				spit)
-				.put("temp-file",			temp_file)
-				.put("slurp-temp-file",		slurp_temp_file)
 				
 				.put("==",					equal_Q)
 				.put("!=",					not_equal_Q)			
@@ -6259,10 +6257,11 @@ public class CoreFunctions {
 				.put("io/list-files",		io_list_files)
 				.put("io/delete-file",		io_delete_file)
 				.put("io/copy-file",		io_copy_file)
+				.put("io/temp-file",		io_temp_file)
 				.put("io/tmp-dir",			io_tmp_dir)
 				.put("io/user-dir",			io_user_dir)
-				
-				
+				.put("io/slurp-temp-file",	io_slurp_temp_file)
+								
 				.put("str/blank?",			str_blank)
 				.put("str/starts-with?",	str_starts_with)
 				.put("str/ends-with?",		str_ends_with)

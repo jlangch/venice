@@ -107,9 +107,9 @@
 (def xchart/to-bytes-with-dpi
    (fn [chart type dpi]
         (let [format (get xchart/bitmap-formats type)
-              file (temp-file "xchart-", (get xchart/file-extension type))]
+              file (io/temp-file "xchart-", (get xchart/file-extension type))]
             (. :BitmapEncoder :saveBitmapWithDPI chart file format dpi)
-            (slurp-temp-file file :binary true :remove true))))
+            (io/slurp-temp-file file :binary true :remove true))))
 
 (def xchart/swing-open-window
    (fn [chart title]
