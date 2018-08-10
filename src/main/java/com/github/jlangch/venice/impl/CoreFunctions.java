@@ -493,6 +493,90 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction temp_file = new VncFunction("temp-file") {
+		{
+			setArgLists("(temp-file prefix suffix)");
+			
+			setDoc("Creates a temp file with prefix and suffix");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("temp-file", args, 2);
+
+			final String prefix = Coerce.toVncString(args.first()).getValue();
+			final String suffix = Coerce.toVncString(args.second()).getValue();
+			try {
+				final File file = File.createTempFile(prefix, suffix);
+				return new VncJavaObject(file);
+			}
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
+	public static VncFunction slurp_temp_file = new VncFunction("slurp-temp-file") {
+		{
+			setArgLists("(slurp-temp-file file & options)");
+			
+			setDoc("slurps a previously created temp file");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("slurp-temp-file", args, 1);
+
+			try {	
+				File file;
+				
+				if (Types.isVncString(args.nth(0)) ) {
+					file = new File(((VncString)args.nth(0)).getValue());
+				}
+				else if (isJavaIoFile(args.nth(0)) ) {
+					file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'slurp-temp-file' does not allow %s as f. %s",
+							Types.getClassName(args.nth(0)),
+							ErrorMessage.buildErrLocation(args)));
+				}
+
+				
+				final VncHashMap options = new VncHashMap(args.slice(1));
+
+				final VncVal binary = options.get(new VncKeyword("binary")); 
+	
+				final VncVal remove = options.get(new VncKeyword("remove")); 
+
+				if (binary == True) {
+					final byte[] data = Files.readAllBytes(file.toPath());
+					
+					if (remove == True) {
+						file.delete();
+					}
+					
+					return new VncByteBuffer(ByteBuffer.wrap(data));
+				}
+				else {
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 
+					
+					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+									
+					final byte[] data = Files.readAllBytes(file.toPath());
+
+					if (remove == True) {
+						file.delete();
+					}
+
+					return new VncString(new String(data, encoding));
+				}
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
 	public static VncFunction slurp = new VncFunction("slurp") {
 		{
 			setArgLists("(slurp file & options)");
@@ -504,7 +588,9 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("slurp", args);
-			
+
+			assertMinArity("slurp", args, 1);
+
 			try {	
 				File file;
 				
@@ -558,7 +644,10 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("spit", args);
-			
+
+
+			assertMinArity("spit", args, 2);
+
 			try {
 				// Currently just string content is supported!
 				
@@ -5998,6 +6087,8 @@ public class CoreFunctions {
 				.put("read-string",			read_string)
 				.put("slurp",				slurp)
 				.put("spit",				spit)
+				.put("temp-file",			temp_file)
+				.put("slurp-temp-file",		slurp_temp_file)
 				
 				.put("==",					equal_Q)
 				.put("!=",					not_equal_Q)			
