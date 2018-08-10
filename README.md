@@ -33,7 +33,7 @@ Venice requires Java 8 or newer.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.x.y.jar`
+Start the REPL with `java -jar venice-0.8.1.jar`
 
 ```text
 venice> (+ 1 1)
@@ -314,7 +314,6 @@ Venice supports
   - JSON
   - Protocol/Logger
   - Charts
-  - Http/Rest Client (planned for Venice 1.0)
   
 through extension modules
   
@@ -367,7 +366,7 @@ _TODO: document_
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.8.0'
+    compile 'com.github.jlangch:venice:0.8.1'
 }
 ```
 
@@ -379,7 +378,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.8.0</version>
+        <version>0.8.1</version>
     </dependency>
 </dependencies>
 ```
