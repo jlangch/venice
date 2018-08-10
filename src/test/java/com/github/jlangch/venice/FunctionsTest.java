@@ -2562,10 +2562,10 @@ public class FunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                  " +
-				"   (let [file (temp-file \"xchart-\", \".chart\")]   " +
-				"        (spit file \"123456789\" :append true)       " +
-				"        (slurp-temp-file file :remove true))         " +
+				"(do                                                          " +
+				"   (let [file (temp-file \"xchart-\", \".chart\")]           " +
+				"        (spit file \"123456789\" :append true)               " +
+				"        (slurp-temp-file file :binary false :remove true))   " +
 				") ";
 				
 				assertEquals("123456789",venice.eval(script));					

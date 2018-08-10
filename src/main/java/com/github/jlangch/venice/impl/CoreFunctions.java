@@ -507,7 +507,7 @@ public class CoreFunctions {
 			final String suffix = Coerce.toVncString(args.second()).getValue();
 			try {
 				final File file = File.createTempFile(prefix, suffix);
-				return new VncJavaObject(file);
+				return new VncString(file.getPath());
 			}
 			catch (Exception ex) {
 				throw new VncException(ex.getMessage(), ex);
