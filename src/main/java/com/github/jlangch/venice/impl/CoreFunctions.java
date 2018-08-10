@@ -497,7 +497,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(temp-file prefix suffix)");
 			
-			setDoc("Creates a temp file with prefix and suffix");
+			setDoc("Creates an empty temp file with prefix and suffix");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -506,8 +506,9 @@ public class CoreFunctions {
 			final String prefix = Coerce.toVncString(args.first()).getValue();
 			final String suffix = Coerce.toVncString(args.second()).getValue();
 			try {
-				final File file = File.createTempFile(prefix, suffix);
-				return new VncString(file.getPath());
+				final String path = File.createTempFile(prefix, suffix).getPath();
+				tempFiles.add(path);
+				return new VncString(path);
 			}
 			catch (Exception ex) {
 				throw new VncException(ex.getMessage(), ex);
@@ -542,6 +543,13 @@ public class CoreFunctions {
 				}
 
 				
+				if (!tempFiles.contains(file.getPath())) {
+					throw new VncException(String.format(
+							"Function 'slurp-temp-file' tries to access the unknown temp file '%s'. %s",
+							file.getPath(),
+							ErrorMessage.buildErrLocation(args)));
+				}
+				
 				final VncHashMap options = new VncHashMap(args.slice(1));
 
 				final VncVal binary = options.get(new VncKeyword("binary")); 
@@ -553,6 +561,7 @@ public class CoreFunctions {
 					
 					if (remove == True) {
 						file.delete();
+						tempFiles.remove(file.getPath());
 					}
 					
 					return new VncByteBuffer(ByteBuffer.wrap(data));
@@ -566,11 +575,15 @@ public class CoreFunctions {
 
 					if (remove == True) {
 						file.delete();
+						tempFiles.remove(file.getPath());
 					}
 
 					return new VncString(new String(data, encoding));
 				}
 			} 
+			catch (VncException ex) {
+				throw ex;
+			}
 			catch (Exception ex) {
 				throw new VncException(ex.getMessage(), ex);
 			}
@@ -6284,4 +6297,5 @@ public class CoreFunctions {
 	
 	private static final AtomicLong gensymValue = new AtomicLong(0);
 	private static final Random random = new Random();
+	private static final HashSet<String> tempFiles = new HashSet<>();
 }
