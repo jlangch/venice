@@ -829,9 +829,9 @@ public class DocGenerator {
 						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples())),
 						idgen.id()));
 		general.addItem(new DocItem(" ", null));
-		general.addItem(new DocItem("Invoke constructors, invoke static or instance methods, "
-										+ "and access static or instance fields", 
-									null));
+		general.addItem(new DocItem("Invoke constructors", null));
+		general.addItem(new DocItem("Invoke static or instance methods", null));
+		general.addItem(new DocItem("IAccess static or instance fields", null));
 
 		return section;
 	}
