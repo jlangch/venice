@@ -207,6 +207,8 @@ A larger example:
 (do
    (import :org.test.User :java.time.LocalDate)
 
+   ;; convert a Java list to a Venice list and return the 
+   ;; first item
    (first
       (into '() 
          (doto (. :java.util.ArrayList :new)
@@ -280,10 +282,10 @@ venice.eval(
     "      (. :add 1)                     " +
     "      (. :add 2))                    ");
 
-// => FAIL (call to non white listed static method)
+// => FAIL (invoking non white listed static method)
 venice.eval("(. :java.lang.System :exit 0)"); 
 
-// => FAIL (call to rejected Venice I/O function)
+// => FAIL (invoking rejected Venice I/O function)
 venice.eval("(slurp \"/tmp/file\")"); 
 ```
 
