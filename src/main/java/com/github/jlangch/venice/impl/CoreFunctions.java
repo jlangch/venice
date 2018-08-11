@@ -4304,8 +4304,12 @@ public class CoreFunctions {
 					"Returns nil. ");
 			
 			setExamples(
-					"(docoll (fn [x] (println x)) [1 2 3 4])",
-					"(docoll (fn [[k v]] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
+					"(docoll \n" +
+					"   (fn [x] (println x)) \n" +
+					"   [1 2 3 4])",
+					"(docoll \n" +
+					"    (fn [[k v]] (println (pr-str k v)))" +
+					"    {:a 1 :b 2 :c 3 :d 4})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5976,6 +5980,8 @@ public class CoreFunctions {
 			setArgLists("(uuid)");
 			
 			setDoc("Generates a UUID.");
+			
+			setExamples("(uuid )");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5989,6 +5995,10 @@ public class CoreFunctions {
 			setArgLists("(type x)");
 			
 			setDoc("Retruns the type of x.");
+			
+			setExamples(
+					"(type 5)",
+					"(type (. :java.time.ZonedDateTime :now))");
 		}
 		
 		public VncVal apply(final VncList args) {
