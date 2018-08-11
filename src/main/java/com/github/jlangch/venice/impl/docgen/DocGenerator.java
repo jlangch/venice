@@ -531,6 +531,7 @@ public class DocGenerator {
 		final DocSection misc = new DocSection("Misc");
 		all.addSection(misc);
 		misc.addItem(getDocItem("class"));
+		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));
 
 
@@ -844,7 +845,6 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("json/pretty-print", Arrays.asList("(json/pretty-print json)"), "Pretty print a JSON string", "", idgen.id()));
 		general.addItem(new DocItem("json/to-json", Arrays.asList("(json/to-json val)"), "Convert the value to JSON", "", idgen.id()));
 		general.addItem(new DocItem("json/to-pretty-json", Arrays.asList("(json/to-pretty-json val)"), "Convert the value to pretty-printed JSON", "", idgen.id()));

@@ -4304,8 +4304,12 @@ public class CoreFunctions {
 					"Returns nil. ");
 			
 			setExamples(
-					"(docoll (fn [x] (println x)) [1 2 3 4])",
-					"(docoll (fn [[k v]] (println (pr-str k v))) {:a 1 :b 2 :c 3 :d 4})");
+					"(docoll \n" +
+					"   (fn [x] (println x)) \n" +
+					"   [1 2 3 4])",
+					"(docoll \n" +
+					"    (fn [[k v]] (println (pr-str k v)))" +
+					"    {:a 1 :b 2 :c 3 :d 4})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5697,6 +5701,8 @@ public class CoreFunctions {
 			setArgLists("(str/split s regex)");
 			
 			setDoc("Splits string on a regular expression.");
+			
+			setExamples("(str/split \"abc , def , ghi\" \"[ *],[ *]\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5719,6 +5725,8 @@ public class CoreFunctions {
 			setArgLists("(str/split-lines s)");
 			
 			setDoc("Splits s into lines.");
+			
+			setExamples("(str/split-lines \"line1\nline2\nline3\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5740,6 +5748,8 @@ public class CoreFunctions {
 			setArgLists("(str/format format args*)");
 			
 			setDoc("Returns a formatted string using the specified format string and arguments.");
+			
+			setExamples("(str/format \"%s: %d\" \"abc\" 100)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5942,6 +5952,8 @@ public class CoreFunctions {
 			setArgLists("(version)");
 			
 			setDoc("Returns the version.");
+			
+			setExamples("(version )");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5956,6 +5968,8 @@ public class CoreFunctions {
 			setArgLists("(gensym)", "(gensym prefix)");
 			
 			setDoc("Generates a symbol.");
+			
+			setExamples("(gensym )", "(gensym \"prefix_\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5976,6 +5990,8 @@ public class CoreFunctions {
 			setArgLists("(uuid)");
 			
 			setDoc("Generates a UUID.");
+			
+			setExamples("(uuid )");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5989,6 +6005,10 @@ public class CoreFunctions {
 			setArgLists("(type x)");
 			
 			setDoc("Retruns the type of x.");
+			
+			setExamples(
+					"(type 5)",
+					"(type (. :java.time.ZonedDateTime :now))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -6002,6 +6022,8 @@ public class CoreFunctions {
 			setArgLists("(sleep n)");
 			
 			setDoc("Sleep for n milliseconds.");
+			
+			setExamples("(sleep 30)");
 		}
 		
 		public VncVal apply(final VncList args) {
