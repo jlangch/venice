@@ -67,7 +67,10 @@ import com.github.jlangch.venice.Parameters;
 
 final Venice venice = new Venice();
 
-System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
+System.out.println(
+    venice.eval(
+        "(+ x y 3)", 
+        Parameters.of("x", 6, "y", 3L)));
 ```
 
 
@@ -81,7 +84,9 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 final Venice venice = new Venice();
 
 // prevent writing to stdout by redirect to the <null> device
-venice.eval("(println [1 2])", Parameters.of("*out*", null));
+venice.eval(
+    "(println [1 2])", 
+    Parameters.of("*out*", null));
 
 // capturing data written to stdout
 final CapturingPrintStream ps = CapturingPrintStream.create();
