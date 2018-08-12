@@ -112,6 +112,10 @@ public class CoreFunctions {
 			setArgLists("(throw)", "(throw x)");
 			
 			setDoc("Throws exception with passed value x");
+			
+			setExamples(
+					"(try (throw 100) (catch (do (+ 1 2) -1)))",
+					"(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -146,6 +150,11 @@ public class CoreFunctions {
 			setArgLists("(nil? x)");
 			
 			setDoc("Returns true if x is nil, false otherwise");
+			
+			setExamples(
+					"(nil? nil)",
+					"(nil? 0)",
+					"(nil? false)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -160,6 +169,14 @@ public class CoreFunctions {
 			setArgLists("(some? x)");
 			
 			setDoc("Returns true if x is not nil, false otherwise");
+			
+			setExamples(
+					"(some? nil)",
+					"(some? 0)",
+					"(some? 4.0)",
+					"(some? false)",
+					"(some? [])",
+					"(some? {})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -174,6 +191,13 @@ public class CoreFunctions {
 			setArgLists("(true? x)");
 			
 			setDoc("Returns true if x is true, false otherwise");
+			
+			setExamples(
+					"(true? true)",
+					"(true? false)",
+					"(true? nil)",
+					"(true? 0)",
+					"(true? (== 1 1))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -188,6 +212,13 @@ public class CoreFunctions {
 			setArgLists("(false? x)");
 			
 			setDoc("Returns true if x is false, false otherwise");
+			
+			setExamples(
+					"(false? true)",
+					"(false? false)",
+					"(false? nil)",
+					"(false? 0)",
+					"(false? (== 1 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
