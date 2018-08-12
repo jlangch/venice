@@ -67,7 +67,10 @@ import com.github.jlangch.venice.Parameters;
 
 final Venice venice = new Venice();
 
-System.out.println(venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
+System.out.println(
+    venice.eval(
+        "(+ x y 3)", 
+        Parameters.of("x", 6, "y", 3L)));
 ```
 
 
@@ -81,7 +84,9 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 final Venice venice = new Venice();
 
 // prevent writing to stdout by redirect to the <null> device
-venice.eval("(println [1 2])", Parameters.of("*out*", null));
+venice.eval(
+    "(println [1 2])", 
+    Parameters.of("*out*", null));
 
 // capturing data written to stdout
 final CapturingPrintStream ps = CapturingPrintStream.create();
@@ -207,6 +212,8 @@ A larger example:
 (do
    (import :org.test.User :java.time.LocalDate)
 
+   ;; convert a Java list to a Venice list and return the 
+   ;; first item
    (first
       (into '() 
          (doto (. :java.util.ArrayList :new)
@@ -280,10 +287,10 @@ venice.eval(
     "      (. :add 1)                     " +
     "      (. :add 2))                    ");
 
-// => FAIL (call to non white listed static method)
+// => FAIL (invoking non white listed static method)
 venice.eval("(. :java.lang.System :exit 0)"); 
 
-// => FAIL (call to rejected Venice I/O function)
+// => FAIL (invoking rejected Venice I/O function)
 venice.eval("(slurp \"/tmp/file\")"); 
 ```
 
