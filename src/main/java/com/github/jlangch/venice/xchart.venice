@@ -16,15 +16,21 @@
 (import :org.knowm.xchart.style.AxesChartStyler)
 (import :org.knowm.xchart.style.Styler$LegendPosition)
 (import :org.knowm.xchart.style.Styler$TextAlignment)
+(import :org.knowm.xchart.style.Styler$YAxisPosition)
 (import :org.knowm.xchart.style.PieStyler$AnnotationType)
 (import :org.knowm.xchart.style.GGPlot2Theme)
 (import :org.knowm.xchart.style.MatlabTheme)
 (import :org.knowm.xchart.style.XChartTheme)
     
 (import :org.knowm.xchart.style.markers.Circle)
+(import :org.knowm.xchart.style.markers.Cross)
 (import :org.knowm.xchart.style.markers.Diamond)
 (import :org.knowm.xchart.style.markers.None)
+(import :org.knowm.xchart.style.markers.Oval)
+(import :org.knowm.xchart.style.markers.Plus)
+(import :org.knowm.xchart.style.markers.Rectangle)
 (import :org.knowm.xchart.style.markers.Square)
+(import :org.knowm.xchart.style.markers.Trapezoid)
 (import :org.knowm.xchart.style.markers.TriangleDown)
 (import :org.knowm.xchart.style.markers.TriangleUp)
     
@@ -48,9 +54,9 @@
 ;; utils
 ;; ---------------------------------------------------------------------------
 
-;; Example: (xchart/doto-cond       =>    (let [e expr]
-;;             expr                          (when cond1 (my e call))
-;;             cond1 (my call)               (when cond2 (my2 e call2)))
+;; Example: (xchart/doto-cond     =>    (let [e expr]
+;;             expr                        (when cond1 (my e call))
+;;             cond1 (my call)             (when cond2 (my2 e call2)))
 ;;             cond2 (my2 call2))
 (defmacro xchart/doto-cond 
    [expr & clauses]
@@ -157,53 +163,68 @@
     
 (def xchart/markers
    { :circle        (. :Circle :new)
+     :cross         (. :Cross :new)
      :diamond       (. :Diamond :new)
      :none          (. :None :new)
+     :oval          (. :Oval :new)
+     :plus          (. :Plus :new)
+     :rectangle     (. :Rectangle :new)
      :square        (. :Square :new)
+     :trapezoid     (. :Trapezoid :new)
      :triangle-up   (. :TriangleUp :new)
      :triangle-down (. :TriangleDown :new) })    
 
 (def xchart/xy-render-styles
-   { :area    (. :XYSeries$XYSeriesRenderStyle :Area)
-     :scatter (. :XYSeries$XYSeriesRenderStyle :Scatter)
-     :line    (. :XYSeries$XYSeriesRenderStyle :Line) })
+   { :area       (. :XYSeries$XYSeriesRenderStyle :Area)
+     :scatter    (. :XYSeries$XYSeriesRenderStyle :Scatter)
+     :step       (. :XYSeries$XYSeriesRenderStyle :Step)
+     :step-area  (. :XYSeries$XYSeriesRenderStyle :StepArea)
+     :line       (. :XYSeries$XYSeriesRenderStyle :Line) })
 
 (def xchart/pie-render-styles
-   { :pie   (. :PieSeries$PieSeriesRenderStyle :Pie)
-     :donut (. :PieSeries$PieSeriesRenderStyle :Donut) })
+   { :pie    (. :PieSeries$PieSeriesRenderStyle :Pie)
+     :donut  (. :PieSeries$PieSeriesRenderStyle :Donut) })
     
 (def xchart/pie-annotation-types
    { :label                (. :PieStyler$AnnotationType :Label)
      :label-and-percentage (. :PieStyler$AnnotationType :LabelAndPercentage)
-     :percentage           (. :PieStyler$AnnotationType :Percentage) })
+     :percentage           (. :PieStyler$AnnotationType :Percentage) 
+     :value                (. :PieStyler$AnnotationType :Value)})
 
 (def xchart/category-render-styles
-   { :area    (. :CategorySeries$CategorySeriesRenderStyle :Area)
-     :bar     (. :CategorySeries$CategorySeriesRenderStyle :Bar)
-     :line    (. :CategorySeries$CategorySeriesRenderStyle :Line)
-     :scatter (. :CategorySeries$CategorySeriesRenderStyle :Scatter)
-     :stick   (. :CategorySeries$CategorySeriesRenderStyle :Stick) })
+   { :area        (. :CategorySeries$CategorySeriesRenderStyle :Area)
+     :bar         (. :CategorySeries$CategorySeriesRenderStyle :Bar)
+     :line        (. :CategorySeries$CategorySeriesRenderStyle :Line)
+     :scatter     (. :CategorySeries$CategorySeriesRenderStyle :Scatter)
+     :stepped-bar (. :CategorySeries$CategorySeriesRenderStyle :SteppedBar)
+     :stick       (. :CategorySeries$CategorySeriesRenderStyle :Stick) })
 
 (def xchart/bubble-render-styles
-   { :round (. :BubbleSeries$BubbleSeriesRenderStyle :Round) })
+   { :round  (. :BubbleSeries$BubbleSeriesRenderStyle :Round) })
 
 (def xchart/text-alignments
-   { :centre (. :Styler$TextAlignment :Centre)
-     :left   (. :Styler$TextAlignment :Left)
-     :right  (. :Styler$TextAlignment :Right) })
+   { :centre  (. :Styler$TextAlignment :Centre)
+     :left    (. :Styler$TextAlignment :Left)
+     :right   (. :Styler$TextAlignment :Right) })
 
 (def xchart/legend-positions
-   { :inside-n  (. :Styler$LegendPosition :InsideN)
-     :inside-ne (. :Styler$LegendPosition :InsideNE)
-     :inside-nw (. :Styler$LegendPosition :InsideNW)
-     :inside-se (. :Styler$LegendPosition :InsideSE)
-     :inside-sw (. :Styler$LegendPosition :InsideSW)
-     :outside-e (. :Styler$LegendPosition :OutsideE) })
+   { :inside-n   (. :Styler$LegendPosition :InsideN)
+     :inside-ne  (. :Styler$LegendPosition :InsideNE)
+     :inside-nw  (. :Styler$LegendPosition :InsideNW)
+     :inside-se  (. :Styler$LegendPosition :InsideSE)
+     :inside-sw  (. :Styler$LegendPosition :InsideSW)
+     :outside-e  (. :Styler$LegendPosition :OutsideE)
+     :outside-s  (. :Styler$LegendPosition :OutsideS) })
+
+;; TODO support this
+(def xchart/y-axis-position
+   { :left   (. :Styler$YAxisPosition :Left)
+     :right  (. :Styler$YAxisPosition :Right) })
 
 (def xchart/themes
-   { :ggplot2 (. :GGPlot2Theme :new)
-     :matlab  (. :MatlabTheme :new)
-     :xchart  (. :XChartTheme :new) }) 
+   { :ggplot2  (. :GGPlot2Theme :new)
+     :matlab   (. :MatlabTheme :new)
+     :xchart   (. :XChartTheme :new) }) 
  
 (def xchart/bitmap-formats
    { :png  (. :BitmapEncoder$BitmapFormat :PNG)
