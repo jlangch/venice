@@ -193,22 +193,6 @@ public class DocGenerator {
 		bigdecimal.addItem(getDocItem("dec/div"));
 		bigdecimal.addItem(getDocItem("dec/scale"));
 
-		final DocSection bytebuf = new DocSection("Byte Buffer");
-		section.addSection(bytebuf);
-
-		final DocSection bb_create = new DocSection("Create");
-		bytebuf.addSection(bb_create);
-		bb_create.addItem(getDocItem("bytebuf"));
-		bb_create.addItem(getDocItem("bytebuf-from-string"));
-		
-		final DocSection bb_test = new DocSection("Test");
-		bytebuf.addSection(bb_test);
-		bb_test.addItem(getDocItem("bytebuf?"));
-
-		final DocSection bb_use = new DocSection("Use");
-		bytebuf.addSection(bb_use);
-		bb_use.addItem(getDocItem("bytebuf-to-string"));
-
 		
 		final DocSection strings = new DocSection("Strings");
 		section.addSection(strings);
@@ -259,6 +243,23 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
+
+		
+		final DocSection bytebuf = new DocSection("Byte Buffer");
+		section.addSection(bytebuf);
+
+		final DocSection bb_create = new DocSection("Create");
+		bytebuf.addSection(bb_create);
+		bb_create.addItem(getDocItem("bytebuf"));
+		bb_create.addItem(getDocItem("bytebuf-from-string"));
+		
+		final DocSection bb_test = new DocSection("Test");
+		bytebuf.addSection(bb_test);
+		bb_test.addItem(getDocItem("bytebuf?"));
+
+		final DocSection bb_use = new DocSection("Use");
+		bytebuf.addSection(bb_use);
+		bb_use.addItem(getDocItem("bytebuf-to-string"));
 
 		
 		final DocSection other = new DocSection("Other");
