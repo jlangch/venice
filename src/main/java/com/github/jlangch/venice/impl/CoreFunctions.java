@@ -384,12 +384,27 @@ public class CoreFunctions {
 			setArgLists("(symbol name)");
 			
 			setDoc("Returns a symbol from the given name");
+			
+			setExamples(
+					"(symbol \"a\")",
+					"(symbol 'a)");
 		}
 		
 		public VncVal apply(final VncList args) {
 			assertArity("symbol", args, 1);
-			
-			return new VncSymbol((VncString)args.nth(0));
+
+			if (Types.isVncSymbol(args.nth(0))) {
+				return args.nth(0);
+			} 
+			else if (Types.isVncString(args.nth(0))) {
+				return new VncSymbol((VncString)args.nth(0));
+			} 
+			else {
+				throw new VncException(String.format(
+						"Function 'symbol' does not allow %s name. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
+			}
 		}
 	};
 	
@@ -398,6 +413,12 @@ public class CoreFunctions {
 			setArgLists("(symbol? x)");
 			
 			setDoc("Returns true if x is a symbol");
+			
+			setExamples(
+					"(symbol? (symbol \"a\"))",
+					"(symbol? 'a)",
+					"(symbol? nil)",
+					"(symbol? :a)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -412,6 +433,10 @@ public class CoreFunctions {
 			setArgLists("(keyword name)");
 			
 			setDoc("Returns a keyword from the given name");
+			
+			setExamples(
+					"(keyword \"a\")",
+					"(keyword :a)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -437,6 +462,12 @@ public class CoreFunctions {
 			setArgLists("(keyword? x)");
 			
 			setDoc("Returns true if x is a keyword");
+			
+			setExamples(
+					"(keyword? (keyword \"a\"))",
+					"(keyword? :a)",
+					"(keyword? nil)",
+					"(keyword? 'a)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -492,6 +523,8 @@ public class CoreFunctions {
 			setDoc( "With no args, returns the empty string. With one arg x, returns " + 
 					"x.toString(). With more than one arg, returns the concatenation " +
 					"of the str values of the args with delimiter ' '.");
+			
+			setExamples("(pr-str )", "(pr-str 1 2 3)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -512,6 +545,8 @@ public class CoreFunctions {
 			setDoc( "With no args, returns the empty string. With one arg x, returns " + 
 					"x.toString(). (str nil) returns the empty string. With more than " + 
 					"one arg, returns the concatenation of the str values of the args.");
+			
+			setExamples("(str )", "(str 1 2 3)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -738,6 +773,13 @@ public class CoreFunctions {
 			
 			setDoc( "Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
+			
+			setExamples(
+					"(dec/scale 2.44697M 0 :HALF_UP)",
+					"(dec/scale 2.44697M 1 :HALF_UP)",
+					"(dec/scale 2.44697M 2 :HALF_UP)",
+					"(dec/scale 2.44697M 3 :HALF_UP)",
+					"(dec/scale 2.44697M 10 :HALF_UP)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -766,6 +808,8 @@ public class CoreFunctions {
 			
 			setDoc( "Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
+			
+			setExamples("(dec/add 2.44697M 1.79882M 3 :HALF_UP)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -788,6 +832,8 @@ public class CoreFunctions {
 			
 			setDoc( "Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
+			
+			setExamples("(dec/sub 2.44697M 1.79882M 3 :HALF_UP)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -808,6 +854,8 @@ public class CoreFunctions {
 			
 			setDoc( "Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
+			
+			setExamples("(dec/mul 2.44697M 1.79882M 5 :HALF_UP)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -828,6 +876,8 @@ public class CoreFunctions {
 			
 			setDoc( "Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
+			
+			setExamples("(dec/div 2.44697M 1.79882M 5 :HALF_UP)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -871,6 +921,8 @@ public class CoreFunctions {
 			
 			setDoc( "If one number is supplied, returns the negation, else subtracts " +
 					"the numbers from x and returns the result.");
+			
+			setExamples("(- 4)", "(- 8 3 -2 -1)", "(- 8 2.5)", "(- 8 1.5M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -904,6 +956,8 @@ public class CoreFunctions {
 			setArgLists("(*)", "(* x)", "(* x y)", "(* x y & more)");
 			
 			setDoc("Returns the product of numbers. (*) returns 1");
+			
+			setExamples("(*)", "(* 4)", "(* 4 3)", "(* 4 3 2)", "(* 6.0 2)", "(* 6 1.5M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -926,6 +980,8 @@ public class CoreFunctions {
 			
 			setDoc( "If no denominators are supplied, returns 1/numerator, " + 
 					"else returns numerator divided by all of the denominators.");
+			
+			setExamples("(/ 2.0)", "(/ 12 2 3)", "(/ 12 3)", "(/ 6.0 2)", "(/ 6 1.5M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -959,6 +1015,8 @@ public class CoreFunctions {
 			setArgLists("(mod n d)");
 			
 			setDoc("Modulus of n and d.");
+			
+			setExamples("(mod 10 4)");
 		}
 		
 		public VncVal apply(final VncList args) {
