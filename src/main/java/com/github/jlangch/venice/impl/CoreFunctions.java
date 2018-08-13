@@ -989,6 +989,8 @@ public class CoreFunctions {
 			setArgLists("(inc x)");
 			
 			setDoc("Increments the number x");
+			
+			setExamples("(inc 10)", "(inc 10.1)", "(inc 10.12M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1018,6 +1020,8 @@ public class CoreFunctions {
 			setArgLists("(dec x)");
 			
 			setDoc("Decrements the number x");
+			
+			setExamples("(dec 10)", "(dec 10.1)", "(dec 10.12M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1047,6 +1051,12 @@ public class CoreFunctions {
 			setArgLists("(max x)", "(max x y)", "(max x y & more)");
 			
 			setDoc("Returns the greatest of the values");
+			
+			setExamples(
+					"(max 1)", "(max 1 2)", "(max 4 3 2 1)",
+					"(max 1.0)", "(max 1.0 2.0)", "(max 4.0 3.0 2.0 1.0)",
+					"(max 1.0M)", "(max 1.0M 2.0M)", "(max 4.0M 3.0M 2.0M 1.0M)",
+					"(max 1.0M 2)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1084,6 +1094,12 @@ public class CoreFunctions {
 			setArgLists("(min x)", "(min x y)", "(min x y & more)");
 			
 			setDoc("Returns the smallest of the values");
+			
+			setExamples(
+					"(min 1)", "(min 1 2)", "(min 4 3 2 1)",
+					"(min 1.0)", "(min 1.0 2.0)", "(min 4.0 3.0 2.0 1.0)",
+					"(min 1.0M)", "(min 1.0M 2.0M)", "(min 4.0M 3.0M 2.0M 1.0M)",
+					"(min 1.0M 2)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1121,6 +1137,8 @@ public class CoreFunctions {
 			setArgLists("(abs x)");
 			
 			setDoc("Returns the absolute value of the number");
+			
+			setExamples("(abs 10)", "(abs -10)", "(abs -10.1)", "(abs -10.12M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1152,6 +1170,8 @@ public class CoreFunctions {
 			
 			setDoc( "Without argument returns a random long between 0 and MAX_LONG. " +
 					"Without argument max returns a random long between 0 and max exclusive.");
+			
+			setExamples("(rand-long)", "(rand-long 100)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1176,6 +1196,8 @@ public class CoreFunctions {
 			
 			setDoc( "Without argument returns a double between 0.0 and 1.0. " +
 					"Without argument max returns a random double between 0.0 and max.");
+			
+			setExamples("(rand-double)", "(rand-double 100.0)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1456,6 +1478,8 @@ public class CoreFunctions {
 			setArgLists("(zero? x)");
 			
 			setDoc("Returns true if x zero else false");
+			
+			setExamples("(zero? 0)", "(zero? 2)", "(zero? 0.0)", "(zero? 0.0M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1485,6 +1509,8 @@ public class CoreFunctions {
 			setArgLists("(pos? x)");
 			
 			setDoc("Returns true if x greater than zero else false");
+			
+			setExamples("(pos? 3)", "(pos? -3)", "(pos? 3.2)", "(pos? 3.2M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1514,6 +1540,8 @@ public class CoreFunctions {
 			setArgLists("(neg? x)");
 			
 			setDoc("Returns true if x smaller than zero else false");
+			
+			setExamples("(neg? -3)", "(neg? 3)", "(neg? -3.2)", "(neg? -3.2M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1543,6 +1571,8 @@ public class CoreFunctions {
 			setArgLists("(even? n)");
 			
 			setDoc("Returns true if n is even, throws an exception if n is not an integer");
+			
+			setExamples("(odd? 4)", "(odd? 3)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1566,6 +1596,8 @@ public class CoreFunctions {
 			setArgLists("(odd? n)");
 			
 			setDoc("Returns true if n is odd, throws an exception if n is not an integer");
+			
+			setExamples("(odd? 3)", "(odd? 4)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1628,6 +1660,11 @@ public class CoreFunctions {
 			setArgLists("(boolean x)");
 			
 			setDoc("Converts to boolean. Everything except 'false' and 'nil' is true in boolean context.");
+			
+			setExamples(
+					"(boolean false)",
+					"(boolean true)",
+					"(boolean nil)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1651,6 +1688,15 @@ public class CoreFunctions {
 			setArgLists("(long x)");
 			
 			setDoc("Converts to long");
+			
+			setExamples(
+					"(long 1)",
+					"(long nil)",
+					"(long false)",
+					"(long true)",
+					"(long 1.2)",
+					"(long 1.2M)",
+					"(long \"1.2\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1701,6 +1747,15 @@ public class CoreFunctions {
 			setArgLists("(double x)");
 			
 			setDoc("Converts to double");
+			
+			setExamples(
+					"(double 1)",
+					"(double nil)",
+					"(double false)",
+					"(double true)",
+					"(double 1.2)",
+					"(double 1.2M)",
+					"(double \"1.2\")");
 		}
 		
 		public VncVal apply(final VncList args) {
