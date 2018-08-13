@@ -87,7 +87,22 @@ public class VncByteBuffer extends VncVal {
 
 	@Override 
 	public String toString() {
-		return value.toString();
+		final byte[] arr = value.array();
+		
+		final StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		
+		for(int ii=0; ii<100 && ii<arr.length; ii++) {
+			if (ii>0) sb.append(" ");
+			sb.append((long)arr[ii] & 0x0FF);
+		}
+		
+		if (arr.length > 100) {
+			 sb.append(" ...");
+		}
+		
+		sb.append("]");
+		return sb.toString();
 	}
 
 

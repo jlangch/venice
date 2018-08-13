@@ -338,6 +338,11 @@ public class CoreFunctions {
 			setArgLists("(bytebuf? x)");
 			
 			setDoc("Returns true if x is a bytebuf");
+			
+			setExamples(
+					"(bytebuf? (bytebuf [1 2]))",
+					"(bytebuf? [1 2])",
+					"(bytebuf? nil)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -352,6 +357,11 @@ public class CoreFunctions {
 			setArgLists("(string? x)");
 			
 			setDoc("Returns true if x is a string");
+			
+			setExamples(
+					"(bytebuf? (bytebuf [1 2]))",
+					"(bytebuf? [1 2])",
+					"(bytebuf? nil)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1799,6 +1809,8 @@ public class CoreFunctions {
 			setArgLists("(bytebuf x)");
 			
 			setDoc( "Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string");
+			
+			setExamples("(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1863,7 +1875,7 @@ public class CoreFunctions {
 			
 			setDoc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to UTF-8");
 			
-			setExamples("bytebuf-from-string \"abcdef\" :UTF-8");
+			setExamples("(bytebuf-from-string \"abcdef\" :UTF-8)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1895,7 +1907,7 @@ public class CoreFunctions {
 			
 			setDoc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to UTF-8");
 			
-			setExamples("bytebuf-to-string \"abcdef\" :UTF-8");
+			setExamples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)");
 		}
 		
 		public VncVal apply(final VncList args) {
