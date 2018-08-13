@@ -233,6 +233,12 @@ public class CoreFunctions {
 			setArgLists("(boolean? n)");
 			
 			setDoc("Returns true if n is a boolean");
+			
+			setExamples(
+					"(boolean? true)",
+					"(boolean? false)",
+					"(boolean? nil)",
+					"(boolean? 0)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -247,6 +253,13 @@ public class CoreFunctions {
 			setArgLists("(long? n)");
 			
 			setDoc("Returns true if n is a long");
+			
+			setExamples(
+					"(long? 4)",
+					"(long? 3.1)",
+					"(long? true)",
+					"(long? nil)",
+					"(long? {})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -261,6 +274,13 @@ public class CoreFunctions {
 			setArgLists("(double? n)");
 			
 			setDoc("Returns true if n is a double");
+			
+			setExamples(
+					"(double? 4.0)",
+					"(double? 3)",
+					"(double? true)",
+					"(double? nil)",
+					"(double? {})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -275,6 +295,11 @@ public class CoreFunctions {
 			setArgLists("(decimal? n)");
 			
 			setDoc("Returns true if n is a decimal");
+			
+			setExamples(
+					"(decimal? 4.0M)",
+					"(decimal? 4.0)",
+					"(decimal? 3)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -289,6 +314,13 @@ public class CoreFunctions {
 			setArgLists("(number? n)");
 			
 			setDoc("Returns true if n is a number (long, double, or decimal)");
+			
+			setExamples(
+					"(number? 4.0M)",
+					"(number? 4.0)",
+					"(number? 3)",
+					"(number? true)",
+					"(number? \"a\")");
 		}
 		
 		public VncVal apply(final VncList args) {
