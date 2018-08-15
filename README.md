@@ -4,7 +4,8 @@
 
 # Venice
 
-Venice, a sandboxed Lisp with Java interoperability.
+Venice, a sandboxed Lisp with Java interoperability serving as 
+a safe scripting language.
 
 
 ## Overview
