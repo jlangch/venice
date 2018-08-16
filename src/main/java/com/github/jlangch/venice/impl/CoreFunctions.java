@@ -482,6 +482,9 @@ public class CoreFunctions {
 			setArgLists("(fn? x)");
 			
 			setDoc("Returns true if x is a function");
+			
+			setExamples(
+					"(do \n   (def sum (fn [x] (+ 1 x)))\n   (fn? sum))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1282,6 +1285,8 @@ public class CoreFunctions {
 			setArgLists("(== x y)");
 			
 			setDoc("Returns true if both operands have the equivalent type");
+			
+			setExamples("(== 0 0)", "(== 0 1)", "(== 0 0.0)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1296,6 +1301,8 @@ public class CoreFunctions {
 			setArgLists("(!= x y)");
 			
 			setDoc("Returns true if both operands do not have the equivalent type");
+			
+			setExamples("(!= 0 1)", "(!= 0 0)", "(!= 0 0.0)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1310,6 +1317,8 @@ public class CoreFunctions {
 			setArgLists("(match s regex)");
 			
 			setDoc("Returns true if the string s matches the regular expression regex");
+			
+			setExamples("(match \"1234\" \"[0-9]+\")", "(match \"1234ss\" \"[0-9]+\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1337,6 +1346,8 @@ public class CoreFunctions {
 			setArgLists("(match-not s regex)");
 			
 			setDoc("Returns true if the string s does not match the regular expression regex");
+			
+			setExamples("(match-not \"1234\" \"[0-9]+\")", "(match-not \"1234ss\" \"[0-9]+\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1364,6 +1375,8 @@ public class CoreFunctions {
 			setArgLists("(< x y)");
 			
 			setDoc("Returns true if x is smaller than y");
+			
+			setExamples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1407,6 +1420,8 @@ public class CoreFunctions {
 			setArgLists("(<= x y)");
 			
 			setDoc("Returns true if x is smaller or equal to y");
+			
+			setExamples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1450,6 +1465,8 @@ public class CoreFunctions {
 			setArgLists("(> x y)");
 			
 			setDoc("Returns true if x is greater than y");
+			
+			setExamples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1493,6 +1510,8 @@ public class CoreFunctions {
 			setArgLists("(>= x y)");
 			
 			setDoc("Returns true if x is greater or equal to y");
+			
+			setExamples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1865,6 +1884,13 @@ public class CoreFunctions {
 			
 			setDoc( "Converts to decimal. rounding-mode is one of (:CEILING, :DOWN, " +
 					":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)");
+			
+			setExamples(
+					"(decimal 2)", 
+					"(decimal 2 3 :HALF_UP)", 
+					"(decimal 2.5787 3 :HALF_UP)",
+					"(decimal \"2.5787\" 3 :HALF_UP)",
+					"(decimal nil)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2056,6 +2082,8 @@ public class CoreFunctions {
 			setArgLists("(list & items)");
 			
 			setDoc("Creates a new list containing the items.");
+			
+			setExamples("(list )", "(list 1 2 3)", "(list 1 2 3 [:a :b])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2072,6 +2100,8 @@ public class CoreFunctions {
 			setArgLists("(list? obj)");
 			
 			setDoc("Returns true if obj is a list");
+			
+			setExamples("(list? (list 1 2))", "(list? '(1 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2090,6 +2120,8 @@ public class CoreFunctions {
 			setArgLists("(vector & items)");
 			
 			setDoc("Creates a new vector containing the items.");
+			
+			setExamples("(vector )", "(vector 1 2 3)", "(vector 1 2 3 [:a :b])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2106,6 +2138,8 @@ public class CoreFunctions {
 			setArgLists("(vector? obj)");
 			
 			setDoc("Returns true if obj is a vector");
+			
+			setExamples("(vector? (vector 1 2))", "(vector? [1 2])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2122,6 +2156,8 @@ public class CoreFunctions {
 			setDoc( "Returns a vector of the items in vector from start (inclusive) "+
 					"to end (exclusive). If end is not supplied, defaults to " + 
 					"(count vector)");
+			
+			setExamples("(subvec [1 2 3 4 5 6] 2)", "(subvec [1 2 3 4 5 6] 4)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2150,6 +2186,10 @@ public class CoreFunctions {
 			setDoc( "Returns a byte buffer of the items in buffer from start (inclusive) "+
 					"to end (exclusive). If end is not supplied, defaults to " + 
 					"(count bytebuffer)");
+			
+			setExamples(
+					"(subbytebuf (bytebuf [1 2 3 4 5 6]) 2)", 
+					"(subbytebuf (bytebuf [1 2 3 4 5 6]) 4)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2308,6 +2348,10 @@ public class CoreFunctions {
 			setArgLists("(hash-map & keyvals)", "(hash-map map)");
 			
 			setDoc("Creates a new hash map containing the items.");
+			
+			setExamples(
+					"(hash-map :a 1 :b 2)", 
+					"(hash-map (sorted-map :a 1 :b 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2328,6 +2372,10 @@ public class CoreFunctions {
 			setArgLists("(ordered-map & keyvals)", "(ordered-map map)");
 			
 			setDoc("Creates a new ordered map containing the items.");
+			
+			setExamples(
+					"(ordered-map :a 1 :b 2)", 
+					"(ordered-map (hash-map :a 1 :b 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2345,6 +2393,10 @@ public class CoreFunctions {
 			setArgLists("(sorted-map & keyvals)", "(sorted-map map)");
 			
 			setDoc("Creates a new sorted map containing the items.");
+			
+			setExamples(
+					"(sorted-map :a 1 :b 2)", 
+					"(sorted-map (hash-map :a 1 :b 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2362,6 +2414,8 @@ public class CoreFunctions {
 			setArgLists("(map? obj)");
 			
 			setDoc("Returns true if obj is a map");
+			
+			setExamples("(map? {:a 1 :b 2})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2376,6 +2430,8 @@ public class CoreFunctions {
 			setArgLists("(hash-map? obj)");
 			
 			setDoc("Returns true if obj is a hash map");
+			
+			setExamples("(hash-map? (hash-map :a 1 :b 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2390,6 +2446,8 @@ public class CoreFunctions {
 			setArgLists("(ordered-map? obj)");
 			
 			setDoc("Returns true if obj is an ordered map");
+			
+			setExamples("(ordered-map? (ordered-map :a 1 :b 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2404,6 +2462,8 @@ public class CoreFunctions {
 			setArgLists("(sorted-map? obj)");
 			
 			setDoc("Returns true if obj is a sorted map");
+			
+			setExamples("(sorted-map? (sorted-map :a 1 :b 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2419,6 +2479,13 @@ public class CoreFunctions {
 			
 			setDoc( "Returns true if key is present in the given collection, otherwise " + 
 					"returns false.");
+			
+			setExamples(
+					"(contains? {:a 1 :b 2} :a)",
+					"(contains? [10 11 12] 1)",
+					"(contains? [10 11 12] 5)",
+					"(contains? \"abc\" 1)",
+					"(contains? \"abc\" 5)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2463,10 +2530,21 @@ public class CoreFunctions {
 					"same type, that contains the mapping of key(s) to " + 
 					"val(s). When applied to a vector, returns a new vector that " + 
 					"contains val at index. Note - index must be <= (count vector).");
+			
+			setExamples(
+					"(assoc {} :a 1 :b 2)",
+					"(assoc nil :a 1 :b 2)",
+					"(assoc [1 2 3] 0 10)",
+					"(assoc [1 2 3] 3 10)");
 		}
 		
 		public VncVal apply(final VncList args) {
-			if (Types.isVncMap(args.nth(0))) {
+			if (args.nth(0) == Nil) {
+				final VncMap new_hm = new VncHashMap();
+				new_hm.assoc((VncList)args.slice(1));
+				return new_hm;
+			}
+			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap hm = (VncMap)args.nth(0);
 				
 				final VncMap new_hm = hm.copy();
@@ -2528,6 +2606,10 @@ public class CoreFunctions {
 			setDoc( "Associates a value in a nested associative structure, where ks is a " + 
 					"sequence of keys and v is the new value and returns a new nested structure. " + 
 					"If any levels do not exist, hash-maps or vectors will be created.");
+			
+			setExamples(
+					"(do\n   (def users [{:name \"James\" :age 26}  {:name \"John\" :age 43}])\n   (assoc-in users [1 :age] 44))",
+					"(do\n   (def users [{:name \"James\" :age 26}  {:name \"John\" :age 43}])\n   (assoc-in users [2] {:name \"Jack\" :age 19}) )");			
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2611,6 +2693,10 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a new coll of the same type, " + 
 					"that does not contain a mapping for key(s)");
+			
+			setExamples(
+					"(dissoc {:a 1 :b 2 :c 3} :b)",
+					"(dissoc {:a 1 :b 2 :c 3} :c :b)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2764,7 +2850,6 @@ public class CoreFunctions {
 			setDoc("Returns the map entry for key, or nil if key not present.");
 					
 			setExamples("(find {:a 1 :b 2} :b)", "(find {:a 1 :b 2} :z)");
-
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2788,6 +2873,8 @@ public class CoreFunctions {
 			setArgLists("(key e)");
 			
 			setDoc("Returns the key of the map entry.");
+			
+			setExamples("(key (find {:a 1 :b 2} :b))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2803,6 +2890,8 @@ public class CoreFunctions {
 			setArgLists("(keys map)");
 			
 			setDoc("Returns a collection of the map's keys.");
+			
+			setExamples("(keys {:a 1 :b 2 :c 3})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2823,6 +2912,8 @@ public class CoreFunctions {
 			setArgLists("(val e)");
 			
 			setDoc("Returns the val of the map entry.");
+			
+			setExamples("(val (find {:a 1 :b 2} :b))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2838,6 +2929,8 @@ public class CoreFunctions {
 			setArgLists("(vals map)");
 			
 			setDoc("Returns a collection of the map's values.");
+			
+			setExamples("(vals {:a 1 :b 2 :c 3})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3102,6 +3195,8 @@ public class CoreFunctions {
 			setArgLists("(coll? obj)");
 			
 			setDoc("Returns true if obj is a collection");
+			
+			setExamples("(coll? {:a 1})", "(coll? [1 2])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3190,6 +3285,8 @@ public class CoreFunctions {
 			
 			setDoc( "Returns the number of items in the collection. (count nil) returns " + 
 					"0. Also works on strings, and Java Collections");
+			
+			setExamples("(count {:a 1 :b 2})", "(count [1 2])", "(count \"abc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3237,6 +3334,8 @@ public class CoreFunctions {
 			setArgLists("(empty coll)");
 			
 			setDoc("Returns an empty collection of the same category as coll, or nil");
+			
+			setExamples("(empty {:a 1})", "(empty [1 2])", "(empty '(1 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3269,6 +3368,8 @@ public class CoreFunctions {
 			setArgLists("(empty? x)");
 			
 			setDoc("Returns true if x is empty");
+			
+			setExamples("(empty? {})", "(empty? [])", "(empty? '())");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3298,6 +3399,8 @@ public class CoreFunctions {
 			setArgLists("(not-empty? x)");
 			
 			setDoc("Returns true if x is not empty");
+			
+			setExamples("(empty? {:a 1})", "(empty? [1 2])", "(empty? '(1 2))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3328,6 +3431,10 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a new collection where x is the first element and coll is\n" + 
 					"the rest");
+			
+			setExamples(
+					"(cons 1 '(2 3 4 5 6))",
+					"(cons [1 2] [4 5 6])");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -3359,6 +3466,16 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a collection of the concatenation of the elements " +
 					"in the supplied colls.");
+			
+			setExamples(
+					"(concat [1 2])",
+					"(concat [1 2] [4 5 6])",
+					"(concat '(1 2))",
+					"(concat '(1 2) [4 5 6])",
+					"(concat {:a 1})",
+					"(concat {:a 1} {:b 2 c: 3})",
+					"(concat \"abc\")",
+					"(concat \"abc\" \"def\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3410,8 +3527,7 @@ public class CoreFunctions {
 			
 			setDoc("Returns a collection of the first item in each coll, then the second etc.");
 			
-			setExamples("(interleave [:a :b :c] [1 2])");
-			
+			setExamples("(interleave [:a :b :c] [1 2])");	
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3473,6 +3589,13 @@ public class CoreFunctions {
 			setArgLists("(first coll)");
 			
 			setDoc("Returns the first element of coll.");
+			
+			setExamples(
+					"(first nil)",
+					"(first [])",
+					"(first [1 2 3])",
+					"(first '())",
+					"(first '(1 2 3))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3503,6 +3626,13 @@ public class CoreFunctions {
 			setArgLists("(second coll)");
 			
 			setDoc("Returns the second element of coll.");
+			
+			setExamples(
+					"(second nil)",
+					"(second [])",
+					"(second [1 2 3])",
+					"(second '())",
+					"(second '(1 2 3))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3534,6 +3664,11 @@ public class CoreFunctions {
 			setArgLists("(nth coll idx)");
 			
 			setDoc("Returns the nth element of coll.");
+			
+			setExamples(
+					"(nth nil 1)",
+					"(nth [1 2 3] 1)",
+					"(nth '(1 2 3) 1)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3566,6 +3701,13 @@ public class CoreFunctions {
 			setArgLists("(last coll)");
 			
 			setDoc("Returns the last element of coll.");
+			
+			setExamples(
+					"(last nil)",
+					"(last [])",
+					"(last [1 2 3])",
+					"(last '())",
+					"(last '(1 2 3))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3596,6 +3738,15 @@ public class CoreFunctions {
 			setArgLists("(rest coll)");
 			
 			setDoc("Returns a collection with second to list element");
+			
+			setExamples(
+					"(rest nil)",
+					"(rest [])",
+					"(rest [1])",
+					"(rest [1 2 3])",
+					"(rest '())",
+					"(rest '(1))",
+					"(rest '(1 2 3))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3619,6 +3770,15 @@ public class CoreFunctions {
 			setArgLists("(nfirst coll n)");
 			
 			setDoc("Returns a collection of the first n items");
+			
+			setExamples(
+					"(nfirst nil 2)",
+					"(nfirst [] 2)",
+					"(nfirst [1] 2)",
+					"(nfirst [1 2 3] 2)",
+					"(nfirst '() 2)",
+					"(nfirst '(1) 2)",
+					"(nfirst '(1 2 3) 2)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3655,6 +3815,15 @@ public class CoreFunctions {
 			setArgLists("(nlast coll n)");
 			
 			setDoc("Returns a collection of the last n items");
+			
+			setExamples(
+					"(nlast nil 2)",
+					"(nlast [] 2)",
+					"(nlast [1] 2)",
+					"(nlast [1 2 3] 2)",
+					"(nlast '() 2)",
+					"(nlast '(1) 2)",
+					"(nlast '(1 2 3) 2)");
 		}
 		
 		public VncVal apply(final VncList args) {

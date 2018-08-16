@@ -85,7 +85,7 @@ public class DocGenerator {
 			final byte[] pdf = PdfRenderer.renderCheatSheet(xhtml);
 			save(new File(getUserDir(), "cheatsheet.pdf"), pdf);
 			
-			System.out.println("Genereated Cheat Sheet at: " + getUserDir());
+			System.out.println("Generated Cheat Sheet at: " + getUserDir());
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
