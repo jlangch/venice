@@ -7,12 +7,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.8.2] - 2018-08-xx
+## [0.8.2] - 2018-08-16
 
 ### Added
 
 - added dpi scaling to charts (high-res charts)
 - added sandboxing for created temp files 
+- added more documented functions in the cheatsheet
 
 ### fixed
 
