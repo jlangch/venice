@@ -363,6 +363,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("interleave"));
 		list_modify.addItem(getDocItem("mapcat"));
 		list_modify.addItem(getDocItem("flatten"));
+		list_modify.addItem(getDocItem("seq"));
 		list_modify.addItem(getDocItem("reduce"));
 		list_modify.addItem(getDocItem("reverse"));
 		list_modify.addItem(getDocItem("sort"));
@@ -414,6 +415,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("interleave"));
 		vec_modify.addItem(getDocItem("mapcat"));
 		vec_modify.addItem(getDocItem("flatten"));
+		vec_modify.addItem(getDocItem("seq"));
 		vec_modify.addItem(getDocItem("reduce"));
 		vec_modify.addItem(getDocItem("reverse"));
 		vec_modify.addItem(getDocItem("sort"));
