@@ -357,8 +357,35 @@ The Jackson Jdk8 module is loaded automatically if it is available
 
 ### Protocol/Logger
 
-_TODO: document_
+Venice provides a simple protocol facility.
 
+```clojure
+(do
+   (load-module :protocol)
+ 
+   ;; open
+   (protocol/open)
+   
+   (protocol/log :INFO "test info")
+   (protocol/log :WARN "test warn")
+   (protocol/log :ALERT "test alert")
+   
+   ;; return the protocol as a string
+   (protocol/to-string))
+```
+
+```clojure
+(do
+   (load-module :protocol)
+ 
+   ;; open and attach to the current out stream
+   (protocol/open)
+   (protocol/attach-os *out*)
+   
+   (protocol/log :INFO "test info")
+   (protocol/log :WARN "test warn")
+   (protocol/log :ALERT "test alert"))
+```
 
 
 ### Charts
