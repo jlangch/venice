@@ -5296,6 +5296,8 @@ public class CoreFunctions {
 			setArgLists("(atom x)");
 			
 			setDoc("Creates an atom with the initial value x");
+			
+			setExamples("(do\n   (def counter (atom 0))\n   (deref counter))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5310,6 +5312,8 @@ public class CoreFunctions {
 			setArgLists("(atom? x)");
 			
 			setDoc("Returns true if x is an atom, otherwise false");
+			
+			setExamples("(do\n   (def counter (atom 0))\n   (atom? counter))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5324,6 +5328,8 @@ public class CoreFunctions {
 			setArgLists("(deref atom)");
 			
 			setDoc("Dereferences an atom, returns its value");
+			
+			setExamples("(do\n   (def counter (atom 0))\n   (deref counter))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5340,6 +5346,8 @@ public class CoreFunctions {
 			
 			setDoc( "Sets the value of atom to newval without regard for the " + 
 					"current value. Returns newval.");
+			
+			setExamples("(do\n   (def counter (atom 0))\n   (reset! counter 99)\n   (deref counter))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5358,6 +5366,8 @@ public class CoreFunctions {
 					"(apply f current-value-of-atom args). Note that f may be called " + 
 					"multiple times, and thus should be free of side effects.  Returns " + 
 					"the value that was swapped in.");
+			
+			setExamples("(do\n   (def counter (atom 0))\n   (swap! counter inc)\n   (deref counter))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5378,6 +5388,8 @@ public class CoreFunctions {
 			setDoc( "Atomically sets the value of atom to newval if and only if the " + 
 					"current value of the atom is identical to oldval. Returns true if " + 
 					"set happened, else false");
+			
+			setExamples("(do\n   (def counter (atom 2))\n   (compare-and-set! counter 2 4)\n   (deref counter))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5400,6 +5412,11 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a java.io.File. path, parent, and child can be a string " +
 					"or java.io.File");
+			
+			setExamples(
+					"(io/file \"/temp/test.txt\")",
+					"(io/file \"/temp\" \"test.txt\")",
+					"(io/file (io/file \"/temp\") \"test.txt\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5457,6 +5474,9 @@ public class CoreFunctions {
 			setArgLists("(io/file? x)");
 			
 			setDoc("Returns true if x is a java.io.File.");
+			
+			setExamples(
+					"(io/file? (io/file \"/temp/test.txt\"))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5472,6 +5492,9 @@ public class CoreFunctions {
 			setArgLists("(io/exists-file? x)");
 			
 			setDoc("Returns true if the file x exists. x must be a java.io.File.");
+			
+			setExamples(
+					"(io/exists-file? (io/file \"/temp/test.txt\"))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5494,6 +5517,9 @@ public class CoreFunctions {
 			setArgLists("(io/exists-dir? x)");
 			
 			setDoc("Returns true if the file x exists and is a directory. x must be a java.io.File.");
+			
+			setExamples(
+					"(io/exists-dir? (io/file \"/temp\"))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5674,6 +5700,8 @@ public class CoreFunctions {
 			setArgLists("(io/tmp-dir)");
 			
 			setDoc("Returns the tmp dir as a java.io.File.");
+			
+			setExamples("(io/tmp-dir )");
 		}
 		
 		public VncVal apply(final VncList args) {
