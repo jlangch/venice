@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed xchart/to-bytes
+- fixed str/join
 
 
 
