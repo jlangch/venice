@@ -3860,6 +3860,10 @@ public class CoreFunctions {
 			setArgLists("(distinct coll)");
 			
 			setDoc("Returns a collection with all duplicates removed");
+			
+			setExamples(
+					"(distinct [1 2 3 4 2 3 4])",
+					"(distinct '(1 2 3 4 2 3 4))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3888,6 +3892,10 @@ public class CoreFunctions {
 			setArgLists("(dedupe coll)");
 			
 			setDoc("Returns a collection with all consecutive duplicates removed");
+			
+			setExamples(
+					"(dedupe [1 2 2 2 3 4 4 2 3])",
+					"(dedupe '(1 2 2 2 3 4 4 2 3))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3980,6 +3988,12 @@ public class CoreFunctions {
 			setArgLists("(coalesce args*)");
 			
 			setDoc("Returns the first non nil arg");
+			
+			setExamples(
+					"(coalesce [])",
+					"(coalesce [1 2])",
+					"(coalesce [nil])",
+					"(coalesce [nil 1 2])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -3992,6 +4006,12 @@ public class CoreFunctions {
 			setArgLists("(empty-to-nil x)");
 			
 			setDoc("Returns nil if x is empty");
+			
+			setExamples(
+					"(empty-to-nil \"\")",
+					"(empty-to-nil [])",
+					"(empty-to-nil '())",
+					"(empty-to-nil {})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4021,6 +4041,9 @@ public class CoreFunctions {
 			setArgLists("(class x)");
 			
 			setDoc("Returns the class of x");
+			
+			setExamples(
+					"(. :java.lang.Long :class)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4036,6 +4059,10 @@ public class CoreFunctions {
 			
 			setDoc( "For a list, returns a new list without the first item, " + 
 					"for a vector, returns a new vector without the last item.");
+			
+			setExamples(
+					"(pop '(1 2 3 4))",
+					"(pop [1 2 3 4])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4061,6 +4088,10 @@ public class CoreFunctions {
 			setArgLists("(peek coll)");
 			
 			setDoc("For a list, same as first, for a vector, same as last");
+			
+			setExamples(
+					"(peek '(1 2 3 4))",
+					"(peek [1 2 3 4])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4087,6 +4118,8 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a list of successive items from coll while " + 
 					"(predicate item) returns logical true.");
+			
+			setExamples("(take-while neg? [-2 -1 0 1 2 3])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4111,6 +4144,8 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a collection of the first n items in coll, or all items if " + 
 					"there are fewer than n.");
+			
+			setExamples("(take 3 [1 2 3 4 5])", "(take 10 [1 2 3 4 5])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4129,6 +4164,8 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a list of the items in coll starting from the " + 
 					"first item for which (predicate item) returns logical false.");
+			
+			setExamples("(drop-while neg? [-2 -1 0 1 2 3])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4152,6 +4189,8 @@ public class CoreFunctions {
 			setArgLists("(drop n coll)");
 			
 			setDoc("Returns a collection of all but the first n items in coll");
+			
+			setExamples("(drop 3 [1 2 3 4 5])", "(drop 10 [1 2 3 4 5])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4171,6 +4210,8 @@ public class CoreFunctions {
 			setDoc( "Takes any nested combination of collections (lists, vectors, " + 
 					"etc.) and returns their contents as a single, flat sequence. " + 
 					"(flatten nil) returns an empty list.");
+			
+			setExamples("(flatten [])", "(flatten [[1 2 3] [4 5 6] [7 8 9]])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4189,6 +4230,8 @@ public class CoreFunctions {
 			setArgLists("(reverse coll)");
 			
 			setDoc("Returns a collection of the items in coll in reverse order");
+			
+			setExamples("(reverse [1 2 3 4 5 6])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4204,7 +4247,6 @@ public class CoreFunctions {
 		}
 	};
 	
-
 	public static VncFunction sort = new VncFunction("sort") {
 		{
 			setArgLists("(sort coll)", "(sort compfn coll)");
@@ -4212,6 +4254,10 @@ public class CoreFunctions {
 			setDoc( "Returns a sorted list of the items in coll. If no compare function " + 
 					"compfn is supplied, uses the natural compare. The compare function " + 
 					"takes two arguments and returns -1, 0, or 1");
+			
+			setExamples(
+					"(sort [3 2 5 4 1 6])", 
+					"(sort {:c 3 :a 1 :b 2})");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -4307,7 +4353,7 @@ public class CoreFunctions {
 			}			
 		}
 	};
-	
+
 	public static VncFunction sort_by = new VncFunction("sort-by") {
 		{
 			setArgLists("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)");
@@ -4315,6 +4361,11 @@ public class CoreFunctions {
 			setDoc( "Returns a sorted sequence of the items in coll, where the sort " + 
 					"order is determined by comparing (keyfn item).  If no comparator is " + 
 					"supplied, uses compare.");
+			
+			setExamples(
+					"(sort-by count [\"aaa\" \"bb\" \"c\"])", 
+					"(sort-by first [[1 2] [3 4] [2 3]])",
+					"(sort-by (fn [x] (get x :rank)) [{:rank 2} {:rank 3} {:rank 1}])");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -4411,7 +4462,7 @@ public class CoreFunctions {
 			}			
 		}
 	};
-	
+
 	public static VncFunction group_by = new VncFunction("group-by") {
 		{
 			setArgLists("(group-by f coll)");
@@ -4419,6 +4470,10 @@ public class CoreFunctions {
 			setDoc( "Returns a map of the elements of coll keyed by the result of " + 
 					"f on each element. The value at each key will be a vector of the " + 
 					"corresponding elements, in the order they appeared in coll.");
+			
+			setExamples(
+					"(group-by count [\"a\" \"as\" \"asd\" \"aa\" \"asdf\" \"qwer\"])",
+					"(group-by odd? (range 10))");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -4450,6 +4505,9 @@ public class CoreFunctions {
 			setArgLists("(apply f args* coll)");
 			
 			setDoc("Applies f to all arguments composed of args and coll");
+			
+			setExamples(
+					"(apply str [1 2 3 4 5])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4543,6 +4601,9 @@ public class CoreFunctions {
 			setDoc( "Applys f to the set of first items of each coll, followed by applying " + 
 					"f to the set of second items in each coll, until any one of the colls " + 
 					"is exhausted.  Any remaining items in other colls are ignored. ");
+			
+			setExamples(
+					"(map inc [1 2 3 4])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4592,6 +4653,9 @@ public class CoreFunctions {
 					"to the set of first items of each coll, followed by applying " + 
 					"f to the set of second items in each coll, until any one of the colls " + 
 					"is exhausted.  Any remaining items in other colls are ignored. ");
+
+			setExamples(
+					"(mapv inc [1 2 3 4])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4704,6 +4768,9 @@ public class CoreFunctions {
 			
 			setDoc( "Returns the result of applying concat to the result of applying map " + 
 					"to fn and colls. Thus function fn should return a collection.");
+
+			setExamples(
+					"(mapcat reverse [[3 2 1 0] [6 5 4] [9 8 7]])");
 		}
 		
 		public VncVal apply(final VncList args) {			
@@ -4717,6 +4784,9 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a collection of the items in coll for which " + 
 					"(predicate item) returns logical true. ");
+
+			setExamples(
+					"(filter even? [1 2 3 4 5 6 7])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4742,6 +4812,9 @@ public class CoreFunctions {
 			
 			setDoc( "Returns a collection of the items in coll for which " + 
 					"(predicate item) returns logical false. ");
+
+			setExamples(
+					"(filter even? [1 2 3 4 5 6 7])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4774,6 +4847,10 @@ public class CoreFunctions {
 					"result of applying f to val and the first item in coll, then " + 
 					"applying f to that result and the 2nd item, etc. If coll contains no " + 
 					"items, returns val and f is not called.");
+
+			setExamples(
+					"(reduce (fn [x y] (+ x y)) [1 2 3 4 5 6 7])",
+					"(reduce (fn [x y] (+ x y)) 10 [1 2 3 4 5 6 7])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4824,6 +4901,9 @@ public class CoreFunctions {
 					"2nd key and value, etc. If coll contains no entries, returns init " + 
 					"and f is not called. Note that reduce-kv is supported on vectors, " + 
 					"where the keys will be the ordinals.");
+
+			setExamples(
+					"(reduce-kv (fn [x y z] (assoc x z y)) {} {:a 1 :b 2 :c 3})");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4891,6 +4971,10 @@ public class CoreFunctions {
 			setDoc( "Returns a new collection with the x, xs " + 
 					"'added'. (conj nil item) returns (item).  The 'addition' may " + 
 					"happen at different 'places' depending on the concrete type.");
+			
+			setExamples(
+					"(conj [1 2 3] 4)",
+					"(conj '(1 2 3) 4)");
 		}
 
 		public VncVal apply(final VncList args) {			
@@ -4949,6 +5033,12 @@ public class CoreFunctions {
 			setDoc( "Returns a seq on the collection. If the collection is " + 
 					"empty, returns nil.  (seq nil) returns nil. seq also works on " + 
 					"Strings.");
+			
+			setExamples(
+					"(seq nil)",
+					"(seq [1 2 3])",
+					"(seq '(1 2 3))",
+					"(seq \"abcd\")");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -5008,6 +5098,13 @@ public class CoreFunctions {
 			setDoc( "Returns a collection of numbers from start (inclusive) to end " + 
 					"(exclusive), by step, where start defaults to 0 and step defaults to 1. " +
 					"When start is equal to end, returns empty list.");
+			
+			setExamples(
+					"(range 10)",
+					"(range 10 20)",
+					"(range 10 20 3)",
+					"(range 10 15 0.5)",
+					"(range 1.1M 2.2M 0.1M)");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5092,6 +5189,9 @@ public class CoreFunctions {
 			setArgLists("(repeat n x)");
 			
 			setDoc("Returns a collection with the value x repeated n times");
+			
+			setExamples(
+					"(repeat 5 [1 2])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5691,6 +5791,12 @@ public class CoreFunctions {
 			setArgLists("(str/blank? s)");
 			
 			setDoc("True if s is blank.");
+			
+			setExamples(
+					"(str/blank? nil)", 
+					"(str/blank? \"\")", 
+					"(str/blank? \"  \")", 
+					"(str/blank? \"abc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5711,6 +5817,9 @@ public class CoreFunctions {
 			setArgLists("(str/starts-with? s substr)");
 			
 			setDoc("True if s starts with substr.");
+			
+			setExamples(
+					"(str/starts-with? \"abc\"  \"ab\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5732,6 +5841,9 @@ public class CoreFunctions {
 			setArgLists("(str/ends-with? s substr)");
 			
 			setDoc("True if s ends with substr.");
+			
+			setExamples(
+					"(str/starts-with? \"abc\"  \"bc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5753,6 +5865,9 @@ public class CoreFunctions {
 			setArgLists("(str/contains? s substr)");
 			
 			setDoc("True if s contains with substr.");
+			
+			setExamples(
+					"(str/contains? \"abc\"  \"ab\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5774,6 +5889,8 @@ public class CoreFunctions {
 			setArgLists("(str/trim s substr)");
 			
 			setDoc("Trims leading and trailing spaces from s.");
+			
+			setExamples("(str/trim \" abc  \")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5793,6 +5910,12 @@ public class CoreFunctions {
 			
 			setDoc( "Trims leading and trailing spaces from s. " +
 					"Returns nil if the rewsulting string is empry");
+			
+			setExamples(
+					"(str/trim \"\")",
+					"(str/trim \"    \")",
+					"(str/trim nil)",
+					"(str/trim \" abc   \")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5813,6 +5936,9 @@ public class CoreFunctions {
 			
 			setDoc( "Return index of value (string or char) in s, optionally searching " + 
 					"forward from from-index. Return nil if value not found.");
+			
+			setExamples(
+					"(str/index-of \"abcdefabc\" \"ab\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5839,6 +5965,9 @@ public class CoreFunctions {
 			
 			setDoc( "Return last index of value (string or char) in s, optionally\n" + 
 					"searching backward from from-index. Return nil if value not found.");
+			
+			setExamples(
+					"(str/last-index-of \"abcdefabc\" \"ab\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5868,6 +5997,9 @@ public class CoreFunctions {
 			setArgLists("(str/replace-first s search replacement)");
 			
 			setDoc("Replaces the first occurrance of search in s");
+			
+			setExamples(
+					"(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5900,6 +6032,9 @@ public class CoreFunctions {
 			setArgLists("(str/replace-last s search replacement)");
 			
 			setDoc("Replaces the last occurrance of search in s");
+			
+			setExamples(
+					"(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5932,6 +6067,9 @@ public class CoreFunctions {
 			setArgLists("(str/replace-all s search replacement)");
 			
 			setDoc("Replaces the all occurrances of search in s");
+			
+			setExamples(
+					"(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5972,6 +6110,9 @@ public class CoreFunctions {
 			setArgLists("(str/lower-case s)");
 			
 			setDoc("Converts s to lowercase");
+			
+			setExamples(
+					"(str/lower-case \"aBcDeF\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5992,6 +6133,9 @@ public class CoreFunctions {
 			setArgLists("(str/upper-case s)");
 			
 			setDoc("Converts s to uppercase");
+			
+			setExamples(
+					"(str/upper-case \"aBcDeF\")");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -6012,17 +6156,21 @@ public class CoreFunctions {
 			setArgLists("(str/join coll)", "(str/join separator coll)");
 			
 			setDoc("Joins all elements in coll separated by an optional separator.");
+			
+			setExamples(
+					"(str/join [1 2 3])",
+					"(str/join \"-\" [1 2 3])");
 		}
 		
 		public VncVal apply(final VncList args) {
 			assertArity("str/join", args, 1, 2);
 
-			final VncList strings = Coerce.toVncList(args.nth(0));		
-			final VncString delim = Coerce.toVncString(args.nth(1));
+			final VncList coll = Coerce.toVncList(args.last());		
+			final VncString delim = args.size() == 2 ? Coerce.toVncString(args.nth(0)) : new VncString("");
 			
 			return new VncString(
-						strings.size() > 0
-							? strings
+						coll.size() > 0
+							? coll
 								.getList()
 								.stream()
 								.map(v -> Types.isVncString(v) ? ((VncString)v).getValue() : v.toString())
@@ -6037,6 +6185,10 @@ public class CoreFunctions {
 			
 			setDoc( "Returns the substring of s beginning at start inclusive, and ending " + 
 					"at end (defaults to length of string), exclusive.");
+			
+			setExamples(
+					"(str/subs \"abcdef\" 2)",
+					"(str/subs \"abcdef\" 2 5)");
 		}
 		
 		public VncVal apply(final VncList args) {
