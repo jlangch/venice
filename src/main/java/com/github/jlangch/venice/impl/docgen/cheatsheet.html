@@ -25,6 +25,9 @@
                 line-height: 2em;
                 font-weight: 300;
             }
+            div.header h1 {
+                font-weight: 500;
+            }
             h2 {
                 margin-top: 1.5em;
                 margin-bottom: 1.5em;
@@ -166,8 +169,7 @@
     <body>
         <div class="main">
             <div class="header">    
-                <h1>Cheatsheet</h1>
-                <h2>Venice $data.version; format="xml"$ Cheat Sheet</h2>
+                 <h1>Venice $data.version; format="xml"$ Cheat Sheet</h1>
             </div>
             <div class="column">
                 $data.left:{s1|
@@ -211,7 +213,7 @@
                 }$            
             </div>
  
-            <div class="embedding" style="page-break-before: always;">    
+            <div class="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
                 
                $data.snippets:{s|
@@ -231,7 +233,7 @@
                     <h1>$it.name; format="xml"$</h1>
                     <div class="arglists">
                         <div class="arglist">
-                            <code>$it.signatures:{sig|$sig; format="xml"$ }$</code>
+                          $it.signatures:{sig|<code>$sig; format="xml"$</code>}$                          
                         </div>
                     </div>
                     <div class="descr">
