@@ -99,10 +99,9 @@
                 padding: 0 0.5em 0.5em;
             }                            
             .embedding {
-                clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: 10em 0.5em 0.5em;
+                padding: $if(data.pdfmode)$0em$else$20em$endif$ 0.5em 0.5em;
             }                            
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -171,6 +170,7 @@
             <div class="header">    
                  <h1>Venice $data.version; format="xml"$ Cheat Sheet</h1>
             </div>
+            
             <div class="column">
                 $data.left:{s1|
                 <div class="section">
@@ -213,6 +213,8 @@
                 }$            
             </div>
  
+ 			<div style="clear: both;"></div>
+ 			
             <div class="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
                 

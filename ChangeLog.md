@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed Cheat Sheet for functions referenced multiple times
+- fixed cheat sheet page breaks on PDF
 
 
 
