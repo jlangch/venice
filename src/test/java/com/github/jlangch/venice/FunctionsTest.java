@@ -1420,14 +1420,47 @@ public class FunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                          " +
+				"(do                                                             " +
 				"   (let [file (io/temp-file \"xchart-\", \".chart\")]           " +
-				"        (spit file \"123456789\" :append true)               " +
+				"        (spit file \"123456789\" :append true)                  " +
 				"        (io/slurp-temp-file file :binary false :remove true))   " +
 				") ";
 				
 				assertEquals("123456789",venice.eval(script));					
+	}	
+	
+	@Test
+	public void test_io_slurp_stream() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                        " +
+				"   (import :java.io.FileInputStream)                       " +
+				"   (let [file (io/temp-file \"test-\", \".txt\")]          " +
+				"        (spit file \"123456789\" :append true)             " +
+				"        (try-with [is (. :FileInputStream :new file)]      " +
+				"           (io/slurp-stream is :binary false)))            " +
+				")";
+				
+				assertEquals("123456789",venice.eval(script));					
 	}
+	
+	@Test
+	public void test_io_spit_stream() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                           " +
+				"   (import :java.io.FileOutputStream)                         " +
+				"   (let [file (io/temp-file \"test-\", \".txt\")]             " +
+				"        (try-with [is (. :FileOutputStream :new file)]        " +
+				"           (io/spit-stream is \"123456789\" :flush true))     " +
+				"        (io/slurp-temp-file file :binary false))              " +
+				")";
+				
+				assertEquals("123456789",venice.eval(script));					
+	}
+
 	
 	@Test
 	public void test_io_user_dir() {

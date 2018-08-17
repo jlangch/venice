@@ -688,6 +688,8 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/temp-file"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/slurp-temp-file"));
+		io.addItem(getDocItem("io/slurp-stream"));
+		io.addItem(getDocItem("io/spit-stream"));
 		io.addItem(getDocItem("io/user-dir"));
 
 		final DocSection load = new DocSection("load");

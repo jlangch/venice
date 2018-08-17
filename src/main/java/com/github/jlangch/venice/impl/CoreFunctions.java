@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
@@ -5735,7 +5736,10 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/slurp-temp-file file & options)");
 			
-			setDoc("slurps binary or string data from a previously created temp file");
+			setDoc( "Slurps binary or string data from a previously created temp file. " +
+					"Supports the option :binary to either slurp binary or string data. " +
+					"For string data an optional encoding can be specified. " +
+					"Options: :encoding \"UTF-8\" :binary true/false. ");
 			
 			setExamples(
 				"(do \n" +
@@ -5816,7 +5820,10 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/slurp-stream is & options)");
 			
-			setDoc("slurps binary or string data from an input stream");
+			setDoc( "Slurps binary or string data from an input stream. " +
+					"Supports the option :binary to either slurp binary or string data. " +
+					"For string data an optional encoding can be specified. " +
+					"Options: :encoding \"UTF-8\" :binary true/false. ");
 			
 			setExamples(
 				"(do \n" +
@@ -5859,6 +5866,75 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction io_spit_stream = new VncFunction("spit-stream") {
+		{
+			setArgLists("(io/spit-stream os content & options)");
+			
+			setDoc( "Writes content (string or bytebuf) to the output stream os. " +
+					"If content is of type string an optional encoding (defaults to " +
+					"UTF-8) is supported. The stream can optionally be flushed after " +
+					"the operation. " +
+					"Options: :flush true/false :encoding \"UTF-8\"");
+			
+			setExamples(
+				"(do \n" +
+				"   (import :java.io.FileOutputStream) \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (try-with [is (. :FileOutputStream :new file)] \n" +
+				"           (io/spit-stream is \"123456789\" :flush true))) \n" +
+				")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("spit-stream", args);
+
+
+			assertMinArity("io/spit-stream", args, 2);
+
+			try {
+				final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+		
+				final VncVal content = args.nth(1);
+
+				final VncHashMap options = new VncHashMap(args.slice(2));
+
+				final VncVal encVal = options.get(new VncKeyword("encoding")); 					
+				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+
+				final VncVal flushVal = options.get(new VncKeyword("flush")); 
+				final boolean flush = flushVal == True ? true : false;
+
+				byte[] data;
+				
+				if (Types.isVncString(content)) {
+					data = ((VncString)content).getValue().getBytes(encoding);
+				}
+				else if (Types.isVncByteBuffer(content)) {
+					data = ((VncByteBuffer)content).getValue().array();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'spit-stream' does not allow %s as content. %s",
+							Types.getClassName(content),
+							ErrorMessage.buildErrLocation(args)));
+				}
+				
+				os.write(data);
+				
+				if (flush) {
+					os.flush();
+				}
+				
+				return Nil;
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// String functions
 	///////////////////////////////////////////////////////////////////////////
@@ -6888,8 +6964,8 @@ public class CoreFunctions {
 				.put("io/user-dir",			io_user_dir)
 				.put("io/slurp-temp-file",	io_slurp_temp_file)
 				.put("io/slurp-stream",	    io_slurp_stream)
+				.put("io/spit-stream",	    io_spit_stream)
 				
-								
 				.put("str/blank?",			str_blank)
 				.put("str/starts-with?",	str_starts_with)
 				.put("str/ends-with?",		str_ends_with)
