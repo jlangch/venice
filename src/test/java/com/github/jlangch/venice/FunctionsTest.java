@@ -1438,6 +1438,7 @@ public class FunctionsTest {
 				"   (import :java.io.FileInputStream)                       " +
 				"   (let [file (io/temp-file \"test-\", \".txt\")]          " +
 				"        (spit file \"123456789\" :append true)             " +
+				"        (io/delete-file-on-exit file)                      " +
 				"        (try-with [is (. :FileInputStream :new file)]      " +
 				"           (io/slurp-stream is :binary false)))            " +
 				")";
@@ -1453,6 +1454,7 @@ public class FunctionsTest {
 				"(do                                                           " +
 				"   (import :java.io.FileOutputStream)                         " +
 				"   (let [file (io/temp-file \"test-\", \".txt\")]             " +
+				"        (io/delete-file-on-exit file)                         " +
 				"        (try-with [is (. :FileOutputStream :new file)]        " +
 				"           (io/spit-stream is \"123456789\" :flush true))     " +
 				"        (io/slurp-temp-file file :binary false))              " +

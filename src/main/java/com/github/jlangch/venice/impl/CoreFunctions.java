@@ -5577,7 +5577,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/delete-file-on-exit x)");
 			
-			setDoc("Deletes a file on JVM exit. x must be a java.io.File.");
+			setDoc("Deletes a file on JVM exit. x must be a string or java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -5585,14 +5585,20 @@ public class CoreFunctions {
 
 			assertArity("io/delete-file-on-exit", args, 1);
 
-			if (!isJavaIoFile(args.nth(0)) ) {
+			File file;
+			if (Types.isVncString(args.nth(0)) ) {
+				file = new File(((VncString)args.nth(0)).getValue());
+			}
+			else if (isJavaIoFile(args.nth(0)) ) {
+				file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			}
+			else {
 				throw new VncException(String.format(
 						"Function 'io/delete-file-on-exit' does not allow %s as x. %s",
 						Types.getClassName(args.nth(0)),
 						ErrorMessage.buildErrLocation(args)));
 			}
 
-			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
 			try {
 				file.deleteOnExit();;	
 			}
