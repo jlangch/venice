@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
@@ -79,6 +80,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -5809,7 +5811,54 @@ public class CoreFunctions {
 			}
 		}
 	};
-	
+
+	public static VncFunction io_slurp_stream = new VncFunction("io/slurp-stream") {
+		{
+			setArgLists("(io/slurp-stream is & options)");
+			
+			setDoc("slurps form an input stream");
+			
+			setExamples(
+				"(do \n" +
+				"   (import :java.io.FileInputStream) \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (spit file \"123456789\" :append true) \n" +
+				"        (try-with [is (. :FileInputStream :new file)] \n" +
+				"           (io/slurp-stream is :binary false))) \n" +
+				")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("io/slurp-stream", args, 1);
+
+			try {	
+				final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+								
+				final VncHashMap options = new VncHashMap(args.slice(1));
+
+				final VncVal binary = options.get(new VncKeyword("binary")); 
+
+				if (binary == True) {
+					final byte[] data = StreamUtil.toByteArray(is);
+					return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
+				}
+				else {
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 
+					
+					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+
+					return new VncString(StreamUtil.toString(is, encoding));
+				}
+			} 
+			catch (VncException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
 	///////////////////////////////////////////////////////////////////////////
 	// String functions
 	///////////////////////////////////////////////////////////////////////////
@@ -6838,6 +6887,8 @@ public class CoreFunctions {
 				.put("io/tmp-dir",			io_tmp_dir)
 				.put("io/user-dir",			io_user_dir)
 				.put("io/slurp-temp-file",	io_slurp_temp_file)
+				.put("io/slurp-stream",	    io_slurp_stream)
+				
 								
 				.put("str/blank?",			str_blank)
 				.put("str/starts-with?",	str_starts_with)

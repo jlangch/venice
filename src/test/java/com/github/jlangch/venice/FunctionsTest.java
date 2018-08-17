@@ -2871,14 +2871,14 @@ public class FunctionsTest {
 	public void test_str_join() {
 		final Venice venice = new Venice();
 
-		assertEquals("", venice.eval("(str/join '() \"\")"));
-		assertEquals("", venice.eval("(str/join '() \"-\")"));
+		assertEquals("", venice.eval("(str/join \"\" '())"));
+		assertEquals("", venice.eval("(str/join \"-\" '())"));
 
-		assertEquals("ab", venice.eval("(str/join '(\"ab\") \"\")"));
-		assertEquals("ab", venice.eval("(str/join '(\"ab\") \"-\")"));
+		assertEquals("ab", venice.eval("(str/join \"\" '(\"ab\"))"));
+		assertEquals("ab", venice.eval("(str/join \"-\" '(\"ab\"))"));
 
-		assertEquals("abcdef", venice.eval("(str/join '(\"ab\" \"cd\" \"ef\") \"\")"));
-		assertEquals("ab-cd-ef", venice.eval("(str/join '(\"ab\" \"cd\" \"ef\") \"-\")"));
+		assertEquals("abcdef", venice.eval("(str/join \"\" '(\"ab\" \"cd\" \"ef\"))"));
+		assertEquals("ab-cd-ef", venice.eval("(str/join \"-\" '(\"ab\" \"cd\" \"ef\"))"));
 	}
 
 	@Test
