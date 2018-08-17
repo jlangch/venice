@@ -684,6 +684,7 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/exists-dir?"));
 		io.addItem(getDocItem("io/list-files"));
 		io.addItem(getDocItem("io/delete-file"));
+		io.addItem(getDocItem("io/delete-file-on-exit"));
 		io.addItem(getDocItem("io/copy-file"));
 		io.addItem(getDocItem("io/temp-file"));
 		io.addItem(getDocItem("io/tmp-dir"));

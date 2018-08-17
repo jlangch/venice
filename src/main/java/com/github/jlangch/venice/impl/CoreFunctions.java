@@ -5573,6 +5573,39 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction io_delete_file_on_exit = new VncFunction("io/delete-file-on-exit") {
+		{
+			setArgLists("(io/delete-file-on-exit x)");
+			
+			setDoc("Deletes a file on JVM exit. x must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/delete-file-on-exit", args);
+
+			assertArity("io/delete-file-on-exit", args, 1);
+
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/delete-file-on-exit' does not allow %s as x. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
+			}
+
+			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			try {
+				file.deleteOnExit();;	
+			}
+			catch(Exception ex) {
+				throw new VncException(
+						String.format("Failed to marke file %s to delete on exit", file.getPath()),
+						ex);
+			}
+			
+			return Nil;
+		}
+	};
+
 	public static VncFunction io_list_files = new VncFunction("io/list-files") {
 		{
 			setArgLists("(io/list-files dir filterFn?)");
@@ -6958,6 +6991,8 @@ public class CoreFunctions {
 				.put("io/exists-dir?",		io_exists_dir_Q)
 				.put("io/list-files",		io_list_files)
 				.put("io/delete-file",		io_delete_file)
+				.put("io/delete-file-on-exit", io_delete_file_on_exit)
+				
 				.put("io/copy-file",		io_copy_file)
 				.put("io/temp-file",		io_temp_file)
 				.put("io/tmp-dir",			io_tmp_dir)
