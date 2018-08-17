@@ -103,7 +103,6 @@ public class DocGenerator {
 	private List<DocSection> getRightSections() {
 		return Arrays.asList(
 				getCollectionsSection(),
-				getOtherTypesSection(),
 				getAtomsSection(),
 				getSpecialFormsSection(),
 				getJavaInteropSection(),
@@ -255,11 +254,15 @@ public class DocGenerator {
 		
 		final DocSection bb_test = new DocSection("Test");
 		bytebuf.addSection(bb_test);
+		bb_test.addItem(getDocItem("empty?"));
+		bb_test.addItem(getDocItem("not-empty?"));
 		bb_test.addItem(getDocItem("bytebuf?"));
 
 		final DocSection bb_use = new DocSection("Use");
 		bytebuf.addSection(bb_use);
+		bb_use.addItem(getDocItem("count"));
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
+		bb_use.addItem(getDocItem("bytebuf-sub"));
 
 		
 		final DocSection other = new DocSection("Other");
@@ -496,27 +499,7 @@ public class DocGenerator {
 		map_test.addItem(getDocItem("contains?"));
 
 		return section;
-	}
-
-
-	private DocSection getOtherTypesSection() {
-		final DocSection section = new DocSection("Other Types");
-
-		final DocSection bytebuf = new DocSection("ByteBuffer");
-		section.addSection(bytebuf);
-
-		final DocSection bytebuf_misc = new DocSection("Misc");
-		bytebuf.addSection(bytebuf_misc);
-		bytebuf_misc.addItem(getDocItem("count"));
-		bytebuf_misc.addItem(getDocItem("empty?"));
-		bytebuf_misc.addItem(getDocItem("not-empty?"));
-		bytebuf_misc.addItem(getDocItem("bytebuf"));
-		bytebuf_misc.addItem(getDocItem("bytebuf?"));
-		bytebuf_misc.addItem(getDocItem("subbytebuf"));
-		
-		return section;
-	}
-		
+	}		
 
 	private DocSection getFunctionsSection() {
 		final DocSection section = new DocSection("Functions");
@@ -909,6 +892,20 @@ public class DocGenerator {
 	}
 
 	private DocItem getDocItem(final String name) {
+		final DocItem item = docItems.get(name);
+		if (item != null) {
+			return item;
+		}
+		else {
+			final DocItem item_ = getDocItem_(name);
+			if (item_ != null) {
+				docItems.put(name, item_);
+			}
+			return item_;
+		}
+	}
+
+	private DocItem getDocItem_(final String name) {
 		if ("()".equals(name)) {
 			return new DocItem(
 					name, 
@@ -1085,6 +1082,7 @@ public class DocGenerator {
 	
 
 
+	private final Map<String, DocItem> docItems = new HashMap<>();
 	private final Env env;
 	private final IdGen idgen = new IdGen();
 }

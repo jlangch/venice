@@ -202,6 +202,29 @@ public class FunctionsTest {
 		assertTrue((Boolean)venice.eval("(bytebuf? (bytebuf))"));		
 		assertFalse((Boolean)venice.eval("(bytebuf? 1)"));		
 	}
+	
+	@Test
+	public void test_bytebuf_from_string() {
+		final Venice venice = new Venice();
+
+		assertArrayEquals(new byte[] {97,98,99,100,101,102}, ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8)")).array());		
+	}
+	
+	@Test
+	public void test_bytebuf_to_string() {
+		final Venice venice = new Venice();
+
+		assertEquals("abcdef",  venice.eval("(bytebuf-to-string (bytebuf [97 98 99 100 101 102]) :UTF-8)"));		
+	}
+
+	@Test
+	public void test_bytebuf_sub() {
+		final Venice venice = new Venice();
+
+		assertArrayEquals(new byte[] {3,4,5}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 3)")).array());		
+		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
+		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
+	}
 
 	@Test
 	public void test_class() {
@@ -917,6 +940,14 @@ public class FunctionsTest {
 		assertEquals("[:a 1 :b 2]", venice.eval("(str (flatten [{:a 1 :b 2}]))"));
 		assertEquals("[1 :a 2 :b 3]", venice.eval("(str (flatten [1 {:a 2 :b 3}]))"));
 		assertEquals("[1 2 :a 3 :b 4 5 6]", venice.eval("(str (flatten [1 2 {:a 3 :b [4 5 6]}]))"));
+	}
+	
+	@Test
+	public void test_flush() {
+		final Venice venice = new Venice();
+
+		venice.eval("(flush )");
+		venice.eval("(flush (. :java.lang.System :out))");
 	}
 	
 	@Test
@@ -3100,15 +3131,6 @@ public class FunctionsTest {
 		
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"abcdef\")"));
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"aBcDeF\")"));
-	}
-
-	@Test
-	public void test_subbytebuf() {
-		final Venice venice = new Venice();
-
-		assertArrayEquals(new byte[] {3,4,5}, ((ByteBuffer)venice.eval("(subbytebuf (bytebuf [0 1 2 3 4 5]) 3)")).array());		
-		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(subbytebuf (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
-		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(subbytebuf (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
 	}
 
 	@Test

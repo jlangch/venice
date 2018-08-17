@@ -335,26 +335,6 @@ public class CoreFunctions {
 		}
 	};
 
-	
-	public static VncFunction bytebuf_Q = new VncFunction("bytebuf?") {
-		{
-			setArgLists("(bytebuf? x)");
-			
-			setDoc("Returns true if x is a bytebuf");
-			
-			setExamples(
-					"(bytebuf? (bytebuf [1 2]))",
-					"(bytebuf? [1 2])",
-					"(bytebuf? nil)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("bytebuf?", args, 1);
-			
-			return Types.isVncByteBuffer(args.nth(0)) ? True : False;
-		}
-	};
-
 	public static VncFunction string_Q = new VncFunction("string?") {
 		{
 			setArgLists("(string? x)");
@@ -1809,6 +1789,131 @@ public class CoreFunctions {
 	};
 
 	
+	///////////////////////////////////////////////////////////////////////////
+	// List functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction new_list = new VncFunction("list") {
+		{
+			setArgLists("(list & items)");
+			
+			setDoc("Creates a new list containing the items.");
+			
+			setExamples("(list )", "(list 1 2 3)", "(list 1 2 3 [:a :b])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			return new VncList(args.getList());
+		}
+	};
+
+	static public boolean list_Q(VncVal mv) {
+		return mv.getClass().equals(VncList.class);
+	}
+	
+	public static VncFunction list_Q = new VncFunction("list?") {
+		{
+			setArgLists("(list? obj)");
+			
+			setDoc("Returns true if obj is a list");
+			
+			setExamples("(list? (list 1 2))", "(list? '(1 2))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("list?", args, 1);
+			
+			return list_Q(args.nth(0)) ? True : False;
+		}
+	};
+
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Vector functions
+	///////////////////////////////////////////////////////////////////////////
+	public static VncFunction new_vector = new VncFunction("vector") {
+		{
+			setArgLists("(vector & items)");
+			
+			setDoc("Creates a new vector containing the items.");
+			
+			setExamples("(vector )", "(vector 1 2 3)", "(vector 1 2 3 [:a :b])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			return new VncVector(args.getList());
+		}
+	};
+
+	static public boolean vector_Q(VncVal mv) {
+		return mv.getClass().equals(VncVector.class);
+	}
+	
+	public static VncFunction vector_Q = new VncFunction("vector?") {
+		{
+			setArgLists("(vector? obj)");
+			
+			setDoc("Returns true if obj is a vector");
+			
+			setExamples("(vector? (vector 1 2))", "(vector? [1 2])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("vector?", args, 1);
+			
+			return vector_Q(args.nth(0)) ? True : False;
+		}
+	};
+	
+	public static VncFunction subvec = new VncFunction("subvec") {
+		{
+			setArgLists("(subvec v start) (subvec v start end)");
+			
+			setDoc( "Returns a vector of the items in vector from start (inclusive) "+
+					"to end (exclusive). If end is not supplied, defaults to " + 
+					"(count vector)");
+			
+			setExamples("(subvec [1 2 3 4 5 6] 2)", "(subvec [1 2 3 4 5 6] 4)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("subvec", args, 2, 3);
+
+			final VncVector vec = Coerce.toVncVector(args.nth(0));		
+			final VncLong from = Coerce.toVncLong(args.nth(1));
+			final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
+			
+			return new VncVector(
+							to == null
+								? vec.getList().subList(from.getValue().intValue(), vec.size())
+								: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
+		}
+	};
+
+	
+	///////////////////////////////////////////////////////////////////////////
+	// ByteBuf functions
+	///////////////////////////////////////////////////////////////////////////
+	
+	public static VncFunction bytebuf_Q = new VncFunction("bytebuf?") {
+		{
+			setArgLists("(bytebuf? x)");
+			
+			setDoc("Returns true if x is a bytebuf");
+			
+			setExamples(
+					"(bytebuf? (bytebuf [1 2]))",
+					"(bytebuf? [1 2])",
+					"(bytebuf? nil)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("bytebuf?", args, 1);
+			
+			return Types.isVncByteBuffer(args.nth(0)) ? True : False;
+		}
+	};
+
 	public static VncFunction bytebuf_cast = new VncFunction("bytebuf") {
 		{
 			setArgLists("(bytebuf x)");
@@ -1938,128 +2043,21 @@ public class CoreFunctions {
 		}
 	};
 
-	
-	///////////////////////////////////////////////////////////////////////////
-	// List functions
-	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction new_list = new VncFunction("list") {
+	public static VncFunction bytebuf_sub = new VncFunction("bytebuf-sub") {
 		{
-			setArgLists("(list & items)");
-			
-			setDoc("Creates a new list containing the items.");
-			
-			setExamples("(list )", "(list 1 2 3)", "(list 1 2 3 [:a :b])");
-		}
-		
-		public VncVal apply(final VncList args) {
-			return new VncList(args.getList());
-		}
-	};
-
-	static public boolean list_Q(VncVal mv) {
-		return mv.getClass().equals(VncList.class);
-	}
-	
-	public static VncFunction list_Q = new VncFunction("list?") {
-		{
-			setArgLists("(list? obj)");
-			
-			setDoc("Returns true if obj is a list");
-			
-			setExamples("(list? (list 1 2))", "(list? '(1 2))");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("list?", args, 1);
-			
-			return list_Q(args.nth(0)) ? True : False;
-		}
-	};
-
-	
-	///////////////////////////////////////////////////////////////////////////
-	// Vector functions
-	///////////////////////////////////////////////////////////////////////////
-	public static VncFunction new_vector = new VncFunction("vector") {
-		{
-			setArgLists("(vector & items)");
-			
-			setDoc("Creates a new vector containing the items.");
-			
-			setExamples("(vector )", "(vector 1 2 3)", "(vector 1 2 3 [:a :b])");
-		}
-		
-		public VncVal apply(final VncList args) {
-			return new VncVector(args.getList());
-		}
-	};
-
-	static public boolean vector_Q(VncVal mv) {
-		return mv.getClass().equals(VncVector.class);
-	}
-	
-	public static VncFunction vector_Q = new VncFunction("vector?") {
-		{
-			setArgLists("(vector? obj)");
-			
-			setDoc("Returns true if obj is a vector");
-			
-			setExamples("(vector? (vector 1 2))", "(vector? [1 2])");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("vector?", args, 1);
-			
-			return vector_Q(args.nth(0)) ? True : False;
-		}
-	};
-	
-	public static VncFunction subvec = new VncFunction("subvec") {
-		{
-			setArgLists("(subvec v start) (subvec v start end)");
-			
-			setDoc( "Returns a vector of the items in vector from start (inclusive) "+
-					"to end (exclusive). If end is not supplied, defaults to " + 
-					"(count vector)");
-			
-			setExamples("(subvec [1 2 3 4 5 6] 2)", "(subvec [1 2 3 4 5 6] 4)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("subvec", args, 2, 3);
-
-			final VncVector vec = Coerce.toVncVector(args.nth(0));		
-			final VncLong from = Coerce.toVncLong(args.nth(1));
-			final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
-			
-			return new VncVector(
-							to == null
-								? vec.getList().subList(from.getValue().intValue(), vec.size())
-								: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
-		}
-	};
-
-	
-	///////////////////////////////////////////////////////////////////////////
-	// ByteBuf functions
-	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction subbytebuf = new VncFunction("subbytebuf") {
-		{
-			setArgLists("(subbytebuf x start) (subbytebuf x start end)");
+			setArgLists("(bytebuf-sub x start) (bytebuf-sub x start end)");
 			
 			setDoc( "Returns a byte buffer of the items in buffer from start (inclusive) "+
 					"to end (exclusive). If end is not supplied, defaults to " + 
 					"(count bytebuffer)");
 			
 			setExamples(
-					"(subbytebuf (bytebuf [1 2 3 4 5 6]) 2)", 
-					"(subbytebuf (bytebuf [1 2 3 4 5 6]) 4)");
+					"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 2)", 
+					"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 4)");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("subbytebuf", args, 2, 3);
+			assertArity("bytebuf-sub", args, 2, 3);
 
 			final byte[] buf = Coerce.toVncByteBuffer(args.nth(0)).getValue().array();		
 			final VncLong from = Coerce.toVncLong(args.nth(1));
@@ -5579,7 +5577,7 @@ public class CoreFunctions {
 			setExamples(
 				"(do \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-				"        (spit file \"123456789\" :append true) \n" +
+				"        (io/spit file \"123456789\" :append true) \n" +
 				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
 				")");
 		}
@@ -5782,7 +5780,7 @@ public class CoreFunctions {
 			setExamples(
 				"(do \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-				"        (spit file \"123456789\" :append true) \n" +
+				"        (io/spit file \"123456789\" :append true) \n" +
 				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
 				")");
 		}
@@ -5868,7 +5866,7 @@ public class CoreFunctions {
 				"   (import :java.io.FileInputStream) \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
 				"        (io/delete-file-on-exit file) \n" +
-				"        (spit file \"123456789\" :append true) \n" +
+				"        (io/spit file \"123456789\" :append true) \n" +
 				"        (try-with [is (. :FileInputStream :new file)] \n" +
 				"           (io/slurp-stream is :binary false))) \n" +
 				")");
@@ -6908,7 +6906,7 @@ public class CoreFunctions {
 				.put("update",				update)
 				.put("update!",				update_BANG)
 				.put("subvec", 				subvec)
-				.put("subbytebuf", 			subbytebuf)
+				.put("bytebuf-sub", 		bytebuf_sub)
 				.put("empty", 				empty)
 
 				.put("set?",				set_Q)

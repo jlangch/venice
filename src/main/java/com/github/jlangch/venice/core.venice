@@ -278,13 +278,13 @@
 
 
 (def  
-   { :arglists '("(flush)")
-     :doc "Flushes the output stream that is the current value of *out*"
+   { :arglists '("(flush)", "(flush os)")
+     :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
      :examples '() }
     
    flush 
    
-   (fn [] (do (. *out* :flush) nil)))
+   (fn [os] (let [out (coalesce os *out*)] (. out :flush) nil)))
 
 
 (def 

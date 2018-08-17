@@ -14,11 +14,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added function 'io/slurp-stream'
 - added function 'io/spit-stream'
 - added function 'io/delete-file-on-exit'
+- added function 'flush' takes an optional argument output stream. E.g.: (flush os)
 - added try resources block 'try-with'
 
 ### fixed
 
-- fixed ...
+- fixed Cheat Sheet for functions referenced multiple times
 
 
 

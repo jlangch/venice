@@ -172,7 +172,7 @@ Try with resources
    (import :java.io.FileInputStream)
    
    (let [file (io/temp-file "test-", ".txt")]
-        (spit file "123456789" :append true)
+        (io/spit file "123456789" :append true)
         (try-with [is (. :FileInputStream :new file)]
            (io/slurp-stream is :binary false)))
 )
@@ -306,7 +306,7 @@ venice.eval(
 venice.eval("(. :java.lang.System :exit 0)"); 
 
 // => FAIL (invoking rejected Venice I/O function)
-venice.eval("(slurp \"/tmp/file\")"); 
+venice.eval("(io/slurp \"/tmp/file\")"); 
 ```
 
 Prohibit Venice I/O functions and Java Interop:
