@@ -5868,6 +5868,7 @@ public class CoreFunctions {
 				"(do \n" +
 				"   (import :java.io.FileInputStream) \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (io/delete-file-on-exit file) \n" +
 				"        (spit file \"123456789\" :append true) \n" +
 				"        (try-with [is (. :FileInputStream :new file)] \n" +
 				"           (io/slurp-stream is :binary false))) \n" +
@@ -5919,6 +5920,7 @@ public class CoreFunctions {
 				"(do \n" +
 				"   (import :java.io.FileOutputStream) \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (io/delete-file-on-exit file) \n" +
 				"        (try-with [is (. :FileOutputStream :new file)] \n" +
 				"           (io/spit-stream is \"123456789\" :flush true))) \n" +
 				")");
