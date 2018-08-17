@@ -12,3 +12,5 @@
 [OSSRH Manual Deploy](https://central.sonatype.org/pages/manual-staging-bundle-creation-and-deployment.html)
 
 [Project Euler](https://projecteuler.net/)
+
+[Dali SVG](https://github.com/stathissideris/dali)

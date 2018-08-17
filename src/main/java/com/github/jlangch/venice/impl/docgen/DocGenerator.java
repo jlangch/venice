@@ -818,6 +818,30 @@ public class DocGenerator {
 									"(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))"),
 							true),
 						idgen.id()));
+		
+		generic.addItem(
+				new DocItem(
+						"try-with", 
+						Arrays.asList(
+								"(try-with [bindings*] expr)",
+								"(try-with [bindings*] (throw))",
+								"(try-with [bindings*] (throw expr))",
+								"(try-with [bindings*] (throw expr) (catch expr))",
+								"(try-with [bindings*] (throw expr) (catch expr) (finally expr))"),
+						"Exception handling try with resources. Closes the resources if they are of type Closeable",
+						runExamples(
+							"try", 
+							Arrays.asList(
+								"(do \n" +
+								"   (import :java.io.FileInputStream) \n" +
+								"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+								"        (spit file \"123456789\" :append true) \n" +
+								"        (try-with [is (. :FileInputStream :new file)] \n" +
+								"           (io/slurp-stream is :binary false))) \n" +
+								")"),
+							true),
+						idgen.id()));
+
 
 		return section;
 	}

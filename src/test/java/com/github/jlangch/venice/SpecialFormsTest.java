@@ -157,6 +157,23 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_try_with() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(do                                                      \n" +
+				"   (import :java.io.FileInputStream)                     \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")]        \n" +
+				"        (spit file \"123456789\" :append true)           \n" +
+				"        (try-with [is (. :FileInputStream :new file)]    \n" +
+				"           (io/slurp-stream is :binary false)))          \n" +
+				")";
+
+		assertEquals("123456789", venice.eval(lisp));
+	}
+
+
+	@Test
 	public void test_eval() {
 		final Venice venice = new Venice();
 		

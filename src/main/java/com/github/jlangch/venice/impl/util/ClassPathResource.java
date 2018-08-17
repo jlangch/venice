@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -104,7 +102,7 @@ public class ClassPathResource {
 
 	public byte[] getResourceAsBinary() {  
 		try(InputStream is = getInputStream()) {
-			return is == null ? null : toByteArray(getInputStream());
+			return StreamUtil.toByteArray(is);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
@@ -122,24 +120,12 @@ public class ClassPathResource {
 
 	public String getResourceAsString(final String charsetName) {		
 		try(InputStream is = getInputStream()) {
-			return is == null ? null : new String(toByteArray(getInputStream()), charsetName);
+			return new String(StreamUtil.toByteArray(is), charsetName);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
 		}
 	}
-
-    private static byte[] toByteArray(final InputStream input) throws IOException{
-    	try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-        	final byte[] buffer = new byte[16 * 1024];
-        	int n;
-        	while (-1 != (n = input.read(buffer))) {
-        		output.write(buffer, 0, n);
-        	}
-
-        	return output.toByteArray();
-        }
-    }
 	
 	private final String path;
 	private final ClassLoader classLoader;

@@ -24,7 +24,10 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.Closeable;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
@@ -314,7 +317,7 @@ public class VeniceInterpreter {
 					return macroexpand(a1, env);
 				}
 					
-				case "try":
+				case "try":  // (try expr (catch expr) (finally expr))
 					try {
 						return EVAL(ast.nth(1), env);
 					} 
@@ -340,6 +343,79 @@ public class VeniceInterpreter {
 								return Coerce.toVncList(result).first();
 							}
 						}
+					}
+					
+				case "try-with":  // (try-with [bindings*] expr (catch expr) (finally expr))
+					env = new Env(env);
+
+					final VncList bindings = Coerce.toVncList(ast.nth(1));
+					final List<Binding> boundResources = new ArrayList<>();
+					
+					for(int i=0; i<bindings.size(); i+=2) {
+						final VncVal sym = bindings.nth(i);
+						final VncVal val = EVAL(bindings.nth(i+1), env);
+
+						if (Types.isVncSymbol(sym)) {
+							env.set((VncSymbol)sym, val);
+							boundResources.add(new Binding((VncSymbol)sym, val));
+						}
+						else {
+							throw new VncException(
+									String.format(
+											"Invalid 'try-with' destructuring symbol value type %s. Expected symbol. %s",
+											Types.getClassName(sym),
+											ErrorMessage.buildErrLocation(ast)));
+						}
+					}
+
+					try {
+						try {
+							return EVAL(ast.nth(2), env);
+						} 
+						catch (Throwable t) {
+							if (ast.size() > 3) {
+								final VncList catchBlock = findFirstCatchBlock(ast.slice(3));
+								if (catchBlock != null) {
+									final VncVal result = eval_ast(catchBlock.slice(1), env);
+									return Coerce.toVncList(result).first();
+								}
+								else {
+									return Nil;
+								}
+							}
+							
+							throw t;
+						}
+						finally {
+							if (ast.size() > 3) {
+								final VncList finallyBlock = findFirstFinallyBlock(ast.slice(3));
+								if (finallyBlock != null) {
+									final VncVal result = eval_ast(finallyBlock.slice(1), env);
+									return Coerce.toVncList(result).first();
+								}
+							}
+						}
+					}
+					finally {
+						// close resources
+						boundResources.stream().forEach(b -> {
+							final VncVal resource = b.val;
+							if (Types.isVncJavaObject(resource)) {
+								final Object r = ((VncJavaObject)resource).getDelegate();
+								if (r instanceof Closeable) {
+									try {
+										((Closeable)r).close();
+									}
+									catch(Exception ex) {
+										throw new VncException(
+												String.format(
+														"'try-with' failed to close resource %s. %s",
+														b.sym.getName(),
+														ErrorMessage.buildErrLocation(ast)));
+									}
+								}
+							}
+						});
 					}
 					
 				case "do":
