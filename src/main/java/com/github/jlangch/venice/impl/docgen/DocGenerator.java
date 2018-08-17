@@ -828,7 +828,10 @@ public class DocGenerator {
 								"(try-with [bindings*] (throw expr))",
 								"(try-with [bindings*] (throw expr) (catch expr))",
 								"(try-with [bindings*] (throw expr) (catch expr) (finally expr))"),
-						"Exception handling try with resources. Closes the resources if they are of type Closeable",
+						"try-with resources allows the declaration of resources to be used in a try block "
+								+ "with the assurance that the resources will be closed after execution "
+								+ "of that block. The resources declared must implement the Closeable or "
+								+ "AutoCloseable interface.",
 						runExamples(
 							"try", 
 							Arrays.asList(

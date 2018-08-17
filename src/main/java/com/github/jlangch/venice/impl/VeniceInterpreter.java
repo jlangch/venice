@@ -402,7 +402,19 @@ public class VeniceInterpreter {
 							final VncVal resource = b.val;
 							if (Types.isVncJavaObject(resource)) {
 								final Object r = ((VncJavaObject)resource).getDelegate();
-								if (r instanceof Closeable) {
+								if (r instanceof AutoCloseable) {
+									try {
+										((AutoCloseable)r).close();
+									}
+									catch(Exception ex) {
+										throw new VncException(
+												String.format(
+														"'try-with' failed to close resource %s. %s",
+														b.sym.getName(),
+														ErrorMessage.buildErrLocation(ast)));
+									}
+								}
+								else if (r instanceof Closeable) {
 									try {
 										((Closeable)r).close();
 									}
