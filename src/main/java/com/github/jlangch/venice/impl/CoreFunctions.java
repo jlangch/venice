@@ -5735,7 +5735,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/slurp-temp-file file & options)");
 			
-			setDoc("slurps a previously created temp file");
+			setDoc("slurps binary or string data from a previously created temp file");
 			
 			setExamples(
 				"(do \n" +
@@ -5816,7 +5816,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(io/slurp-stream is & options)");
 			
-			setDoc("slurps form an input stream");
+			setDoc("slurps binary or string data from an input stream");
 			
 			setExamples(
 				"(do \n" +

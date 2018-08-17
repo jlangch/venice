@@ -165,6 +165,20 @@ Java VarArgs:
 ```
 
 
+Try with resources
+
+```clojure
+(do
+   (import :java.io.FileInputStream)
+   
+   (let [file (io/temp-file "test-", ".txt")]
+        (spit file "123456789" :append true)
+        (try-with [is (. :FileInputStream :new file)]
+           (io/slurp-stream is :binary false)))
+)
+```
+
+
 Java Callbacks:
 
 ```clojure
