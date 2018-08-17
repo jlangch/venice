@@ -164,7 +164,7 @@ public class SpecialFormsTest {
 				"(do                                                      \n" +
 				"   (import :java.io.FileInputStream)                     \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")]        \n" +
-				"        (spit file \"123456789\" :append true)           \n" +
+				"        (io/spit file \"123456789\" :append true)        \n" +
 				"        (try-with [is (. :FileInputStream :new file)]    \n" +
 				"           (io/slurp-stream is :binary false)))          \n" +
 				")";

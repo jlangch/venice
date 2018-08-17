@@ -676,8 +676,6 @@ public class DocGenerator {
 
 		final DocSection io = new DocSection("file-io");
 		all.addSection(io);
-		io.addItem(getDocItem("slurp"));
-		io.addItem(getDocItem("spit"));
 		io.addItem(getDocItem("io/file"));
 		io.addItem(getDocItem("io/file?"));
 		io.addItem(getDocItem("io/exists-file?"));
@@ -686,11 +684,13 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/delete-file"));
 		io.addItem(getDocItem("io/delete-file-on-exit"));
 		io.addItem(getDocItem("io/copy-file"));
-		io.addItem(getDocItem("io/temp-file"));
-		io.addItem(getDocItem("io/tmp-dir"));
+		io.addItem(getDocItem("io/slurp"));
 		io.addItem(getDocItem("io/slurp-temp-file"));
 		io.addItem(getDocItem("io/slurp-stream"));
+		io.addItem(getDocItem("io/spit"));
 		io.addItem(getDocItem("io/spit-stream"));
+		io.addItem(getDocItem("io/temp-file"));
+		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
 
 		final DocSection load = new DocSection("load");

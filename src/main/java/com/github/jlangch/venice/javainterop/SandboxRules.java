@@ -56,8 +56,8 @@ import java.util.stream.Collectors;
  * <p>
  * E.g: black listing Venice I/O functions
  * <ul>
- *   <li>blacklist:venice:slurp (reject calls to 'slurp')</li>
- *   <li>blacklist:venice:*io* (reject all Venice I/O calls like 'slurp', 'create-file', ...)</li>
+ *   <li>blacklist:venice:io/slurp (reject calls to 'io/slurp')</li>
+ *   <li>blacklist:venice:*io* (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
  *   <li>blacklist:venice:. (reject java interop)</li>
  * </ul>
  */
