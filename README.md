@@ -174,7 +174,8 @@ Exception handling
   (try
      (throw (. :RuntimeException :new "a message"))
      (catch :IOException ex (. ex :getMessage))
-     (catch :RuntimeException ex (. ex :getMessage))))
+     (catch :RuntimeException ex (. ex :getMessage))
+     (finally (println "... finally.")))
 )
 ```
 
