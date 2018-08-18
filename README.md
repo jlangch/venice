@@ -203,9 +203,11 @@ Java Callbacks:
    (import :java.io.File :java.io.FilenameFilter)
 
    (def file-filter
-        (fn [dir name] (string/ends-with? name ".txt")))
+        (fn [dir name] (str/ends-with? name ".txt")))
 
    (let [dir (. :File :new "/tmp")]
+        ;; create a dynamic proxy for the interface FilenameFilter
+        ;; and implement its function 'accept' by 'file-filter'
         (. dir :list (proxify :FilenameFilter {:accept file-filter})))
 )
 ```
