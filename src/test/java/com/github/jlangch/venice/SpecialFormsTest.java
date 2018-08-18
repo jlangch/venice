@@ -121,17 +121,21 @@ public class SpecialFormsTest {
 	public void test_try_finally() {
 		final Venice venice = new Venice();
 
-		final String lisp = 
-				"(try                   " +
-				"  (throw 100)          " +
-				"  (finally             " +
-				"    (do                " +
-				"      (+ 1 2)          " +
-				"      (+ 3 4)          " +
-				"      -2))             " +
-				")                      ";
-
-		assertEquals(Long.valueOf(-2L), venice.eval(lisp));
+		try {
+			final String lisp = 
+					"(try                   " +
+					"  (throw 100)          " +
+					"  (finally             " +
+					"    (println \"...\")))" +
+					")                      ";
+			
+			venice.eval(lisp);
+			
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("100", ex.getMessage());
+		}
 	}
 	
 	@Test
@@ -147,13 +151,10 @@ public class SpecialFormsTest {
 				"      (+ 3 4)          " +
 				"      -1))             " +
 				"  (finally             " +
-				"    (do                " +
-				"      (+ 1 2)          " +
-				"      (+ 3 4)          " +
-				"      -2))             " +
+				"    (println \"...\")))" +
 				")                      ";
 
-		assertEquals(Long.valueOf(-2L), venice.eval(lisp));
+		assertEquals(Long.valueOf(-1L), venice.eval(lisp));
 	}
 
 	@Test

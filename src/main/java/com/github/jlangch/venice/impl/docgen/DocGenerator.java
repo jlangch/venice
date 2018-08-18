@@ -800,8 +800,8 @@ public class DocGenerator {
 									"(try (throw))",
 									"(try (throw \"test message\"))",
 									"(try (throw 100) (catch (do (+ 1 2) -1)))",
-									"(try (throw 100) (finally -2))",
-									"(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))"),
+									"(try (throw 100) (finally (println \"finally\")))",
+									"(try (throw 100) (catch (do (+ 1 2) -1)) (finally (println \"finally\")))"),
 							true),
 						idgen.id()));
 		

@@ -318,117 +318,11 @@ public class VeniceInterpreter {
 				}
 					
 				case "try":  // (try expr (catch expr) (finally expr))
-					try {
-						return EVAL(ast.nth(1), env);
-					} 
-					catch (Throwable t) {
-						if (ast.size() > 2) {
-							final VncList catchBlock = findFirstCatchBlock(ast.slice(2));
-							if (catchBlock != null) {
-								final VncVal result = eval_ast(catchBlock.slice(1), env);
-								return Coerce.toVncList(result).first();
-							}
-							else {
-								return Nil;
-							}
-						}
-						
-						throw t;
-					}
-					finally {
-						if (ast.size() > 2) {
-							final VncList finallyBlock = findFirstFinallyBlock(ast.slice(2));
-							if (finallyBlock != null) {
-								final VncVal result = eval_ast(finallyBlock.slice(1), env);
-								return Coerce.toVncList(result).first();
-							}
-						}
-					}
+					return try_(ast, env);
 					
-				case "try-with":  // (try-with [bindings*] expr (catch expr) (finally expr))
+				case "try-with": // (try-with [bindings*] expr (catch expr) (finally expr))
 					env = new Env(env);
-
-					final VncList bindings = Coerce.toVncList(ast.nth(1));
-					final List<Binding> boundResources = new ArrayList<>();
-					
-					for(int i=0; i<bindings.size(); i+=2) {
-						final VncVal sym = bindings.nth(i);
-						final VncVal val = EVAL(bindings.nth(i+1), env);
-
-						if (Types.isVncSymbol(sym)) {
-							env.set((VncSymbol)sym, val);
-							boundResources.add(new Binding((VncSymbol)sym, val));
-						}
-						else {
-							throw new VncException(
-									String.format(
-											"Invalid 'try-with' destructuring symbol value type %s. Expected symbol. %s",
-											Types.getClassName(sym),
-											ErrorMessage.buildErrLocation(ast)));
-						}
-					}
-
-					try {
-						try {
-							return EVAL(ast.nth(2), env);
-						} 
-						catch (Throwable t) {
-							if (ast.size() > 3) {
-								final VncList catchBlock = findFirstCatchBlock(ast.slice(3));
-								if (catchBlock != null) {
-									final VncVal result = eval_ast(catchBlock.slice(1), env);
-									return Coerce.toVncList(result).first();
-								}
-								else {
-									return Nil;
-								}
-							}
-							
-							throw t;
-						}
-						finally {
-							if (ast.size() > 3) {
-								final VncList finallyBlock = findFirstFinallyBlock(ast.slice(3));
-								if (finallyBlock != null) {
-									final VncVal result = eval_ast(finallyBlock.slice(1), env);
-									return Coerce.toVncList(result).first();
-								}
-							}
-						}
-					}
-					finally {
-						// close resources
-						boundResources.stream().forEach(b -> {
-							final VncVal resource = b.val;
-							if (Types.isVncJavaObject(resource)) {
-								final Object r = ((VncJavaObject)resource).getDelegate();
-								if (r instanceof AutoCloseable) {
-									try {
-										((AutoCloseable)r).close();
-									}
-									catch(Exception ex) {
-										throw new VncException(
-												String.format(
-														"'try-with' failed to close resource %s. %s",
-														b.sym.getName(),
-														ErrorMessage.buildErrLocation(ast)));
-									}
-								}
-								else if (r instanceof Closeable) {
-									try {
-										((Closeable)r).close();
-									}
-									catch(Exception ex) {
-										throw new VncException(
-												String.format(
-														"'try-with' failed to close resource %s. %s",
-														b.sym.getName(),
-														ErrorMessage.buildErrLocation(ast)));
-									}
-								}
-							}
-						});
-					}
+					return try_with_(ast, env);
 					
 				case "do":
 					if (ast.size() < 2) {
@@ -571,6 +465,127 @@ public class VeniceInterpreter {
 		return null;
 	}
 	
+	private VncVal try_(final VncList ast, final Env env) {
+		VncVal result = Nil;
+
+		try {
+			result = EVAL(ast.nth(1), env);
+		} 
+		catch (Throwable t) {
+			VncList catchBlock = null;
+			if (ast.size() > 2) {
+				catchBlock = findFirstCatchBlock(ast.slice(2));
+				if (catchBlock != null) {
+					final VncVal res = eval_ast(catchBlock.slice(1), env);
+					result = Coerce.toVncList(res).first();
+				}
+			}
+			
+			if (catchBlock == null) {
+				throw t;
+			}
+		}
+		finally {
+			if (ast.size() > 2) {
+				final VncList finallyBlock = findFirstFinallyBlock(ast.slice(2));
+				if (finallyBlock != null) {
+					eval_ast(finallyBlock.slice(1), env);
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	private VncVal try_with_(final VncList ast, final Env env) {
+		final VncList bindings = Coerce.toVncList(ast.nth(1));
+		final List<Binding> boundResources = new ArrayList<>();
+		
+		for(int i=0; i<bindings.size(); i+=2) {
+			final VncVal sym = bindings.nth(i);
+			final VncVal val = EVAL(bindings.nth(i+1), env);
+
+			if (Types.isVncSymbol(sym)) {
+				env.set((VncSymbol)sym, val);
+				boundResources.add(new Binding((VncSymbol)sym, val));
+			}
+			else {
+				throw new VncException(
+						String.format(
+								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol. %s",
+								Types.getClassName(sym),
+								ErrorMessage.buildErrLocation(ast)));
+			}
+		}
+
+		
+		VncVal result = Nil;
+		try {
+			try {
+				result = EVAL(ast.nth(2), env);
+			} 
+			catch (Throwable t) {
+				VncList catchBlock = null;
+				if (ast.size() > 3) {
+					catchBlock = findFirstCatchBlock(ast.slice(3));
+					if (catchBlock != null) {
+						final VncVal res = eval_ast(catchBlock.slice(1), env);
+						result = Coerce.toVncList(res).first();
+					}
+				}
+				
+				
+				if (catchBlock == null) {
+					throw t;
+				}
+			}
+			finally {
+				// finally is only for side effects
+				if (ast.size() > 3) {
+					final VncList finallyBlock = findFirstFinallyBlock(ast.slice(3));
+					if (finallyBlock != null) {
+						eval_ast(finallyBlock.slice(1), env);
+					}
+				}
+			}
+		}
+		finally {
+			// close resources
+			boundResources.stream().forEach(b -> {
+				final VncVal resource = b.val;
+				if (Types.isVncJavaObject(resource)) {
+					final Object r = ((VncJavaObject)resource).getDelegate();
+					if (r instanceof AutoCloseable) {
+						try {
+							((AutoCloseable)r).close();
+						}
+						catch(Exception ex) {
+							throw new VncException(
+									String.format(
+											"'try-with' failed to close resource %s. %s",
+											b.sym.getName(),
+											ErrorMessage.buildErrLocation(ast)));
+						}
+					}
+					else if (r instanceof Closeable) {
+						try {
+							((Closeable)r).close();
+						}
+						catch(Exception ex) {
+							throw new VncException(
+									String.format(
+											"'try-with' failed to close resource %s. %s",
+											b.sym.getName(),
+											ErrorMessage.buildErrLocation(ast)));
+						}
+					}
+				}
+			});
+		}
+		
+		return result;
+	}
+
 	
 
 	private final JavaImports javaImports = new JavaImports();
