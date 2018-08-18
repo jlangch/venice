@@ -317,10 +317,10 @@ public class VeniceInterpreter {
 					return macroexpand(a1, env);
 				}
 					
-				case "try":  // (try expr (catch expr) (finally expr))
+				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					return try_(ast, env);
 					
-				case "try-with": // (try-with [bindings*] expr (catch expr) (finally expr))
+				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
 					env = new Env(env);
 					return try_with_(ast, env);
 					
@@ -476,8 +476,8 @@ public class VeniceInterpreter {
 			if (ast.size() > 2) {
 				catchBlock = findFirstCatchBlock(ast.slice(2));
 				if (catchBlock != null) {
-					final VncVal res = eval_ast(catchBlock.slice(1), env);
-					result = Coerce.toVncList(res).first();
+					final VncVal blocks = eval_ast(catchBlock.slice(1), env);
+					result = Coerce.toVncList(blocks).first();
 				}
 			}
 			
@@ -529,8 +529,8 @@ public class VeniceInterpreter {
 				if (ast.size() > 3) {
 					catchBlock = findFirstCatchBlock(ast.slice(3));
 					if (catchBlock != null) {
-						final VncVal res = eval_ast(catchBlock.slice(1), env);
-						result = Coerce.toVncList(res).first();
+						final VncVal blocks = eval_ast(catchBlock.slice(1), env);
+						result = Coerce.toVncList(blocks).first();
 					}
 				}
 				
