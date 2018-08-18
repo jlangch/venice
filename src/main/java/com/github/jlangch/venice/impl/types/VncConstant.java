@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+
 public class VncConstant extends VncVal {
 
 	public VncConstant(final String name) { 

@@ -178,7 +178,7 @@ public class VncBigDecimal extends VncVal {
 
 	@Override 
 	public String toString() {
-		return value.toString();
+		return value.toString() + "M";
 	}
 
 

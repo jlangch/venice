@@ -1003,7 +1003,7 @@ public class DocGenerator {
 						final CapturingPrintStream ps = CapturingPrintStream.create();
 						
 						final String result = (String)runner.eval(
-													"(str " + e + ")",
+													"(pr-str " + e + ")",
 													Parameters.of("*out*", ps));
 						
 						if (sb.length() > 0) {

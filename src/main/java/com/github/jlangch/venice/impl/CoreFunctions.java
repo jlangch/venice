@@ -3854,14 +3854,14 @@ public class CoreFunctions {
 			setDoc("Returns the first non nil arg");
 			
 			setExamples(
-					"(coalesce [])",
-					"(coalesce [1 2])",
-					"(coalesce [nil])",
-					"(coalesce [nil 1 2])");
+					"(coalesce )",
+					"(coalesce 1 2)",
+					"(coalesce nil)",
+					"(coalesce nil 1 2)");
 		}
 		
 		public VncVal apply(final VncList args) {
-			return args.getList().stream().filter(v -> v != Nil).findFirst().orElse(Nil);
+			return args.stream().filter(v -> v != Nil).findFirst().orElse(Nil);
 		}
 	};
 
@@ -4593,7 +4593,7 @@ public class CoreFunctions {
 					"   (fn [x] (println x)) \n" +
 					"   [1 2 3 4])",
 					"(docoll \n" +
-					"    (fn [[k v]] (println (pr-str k v)))" +
+					"    (fn [[k v]] (println (pr-str k v)))  \n" +
 					"    {:a 1 :b 2 :c 3 :d 4})");
 		}
 		
