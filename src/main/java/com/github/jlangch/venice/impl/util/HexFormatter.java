@@ -70,7 +70,11 @@ public class HexFormatter {
 	 * @return	The hex formatted string or an empty string if the 
 	 * 			<tt>binary</tt> is <tt>null</tt> or empty
 	 */
-	public static String toHex(final byte[] binary, final String delimiter, final boolean prefixWith0x) {
+	public static String toHex(
+			final byte[] binary, 
+			final String delimiter, 
+			final boolean prefixWith0x
+	) {
 		return binary == null
 				? ""
 				: IntStream.range(0, binary.length)
