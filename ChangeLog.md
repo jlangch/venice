@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [0.8.4] - 2018-08-xx
+
+### Added
+
+- added ...
+
+### fixed
+
+- fixed ...
+
+
+
 ## [0.8.3] - 2018-08-18
 
 ### Added
@@ -22,18 +34,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - fixed Cheat Sheet for functions referenced multiple times
 - fixed cheat sheet page breaks on PDF
 - fixed try-catch-finally. The finally block is only evaluated for side effects
-
-
-
-## [0.8.4] - 2018-08-xx
-
-### Added
-
-- added ...
-
-### fixed
-
-- fixed ...
 
 
 
