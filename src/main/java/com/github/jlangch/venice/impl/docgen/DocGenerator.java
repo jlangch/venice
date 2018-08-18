@@ -789,19 +789,18 @@ public class DocGenerator {
 				new DocItem(
 						"try", 
 						Arrays.asList(
-								"(try (throw))",
-								"(try (throw expr))",
-								"(try (throw expr) (catch expr))",
-								"(try (throw expr) (catch expr) (finally expr))"),
+								"(try expr)",
+								"(try expr (catch exClass exSym expr))",
+								"(try expr (catch exClass exSym expr) (finally expr))"),
 						"Exception handling: try - catch -finally ",
 						runExamples(
 							"try", 
 							Arrays.asList(
 									"(try (throw))",
 									"(try (throw \"test message\"))",
-									"(try (throw 100) (catch (do (+ 1 2) -1)))",
+									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)))",
 									"(try (throw 100) (finally (println \"finally\")))",
-									"(try (throw 100) (catch (do (+ 1 2) -1)) (finally (println \"finally\")))"),
+									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)) (finally (println \"finally\")))"),
 							true),
 						idgen.id()));
 		
@@ -810,10 +809,8 @@ public class DocGenerator {
 						"try-with", 
 						Arrays.asList(
 								"(try-with [bindings*] expr)",
-								"(try-with [bindings*] (throw))",
-								"(try-with [bindings*] (throw expr))",
-								"(try-with [bindings*] (throw expr) (catch expr))",
-								"(try-with [bindings*] (throw expr) (catch expr) (finally expr))"),
+								"(try-with [bindings*] expr (catch :java.lang.Exception ex expr))",
+								"(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))"),
 						"try-with resources allows the declaration of resources to be used in a try block "
 								+ "with the assurance that the resources will be closed after execution "
 								+ "of that block. The resources declared must implement the Closeable or "

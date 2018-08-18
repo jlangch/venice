@@ -46,6 +46,8 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.CatchBlock;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 
 public class VeniceInterpreter {
@@ -279,43 +281,11 @@ public class VeniceInterpreter {
 					orig_ast = quasiquote(ast.nth(1));
 					break;
 	
-				case "defmacro": {
-					final boolean hasMeta = ast.size() > 4;
-					final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(1), env) : new VncHashMap();
-					final VncVal macroName = ast.nth(hasMeta ? 2 : 1);
-					final VncList macroParams = Coerce.toVncList(ast.nth(hasMeta ? 3 : 2));
-					final VncVal macroFnAst = ast.nth(hasMeta ? 4 : 3);
-	
-					final String sMacroName = Types.isVncSymbol(macroName) 
-												? ((VncSymbol)macroName).getName() 
-												: ((VncString)macroName).getValue();
+				case "defmacro":
+					return defmacro_(ast,env);
 
-					final Env _env = env;
-					final VncFunction macroFn = 
-							new VncFunction(sMacroName, macroFnAst, env, macroParams) {
-								public VncVal apply(final VncList args) {
-									final Env localEnv = new Env(_env);
-
-									// destructuring macro params -> args
-									Destructuring
-										.destructure(macroParams, args)
-										.forEach(b -> localEnv.set(b.sym, b.val));
-									
-									// run the macro
-									final VncVal result = EVAL(macroFnAst, localEnv);
-									return result;
-								}
-							};
-
-					macroFn.setMacro();
-					env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
-					return macroFn;
-				}
-
-				case "macroexpand": {
-					final VncVal a1 = ast.nth(1);
-					return macroexpand(a1, env);
-				}
+				case "macroexpand": 
+					return macroexpand(ast.nth(1), env);
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					return try_(ast, env);
@@ -441,28 +411,37 @@ public class VeniceInterpreter {
 		return env;
 	}
 	
-	private VncList findFirstCatchBlock(final VncList blocks) {
-		for(int ii=0; ii<blocks.size(); ii++) {
-			final VncList block = (VncList)blocks.nth(ii);
-			
-			final VncSymbol sym = (VncSymbol)block.nth(0);
-			if (sym.getName().equals("catch")) {
-				return block;
-			}
-		}
-		return null;
-	}
-	
-	private VncList findFirstFinallyBlock(final VncList blocks) {
-		for(int ii=0; ii<blocks.size(); ii++) {
-			final VncList block = Coerce.toVncList(blocks.nth(ii));
-			
-			final VncSymbol sym = Coerce.toVncSymbol(block.nth(0));
-			if (sym.getName().equals("finally")) {
-				return block;
-			}
-		}
-		return null;
+	private VncVal defmacro_(final VncList ast, final Env env) {
+		final boolean hasMeta = ast.size() > 4;
+		final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(1), env) : new VncHashMap();
+		final VncVal macroName = ast.nth(hasMeta ? 2 : 1);
+		final VncList macroParams = Coerce.toVncList(ast.nth(hasMeta ? 3 : 2));
+		final VncVal macroFnAst = ast.nth(hasMeta ? 4 : 3);
+
+		final String sMacroName = Types.isVncSymbol(macroName) 
+									? ((VncSymbol)macroName).getName() 
+									: ((VncString)macroName).getValue();
+
+		final Env _env = env;
+		final VncFunction macroFn = 
+				new VncFunction(sMacroName, macroFnAst, env, macroParams) {
+					public VncVal apply(final VncList args) {
+						final Env localEnv = new Env(_env);
+
+						// destructuring macro params -> args
+						Destructuring
+							.destructure(macroParams, args)
+							.forEach(b -> localEnv.set(b.sym, b.val));
+						
+						// run the macro
+						final VncVal result = EVAL(macroFnAst, localEnv);
+						return result;
+					}
+				};
+
+		macroFn.setMacro();
+		env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
+		return macroFn;
 	}
 	
 	private VncVal try_(final VncList ast, final Env env) {
@@ -471,18 +450,20 @@ public class VeniceInterpreter {
 		try {
 			result = EVAL(ast.nth(1), env);
 		} 
-		catch (Throwable t) {
-			VncList catchBlock = null;
+		catch (Throwable th) {
+			CatchBlock catchBlock = null;
 			if (ast.size() > 2) {
-				catchBlock = findFirstCatchBlock(ast.slice(2));
+				catchBlock = findCatchBlockMatchingThrowable(ast.slice(2), th);
 				if (catchBlock != null) {
-					final VncVal blocks = eval_ast(catchBlock.slice(1), env);
+					env.set(catchBlock.getExSym(), new VncJavaObject(th));
+					
+					final VncVal blocks = eval_ast(catchBlock.getBody(), env);
 					result = Coerce.toVncList(blocks).first();
 				}
 			}
 			
 			if (catchBlock == null) {
-				throw t;
+				throw th;
 			}
 		}
 		finally {
@@ -524,19 +505,20 @@ public class VeniceInterpreter {
 			try {
 				result = EVAL(ast.nth(2), env);
 			} 
-			catch (Throwable t) {
-				VncList catchBlock = null;
+			catch (Throwable th) {
+				CatchBlock catchBlock = null;
 				if (ast.size() > 3) {
-					catchBlock = findFirstCatchBlock(ast.slice(3));
+					catchBlock = findCatchBlockMatchingThrowable(ast.slice(3), th);
 					if (catchBlock != null) {
-						final VncVal blocks = eval_ast(catchBlock.slice(1), env);
+						env.set(catchBlock.getExSym(), new VncJavaObject(th));
+
+						final VncVal blocks = eval_ast(catchBlock.getBody(), env);
 						result = Coerce.toVncList(blocks).first();
 					}
 				}
-				
-				
+						
 				if (catchBlock == null) {
-					throw t;
+					throw th;
 				}
 			}
 			finally {
@@ -584,6 +566,54 @@ public class VeniceInterpreter {
 		}
 		
 		return result;
+	}
+
+	private CatchBlock findCatchBlockMatchingThrowable(
+			final VncList blocks, 
+			final Throwable th
+	) {
+		final VncList block = blocks
+								.stream()
+								.map(b -> (VncList)b)
+								.filter(b -> ((VncSymbol)b.first()).getName().equals("catch"))
+								.filter(b -> isCatchBlockMatchingThrowable(b, th))
+								.findFirst()
+								.orElse(null);
+		
+		if (block != null) {
+			final VncSymbol sym = Coerce.toVncSymbol(block.nth(2));
+			return new CatchBlock(sym, block.slice(3));
+		}
+		else {
+			return null;
+		}
+	}
+	
+	private boolean isCatchBlockMatchingThrowable(
+		final VncList block, 
+		final Throwable th
+	) {
+		final String className = javaImports.resolveClassName(((VncString)block.nth(1)).getValue());
+		final Class<?> targetClass = ReflectionAccessor.classForName(className);
+		
+		if (targetClass.isAssignableFrom(th.getClass())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private VncList findFirstFinallyBlock(final VncList blocks) {
+		for(int ii=0; ii<blocks.size(); ii++) {
+			final VncList block = Coerce.toVncList(blocks.nth(ii));
+			
+			final VncSymbol sym = Coerce.toVncSymbol(block.nth(0));
+			if (sym.getName().equals("finally")) {
+				return block;
+			}
+		}
+		return null;
 	}
 
 	

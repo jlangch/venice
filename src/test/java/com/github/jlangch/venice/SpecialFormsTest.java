@@ -74,14 +74,14 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		final String lisp = 
-				"(try                   " +
-				"  (throw 100)          " +
-				"  (catch               " +
-				"    (do                " +
-				"      (+ 1 2)          " +
-				"      (+ 3 4)          " +
-				"      -1)))            " +
-				")                      ";
+				"(try                                 " +
+				"  (throw 100)                        " +
+				"  (catch :java.lang.Exception ex     " +
+				"         (do                         " +
+				"            (+ 1 2)                  " +
+				"            (+ 3 4)                  " +
+				"            -1)))                    " +
+				")                                    ";
 
 		assertEquals(Long.valueOf(-1L), venice.eval(lisp));
 	}
@@ -91,14 +91,14 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		final String lisp = 
-				"(try                                   " +
-				"  (throw 100)                          " +
-				"  (catch                               " +
-				"    (do                                " +
-				"      (+ 1 2)                          " +
-				"      (+ 3 4)                          " +
-				"      (str (ordered-map :a 1 :b 2))))   " +
-				")                                      ";
+				"(try                                         " +
+				"  (throw 100)                                " +
+				"  (catch :java.lang.Exception ex             " +
+				"         (do                                 " +
+				"            (+ 1 2)                          " +
+				"            (+ 3 4)                          " +
+				"            (str (ordered-map :a 1 :b 2))))  " +
+				")                                            ";
 
 		assertEquals("{:a 1 :b 2}", venice.eval(lisp));
 	}
@@ -108,11 +108,11 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		final String lisp = 
-				"(do                                      " +
-				"  (+ 10 (try                             " +
-				"          (throw 100)                    " +
-				"          (catch 30)))                   " +
-				")                                        ";
+				"(do                                             " +
+				"  (+ 10 (try                                    " +
+				"          (throw 100)                           " +
+				"          (catch :java.lang.Exception ex 30)))  " +
+				")                                               ";
 
 		assertEquals(Long.valueOf(40L), venice.eval(lisp));
 	}
@@ -143,16 +143,16 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		final String lisp = 
-				"(try                   " +
-				"  (throw 100)          " +
-				"  (catch               " +
-				"    (do                " +
-				"      (+ 1 2)          " +
-				"      (+ 3 4)          " +
-				"      -1))             " +
-				"  (finally             " +
-				"    (println \"...\")))" +
-				")                      ";
+				"(try                                   " +
+				"  (throw 100)                          " +
+				"  (catch :java.lang.Exception ex       " +
+				"         (do                           " +
+				"            (+ 1 2)                    " +
+				"            (+ 3 4)                    " +
+				"            -1))                       " +
+				"  (finally                             " +
+				"     (println \"...\")))               " +
+				")                                      ";
 
 		assertEquals(Long.valueOf(-1L), venice.eval(lisp));
 	}

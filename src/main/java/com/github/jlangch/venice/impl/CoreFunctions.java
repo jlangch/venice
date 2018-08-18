@@ -117,8 +117,8 @@ public class CoreFunctions {
 			setDoc("Throws exception with passed value x");
 			
 			setExamples(
-					"(try (throw 100) (catch (do (+ 1 2) -1)))",
-					"(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))");
+					"(try\n   (throw 100)\n   (catch :java.lang.Exception ex\n          (do (+ 1 2) -1)))",
+					"(try\n   (throw 100)\n   (catch :java.lang.Exception ex\n          (do (+ 1 2) -1))\n   (finally (println \"finally\")))");
 		}
 		
 		public VncVal apply(final VncList args) {
