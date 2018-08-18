@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/4c324e53/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/4c324e53/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/9ca40526/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/9ca40526/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -25,9 +25,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/4c324e53/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/9ca40526/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/4c324e53/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/9ca40526/cheatsheet.pdf)
 
 
 ## REPL
