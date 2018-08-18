@@ -101,7 +101,7 @@
             .embedding {
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: 20em 0.5em 0.5em;
+                padding: 10em 0.5em 0.5em;
             }                            
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -118,7 +118,7 @@
                 clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: 10em 0.5em 0.5em;
+                padding: 20em 0.5em 0.5em;
             }                            
             .detail {
                 background-color: #ebebeb;
@@ -166,7 +166,7 @@
     <body>
         <div class="main">
             <div class="header">    
-                 <h1>Venice 0.8.3 Cheat Sheet</h1>
+                 <h1>Venice 0.8.4 Cheat Sheet</h1>
             </div>
 
             <div class="column">
@@ -629,7 +629,7 @@
                                         <code>Returns the product of numbers. (*) returns 1</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(*)<br/>=&gt; 1<br/><br/>(* 4)<br/>=&gt; 4<br/><br/>(* 4 3)<br/>=&gt; 12<br/><br/>(* 4 3 2)<br/>=&gt; 24<br/><br/>(* 6.0 2)<br/>=&gt; 12.0<br/><br/>(* 6 1.5M)<br/>=&gt; 9.0</code>
+                                        <code>(*)<br/>=&gt; 1<br/><br/>(* 4)<br/>=&gt; 4<br/><br/>(* 4 3)<br/>=&gt; 12<br/><br/>(* 4 3 2)<br/>=&gt; 24<br/><br/>(* 6.0 2)<br/>=&gt; 12.0<br/><br/>(* 6 1.5M)<br/>=&gt; 9.0M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1000">
@@ -657,7 +657,7 @@
                                         <code>If one number is supplied, returns the negation, else subtracts the numbers from x and returns the result.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(- 4)<br/>=&gt; -4<br/><br/>(- 8 3 -2 -1)<br/>=&gt; 8<br/><br/>(- 8 2.5)<br/>=&gt; 5.5<br/><br/>(- 8 1.5M)<br/>=&gt; 6.5</code>
+                                        <code>(- 4)<br/>=&gt; -4<br/><br/>(- 8 3 -2 -1)<br/>=&gt; 8<br/><br/>(- 8 2.5)<br/>=&gt; 5.5<br/><br/>(- 8 1.5M)<br/>=&gt; 6.5M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1110">
@@ -671,7 +671,7 @@
                                         <code>Threads the expr through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(-&gt; 5 (+ 3) (/ 2) (- 1))<br/>=&gt; 3<br/><br/>(do<br/>   (def person <br/>        {:name &quot;Peter Meier&quot;<br/>         :address {:street &quot;Lindenstrasse 45&quot;<br/>                   :city &quot;Bern&quot;<br/>                   :zip 3000}})<br/><br/>   (-&gt; person :address :street)) <br/>=&gt; Lindenstrasse 45</code>
+                                        <code>(-&gt; 5 (+ 3) (/ 2) (- 1))<br/>=&gt; 3<br/><br/>(do<br/>   (def person <br/>        {:name &quot;Peter Meier&quot;<br/>         :address {:street &quot;Lindenstrasse 45&quot;<br/>                   :city &quot;Bern&quot;<br/>                   :zip 3000}})<br/><br/>   (-&gt; person :address :street)) <br/>=&gt; &quot;Lindenstrasse 45&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1111">
@@ -699,7 +699,7 @@
                                         <code>Java interop. Calls a constructor or an object method. The function is sandboxed</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke constructor <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-08-18T08:12:50.577+02:00[Europe/Zurich]<br/><br/>;; invoke constructor with param <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke constructor <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-08-18T21:17:44.510+02:00[Europe/Zurich]<br/><br/>;; invoke constructor with param <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -713,7 +713,7 @@
                                         <code>If no denominators are supplied, returns 1/numerator, else returns numerator divided by all of the denominators.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(/ 2.0)<br/>=&gt; 0.5<br/><br/>(/ 12 2 3)<br/>=&gt; 2<br/><br/>(/ 12 3)<br/>=&gt; 4<br/><br/>(/ 6.0 2)<br/>=&gt; 3.0<br/><br/>(/ 6 1.5M)<br/>=&gt; 4.0000000000000000</code>
+                                        <code>(/ 2.0)<br/>=&gt; 0.5<br/><br/>(/ 12 2 3)<br/>=&gt; 2<br/><br/>(/ 12 3)<br/>=&gt; 4<br/><br/>(/ 6.0 2)<br/>=&gt; 3.0<br/><br/>(/ 6 1.5M)<br/>=&gt; 4.0000000000000000M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1012">
@@ -811,7 +811,7 @@
                                         <code>Returns the absolute value of the number</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(abs 10)<br/>=&gt; 10<br/><br/>(abs -10)<br/>=&gt; 10<br/><br/>(abs -10.1)<br/>=&gt; 10.1<br/><br/>(abs -10.12M)<br/>=&gt; 10.12</code>
+                                        <code>(abs 10)<br/>=&gt; 10<br/><br/>(abs -10)<br/>=&gt; 10<br/><br/>(abs -10.1)<br/>=&gt; 10.1<br/><br/>(abs -10.12M)<br/>=&gt; 10.12M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1101">
@@ -853,7 +853,7 @@
                                         <code>Applies f to all arguments composed of args and coll</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(apply str [1 2 3 4 5])<br/>=&gt; 12345</code>
+                                        <code>(apply str [1 2 3 4 5])<br/>=&gt; &quot;12345&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1117">
@@ -895,7 +895,7 @@
                                         <code>Associates a value in a nested associative structure, where ks is a sequence of keys and v is the new value and returns a new nested structure. If any levels do not exist, hash-maps or vectors will be created.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do<br/>   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])<br/>   (assoc-in users [1 :age] 44))<br/>=&gt; [{:age 26 :name James} {:age 44 :name John}]<br/><br/>(do<br/>   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])<br/>   (assoc-in users [2] {:name &quot;Jack&quot; :age 19}) )<br/>=&gt; [{:age 26 :name James} {:age 43 :name John} {:age 19 :name Jack}]</code>
+                                        <code>(do<br/>   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])<br/>   (assoc-in users [1 :age] 44))<br/>=&gt; [{:age 26 :name &quot;James&quot;} {:age 44 :name &quot;John&quot;}]<br/><br/>(do<br/>   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])<br/>   (assoc-in users [2] {:name &quot;Jack&quot; :age 19}) )<br/>=&gt; [{:age 26 :name &quot;James&quot;} {:age 43 :name &quot;John&quot;} {:age 19 :name &quot;Jack&quot;}]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1223">
@@ -1007,7 +1007,7 @@
                                         <code>Converts a bytebuf to a string using an optional encoding. The encoding defaults to UTF-8</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)<br/>=&gt; abc</code>
+                                        <code>(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)<br/>=&gt; &quot;abc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1069">
@@ -1049,7 +1049,7 @@
                                         <code>Returns the first non nil arg</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(coalesce [])<br/>=&gt; []<br/><br/>(coalesce [1 2])<br/>=&gt; [1 2]<br/><br/>(coalesce [nil])<br/>=&gt; [nil]<br/><br/>(coalesce [nil 1 2])<br/>=&gt; [nil 1 2]</code>
+                                        <code>(coalesce )<br/>=&gt; nil<br/><br/>(coalesce 1 2)<br/>=&gt; 1<br/><br/>(coalesce nil)<br/>=&gt; nil<br/><br/>(coalesce nil 1 2)<br/>=&gt; 1</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1152">
@@ -1119,7 +1119,7 @@
                                         <code>Returns a collection of the concatenation of the elements in the supplied colls.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(concat [1 2])<br/>=&gt; (1 2)<br/><br/>(concat [1 2] [4 5 6])<br/>=&gt; (1 2 4 5 6)<br/><br/>(concat &apos;(1 2))<br/>=&gt; (1 2)<br/><br/>(concat &apos;(1 2) [4 5 6])<br/>=&gt; (1 2 4 5 6)<br/><br/>(concat {:a 1})<br/>=&gt; ([:a 1])<br/><br/>(concat {:a 1} {:b 2 c: 3})<br/>=&gt; ([:a 1] [:b 2] [c: 3])<br/><br/>(concat &quot;abc&quot;)<br/>=&gt; (a b c)<br/><br/>(concat &quot;abc&quot; &quot;def&quot;)<br/>=&gt; (a b c d e f)</code>
+                                        <code>(concat [1 2])<br/>=&gt; (1 2)<br/><br/>(concat [1 2] [4 5 6])<br/>=&gt; (1 2 4 5 6)<br/><br/>(concat &apos;(1 2))<br/>=&gt; (1 2)<br/><br/>(concat &apos;(1 2) [4 5 6])<br/>=&gt; (1 2 4 5 6)<br/><br/>(concat {:a 1})<br/>=&gt; ([:a 1])<br/><br/>(concat {:a 1} {:b 2 c: 3})<br/>=&gt; ([:a 1] [:b 2] [c: 3])<br/><br/>(concat &quot;abc&quot;)<br/>=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot;)<br/><br/>(concat &quot;abc&quot; &quot;def&quot;)<br/>=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot; &quot;f&quot;)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1116">
@@ -1133,7 +1133,7 @@
                                         <code>Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn&apos;t evaluate any of the other tests or exprs. (cond) returns nil.</code>
                                     </div>
                                     <div class="examples">
-                                        <code></code>
+                                        <code>(do <br/>   (let [n 5]<br/>        (cond<br/>           (&lt; n 0) &quot;negative&quot;<br/>           (&gt; n 0) &quot;positive&quot;<br/>           :else &quot;zero&quot;)))<br/>=&gt; &quot;positive&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1146">
@@ -1204,7 +1204,7 @@
                                         <code>Decrements the number x</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(dec 10)<br/>=&gt; 9<br/><br/>(dec 10.1)<br/>=&gt; 9.1<br/><br/>(dec 10.12M)<br/>=&gt; 9.12</code>
+                                        <code>(dec 10)<br/>=&gt; 9<br/><br/>(dec 10.1)<br/>=&gt; 9.1<br/><br/>(dec 10.12M)<br/>=&gt; 9.12M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1029">
@@ -1218,7 +1218,7 @@
                                         <code>Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, :FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(dec/add 2.44697M 1.79882M 3 :HALF_UP)<br/>=&gt; 4.246</code>
+                                        <code>(dec/add 2.44697M 1.79882M 3 :HALF_UP)<br/>=&gt; 4.246M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1032">
@@ -1232,7 +1232,7 @@
                                         <code>Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, :FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(dec/div 2.44697M 1.79882M 5 :HALF_UP)<br/>=&gt; 1.36032</code>
+                                        <code>(dec/div 2.44697M 1.79882M 5 :HALF_UP)<br/>=&gt; 1.36032M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1031">
@@ -1246,7 +1246,7 @@
                                         <code>Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, :FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(dec/mul 2.44697M 1.79882M 5 :HALF_UP)<br/>=&gt; 4.40166</code>
+                                        <code>(dec/mul 2.44697M 1.79882M 5 :HALF_UP)<br/>=&gt; 4.40166M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1033">
@@ -1260,7 +1260,7 @@
                                         <code>Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, :FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(dec/scale 2.44697M 0 :HALF_UP)<br/>=&gt; 2<br/><br/>(dec/scale 2.44697M 1 :HALF_UP)<br/>=&gt; 2.4<br/><br/>(dec/scale 2.44697M 2 :HALF_UP)<br/>=&gt; 2.45<br/><br/>(dec/scale 2.44697M 3 :HALF_UP)<br/>=&gt; 2.447<br/><br/>(dec/scale 2.44697M 10 :HALF_UP)<br/>=&gt; 2.4469700000</code>
+                                        <code>(dec/scale 2.44697M 0 :HALF_UP)<br/>=&gt; 2M<br/><br/>(dec/scale 2.44697M 1 :HALF_UP)<br/>=&gt; 2.4M<br/><br/>(dec/scale 2.44697M 2 :HALF_UP)<br/>=&gt; 2.45M<br/><br/>(dec/scale 2.44697M 3 :HALF_UP)<br/>=&gt; 2.447M<br/><br/>(dec/scale 2.44697M 10 :HALF_UP)<br/>=&gt; 2.4469700000M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1030">
@@ -1274,7 +1274,7 @@
                                         <code>Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, :FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(dec/sub 2.44697M 1.79882M 3 :HALF_UP)<br/>=&gt; 0.648</code>
+                                        <code>(dec/sub 2.44697M 1.79882M 3 :HALF_UP)<br/>=&gt; 0.648M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1026">
@@ -1414,7 +1414,7 @@
                                         <code>Applies f to the items of the collection presumably for side effects. Returns nil. </code>
                                     </div>
                                     <div class="examples">
-                                        <code>(docoll <br/>   (fn [x] (println x)) <br/>   [1 2 3 4])<br/>1<br/>2<br/>3<br/>4<br/>=&gt; <br/><br/>(docoll <br/>    (fn [[k v]] (println (pr-str k v)))    {:a 1 :b 2 :c 3 :d 4})<br/>:a 1<br/>:b 2<br/>:c 3<br/>:d 4<br/>=&gt; </code>
+                                        <code>(docoll <br/>   (fn [x] (println x)) <br/>   [1 2 3 4])<br/>1<br/>2<br/>3<br/>4<br/>=&gt; nil<br/><br/>(docoll <br/>    (fn [[k v]] (println (pr-str k v)))  <br/>    {:a 1 :b 2 :c 3 :d 4})<br/>:a 1<br/>:b 2<br/>:c 3<br/>:d 4<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1107">
@@ -1442,7 +1442,7 @@
                                         <code>Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(doto (. :java.util.HashMap :new)<br/>      (. :put :a 1)<br/>      (. :put :b 2))<br/>=&gt; {a 1 b 2}</code>
+                                        <code>(doto (. :java.util.HashMap :new)<br/>      (. :put :a 1)<br/>      (. :put :b 2))<br/>=&gt; {&quot;a&quot; 1 &quot;b&quot; 2}</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1025">
@@ -1512,7 +1512,7 @@
                                         <code>Returns nil if x is empty</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(empty-to-nil &quot;&quot;)<br/>=&gt; <br/><br/>(empty-to-nil [])<br/>=&gt; <br/><br/>(empty-to-nil &apos;())<br/>=&gt; <br/><br/>(empty-to-nil {})<br/>=&gt; </code>
+                                        <code>(empty-to-nil &quot;&quot;)<br/>=&gt; nil<br/><br/>(empty-to-nil [])<br/>=&gt; nil<br/><br/>(empty-to-nil &apos;())<br/>=&gt; nil<br/><br/>(empty-to-nil {})<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1061">
@@ -1610,7 +1610,7 @@
                                         <code>Returns the map entry for key, or nil if key not present.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(find {:a 1 :b 2} :b)<br/>=&gt; [:b 2]<br/><br/>(find {:a 1 :b 2} :z)<br/>=&gt; </code>
+                                        <code>(find {:a 1 :b 2} :b)<br/>=&gt; [:b 2]<br/><br/>(find {:a 1 :b 2} :z)<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1167">
@@ -1624,7 +1624,7 @@
                                         <code>Returns the first element of coll.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(first nil)<br/>=&gt; <br/><br/>(first [])<br/>=&gt; <br/><br/>(first [1 2 3])<br/>=&gt; 1<br/><br/>(first &apos;())<br/>=&gt; <br/><br/>(first &apos;(1 2 3))<br/>=&gt; 1</code>
+                                        <code>(first nil)<br/>=&gt; nil<br/><br/>(first [])<br/>=&gt; nil<br/><br/>(first [1 2 3])<br/>=&gt; 1<br/><br/>(first &apos;())<br/>=&gt; nil<br/><br/>(first &apos;(1 2 3))<br/>=&gt; 1</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1181">
@@ -1666,7 +1666,7 @@
                                         <code>Creates a function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-0a18e134-a48f-4a1e-b760-98bb21de45f1<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-17eb1eac-6338-493c-99fc-e82ed38cb0e6</code>
+                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-d5103b10-f7bc-4959-9f39-ca5deeb1d2bc<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-403a066a-25ab-4459-a26e-adba131fe1e2</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1087">
@@ -1736,7 +1736,7 @@
                                         <code>Returns a map of the elements of coll keyed by the result of f on each element. The value at each key will be a vector of the corresponding elements, in the order they appeared in coll.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(group-by count [&quot;a&quot; &quot;as&quot; &quot;asd&quot; &quot;aa&quot; &quot;asdf&quot; &quot;qwer&quot;])<br/>=&gt; {1 [a] 2 [as aa] 3 [asd] 4 [asdf qwer]}<br/><br/>(group-by odd? (range 10))<br/>=&gt; {false [0 2 4 6 8] true [1 3 5 7 9]}</code>
+                                        <code>(group-by count [&quot;a&quot; &quot;as&quot; &quot;asd&quot; &quot;aa&quot; &quot;asdf&quot; &quot;qwer&quot;])<br/>=&gt; {1 [&quot;a&quot;] 2 [&quot;as&quot; &quot;aa&quot;] 3 [&quot;asd&quot;] 4 [&quot;asdf&quot; &quot;qwer&quot;]}<br/><br/>(group-by odd? (range 10))<br/>=&gt; {false [0 2 4 6 8] true [1 3 5 7 9]}</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1209">
@@ -1792,7 +1792,7 @@
                                         <code>Evaluates test.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(if (&lt; 10 20) &quot;yes&quot; &quot;no&quot;)<br/>=&gt; yes</code>
+                                        <code>(if (&lt; 10 20) &quot;yes&quot; &quot;no&quot;)<br/>=&gt; &quot;yes&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1105">
@@ -1821,7 +1821,7 @@
                                         <code>Increments the number x</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(inc 10)<br/>=&gt; 11<br/><br/>(inc 10.1)<br/>=&gt; 11.1<br/><br/>(inc 10.12M)<br/>=&gt; 11.12</code>
+                                        <code>(inc 10)<br/>=&gt; 11<br/><br/>(inc 10.1)<br/>=&gt; 11.1<br/><br/>(inc 10.12M)<br/>=&gt; 11.12M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1179">
@@ -1849,7 +1849,7 @@
                                         <code>Returns a collection of the elements of coll separated by sep.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(interpose &quot;, &quot; [1 2 3])<br/>=&gt; (1 ,  2 ,  3)<br/><br/>(apply str (interpose &quot;, &quot; [1 2 3]))<br/>=&gt; 1, 2, 3</code>
+                                        <code>(interpose &quot;, &quot; [1 2 3])<br/>=&gt; (1 &quot;, &quot; 2 &quot;, &quot; 3)<br/><br/>(apply str (interpose &quot;, &quot; [1 2 3]))<br/>=&gt; &quot;1, 2, 3&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1207">
@@ -1877,7 +1877,7 @@
                                         <code>Returns a new coll consisting of to-coll with all of the items offrom-coll conjoined.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )<br/>=&gt; {:a 1 :b 2 :c 3}<br/><br/>(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )<br/>=&gt; {:a 1 :b 2 :c 3}<br/><br/>(into [] {1 2, 3 4})<br/>=&gt; [[1 2] [3 4]]<br/><br/>(into &apos;() &apos;(1 2 3))<br/>=&gt; (3 2 1)<br/><br/>(into [1 2 3] &apos;(4 5 6))<br/>=&gt; [1 2 3 4 5 6]<br/><br/>(into &apos;() (bytebuf [0 1 2]))<br/>=&gt; (0 1 2)<br/><br/>(into [] (bytebuf [0 1 2]))<br/>=&gt; [0 1 2]<br/><br/>(into &apos;() &quot;abc&quot;)<br/>=&gt; (a b c)<br/><br/>(into [] &quot;abc&quot;)<br/>=&gt; [a b c]<br/><br/>(into (sorted-map) {:b 2 :c 3 :a 1})<br/>=&gt; {:a 1 :b 2 :c 3}</code>
+                                        <code>(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )<br/>=&gt; {:a 1 :b 2 :c 3}<br/><br/>(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )<br/>=&gt; {:a 1 :b 2 :c 3}<br/><br/>(into [] {1 2, 3 4})<br/>=&gt; [[1 2] [3 4]]<br/><br/>(into &apos;() &apos;(1 2 3))<br/>=&gt; (3 2 1)<br/><br/>(into [1 2 3] &apos;(4 5 6))<br/>=&gt; [1 2 3 4 5 6]<br/><br/>(into &apos;() (bytebuf [0 1 2]))<br/>=&gt; (0 1 2)<br/><br/>(into [] (bytebuf [0 1 2]))<br/>=&gt; [0 1 2]<br/><br/>(into &apos;() &quot;abc&quot;)<br/>=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot;)<br/><br/>(into [] &quot;abc&quot;)<br/>=&gt; [&quot;a&quot; &quot;b&quot; &quot;c&quot;]<br/><br/>(into (sorted-map) {:b 2 :c 3 :a 1})<br/>=&gt; {:a 1 :b 2 :c 3}</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1135">
@@ -2017,7 +2017,7 @@
                                         <code>Slurps binary or string data from an input stream. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified. Options: :encoding &quot;UTF-8&quot; :binary true/false. </code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (import :java.io.FileInputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (try-with [is (. :FileInputStream :new file)] <br/>           (io/slurp-stream is :binary false))) <br/>)<br/>=&gt; 123456789</code>
+                                        <code>(do <br/>   (import :java.io.FileInputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (try-with [is (. :FileInputStream :new file)] <br/>           (io/slurp-stream is :binary false))) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1137">
@@ -2031,7 +2031,7 @@
                                         <code>Slurps binary or string data from a previously created temp file. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified. Options: :encoding &quot;UTF-8&quot; :binary true/false. </code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; 123456789</code>
+                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1139">
@@ -2059,7 +2059,7 @@
                                         <code>Writes content (string or bytebuf) to the output stream os. If content is of type string an optional encoding (defaults to UTF-8) is supported. The stream can optionally be flushed after the operation. Options: :flush true/false :encoding &quot;UTF-8&quot;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (import :java.io.FileOutputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (try-with [is (. :FileOutputStream :new file)] <br/>           (io/spit-stream is &quot;123456789&quot; :flush true))) <br/>)<br/>=&gt; </code>
+                                        <code>(do <br/>   (import :java.io.FileOutputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (try-with [is (. :FileOutputStream :new file)] <br/>           (io/spit-stream is &quot;123456789&quot; :flush true))) <br/>)<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1141">
@@ -2073,7 +2073,7 @@
                                         <code>Creates an empty temp file with prefix and suffix</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; 123456789</code>
+                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1142">
@@ -2269,7 +2269,7 @@
                                         <code>Returns the last element of coll.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(last nil)<br/>=&gt; <br/><br/>(last [])<br/>=&gt; <br/><br/>(last [1 2 3])<br/>=&gt; 3<br/><br/>(last &apos;())<br/>=&gt; <br/><br/>(last &apos;(1 2 3))<br/>=&gt; 3</code>
+                                        <code>(last nil)<br/>=&gt; nil<br/><br/>(last [])<br/>=&gt; nil<br/><br/>(last [1 2 3])<br/>=&gt; 3<br/><br/>(last &apos;())<br/>=&gt; nil<br/><br/>(last &apos;(1 2 3))<br/>=&gt; 3</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1232">
@@ -2311,7 +2311,7 @@
                                         <code>List comprehension. Takes a vector of one or more binding-form/collection-expr pairs, each followed by zero or more modifiers, and yields a collection of evaluations of expr. Supported modifiers are: :when test.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(list-comp [x (range 10)] x)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(list-comp [x (range 5)] (* x 2))<br/>=&gt; (0 2 4 6 8)<br/><br/>(list-comp [x (range 10) :when (odd? x)] x)<br/>=&gt; (1 3 5 7 9)<br/><br/>(list-comp [x (range 10) :when (odd? x)] (* x 2))<br/>=&gt; (2 6 10 14 18)<br/><br/>(list-comp [x (list &quot;abc&quot;) y [0 1 2]] [x y])<br/>=&gt; ([abc 0] [abc 1] [abc 2])</code>
+                                        <code>(list-comp [x (range 10)] x)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(list-comp [x (range 5)] (* x 2))<br/>=&gt; (0 2 4 6 8)<br/><br/>(list-comp [x (range 10) :when (odd? x)] x)<br/>=&gt; (1 3 5 7 9)<br/><br/>(list-comp [x (range 10) :when (odd? x)] (* x 2))<br/>=&gt; (2 6 10 14 18)<br/><br/>(list-comp [x (list &quot;abc&quot;) y [0 1 2]] [x y])<br/>=&gt; ([&quot;abc&quot; 0] [&quot;abc&quot; 1] [&quot;abc&quot; 2])</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1153">
@@ -2395,7 +2395,7 @@
                                         <code>Evaluates the exprs and binds the bindings. Creates a recursion point with the bindings.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(loop [x 10]<br/>  (when (&gt; x 1)<br/>    (println x)<br/>    (recur (- x 2))))<br/>10<br/>8<br/>6<br/>4<br/>2<br/>=&gt; </code>
+                                        <code>(loop [x 10]<br/>  (when (&gt; x 1)<br/>    (println x)<br/>    (recur (- x 2))))<br/>10<br/>8<br/>6<br/>4<br/>2<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1115">
@@ -2507,7 +2507,7 @@
                                         <code>Returns the greatest of the values</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(max 1)<br/>=&gt; 1<br/><br/>(max 1 2)<br/>=&gt; 2<br/><br/>(max 4 3 2 1)<br/>=&gt; 4<br/><br/>(max 1.0)<br/>=&gt; 1.0<br/><br/>(max 1.0 2.0)<br/>=&gt; 2.0<br/><br/>(max 4.0 3.0 2.0 1.0)<br/>=&gt; 4.0<br/><br/>(max 1.0M)<br/>=&gt; 1.0<br/><br/>(max 1.0M 2.0M)<br/>=&gt; 2.0<br/><br/>(max 4.0M 3.0M 2.0M 1.0M)<br/>=&gt; 4.0<br/><br/>(max 1.0M 2)<br/>=&gt; 2</code>
+                                        <code>(max 1)<br/>=&gt; 1<br/><br/>(max 1 2)<br/>=&gt; 2<br/><br/>(max 4 3 2 1)<br/>=&gt; 4<br/><br/>(max 1.0)<br/>=&gt; 1.0<br/><br/>(max 1.0 2.0)<br/>=&gt; 2.0<br/><br/>(max 4.0 3.0 2.0 1.0)<br/>=&gt; 4.0<br/><br/>(max 1.0M)<br/>=&gt; 1.0M<br/><br/>(max 1.0M 2.0M)<br/>=&gt; 2.0M<br/><br/>(max 4.0M 3.0M 2.0M 1.0M)<br/>=&gt; 4.0M<br/><br/>(max 1.0M 2)<br/>=&gt; 2</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1086">
@@ -2535,7 +2535,7 @@
                                         <code>Returns a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the mapping from the latter (left-to-right) will be the mapping in the result.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(merge {:a 1 :b 2 :c 3} {:b 9 :d 4})<br/>=&gt; {:a 1 :b 9 :c 3 :d 4}<br/><br/>(merge {:a 1} nil)<br/>=&gt; {:a 1}<br/><br/>(merge nil {:a 1})<br/>=&gt; {:a 1}<br/><br/>(merge nil nil)<br/>=&gt; </code>
+                                        <code>(merge {:a 1 :b 2 :c 3} {:b 9 :d 4})<br/>=&gt; {:a 1 :b 9 :c 3 :d 4}<br/><br/>(merge {:a 1} nil)<br/>=&gt; {:a 1}<br/><br/>(merge nil {:a 1})<br/>=&gt; {:a 1}<br/><br/>(merge nil nil)<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1097">
@@ -2563,7 +2563,7 @@
                                         <code>Returns the smallest of the values</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(min 1)<br/>=&gt; 1<br/><br/>(min 1 2)<br/>=&gt; 1<br/><br/>(min 4 3 2 1)<br/>=&gt; 1<br/><br/>(min 1.0)<br/>=&gt; 1.0<br/><br/>(min 1.0 2.0)<br/>=&gt; 1.0<br/><br/>(min 4.0 3.0 2.0 1.0)<br/>=&gt; 1.0<br/><br/>(min 1.0M)<br/>=&gt; 1.0<br/><br/>(min 1.0M 2.0M)<br/>=&gt; 1.0<br/><br/>(min 4.0M 3.0M 2.0M 1.0M)<br/>=&gt; 1.0<br/><br/>(min 1.0M 2)<br/>=&gt; 1.0</code>
+                                        <code>(min 1)<br/>=&gt; 1<br/><br/>(min 1 2)<br/>=&gt; 1<br/><br/>(min 4 3 2 1)<br/>=&gt; 1<br/><br/>(min 1.0)<br/>=&gt; 1.0<br/><br/>(min 1.0 2.0)<br/>=&gt; 1.0<br/><br/>(min 4.0 3.0 2.0 1.0)<br/>=&gt; 1.0<br/><br/>(min 1.0M)<br/>=&gt; 1.0M<br/><br/>(min 1.0M 2.0M)<br/>=&gt; 1.0M<br/><br/>(min 4.0M 3.0M 2.0M 1.0M)<br/>=&gt; 1.0M<br/><br/>(min 1.0M 2)<br/>=&gt; 1.0M</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1004">
@@ -2689,7 +2689,7 @@
                                         <code>Returns the nth element of coll.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(nth nil 1)<br/>=&gt; <br/><br/>(nth [1 2 3] 1)<br/>=&gt; 2<br/><br/>(nth &apos;(1 2 3) 1)<br/>=&gt; 2</code>
+                                        <code>(nth nil 1)<br/>=&gt; nil<br/><br/>(nth [1 2 3] 1)<br/>=&gt; 2<br/><br/>(nth &apos;(1 2 3) 1)<br/>=&gt; 2</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1023">
@@ -2787,7 +2787,7 @@
                                         <code>Returns a collection of lists of n items each, at offsets step apart. If step is not supplied, defaults to n, i.e. the partitions do not overlap. If a padcoll collection is supplied, use its elements as necessary to complete last partition upto n items. In case there are not enough padding elements, return a partition with less than n items.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(partition 4 (range 20))<br/>=&gt; ((0 1 2 3) (4 5 6 7) (8 9 10 11) (12 13 14 15) (16 17 18 19))<br/><br/>(partition 4 6 (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19))<br/><br/>(partition 3 6 [&quot;a&quot;] (range 20))<br/>=&gt; ((0 1 2) (6 7 8) (12 13 14) (18 19 a))<br/><br/>(partition 4 6 [&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;] (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19 a b))</code>
+                                        <code>(partition 4 (range 20))<br/>=&gt; ((0 1 2 3) (4 5 6 7) (8 9 10 11) (12 13 14 15) (16 17 18 19))<br/><br/>(partition 4 6 (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19))<br/><br/>(partition 3 6 [&quot;a&quot;] (range 20))<br/>=&gt; ((0 1 2) (6 7 8) (12 13 14) (18 19 &quot;a&quot;))<br/><br/>(partition 4 6 [&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;] (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19 &quot;a&quot; &quot;b&quot;))</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1171">
@@ -2843,7 +2843,7 @@
                                         <code>With no args, returns the empty string. With one arg x, returns x.toString(). With more than one arg, returns the concatenation of the str values of the args with delimiter &apos; &apos;.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(pr-str )<br/>=&gt; <br/><br/>(pr-str 1 2 3)<br/>=&gt; 1 2 3</code>
+                                        <code>(pr-str )<br/>=&gt; &quot;&quot;<br/><br/>(pr-str 1 2 3)<br/>=&gt; &quot;1 2 3&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1121">
@@ -2857,7 +2857,7 @@
                                         <code>Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter &apos; &apos;. Returns nil.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(print [10 20 30])<br/>[10 20 30]<br/>=&gt; </code>
+                                        <code>(print [10 20 30])<br/>[10 20 30]<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1122">
@@ -2871,7 +2871,7 @@
                                         <code>Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter &apos; &apos;. Returns nil.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do (println 200) (println [10 20 30]))<br/>200<br/>[10 20 30]<br/>=&gt; </code>
+                                        <code>(do (println 200) (println [10 20 30]))<br/>200<br/>[10 20 30]<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1240">
@@ -2899,7 +2899,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. Without argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.7152993246763111<br/><br/>(rand-double 100.0)<br/>=&gt; 52.67342267716757</code>
+                                        <code>(rand-double)<br/>=&gt; 0.40191346846120657<br/><br/>(rand-double 100.0)<br/>=&gt; 82.827530734223</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1027">
@@ -2913,7 +2913,7 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. Without argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 3743403453565893689<br/><br/>(rand-long 100)<br/>=&gt; 4</code>
+                                        <code>(rand-long)<br/>=&gt; 8611087012028193303<br/><br/>(rand-long 100)<br/>=&gt; 73</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1149">
@@ -2927,7 +2927,7 @@
                                         <code>Returns a collection of numbers from start (inclusive) to end (exclusive), by step, where start defaults to 0 and step defaults to 1. When start is equal to end, returns empty list.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(range 10)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(range 10 20)<br/>=&gt; (10 11 12 13 14 15 16 17 18 19)<br/><br/>(range 10 20 3)<br/>=&gt; (10 13 16 19)<br/><br/>(range 10 15 0.5)<br/>=&gt; (10 10.5 11.0 11.5 12.0 12.5 13.0 13.5 14.0 14.5)<br/><br/>(range 1.1M 2.2M 0.1M)<br/>=&gt; (1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1)</code>
+                                        <code>(range 10)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(range 10 20)<br/>=&gt; (10 11 12 13 14 15 16 17 18 19)<br/><br/>(range 10 20 3)<br/>=&gt; (10 13 16 19)<br/><br/>(range 10 15 0.5)<br/>=&gt; (10 10.5 11.0 11.5 12.0 12.5 13.0 13.5 14.0 14.5)<br/><br/>(range 1.1M 2.2M 0.1M)<br/>=&gt; (1.1M 1.2M 1.3M 1.4M 1.5M 1.6M 1.7M 1.8M 1.9M 2.0M 2.1M)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1127">
@@ -3081,7 +3081,7 @@
                                         <code>Returns the second element of coll.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(second nil)<br/>=&gt; <br/><br/>(second [])<br/>=&gt; <br/><br/>(second [1 2 3])<br/>=&gt; 2<br/><br/>(second &apos;())<br/>=&gt; <br/><br/>(second &apos;(1 2 3))<br/>=&gt; 2</code>
+                                        <code>(second nil)<br/>=&gt; nil<br/><br/>(second [])<br/>=&gt; nil<br/><br/>(second [1 2 3])<br/>=&gt; 2<br/><br/>(second &apos;())<br/>=&gt; nil<br/><br/>(second &apos;(1 2 3))<br/>=&gt; 2</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1182">
@@ -3095,7 +3095,7 @@
                                         <code>Returns a seq on the collection. If the collection is empty, returns nil.  (seq nil) returns nil. seq also works on Strings.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(seq nil)<br/>=&gt; <br/><br/>(seq [1 2 3])<br/>=&gt; (1 2 3)<br/><br/>(seq &apos;(1 2 3))<br/>=&gt; (1 2 3)<br/><br/>(seq &quot;abcd&quot;)<br/>=&gt; (a b c d)</code>
+                                        <code>(seq nil)<br/>=&gt; nil<br/><br/>(seq [1 2 3])<br/>=&gt; (1 2 3)<br/><br/>(seq &apos;(1 2 3))<br/>=&gt; (1 2 3)<br/><br/>(seq &quot;abcd&quot;)<br/>=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1157">
@@ -3179,7 +3179,7 @@
                                         <code>Returns a sorted sequence of the items in coll, where the sort order is determined by comparing (keyfn item).  If no comparator is supplied, uses compare.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(sort-by count [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])<br/>=&gt; [c bb aaa]<br/><br/>(sort-by first [[1 2] [3 4] [2 3]])<br/>=&gt; [[1 2] [2 3] [3 4]]<br/><br/>(sort-by (fn [x] (get x :rank)) [{:rank 2} {:rank 3} {:rank 1}])<br/>=&gt; [{:rank 1} {:rank 2} {:rank 3}]</code>
+                                        <code>(sort-by count [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])<br/>=&gt; [&quot;c&quot; &quot;bb&quot; &quot;aaa&quot;]<br/><br/>(sort-by first [[1 2] [3 4] [2 3]])<br/>=&gt; [[1 2] [2 3] [3 4]]<br/><br/>(sort-by (fn [x] (get x :rank)) [{:rank 2} {:rank 3} {:rank 1}])<br/>=&gt; [{:rank 1} {:rank 2} {:rank 3}]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1211">
@@ -3221,7 +3221,7 @@
                                         <code>With no args, returns the empty string. With one arg x, returns x.toString(). (str nil) returns the empty string. With more than one arg, returns the concatenation of the str values of the args.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str )<br/>=&gt; <br/><br/>(str 1 2 3)<br/>=&gt; 123</code>
+                                        <code>(str )<br/>=&gt; &quot;&quot;<br/><br/>(str 1 2 3)<br/>=&gt; &quot;123&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1062">
@@ -3277,7 +3277,7 @@
                                         <code>Returns a formatted string using the specified format string and arguments.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/format &quot;%s: %d&quot; &quot;abc&quot; 100)<br/>=&gt; abc: 100</code>
+                                        <code>(str/format &quot;%s: %d&quot; &quot;abc&quot; 100)<br/>=&gt; &quot;abc: 100&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1039">
@@ -3305,7 +3305,7 @@
                                         <code>Joins all elements in coll separated by an optional separator.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/join [1 2 3])<br/>=&gt; 123<br/><br/>(str/join &quot;-&quot; [1 2 3])<br/>=&gt; 1-2-3</code>
+                                        <code>(str/join [1 2 3])<br/>=&gt; &quot;123&quot;<br/><br/>(str/join &quot;-&quot; [1 2 3])<br/>=&gt; &quot;1-2-3&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1040">
@@ -3334,7 +3334,7 @@
                                         <code>Converts s to lowercase</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/lower-case &quot;aBcDeF&quot;)<br/>=&gt; abcdef</code>
+                                        <code>(str/lower-case &quot;aBcDeF&quot;)<br/>=&gt; &quot;abcdef&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1036">
@@ -3348,7 +3348,7 @@
                                         <code>Quotes a string.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/quote &quot;abc&quot; &quot;-&quot;)<br/>=&gt; -abc-<br/><br/>(str/quote &quot;abc&quot; &quot;&lt;&quot; &quot;&gt;&quot;)<br/>=&gt; &lt;abc&gt;</code>
+                                        <code>(str/quote &quot;abc&quot; &quot;-&quot;)<br/>=&gt; &quot;-abc-&quot;<br/><br/>(str/quote &quot;abc&quot; &quot;&lt;&quot; &quot;&gt;&quot;)<br/>=&gt; &quot;&lt;abc&gt;&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1054">
@@ -3362,7 +3362,7 @@
                                         <code>Repeats s n times with an optional separator.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/repeat &quot;abc&quot; 0)<br/>=&gt; <br/><br/>(str/repeat &quot;abc&quot; 3)<br/>=&gt; abcabcabc<br/><br/>(str/repeat &quot;abc&quot; 3 &quot;-&quot;)<br/>=&gt; abc-abc-abc</code>
+                                        <code>(str/repeat &quot;abc&quot; 0)<br/>=&gt; &quot;&quot;<br/><br/>(str/repeat &quot;abc&quot; 3)<br/>=&gt; &quot;abcabcabc&quot;<br/><br/>(str/repeat &quot;abc&quot; 3 &quot;-&quot;)<br/>=&gt; &quot;abc-abc-abc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1043">
@@ -3376,7 +3376,7 @@
                                         <code>Replaces the all occurrances of search in s</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/replace-all &quot;abcdefabc&quot; &quot;ab&quot; &quot;XYZ&quot;)<br/>=&gt; XYZcdefXYZc</code>
+                                        <code>(str/replace-all &quot;abcdefabc&quot; &quot;ab&quot; &quot;XYZ&quot;)<br/>=&gt; &quot;XYZcdefXYZc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1041">
@@ -3390,7 +3390,7 @@
                                         <code>Replaces the first occurrance of search in s</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/replace-first &quot;abcdefabc&quot; &quot;ab&quot; &quot;XYZ&quot;)<br/>=&gt; XYZdefabc</code>
+                                        <code>(str/replace-first &quot;abcdefabc&quot; &quot;ab&quot; &quot;XYZ&quot;)<br/>=&gt; &quot;XYZdefabc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1042">
@@ -3404,7 +3404,7 @@
                                         <code>Replaces the last occurrance of search in s</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/replace-last &quot;abcdefabc&quot; &quot;ab&quot; &quot;XYZ&quot;)<br/>=&gt; abcdefXYZ</code>
+                                        <code>(str/replace-last &quot;abcdefabc&quot; &quot;ab&quot; &quot;XYZ&quot;)<br/>=&gt; &quot;abcdefXYZ&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1048">
@@ -3418,7 +3418,7 @@
                                         <code>Splits string on a regular expression.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/split &quot;abc , def , ghi&quot; &quot;[ *],[ *]&quot;)<br/>=&gt; (abc def ghi)</code>
+                                        <code>(str/split &quot;abc , def , ghi&quot; &quot;[ *],[ *]&quot;)<br/>=&gt; (&quot;abc&quot; &quot;def&quot; &quot;ghi&quot;)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1049">
@@ -3432,7 +3432,7 @@
                                         <code>Splits s into lines.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/split-lines &quot;line1<br/>line2<br/>line3&quot;)<br/>=&gt; (line1 line2 line3)</code>
+                                        <code>(str/split-lines &quot;line1<br/>line2<br/>line3&quot;)<br/>=&gt; (&quot;line1&quot; &quot;line2&quot; &quot;line3&quot;)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1063">
@@ -3460,7 +3460,7 @@
                                         <code>Removes a substr only if it is at the end of a s, otherwise returns s.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/strip-end &quot;abcdef&quot; &quot;def&quot;)<br/>=&gt; abc<br/><br/>(str/strip-end &quot;abcdef&quot; &quot;abc&quot;)<br/>=&gt; abcdef</code>
+                                        <code>(str/strip-end &quot;abcdef&quot; &quot;def&quot;)<br/>=&gt; &quot;abc&quot;<br/><br/>(str/strip-end &quot;abcdef&quot; &quot;abc&quot;)<br/>=&gt; &quot;abcdef&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1052">
@@ -3474,7 +3474,7 @@
                                         <code>Strip the indent of a multi-line string. The first line&apos;s leading whitespaces define the indent.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/strip-indent &quot;  line1<br/>    line2<br/>    line3&quot;)<br/>=&gt; line1<br/>  line2<br/>  line3</code>
+                                        <code>(str/strip-indent &quot;  line1<br/>    line2<br/>    line3&quot;)<br/>=&gt; &quot;line1\n  line2\n  line3&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1053">
@@ -3488,7 +3488,7 @@
                                         <code>Strips leading whitespaces upto and including the margin &apos;|&apos; from each line in a multi-line string.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/strip-margin &quot;line1<br/>  line2<br/>  line3&quot;)<br/>=&gt; line1<br/>  line2<br/>  line3</code>
+                                        <code>(str/strip-margin &quot;line1<br/>  line2<br/>  line3&quot;)<br/>=&gt; &quot;line1\n  line2\n  line3&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1050">
@@ -3502,7 +3502,7 @@
                                         <code>Removes a substr only if it is at the beginning of a s, otherwise returns s.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/strip-start &quot;abcdef&quot; &quot;abc&quot;)<br/>=&gt; def<br/><br/>(str/strip-start &quot;abcdef&quot; &quot;def&quot;)<br/>=&gt; abcdef</code>
+                                        <code>(str/strip-start &quot;abcdef&quot; &quot;abc&quot;)<br/>=&gt; &quot;def&quot;<br/><br/>(str/strip-start &quot;abcdef&quot; &quot;def&quot;)<br/>=&gt; &quot;abcdef&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1047">
@@ -3516,7 +3516,7 @@
                                         <code>Returns the substring of s beginning at start inclusive, and ending at end (defaults to length of string), exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/subs &quot;abcdef&quot; 2)<br/>=&gt; cdef<br/><br/>(str/subs &quot;abcdef&quot; 2 5)<br/>=&gt; cde</code>
+                                        <code>(str/subs &quot;abcdef&quot; 2)<br/>=&gt; &quot;cdef&quot;<br/><br/>(str/subs &quot;abcdef&quot; 2 5)<br/>=&gt; &quot;cde&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1058">
@@ -3530,7 +3530,7 @@
                                         <code>Trims leading and trailing spaces from s.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/trim &quot; abc  &quot;)<br/>=&gt; abc</code>
+                                        <code>(str/trim &quot; abc  &quot;)<br/>=&gt; &quot;abc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1059">
@@ -3544,7 +3544,7 @@
                                         <code>Trims leading and trailing spaces from s. Returns nil if the rewsulting string is empry</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/trim &quot;&quot;)<br/>=&gt; <br/><br/>(str/trim &quot;    &quot;)<br/>=&gt; <br/><br/>(str/trim nil)<br/>=&gt; <br/><br/>(str/trim &quot; abc   &quot;)<br/>=&gt; abc</code>
+                                        <code>(str/trim &quot;&quot;)<br/>=&gt; &quot;&quot;<br/><br/>(str/trim &quot;    &quot;)<br/>=&gt; &quot;&quot;<br/><br/>(str/trim nil)<br/>=&gt; nil<br/><br/>(str/trim &quot; abc   &quot;)<br/>=&gt; &quot;abc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1055">
@@ -3558,7 +3558,7 @@
                                         <code>Truncates a string to the max lenght maxlen and adds the marker to the end if the string needs to be truncated</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/truncate &quot;abcdefghij&quot; 20 &quot;...&quot;)<br/>=&gt; abcdefghij<br/><br/>(str/truncate &quot;abcdefghij&quot; 9 &quot;...&quot;)<br/>=&gt; abcdef...<br/><br/>(str/truncate &quot;abcdefghij&quot; 4 &quot;...&quot;)<br/>=&gt; a...</code>
+                                        <code>(str/truncate &quot;abcdefghij&quot; 20 &quot;...&quot;)<br/>=&gt; &quot;abcdefghij&quot;<br/><br/>(str/truncate &quot;abcdefghij&quot; 9 &quot;...&quot;)<br/>=&gt; &quot;abcdef...&quot;<br/><br/>(str/truncate &quot;abcdefghij&quot; 4 &quot;...&quot;)<br/>=&gt; &quot;a...&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1045">
@@ -3572,7 +3572,7 @@
                                         <code>Converts s to uppercase</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(str/upper-case &quot;aBcDeF&quot;)<br/>=&gt; ABCDEF</code>
+                                        <code>(str/upper-case &quot;aBcDeF&quot;)<br/>=&gt; &quot;ABCDEF&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1060">
@@ -3684,7 +3684,7 @@
                                         <code>Throws exception with passed value x</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(try (throw 100) (catch (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)) (finally -2))<br/>=&gt; -1</code>
+                                        <code>(try<br/>   (throw 100)<br/>   (catch :java.lang.Exception ex<br/>          (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try<br/>   (throw 100)<br/>   (catch :java.lang.Exception ex<br/>          (do (+ 1 2) -1))<br/>   (finally (println &quot;finally&quot;)))<br/>finally<br/>=&gt; -1</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1120">
@@ -3698,7 +3698,7 @@
                                         <code>Evaluates expr and prints the time it took.  Returns the value of expr.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time (println [100 200]))<br/>[100 200]<br/>Elapsed time: 1 msecs<br/>=&gt; </code>
+                                        <code>(time (println [100 200]))<br/>[100 200]<br/>Elapsed time: 0 msecs<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1094">
@@ -3712,7 +3712,7 @@
                                         <code>Returns the current time in milliseconds</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ms)<br/>=&gt; 1534572770147</code>
+                                        <code>(time-ms)<br/>=&gt; 1534619864071</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1095">
@@ -3726,7 +3726,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ns)<br/>=&gt; 254672679528823</code>
+                                        <code>(time-ns)<br/>=&gt; 268254477129013</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1079">
@@ -3747,21 +3747,21 @@
                                     <h1>try</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                          <code>(try (throw))</code><code>(try (throw expr))</code><code>(try (throw expr) (catch expr))</code><code>(try (throw expr) (catch expr) (finally expr))</code>                          
+                                          <code>(try expr)</code><code>(try expr (catch exClass exSym expr))</code><code>(try expr (catch exClass exSym expr) (finally expr))</code>                          
                                         </div>
                                     </div>
                                     <div class="descr">
                                         <code>Exception handling: try - catch -finally </code>
                                     </div>
                                     <div class="examples">
-                                        <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try (throw 100) (finally (println &quot;finally&quot;)))<br/>=&gt; VncException: 100<br/><br/>(try (throw 100) (catch (do (+ 1 2) -1)) (finally (println &quot;finally&quot;)))<br/>finally<br/>=&gt; -1</code>
+                                        <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try (throw 100) (finally (println &quot;finally&quot;)))<br/>=&gt; VncException: 100<br/><br/>(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)) (finally (println &quot;finally&quot;)))<br/>finally<br/>=&gt; -1<br/><br/>(do <br/>  (import :java.lang.RuntimeException) <br/>  (try <br/>     (throw (. :RuntimeException :new &quot;message&quot;)) <br/>     (catch :RuntimeException ex (. ex :getMessage)))) <br/>)<br/>=&gt; &quot;message&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1238">
                                     <h1>try-with</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                          <code>(try-with [bindings*] expr)</code><code>(try-with [bindings*] (throw))</code><code>(try-with [bindings*] (throw expr))</code><code>(try-with [bindings*] (throw expr) (catch expr))</code><code>(try-with [bindings*] (throw expr) (catch expr) (finally expr))</code>                          
+                                          <code>(try-with [bindings*] expr)</code><code>(try-with [bindings*] expr (catch :java.lang.Exception ex expr))</code><code>(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))</code>                          
                                         </div>
                                     </div>
                                     <div class="descr">
@@ -3782,7 +3782,7 @@
                                         <code>Retruns the type of x.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(type 5)<br/>=&gt; venice.Long<br/><br/>(type (. :java.time.ZonedDateTime :now))<br/>=&gt; venice.JavaObject(java.time.ZonedDateTime)</code>
+                                        <code>(type 5)<br/>=&gt; &quot;venice.Long&quot;<br/><br/>(type (. :java.time.ZonedDateTime :now))<br/>=&gt; &quot;venice.JavaObject(java.time.ZonedDateTime)&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1206">
@@ -3838,7 +3838,7 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; 5e0f1a57-16b5-4f1d-99cc-53e955e06f60</code>
+                                        <code>(uuid )<br/>=&gt; &quot;95537a31-fd4a-4a89-99d5-94bb891728e2&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1218">
@@ -3922,7 +3922,7 @@
                                         <code>Returns the version.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(version )<br/>=&gt; 0.8.3</code>
+                                        <code>(version )<br/>=&gt; &quot;0.8.4&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1103">
