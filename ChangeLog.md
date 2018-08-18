@@ -15,13 +15,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added function 'io/spit-stream'
 - added function 'io/delete-file-on-exit'
 - added function 'flush' takes an optional argument output stream. E.g.: (flush os)
-- added try resources block 'try-with'
+- added try-with-resources block 'try-with'
 
 ### fixed
 
 - fixed Cheat Sheet for functions referenced multiple times
 - fixed cheat sheet page breaks on PDF
 - fixed try-catch-finally. The finally block is only evaluated for side effects
+
+
+
+## [0.8.4] - 2018-08-xx
+
+### Added
+
+- added ...
+
+### fixed
+
+- fixed ...
 
 
 
