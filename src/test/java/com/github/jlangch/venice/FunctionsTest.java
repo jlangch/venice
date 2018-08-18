@@ -2452,7 +2452,7 @@ public class FunctionsTest {
 		assertEquals("true", venice.eval("(pr-str true)"));	
 		assertEquals("1", venice.eval("(pr-str 1)"));	
 		assertEquals("-3.0", venice.eval("(pr-str -3.0)"));
-		assertEquals("-3.0123", venice.eval("(pr-str -3.0123M)"));
+		assertEquals("-3.0123M", venice.eval("(pr-str -3.0123M)"));
 		assertEquals(":a", venice.eval("(pr-str :a)"));
 		assertEquals("a", venice.eval("(pr-str (symbol :a))"));
 		assertEquals("(1 2)", venice.eval("(pr-str '(1 2))"));
@@ -2513,9 +2513,9 @@ public class FunctionsTest {
 		assertEquals("(1.0 1.5 2.0 2.5 3.0)", venice.eval("(str (range 1.0 3.1 0.5))"));
 		
 		// Decimal
-		assertEquals("(1.0 2.0 3.0 4.0 5.0)", venice.eval("(str (range 1.0M 6.0M))"));
-		assertEquals("(1.0 2.0 3.0 4.0 5.0)", venice.eval("(str (range 1.0M 6.0M 1.0M))"));
-		assertEquals("(1.0 1.5 2.0 2.5 3.0)", venice.eval("(str (range 1.0M 3.1M 0.5M))"));
+		assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(str (range 1.0M 6.0M))"));
+		assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(str (range 1.0M 6.0M 1.0M))"));
+		assertEquals("(1.0M 1.5M 2.0M 2.5M 3.0M)", venice.eval("(str (range 1.0M 3.1M 0.5M))"));
 		
 		// Mixed
 		assertEquals("(1 2 3 4 5)", venice.eval("(str (range 1 6.0))"));
@@ -2566,7 +2566,7 @@ public class FunctionsTest {
 		
 		// Decimal
 		assertEquals("()", venice.eval("(str (repeat 0 1.0M))"));
-		assertEquals("(1.0 1.0 1.0 1.0)", venice.eval("(str (repeat 4 1.0M))"));
+		assertEquals("(1.0M 1.0M 1.0M 1.0M)", venice.eval("(str (repeat 4 1.0M))"));
 
 		// Vector
 		assertEquals("()", venice.eval("(str (repeat 0 [5]))"));
@@ -2879,7 +2879,7 @@ public class FunctionsTest {
 		assertEquals("true", venice.eval("(str true)"));	
 		assertEquals("1", venice.eval("(str 1)"));	
 		assertEquals("-3.0", venice.eval("(str -3.0)"));
-		assertEquals("-3.0123", venice.eval("(str -3.0123M)"));
+		assertEquals("-3.0123M", venice.eval("(str -3.0123M)"));
 		assertEquals(":a", venice.eval("(str :a)"));
 		assertEquals("a", venice.eval("(str (symbol :a))"));
 		assertEquals("()", venice.eval("(str '())"));
