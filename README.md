@@ -165,6 +165,20 @@ Java VarArgs:
 ```
 
 
+Exception handling
+
+```clojure
+(do
+  (import :java.lang.RuntimeException)
+  (import :java.io.IOException)
+  (try
+     (throw (. :RuntimeException :new "a message"))
+     (catch :IOException ex (. ex :getMessage))
+     (catch :RuntimeException ex (. ex :getMessage))))
+)
+```
+
+
 Try with resources
 
 ```clojure

@@ -367,7 +367,10 @@ public class VeniceInterpreter {
 						return k.apply(fnArgs);
 					}
 					else {
-						throw new VncException(String.format("Not a function or keyword: '%s'", PRINT(el.nth(0))));
+						throw new VncException(
+								String.format(
+										"Not a function or keyword: '%s'", 
+										PRINT(el.nth(0))));
 					}
 			}
 		}

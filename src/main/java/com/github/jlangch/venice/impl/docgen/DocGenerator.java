@@ -800,7 +800,13 @@ public class DocGenerator {
 									"(try (throw \"test message\"))",
 									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)))",
 									"(try (throw 100) (finally (println \"finally\")))",
-									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)) (finally (println \"finally\")))"),
+									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)) (finally (println \"finally\")))",
+									"(do \n" +
+									"  (import :java.lang.RuntimeException) \n" +
+									"  (try \n" +
+									"     (throw (. :RuntimeException :new \"message\")) \n" +
+									"     (catch :RuntimeException ex (. ex :getMessage)))) \n" +
+									")"),
 							true),
 						idgen.id()));
 		

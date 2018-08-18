@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added support for catching specific exceptions
+- added support for catching multiple exceptions within a try-catch-finally block
 
 ### fixed
 
