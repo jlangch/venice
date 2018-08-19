@@ -135,16 +135,30 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
+	public void test_try_catch_5() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(do                                                        " +
+				"  (import :com.github.jlangch.venice.ValueException)       " +
+				"  (try                                                     " +
+				"     (throw [1 2 3])                                       " +
+				"     (catch :ValueException ex (pr-str (. ex :getValue)))  " +
+				"     (catch :RuntimeException ex \"???\")))                " +
+				")                                                          ";
+
+		assertEquals("[1 2 3]", venice.eval(lisp));
+	}
+	
+	@Test
 	public void test_try_finally() {
 		final Venice venice = new Venice();
 
 		try {
 			final String lisp = 
-					"(try                   " +
-					"  (throw 100)          " +
-					"  (finally             " +
-					"    (println \"...\")))" +
-					")                      ";
+					"(try                                  " +
+					"  (throw 100)                         " +
+					"  (finally (println \"...finally\"))) ";
 			
 			venice.eval(lisp);
 			
@@ -168,7 +182,7 @@ public class SpecialFormsTest {
 				"            (+ 3 4)                    " +
 				"            -1))                       " +
 				"  (finally                             " +
-				"     (println \"...\")))               " +
+				"     (println \"...finally\")))        " +
 				")                                      ";
 
 		assertEquals(Long.valueOf(-1L), venice.eval(lisp));

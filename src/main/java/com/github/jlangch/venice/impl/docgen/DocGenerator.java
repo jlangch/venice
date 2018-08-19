@@ -798,14 +798,22 @@ public class DocGenerator {
 							Arrays.asList(
 									"(try (throw))",
 									"(try (throw \"test message\"))",
-									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)))",
-									"(try (throw 100) (finally (println \"finally\")))",
-									"(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)) (finally (println \"finally\")))",
+									"(try \n   (throw 100) \n   (catch :java.lang.Exception ex -100)))",
+									"(try \n   (throw 100) \n   (finally (println \"...finally\")))",
+									"(try \n   (throw 100) \n   (catch :java.lang.Exception ex -100) \n   (finally (println \"...finally\")))",
 									"(do \n" +
 									"  (import :java.lang.RuntimeException) \n" +
 									"  (try \n" +
 									"     (throw (. :RuntimeException :new \"message\")) \n" +
 									"     (catch :RuntimeException ex (. ex :getMessage)))) \n" +
+									")",
+									"(do \n" +
+									"  (import :com.github.jlangch.venice.ValueException) \n" +
+									"  (try \n" +
+									"     (throw [1 2 3]) \n" +
+									"     (catch :ValueException ex (str (. ex :getValue))) \n" +
+									"     (catch :RuntimeException ex \"runtime ex\") \n" +
+									"     (finally (println \"...finally\"))) \n" +
 									")"),
 							true),
 						idgen.id()));
@@ -827,7 +835,7 @@ public class DocGenerator {
 								"(do \n" +
 								"   (import :java.io.FileInputStream) \n" +
 								"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-								"        (spit file \"123456789\" :append true) \n" +
+								"        (io/spit file \"123456789\" :append true) \n" +
 								"        (try-with [is (. :FileInputStream :new file)] \n" +
 								"           (io/slurp-stream is :binary false))) \n" +
 								")"),
@@ -999,9 +1007,9 @@ public class DocGenerator {
 				.filter(e -> !StringUtil.isEmpty(e))
 				.map(e -> StringUtil.stripMargin(e, '|'))
 				.forEach(e -> {
+					final CapturingPrintStream ps = CapturingPrintStream.create();
+					
 					try {
-						final CapturingPrintStream ps = CapturingPrintStream.create();
-						
 						final String result = (String)runner.eval(
 													"(pr-str " + e + ")",
 													Parameters.of("*out*", ps));
@@ -1018,14 +1026,18 @@ public class DocGenerator {
 						sb.append("=> ").append(result);
 					}
 					catch(Exception ex) {
-						if (catchEx) {
-							
+						if (catchEx) {							
 							if (sb.length() > 0) {
 								sb.append("\n\n");
 							}
-							sb.append(e)
-							  .append("\n")
-							  .append("=> ")
+							sb.append(e);
+							sb.append("\n");
+							if (!ps.isEmpty()) {
+								final String out = ps.getOutput();
+								sb.append(out);
+								if (!out.endsWith("\n")) sb.append("\n");
+							}
+							sb.append("=> ")
 							  .append(ex.getClass().getSimpleName())
 							  .append(": ")
 							  .append(ex.getMessage());
