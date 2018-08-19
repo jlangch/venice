@@ -699,7 +699,7 @@
                                         <code>Java interop. Calls a constructor or an object method. The function is sandboxed</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke constructor <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-08-18T21:17:44.510+02:00[Europe/Zurich]<br/><br/>;; invoke constructor with param <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke constructor <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-08-19T20:56:51.376+02:00[Europe/Zurich]<br/><br/>;; invoke constructor with param <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -1666,7 +1666,7 @@
                                         <code>Creates a function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-d5103b10-f7bc-4959-9f39-ca5deeb1d2bc<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-403a066a-25ab-4459-a26e-adba131fe1e2</code>
+                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-29204396-9cba-402d-84cf-c833547e3886<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-457d4244-af4f-475f-8419-6ec939b30862</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1087">
@@ -2059,7 +2059,7 @@
                                         <code>Writes content (string or bytebuf) to the output stream os. If content is of type string an optional encoding (defaults to UTF-8) is supported. The stream can optionally be flushed after the operation. Options: :flush true/false :encoding &quot;UTF-8&quot;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (import :java.io.FileOutputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (try-with [is (. :FileOutputStream :new file)] <br/>           (io/spit-stream is &quot;123456789&quot; :flush true))) <br/>)<br/>=&gt; nil</code>
+                                        <code>(do <br/>   (import :java.io.FileOutputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (try-with [os (. :FileOutputStream :new file)] <br/>           (io/spit-stream os &quot;123456789&quot; :flush true))) <br/>)<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1141">
@@ -2885,7 +2885,7 @@
                                         <code>Proxifies a Java interface to be passed as a Callback object to Java functions. The interface&apos;s methods are implemented by Venice functions.</code>
                                     </div>
                                     <div class="examples">
-                                        <code></code>
+                                        <code>(do <br/>   (import :java.io.File :java.io.FilenameFilter) <br/><br/>   (def file-filter <br/>        (fn [dir name] (str/ends-with? name &quot;.xxx&quot;))) <br/><br/>   (let [dir (io/tmp-dir )] <br/>        ;; create a dynamic proxy for the interface FilenameFilter<br/>        ;; and implement its function &apos;accept&apos; by &apos;file-filter&apos;<br/>        (. dir :list (proxify :FilenameFilter {:accept file-filter}))) <br/>)<br/>=&gt; []</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1028">
@@ -2899,7 +2899,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. Without argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.40191346846120657<br/><br/>(rand-double 100.0)<br/>=&gt; 82.827530734223</code>
+                                        <code>(rand-double)<br/>=&gt; 0.8308062553615244<br/><br/>(rand-double 100.0)<br/>=&gt; 73.38146725507774</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1027">
@@ -2913,7 +2913,7 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. Without argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 8611087012028193303<br/><br/>(rand-long 100)<br/>=&gt; 73</code>
+                                        <code>(rand-long)<br/>=&gt; 4626254559854432740<br/><br/>(rand-long 100)<br/>=&gt; 75</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1149">
@@ -3712,7 +3712,7 @@
                                         <code>Returns the current time in milliseconds</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ms)<br/>=&gt; 1534619864071</code>
+                                        <code>(time-ms)<br/>=&gt; 1534705010911</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1095">
@@ -3726,7 +3726,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ns)<br/>=&gt; 268254477129013</code>
+                                        <code>(time-ns)<br/>=&gt; 285531247359433</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1079">
@@ -3754,7 +3754,7 @@
                                         <code>Exception handling: try - catch -finally </code>
                                     </div>
                                     <div class="examples">
-                                        <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)))<br/>=&gt; -1<br/><br/>(try (throw 100) (finally (println &quot;finally&quot;)))<br/>=&gt; VncException: 100<br/><br/>(try (throw 100) (catch :java.lang.Exception ex (do (+ 1 2) -1)) (finally (println &quot;finally&quot;)))<br/>finally<br/>=&gt; -1<br/><br/>(do <br/>  (import :java.lang.RuntimeException) <br/>  (try <br/>     (throw (. :RuntimeException :new &quot;message&quot;)) <br/>     (catch :RuntimeException ex (. ex :getMessage)))) <br/>)<br/>=&gt; &quot;message&quot;</code>
+                                        <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try <br/>   (throw 100) <br/>   (catch :java.lang.Exception ex -100)))<br/>=&gt; -100<br/><br/>(try <br/>   (throw 100) <br/>   (finally (println &quot;...finally&quot;)))<br/>...finally<br/>=&gt; VncException: 100<br/><br/>(try <br/>   (throw 100) <br/>   (catch :java.lang.Exception ex -100) <br/>   (finally (println &quot;...finally&quot;)))<br/>...finally<br/>=&gt; -100<br/><br/>(do <br/>  (import :java.lang.RuntimeException) <br/>  (try <br/>     (throw (. :RuntimeException :new &quot;message&quot;)) <br/>     (catch :RuntimeException ex (. ex :getMessage)))) <br/>)<br/>=&gt; &quot;message&quot;<br/><br/>(do <br/>  (import :com.github.jlangch.venice.ValueException) <br/>  (try <br/>     (throw [1 2 3]) <br/>     (catch :ValueException ex (str (. ex :getValue))) <br/>     (catch :RuntimeException ex &quot;runtime ex&quot;) <br/>     (finally (println &quot;...finally&quot;))) <br/>)<br/>...finally<br/>=&gt; &quot;[1 2 3]&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1238">
@@ -3768,7 +3768,7 @@
                                         <code>try-with resources allows the declaration of resources to be used in a try block with the assurance that the resources will be closed after execution of that block. The resources declared must implement the Closeable or AutoCloseable interface.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (import :java.io.FileInputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (spit file &quot;123456789&quot; :append true) <br/>        (try-with [is (. :FileInputStream :new file)] <br/>           (io/slurp-stream is :binary false))) <br/>)<br/>=&gt; VncException: Symbol &apos;spit&apos; not found</code>
+                                        <code>(do <br/>   (import :java.io.FileInputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (try-with [is (. :FileInputStream :new file)] <br/>           (io/slurp-stream is :binary false))) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1090">
@@ -3838,7 +3838,7 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; &quot;95537a31-fd4a-4a89-99d5-94bb891728e2&quot;</code>
+                                        <code>(uuid )<br/>=&gt; &quot;9a5b3bcf-b686-4bf5-b865-cadb7a9be897&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1218">
