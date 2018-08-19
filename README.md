@@ -452,7 +452,7 @@ Venice provides a simple protocol facility.
               :x-axis { :title "X" }
               :y-axis { :title "Y" }
               :theme :xchart } )
-         72)))
+         120)))
 ```
 
 
