@@ -430,7 +430,7 @@ classpath:
 
 ##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/line-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -452,7 +452,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/area-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -473,7 +473,7 @@ classpath:
 
 ##### Bar Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/bar-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/bar-chart.png" width="300">
 
 ```clojure
 (do
@@ -494,7 +494,7 @@ classpath:
 
 ##### Pie Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/pie-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/pie-chart.png" width="300">
 
 ```clojure
 (do
