@@ -431,28 +431,18 @@ Venice provides a simple protocol facility.
 (do
    (load-module :xchart)
 
-   (def to-png
-        (fn [chart dpi] (xchart/to-bytes-with-dpi chart :png dpi)))
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "y(x)" { :x [0.0 1.0 2.0]
+                    :y [0.0 1.0 2.0] } }
 
-   (def write-to-file
-        (fn [file bytes]
-            (do
-               (try-with [os (. :FileOutputStream :new file)]
-                 (io/spit-stream os bytes :flush true))
-               (println (str "Chart saved to " file)))))
-
-   (write-to-file
-      (. :java.io.File :new "simple-chart.png")
-      (to-png
-         (xchart/xy-chart
-            { "y(x)" { :x [0.0 1.0 2.0]
-                       :y [0.0 1.0 2.0] } }
-
-            { :title "Simple Chart"
-              :x-axis { :title "X" }
-              :y-axis { :title "Y" }
-              :theme :xchart } )
-         120)))
+         { :title "Simple Chart"
+           :x-axis { :title "X" }
+           :y-axis { :title "Y" }
+           :theme :xchart } )
+      :png
+      120
+      (. :java.io.File :new "simple-chart.png")))
 ```
 
 

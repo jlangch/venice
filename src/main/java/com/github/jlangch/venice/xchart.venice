@@ -117,6 +117,12 @@
             (. :BitmapEncoder :saveBitmapWithDPI chart file format dpi)
             (io/slurp-temp-file file :binary true :remove true))))
 
+(def xchart/write-to-file
+   (fn [chart type dpi file]
+       (let [bytes (xchart/to-bytes-with-dpi chart type dpi)]
+            (try-with [os (. :FileOutputStream :new file)]
+                (io/spit-stream os bytes :flush true)))))
+
 (def xchart/swing-open-window
    (fn [chart title]
        (let [frame (. :JFrame :new title)
