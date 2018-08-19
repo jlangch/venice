@@ -430,7 +430,7 @@ classpath:
 
 ##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/charts/line-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -441,7 +441,6 @@ classpath:
       (xchart/xy-chart
          { "y(x)" { :x [0.0 1.0 2.0]
                     :y [0.0 0.8 2.0] } }
-
          { :title "Line Chart"
            :x-axis { :title "X" :decimal-pattern "#0.0"}
            :y-axis { :title "Y" :decimal-pattern "#0.0"}
@@ -453,7 +452,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/charts/area-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -461,22 +460,54 @@ classpath:
 
    (xchart/write-to-file
       (xchart/xy-chart
-         { "a" { :x [0.0  3.0  5.0  7.0  9.0]
-                 :y [0.0  8.0 12.0  9.0  8.0] }
-           "b" { :x [0.0  2.0  4.0  6.0  9.0]
-                 :y [2.0  9.0  7.0  3.0  7.0] }
-           "c" { :x [0.0  1.0  3.0  8.0  9.0]
-                 :y [1.0  2.0  4.0  3.0  4.0] } }
-
-         { :title "Area Chart"
-           :render-style :area
-           :legend {:position :inside-ne}
-           :x-axis { :title "X" :decimal-pattern "#0"}
-           :y-axis { :title "Y" :decimal-pattern "#0"}
+         { "y(x)" { :x [0.0 1.0 2.0]
+                    :y [0.0 0.8 2.0] } }
+         { :title "Line Chart"
+           :x-axis { :title "X" :decimal-pattern "#0.0"}
+           :y-axis { :title "Y" :decimal-pattern "#0.0"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "area-chart.png")))
+      (. :java.io.File :new "line-chart.png")))
+```
+
+##### Bar Chart Example
+
+<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/bar-chart.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (xchart/write-to-file
+      (xchart/category-chart
+         { "Bananas" {"Mon" 6, "Tue" 2, "Fri" 3, "Wed" 1, "Thu" 3}
+           "Apples" {"Tue" 3, "Wed" 5, "Fri" 1, "Mon" 1}
+           "Pears" {"Thu" 1, "Mon" 3, "Fri" 4, "Wed" 1} }           
+         { :title "Weekly Fruit Sales"
+           :theme :xchart 
+           :x-axis {:order ["Mon" "Tue" "Wed" "Thu" "Fri"] } } )
+      :png ;; write as PNG
+      120  ;; render with 120 dpi
+      (. :java.io.File :new "bar-chart.png")))
+```
+
+##### Pie Chart Example
+
+<img src="https://cdn.rawgit.com/jlangch/venice/9aba4c2c/doc/charts/pie-chart.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (xchart/write-to-file
+      (xchart/pie-chart
+         { "A" 400
+           "B" 310
+           "C" 50 } )
+      :png ;; write as PNG
+      120  ;; render with 120 dpi
+      (. :java.io.File :new "pie-chart.png")))
 ```
 
 
