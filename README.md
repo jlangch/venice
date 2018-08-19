@@ -437,15 +437,40 @@ Venice provides a simple protocol facility.
                     :y [0.0 0.8 2.0] } }
 
          { :title "Simple Chart"
-           :x-axis { :title "X" :decimal-pattern "0#.#"}
-           :y-axis { :title "Y" :decimal-pattern "0#.#"}
+           :x-axis { :title "X" :decimal-pattern "#0.0"}
+           :y-axis { :title "Y" :decimal-pattern "#0.0"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
       (. :java.io.File :new "simple-chart.png")))
 ```
 
+##### Advanced Example
 
+<img src="https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/advanced-chart.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "a" { :x [0.0  3.0  5.0  7.0  9.0]
+                 :y [0.0  8.0 12.0  9.0  8.0] }
+           "b" { :x [0.0  2.0  4.0  6.0  9.0]
+                 :y [2.0  9.0  7.0  3.0  7.0] }
+           "c" { :x [0.0  1.0  3.0  8.0  9.0]
+                 :y [1.0  2.0  4.0  3.0  4.0] } }
+
+         { :title "Simple Chart"
+           :render-style :area
+           :legend {:position :inside-ne}
+           :x-axis { :title "X" :decimal-pattern "#0.0"}
+           :y-axis { :title "Y" :decimal-pattern "#0.0"}
+           :theme :xchart } )
+      :png ;; write as PNG
+      120  ;; render with 120 dpi
+      (. :java.io.File :new "advanced-chart.png")))
 
 ## Build Dependencies
 
