@@ -422,6 +422,12 @@ Venice provides a simple protocol facility.
 
 ### Charts
 
+Venice supports rendering charts if the XChart library is on the runtime 
+classpath:
+
+ - xchart-3.5.x.jar
+ 
+
 ##### Line Chart Example
 
 <img src="https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/charts/line-chart.png" width="300">
