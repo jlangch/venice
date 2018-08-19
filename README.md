@@ -426,8 +426,6 @@ Venice provides a simple protocol facility.
 
 <img src="https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/simple-chart.png" width="300">
 
-(https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/simple-chart.png  | width=300)
-
 
 ```clojure
 (do
