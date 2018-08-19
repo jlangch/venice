@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -25,9 +25,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/dcaee7f8/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/3495c5ef/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/dcaee7f8/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/3495c5ef/cheatsheet.pdf)
 
 
 ## REPL
@@ -424,7 +424,7 @@ Venice provides a simple protocol facility.
 
 ##### Simple Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/simple-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/simple-chart.png" width="300">
 
 
 ```clojure
@@ -447,7 +447,7 @@ Venice provides a simple protocol facility.
 
 ##### Advanced Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/advanced-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/advanced-chart.png" width="300">
 
 ```clojure
 (do
