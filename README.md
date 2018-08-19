@@ -434,11 +434,11 @@ Venice provides a simple protocol facility.
    (xchart/write-to-file
       (xchart/xy-chart
          { "y(x)" { :x [0.0 1.0 2.0]
-                    :y [0.0 1.0 2.0] } }
+                    :y [0.0 0.8 2.0] } }
 
          { :title "Simple Chart"
-           :x-axis { :title "X" }
-           :y-axis { :title "Y" }
+           :x-axis { :title "X" :decimal-pattern "0#.#"}
+           :y-axis { :title "Y" :decimal-pattern "0#.#"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
