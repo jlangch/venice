@@ -234,7 +234,7 @@
 
    load-file [f]
    
-   `(eval (read-string (str "(do " (io/slurp ~f) ")"))))
+   `(eval (read-string (str "(do " (io/slurp ~f :encoding "UTF-8" :binary false) ")"))))
 
 
 (defmacro 
