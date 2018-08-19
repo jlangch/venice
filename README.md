@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/doc/dcaee7f8/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/doc/dcaee7f8/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/dcaee7f8/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
