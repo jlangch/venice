@@ -5918,8 +5918,8 @@ public class CoreFunctions {
 				"   (import :java.io.FileOutputStream) \n" +
 				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
 				"        (io/delete-file-on-exit file) \n" +
-				"        (try-with [is (. :FileOutputStream :new file)] \n" +
-				"           (io/spit-stream is \"123456789\" :flush true))) \n" +
+				"        (try-with [os (. :FileOutputStream :new file)] \n" +
+				"           (io/spit-stream os \"123456789\" :flush true))) \n" +
 				")");
 		}
 		
