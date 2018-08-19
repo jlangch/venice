@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -25,9 +25,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/3495c5ef/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/5370b3f0/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/3495c5ef/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/5370b3f0/cheatsheet.pdf)
 
 
 ## REPL
@@ -422,9 +422,9 @@ Venice provides a simple protocol facility.
 
 ### Charts
 
-##### Simple Example
+##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/simple-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -436,18 +436,18 @@ Venice provides a simple protocol facility.
          { "y(x)" { :x [0.0 1.0 2.0]
                     :y [0.0 0.8 2.0] } }
 
-         { :title "Simple Chart"
+         { :title "Line Chart"
            :x-axis { :title "X" :decimal-pattern "#0.0"}
            :y-axis { :title "Y" :decimal-pattern "#0.0"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "simple-chart.png")))
+      (. :java.io.File :new "line-chart.png")))
 ```
 
-##### Advanced Example
+##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/3495c5ef/doc/advanced-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -462,7 +462,7 @@ Venice provides a simple protocol facility.
            "c" { :x [0.0  1.0  3.0  8.0  9.0]
                  :y [1.0  2.0  4.0  3.0  4.0] } }
 
-         { :title "Simple Chart"
+         { :title "Area Chart"
            :render-style :area
            :legend {:position :inside-ne}
            :x-axis { :title "X" :decimal-pattern "#0"}
@@ -470,7 +470,7 @@ Venice provides a simple protocol facility.
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "advanced-chart.png")))
+      (. :java.io.File :new "area-chart.png")))
 ```
 
 
