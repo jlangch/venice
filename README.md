@@ -504,7 +504,9 @@ classpath:
       (xchart/pie-chart
          { "A" 400
            "B" 310
-           "C" 50 } )
+           "C" 50 } 
+         { :title "Pie Chart"
+           :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
       (. :java.io.File :new "pie-chart.png")))
