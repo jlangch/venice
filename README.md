@@ -465,8 +465,8 @@ Venice provides a simple protocol facility.
          { :title "Simple Chart"
            :render-style :area
            :legend {:position :inside-ne}
-           :x-axis { :title "X" :decimal-pattern "#0.0"}
-           :y-axis { :title "Y" :decimal-pattern "#0.0"}
+           :x-axis { :title "X" :decimal-pattern "#0"}
+           :y-axis { :title "Y" :decimal-pattern "#0"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
