@@ -480,7 +480,7 @@ classpath:
 
 ##### Bubble Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/bubble-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/ca4614ed/doc/charts/bubble-chart.png" width="300">
 
 ```clojure
 (do
