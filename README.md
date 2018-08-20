@@ -442,6 +442,7 @@ classpath:
          { "y(x)" { :x [0.0 1.0 2.0]
                     :y [0.0 0.8 2.0] } }
          { :title "Line Chart"
+           :render-style :line
            :x-axis { :title "X" :decimal-pattern "#0.0"}
            :y-axis { :title "Y" :decimal-pattern "#0.0"}
            :theme :xchart } )
@@ -549,6 +550,7 @@ classpath:
            "B" 310
            "C" 50 } 
          { :title "Pie Chart"
+           :render-style :pie
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
