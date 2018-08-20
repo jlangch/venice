@@ -183,6 +183,7 @@ public class DocGenerator {
 		numbers.addSection(random);
 		random.addItem(getDocItem("rand-long"));
 		random.addItem(getDocItem("rand-double"));
+		random.addItem(getDocItem("rand-gaussian"));
 
 		final DocSection bigdecimal = new DocSection("BigDecimal");
 		numbers.addSection(bigdecimal);

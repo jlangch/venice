@@ -1122,6 +1122,7 @@ public class CoreFunctions {
 			}
 		}
 	};
+	
 	public static VncFunction rand_double = new VncFunction("rand-double") {
 		{
 			setArgLists("(rand-double)", "(rand-double max)");
@@ -1147,6 +1148,33 @@ public class CoreFunctions {
 
 				}
 				return new VncDouble(random.nextDouble() * max);
+			}
+		}
+	};
+	
+	public static VncFunction rand_gaussian = new VncFunction("rand-gaussian") {
+		{
+			setArgLists("(rand-gaussian)", "(rand-gaussian mean stddev)");
+			
+			setDoc( "Without argument returns a Gaussion distributed double value with " +
+					"mean 0.0 and standard deviation 1.0. " +
+					"With argument mean and stddev returns a Gaussion distributed double " +
+					"value with the given mean and standard deviation.");
+			
+			setExamples("(rand-gaussian)", "(rand-gaussian 0.0 5.0)");
+
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("rand-gaussian", args, 0, 2);
+			
+			if (args.isEmpty()) {
+				return new VncDouble(random.nextGaussian());
+			}
+			else {
+				final double mean = Coerce.toVncDouble(args.first()).getValue();
+				final double stddev = Coerce.toVncDouble(args.second()).getValue();
+				return new VncDouble(mean + stddev * random.nextGaussian());
 			}
 		}
 	};
@@ -6952,7 +6980,8 @@ public class CoreFunctions {
 				.put("time-ns",				time_ns)
 				.put("rand-long",			rand_long)
 				.put("rand-double",			rand_double)
-		
+				.put("rand-gaussian",		rand_gaussian)
+				
 				.put("list",				new_list)
 				.put("list?",				list_Q)
 				.put("vector",				new_vector)
