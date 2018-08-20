@@ -611,6 +611,31 @@ public class CoreFunctions {
 			}
 		}
 	};
+
+	public static VncFunction loadClasspathVenice = new VncFunction("load-classpath-venice") {
+		public VncVal apply(final VncList args) {
+			try {	
+				assertArity("load-classpath-venice", args, 1);
+				
+				final VncVal name = args.first();
+				
+				if (Types.isVncString(name)) {
+					final String res = ModuleLoader.loadVeniceResource(((VncString)args.first()).getValue());
+					return new VncString(res);
+				}
+				else if (Types.isVncSymbol(name)) {
+					final String res = ModuleLoader.loadVeniceResource(((VncSymbol)args.first()).getName());
+					return new VncString(res);
+				}
+				else {
+					return Nil;
+				}
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Number functions
@@ -7034,7 +7059,8 @@ public class CoreFunctions {
 
 				.put("class",				className)	
 				.put("load-core-module",	loadCoreModule)
-				
+				.put("load-classpath-venice", loadClasspathVenice)
+							
 				.toMap();
 
 	

@@ -1,0 +1,4 @@
+;; Test Venice classpath script
+
+(def test/println 
+     (fn [x] (println (str "test: " x))))

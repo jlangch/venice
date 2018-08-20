@@ -49,10 +49,31 @@ public class ModuleLoader {
 								.getResourceAsString("UTF-8"));
 		}
 		catch(Exception ex) {
-			throw new VncException(String.format("Failed to load Venice core module '%s'", name), ex);
+			throw new VncException(String.format(
+					"Failed to load Venice core module '%s'", name), 
+					ex);
 		}
 	}
 
+	public static String loadVeniceResource(final String resource) {
+		// For security reasons just allow to load venice scripts!
+		if (!resource.endsWith(".venice")) {
+			throw new VncException(String.format(
+					"Must not load other than Venice (*.venice) resources from "
+						+ "classpath. Resource: '%s'"));
+		}
+		
+		try {
+			return modules.computeIfAbsent(
+					resource, 
+					k -> new ClassPathResource(resource).getResourceAsString("UTF-8"));
+		}
+		catch(Exception ex) {
+			throw new VncException(String.format(
+					"Failed to load Venice resource '%s'", resource), 
+					ex);
+		}
+	}
 		
 		
 	private static final Map<String,String> modules = new HashMap<>();

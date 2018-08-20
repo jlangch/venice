@@ -592,7 +592,8 @@ public class DocGenerator {
 		loading.addItem(getDocItem("load-string"));
 		loading.addItem(getDocItem("load-file"));
 		loading.addItem(getDocItem("load-module"));
-
+		loading.addItem(getDocItem("load-classpath-file"));
+		
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);
 		test.addItem(getDocItem("macro?"));

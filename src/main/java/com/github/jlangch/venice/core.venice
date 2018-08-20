@@ -237,15 +237,28 @@
    `(eval (read-string (str "(do " (io/slurp ~f :encoding "UTF-8" :binary false) ")"))))
 
 
+(defmacro
+
+   { :arglists '("(load-classpath-file name)")
+     :doc "Sequentially read and evaluate the set of forms contained in the classpath file." 
+     :examples '("(do 
+                 |   (load-classpath-file \"com/github/jlangch/venice/test.venice\")
+                 |   (test/println \"hello\"))") }
+
+   load-classpath-file [f]
+   
+   `(eval (read-string (str "(do " (load-classpath-venice ~f) ")"))))
+
+
 (defmacro 
    { :arglists '("(load-module s)")
      :doc "Loads a Venice predefined extension module." 
-     :examples '() }
+     :examples '("(do 
+                 |   (load-module :protocol))") }
    
    load-module [s]
    
    `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
-
 
 
 (def
