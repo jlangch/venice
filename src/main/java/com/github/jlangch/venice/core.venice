@@ -76,7 +76,7 @@
 
 
 (defmacro 
-   { :arglists '("(when test & body)")
+   { :arglists '("(when-not test & body)")
      :doc "Evaluates test. If logical false, evaluates body in an implicit do." }
 
    when-not [test & body]
