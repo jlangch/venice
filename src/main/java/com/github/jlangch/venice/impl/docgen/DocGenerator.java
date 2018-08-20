@@ -564,8 +564,32 @@ public class DocGenerator {
 		section.addSection(all);
 
 		final DocSection create = new DocSection("Create");
-		all.addSection(create);
-		create.addItem(new DocItem("defmacro", idgen.id()));
+		all.addSection(create);		
+		create.addItem(
+				new DocItem(
+						"defmacro", 
+						Arrays.asList("(defmacro name [params*] body)"), 
+						"Macro definition",
+						runExamples(
+							"defmacro", 
+							Arrays.asList(
+									"(defmacro unless [pred a b]\n" + 
+									"  `(if (not ~pred) ~a ~b))")),
+						idgen.id()));
+		
+		final DocSection debug = new DocSection("Debug");
+		all.addSection(debug);		
+		debug.addItem(
+				new DocItem(
+						"macroexpand", 
+						Arrays.asList("(macroexpand form)"), 
+						"If form represents a macro form, returns its expansion, " + 
+						"else returns form",
+						runExamples(
+							"macroexpand", 
+							Arrays.asList(
+									"(macroexpand (-> c (+ 3) (* 2)))")),
+						idgen.id()));
 
 		final DocSection branch = new DocSection("Branch");
 		all.addSection(branch);
@@ -764,18 +788,6 @@ public class DocGenerator {
 									"  (when (> x 1)\n" + 
 									"    (println x)\n" + 
 									"    (recur (- x 2))))")),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"macroexpand", 
-						Arrays.asList("(macroexpand form)"), 
-						"If form represents a macro form, returns its expansion, " + 
-						"else returns form",
-						runExamples(
-							"macroexpand", 
-							Arrays.asList(
-									"(macroexpand (-> c (+ 3) (* 2)))")),
 						idgen.id()));
 	    
 		generic.addItem(
