@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/5370b3f0/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/e3628933/doc/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/e3628933/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -25,9 +25,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/fc1fd6da/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/e3628933/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/fc1fd6da/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/e3628933/cheatsheet.pdf)
 
 
 ## REPL
@@ -430,7 +430,7 @@ classpath:
 
 ##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/line-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -452,7 +452,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/area-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -460,20 +460,63 @@ classpath:
 
    (xchart/write-to-file
       (xchart/xy-chart
-         { "y(x)" { :x [0.0 1.0 2.0]
-                    :y [0.0 0.8 2.0] } }
-         { :title "Line Chart"
-           :x-axis { :title "X" :decimal-pattern "#0.0"}
-           :y-axis { :title "Y" :decimal-pattern "#0.0"}
+         { "a" { :x [0.0  3.0  5.0  7.0  9.0]
+                 :y [0.0  8.0 12.0  9.0  8.0] }
+           "b" { :x [0.0  2.0  4.0  6.0  9.0]
+                 :y [2.0  9.0  7.0  3.0  7.0] }
+           "c" { :x [0.0  1.0  3.0  8.0  9.0]
+                 :y [1.0  2.0  4.0  3.0  4.0] } }
+
+         { :title "Area Chart"
+           :render-style :area
+           :legend {:position :inside-ne}
+           :x-axis { :title "X" :decimal-pattern "#0"}
+           :y-axis { :title "Y" :decimal-pattern "#0"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "line-chart.png")))
+      (. :java.io.File :new "area-chart.png")))
+```
+
+##### Bubble Chart Example
+
+<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/bubble-chart.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (def series1
+        [ {:x  1 :y  2 :bubble 10}
+          {:x 10 :y  8 :bubble  4}
+          {:x 20 :y 25 :bubble  8} ])
+   (def series2
+        [ {:x 10 :y  4 :bubble 10}
+          {:x  5 :y  5 :bubble 12}
+          {:x 18 :y 20 :bubble  3} ])
+   (def bubblify
+        (fn [series]
+            {:x (map (fn [t] (:x t)) series)
+             :y (map (fn [t] (:y t)) series)
+             :bubble (map (fn [t] (:bubble t)) series)}))
+
+   (xchart/write-to-file
+      (xchart/bubble-chart
+         {"Series 1" (bubblify series1)
+          "Series 2" (bubblify series2) }
+         { :title "Bubble Chart"
+           :legend {:position :inside-sw}
+           :x-axis {:title "Series 2"}
+           :y-axis {:title "Series 1"}
+           :theme :xchart } )
+      :png ;; write as PNG
+      120  ;; render with 120 dpi
+      (. :java.io.File :new "bubble-chart.png")))
 ```
 
 ##### Bar Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/bar-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/bar-chart.png" width="300">
 
 ```clojure
 (do
@@ -494,7 +537,7 @@ classpath:
 
 ##### Pie Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/96c517c1/doc/charts/pie-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/pie-chart.png" width="300">
 
 ```clojure
 (do
