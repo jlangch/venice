@@ -15,6 +15,7 @@
 (import :org.knowm.xchart.style.Styler)
 (import :org.knowm.xchart.style.AxesChartStyler)
 (import :org.knowm.xchart.style.Styler$LegendPosition)
+(import :org.knowm.xchart.style.Styler$LegendLayout)
 (import :org.knowm.xchart.style.Styler$TextAlignment)
 (import :org.knowm.xchart.style.Styler$YAxisPosition)
 (import :org.knowm.xchart.style.PieStyler$AnnotationType)
@@ -64,10 +65,9 @@
          expr-sym (gensym "expr")]
        `(let [~expr-sym ~expr]
           ~@(map (fn [[cond clause]]
-                      `(when ~cond
-                           (~(first clause) ~expr-sym ~@(rest clause))))
-                  pairs)
-       ~expr-sym)))
+                     `(when ~cond (~(first clause) ~expr-sym ~@(rest clause))))
+                 pairs)
+          ~expr-sym)))
 
 ;; Maps a function over the values of an associative collection.
 (def xchart/map-vals
@@ -221,6 +221,11 @@
      :inside-sw  (. :Styler$LegendPosition :InsideSW)
      :outside-e  (. :Styler$LegendPosition :OutsideE)
      :outside-s  (. :Styler$LegendPosition :OutsideS) })
+
+;; TODO support this
+(def xchart/legend-layout
+   { :vertical   (. :Styler$LegendLayout :Vertical)
+     :horizontal (. :Styler$LegendLayout :Horizontal) })
 
 ;; TODO support this
 (def xchart/y-axis-position
