@@ -567,7 +567,6 @@ public class DocGenerator {
 		all.addSection(create);
 		create.addItem(new DocItem("defmacro", idgen.id()));
 
-
 		final DocSection branch = new DocSection("Branch");
 		all.addSection(branch);
 		branch.addItem(getDocItem("and"));
@@ -769,14 +768,14 @@ public class DocGenerator {
 		
 		generic.addItem(
 				new DocItem(
-						"defmacro", 
+						"macroexpand", 
 						Arrays.asList("(macroexpand form)"), 
 						"If form represents a macro form, returns its expansion, " + 
 						"else returns form",
 						runExamples(
-							"defmacro", 
+							"macroexpand", 
 							Arrays.asList(
-									"(macroexpand '(-> c (+ 3) (* 2)))")),
+									"(macroexpand (-> c (+ 3) (* 2)))")),
 						idgen.id()));
 	    
 		generic.addItem(
