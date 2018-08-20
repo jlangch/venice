@@ -74,7 +74,7 @@ public class XChartModuleTest {
 			"           \"Apples\" {\"Tue\" 3, \"Wed\" 5, \"Fri\" 1, \"Mon\" 1}                \n" +
 			"           \"Pears\" {\"Thur\" 1, \"Mon\" 3, \"Fri\" 4, \"Wed\" 1}}               \n" +
 			"          {:title \"Weekly Fruit Sales\"                                          \n" +
-			"           :theme :xchart                                                        \n" +
+			"           :theme :xchart                                                         \n" +
 			"           :x-axis {:order [\"Mon\" \"Tue\" \"Wed\" \"Thur\" \"Fri\"]}} ))        \n" +
 			"                                                                                  \n" +
 			"    (sleep 20000)                                                                 \n" +
@@ -249,5 +249,31 @@ public class XChartModuleTest {
 
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
+
+	@Test
+	@Ignore
+	public void test_doto_cond() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                                \n" +
+			"   (load-module :xchart)                                           \n" +
+			"                                                                   \n" +
+			"	(def p (fn [x y] (println (str x \" : \" y))))                  \n" +
+			"                                                                   \n" +
+			"   (p \"...test\" \"start\")                                       \n" +
+			"                                                                   \n" +
+			"   (xchart/doto-cond                                               \n" +
+			"      100                                                          \n" +
+			"      200 (p 200)                                                  \n" +
+			"      300 (p 300))                                                 \n" +
+			"                                                                   \n" +
+			"   (macroexpand (xchart/doto-cond 100 200 (p 200) 300 (p 300)))    \n" +
+			") ";
+
+
+		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
 
 }
