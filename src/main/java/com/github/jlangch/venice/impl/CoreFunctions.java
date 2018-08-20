@@ -5548,7 +5548,7 @@ public class CoreFunctions {
 
 	public static VncFunction io_copy_file = new VncFunction("io/copy-file") {
 		{
-			setArgLists("(io/copy input output)");
+			setArgLists("(io/copy-file input output)");
 			
 			setDoc( "Copies input to output. Returns nil or throws IOException. " + 
 					"Input and output must be a java.io.File.");
@@ -5595,7 +5595,7 @@ public class CoreFunctions {
 	
 	public static VncFunction io_move_file = new VncFunction("io/move-file") {
 		{
-			setArgLists("(io/move source target)");
+			setArgLists("(io/move-file source target)");
 			
 			setDoc( "Moves source to target. Returns nil or throws IOException. " + 
 					"Source and target must be a java.io.File.");
