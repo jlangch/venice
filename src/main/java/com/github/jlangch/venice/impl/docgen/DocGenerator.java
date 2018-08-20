@@ -668,6 +668,7 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/delete-file"));
 		io.addItem(getDocItem("io/delete-file-on-exit"));
 		io.addItem(getDocItem("io/copy-file"));
+		io.addItem(getDocItem("io/move-file"));
 		io.addItem(getDocItem("io/slurp"));
 		io.addItem(getDocItem("io/slurp-temp-file"));
 		io.addItem(getDocItem("io/slurp-stream"));

@@ -5561,13 +5561,13 @@ public class CoreFunctions {
 
 			if (!isJavaIoFile(args.nth(0)) ) {
 				throw new VncException(String.format(
-						"Function 'io/delete-file' does not allow %s as input. %s",
+						"Function 'io/copy-file' does not allow %s as input. %s",
 						Types.getClassName(args.nth(0)),
 						ErrorMessage.buildErrLocation(args)));
 			}
 			if (!isJavaIoFile(args.nth(1)) ) {
 				throw new VncException(String.format(
-						"Function 'io/delete-file' does not allow %s as output. %s",
+						"Function 'io/copy-file' does not allow %s as output. %s",
 						Types.getClassName(args.nth(1)),
 						ErrorMessage.buildErrLocation(args)));
 			}
@@ -5583,6 +5583,53 @@ public class CoreFunctions {
 				throw new VncException(
 						String.format(
 								"Failed to copy file %s to %s. %s", 
+								from.getPath(), 
+								to.getPath(),
+								ErrorMessage.buildErrLocation(args)),
+						ex);
+			}
+			
+			return Nil;
+		}
+	};
+	
+	public static VncFunction io_move_file = new VncFunction("io/move-file") {
+		{
+			setArgLists("(io/move source target)");
+			
+			setDoc( "Moves source to target. Returns nil or throws IOException. " + 
+					"Source and target must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/move-file", args);
+
+			assertArity("io/move-file", args, 2);
+
+			if (!isJavaIoFile(args.nth(0)) ) {
+				throw new VncException(String.format(
+						"Function 'io/move-file' does not allow %s as source. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
+			}
+			if (!isJavaIoFile(args.nth(1)) ) {
+				throw new VncException(String.format(
+						"Function 'io/move-file' does not allow %s as target. %s",
+						Types.getClassName(args.nth(1)),
+						ErrorMessage.buildErrLocation(args)));
+			}
+
+
+			final File from = (File)((VncJavaObject)args.nth(0)).getDelegate();
+			final File to = (File)((VncJavaObject)args.nth(1)).getDelegate();
+			
+			try {
+				Files.move(from.toPath(), to.toPath());
+			}
+			catch(Exception ex) {
+				throw new VncException(
+						String.format(
+								"Failed to move file %s to %s. %s", 
 								from.getPath(), 
 								to.getPath(),
 								ErrorMessage.buildErrLocation(args)),
@@ -6773,10 +6820,10 @@ public class CoreFunctions {
 								"io/list-files",
 								"io/delete-file",
 								"io/copy-file",
+								"io/move-file",
 								"io/tmp-dir",
 								"io/user-dir"));
 	}
-	
 	
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncList(value)) {
@@ -7019,9 +7066,9 @@ public class CoreFunctions {
 				.put("io/exists-dir?",		io_exists_dir_Q)
 				.put("io/list-files",		io_list_files)
 				.put("io/delete-file",		io_delete_file)
-				.put("io/delete-file-on-exit", io_delete_file_on_exit)
-				
+				.put("io/delete-file-on-exit", io_delete_file_on_exit)				
 				.put("io/copy-file",		io_copy_file)
+				.put("io/move-file",		io_move_file)
 				.put("io/temp-file",		io_temp_file)
 				.put("io/tmp-dir",			io_tmp_dir)
 				.put("io/user-dir",			io_user_dir)

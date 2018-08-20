@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added updated cheat sheets
 - added function 'load-classpath-file' to sequentially read and evaluate the set 
         of forms contained in the classpath file.
+- added function 'io/move-file'
 
 ### fixed
 
