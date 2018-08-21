@@ -475,20 +475,22 @@ classpath:
 
 ##### Bubble Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/bubble-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/fbcce2b0/doc/charts/bubble-chart.png" width="300">
 
 ```clojure
 (do
    (load-module :xchart)
 
    (def series1
-        [ {:x  1 :y  2 :bubble 10}
-          {:x 10 :y  8 :bubble  4}
-          {:x 20 :y 25 :bubble  8} ])
+        [ {:x  1 :y  2 :bubble 30}
+          {:x 10 :y  8 :bubble 12}
+          {:x 12 :y 16 :bubble 15}
+          {:x 20 :y 25 :bubble 24} ])
    (def series2
-        [ {:x 10 :y  4 :bubble 10}
-          {:x  5 :y  5 :bubble 12}
-          {:x 18 :y 20 :bubble  3} ])
+        [ {:x 10 :y  4 :bubble 30}
+          {:x  5 :y  5 :bubble 36}
+          {:x  6 :y 20 :bubble 50}
+          {:x 18 :y 20 :bubble  9} ])
    (def bubblify
         (fn [series]
             {:x (map (fn [t] (:x t)) series)
