@@ -409,7 +409,7 @@ classpath:
          { "y(x)" { :x [0.0 1.0 2.0]
                     :y [0.0 0.8 2.0] } }
          { :title "Line Chart"
-           :render-style :line
+           :render-style :line   ;; :step
            :x-axis { :title "X" :decimal-pattern "#0.0"}
            :y-axis { :title "Y" :decimal-pattern "#0.0"}
            :theme :xchart } )
@@ -436,7 +436,7 @@ classpath:
                  :y [1.0  2.0  4.0  3.0  4.0] } }
 
          { :title "Area Chart"
-           :render-style :area
+           :render-style :area   ;; :step-area
            :legend {:position :inside-ne}
            :x-axis { :title "X" :decimal-pattern "#0.#"}
            :y-axis { :title "Y" :decimal-pattern "#0.#"}
