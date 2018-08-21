@@ -335,23 +335,24 @@
 
 (def xchart/set-axis-ticks!
    (fn [styler {:keys [labels marks padding visible? line-visible?]}]
-       (let [{:keys [color font]} labels]
+       (do
+          (let [{:keys [color font]} labels]
+             (xchart/doto-cond
+                styler
+                color (. :setAxisTickLabelsColor (get xchart/colors color color))
+                font  (. :setAxisTickLabelsFont font)))
+          (let [{:keys [length color stroke visible?]} marks]
+             (xchart/doto-cond
+                styler
+                length                (. :setAxisTickMarkLength length)
+                color                 (. :setAxisTickMarksColor (get xchart/colors color color))
+                stroke                (. :setAxisTickMarksStroke (get xchart/strokes stroke stroke))
+                (not (nil? visible?)) (. :setAxisTicksMarksVisible visible?)))
           (xchart/doto-cond
              styler
-             color (. :setAxisTickLabelsColor (get xchart/colors color color))
-             font  (. :setAxisTickLabelsFont font)))
-       (let [{:keys [length color stroke visible?]} marks]
-          (xchart/doto-cond
-             styler
-             length                (. :setAxisTickMarkLength length)
-             color                 (. :setAxisTickMarksColor (get xchart/colors color color))
-             stroke                (. :setAxisTickMarksStroke (get xchart/strokes stroke stroke))
-             (not (nil? visible?)) (. :setAxisTicksMarksVisible visible?)))
-       (xchart/doto-cond
-          styler
-          padding                    (. :setAxisTickPadding padding)
-          (not (nil? line-visible?)) (. :setAxisTicksLineVisible line-visible?)
-          (not (nil? visible?))      (. :setAxisTicksVisible visible?))))
+             padding                    (. :setAxisTickPadding padding)
+             (not (nil? line-visible?)) (. :setAxisTicksLineVisible line-visible?)
+             (not (nil? visible?))      (. :setAxisTicksVisible visible?)))))
 
 (def xchart/set-axis-title!
    (fn [styler {:keys [font visible? padding]}]
@@ -363,46 +364,50 @@
 
 (def xchart/set-axis-plot!
    (fn [styler {:keys [grid-lines margin tick-marks?]}]
-       (let [{:keys [horizontal? vertical? visible? color stroke]} grid-lines]
+       (do
+          (let [{:keys [horizontal? vertical? visible? color stroke]} grid-lines]
+             (xchart/doto-cond
+                styler
+                (not (nil? visible?))    (. :setPlotGridLinesVisible visible?)
+                color                    (. :setPlotGridLinesColor (get xchart/colors color color))
+                stroke                   (. :setPlotGridLinesStroke (get xchart/strokes stroke stroke))
+                (not (nil? horizontal?)) (. :setPlotGridHorizontalLinesVisible horizontal?)
+                (not (nil? vertical?))   (. :setPlotGridVerticalLinesVisible vertical?)))
           (xchart/doto-cond
              styler
-             (not (nil? visible?))    (. :setPlotGridLinesVisible visible?)
-             color                    (. :setPlotGridLinesColor (get xchart/colors color color))
-             stroke                   (. :setPlotGridLinesStroke (get xchart/strokes stroke stroke))
-             (not (nil? horizontal?)) (. :setPlotGridHorizontalLinesVisible horizontal?)
-             (not (nil? vertical?))   (. :setPlotGridVerticalLinesVisible vertical?)))
-       (xchart/doto-cond
-          styler
-          margin                   (. :setPlotMargin margin)
-          (not (nil? tick-marks?)) (. :setPlotTicksMarksVisible tick-marks?))))
+             margin                   (. :setPlotMargin margin)
+             (not (nil? tick-marks?)) (. :setPlotTicksMarksVisible tick-marks?)))))
 
 (def xchart/set-x-axis-style!
    (fn [styler
         {:keys [label logarithmic? max min decimal-pattern
                 tick-mark-spacing-hint ticks-visible? title-visible?]}]
-       (let [{:keys [alignment rotation]} label]
+       (do
+          (let [{:keys [alignment rotation]} label]
+             (xchart/doto-cond
+                styler
+                alignment (. :setXAxisLabelAlignment (get xchart/text-alignments alignment alignment))
+                rotation  (. :setXAxisLabelRotation rotation)))
           (xchart/doto-cond
              styler
-             alignment (. :setXAxisLabelAlignment (get xchart/text-alignments alignment alignment))
-             rotation  (. :setXAxisLabelRotation rotation)))
-       (xchart/doto-cond
-          styler
-          decimal-pattern             (. :setXAxisDecimalPattern decimal-pattern)
-          (not (nil? logarithmic?))   (. :setXAxisLogarithmic logarithmic?)
-          max                         (. :setXAxisMax max)
-          min                         (. :setXAxisMin min)
-          tick-mark-spacing-hint      (. :setXAxisTickMarkSpacingHint tick-mark-spacing-hint)
-          (not (nil? ticks-visible?)) (. :setXAxisTicksVisible ticks-visible?)
-          (not (nil? title-visible?)) (. :setXAxisTitleVisible title-visible?))))
+             decimal-pattern             (. :setXAxisDecimalPattern decimal-pattern)
+             (not (nil? logarithmic?))   (. :setXAxisLogarithmic logarithmic?)
+             max                         (. :setXAxisMax max)
+             min                         (. :setXAxisMin min)
+             tick-mark-spacing-hint      (. :setXAxisTickMarkSpacingHint tick-mark-spacing-hint)
+             (not (nil? ticks-visible?)) (. :setXAxisTicksVisible ticks-visible?)
+            (not (nil? title-visible?)) (. :setXAxisTitleVisible title-visible?)))))
 
 (def xchart/set-y-axis-style!
    (fn [styler
         {:keys [label logarithmic? max min decimal-pattern
                 tick-mark-spacing-hint ticks-visible? title-visible?]}]
-       (let [{:keys [alignment rotation]} label]
-          (xchart/doto-cond
-             styler
-             alignment (. :setYAxisLabelAlignment (get xchart/text-alignments alignment alignment))))
+       (do
+          (let [{:keys [alignment rotation]} label]
+             (xchart/doto-cond
+                styler
+                alignment (. :setYAxisLabelAlignment (get xchart/text-alignments alignment alignment))))
+          
           (xchart/doto-cond
              styler
              decimal-pattern             (. :setYAxisDecimalPattern decimal-pattern)
@@ -411,7 +416,7 @@
              min                         (. :setYAxisMin min)
              tick-mark-spacing-hint      (. :setYAxisTickMarkSpacingHint tick-mark-spacing-hint)
              (not (nil? ticks-visible?)) (. :setYAxisTicksVisible ticks-visible?)
-             (not (nil? title-visible?)) (. :setYAxisTitleVisible title-visible?))))
+             (not (nil? title-visible?)) (. :setYAxisTitleVisible title-visible?)))))
 
 (def xchart/set-axes-style!
    (fn [styler

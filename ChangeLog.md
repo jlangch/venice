@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed documentation for functions 'proxify' and 'cond'
+- fixed xchart extension module xy-chart axis styling
 
 
 
