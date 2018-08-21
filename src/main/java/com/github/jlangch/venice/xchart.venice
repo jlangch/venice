@@ -222,7 +222,6 @@
      :outside-e  (. :Styler$LegendPosition :OutsideE)
      :outside-s  (. :Styler$LegendPosition :OutsideS) })
 
-;; TODO support this
 (def xchart/legend-layout
    { :vertical   (. :Styler$LegendLayout :Vertical)
      :horizontal (. :Styler$LegendLayout :Horizontal) })
@@ -266,6 +265,7 @@
           font                  (. :setLegendFont font)
           padding               (. :setLegendPadding padding)
           position              (. :setLegendPosition (get xchart/legend-positions position))
+          layout                (. :setLegendLayout (get xchart/legend-layout layout))
           series-line-length    (. :setLegendSeriesLineLength series-line-length)
           (not (nil? visible?)) (. :setLegendVisible visible?))))
 
@@ -396,7 +396,7 @@
              min                         (. :setXAxisMin min)
              tick-mark-spacing-hint      (. :setXAxisTickMarkSpacingHint tick-mark-spacing-hint)
              (not (nil? ticks-visible?)) (. :setXAxisTicksVisible ticks-visible?)
-            (not (nil? title-visible?)) (. :setXAxisTitleVisible title-visible?)))))
+             (not (nil? title-visible?)) (. :setXAxisTitleVisible title-visible?)))))
 
 (def xchart/set-y-axis-style!
    (fn [styler
