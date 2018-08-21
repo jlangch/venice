@@ -65,7 +65,7 @@ public class HexFormatter {
 	 * 
 	 * @param	binary An optional binary array
 	 * @param	delimiter An optional delimiter
-	 * @param	deprefixWith0x prefix every byte with '0x'
+	 * @param	prefixWith0x prefix every byte with '0x'
 	 * 
 	 * @return	The hex formatted string or an empty string if the 
 	 * 			<tt>binary</tt> is <tt>null</tt> or empty
