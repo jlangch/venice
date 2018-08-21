@@ -359,7 +359,7 @@ through extension modules
 
 ### JSON
 
-Venice supports JSON if the Jackson libs are on the runtime classpath:
+Venice supports JSON if the [Jackson](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
 
  - jackson-core-2.9.x.jar
  - jackson-databind-2.9.x.jar
@@ -389,7 +389,7 @@ The Jackson _jdk8_ module is loaded automatically if it is available
 
 ### Charts
 
-Venice supports rendering charts if the XChart library is on the runtime 
+Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime 
 classpath:
 
  - xchart-3.5.x.jar
