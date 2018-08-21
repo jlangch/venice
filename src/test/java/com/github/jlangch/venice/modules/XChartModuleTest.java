@@ -50,7 +50,8 @@ public class XChartModuleTest {
 			"         { :title \"Longest running distance\"                        \n" +
 			"           :x-axis { :title \"Months (since start)\" }                \n" +
 			"           :y-axis { :title \"Distance\"                              \n" +
-			"                     :decimal-pattern \"##.## km\" }                  \n" +
+			"                     :decimal-pattern \"##.## km\"                    \n" +
+			"                     :label { :alignment :right} }                    \n" +
 			"           :theme :matlab } ))                                        \n" +
 			"                                                                      \n" +
 			"    (sleep 20000)                                                     \n" +
