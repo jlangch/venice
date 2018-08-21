@@ -397,7 +397,7 @@ classpath:
 
 ##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/line-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -420,7 +420,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/area-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -446,9 +446,32 @@ classpath:
       (. :java.io.File :new "area-chart.png")))
 ```
 
+##### Scatter Chart Example
+
+<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/scatter-chart.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "Rand" { :x (map (fn [x] (rand-long 10)) (range 10))
+                    :y (map (fn [x] (rand-long 10)) (range 10)) } }
+         { :title "Scatter Chart"
+           :render-style :scatter
+           :marker { :size 20 }
+           :x-axis { :title "X" :decimal-pattern "#0.0" :min 0.0 :max 10.0 }
+           :y-axis { :title "Y" :decimal-pattern "#0.0" :min 0.0 :max 10.0 }
+           :theme :xchart } )
+      :png ;; write as PNG
+      120  ;; render with 120 dpi
+      (. :java.io.File :new "scatter-chart.png")))
+```
+
 ##### Bubble Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/bubble-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/bubble-chart.png" width="300">
 
 ```clojure
 (do
@@ -484,7 +507,7 @@ classpath:
 
 ##### Bar Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/bar-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/bar-chart.png" width="300">
 
 ```clojure
 (do
@@ -505,7 +528,7 @@ classpath:
 
 ##### Pie Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/pie-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/pie-chart.png" width="300">
 
 ```clojure
 (do
