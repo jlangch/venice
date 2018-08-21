@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/e3628933/doc/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/e3628933/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -25,16 +25,16 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/e3628933/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/e3628933/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/cheatsheet.pdf)
 
 
 ## REPL
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.8.3.jar`
+Start the REPL with `java -jar venice-0.8.4.jar`
 
 ```text
 venice> (+ 1 1)
@@ -352,7 +352,6 @@ explicitely.
 Venice supports
 
   - JSON
-  - Protocol/Logger
   - Charts
   
 through extension modules
@@ -366,7 +365,7 @@ Venice supports JSON if the Jackson libs are on the runtime classpath:
  - jackson-databind-2.9.x.jar
  - jackson-datatype-jdk8-2.9.x.jar (optional Jdk8 module)
  
-The Jackson Jdk8 module is loaded automatically if it is available
+The Jackson _jdk8_ module is loaded automatically if it is available
  
 
 ```clojure
@@ -387,38 +386,6 @@ The Jackson Jdk8 module is loaded automatically if it is available
 )
 ```
 
-### Protocol/Logger
-
-Venice provides a simple protocol facility.
-
-```clojure
-(do
-   (load-module :protocol)
- 
-   ;; open
-   (protocol/open)
-   
-   (protocol/log :INFO "test info")
-   (protocol/log :WARN "test warn")
-   (protocol/log :ALERT "test alert")
-   
-   ;; return the protocol as a string
-   (protocol/to-string))
-```
-
-```clojure
-(do
-   (load-module :protocol)
- 
-   ;; open and attach to the current out stream
-   (protocol/open)
-   (protocol/attach-os *out*)
-   
-   (protocol/log :INFO "test info")
-   (protocol/log :WARN "test warn")
-   (protocol/log :ALERT "test alert"))
-```
-
 
 ### Charts
 
@@ -430,7 +397,7 @@ classpath:
 
 ##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/line-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -453,7 +420,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/area-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -471,8 +438,8 @@ classpath:
          { :title "Area Chart"
            :render-style :area
            :legend {:position :inside-ne}
-           :x-axis { :title "X" :decimal-pattern "#0"}
-           :y-axis { :title "Y" :decimal-pattern "#0"}
+           :x-axis { :title "X" :decimal-pattern "#0.#"}
+           :y-axis { :title "Y" :decimal-pattern "#0.#"}
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
@@ -481,7 +448,7 @@ classpath:
 
 ##### Bubble Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/ca4614ed/doc/charts/bubble-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/bubble-chart.png" width="300">
 
 ```clojure
 (do
@@ -517,7 +484,7 @@ classpath:
 
 ##### Bar Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/bar-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/bar-chart.png" width="300">
 
 ```clojure
 (do
@@ -538,7 +505,7 @@ classpath:
 
 ##### Pie Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/e3628933/doc/charts/pie-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/0bc6e4aa/doc/charts/pie-chart.png" width="300">
 
 ```clojure
 (do
@@ -565,7 +532,7 @@ classpath:
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.8.3'
+    compile 'com.github.jlangch:venice:0.8.4'
 }
 ```
 
@@ -577,7 +544,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.8.3</version>
+        <version>0.8.4</version>
     </dependency>
 </dependencies>
 ```
