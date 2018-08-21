@@ -448,16 +448,20 @@ classpath:
 
 ##### Scatter Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/c2bf71cc/doc/charts/scatter-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/fac75232/doc/charts/scatter-chart.png" width="300">
 
 ```clojure
 (do
    (load-module :xchart)
 
+   (def rand-list (fn [count max] (map (fn [x] (rand-long max)) (range count))))
+
    (xchart/write-to-file
       (xchart/xy-chart
-         { "Rand" { :x (map (fn [x] (rand-long 10)) (range 10))
-                    :y (map (fn [x] (rand-long 10)) (range 10)) } }
+         { "Rand 1" { :x (rand-list 8 10)
+                      :y (rand-list 8 10) }
+           "Rand 2" { :x (rand-list 8 10)
+                      :y (rand-list 8 10) } }
          { :title "Scatter Chart"
            :render-style :scatter
            :marker { :size 20 }
