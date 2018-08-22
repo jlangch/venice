@@ -7,25 +7,32 @@
 
 
 (def webdav/avail? (fn []
-   (some? (. :com.github.sardine.Sardine :class))))
+   (some? (. :Sardine :class))))
 
-(def webdav/get (fn [url props]
+(def webdav/get-as-stream (fn [url props]
    (let [{:keys [username password]} 
-         sardine (. : SardineFactory :begin username password]) 
+         sardine (. :SardineFactory :begin username password)] 
          (try      
             (. sardine :get)
-            (finally (. sardine :shutdown)))
+            (finally (. sardine :shutdown))))))
+
+(def webdav/get-as-file (fn [url props file]
+   (try-with [os (webdav/get-as-stream url props)]
+      (io/spit-stream os bytes :flush true))))
 
 (def webdav/put (fn [url data props]
    (let [{:keys [username password content-type]} 
-         sardine (. : SardineFactory :begin username password])       
+         sardine (. :SardineFactory :begin username password)]       
          (try      
             (. sardine :put url data content-type)
-            (finally (. sardine :shutdown)))
+            (finally (. sardine :shutdown))))))
 
-(def webdav/put (fn [url data props]
-   (let [{:keys [username password content-type]} 
-         sardine (. : SardineFactory :begin username password])       
+(def webdav/put-file (fn [url file props]
+   (webdav/put url (io/slurp file :binary true) props)))
+
+(def webdav/exists? (fn [url props]
+   (let [{:keys [username password]} 
+         sardine (. :SardineFactory :begin username password)]       
          (try      
             (. sardine :exists url)
-            (finally (. sardine :shutdown)))
+            (finally (. sardine :shutdown))))))
