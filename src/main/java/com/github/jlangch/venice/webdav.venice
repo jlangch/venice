@@ -1,0 +1,31 @@
+;; webDAV utils (requires Sardine library on classpath)
+
+(import :com.github.sardine.DavResource)
+(import :com.github.sardine.Sardine)
+(import :com.github.sardine.SardineFactory)
+(import :com.github.sardine.Version)
+
+
+(def webdav/avail? (fn []
+   (some? (. :com.github.sardine.Sardine :class))))
+
+(def webdav/get (fn [url props]
+   (let [{:keys [username password]} 
+         sardine (. : SardineFactory :begin username password]) 
+         (try      
+            (. sardine :get)
+            (finally (. sardine :shutdown)))
+
+(def webdav/put (fn [url data props]
+   (let [{:keys [username password content-type]} 
+         sardine (. : SardineFactory :begin username password])       
+         (try      
+            (. sardine :put url data content-type)
+            (finally (. sardine :shutdown)))
+
+(def webdav/put (fn [url data props]
+   (let [{:keys [username password content-type]} 
+         sardine (. : SardineFactory :begin username password])       
+         (try      
+            (. sardine :exists url)
+            (finally (. sardine :shutdown)))

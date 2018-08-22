@@ -79,5 +79,5 @@ public class ModuleLoader {
 	private static final Map<String,String> modules = new HashMap<>();
 	
 	private static final Set<String> validModules = 
-			new HashSet<>(Arrays.asList("core", "json", "protocol", "http", "xchart"));
+			new HashSet<>(Arrays.asList("core", "json", "protocol", "http", "xchart", "webdav"));
 }
