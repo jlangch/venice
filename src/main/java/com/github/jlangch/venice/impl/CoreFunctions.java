@@ -6876,21 +6876,25 @@ public class CoreFunctions {
 		{
 			setArgLists("(thread-local)");
 			
-			setDoc("Creates a new thread-local");
+			setDoc("Creates a new thread-local accessor");
 			
-			setExamples(				
-					"(do                           \n" +
-					"   (def ctx (thread-local))   \n" +
-					"   (assoc ctx :a 1 :b 2)      \n" +
-					"   (dissoc ctx :a)            \n" +
-					"   (get ctx :a 100)           \n" +
-					")                              ");
+			setExamples(
+					"(thread-local :a 1 :b 2)", 
+					"(thread-local { :a 1 :b 2 })",
+					"(do \n" +
+					"   (assoc (thread-local) :a 1 :b 2) \n" +
+					"   (dissoc (thread-local) :a) \n" +
+					"   (get (thread-local) :b 100) \n" +
+					")");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("thread-local", args, 0);
-			
-			return new VncThreadLocal();
+			if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
+				return new VncThreadLocal(((VncMap)args.nth(0)).getMap());
+			}
+			else {
+				return new VncThreadLocal(args);
+			}
 		}
 	};
 

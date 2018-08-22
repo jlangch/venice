@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Map;
+
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
@@ -30,6 +32,13 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal() { 
 	}
 	
+	public VncThreadLocal(final Map<VncVal,VncVal> val) {
+		val.entrySet().forEach(e -> set(Coerce.toVncKeyword(e.getKey()), e.getValue()));
+	}
+	
+	public VncThreadLocal(final VncList lst) {
+		assoc(lst);
+	}
 
 	public VncThreadLocal copy() { 
 		return this;

@@ -33,10 +33,9 @@ public class ThreadLocalTest {
 		final Venice venice = new Venice();
 
 		final String s = 
-				"(do                           \n" +
-				"   (def ctx (thread-local))   \n" +
-				"   (assoc ctx :a 1 :b 2)      \n" +
-				"   (get ctx :a)               \n" +
+				"(do                                   \n" +
+				"   (assoc (thread-local) :a 1 :b 2)   \n" +
+				"   (get (thread-local) :a)            \n" +
 				")                              ";
 	
 		assertEquals("1", venice.eval("(str " + s + ")"));
@@ -48,11 +47,10 @@ public class ThreadLocalTest {
 
 		final String s = 
 				"(do                           \n" +
-				"   (def ctx (thread-local))   \n" +
-				"   (assoc ctx :a 1 :b 2)      \n" +
-				"   (dissoc ctx :a)            \n" +
-				"   (get ctx :a 100)           \n" +
-				")                              ";
+				"   (assoc (thread-local) :a 1 :b 2)  \n" +
+				"   (dissoc (thread-local) :a)        \n" +
+				"   (get (thread-local) :a 100)       \n" +
+				")                                      ";
 	
 		assertEquals("100", venice.eval("(str " + s + ")"));
 	}
