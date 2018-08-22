@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.JavaInterceptor;
 import com.github.jlangch.venice.util.NullOutputStream;
@@ -126,7 +127,7 @@ public class Venice {
 			throw ex;
 		}
 		finally {
-			JavaInterop.unregister();
+			cleanAfterRun();
 		}
 	}
 
@@ -194,7 +195,7 @@ public class Venice {
 			throw ex;
 		}
 		finally {
-			JavaInterop.unregister();
+			cleanAfterRun();
 		}
 	}
 	
@@ -256,6 +257,20 @@ public class Venice {
 		}
 		
 		return env;
+	}
+
+	private void cleanAfterRun() {
+		// for security reason remove thread-local map!
+		try {
+			ThreadLocalMap.clear();
+			ThreadLocalMap.remove();
+		}
+		catch(Exception ex) {}
+		
+		try {
+			JavaInterop.unregister();
+		}
+		catch(Exception ex) {}
 	}
 
 	
