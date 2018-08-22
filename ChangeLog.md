@@ -11,11 +11,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added printing exception stack trace in REPL
+- added ...
 
 ### fixed
 
 - fixed a hiding exception with JavaInterop
+- fixed printing full exception stack trace in REPL not just the message
 
 
 
