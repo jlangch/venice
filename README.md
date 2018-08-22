@@ -204,20 +204,15 @@ Working with thread local
 (do
    ;; create the thread local vars :a -> 1 and :b 2
    (thread-local :a 1 :b 2)
-
-   ;; create the thread local vars :c -> 3 and :d 4
-   (thread-local { :c 3 :d 4 })
-   
-   ;; associate (create) the thread local vars :a -> 1 and :b 2
+   (thread-local {:a 1 :b 2})
    (assoc (thread-local) :a 1 :b 2) 
    
    ;; disassociate (remove) the thread local var :a
    (dissoc (thread-local) :a) 
     
-   ;; get the value of the thread locals var :b
+   ;; get the value of the thread local var :b with 
+   ;; an optional default
    (get (thread-local) :b) 
-    
-   ;; get the value of the thread locals var :b with default value 100
    (get (thread-local) :b 100) 
 ))
 ```
