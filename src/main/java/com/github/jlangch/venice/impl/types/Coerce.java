@@ -50,7 +50,22 @@ public class Coerce {
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
-
+	
+	public static VncThreadLocal toVncThreadLocal(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncThreadLocal) {
+			return (VncThreadLocal)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to thread-local. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
 	public static VncKeyword toVncKeyword(final VncVal val) {
 		if (val == null) {
 			return null;

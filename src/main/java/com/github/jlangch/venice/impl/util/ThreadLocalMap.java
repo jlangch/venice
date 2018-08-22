@@ -34,14 +34,30 @@ public class ThreadLocalMap {
 	public ThreadLocalMap() {
 	}
 	
-	public static VncVal get(final VncKeyword name) {
-		return name == null ? Constants.Nil : get().values.get(name);
+	public static VncVal get(final VncKeyword key) {
+		if (key == null) {
+			return Constants.Nil;
+		}
+		else {
+			final VncVal v = get().values.get(key);
+			return v == null ? Constants.Nil : v;
+		}
 	}
 	
-	public static void set(final VncKeyword name, final VncVal val) {
-		if (name != null) {
-			get().values.put(name, val == null ? Constants.Nil : val);
+	public static void set(final VncKeyword key, final VncVal val) {
+		if (key != null) {
+			get().values.put(key, val == null ? Constants.Nil : val);
 		}
+	}
+	
+	public static void remove(final VncKeyword key) {
+		if (key != null) {
+			get().values.remove(key);
+		}
+	}
+	
+	public static boolean containsKey(final VncKeyword key) {
+		return key == null ? false : get().values.containsKey(key);
 	}
 
 	private static ThreadLocalMap get() {
