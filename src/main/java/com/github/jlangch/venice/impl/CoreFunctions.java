@@ -67,6 +67,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -2507,6 +2508,12 @@ public class CoreFunctions {
 				}
 				return new VncString(s);
 			}
+			else if (Types.isVncThreadLocal(args.nth(0))) {
+				final VncThreadLocal th = (VncThreadLocal)args.nth(0);
+				
+				th.assoc((VncList)args.slice(1));
+				return th;
+			}
 			else {
 				throw new VncException(String.format(
 						"Function 'assoc' does not allow %s as collection. %s", 
@@ -2655,6 +2662,12 @@ public class CoreFunctions {
 				}
 				return new VncString(s);
 			}
+			else if (Types.isVncThreadLocal(args.nth(0))) {
+				final VncThreadLocal th = (VncThreadLocal)args.nth(0);
+				
+				th.dissoc((VncList)args.slice(1));
+				return th;
+			}
 			else {
 				throw new VncException(String.format(
 						"Function 'dissoc' does not allow %s as coll. %s", 
@@ -2681,13 +2694,28 @@ public class CoreFunctions {
 			if (args.nth(0) == Nil) {
 				return Nil;
 			} 
-			else {
+			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap mhm = Coerce.toVncMap(args.nth(0));
 				final VncVal key = args.nth(1);
 				final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 				
 				final VncVal value = mhm.get(key);
 				return value != Nil ? value : key_not_found;
+			}
+			else if (Types.isVncThreadLocal(args.nth(0))) {
+				final VncThreadLocal th = Coerce.toVncThreadLocal(args.nth(0));
+				
+				final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
+				final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+				
+				final VncVal value = th.get(key);
+				return value != Nil ? value : key_not_found;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'get' does not allow %s as collection. %s", 
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
 			}
 		}
 	};
@@ -6837,6 +6865,45 @@ public class CoreFunctions {
 			return Nil;
 		}
 	};
+
+
+
+	///////////////////////////////////////////////////////////////////////////
+	// Thread local
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction new_thread_local = new VncFunction("thread-local") {
+		{
+			setArgLists("(thread-local)");
+			
+			setDoc("Creates a new thread-local");
+			
+			setExamples("(do\n   (def ctx (thread-local))\n   (assoc ctx :a 1 :b 2)\n   (get ctx :a))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("thread-local", args, 0);
+			
+			return new VncThreadLocal();
+		}
+	};
+
+	public static VncFunction thread_local_Q = new VncFunction("thread-local?") {
+		{
+			setArgLists("(thread-local? x)");
+			
+			setDoc("Returns true if x is a thread-local, otherwise false");
+			
+			setExamples("(do\n   (def x (thread-local))\n   (thread-local? x))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("thread-local?", args, 1);
+			
+			return Types.isVncThreadLocal(args.nth(0)) ? True : False;
+		}
+	};
+
 	
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
@@ -7088,7 +7155,9 @@ public class CoreFunctions {
 				.put("sleep",				sleep)
 				.put("version",				version)
 				.put("type",				type)
-				
+				.put("thread-local",		new_thread_local)
+				.put("thread-local?",		thread_local_Q)
+								
 				.put("io/file",				io_file)
 				.put("io/file?",			io_file_Q)
 				.put("io/exists-file?",		io_exists_file_Q)

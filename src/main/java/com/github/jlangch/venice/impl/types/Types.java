@@ -42,6 +42,10 @@ public class Types {
 	public static boolean isVncAtom(final VncVal val) {
 		return val != null && (val instanceof VncAtom);
 	}
+	
+	public static boolean isVncThreadLocal(final VncVal val) {
+		return val != null && (val instanceof VncThreadLocal);
+	}
 
 	public static boolean isVncString(final VncVal val) {
 		return val != null && (val instanceof VncString);
@@ -148,6 +152,9 @@ public class Types {
 		}
 		else if (Types.isVncAtom(val)) {
 			return new VncString("venice.Atom");
+		}
+		else if (Types.isVncThreadLocal(val)) {
+			return new VncString("venice.ThreadLocal");
 		}
 		else if (Types.isVncLong(val)) {
 			return new VncString("venice.Long");
