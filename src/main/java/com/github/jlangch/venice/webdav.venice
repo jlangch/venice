@@ -8,10 +8,9 @@
 ;; 
 ;;   (webdav/with {}
 ;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
-;;           (try
-;;              (do
-;;                 (webdav/exists? url)
-;;                 (webdav/get-as-file url "download.doc")))))
+;;           (do
+;;              (webdav/exists? url)
+;;              (webdav/get-as-file url "download.doc")))))
 
 (import :com.github.sardine.DavResource)
 (import :com.github.sardine.Sardine)
