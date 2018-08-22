@@ -104,6 +104,7 @@ public class DocGenerator {
 		return Arrays.asList(
 				getCollectionsSection(),
 				getAtomsSection(),
+				getThreadLocalsSection(),
 				getSpecialFormsSection(),
 				getJavaInteropSection(),
 				getMiscellaneousSection());
@@ -656,6 +657,29 @@ public class DocGenerator {
 		access.addItem(getDocItem("reset!"));
 		access.addItem(getDocItem("swap!"));
 		access.addItem(getDocItem("compare-and-set!"));
+
+		return section;
+	}
+
+	private DocSection getThreadLocalsSection() {
+		final DocSection section = new DocSection("ThreadLocals");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection create = new DocSection("Create");
+		all.addSection(create);
+		create.addItem(getDocItem("thread-local"));
+
+		final DocSection test = new DocSection("Test");
+		all.addSection(test);
+		test.addItem(getDocItem("thread-local?"));
+
+		final DocSection access = new DocSection("Access");
+		all.addSection(access);
+		access.addItem(getDocItem("assoc"));
+		access.addItem(getDocItem("dissoc"));
+		access.addItem(getDocItem("get"));
 
 		return section;
 	}

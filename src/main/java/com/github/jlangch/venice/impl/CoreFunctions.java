@@ -6878,7 +6878,13 @@ public class CoreFunctions {
 			
 			setDoc("Creates a new thread-local");
 			
-			setExamples("(do\n   (def ctx (thread-local))\n   (assoc ctx :a 1 :b 2)\n   (get ctx :a))");
+			setExamples(				
+					"(do                           \n" +
+					"   (def ctx (thread-local))   \n" +
+					"   (assoc ctx :a 1 :b 2)      \n" +
+					"   (dissoc ctx :a)            \n" +
+					"   (get ctx :a 100)           \n" +
+					")                              ");
 		}
 		
 		public VncVal apply(final VncList args) {
