@@ -59,7 +59,7 @@ public class REPL {
 				break;
 			} 
 			catch (Exception e) {
-				System.out.println("Exception: " + e.getMessage());
+				e.printStackTrace();
 				break;
 			}
 			
@@ -73,8 +73,8 @@ public class REPL {
 				System.out.println("Error: " + Printer._pr_str(e.getValue(), false));
 				continue;
 			} 
-			catch (Exception t) {
-				System.out.println("Exception: " + t.getMessage());
+			catch (Exception e) {
+				e.printStackTrace();
 				continue;
 			}
 		}
