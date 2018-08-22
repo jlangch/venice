@@ -6914,6 +6914,21 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction thread_local_clear = new VncFunction("thread-local-clear") {
+		{
+			setArgLists("(thread-local-clear)");
+			
+			setDoc("Removes all thread local vars");
+			
+			setExamples("(thread-local-clear)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("thread-local-clear", args, 0);
+			new VncThreadLocal().clear();
+			return this;
+		}
+	};
 	
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
@@ -7167,6 +7182,7 @@ public class CoreFunctions {
 				.put("type",				type)
 				.put("thread-local",		new_thread_local)
 				.put("thread-local?",		thread_local_Q)
+				.put("thread-local-clear",	thread_local_clear)
 								
 				.put("io/file",				io_file)
 				.put("io/file?",			io_file_Q)

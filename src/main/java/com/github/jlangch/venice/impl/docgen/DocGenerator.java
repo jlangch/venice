@@ -675,6 +675,10 @@ public class DocGenerator {
 		all.addSection(test);
 		test.addItem(getDocItem("thread-local?"));
 
+		final DocSection clear = new DocSection("Clear");
+		all.addSection(clear);
+		clear.addItem(getDocItem("thread-local-clear"));
+
 		final DocSection access = new DocSection("Access");
 		all.addSection(access);
 		access.addItem(getDocItem("assoc"));

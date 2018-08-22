@@ -82,6 +82,11 @@ public class VncThreadLocal extends VncVal {
 		return this;
 	}
 
+	public VncThreadLocal clear() {
+		ThreadLocalMap.clear();
+		return this;
+	}
+
 	
 	@Override 
 	public String toString() {
