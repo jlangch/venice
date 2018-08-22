@@ -198,7 +198,6 @@ Try with resources
 Working with thread local 
 
 ```clojure
-
 ;; the 'thread-local' function returns a map-like accessor 
 ;; to thread local variables
 (do
