@@ -194,32 +194,6 @@ Try with resources
 )
 ```
 
-
-Working with thread local 
-
-```clojure
-;; the 'thread-local' function returns a map-like accessor 
-;; to thread local variables
-(do
-   ;; create the thread local vars :a -> 1 and :b 2
-   (thread-local :a 1 :b 2)
-   (thread-local {:a 1 :b 2})
-   (assoc (thread-local) :a 1 :b 2) 
-   
-   ;; disassociate (remove) the thread local var :a
-   (dissoc (thread-local) :a) 
-    
-   ;; get the value of the thread local var :b with 
-   ;; an optional default
-   (get (thread-local) :b) 
-   (get (thread-local) :b 100) 
-   
-   ;; clear (remove) all thread local vars
-   (thread-local-clear) 
-))
-```
-
-
 Java Callbacks:
 
 ```clojure

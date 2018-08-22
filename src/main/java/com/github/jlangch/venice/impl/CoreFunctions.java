@@ -6882,6 +6882,7 @@ public class CoreFunctions {
 					"(thread-local :a 1 :b 2)", 
 					"(thread-local { :a 1 :b 2 })",
 					"(do \n" +
+					"   (thread-local-clear) \n" +
 					"   (assoc (thread-local) :a 1 :b 2) \n" +
 					"   (dissoc (thread-local) :a) \n" +
 					"   (get (thread-local) :b 100) \n" +
