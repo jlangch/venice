@@ -1,17 +1,35 @@
 ;; webDAV utils (requires Sardine library on classpath)
 
-
+ 
+;; example
+;;
 ;; (do
 ;;   (load-module :webdav)
 ;; 
-;;   (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
-;;        (webdav/open {})
+;;   (webdav/with {}
+;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
+;;           (try
+;;              (do
+;;                 (webdav/exists? url)
+;;                 (webdav/get-as-file url "download.doc")))))
+
+(import :com.github.sardine.DavResource)
+(import :com.github.sardine.Sardine)
+(import :com.github.sardine.SardineFactory)
+;; webDAV utils (requires Sardine library on classpath)
+
+ 
+;; example
+;;
+;; (do
+;;   (load-module :webdav)
 ;; 
-;;        (try
-;;           (do
-;;              (webdav/exists? url)
-;;              (webdav/get-as-file url "download.doc"))
-;;           (finally (webdav/close )))))
+;;   (webdav/with {}
+;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
+;;           (try
+;;              (do
+;;                 (webdav/exists? url)
+;;                 (webdav/get-as-file url "download.doc")))))
 
 (import :com.github.sardine.DavResource)
 (import :com.github.sardine.Sardine)
@@ -21,20 +39,23 @@
 (import :java.io.FileOutputStream)
 
 
-(def *sardine* (atom nil))
+(defmacro 
+  webdav/with [props & body]
+        `(let [{:keys [username password]} ~props]          
+            (thread-local :sardine (. :SardineFactory :begin username password))
+            (try
+               (do ~@body)
+               (finally 
+                  (do 
+                     (. (get (thread-local) :sardine) :shutdown) 
+                     (dissoc (thread-local) :sardine))))))
 
-(def webdav/avail? (fn []
-   (some? (. :Sardine :class))))
 
-(def webdav/open (fn [ {:keys [username password]} ] 
-     (reset! *sardine* (. :SardineFactory :begin username password))))
-
-(def webdav/close (fn []
-   (do
-      (. (deref *sardine*) :shutdown)
-      (reset! *sardine* nil))))
-
-(def webdav/get-as-stream (fn [url] (. (deref *sardine*) :get url)))
+(def webdav/avail? (fn [] (some? (. :Sardine :class))))
+ 
+(def webdav/version (fn [] (. :Version :getSpecification)))
+  
+(def webdav/get-as-stream (fn [url] (. (get (thread-local) :sardine) :get url)))
 
 (def webdav/get-as-bytes (fn [url] 
    (try-with [is (webdav/get-as-stream url)] 
@@ -47,9 +68,47 @@
                              :flush true))))
 
 (def webdav/put (fn [url data]
-   (. (deref *sardine*) :put url data content-type)))
+   (. (get (thread-local) :sardine) :put url data content-type)))
 
 (def webdav/put-file (fn [url file]
    (webdav/put url (io/slurp file :binary true))))
 
-(def webdav/exists? (fn [url] (. (deref *sardine*) :exists url)))
+(def webdav/exists? (fn [url] (. (get (thread-local) :sardine) :exists url)))
+
+(import :java.io.FileOutputStream)
+
+
+(defmacro 
+  webdav/with [props & body]
+        `(let [{:keys [username password]} ~props]          
+            (thread-local :sardine (. :SardineFactory :begin username password))
+            (try
+               (do ~@body)
+               (finally 
+                  (do 
+                     (. (get (thread-local) :sardine) :shutdown) 
+                     (dissoc (thread-local) :sardine))))))
+
+
+(def webdav/avail? (fn []
+   (some? (. :Sardine :class))))
+
+(def webdav/get-as-stream (fn [url] (. (get (thread-local) :sardine) :get url)))
+
+(def webdav/get-as-bytes (fn [url] 
+   (try-with [is (webdav/get-as-stream url)] 
+             (io/slurp-stream is :binary true))))
+
+(def webdav/get-as-file (fn [url file]
+   (try-with [os (. :FileOutputStream :new file)]
+             (io/spit-stream os 
+                             (webdav/get-as-bytes url) 
+                             :flush true))))
+
+(def webdav/put (fn [url data]
+   (. (get (thread-local) :sardine) :put url data content-type)))
+
+(def webdav/put-file (fn [url file]
+   (webdav/put url (io/slurp file :binary true))))
+
+(def webdav/exists? (fn [url] (. (get (thread-local) :sardine) :exists url)))
