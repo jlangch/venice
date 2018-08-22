@@ -280,6 +280,13 @@ public class JavaInteropTest {
 	}
 	
 	@Test
+	public void testStaticVoid() {
+		final Venice venice = new Venice();
+
+		assertEquals("123", venice.eval("(. :com.github.jlangch.venice.support.JavaObject :staticVoid)"));
+	}
+
+	@Test
 	@Ignore
 	public void testJavaSandboxRecorder() {
 		final Venice venice = new Venice(new JavaSandboxRecorder());
