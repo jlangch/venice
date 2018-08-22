@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### fixed
 
-- fixed a hiding exception with JavaInterop
+- fixed a hiding exception problem with JavaInterop on static method calls
 - fixed printing full exception stack trace in REPL not just the message
 
 
