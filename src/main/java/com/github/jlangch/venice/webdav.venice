@@ -11,6 +11,15 @@
 ;;           (do
 ;;              (webdav/exists? url)
 ;;              (webdav/get-as-file url "download.doc")))))
+;;
+;; (do
+;;   (load-module :webdav)
+;; 
+;;   (webdav/with {:username "jon.doe" :password "123456"}
+;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
+;;           (do
+;;              (webdav/exists? url)
+;;              (webdav/get-as-file url "download.doc")))))
 
 (import :com.github.sardine.DavResource)
 (import :com.github.sardine.Sardine)
@@ -48,11 +57,22 @@
                              (webdav/get-as-bytes url) 
                              :flush true))))
 
-(def webdav/put (fn [url data]
+(def webdav/exists? (fn [url] (. (get (thread-local) :sardine) :exists url)))
+
+(def webdav/put! (fn [url data]
    (. (get (thread-local) :sardine) :put url data content-type)))
 
-(def webdav/put-file (fn [url file]
+(def webdav/put-file! (fn [url file]
    (webdav/put url (io/slurp file :binary true))))
 
-(def webdav/exists? (fn [url] (. (get (thread-local) :sardine) :exists url)))
+(def webdav/list (fn [url depth] (. (get (thread-local) :sardine) :list url depth)))
+
+(def webdav/delete! (fn [url] (. (get (thread-local) :sardine) :delete url)))
+
+(def webdav/createDirectory! (fn [url] (. (get (thread-local) :sardine) :createDirectory url)))
+
+(def webdav/move! (fn [srcUrl dstUrl] (. (get (thread-local) :sardine) :move srcUrl dstUrl)))
+
+(def webdav/copy! (fn [srcUrl dstUrl] (. (get (thread-local) :sardine) :copy srcUrl dstUrl)))
+
 
