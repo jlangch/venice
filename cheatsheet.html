@@ -166,7 +166,7 @@
     <body>
         <div class="main">
             <div class="header">    
-                 <h1>Venice 0.8.4 Cheat Sheet</h1>
+                 <h1>Venice 0.8.5 Cheat Sheet</h1>
             </div>
 
             <div class="column">
@@ -519,13 +519,39 @@
 
                                 </div>
                                 <div class="section">
+                                    <h2>ThreadLocals</h2>
+                                                        <h3></h3>
+                                                        <table>
+                                                            <tbody>
+                                                                                            <tr>
+                                                                                                <td>Create</td>
+                                                                                                <td><code><a href="#1233">thread-local</a> </code></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Test</td>
+                                                                                                <td><code><a href="#1234">thread-local?</a> </code></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Clear</td>
+                                                                                                <td><code><a href="#1235">thread-local-clear</a> </code></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Access</td>
+                                                                                                <td><code><a href="#1223">assoc</a> <a href="#1224">dissoc</a> <a href="#1218">get</a> </code></td>
+                                                                                            </tr>
+
+                                                            </tbody>
+                                                        </table>
+
+                                </div>
+                                <div class="section">
                                     <h2>Special Forms</h2>
                                                         <h3></h3>
                                                         <table>
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>Forms</td>
-                                                                                                <td><code><a href="#1233">def</a> <a href="#1234">if</a> <a href="#1235">do</a> <a href="#1236">let</a> <a href="#1237">fn</a> <a href="#1238">loop</a> <a href="#1239">recur</a> <a href="#1240">try</a> <a href="#1241">try-with</a> </code></td>
+                                                                                                <td><code><a href="#1236">def</a> <a href="#1237">if</a> <a href="#1238">do</a> <a href="#1239">let</a> <a href="#1240">fn</a> <a href="#1241">loop</a> <a href="#1242">recur</a> <a href="#1243">try</a> <a href="#1244">try-with</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -539,7 +565,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>General</td>
-                                                                                                <td><code><a href="#1242">.</a> <a href="#1243">proxify</a> <div> </div><div>Invoke constructors</div><div>Invoke static or instance methods</div><div>Access static or instance fields</div></code></td>
+                                                                                                <td><code><a href="#1245">.</a> <a href="#1246">proxify</a> <div> </div><div>Invoke constructors</div><div>Invoke static or instance methods</div><div>Access static or instance fields</div></code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -553,7 +579,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td>JSON</td>
-                                                                                                <td><code><a href="#1244">json/pretty-print</a> <a href="#1245">json/to-json</a> <a href="#1246">json/to-pretty-json</a> <a href="#1247">json/parse</a> <div> </div><a href="#1248">json/avail?</a> <a href="#1249">json/avail-jdk8-module?</a> <div> </div><div>Available if Jackson libs are on runtime classpath</div></code></td>
+                                                                                                <td><code><a href="#1247">json/pretty-print</a> <a href="#1248">json/to-json</a> <a href="#1249">json/to-pretty-json</a> <a href="#1250">json/parse</a> <div> </div><a href="#1251">json/avail?</a> <a href="#1252">json/avail-jdk8-module?</a> <div> </div><div>Available if Jackson libs are on runtime classpath</div></code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -692,7 +718,7 @@
                                         <code>(-&gt;&gt; 5 (+ 3) (/ 32) (- 1))<br/>=&gt; -3<br/><br/>(-&gt;&gt; [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]<br/>     (map (fn [x] (get x :b)))<br/>     (filter (fn [x] (&gt; x 4)))<br/>     (map inc)))) <br/>=&gt; (7 9)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1242">
+                                <div class="detail" id="1245">
                                     <h1>.</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -703,7 +729,7 @@
                                         <code>Java interop. Calls a constructor or an object method. The function is sandboxed</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke constructor <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-08-21T10:46:43.844+02:00[Europe/Zurich]<br/><br/>;; invoke constructor with param <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke constructor <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-08-23T08:02:15.530+02:00[Europe/Zurich]<br/><br/>;; invoke constructor with param <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. &quot;java.lang.Math&quot; :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -1309,7 +1335,7 @@
                                         <code>(dedupe [1 2 2 2 3 4 4 2 3])<br/>=&gt; [1 2 3 4 2 3]<br/><br/>(dedupe &apos;(1 2 2 2 3 4 4 2 3))<br/>=&gt; (1 2 3 4 2 3)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1233">
+                                <div class="detail" id="1236">
                                     <h1>def</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1393,7 +1419,7 @@
                                         <code>(distinct [1 2 3 4 2 3 4])<br/>=&gt; [1 2 3 4]<br/><br/>(distinct &apos;(1 2 3 4 2 3 4))<br/>=&gt; (1 2 3 4)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1235">
+                                <div class="detail" id="1238">
                                     <h1>do</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1670,7 +1696,7 @@
                                         <code>Creates a function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-aaeeb448-e55a-4ef8-948a-a57882a97171<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-f98ad425-6328-4414-8c25-3cc0fceb2375</code>
+                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-11c027f6-0f61-42ce-8d0e-5c3fb4f208f1<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-d8c36888-2186-46f3-bd2a-2d23aa580a05</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1088">
@@ -1785,7 +1811,7 @@
                                         <code>(identity 4)<br/>=&gt; 4<br/><br/>(filter identity [1 2 3 nil 4 false true 1234])<br/>=&gt; [1 2 3 4 true 1234]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1234">
+                                <div class="detail" id="1237">
                                     <h1>if</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2122,7 +2148,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1249">
+                                <div class="detail" id="1252">
                                     <h1>json/avail-jdk8-module?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2136,7 +2162,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1248">
+                                <div class="detail" id="1251">
                                     <h1>json/avail?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2150,7 +2176,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1247">
+                                <div class="detail" id="1250">
                                     <h1>json/parse</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2164,7 +2190,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1244">
+                                <div class="detail" id="1247">
                                     <h1>json/pretty-print</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2178,7 +2204,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1245">
+                                <div class="detail" id="1248">
                                     <h1>json/to-json</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2192,7 +2218,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1246">
+                                <div class="detail" id="1249">
                                     <h1>json/to-pretty-json</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2290,7 +2316,7 @@
                                         <code>(last nil)<br/>=&gt; nil<br/><br/>(last [])<br/>=&gt; nil<br/><br/>(last [1 2 3])<br/>=&gt; 3<br/><br/>(last &apos;())<br/>=&gt; nil<br/><br/>(last &apos;(1 2 3))<br/>=&gt; 3</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1236">
+                                <div class="detail" id="1239">
                                     <h1>let</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2385,7 +2411,7 @@
                                         <code>Loads a Venice predefined extension module.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (load-module :protocol))<br/>=&gt; anonymous-09a387a0-16d6-44f9-ab4e-af01360e46ae</code>
+                                        <code>(do <br/>   (load-module :protocol))<br/>=&gt; anonymous-71a53700-f60c-43fe-b44a-90d3dae97624</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1114">
@@ -2416,7 +2442,7 @@
                                         <code>(long? 4)<br/>=&gt; true<br/><br/>(long? 3.1)<br/>=&gt; false<br/><br/>(long? true)<br/>=&gt; false<br/><br/>(long? nil)<br/>=&gt; false<br/><br/>(long? {})<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1238">
+                                <div class="detail" id="1241">
                                     <h1>loop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2920,7 +2946,7 @@
                                         <code>(do (println 200) (println [10 20 30]))<br/>200<br/>[10 20 30]<br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1243">
+                                <div class="detail" id="1246">
                                     <h1>proxify</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2945,7 +2971,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. Without argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.3874957441240834<br/><br/>(rand-double 100.0)<br/>=&gt; 6.846347341958603</code>
+                                        <code>(rand-double)<br/>=&gt; 0.5788214370326952<br/><br/>(rand-double 100.0)<br/>=&gt; 93.5429301622999</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1029">
@@ -2959,7 +2985,7 @@
                                         <code>Without argument returns a Gaussion distributed double value with mean 0.0 and standard deviation 1.0. With argument mean and stddev returns a Gaussion distributed double value with the given mean and standard deviation.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-gaussian)<br/>=&gt; 0.00140135447583941<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; 3.4303881405923207</code>
+                                        <code>(rand-gaussian)<br/>=&gt; -0.5743921865996716<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; -2.7369604182054843</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1027">
@@ -2973,7 +2999,7 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. Without argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 4261030660527856332<br/><br/>(rand-long 100)<br/>=&gt; 97</code>
+                                        <code>(rand-long)<br/>=&gt; 253700784733705510<br/><br/>(rand-long 100)<br/>=&gt; 99</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1153">
@@ -3018,7 +3044,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1239">
+                                <div class="detail" id="1242">
                                     <h1>recur</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3733,6 +3759,48 @@
                                         <code>(take-while neg? [-2 -1 0 1 2 3])<br/>=&gt; [-2 -1]</code>
                                     </div>
                                 </div>
+                                <div class="detail" id="1233">
+                                    <h1>thread-local</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                          <code>(thread-local)</code>                          
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Creates a new thread-local accessor</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(thread-local :a 1 :b 2)<br/>=&gt; ThreadLocal<br/><br/>(thread-local { :a 1 :b 2 })<br/>=&gt; ThreadLocal<br/><br/>(do <br/>   (thread-local-clear) <br/>   (assoc (thread-local) :a 1 :b 2) <br/>   (dissoc (thread-local) :a) <br/>   (get (thread-local) :b 100) <br/>)<br/>=&gt; 2</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1235">
+                                    <h1>thread-local-clear</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                          <code>(thread-local-clear)</code>                          
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Removes all thread local vars</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(thread-local-clear)<br/>=&gt; thread-local-clear</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1234">
+                                    <h1>thread-local?</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                          <code>(thread-local? x)</code>                          
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns true if x is a thread-local, otherwise false</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(do<br/>   (def x (thread-local))<br/>   (thread-local? x))<br/>=&gt; true</code>
+                                    </div>
+                                </div>
                                 <div class="detail" id="1089">
                                     <h1>throw</h1>
                                     <div class="arglists">
@@ -3772,7 +3840,7 @@
                                         <code>Returns the current time in milliseconds</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ms)<br/>=&gt; 1534841203384</code>
+                                        <code>(time-ms)<br/>=&gt; 1535004135072</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1096">
@@ -3786,7 +3854,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time-ns)<br/>=&gt; 342313252770564</code>
+                                        <code>(time-ns)<br/>=&gt; 401367916738205</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1080">
@@ -3803,7 +3871,7 @@
                                         <code>(true? true)<br/>=&gt; true<br/><br/>(true? false)<br/>=&gt; false<br/><br/>(true? nil)<br/>=&gt; false<br/><br/>(true? 0)<br/>=&gt; false<br/><br/>(true? (== 1 1))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1240">
+                                <div class="detail" id="1243">
                                     <h1>try</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3817,7 +3885,7 @@
                                         <code>(try (throw))<br/>=&gt; VncException: nil<br/><br/>(try (throw &quot;test message&quot;))<br/>=&gt; VncException: test message<br/><br/>(try <br/>   (throw 100) <br/>   (catch :java.lang.Exception ex -100)))<br/>=&gt; -100<br/><br/>(try <br/>   (throw 100) <br/>   (finally (println &quot;...finally&quot;)))<br/>...finally<br/>=&gt; VncException: 100<br/><br/>(try <br/>   (throw 100) <br/>   (catch :java.lang.Exception ex -100) <br/>   (finally (println &quot;...finally&quot;)))<br/>...finally<br/>=&gt; -100<br/><br/>(do <br/>  (import :java.lang.RuntimeException) <br/>  (try <br/>     (throw (. :RuntimeException :new &quot;message&quot;)) <br/>     (catch :RuntimeException ex (. ex :getMessage)))) <br/>)<br/>=&gt; &quot;message&quot;<br/><br/>(do <br/>  (import :com.github.jlangch.venice.ValueException) <br/>  (try <br/>     (throw [1 2 3]) <br/>     (catch :ValueException ex (str (. ex :getValue))) <br/>     (catch :RuntimeException ex &quot;runtime ex&quot;) <br/>     (finally (println &quot;...finally&quot;))) <br/>)<br/>...finally<br/>=&gt; &quot;[1 2 3]&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1241">
+                                <div class="detail" id="1244">
                                     <h1>try-with</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3898,7 +3966,7 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; &quot;d6cbfb05-084d-43ea-ad4a-bd2454f6d142&quot;</code>
+                                        <code>(uuid )<br/>=&gt; &quot;3a52c38d-2ef1-4057-8d7f-a432188478d0&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1222">
@@ -3982,7 +4050,7 @@
                                         <code>Returns the version.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(version )<br/>=&gt; &quot;0.8.4&quot;</code>
+                                        <code>(version )<br/>=&gt; &quot;0.8.5&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1105">
