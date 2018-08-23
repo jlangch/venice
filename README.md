@@ -561,11 +561,23 @@ Venice supports WebDAV if the [Sardine](https://github.com/lookfirst/sardine) li
  
 dependencies:
  
-  - http-client
-  - common-logging
+  - httpclient-4.5.2.jar
+  - httpcore-4.4.4.jar
+  - httpcore-nio-4.4.4.jar
+  - httpmime-4.5.2.jar
+  - commons-logging-1.2-api.jar
+  - commons-logging-1.2.jar
  
- 
+```clojure
+(do
+  (load-module :webdav)
 
+  (webdav/with {:username "jon.doe" :password "123456"}
+     (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
+          (do
+             (webdav/exists? url)
+             (webdav/get-as-file url "download.doc")))))
+```
 
 
 ## Build Dependencies
