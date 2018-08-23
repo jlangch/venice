@@ -555,9 +555,16 @@ classpath:
 
 ### WebDAV
 
-Venice supports WebDAV if the [Sardine](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
+Venice supports WebDAV if the [Sardine](https://github.com/lookfirst/sardine) libs are on the runtime classpath:
 
- - sardine-3.5.x.jar
+ - sardine-5.9.jar
+ 
+dependencies:
+ 
+  - http-client
+  - common-logging
+ 
+ 
 
 
 
