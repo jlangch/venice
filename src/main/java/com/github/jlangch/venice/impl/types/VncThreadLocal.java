@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -58,7 +61,7 @@ public class VncThreadLocal extends VncVal {
 
 	
 	public VncVal containsKey(final VncKeyword key) {
-		return key != null && ThreadLocalMap.containsKey(key) ? Constants.True : Constants.False;
+		return key != null && ThreadLocalMap.containsKey(key) ? True : False;
 	}
 
 	public VncThreadLocal assoc(final VncVal... mvs) {
