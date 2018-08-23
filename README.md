@@ -352,6 +352,7 @@ Venice supports
 
   - JSON
   - Charts
+  - WebDAV
   
 through extension modules
   
@@ -551,6 +552,13 @@ classpath:
       120  ;; render with 120 dpi
       (. :java.io.File :new "pie-chart.png")))
 ```
+
+### WebDAV
+
+Venice supports WebDAV if the [Sardine](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
+
+ - sardine-3.5.x.jar
+
 
 
 ## Build Dependencies
