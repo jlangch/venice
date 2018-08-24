@@ -24,6 +24,8 @@ package com.github.jlangch.venice.javainterop;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 
 public class JavaSandboxRecorder extends JavaInterceptor {
@@ -104,12 +106,9 @@ public class JavaSandboxRecorder extends JavaInterceptor {
 	}
 	
 	private String arguments(final Object... args) {
-		final StringBuilder b = new StringBuilder();
-		for (Object o : args) {
-			if (b.length()>0) b.append(',');
-			b.append(type(o));
-		}
-		return b.toString();
+		return Arrays.stream(args)
+					 .map(a -> type(a))
+					 .collect(Collectors.joining(","));
 	}
 
 	private boolean isClass(final Object o) {

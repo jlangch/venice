@@ -254,7 +254,7 @@
    { :arglists '("(load-module s)")
      :doc "Loads a Venice predefined extension module." 
      :examples '("(do 
-                 |   (load-module :protocol))") }
+                 |   (load-module :xchart))") }
    
    load-module [s]
    
