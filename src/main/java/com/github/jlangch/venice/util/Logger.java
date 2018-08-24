@@ -32,12 +32,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class Protocol {
+public class Logger {
 
 	private enum Level { DEBUG, INFO, WARN, ALERT };
 	
 	
-	public Protocol() {
+	public Logger() {
 	}
 	
 	public void attachOutputStream(final OutputStream os) {

@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.jsr223;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -29,6 +30,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.ModuleLoader;
 
 
 public class VeniceScriptEngineFactory implements ScriptEngineFactory {
@@ -54,7 +56,7 @@ public class VeniceScriptEngineFactory implements ScriptEngineFactory {
 
 	@Override
 	public List<String> getExtensions() {
-		return Arrays.asList("json", "protocol");
+		return new ArrayList<>(ModuleLoader.VALID_MODULES);
 	}
 
 	@Override

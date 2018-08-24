@@ -31,48 +31,48 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
-public class ProtocolModuleTest {
+public class LoggerModuleTest {
 
 	@Test
-	public void test_protocol() {
+	public void test_logger() {
 		final Venice venice = new Venice();
 
 		final String script =
 				"(do                                          " +
-				"   (load-module :protocol)                   " +
+				"   (load-module :logger)                   " +
 				"                                             " +
-				"   (protocol/open)                           " + 
-				"   (protocol/log :INFO \"test 1\")           " + 
-				"   (protocol/log :INFO \"test 2\")           " + 
-				"   (protocol/to-string)                      " + 
+				"   (logger/open)                           " + 
+				"   (logger/log :INFO \"test 1\")           " + 
+				"   (logger/log :INFO \"test 2\")           " + 
+				"   (logger/to-string)                      " + 
 				") ";
 
-		final String protocol = (String)venice.eval("(str " + script + ")");
-		assertEquals(2, StringUtil.splitIntoLines(protocol).size());
+		final String logger = (String)venice.eval("(str " + script + ")");
+		assertEquals(2, StringUtil.splitIntoLines(logger).size());
 	}
 
 	@Test
-	public void test_protocol_stdout() {
+	public void test_logger_stdout() {
 		final CapturingPrintStream ps = CapturingPrintStream.create();
 
 		final Venice venice = new Venice();
 
 		final String script =
 				"(do                                          " +
-				"   (load-module :protocol)                   " +
+				"   (load-module :logger)                   " +
 				"                                             " +
-				"   (protocol/open)                           " + 
-				"   (protocol/attach-os *out*)                " + 
-				"   (protocol/log :INFO \"test 1\")           " + 
-				"   (protocol/log :INFO \"test 2\")           " + 
-				"   (protocol/to-string)                      " + 
+				"   (logger/open)                           " + 
+				"   (logger/attach-os *out*)                " + 
+				"   (logger/log :INFO \"test 1\")           " + 
+				"   (logger/log :INFO \"test 2\")           " + 
+				"   (logger/to-string)                      " + 
 				") ";
 
-		final String protocol = (String)venice.eval(
+		final String logger = (String)venice.eval(
 											"(str " + script + ")",
 											Parameters.of("*out*", ps));
 		
-		assertEquals(2, StringUtil.splitIntoLines(protocol).size());
+		assertEquals(2, StringUtil.splitIntoLines(logger).size());
 		assertEquals(2, StringUtil.splitIntoLines(ps.getOutput()).size());
 	}
 

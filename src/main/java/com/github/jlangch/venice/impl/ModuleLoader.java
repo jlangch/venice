@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,7 +35,7 @@ import com.github.jlangch.venice.impl.util.ClassPathResource;
 public class ModuleLoader {
 	
 	public static String load(final String module) {
-		if (!validModules.contains(module)) {
+		if (!VALID_MODULES.contains(module)) {
 			throw new VncException(String.format(
 					"The Venice core module '%s' does not exist",
 					module));
@@ -78,6 +79,8 @@ public class ModuleLoader {
 		
 	private static final Map<String,String> modules = new HashMap<>();
 	
-	private static final Set<String> validModules = 
-			new HashSet<>(Arrays.asList("core", "json", "protocol", "http", "xchart", "webdav"));
+	public static final Set<String> VALID_MODULES = 
+			Collections.unmodifiableSet(
+					new HashSet<>(
+							Arrays.asList("core", "json", "logger", "http", "xchart", "webdav")));
 }

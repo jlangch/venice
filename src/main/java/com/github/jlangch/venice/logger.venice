@@ -1,0 +1,11 @@
+;; Logger
+
+(def *logger* (. :com.github.jlangch.venice.util.Logger :new))
+
+(def logger/open (fn [] (do (. *logger* :clear) nil)))
+
+(def logger/attach-os (fn [os] (do (. *logger* :attachOutputStream os) nil)))
+
+(def logger/log (fn [lvl msg] (do (. *logger* :log lvl msg) nil)))
+
+(def logger/to-string (fn [] (str *logger*)))
