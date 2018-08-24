@@ -1,0 +1,6 @@
+;; Time
+
+;; the goal of the time module is to build a Joda like Venice API on top
+;; of Java's new time API.
+
+;; see https://github.com/clj-time/clj-time

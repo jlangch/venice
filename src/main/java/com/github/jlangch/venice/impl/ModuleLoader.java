@@ -81,6 +81,8 @@ public class ModuleLoader {
 	
 	public static final Set<String> VALID_MODULES = 
 			Collections.unmodifiableSet(
-					new HashSet<>(
-							Arrays.asList("core", "json", "logger", "http", "xchart", "webdav")));
+				new HashSet<>(
+					Arrays.asList(
+							"core", "http", "json", "logger", 
+							"time", "webdav", "xchart")));
 }

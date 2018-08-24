@@ -1,5 +1,9 @@
 ;; XChart
 
+;; Thanks to Jean Niklas L'orange and his clojure xchart project 
+;; (https://github.com/hypirion/clj-xchart). Venice's xchart 
+;; builds heavily on Jean Niklas smart work.
+
 (import :org.knowm.xchart.BubbleChart)
 (import :org.knowm.xchart.XYChart)
 (import :org.knowm.xchart.PieChart)
