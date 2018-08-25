@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.types;
 
 import java.util.function.Function;
 
-import com.github.jlangch.venice.impl.CoreFunctions;
+import com.github.jlangch.venice.impl.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
@@ -35,7 +35,7 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	}
 
 	public VncVal apply(final VncList args) {
-		CoreFunctions.assertArity("keyword", args, 1);
+		FunctionsUtil.assertArity("keyword", args, 1);
 		
 		if (args.first() == Constants.Nil) {
 			return Constants.Nil;

@@ -35,32 +35,25 @@ public class JavaInteropFn extends VncFunction {
 		
 		setArgLists(
 				"(. classname :new args)", 
-			        "(. classname :class)",
-			        "(. classname :method args)",
-			        "(. classname :field)",
-				"(. object :method args)", 
-			        "(. object :field)",
+				"(. classname method-name args)",
+				"(. classname field-name)",
+				"(. classname :class)",
+				"(. object method-name args)", 
+				"(. object field-name)",
 				"(. object :class)");
 		
 		setDoc(
-				"Java interop. Calls a constructor or an object method. " +
-				"The function is sandboxed");
+				"Java interop. Calls a constructor or an class/object method or accesses a " +
+				"class/instance field. The function is sandboxed.");
 		
 		setExamples(
-				";; access static field \n"
-					+ "(. :java.lang.Math :PI)",
-				";; invoke constructor \n"
-						+ "(. :java.time.ZonedDateTime :now)",
-				";; invoke constructor with param \n"
-						+ "(. (. :java.lang.Long :new 10) :toString)", 
-				";; invoke static method \n"
-						+ "(. :java.lang.Math :min 10 20)", 
-				";; get class name \n"
-						+ "(. :java.lang.Math :class)", 
-				";; get class name \n"
-						+ "(. \"java.lang.Math\" :class)", 
-				";; get class name \n"
-						+ "(. (. :java.io.File :new \"/temp\") :class)");
+				";; invoke constructor \n(. :java.lang.Long :new 10)", 
+				";; invoke static method \n(. :java.time.ZonedDateTime :now)",
+				";; invoke static method \n(. :java.lang.Math :min 10 20)", 
+				";; access static field \n(. :java.lang.Math :PI)",
+				";; invoke method \n(. (. :java.lang.Long :new 10) :toString)", 
+				";; get class name \n(. :java.lang.Math :class)", 
+				";; get class name \n(. (. :java.io.File :new \"/temp\") :class)");
 	}
 
 	

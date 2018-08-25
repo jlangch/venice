@@ -437,12 +437,12 @@
                date-pattern    (. :setDatePattern date-pattern)
                decimal-pattern (. :setDecimalPattern decimal-pattern)
                
-               ;; The logic here is as follows: You can specify a colour for the error
-               ;; bars. If the colour is :match-series, then the colour matches the series
-               ;; colour, but if you specify something else, you cannot match the series!
-               (and ebc (not= ebc :match-series)) (. :setErrorBarsColor (get xchart/colors ebc ebc))
-               (and ebc (not= ebc :match-series)) (. :setErrorBarsColorSeriesColor false)
-               (== ebc :match-series)             (. :setErrorBarsColorSeriesColor true)
+               ;; The logic here is as follows: You can specify a color for the error
+               ;; bars. If the color is :match-series, then the color matches the series
+               ;; color, but if you specify something else, you cannot match the series!
+               (and ebc (!= ebc :match-series)) (. :setErrorBarsColor (get xchart/colors ebc ebc))
+               (and ebc (!= ebc :match-series)) (. :setErrorBarsColorSeriesColor false)
+               (== ebc :match-series)           (. :setErrorBarsColorSeriesColor true)
                
                locale      (. :setLocale locale)
                marker-size (. :setMarkerSize marker-size)

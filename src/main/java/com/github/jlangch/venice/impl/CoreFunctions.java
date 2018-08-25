@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.FunctionsUtil.assertArity;
+import static com.github.jlangch.venice.impl.FunctionsUtil.assertMinArity;
+import static com.github.jlangch.venice.impl.FunctionsUtil.isJavaIoFile;
+import static com.github.jlangch.venice.impl.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
@@ -6959,43 +6963,6 @@ public class CoreFunctions {
 		else {
 			result.add(value);
 		}
-	}
-	
-	public static void assertArity(
-			final String fnName, 
-			final VncList args, 
-			final int...expectedArities
-	) {
-		final int arity = args.size();
-		for (int a : expectedArities) {
-			if (a == arity) return;
-		}		
-		throw new ArityException(args, arity, fnName);
-	}
-	
-	private static void assertMinArity(
-			final String fnName, 
-			final VncList args, 
-			final int minArity
-	) {
-		final int arity = args.size();
-		if (arity < minArity) {		
-			throw new ArityException(args, arity, fnName);
-		}
-	}
-
-	private static boolean isJavaIoFile(final VncVal val) {
-		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
-	}
-
-	private static VncList removeNilValues(final VncList list) {		
-		return new VncList(removeNilValues(list.getList()));
-	}
-
-	private static List<VncVal> removeNilValues(final List<VncVal> items) {		
-		return items.stream()
-				    .filter(v -> v != Nil)
-				    .collect(Collectors.toList());
 	}
 
 	
