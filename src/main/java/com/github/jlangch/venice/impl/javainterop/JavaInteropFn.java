@@ -35,8 +35,11 @@ public class JavaInteropFn extends VncFunction {
 		
 		setArgLists(
 				"(. classname :new args)", 
-				"(. object method args)", 
-				"(. classname :class)", 
+			        "(. classname :class)",
+			        "(. classname :method args)",
+			        "(. classname :field)",
+				"(. object :method args)", 
+			        "(. object :field)",
 				"(. object :class)");
 		
 		setDoc(
