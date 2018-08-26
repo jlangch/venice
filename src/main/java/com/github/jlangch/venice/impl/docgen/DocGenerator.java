@@ -755,6 +755,16 @@ public class DocGenerator {
 		local_date.addItem(getDocItem("time/local-date"));
 		local_date.addItem(getDocItem("time/local-date?"));
 
+		final DocSection local_date_time = new DocSection("local date time");
+		all.addSection(local_date_time);
+		local_date_time.addItem(getDocItem("time/local-date-time"));
+		local_date_time.addItem(getDocItem("time/local-date-time?"));
+
+		final DocSection zoned_date_time = new DocSection("zoned date time");
+		all.addSection(zoned_date_time);
+		zoned_date_time.addItem(getDocItem("time/zoned-date-time"));
+		zoned_date_time.addItem(getDocItem("time/zoned-date-time?"));
+
 		return section;
 	}
 
