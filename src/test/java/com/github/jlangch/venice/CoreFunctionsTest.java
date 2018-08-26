@@ -39,7 +39,7 @@ import java.util.List;
 import org.junit.Test;
 
 
-public class FunctionsTest {
+public class CoreFunctionsTest {
 
 	@Test
 	public void test_abs() {

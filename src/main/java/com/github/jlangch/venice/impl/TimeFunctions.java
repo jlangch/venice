@@ -280,7 +280,7 @@ public class TimeFunctions {
 			assertArity("time/local-date-time", args, 0, 1, 3, 6, 7);
 			
 			if (args.size() == 0) {
-				return new VncJavaObject(LocalDate.now());
+				return new VncJavaObject(LocalDateTime.now());
 			}
 			else if (args.size() == 1) {
 				final VncVal val = args.first();
@@ -425,7 +425,7 @@ public class TimeFunctions {
 					"(time/zoned-date-time 2018 8 1)",
 					"(time/zoned-date-time 2018 8 1 14 20 10)",
 					"(time/zoned-date-time 2018 8 1 14 20 10 200)",
-					"(time/zoned-date-time \"2018-08-01T14:20:10.200\")",
+					"(time/zoned-date-time \"2018-08-01T14:20:10.200+01:00\")",
 					"(time/zoned-date-time 1375315200000)",
 					"(time/zoned-date-time (. :java.util.Date :new))",
 
@@ -433,7 +433,7 @@ public class TimeFunctions {
 					"(time/zoned-date-time :UTC 2018 8 1)",
 					"(time/zoned-date-time :UTC 2018 8 1 14 20 10)",
 					"(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)",
-					"(time/zoned-date-time :UTC \"2018-08-01T14:20:10.200\")",
+					"(time/zoned-date-time :UTC \"2018-08-01T14:20:10.200+01:00\")",
 					"(time/zoned-date-time :UTC 1375315200000)",
 					"(time/zoned-date-time :UTC (. :java.util.Date :new))");
 		}

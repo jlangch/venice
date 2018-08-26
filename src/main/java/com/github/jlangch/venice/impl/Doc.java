@@ -68,6 +68,7 @@ public class Doc {
 	
 	static {
 		CoreFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
+		TimeFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
 		CoreMacroDefs.getMacros().forEach(m -> macros.put(m.getName(), m));
 	}
 }
