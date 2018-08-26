@@ -581,7 +581,7 @@ public class TimeFunctions {
 			
 			setDoc("Creates a formatter");
 			
-			setExamples("(time/formatter \"dd-MM-yyyy\"");
+			setExamples("(time/formatter \"dd-MM-yyyy\")");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/formatter", args, 1, 2);
@@ -590,7 +590,10 @@ public class TimeFunctions {
 			final Locale locale = args.size() == 2 ? getLocale(args.nth(1)) : null;
 			
 			// formatter
-			return new VncJavaObject(getDateTimeFormatter(args.first()).withLocale(locale));
+			return new VncJavaObject(
+					locale == null
+						? getDateTimeFormatter(args.first())
+						: getDateTimeFormatter(args.first()).withLocale(locale));
 		}
 	};
 
@@ -600,7 +603,7 @@ public class TimeFunctions {
 			
 			setDoc("Formats a date with a format");
 			
-			setExamples("(time/format (local-date) \"dd-MM-yyyy\"");
+			setExamples("(time/format (time/local-date) \"dd-MM-yyyy\")");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/format", args, 2, 3);
@@ -616,7 +619,9 @@ public class TimeFunctions {
 			final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
 			
 			// formatter
-			final DateTimeFormatter formatter = getDateTimeFormatter(args.second()).withLocale(locale);
+			final DateTimeFormatter formatter = locale == null
+													? getDateTimeFormatter(args.second())
+													: getDateTimeFormatter(args.second()).withLocale(locale);
 			
 			// format
 			final Object date = ((VncJavaObject)args.first()).getDelegate();

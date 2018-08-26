@@ -765,6 +765,16 @@ public class DocGenerator {
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time?"));
 
+		final DocSection format = new DocSection("format");
+		all.addSection(format);
+		format.addItem(getDocItem("time/formatter"));
+		format.addItem(getDocItem("time/format"));
+
+		final DocSection util = new DocSection("util");
+		all.addSection(util);
+		util.addItem(getDocItem("time/zone-ids"));
+		util.addItem(getDocItem("time/to-millis"));
+
 		return section;
 	}
 
