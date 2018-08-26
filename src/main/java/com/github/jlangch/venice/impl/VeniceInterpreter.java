@@ -394,7 +394,13 @@ public class VeniceInterpreter {
 				key -> env.set(
 						Types.isVncSymbol(key) ? (VncSymbol)key : ((VncString)key).toSymbol(), 
 						CoreFunctions.ns.get(key)));
-				
+
+		// time functions defined in Java
+		TimeFunctions.ns.keySet().forEach(
+				key -> env.set(
+						Types.isVncSymbol(key) ? (VncSymbol)key : ((VncString)key).toSymbol(), 
+						TimeFunctions.ns.get(key)));
+
 		// JavaInterop function
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
 		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
