@@ -97,7 +97,8 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
-				getIOSection());
+				getIOSection(),
+				getTimeSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -734,6 +735,25 @@ public class DocGenerator {
 		all.addSection(load);
 		load.addItem(getDocItem("load-file"));
 		load.addItem(getDocItem("load-string"));
+
+		return section;
+	}
+
+	private DocSection getTimeSection() {
+		final DocSection section = new DocSection("Time");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection date = new DocSection("date");
+		all.addSection(date);
+		date.addItem(getDocItem("time/date"));
+		date.addItem(getDocItem("time/date?"));
+
+		final DocSection local_date = new DocSection("local date");
+		all.addSection(local_date);
+		local_date.addItem(getDocItem("time/local-date"));
+		local_date.addItem(getDocItem("time/local-date?"));
 
 		return section;
 	}
