@@ -454,6 +454,7 @@ public class DocGenerator {
 		set_modify.addItem(getDocItem("difference"));
 		set_modify.addItem(getDocItem("union"));
 		set_modify.addItem(getDocItem("intersection"));
+		set_modify.addItem(getDocItem("seq"));
 
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);
@@ -496,6 +497,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("flatten"));
 		map_modify.addItem(getDocItem("reduce-kv"));
 		map_modify.addItem(getDocItem("merge"));
+		map_modify.addItem(getDocItem("seq"));
 		
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);
@@ -754,16 +756,19 @@ public class DocGenerator {
 		all.addSection(local_date);
 		local_date.addItem(getDocItem("time/local-date"));
 		local_date.addItem(getDocItem("time/local-date?"));
+		local_date.addItem(getDocItem("time/local-date-parse"));
 
 		final DocSection local_date_time = new DocSection("local date time");
 		all.addSection(local_date_time);
 		local_date_time.addItem(getDocItem("time/local-date-time"));
 		local_date_time.addItem(getDocItem("time/local-date-time?"));
+		local_date_time.addItem(getDocItem("time/local-date-time-parse"));
 
 		final DocSection zoned_date_time = new DocSection("zoned date time");
 		all.addSection(zoned_date_time);
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time?"));
+		zoned_date_time.addItem(getDocItem("time/zoned-date-time-parse"));
 
 		final DocSection format = new DocSection("format");
 		all.addSection(format);

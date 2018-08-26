@@ -246,7 +246,7 @@ public class TimeFunctions {
 			final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
 			final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
 		
-			return new VncJavaObject(LocalDate.parse(date.getValue(), formatter.withLocale(locale)));
+			return new VncJavaObject(LocalDate.parse(date.getValue(), localize(formatter, locale)));
 		}
 	};
 	
@@ -384,8 +384,8 @@ public class TimeFunctions {
 			
 			setDoc("Parses a local-date-time.");
 			
-			setExamples(
-					"(time/local-date-time-parse \"2018-08-01\" \"yyyy-MM-dd\")");
+//			setExamples(
+//					"(time/local-date-time-parse \"2018-08-01\" \"yyyy-MM-dd\")");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/local-date-time-parse", args, 2, 3);
@@ -394,7 +394,7 @@ public class TimeFunctions {
 			final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
 			final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
 		
-			return new VncJavaObject(LocalDateTime.parse(date.getValue(), formatter.withLocale(locale)));
+			return new VncJavaObject(LocalDateTime.parse(date.getValue(), localize(formatter, locale)));
 		}
 	};
 
@@ -555,8 +555,8 @@ public class TimeFunctions {
 			
 			setDoc("Parses a zoned-date-time.");
 			
-			setExamples(
-					"(time/zoned-date-time-parse \"2018-08-01\" \"yyyy-MM-dd\")");
+//			setExamples(
+//					"(time/zoned-date-time-parse \"2018-08-01\" \"yyyy-MM-dd\")");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/zoned-date-time-parse", args, 2, 3);
@@ -565,7 +565,7 @@ public class TimeFunctions {
 			final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
 			final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
 		
-			return new VncJavaObject(ZonedDateTime.parse(date.getValue(), formatter.withLocale(locale)));
+			return new VncJavaObject(ZonedDateTime.parse(date.getValue(), localize(formatter, locale)));
 		}
 	};
 	
@@ -590,10 +590,7 @@ public class TimeFunctions {
 			final Locale locale = args.size() == 2 ? getLocale(args.nth(1)) : null;
 			
 			// formatter
-			return new VncJavaObject(
-					locale == null
-						? getDateTimeFormatter(args.first())
-						: getDateTimeFormatter(args.first()).withLocale(locale));
+			return new VncJavaObject(localize(getDateTimeFormatter(args.first()), locale));
 		}
 	};
 
@@ -619,9 +616,7 @@ public class TimeFunctions {
 			final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
 			
 			// formatter
-			final DateTimeFormatter formatter = locale == null
-													? getDateTimeFormatter(args.second())
-													: getDateTimeFormatter(args.second()).withLocale(locale);
+			final DateTimeFormatter formatter = localize(getDateTimeFormatter(args.second()), locale);
 			
 			// format
 			final Object date = ((VncJavaObject)args.first()).getDelegate();
@@ -660,7 +655,7 @@ public class TimeFunctions {
 			
 			setDoc("Returns all available zone ids with time offset");
 			
-			setExamples("(time/zone-ids)");
+			setExamples("(nfirst (seq (time/zone-ids)) 10)");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/zone-ids", args, 0);
@@ -830,6 +825,13 @@ public class TimeFunctions {
 		}
 	}
 
+	private static DateTimeFormatter localize(
+			final DateTimeFormatter formatter, 
+			final Locale locale
+	) {
+		return locale == null ? formatter : formatter.withLocale(locale);
+	}
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
