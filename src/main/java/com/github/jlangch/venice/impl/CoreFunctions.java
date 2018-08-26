@@ -1597,39 +1597,6 @@ public class CoreFunctions {
 		}
 	};
 
-	public static VncFunction time_ms = new VncFunction("time-ms") {
-		{
-			setArgLists("(time-ms)");
-			
-			setDoc("Returns the current time in milliseconds");
-			
-			setExamples("(time-ms)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("time_ms", args, 0);
-			
-			return new VncLong(System.currentTimeMillis());
-		}
-	};
-
-	public static VncFunction time_ns = new VncFunction("time-ns") {
-		{
-			setArgLists("(time-ns)");
-			
-			setDoc( "Returns the current value of the running Java Virtual Machine's " +
-					"high-resolution time source, in nanoseconds.");
-			
-			setExamples("(time-ns)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("time_ns", args, 0);
-			
-			return new VncLong(System.nanoTime());
-		}
-	};
-
 
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -6832,6 +6799,37 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction current_time_millis = new VncFunction("current-time-millis") {
+		{
+			setArgLists("(current-time-millis)");
+			
+			setDoc("Returns the current time in milliseconds.");
+			
+			setExamples("(current-time-millis)");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("current-time-millis", args, 0);
+			
+			return new VncLong(System.currentTimeMillis());
+		}
+	};
+
+	public static VncFunction nano_time = new VncFunction("nano-time") {
+		{
+			setArgLists("(nano-time)");
+			
+			setDoc( "Returns the current value of the running Java Virtual Machine's " +
+					"high-resolution time source, in nanoseconds.");
+			
+			setExamples("(nano-time)");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("nano-time", args, 0);
+			
+			return new VncLong(System.nanoTime());
+		}
+	};
+
 	public static VncFunction type = new VncFunction("type") {
 		{
 			setArgLists("(type x)");
@@ -7036,8 +7034,6 @@ public class CoreFunctions {
 				.put("neg?",				neg_Q)
 				.put("even?",				even_Q)
 				.put("odd?",				odd_Q)
-				.put("time-ms",				time_ms)
-				.put("time-ns",				time_ns)
 				.put("rand-long",			rand_long)
 				.put("rand-double",			rand_double)
 				.put("rand-gaussian",		rand_gaussian)
@@ -7145,6 +7141,9 @@ public class CoreFunctions {
 				
 				.put("gensym",				gensym)
 				.put("uuid",				uuid)
+				.put("current-time-millis",	current_time_millis)
+				.put("nano-time",			nano_time)
+
 				.put("sleep",				sleep)
 				.put("version",				version)
 				.put("type",				type)

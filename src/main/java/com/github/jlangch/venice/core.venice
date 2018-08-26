@@ -208,9 +208,9 @@
      :examples '("(time (println [100 200]))") }
 
    time [expr]
-    `(let [start_ (time-ns)
+    `(let [start_ (nano-time)
            ret_ ~expr]
-         (print (str "Elapsed time: " (/ (- (time-ns) start_) 1000000) " msecs"))
+         (print (str "Elapsed time: " (/ (- (nano-time) start_) 1000000) " msecs"))
          ret_))
          
          
@@ -254,7 +254,7 @@
    { :arglists '("(load-module s)")
      :doc "Loads a Venice predefined extension module." 
      :examples '("(do 
-                 |   (load-module :xchart))") }
+                 |   (load-module :logger))") }
    
    load-module [s]
    
