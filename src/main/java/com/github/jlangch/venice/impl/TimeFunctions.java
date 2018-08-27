@@ -23,7 +23,8 @@ package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.*;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -576,8 +578,206 @@ public class TimeFunctions {
 		}
 	};
 	
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Plus/Minus
+	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction plus = new VncFunction("time/plus") {
+		{
+			setArgLists("(time/plus date unit n)");
+			
+			setDoc("Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}");
+			
+			setExamples(
+					"(time/plus (time/local-date) :days 2)",
+					"(time/plus (time/local-date-time) :days 2)",
+					"(time/plus (time/zoned-date-time) :days 2)");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/plus", args, 3);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
+			final long n = Coerce.toVncLong(args.nth(2)).getValue();
+			
+			if (unit == null) {
+				throw new VncException(String.format(
+						"Function 'time/plus' invalid time unit %s. %s", 
+						Coerce.toVncKeyword(args.second()).getValue(),
+						ErrorMessage.buildErrLocation(args)));
+			}
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncJavaObject(((ZonedDateTime)date).plus(n, unit));
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncJavaObject(((LocalDateTime)date).plus(n, unit));
+			}
+			else if (date instanceof LocalDate) {
+				return new VncJavaObject(((LocalDate)date).plus(n, unit));
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/plus' does not allow %s as date parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction minus = new VncFunction("time/minus") {
+		{
+			setArgLists("(time/minus date unit n)");
+			
+			setDoc("Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}");
+			
+			setExamples(
+					"(time/minus (time/local-date) :days 2)",
+					"(time/minus (time/local-date-time) :days 2)",
+					"(time/minus (time/zoned-date-time) :days 2)");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/minus", args, 3);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
+			final long n = Coerce.toVncLong(args.nth(2)).getValue();
+			
+			if (unit == null) {
+				throw new VncException(String.format(
+						"Function 'time/minus' invalid time unit %s. %s", 
+						Coerce.toVncKeyword(args.second()).getValue(),
+						ErrorMessage.buildErrLocation(args)));
+			}
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncJavaObject(((ZonedDateTime)date).minus(n, unit));
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncJavaObject(((LocalDateTime)date).minus(n, unit));
+			}
+			else if (date instanceof LocalDate) {
+				return new VncJavaObject(((LocalDate)date).minus(n, unit));
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/minus' does not allow %s as date parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Day
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction day_of_week = new VncFunction("time/day-of-week") {
+		{
+			setArgLists("(time/day-of-week date)");
+			
+			setDoc("Returns the day of the week (:MONDAY ... :SUNDAY)");
+			
+			setExamples(
+					"(time/day-of-week (time/local-date))",
+					"(time/day-of-week (time/local-date-time))",
+					"(time/day-of-week (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/day-of-week", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncKeyword(((ZonedDateTime)date).getDayOfWeek().name());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncKeyword(((LocalDateTime)date).getDayOfWeek().name());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncKeyword(((LocalDate)date).getDayOfWeek().name());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/day-of-week' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction day_of_month = new VncFunction("time/day-of-month") {
+		{
+			setArgLists("(time/day-of-month date)");
+			
+			setDoc("Returns the day of the month (1..31)");
+			
+			setExamples(
+					"(time/day-of-month (time/local-date))",
+					"(time/day-of-month (time/local-date-time))",
+					"(time/day-of-month (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/day-of-month", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getDayOfMonth());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getDayOfMonth());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(((LocalDate)date).getDayOfMonth());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/day-of-month' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction day_of_year = new VncFunction("time/day-of-year") {
+		{
+			setArgLists("(time/day-of-year date)");
+			
+			setDoc("Returns the day of the year (1..366)");
+			
+			setExamples(
+					"(time/day-of-year (time/local-date))",
+					"(time/day-of-year (time/local-date-time))",
+					"(time/day-of-year (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/day-of-year", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getDayOfYear());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getDayOfYear());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(((LocalDate)date).getDayOfYear());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/day-of-year' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
 		
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// Formatter
 	///////////////////////////////////////////////////////////////////////////
@@ -751,8 +951,7 @@ public class TimeFunctions {
 		}
 	};
 
-	
-	
+		
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Utils
@@ -869,6 +1068,19 @@ public class TimeFunctions {
 		return zoneId == null ? ZoneId.systemDefault() : zoneId;
 	}
 
+	private static ChronoUnit toChronoUnit(final String unit) {
+		switch(unit) {
+			case "years": return ChronoUnit.YEARS;
+			case "month": return ChronoUnit.MONTHS;
+			case "weeks": return ChronoUnit.WEEKS;
+			case "days": return ChronoUnit.DAYS;
+			case "hours": return ChronoUnit.HOURS;
+			case "minutes": return ChronoUnit.MINUTES;
+			case "seconds": return ChronoUnit.SECONDS;
+			case "millis": return ChronoUnit.MILLIS;
+			default: return null;
+		}
+	}
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -891,6 +1103,13 @@ public class TimeFunctions {
 				.put("time/to-millis",					to_millis)
 				.put("time/formatter",					formatter)
 				.put("time/format",						format)
+				.put("time/plus",						plus)
+				.put("time/minus",						minus)
+				.put("time/day-of-week",				day_of_week)
+				.put("time/day-of-month",				day_of_month)
+				.put("time/day-of-year",				day_of_year)
+				
+				
 							
 				.toMap();	
 }

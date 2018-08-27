@@ -747,35 +747,47 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 
-		final DocSection date = new DocSection("date");
+		final DocSection date = new DocSection("Date");
 		all.addSection(date);
 		date.addItem(getDocItem("time/date"));
 		date.addItem(getDocItem("time/date?"));
 
-		final DocSection local_date = new DocSection("local date");
+		final DocSection local_date = new DocSection("Local Date");
 		all.addSection(local_date);
 		local_date.addItem(getDocItem("time/local-date"));
 		local_date.addItem(getDocItem("time/local-date?"));
 		local_date.addItem(getDocItem("time/local-date-parse"));
 
-		final DocSection local_date_time = new DocSection("local date time");
+		final DocSection local_date_time = new DocSection("Local Date Time");
 		all.addSection(local_date_time);
 		local_date_time.addItem(getDocItem("time/local-date-time"));
 		local_date_time.addItem(getDocItem("time/local-date-time?"));
 		local_date_time.addItem(getDocItem("time/local-date-time-parse"));
 
-		final DocSection zoned_date_time = new DocSection("zoned date time");
+		final DocSection zoned_date_time = new DocSection("Zoned Date Time");
 		all.addSection(zoned_date_time);
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time?"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time-parse"));
 
-		final DocSection format = new DocSection("format");
+		final DocSection format = new DocSection("Format");
 		all.addSection(format);
 		format.addItem(getDocItem("time/formatter"));
 		format.addItem(getDocItem("time/format"));
+		
+		final DocSection test = new DocSection("Test");
+		all.addSection(test);
+		test.addItem(getDocItem("time/plus"));
+		
+		final DocSection misc = new DocSection("Miscellaneous");
+		all.addSection(misc);
+		misc.addItem(getDocItem("time/plus"));
+		misc.addItem(getDocItem("time/minus"));
+		misc.addItem(getDocItem("time/day-of-week"));
+		misc.addItem(getDocItem("time/day-of-month"));
+		misc.addItem(getDocItem("time/day-of-year"));
 
-		final DocSection util = new DocSection("util");
+		final DocSection util = new DocSection("Util");
 		all.addSection(util);
 		util.addItem(getDocItem("time/zone-ids"));
 		util.addItem(getDocItem("time/to-millis"));
