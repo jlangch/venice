@@ -769,6 +769,17 @@ public class DocGenerator {
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time?"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time-parse"));
+		
+		final DocSection fields = new DocSection("Fields");
+		all.addSection(fields);
+		fields.addItem(getDocItem("time/year"));
+		fields.addItem(getDocItem("time/month"));
+		fields.addItem(getDocItem("time/day-of-week"));
+		fields.addItem(getDocItem("time/day-of-month"));
+		fields.addItem(getDocItem("time/day-of-year"));
+		fields.addItem(getDocItem("time/hour"));
+		fields.addItem(getDocItem("time/minute"));
+		fields.addItem(getDocItem("time/second"));
 
 		final DocSection format = new DocSection("Format");
 		all.addSection(format);
@@ -786,9 +797,7 @@ public class DocGenerator {
 		all.addSection(misc);
 		misc.addItem(getDocItem("time/plus"));
 		misc.addItem(getDocItem("time/minus"));
-		misc.addItem(getDocItem("time/day-of-week"));
-		misc.addItem(getDocItem("time/day-of-month"));
-		misc.addItem(getDocItem("time/day-of-year"));
+		misc.addItem(getDocItem("time/period"));
 
 		final DocSection util = new DocSection("Util");
 		all.addSection(util);

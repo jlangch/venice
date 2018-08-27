@@ -810,11 +810,125 @@ public class TimeFunctions {
 			}
 		}
 	};
-	
+
+
+	public static VncFunction period = new VncFunction("time/period") {
+		{
+			setArgLists("(time/period from to unit)");
+			
+			setDoc( "Returns the period interval of two dates in the specified unit. " +
+					"Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}");
+			
+			setExamples(
+					"(time/period (time/local-date) (time/plus (time/local-date) :days 3) :days)",
+					"(time/period (time/local-date-time) (time/plus (time/local-date-time) :days 3) :days)",
+					"(time/period (time/zoned-date-time) (time/plus (time/zoned-date-time) :days 3) :days)");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/period", args, 3);
+			
+			final Object from = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final Object to = Coerce.toVncJavaObject(args.second()).getDelegate();
+			final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.nth(2)).getValue());
+			
+			if (unit == null) {
+				throw new VncException(String.format(
+						"Function 'time/period' invalid time unit %s. %s", 
+						Coerce.toVncKeyword(args.second()).getValue(),
+						ErrorMessage.buildErrLocation(args)));
+			}
+				
+			if (from instanceof ZonedDateTime && to instanceof ZonedDateTime) {
+				return new VncLong(unit.between((ZonedDateTime)from, (ZonedDateTime)to));
+			}
+			else if (from instanceof LocalDateTime && to instanceof LocalDateTime) {
+				return new VncLong(unit.between((LocalDateTime)from, (LocalDateTime)to));
+			}
+			else if (from instanceof LocalDate && to instanceof LocalDate) {
+				return new VncLong(unit.between((LocalDate)from, (LocalDate)to));
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/period' does not allow %s %s as from / to parameter. %s", 
+						Types.getClassName(args.first()),
+						Types.getClassName(args.second()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
-	// Day
+	// Fields
 	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction year = new VncFunction("time/year") {
+		{
+			setArgLists("(time/year date)");
+			
+			setDoc("Returns the year of the date");
+			
+			setExamples(
+					"(time/year (time/local-date))",
+					"(time/year (time/local-date-time))",
+					"(time/year (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/year", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getYear());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getYear());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(((LocalDate)date).getYear());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/year' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction month = new VncFunction("time/month") {
+		{
+			setArgLists("(time/month date)");
+			
+			setDoc("Returns the month of the date 1..12");
+			
+			setExamples(
+					"(time/month (time/local-date))",
+					"(time/month (time/local-date-time))",
+					"(time/month (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/month", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getMonth().getValue());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getMonth().getValue());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(((LocalDate)date).getMonth().getValue());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/month' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
 
 	public static VncFunction day_of_week = new VncFunction("time/day-of-week") {
 		{
@@ -912,6 +1026,108 @@ public class TimeFunctions {
 			else {
 				throw new VncException(String.format(
 						"Function 'time/day-of-year' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction hour = new VncFunction("time/hour") {
+		{
+			setArgLists("(time/hour date)");
+			
+			setDoc("Returns the hour of the date 1..24");
+			
+			setExamples(
+					"(time/hour (time/local-date))",
+					"(time/hour (time/local-date-time))",
+					"(time/hour (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/hour", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getHour());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getHour());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(0);
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/hour' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction minute = new VncFunction("time/minute") {
+		{
+			setArgLists("(time/minute date)");
+			
+			setDoc("Returns the minute of the date 0..59");
+			
+			setExamples(
+					"(time/minute (time/local-date))",
+					"(time/minute (time/local-date-time))",
+					"(time/minute (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/minute", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getMinute());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getMinute());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(0);
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/minute' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction second = new VncFunction("time/second") {
+		{
+			setArgLists("(time/second date)");
+			
+			setDoc("Returns the second of the date 0..59");
+			
+			setExamples(
+					"(time/second (time/local-date))",
+					"(time/second (time/local-date-time))",
+					"(time/second (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/second", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getSecond());
+			}
+			else if (date instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)date).getSecond());
+			}
+			else if (date instanceof LocalDate) {
+				return new VncLong(0);
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/second' does not allow %s as parameter. %s", 
 						Types.getClassName(args.first()),
 						ErrorMessage.buildErrLocation(args)));
 			}
@@ -1247,9 +1463,15 @@ public class TimeFunctions {
 				.put("time/format",						format)
 				.put("time/plus",						plus)
 				.put("time/minus",						minus)
+				.put("time/period",						period)
+				.put("time/year",						year)
+				.put("time/month",						month)
 				.put("time/day-of-week",				day_of_week)
 				.put("time/day-of-month",				day_of_month)
 				.put("time/day-of-year",				day_of_year)
+				.put("time/hour",						hour)
+				.put("time/minute",						minute)
+				.put("time/second",						second)
 				.put("time/after",						after)
 				.put("time/not-after",					not_after)
 				.put("time/before",						before)
