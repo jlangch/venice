@@ -261,7 +261,7 @@
 (def xchart/set-legend!
    (fn [styler
         {:keys [background-color border-color font padding
-                position series-line-length visible?]}]
+                position layout series-line-length visible?]}]
        (xchart/doto-cond
           styler
           background-color      (. :setLegendBackgroundColor (get xchart/colors background-color background-color))
