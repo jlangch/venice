@@ -775,9 +775,12 @@ public class DocGenerator {
 		format.addItem(getDocItem("time/formatter"));
 		format.addItem(getDocItem("time/format"));
 		
-		final DocSection test = new DocSection("Test");
-		all.addSection(test);
-		test.addItem(getDocItem("time/plus"));
+		final DocSection compare = new DocSection("Compare");
+		all.addSection(compare);
+		compare.addItem(getDocItem("time/after"));
+		compare.addItem(getDocItem("time/not-after"));
+		compare.addItem(getDocItem("time/before"));
+		compare.addItem(getDocItem("time/not-before"));
 		
 		final DocSection misc = new DocSection("Miscellaneous");
 		all.addSection(misc);

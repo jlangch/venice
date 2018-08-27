@@ -579,6 +579,148 @@ public class TimeFunctions {
 	};
 	
 	
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Compare
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction after = new VncFunction("time/after") {
+		{
+			setArgLists("(time/after date1 date2)");
+			
+			setDoc("Returns true if date1 is after date2 else false");
+			
+			setExamples(
+					"(time/after (time/local-date) (time/minus (time/local-date) :days 2))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/after", args, 2);
+				
+			final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
+				
+			if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
+				return ((ZonedDateTime)date1).isAfter((ZonedDateTime)date2) ? True : False;
+			}
+			else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
+				return ((LocalDateTime)date1).isAfter((LocalDateTime)date2) ? True : False;
+			}
+			else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
+				return ((LocalDate)date1).isAfter((LocalDate)date2) ? True : False;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/after' does not allow %s %s as date1 / date2 parameter. %s", 
+						Types.getClassName(args.first()),
+						Types.getClassName(args.second()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction not_after = new VncFunction("time/not-after") {
+		{
+			setArgLists("(time/not-after date1 date2)");
+			
+			setDoc("Returns true if date1 is not-after date2 else false");
+			
+			setExamples(
+					"(time/not-after (time/local-date) (time/minus (time/local-date) :days 2))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/not-after", args, 2);
+				
+			final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
+				
+			if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
+				return ((ZonedDateTime)date1).isAfter((ZonedDateTime)date2) ? False : True;
+			}
+			else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
+				return ((LocalDateTime)date1).isAfter((LocalDateTime)date2) ? False : True;
+			}
+			else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
+				return ((LocalDate)date1).isAfter((LocalDate)date2) ? False : True;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/not-after' does not allow %s %s as date1 / date2 parameter. %s", 
+						Types.getClassName(args.first()),
+						Types.getClassName(args.second()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction before = new VncFunction("time/before") {
+		{
+			setArgLists("(time/before date1 date2)");
+			
+			setDoc("Returns true if date1 is before date2 else false");
+			
+			setExamples(
+					"(time/before (time/local-date) (time/minus (time/local-date) :days 2))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/before", args, 2);
+				
+			final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
+				
+			if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
+				return ((ZonedDateTime)date1).isBefore((ZonedDateTime)date2) ? True : False;
+			}
+			else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
+				return ((LocalDateTime)date1).isBefore((LocalDateTime)date2) ? True : False;
+			}
+			else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
+				return ((LocalDate)date1).isBefore((LocalDate)date2) ? True : False;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/before' does not allow %s %s as date1 / date2 parameter. %s", 
+						Types.getClassName(args.first()),
+						Types.getClassName(args.second()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction not_before = new VncFunction("time/not-before") {
+		{
+			setArgLists("(time/not-before date1 date2)");
+			
+			setDoc("Returns true if date1 is not-before date2 else false");
+			
+			setExamples(
+					"(time/not-before (time/local-date) (time/minus (time/local-date) :days 2))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/not-before", args, 2);
+				
+			final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
+				
+			if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
+				return ((ZonedDateTime)date1).isBefore((ZonedDateTime)date2) ? False : True;
+			}
+			else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
+				return ((LocalDateTime)date1).isBefore((LocalDateTime)date2) ? False : True;
+			}
+			else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
+				return ((LocalDate)date1).isBefore((LocalDate)date2) ? False : True;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/not-before' does not allow %s %s as date1 / date2 parameter. %s", 
+						Types.getClassName(args.first()),
+						Types.getClassName(args.second()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// Plus/Minus
 	///////////////////////////////////////////////////////////////////////////
@@ -1108,8 +1250,10 @@ public class TimeFunctions {
 				.put("time/day-of-week",				day_of_week)
 				.put("time/day-of-month",				day_of_month)
 				.put("time/day-of-year",				day_of_year)
-				
-				
-							
+				.put("time/after",						after)
+				.put("time/not-after",					not_after)
+				.put("time/before",						before)
+				.put("time/not-before",					not_before)
+						
 				.toMap();	
 }
