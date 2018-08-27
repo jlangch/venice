@@ -384,8 +384,9 @@ public class TimeFunctions {
 			
 			setDoc("Parses a local-date-time.");
 			
-//			setExamples(
-//					"(time/local-date-time-parse \"2018-08-01\" \"yyyy-MM-dd\")");
+			setExamples(
+					"(time/local-date-time-parse \"2018-08-01 14:20\" \"yyyy-MM-dd HH:mm\")",
+					"(time/local-date-time-parse \"2018-08-01 14:20:01.000\" \"yyyy-MM-dd HH:mm:ss.SSS\")");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/local-date-time-parse", args, 2, 3);
@@ -440,7 +441,7 @@ public class TimeFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("time/zoned-date-time", args, 0, 1, 2, 3, 4, 6, 7, 8);
 			
-			ZoneId zoneId = ZoneId.systemDefault();
+			ZoneId zoneId = null;
 			VncList argList = args;
 			if (args.size() > 0) {
 				final VncVal val = args.first();
@@ -450,7 +451,7 @@ public class TimeFunctions {
 				}
 			}
 			if (argList.size() == 0) {
-				return new VncJavaObject(ZonedDateTime.now(zoneId));
+				return new VncJavaObject(ZonedDateTime.now(orDefaultZone(zoneId)));
 			}
 			else if (argList.size() == 1) {
 				final VncVal val = argList.first();
@@ -460,16 +461,16 @@ public class TimeFunctions {
 						final long millis = ((Date)obj).getTime();
 						return new VncJavaObject(
 										Instant.ofEpochMilli(millis)
-											   .atZone(zoneId));
+											   .atZone(orDefaultZone(zoneId)));
 					}
 					else if (obj instanceof ZonedDateTime) {
-						return new VncJavaObject(((ZonedDateTime)obj).withZoneSameInstant(zoneId));
+						return new VncJavaObject(((ZonedDateTime)obj).withZoneSameInstant(orDefaultZone(zoneId)));
 					}
 					else if (obj instanceof LocalDateTime) {
-						return new VncJavaObject(((LocalDateTime)obj).atZone(zoneId));
+						return new VncJavaObject(((LocalDateTime)obj).atZone(orDefaultZone(zoneId)));
 					}
 					else if (obj instanceof LocalDate) {
-						return new VncJavaObject( ((LocalDate)obj).atTime(0, 0, 0).atZone(zoneId));						
+						return new VncJavaObject( ((LocalDate)obj).atTime(0, 0, 0).atZone(orDefaultZone(zoneId)));						
 					}	
 					else {
 						throw new VncException(String.format(
@@ -481,13 +482,15 @@ public class TimeFunctions {
 				else if (Types.isVncString(val)) {
 					// ISO local date format "yyyy-mm-ddThh:MM:ss.SSS"
 					final String s = ((VncString)val).getValue();
-					return new VncJavaObject(ZonedDateTime.parse(s));
+					return new VncJavaObject(ZonedDateTime.parse(
+												s, 
+												zone(DateTimeFormatter.ISO_ZONED_DATE_TIME, zoneId)));
 				}
 				else if (Types.isVncLong(val)) {
 					final long millis = ((VncLong)val).getValue();
 					return new VncJavaObject(
 									Instant.ofEpochMilli(millis)
-										   .atZone(ZoneId.systemDefault()));
+										   .atZone(orDefaultZone(zoneId)));
 				}
 				else {
 					throw new VncException(String.format(
@@ -503,7 +506,7 @@ public class TimeFunctions {
 							Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
 							Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 							0, 0, 0, 0, 
-							zoneId));
+							orDefaultZone(zoneId)));
 			}
 			else if (argList.size() == 6) {
 				return new VncJavaObject(
@@ -515,7 +518,7 @@ public class TimeFunctions {
 							Coerce.toVncLong(argList.nth(4)).getValue().intValue(),
 							Coerce.toVncLong(argList.nth(5)).getValue().intValue(),
 							0, 
-							zoneId));
+							orDefaultZone(zoneId)));
 			}
 			else {
 				return new VncJavaObject(
@@ -527,7 +530,7 @@ public class TimeFunctions {
 							Coerce.toVncLong(argList.nth(4)).getValue().intValue(),
 							Coerce.toVncLong(argList.nth(5)).getValue().intValue(),
 							Coerce.toVncLong(argList.nth(6)).getValue().intValue(),
-							zoneId));
+							orDefaultZone(zoneId)));
 			}
 		}
 	};
@@ -555,8 +558,11 @@ public class TimeFunctions {
 			
 			setDoc("Parses a zoned-date-time.");
 			
-//			setExamples(
-//					"(time/zoned-date-time-parse \"2018-08-01\" \"yyyy-MM-dd\")");
+			setExamples(
+					"(time/zoned-date-time-parse \"2018-08-01T14:20:01+01:00\" \"yyyy-MM-dd'T'HH:mm:ssz\")",
+					"(time/zoned-date-time-parse \"2018-08-01T14:20:01.000+01:00\" :ISO_OFFSET_DATE_TIME)",
+					"(time/zoned-date-time-parse \"2018-08-01 14:20:01.000 +01:00\" \"yyyy-MM-dd' 'HH:mm:ss.SSS' 'z\")"
+					);
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/zoned-date-time-parse", args, 2, 3);
@@ -786,11 +792,11 @@ public class TimeFunctions {
 	}
 
 	private static DateTimeFormatter getDateTimeFormatter(final VncVal fmt) {
-		if (Types.isVncString(fmt)) {
-			return DateTimeFormatter.ofPattern(((VncString)fmt).getValue());
-		}
-		else if (Types.isVncKeyword(fmt)) {
+		if (Types.isVncKeyword(fmt)) {
 			return getPredefinedDateTimeFormatter((VncKeyword)fmt);
+		}
+		else if (Types.isVncString(fmt)) {
+			return DateTimeFormatter.ofPattern(((VncString)fmt).getValue());
 		}
 		else if (Types.isVncJavaObject(fmt)) {
 			final Object fmtObj = ((VncJavaObject)fmt).getDelegate();
@@ -831,7 +837,18 @@ public class TimeFunctions {
 	) {
 		return locale == null ? formatter : formatter.withLocale(locale);
 	}
-	
+
+	private static DateTimeFormatter zone(
+			final DateTimeFormatter formatter, 
+			final ZoneId zoneId
+	) {
+		return zoneId == null ? formatter : formatter.withZone(zoneId);
+	}
+
+	private static ZoneId orDefaultZone(final ZoneId zoneId) {
+		return zoneId == null ? ZoneId.systemDefault() : zoneId;
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -853,7 +870,7 @@ public class TimeFunctions {
 				.put("time/zone-ids",					zone_ids)
 				.put("time/to-millis",					to_millis)
 				.put("time/formatter",					formatter)
-				.put("time/format",					format)
+				.put("time/format",						format)
 							
 				.toMap();	
 }
