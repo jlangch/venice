@@ -560,6 +560,7 @@ public class TimeFunctions {
 			
 			setExamples(
 					"(time/zoned-date-time-parse \"2018-08-01T14:20:01+01:00\" \"yyyy-MM-dd'T'HH:mm:ssz\")",
+					"(time/zoned-date-time-parse \"2018-08-01T14:20:01.000+01:00\" \"yyyy-MM-dd'T'HH:mm:ss.SSSz\")",
 					"(time/zoned-date-time-parse \"2018-08-01T14:20:01.000+01:00\" :ISO_OFFSET_DATE_TIME)",
 					"(time/zoned-date-time-parse \"2018-08-01 14:20:01.000 +01:00\" \"yyyy-MM-dd' 'HH:mm:ss.SSS' 'z\")"
 					);
@@ -587,7 +588,12 @@ public class TimeFunctions {
 			
 			setDoc("Creates a formatter");
 			
-			setExamples("(time/formatter \"dd-MM-yyyy\")");
+			setExamples(
+					"(time/formatter \"dd-MM-yyyy\")",
+					"(time/formatter \"dd-MM-yyyy\" :en_EN)",
+					"(time/formatter \"dd-MM-yyyy\" \"en_EN\")",
+					"(time/formatter \"yyyy-MM-dd'T'HH:mm:ss.SSSz\")",
+					"(time/formatter :ISO_OFFSET_DATE_TIME)");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/formatter", args, 1, 2);
@@ -606,7 +612,12 @@ public class TimeFunctions {
 			
 			setDoc("Formats a date with a format");
 			
-			setExamples("(time/format (time/local-date) \"dd-MM-yyyy\")");
+			setExamples(
+					"(time/format (time/local-date) \"dd-MM-yyyy\")",
+					"(time/format (time/zoned-date-time) \"yyyy-MM-dd'T'HH:mm:ss.SSSz\")",
+					"(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)",
+					"(time/format (time/zoned-date-time) (time/formatter \"yyyy-MM-dd'T'HH:mm:ss.SSSz\"))",
+					"(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))");
 		}
 		public VncVal apply(final VncList args) {
 			assertArity("time/format", args, 2, 3);
@@ -768,6 +779,15 @@ public class TimeFunctions {
 	private static Locale getLocale(final VncVal locale) {
 		if (locale == Nil) {
 			return Locale.getDefault();
+		}
+		if (Types.isVncKeyword(locale)) {
+			final String[] e = ((VncKeyword)locale).getValue().split("_");
+			switch(e.length) {
+				case 0: return Locale.getDefault();
+				case 1: return new Locale(e[0]);
+				case 2: return new Locale(e[0], e[1]);
+				default: return new Locale(e[0], e[1], e[2]);
+			}
 		}
 		if (Types.isVncString(locale)) {
 			final String[] e = ((VncString)locale).getValue().split("_");
