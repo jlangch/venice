@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
@@ -127,6 +126,23 @@ public class TimeFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertTrue(((Map<?,?>)venice.eval("(time/zone-ids)")).size() > 0);
+	}
+
+	@Test
+	public void test_equal() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval(
+				"(== (time/local-date \"2018-08-01\")" +
+				"    (time/local-date \"2018-08-01\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(== (time/local-date-time \"2018-08-01T10:15:30.980\")" +
+				"    (time/local-date-time \"2018-08-01T10:15:30.980\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(== (time/zoned-date-time \"2018-08-01T10:15:30.980+01:00\")" +
+				"    (time/zoned-date-time \"2018-08-01T10:15:30.980+01:00\"))"));		
 	}
 
 }
