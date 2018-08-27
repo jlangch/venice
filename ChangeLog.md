@@ -7,11 +7,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [0.9.1] - 2018-08-xx
+
+### Added
+
+- added function 'time/with-time'
+- added function 'time/first-day-of-month'
+- added function 'time/last-day-of-month'
+
+
+### fixed
+
+- fixed XChart xy-chart
+
+
+
 ## [0.9.0] - 2018-08-27
 
 ### Added
 
 - added time functions
+
 
 
 ## [0.8.5] - 2018-08-23
