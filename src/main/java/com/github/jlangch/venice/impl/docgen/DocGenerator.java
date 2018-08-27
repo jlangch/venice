@@ -95,10 +95,9 @@ public class DocGenerator {
 	private List<DocSection> getLeftSections() {
 		return Arrays.asList(
 				getPrimitivesSection(),
+				getTimeSection(),
 				getFunctionsSection(),
-				getMacrosSection(),
-				getIOSection(),
-				getTimeSection());
+				getMacrosSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -108,6 +107,7 @@ public class DocGenerator {
 				getThreadLocalsSection(),
 				getSpecialFormsSection(),
 				getJavaInteropSection(),
+				getIOSection(),
 				getMiscellaneousSection());
 	}
 
@@ -780,6 +780,8 @@ public class DocGenerator {
 		fields.addItem(getDocItem("time/hour"));
 		fields.addItem(getDocItem("time/minute"));
 		fields.addItem(getDocItem("time/second"));
+		fields.addItem(getDocItem("time/zone"));
+		fields.addItem(getDocItem("time/zone-offset"));
 
 		final DocSection format = new DocSection("Format");
 		all.addSection(format);

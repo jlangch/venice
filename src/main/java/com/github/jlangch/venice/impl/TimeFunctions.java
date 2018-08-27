@@ -1133,6 +1133,68 @@ public class TimeFunctions {
 			}
 		}
 	};
+	
+	public static VncFunction zone = new VncFunction("time/zone") {
+		{
+			setArgLists("(time/zone date)");
+			
+			setDoc("Returns the zone of the date");
+			
+			setExamples("(time/zone (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/zone", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncKeyword(((ZonedDateTime)date).getZone().getId());
+			}
+			else if (date instanceof LocalDateTime) {
+				return Nil;
+			}
+			else if (date instanceof LocalDate) {
+				return Nil;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/zone' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction zone_offset = new VncFunction("time/zone-offset") {
+		{
+			setArgLists("(time/zone-offset date)");
+			
+			setDoc("Returns the zone-offset of the date in minutes");
+			
+			setExamples("(time/zone-offset (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/zone-offset", args, 1);
+				
+			final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (date instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)date).getOffset().getTotalSeconds() / 60);
+			}
+			else if (date instanceof LocalDateTime) {
+				return Nil;
+			}
+			else if (date instanceof LocalDate) {
+				return Nil;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/zone-offset' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
 		
 	
 	
@@ -1472,6 +1534,8 @@ public class TimeFunctions {
 				.put("time/hour",						hour)
 				.put("time/minute",						minute)
 				.put("time/second",						second)
+				.put("time/zone",						zone)
+				.put("time/zone-offset",				zone_offset)
 				.put("time/after",						after)
 				.put("time/not-after",					not_after)
 				.put("time/before",						before)

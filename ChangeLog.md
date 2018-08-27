@@ -7,15 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.8.6] - 2018-08-xx
+## [0.9.0] - 2018-08-27
 
 ### Added
 
 - added time functions
-
-### fixed
-
-- fixed ...
 
 
 ## [0.8.5] - 2018-08-23
