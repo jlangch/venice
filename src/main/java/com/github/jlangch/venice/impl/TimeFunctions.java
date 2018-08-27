@@ -1032,6 +1032,84 @@ public class TimeFunctions {
 		}
 	};
 	
+	public static VncFunction first_day_of_month = new VncFunction("time/first-day-of-month") {
+		{
+			setArgLists("(time/first-day-of-month date)");
+			
+			setDoc("Returns the first day of a month as a local-date.");
+			
+			setExamples(
+					"(time/first-day-of-month (time/local-date))",
+					"(time/first-day-of-month (time/local-date-time))",
+					"(time/first-day-of-month (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/first-day-of-month", args, 1);
+				
+			final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (dt instanceof ZonedDateTime) {
+				final LocalDate date = ((ZonedDateTime)dt).toLocalDateTime().toLocalDate();
+				return new VncJavaObject(date.withDayOfMonth(1));
+			}
+			else if (dt instanceof LocalDateTime) {
+				final LocalDate date = ((LocalDateTime)dt).toLocalDate();
+				return new VncJavaObject(date.withDayOfMonth(1));
+			}
+			else if (dt instanceof LocalDate) {
+				final LocalDate date = ((LocalDate)dt);
+				return new VncJavaObject(date.withDayOfMonth(1));
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/first-day-of-month' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction last_day_of_month = new VncFunction("time/last-day-of-month") {
+		{
+			setArgLists("(time/last-day-of-month date)");
+			
+			setDoc("Returns the last day of a month as a local-date.");
+			
+			setExamples(
+					"(time/last-day-of-month (time/local-date))",
+					"(time/last-day-of-month (time/local-date-time))",
+					"(time/last-day-of-month (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/last-day-of-month", args, 1);
+				
+			final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+			
+			if (dt instanceof ZonedDateTime) {
+				final LocalDate date = ((ZonedDateTime)dt).toLocalDateTime().toLocalDate();
+				return new VncJavaObject(date.withDayOfMonth(date.lengthOfMonth()));
+			}
+			else if (dt instanceof LocalDateTime) {
+				final LocalDate date = ((LocalDateTime)dt).toLocalDate();
+				return new VncJavaObject(date.withDayOfMonth(date.lengthOfMonth()));
+			}
+			else if (dt instanceof LocalDate) {
+				final LocalDate date = ((LocalDate)dt);
+				return new VncJavaObject(date.withDayOfMonth(date.lengthOfMonth()));
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/last-day-of-month' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	LocalDate initial = LocalDate.of(2014, 2, 13);
+	LocalDate start = initial.withDayOfMonth(1);
+	LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
+	
 	public static VncFunction hour = new VncFunction("time/hour") {
 		{
 			setArgLists("(time/hour date)");
@@ -1531,6 +1609,8 @@ public class TimeFunctions {
 				.put("time/day-of-week",				day_of_week)
 				.put("time/day-of-month",				day_of_month)
 				.put("time/day-of-year",				day_of_year)
+				.put("time/first-day-of-month",			first_day_of_month)
+				.put("time/last-day-of-month",			last_day_of_month)
 				.put("time/hour",						hour)
 				.put("time/minute",						minute)
 				.put("time/second",						second)
