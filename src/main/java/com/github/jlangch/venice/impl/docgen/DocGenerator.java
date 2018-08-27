@@ -797,6 +797,7 @@ public class DocGenerator {
 		
 		final DocSection misc = new DocSection("Miscellaneous");
 		all.addSection(misc);
+		misc.addItem(getDocItem("time/with-time"));
 		misc.addItem(getDocItem("time/plus"));
 		misc.addItem(getDocItem("time/minus"));
 		misc.addItem(getDocItem("time/period"));

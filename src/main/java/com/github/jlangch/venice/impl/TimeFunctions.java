@@ -358,7 +358,7 @@ public class TimeFunctions {
 							Coerce.toVncLong(args.nth(3)).getValue().intValue(),
 							Coerce.toVncLong(args.nth(4)).getValue().intValue(),
 							Coerce.toVncLong(args.nth(5)).getValue().intValue(),
-							Coerce.toVncLong(args.nth(6)).getValue().intValue()));
+							Coerce.toVncLong(args.nth(6)).getValue().intValue() * 1_000_000));
 			}
 		}
 	};
@@ -531,7 +531,7 @@ public class TimeFunctions {
 							Coerce.toVncLong(argList.nth(3)).getValue().intValue(),
 							Coerce.toVncLong(argList.nth(4)).getValue().intValue(),
 							Coerce.toVncLong(argList.nth(5)).getValue().intValue(),
-							Coerce.toVncLong(argList.nth(6)).getValue().intValue(),
+							Coerce.toVncLong(argList.nth(6)).getValue().intValue() * 1_000_000,
 							orDefaultZone(zoneId)));
 			}
 		}
@@ -1106,10 +1106,6 @@ public class TimeFunctions {
 		}
 	};
 	
-	LocalDate initial = LocalDate.of(2014, 2, 13);
-	LocalDate start = initial.withDayOfMonth(1);
-	LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
-	
 	public static VncFunction hour = new VncFunction("time/hour") {
 		{
 			setArgLists("(time/hour date)");
@@ -1211,7 +1207,61 @@ public class TimeFunctions {
 			}
 		}
 	};
+
 	
+	public static VncFunction with_time = new VncFunction("time/with-time") { 
+		{
+			setArgLists(
+					"(time/with-time date hour minute second)", 
+					"(time/with-time date hour minute second millis)");
+			
+			setDoc("Sets the time of a date. Returns a new date");
+			
+			setExamples(
+					"(time/with-time (time/local-date) 22 00 15 333)",
+					"(time/with-time (time/local-date-time) 22 00 15 333)",
+					"(time/with-time (time/zoned-date-time) 22 00 15 333)");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/with-time", args, 4, 5);
+				
+			final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+			final int nanos = args.size() == 5 ? Coerce.toVncLong(args.nth(4)).getValue().intValue() * 1_000_000 : 0;
+			
+			if (dt instanceof ZonedDateTime) {
+				final ZonedDateTime date = ((ZonedDateTime)dt);
+				return new VncJavaObject(
+							date.withHour(Coerce.toVncLong(args.nth(1)).getValue().intValue())
+								.withMinute(Coerce.toVncLong(args.nth(2)).getValue().intValue())
+								.withSecond(Coerce.toVncLong(args.nth(3)).getValue().intValue())
+								.withNano(nanos));
+			}
+			else if (dt instanceof LocalDateTime) {
+			return new VncJavaObject(
+						((LocalDateTime)dt).toLocalDate().atTime(
+							Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+							Coerce.toVncLong(args.nth(2)).getValue().intValue(),
+							Coerce.toVncLong(args.nth(3)).getValue().intValue(),
+							nanos));
+			}
+			else if (dt instanceof LocalDate) {
+				return new VncJavaObject(
+						((LocalDate)dt).atTime(
+							Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+							Coerce.toVncLong(args.nth(2)).getValue().intValue(),
+							Coerce.toVncLong(args.nth(3)).getValue().intValue(),
+							nanos));
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/with-time' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	public static VncFunction zone = new VncFunction("time/zone") {
 		{
 			setArgLists("(time/zone date)");
@@ -1597,6 +1647,7 @@ public class TimeFunctions {
 				.put("time/zoned-date-time",			zoned_date_time)
 				.put("time/zoned-date-time?",			zoned_date_time_Q)
 				.put("time/zoned-date-time-parse",		zoned_date_time_parse)
+				.put("time/with-time",					with_time)
 				.put("time/zone-ids",					zone_ids)
 				.put("time/to-millis",					to_millis)
 				.put("time/formatter",					formatter)
