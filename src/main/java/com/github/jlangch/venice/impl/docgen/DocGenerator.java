@@ -788,12 +788,13 @@ public class DocGenerator {
 		format.addItem(getDocItem("time/formatter"));
 		format.addItem(getDocItem("time/format"));
 		
-		final DocSection compare = new DocSection("Compare");
+		final DocSection compare = new DocSection("Test");
 		all.addSection(compare);
-		compare.addItem(getDocItem("time/after"));
-		compare.addItem(getDocItem("time/not-after"));
-		compare.addItem(getDocItem("time/before"));
-		compare.addItem(getDocItem("time/not-before"));
+		compare.addItem(getDocItem("time/after?"));
+		compare.addItem(getDocItem("time/not-after?"));
+		compare.addItem(getDocItem("time/before?"));
+		compare.addItem(getDocItem("time/not-before?"));
+		compare.addItem(getDocItem("time/within?"));
 		
 		final DocSection misc = new DocSection("Miscellaneous");
 		all.addSection(misc);
@@ -805,7 +806,6 @@ public class DocGenerator {
 		misc.addItem(getDocItem("time/last-day-of-month"));
 		misc.addItem(getDocItem("time/earliest"));
 		misc.addItem(getDocItem("time/latest"));
-		misc.addItem(getDocItem("time/within?"));
 
 		final DocSection util = new DocSection("Util");
 		all.addSection(util);
