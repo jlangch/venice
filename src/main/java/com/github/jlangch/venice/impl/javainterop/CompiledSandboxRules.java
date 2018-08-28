@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -91,7 +91,7 @@ public class CompiledSandboxRules {
 					.stream()
 					.filter(s -> s.startsWith("blacklist:venice:"))
 					.map(s -> s.substring("blacklist:venice:".length()))
-					.map(s -> s.equals("*io*") ? CoreFunctions.getAllIoFunctions() : toSet(s))
+					.map(s -> s.equals("*io*") ? IOFnBlacklisted.getAllIoFunctions() : toSet(s))
 					.flatMap(Set::stream)
 					.collect(Collectors.toSet()));
 	}

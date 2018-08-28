@@ -6939,21 +6939,6 @@ public class CoreFunctions {
 		}
 	};
 	
-	public static Set<String> getAllIoFunctions() {
-		return new HashSet<>(Arrays.asList(
-								"load-file",
-								"io/slurp",
-								"io/spit",
-								"io/exists-file?",
-								"io/exists-dir?",
-								"io/list-files",
-								"io/delete-file",
-								"io/copy-file",
-								"io/move-file",
-								"io/tmp-dir",
-								"io/user-dir"));
-	}
-	
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncList(value)) {
 			((VncList)value).getList().forEach(v -> flatten(v, result));

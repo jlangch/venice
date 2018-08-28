@@ -23,7 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import java.util.Set;
 
-import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
@@ -113,5 +113,5 @@ public class RejectAllInterceptor extends JavaInterceptor {
 	}
 
 	
-	private final Set<String> blacklistedVeniceFunctions = CoreFunctions.getAllIoFunctions();
+	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getAllIoFunctions();
 }
