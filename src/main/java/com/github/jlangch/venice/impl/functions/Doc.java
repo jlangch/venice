@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.functions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MacroDef;
 
 
 public class Doc {
@@ -69,6 +70,7 @@ public class Doc {
 	static {
 		CoreFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
 		TimeFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
+		ShellFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
 		CoreMacroDefs.getMacros().forEach(m -> macros.put(m.getName(), m));
 	}
 }

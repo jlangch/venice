@@ -5,9 +5,9 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
-import com.github.jlangch.venice.impl.CoreFunctions;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;

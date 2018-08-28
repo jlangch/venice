@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.ErrorMessage;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -32,6 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class Coerce {

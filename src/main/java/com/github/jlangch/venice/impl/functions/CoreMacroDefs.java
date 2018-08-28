@@ -19,11 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.functions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.github.jlangch.venice.impl.util.MacroDef;
 
 
 public class CoreMacroDefs {

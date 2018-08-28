@@ -23,7 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import java.util.Set;
 
-import com.github.jlangch.venice.impl.CoreFunctions;
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 

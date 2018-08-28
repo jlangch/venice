@@ -19,12 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.FunctionsUtil.isJavaIoFile;
-import static com.github.jlangch.venice.impl.FunctionsUtil.removeNilValues;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.isJavaIoFile;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
@@ -57,6 +57,10 @@ import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.Reader;
+import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Coerce;
@@ -86,6 +90,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 

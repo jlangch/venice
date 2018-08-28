@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.types;
 
 import java.util.function.Function;
 
-import com.github.jlangch.venice.impl.FunctionsUtil;
+import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 

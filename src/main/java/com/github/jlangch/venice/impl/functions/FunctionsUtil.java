@@ -1,4 +1,4 @@
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 

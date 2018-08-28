@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice;
 
-import com.github.jlangch.venice.impl.ErrorMessage;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class ArityException extends VncException {
 
