@@ -21,10 +21,15 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
+
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class ShellFunctions {
@@ -33,6 +38,18 @@ public class ShellFunctions {
 	// Shell
 	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction sh = new VncFunction("sh") {
+		{
+			setArgLists("(sh name)");
+			
+			setDoc("Returns the documentation for the function/macro with the given name");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("sh", args, 1);
+			
+			return Constants.Nil;
+		}
+	};
 
 	
 	
@@ -49,6 +66,6 @@ public class ShellFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-						
-				.toMap();	
+					.put("sh",	sh)					
+					.toMap();	
 }
