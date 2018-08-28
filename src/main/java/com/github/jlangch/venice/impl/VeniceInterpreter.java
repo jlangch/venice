@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.Closeable;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.github.jlangch.venice.Version;
@@ -551,7 +552,8 @@ public class VeniceInterpreter {
 			}
 		}
 		finally {
-			// close resources
+			// close resources in reverse order
+			Collections.reverse(boundResources);
 			boundResources.stream().forEach(b -> {
 				final VncVal resource = b.val;
 				if (Types.isVncJavaObject(resource)) {

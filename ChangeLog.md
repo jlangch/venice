@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed XChart xy-chart
+- fixed try-with-resources to close the resources in reversed order 
+        of its definition
 
 
 
