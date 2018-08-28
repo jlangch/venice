@@ -803,6 +803,9 @@ public class DocGenerator {
 		misc.addItem(getDocItem("time/period"));
 		misc.addItem(getDocItem("time/first-day-of-month"));
 		misc.addItem(getDocItem("time/last-day-of-month"));
+		misc.addItem(getDocItem("time/earliest"));
+		misc.addItem(getDocItem("time/latest"));
+		misc.addItem(getDocItem("time/within?"));
 
 		final DocSection util = new DocSection("Util");
 		all.addSection(util);

@@ -12,9 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - added function 'time/with-time'
-- added function 'time/first-day-of-month'
-- added function 'time/last-day-of-month'
-
+- added function 'time/first-day-of-month', 'time/last-day-of-month'
+- added function 'time/earliest', 'time/latest', 'time/within?'
 
 ### fixed
 

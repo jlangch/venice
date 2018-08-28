@@ -53,6 +53,8 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 
@@ -1209,6 +1211,10 @@ public class TimeFunctions {
 	};
 
 	
+	///////////////////////////////////////////////////////////////////////////
+	// Miscallenous
+	///////////////////////////////////////////////////////////////////////////
+
 	public static VncFunction with_time = new VncFunction("time/with-time") { 
 		{
 			setArgLists(
@@ -1256,6 +1262,113 @@ public class TimeFunctions {
 			else {
 				throw new VncException(String.format(
 						"Function 'time/with-time' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction latest = new VncFunction("time/latest") {
+		{
+			setArgLists("(time/latest coll)");
+			
+			setDoc( "Returns the latest date from a collection of dates. " + 
+					"All dates must be of equal type. The coll may be empty or nil.");
+			
+			setExamples(
+					"(time/latest [(time/local-date 2018 8 1) (time/local-date 2018 8 3)])");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/latest", args, 1);
+			
+			final List<VncVal> dates = toJavaList(args, "time/latest");
+			
+			if (dates.isEmpty()) {
+				return Nil;
+			}
+			else if (dates.size() == 1) {
+				return dates.get(0);
+			}
+			else {
+				VncVal latest = dates.get(0);
+				for(VncVal date : dates.subList(0, dates.size())) {
+					if (after.apply(new VncList(date, latest)) == True) {
+						latest = date;
+					}
+				}
+				
+				return latest;
+			}
+		}
+	};
+
+	public static VncFunction earliest = new VncFunction("time/earliest") {
+		{
+			setArgLists("(time/earliest coll)");
+			
+			setDoc( "Returns the earliest date from a collection of dates. " +
+					"All dates must be of equal type. The coll may be empty or nil.");
+			
+			setExamples(
+					"(time/earliest [(time/local-date 2018 8 4) (time/local-date 2018 8 3)])");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/earliest", args, 1);
+			
+			final List<VncVal> dates = toJavaList(args, "time/earliest");
+			
+			if (dates.isEmpty()) {
+				return Nil;
+			}
+			else if (dates.size() == 1) {
+				return dates.get(0);
+			}
+			else {
+				VncVal latest = dates.get(0);
+				for(VncVal date : dates.subList(0, dates.size())) {
+					if (before.apply(new VncList(date, latest)) == True) {
+						latest = date;
+					}
+				}
+				
+				return latest;
+			}
+		}
+	};
+
+	public static VncFunction within_Q = new VncFunction("time/within?") {
+		{
+			setArgLists("(time/within? date start end)");
+			
+			setDoc( "Returns true if the date is after or equal to the start and is before or equal to the end. " +
+					"All three dates must be of the same type.");
+			
+			setExamples(
+					"(time/within? (time/local-date 2018 8 4) (time/local-date 2018 8 1) (time/local-date 2018 8 31))",
+					"(time/within? (time/local-date 2018 7 4) (time/local-date 2018 8 1) (time/local-date 2018 8 31))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/within?", args, 3);
+			
+			final Object dt = Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+			final Object start = Coerce.toVncJavaObject(args.nth(1)).getDelegate();
+			final Object end = Coerce.toVncJavaObject(args.nth(2)).getDelegate();
+			
+			if (dt instanceof ZonedDateTime) {
+				final ZonedDateTime date = (ZonedDateTime)dt;
+				return date.isBefore((ZonedDateTime)start) || date.isAfter((ZonedDateTime)end) ? False : True;
+			}
+			else if (dt instanceof LocalDateTime) {
+				final LocalDateTime date = (LocalDateTime)dt;
+				return date.isBefore((LocalDateTime)start) || date.isAfter((LocalDateTime)end) ? False : True;
+			}
+			else if (dt instanceof LocalDate) {
+				final LocalDate date = (LocalDate)dt;
+				return date.isBefore((LocalDate)start) || date.isAfter((LocalDate)end) ? False : True;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/within?' does not allow %s as parameter. %s", 
 						Types.getClassName(args.first()),
 						ErrorMessage.buildErrLocation(args)));
 			}
@@ -1630,6 +1743,31 @@ public class TimeFunctions {
 		}
 	}
 	
+	private static List<VncVal> toJavaList(final VncList args, final String fnName) {
+		final List<VncVal> dates = new ArrayList<>();
+
+		if (args.first() == Nil) {
+			return dates;
+		}
+		
+		if (Types.isVncSequence(args.first())) {
+			dates.addAll(((VncSequence)args.first()).getList());
+		}
+		else if (Types.isVncSet(args.first())) {
+			dates.addAll(((VncSet)args.first()).getList());
+		}
+		else {
+			throw new VncException(String.format(
+					"Function '%s' does not allow %s as parameter. %s", 
+					fnName,
+					Types.getClassName(args.first()),
+					ErrorMessage.buildErrLocation(args)));
+		}
+
+		return dates;
+	}
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1671,6 +1809,9 @@ public class TimeFunctions {
 				.put("time/not-after",					not_after)
 				.put("time/before",						before)
 				.put("time/not-before",					not_before)
+				.put("time/earliest",					earliest)
+				.put("time/latest",						latest)
+				.put("time/within?",					within_Q)
 						
 				.toMap();	
 }
