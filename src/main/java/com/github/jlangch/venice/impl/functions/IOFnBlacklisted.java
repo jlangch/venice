@@ -30,6 +30,7 @@ public class IOFnBlacklisted {
 
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
+								"sh",
 								"load-file",
 								"io/slurp",
 								"io/spit",
