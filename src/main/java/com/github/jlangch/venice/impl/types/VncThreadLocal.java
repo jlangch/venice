@@ -50,6 +50,18 @@ public class VncThreadLocal extends VncVal {
 	public VncVal get(final VncKeyword key) {
 		return ThreadLocalMap.get(key);
 	}
+
+	public VncVal get(final VncKeyword key, final VncVal defaultValue) {
+		return ThreadLocalMap.get(key, defaultValue);
+	}
+
+	public VncVal get(final String key) {
+		return get(new VncKeyword(key));
+	}
+
+	public VncVal get(final String key, final VncVal defaultValue) {
+		return get(new VncKeyword(key), defaultValue);
+	}
 	
 	public void set(final VncKeyword key, final VncVal val) {
 		ThreadLocalMap.set(key, val);

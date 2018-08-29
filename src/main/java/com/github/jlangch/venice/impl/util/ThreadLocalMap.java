@@ -35,12 +35,16 @@ public class ThreadLocalMap {
 	}
 	
 	public static VncVal get(final VncKeyword key) {
+		return get(key, Constants.Nil);
+	}
+	
+	public static VncVal get(final VncKeyword key, final VncVal defaultValue) {
 		if (key == null) {
 			return Constants.Nil;
 		}
 		else {
 			final VncVal v = get().values.get(key);
-			return v == null ? Constants.Nil : v;
+			return v == null ? defaultValue : v;
 		}
 	}
 	
