@@ -30,6 +30,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public abstract class VncSequence extends VncCollection {
 
 	public abstract List<VncVal> getList();
+	
+	public abstract VncVal nth(final int idx);
 
 	public  Stream<VncVal> stream() {
 		return getList().stream();

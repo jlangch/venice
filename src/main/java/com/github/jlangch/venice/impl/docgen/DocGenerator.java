@@ -378,6 +378,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("take-while"));
 		list_modify.addItem(getDocItem("drop"));
 		list_modify.addItem(getDocItem("drop-while"));
+		list_modify.addItem(getDocItem("split-with"));
 	
 		final DocSection list_test = new DocSection("Test");
 		lists.addSection(list_test);
@@ -434,6 +435,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("get-in"));
 		vec_modify.addItem(getDocItem("update"));
 		vec_modify.addItem(getDocItem("update!"));
+		vec_modify.addItem(getDocItem("split-with"));
 			
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);

@@ -2974,6 +2974,55 @@ public class CoreFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 
+	public static VncFunction split_with = new VncFunction("split-with") {
+		{
+			setArgLists("(split-with pred coll)");
+			
+			setDoc( "Splits the collection at the first false/nil predicate result in a vector with two lists");
+			
+			setExamples(
+					"(split-with odd? [1 3 5 6 7 9])",
+					"(split-with odd? [1 3 5])",
+					"(split-with odd? [2 4 6])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("split-with", args, 2);
+			
+			if (args.second() == Nil) {
+				return new VncVector(new VncList(), new VncList());
+			}
+			
+			final VncFunction pred = Coerce.toVncFunction(args.first());
+			final VncSequence coll = Coerce.toVncSequence(args.second());
+			
+			final List<VncVal> items = coll.getList();
+			int splitPos = items.size();
+			
+			// find splitPos
+			for(int ii=0; ii<items.size(); ii++) {
+				final VncVal val = coll.nth(ii);
+				final VncVal match = pred.apply(new VncList(val));
+				if (match == False || match == Nil) {
+					splitPos = ii;
+					break;
+				}				
+			}
+			
+			if (splitPos == 0) {
+				return new VncVector(new VncList(), new VncList(items));
+			}
+			else if (splitPos < items.size()) {
+				return new VncVector(
+							new VncList(items.subList(0, splitPos)), 
+							new VncList(items.subList(splitPos, items.size())));
+			}
+			else {
+				return new VncVector(new VncList(items), new VncList());
+			}
+		}
+	};
+
 	public static VncFunction into = new VncFunction("into") {
 		{
 			setArgLists("(into to-coll from-coll)");
@@ -6336,6 +6385,7 @@ public class CoreFunctions {
 				.put("union", 				union)
 				.put("intersection", 		intersection)
 
+				.put("split-with",			split_with)
 				.put("into",				into)
 				.put("sequential?",	    	sequential_Q)
 				.put("coll?",	    		coll_Q)
