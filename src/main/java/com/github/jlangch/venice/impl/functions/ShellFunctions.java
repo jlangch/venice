@@ -65,9 +65,8 @@ public class ShellFunctions {
 			setDoc("Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
 					"\n" +
 					" Options are\n" + 
-					"  :in      may be given followed by any legal input source for\n" + 
-					"           clojure.java.io/copy, e.g. InputStream, Reader, File, ByteBuf,\n" + 
-					"           or String, to be fed to the sub-process's stdin.\n" + 
+					"  :in      may be given followed by input source as InputStream, Reader, \n" + 
+					"           File, ByteBuf, or String, to be fed to the sub-process's stdin.\n" + 
 					"  :in-enc  option may be given followed by a String, used as a character\n" + 
 					"           encoding name (for example \"UTF-8\" or \"ISO-8859-1\") to\n" + 
 					"           convert the input string specified by the :in option to the\n" + 
@@ -79,7 +78,7 @@ public class ShellFunctions {
 					"           name (for example \"UTF-8\" or \"ISO-8859-1\") to convert\n" + 
 					"           the sub-process's stdout to a String which is returned.\n" + 
 					"           If :bytes is given, the sub-process's stdout will be stored\n" + 
-					"           in a byte array and returned.  Defaults to UTF-8.\n" + 
+					"           in a Bytebuf and returned.  Defaults to UTF-8.\n" + 
 					"  :env     override the process env with a map.\n" + 
 					"  :dir     override the process dir with a String or java.io.File.\n" + 
 					"\n" +
