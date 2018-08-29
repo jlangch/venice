@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.Assert.assertTrue;
 
@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.junit.Test;
+
+import com.github.jlangch.venice.Venice;
 
 
 public class TimeFunctionsTest {
