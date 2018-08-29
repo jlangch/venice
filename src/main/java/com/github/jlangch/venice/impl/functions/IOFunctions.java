@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
@@ -52,6 +53,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 
@@ -764,7 +766,7 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("spit-stream", args);
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/spit-stream", args);
 
 
 			assertMinArity("io/spit-stream", args, 2);
@@ -811,6 +813,71 @@ public class IOFunctions {
 		}
 	};
 
+
+	public static VncFunction io_shell = new VncFunction("sh") {
+		{
+			setArgLists("(sh & args)");
+			
+			setDoc("Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
+					"\n" +
+					" Options are\n" + 
+					"  :in      may be given followed by any legal input source for\n" + 
+					"           clojure.java.io/copy, e.g. InputStream, Reader, File, byte[],\n" + 
+					"           or String, to be fed to the sub-process's stdin.\n" + 
+					"  :in-enc  option may be given followed by a String, used as a character\n" + 
+					"           encoding name (for example \"UTF-8\" or \"ISO-8859-1\") to\n" + 
+					"           convert the input string specified by the :in option to the\n" + 
+					"           sub-process's stdin.  Defaults to UTF-8.\n" + 
+					"           If the :in option provides a byte array, then the bytes are passed\n" + 
+					"           unencoded, and this option is ignored.\n" + 
+					"  :out-enc option may be given followed by :bytes or a String. If a\n" + 
+					"           String is given, it will be used as a character encoding\n" + 
+					"           name (for example \"UTF-8\" or \"ISO-8859-1\") to convert\n" + 
+					"           the sub-process's stdout to a String which is returned.\n" + 
+					"           If :bytes is given, the sub-process's stdout will be stored\n" + 
+					"           in a byte array and returned.  Defaults to UTF-8.\n" + 
+					"  :env     override the process env with a map (or the underlying Java\n" + 
+					"           String[] if you are a masochist).\n" + 
+					"  :dir     override the process dir with a String or java.io.File.\n" + 
+					"\n" +
+					"You can bind :env or :dir for multiple operations using with-sh-env\n" + 
+					"and with-sh-dir.\n" + 
+					"\n" +
+					" sh returns a map of\n" + 
+					"  :exit => sub-process's exit code\n" + 
+					"  :out  => sub-process's stdout (as byte[] or String)\n" + 
+					"  :err  => sub-process's stderr (String via platform default encoding)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("sh", args);
+
+			assertMinArity("sh", args, 1);
+
+			
+			return Nil;
+		}
+	};
+
+	private static String[] toEnvStrings(final VncVal envMap) {
+		if (envMap == Nil) {
+			return null;
+		}
+		else {
+			return ((VncMap)envMap)
+						.entries()
+						.stream()
+						.map(e -> 
+							String.format(
+									"%s=%s", 
+									CoreFunctions.name.apply(new VncList(e.getKey())),
+									e.getValue().toString()))
+						.collect(Collectors.toList())
+						.toArray(new String[] {});
+		}
+	}
+	
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -818,6 +885,7 @@ public class IOFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()								
+					.put("sh",					io_shell)
 					.put("io/file",				io_file)
 					.put("io/file?",			io_file_Q)
 					.put("io/exists-file?",		io_exists_file_Q)

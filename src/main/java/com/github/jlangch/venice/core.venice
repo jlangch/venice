@@ -260,6 +260,30 @@
    
    `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
 
+(defmacro 
+   { :arglists '("(sh dir & forms)")
+     :doc "Sets the directory for use with sh, see sh for details." 
+     :examples '("(sh \"/home/foo\")") }
+
+  with-sh-dir [dir & forms]
+  
+  `(do
+      (thread-local :*sh-dir* ~dir)
+      (try
+         (do ~@forms)
+         (finally (dissoc (thread-local) :*sh-dir*)))))
+
+(defmacro 
+   { :arglists '("(sh env & forms)")
+     :doc "Sets the environment for use with sh, see sh for details." }
+
+  with-sh-env [env & forms]
+  
+  `(do
+      (thread-local :*sh-env* ~env)
+      (try
+         (do ~@forms)
+         (finally (dissoc (thread-local) :*sh-env*)))))
 
 (def
    { :arglists '("(print & xs)")

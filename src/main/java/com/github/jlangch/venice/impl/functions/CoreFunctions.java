@@ -6074,11 +6074,46 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction name = new VncFunction("name") {
+		{
+			setArgLists("(name x)");
+			
+			setDoc("Returns the name String of a string, symbol or keyword.");
+			
+			setExamples(
+					"(name :x)",
+					"(name 'x)",
+					"(name \"x\")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("name", args, 1);
+			
+			final VncVal arg = args.first();
+			
+			if (Types.isVncKeyword(arg)) {
+				return new VncString(((VncKeyword)arg).getValue());
+			}
+			else if (Types.isVncSymbol(arg)) {
+				return new VncString(((VncSymbol)arg).getName());
+			}
+			else if (Types.isVncString(arg)) {
+				return arg;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'name' does not allow %s as parameter. %s", 
+						Types.getClassName(arg),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	public static VncFunction type = new VncFunction("type") {
 		{
 			setArgLists("(type x)");
 			
-			setDoc("Retruns the type of x.");
+			setDoc("Returns the type of x.");
 			
 			setExamples(
 					"(type 5)",
@@ -6375,6 +6410,7 @@ public class CoreFunctions {
 
 				.put("sleep",				sleep)
 				.put("version",				version)
+				.put("name",				name)
 				.put("type",				type)
 				.put("thread-local",		new_thread_local)
 				.put("thread-local?",		thread_local_Q)

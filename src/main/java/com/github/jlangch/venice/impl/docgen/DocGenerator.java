@@ -541,6 +541,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("class"));
 		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));
+		misc.addItem(getDocItem("name"));
 
 
 		final DocSection util = new DocSection("Other");
