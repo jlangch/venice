@@ -32,9 +32,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.functions.CoreFunctions;
-import com.github.jlangch.venice.impl.functions.ShellFunctions;
-import com.github.jlangch.venice.impl.functions.TimeFunctions;
+import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
@@ -394,23 +392,12 @@ public class VeniceInterpreter {
 	public Env createEnv(final PrintStream stdout) {
 		final Env env = new Env(null);
 
+		
 		// core functions defined in Java
-		CoreFunctions.ns.keySet().forEach(
+		Functions.functions.keySet().forEach(
 				key -> env.set(
 						Types.isVncSymbol(key) ? (VncSymbol)key : ((VncString)key).toSymbol(), 
-						CoreFunctions.ns.get(key)));
-
-		// time functions defined in Java
-		TimeFunctions.ns.keySet().forEach(
-				key -> env.set(
-						Types.isVncSymbol(key) ? (VncSymbol)key : ((VncString)key).toSymbol(), 
-						TimeFunctions.ns.get(key)));
-
-		// shell functions defined in Java
-		ShellFunctions.ns.keySet().forEach(
-				key -> env.set(
-						Types.isVncSymbol(key) ? (VncSymbol)key : ((VncString)key).toSymbol(), 
-						ShellFunctions.ns.get(key)));
+						Functions.functions.get(key)));
 
 		// JavaInterop function
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 

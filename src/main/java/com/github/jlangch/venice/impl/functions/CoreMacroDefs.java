@@ -30,6 +30,10 @@ import com.github.jlangch.venice.impl.util.MacroDef;
 
 public class CoreMacroDefs {
 
+	public static MacroDef getMacroDef(final String name) {
+		return getMacros().stream().filter(m -> m.getName().equals(name)).findFirst().orElse(null);
+	}
+	
 	public static List<MacroDef> getMacros() {
 		final List<MacroDef> macros = new ArrayList<>();
 		

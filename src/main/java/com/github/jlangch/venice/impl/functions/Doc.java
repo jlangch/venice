@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.Constants;
@@ -37,7 +35,7 @@ public class Doc {
 	public static String getDoc(final String name) {
 		
 		// function?
-		final VncFunction func = functions.get(name);
+		final VncFunction func = Functions.getFunction(name);
 		if (func != null) {
 			final StringBuilder sb =  new StringBuilder();
 			sb.append(func.getArgLists().getList().stream().map(s -> toString(s)).collect(Collectors.joining(", ")));
@@ -47,7 +45,7 @@ public class Doc {
 		}
 		
 		// macro?
-		final MacroDef macro = macros.get(name);
+		final MacroDef macro = CoreMacroDefs.getMacroDef(name);
 		if (macro != null) {
 			final StringBuilder sb =  new StringBuilder();
 			sb.append(macro.getSignatures().stream().collect(Collectors.joining(", ")));
@@ -63,14 +61,4 @@ public class Doc {
 		return val == Constants.Nil ? "" : ((VncString)val).getValue();
 	}
 	
-	
-	private static final Map<String,VncFunction> functions = new HashMap<>();
-	private static final Map<String,MacroDef> macros = new HashMap<>();
-	
-	static {
-		CoreFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
-		TimeFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
-		ShellFunctions.ns.values().forEach(f -> functions.put(((VncFunction)f).getName(), (VncFunction)f));
-		CoreMacroDefs.getMacros().forEach(m -> macros.put(m.getName(), m));
-	}
 }
