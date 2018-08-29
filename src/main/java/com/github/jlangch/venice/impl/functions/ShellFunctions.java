@@ -136,6 +136,8 @@ public class ShellFunctions {
 
 			Future<Object> future_stdin = null;
 			if (in != Nil) {
+				// spit to subprocess' stdin as string, bytebuf, or File
+				
 				if (Types.isVncString(in)) {
 					future_stdin = executor.submit(
 										() -> { StreamUtil.copyStringToOS(
@@ -154,7 +156,7 @@ public class ShellFunctions {
 				else if (Types.isVncJavaObject(in) && ((VncJavaObject)in).getDelegate() instanceof File) {
 					future_stdin = executor.submit(
 							() -> { StreamUtil.copyFileToOS(
-									(File)((VncJavaObject)in).getDelegate(), 
+										(File)((VncJavaObject)in).getDelegate(), 
 										proc.getOutputStream());
 									return null; });
 				}
@@ -169,14 +171,14 @@ public class ShellFunctions {
 			try(InputStream stdout = proc.getInputStream();
 				InputStream stderr = proc.getErrorStream()
 			) {
-				// slurp stdout 
+				// slurp the subprocess' stdout (as string or bytebuf)
 				final String enc = getEncoding(outEnc);
 				final Future<VncVal> future_stdout =
 						executor.submit(() -> "byte".equals(enc)
 												? new VncByteBuffer(StreamUtil.copyIStoByteArray(stdout))
 												: new VncString(StreamUtil.copyIStoString(stdout, enc)));
 				
-				// slurp stderr with platform default encoding
+				// slurp the subprocess' stderr as string with platform default encoding
 				final Future<VncVal> future_stderr = 
 						executor.submit(() -> new VncString(StreamUtil.copyIStoString(stderr, null)));
 				
