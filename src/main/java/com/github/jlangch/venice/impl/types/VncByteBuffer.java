@@ -28,6 +28,10 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class VncByteBuffer extends VncVal {
 
+	public VncByteBuffer(final byte[] v) { 
+		this(ByteBuffer.wrap(v)); 
+	}
+	
 	public VncByteBuffer(final ByteBuffer v) { 
 		value = v; 
 	}

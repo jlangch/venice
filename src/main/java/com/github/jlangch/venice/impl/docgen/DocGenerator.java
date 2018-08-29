@@ -741,6 +741,10 @@ public class DocGenerator {
 		load.addItem(getDocItem("load-file"));
 		load.addItem(getDocItem("load-string"));
 
+		final DocSection shell = new DocSection("shell");
+		all.addSection(shell);
+		shell.addItem(getDocItem("sh"));
+
 		return section;
 	}
 

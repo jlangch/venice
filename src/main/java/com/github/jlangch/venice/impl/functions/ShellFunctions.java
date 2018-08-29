@@ -37,6 +37,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Types;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -57,8 +58,6 @@ public class ShellFunctions {
 	// Shell
 	///////////////////////////////////////////////////////////////////////////
 
-
-
 	public static VncFunction sh = new VncFunction("sh") {
 		{
 			setArgLists("(sh & args)");
@@ -67,7 +66,7 @@ public class ShellFunctions {
 					"\n" +
 					" Options are\n" + 
 					"  :in      may be given followed by any legal input source for\n" + 
-					"           clojure.java.io/copy, e.g. InputStream, Reader, File, byte[],\n" + 
+					"           clojure.java.io/copy, e.g. InputStream, Reader, File, ByteBuf,\n" + 
 					"           or String, to be fed to the sub-process's stdin.\n" + 
 					"  :in-enc  option may be given followed by a String, used as a character\n" + 
 					"           encoding name (for example \"UTF-8\" or \"ISO-8859-1\") to\n" + 
@@ -89,7 +88,7 @@ public class ShellFunctions {
 					"\n" +
 					" sh returns a map of\n" + 
 					"  :exit => sub-process's exit code\n" + 
-					"  :out  => sub-process's stdout (as byte[] or String)\n" + 
+					"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
 					"  :err  => sub-process's stderr (String via platform default encoding)");
 		}
 		
@@ -146,7 +145,20 @@ public class ShellFunctions {
 													getEncoding(inEnc));
 												return null; });
 				}
-				// TODO  support byte[], bytebuf
+				else if (Types.isVncByteBuffer(in)) {
+					future_stdin = executor.submit(
+							() -> { StreamUtil.copyByteArrayToOS(
+										((VncByteBuffer)in).getValue().array(), 
+										proc.getOutputStream());
+									return null; });
+				}
+				else if (Types.isVncJavaObject(in) && ((VncJavaObject)in).getDelegate() instanceof File) {
+					future_stdin = executor.submit(
+							() -> { StreamUtil.copyFileToOS(
+									(File)((VncJavaObject)in).getDelegate(), 
+										proc.getOutputStream());
+									return null; });
+				}
 				else {
 					proc.getOutputStream().close();
 				}
@@ -159,11 +171,15 @@ public class ShellFunctions {
 				InputStream stderr = proc.getErrorStream()
 			) {
 				// slurp stdout 
-				// TODO :byte as outEnc
-				final Future<String> future_stdout = executor.submit(() -> StreamUtil.copyIStoString(stdout, getEncoding(outEnc)));
+				final String enc = getEncoding(outEnc);
+				final Future<VncVal> future_stdout =
+						executor.submit(() -> "byte".equals(enc)
+												? new VncByteBuffer(StreamUtil.copyIStoByteArray(stdout))
+												: new VncString(StreamUtil.copyIStoString(stdout, enc)));
 				
-				// slurp stderr
-				final Future<String> future_stderr = executor.submit(() -> StreamUtil.copyIStoString(stderr, getEncoding(outEnc)));
+				// slurp stderr with platform default encoding
+				final Future<VncVal> future_stderr = 
+						executor.submit(() -> new VncString(StreamUtil.copyIStoString(stderr, null)));
 				
 				final int exitCode = proc.waitFor();
 					
@@ -173,8 +189,8 @@ public class ShellFunctions {
 				
 				return new VncHashMap(
 						new VncKeyword(":exit"), new VncLong(exitCode),
-						new VncKeyword(":out"),  new VncString(future_stdout.get()),
-						new VncKeyword(":err"),  new VncString(future_stderr.get()));
+						new VncKeyword(":out"),  future_stdout.get(),
+						new VncKeyword(":err"),  future_stderr.get());
 			}
 		}
 		catch(Exception ex) {

@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -67,7 +69,20 @@ public class StreamUtil {
     	
     	os.write(data);
     }
-    
+
+    public static void copyFileToOS(
+    		final File file, 
+    		final OutputStream os
+    ) throws IOException{
+    	if (os == null || file == null) {
+    		return;
+    	}
+    	
+    	try (FileInputStream is = new FileInputStream(file)) {
+    		copy(is, os);
+    	}
+    }
+   
     public static void copyStringToOS(
     		final String data, 
     		final OutputStream os, 
@@ -82,5 +97,19 @@ public class StreamUtil {
     			? data.getBytes(Charset.defaultCharset())
     			: data.getBytes(encoding));
     }
-    
+
+	
+	public static void copy(final InputStream is, final OutputStream os) 
+	throws IOException {
+		int len;
+		byte[] buf=new byte[4096];
+		 
+		while ((len=is.read(buf))!=-1) {
+			os.write(buf,0,len);
+	
+		}
+		
+		os.flush();
+	}
+
 }
