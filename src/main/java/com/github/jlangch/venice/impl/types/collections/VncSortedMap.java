@@ -89,17 +89,25 @@ public class VncSortedMap extends VncMap {
 	}
 
 	@Override
-	public VncSortedMap assoc(final VncList lst) {
-		for (int i=0; i<lst.getList().size(); i+=2) {
-			value.put(lst.nth(i), lst.nth(i+1));
+	public VncSortedMap assoc(final VncList mvs) {
+		for (int i=0; i<mvs.getList().size(); i+=2) {
+			value.put(mvs.nth(i), mvs.nth(i+1));
 		}
 		return this;
 	}
 
 	@Override
-	public VncSortedMap dissoc(final VncList lst) {
-		for (int i=0; i<lst.getList().size(); i++) {
-			value.remove(lst.nth(i));
+	public VncMap dissoc(final VncVal... keys) {
+		for (VncVal key : keys) {
+			value.remove(key);
+		}
+		return this;
+	}
+
+	@Override
+	public VncSortedMap dissoc(final VncList keys) {
+		for (int i=0; i<keys.getList().size(); i++) {
+			value.remove(keys.nth(i));
 		}
 		return this;
 	}
