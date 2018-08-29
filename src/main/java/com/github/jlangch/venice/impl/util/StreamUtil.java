@@ -24,11 +24,13 @@ package com.github.jlangch.venice.impl.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 
 public class StreamUtil {
 
-    public static byte[] toByteArray(final InputStream is) throws IOException{
+    public static byte[] copyIStoByteArray(final InputStream is) throws IOException{
     	if (is == null) {
     		return null;
     	}
@@ -44,8 +46,41 @@ public class StreamUtil {
         }
     }
     
-    public static String toString(final InputStream is, final String encoding) throws IOException{
-    	return is == null ? null : new String(StreamUtil.toByteArray(is), encoding);
+    public static String copyIStoString(
+    		final InputStream is,
+    		final String encoding
+    ) throws IOException{
+    	return is == null 
+    			? null 
+    			: new String(
+    					StreamUtil.copyIStoByteArray(is), 
+    					encoding == null ? Charset.defaultCharset().name() : encoding);
     }
- 
+
+    public static void copyByteArrayToOS(
+    		final byte[] data, 
+    		final OutputStream os
+    ) throws IOException{
+    	if (os == null || data == null) {
+    		return;
+    	}
+    	
+    	os.write(data);
+    }
+    
+    public static void copyStringToOS(
+    		final String data, 
+    		final OutputStream os, 
+    		final String encoding
+    ) throws IOException{
+    	if (os == null || data == null) {
+    		return;
+    	}
+    	
+    	os.write(
+    		encoding == null 
+    			? data.getBytes(Charset.defaultCharset())
+    			: data.getBytes(encoding));
+    }
+    
 }

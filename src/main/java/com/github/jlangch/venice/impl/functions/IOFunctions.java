@@ -723,7 +723,7 @@ public class IOFunctions {
 				final VncVal binary = options.get(new VncKeyword("binary")); 
 
 				if (binary == True) {
-					final byte[] data = StreamUtil.toByteArray(is);
+					final byte[] data = StreamUtil.copyIStoByteArray(is);
 					return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 				}
 				else {
@@ -731,7 +731,7 @@ public class IOFunctions {
 					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 
-					return new VncString(StreamUtil.toString(is, encoding));
+					return new VncString(StreamUtil.copyIStoString(is, encoding));
 				}
 			} 
 			catch (VncException ex) {

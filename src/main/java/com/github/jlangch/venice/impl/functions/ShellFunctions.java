@@ -25,7 +25,12 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinAr
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -43,6 +48,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
 public class ShellFunctions {
@@ -91,27 +97,18 @@ public class ShellFunctions {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("sh", args);
 
 			assertMinArity("sh", args, 1);
-			
+
 			final VncVector v = parseArgs(args);
 
 			final VncList cmd = Coerce.toVncList(v.first());
 			final VncMap opts = Coerce.toVncMap(v.second());
 
+			final ExecutorService executor = Executors.newFixedThreadPool(3);
 			try {
-				final String[] cmdArr = toStringArray(cmd);
-				final String[] envArr = toEnvStrings(opts.get(new VncKeyword(":env")));
-				final File dir_ = toFile(opts.get(new VncKeyword(":dir")));
-				
-				final Process proc = Runtime.getRuntime().exec(cmdArr, envArr, dir_);
-								
-				final int exitCode = proc.waitFor();
-				
-				return new VncHashMap(
-						new VncKeyword(":exit"),
-						new VncLong(exitCode));
+				return apply_(cmd, opts, executor);
 			}
-			catch(Exception ex) {
-				throw new VncException("Faile to exec shell", ex);
+			finally {
+				executor.shutdownNow();
 			}
 		}
 	};
@@ -122,6 +119,68 @@ public class ShellFunctions {
 	///////////////////////////////////////////////////////////////////////////
 	// Util
 	///////////////////////////////////////////////////////////////////////////
+
+	private static VncVal apply_(
+			final VncList cmd, 
+			final VncMap opts, 
+			final ExecutorService executor
+	) {
+		try {
+			final String[] cmdArr = toStringArray(cmd);
+			final String[] envArr = toEnvStrings(opts.get(new VncKeyword(":env")));
+			final File dir_ = toFile(opts.get(new VncKeyword(":dir")));
+			
+			final VncVal in = opts.get(new VncKeyword(":in"));
+			final VncVal inEnc = opts.get(new VncKeyword(":in-enc"));
+			final VncVal outEnc = opts.get(new VncKeyword(":out-enc"));
+					
+			final Process proc = Runtime.getRuntime().exec(cmdArr, envArr, dir_);
+
+			Future<Object> future_stdin = null;
+			if (in != Nil) {
+				if (Types.isVncString(in)) {
+					future_stdin = executor.submit(
+										() -> { StreamUtil.copyStringToOS(
+													((VncString)in).getValue(), 
+													proc.getOutputStream(), 
+													getEncoding(inEnc));
+												return null; });
+				}
+				// TODO  support byte[], bytebuf
+				else {
+					proc.getOutputStream().close();
+				}
+			}
+			else {
+				proc.getOutputStream().close();
+			}
+			
+			try(InputStream stdout = proc.getInputStream();
+				InputStream stderr = proc.getErrorStream()
+			) {
+				// slurp stdout 
+				// TODO :byte as outEnc
+				final Future<String> future_stdout = executor.submit(() -> StreamUtil.copyIStoString(stdout, getEncoding(outEnc)));
+				
+				// slurp stderr
+				final Future<String> future_stderr = executor.submit(() -> StreamUtil.copyIStoString(stderr, getEncoding(outEnc)));
+				
+				final int exitCode = proc.waitFor();
+					
+				if (future_stdin != null) {
+					future_stdin.get();
+				}
+				
+				return new VncHashMap(
+						new VncKeyword(":exit"), new VncLong(exitCode),
+						new VncKeyword(":out"),  new VncString(future_stdout.get()),
+						new VncKeyword(":err"),  new VncString(future_stderr.get()));
+			}
+		}
+		catch(Exception ex) {
+			throw new VncException("Failed to exec shell", ex);
+		}
+	}
 
 	private static File toFile(final VncVal dir) {
 		if (dir == Nil) {
@@ -198,6 +257,15 @@ public class ShellFunctions {
 							new VncList(defaultEnv, sh_opts.get(new VncKeyword(":env")))));
 		
 		return new VncVector(cmd, opts);
+	}
+	
+	private static String getEncoding(final VncVal enc) {
+		if (enc == Nil) {
+			return Charset.defaultCharset().name();
+		}
+		else {
+			return ((VncString)CoreFunctions.name.apply(new VncList(enc))).getValue();
+		}
 	}
 
 	
