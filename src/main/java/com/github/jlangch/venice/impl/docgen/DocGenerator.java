@@ -550,6 +550,7 @@ public class DocGenerator {
 		all.addSection(util);
 		util.addItem(getDocItem("version"));
 		util.addItem(getDocItem("uuid"));
+		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
 		util.addItem(getDocItem("coalesce"));
