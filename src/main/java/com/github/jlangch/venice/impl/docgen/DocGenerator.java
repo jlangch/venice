@@ -97,6 +97,7 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getTimeSection(),
 				getFunctionsSection(),
+				getSystemSection(),
 				getMacrosSection());
 	}
 	
@@ -519,7 +520,6 @@ public class DocGenerator {
 		create.addItem(getDocItem("fn"));
 		create.addItem(getDocItem("identity"));
 
-
 		final DocSection call = new DocSection("Call");
 		all.addSection(call);
 		call.addItem(getDocItem("apply"));
@@ -527,16 +527,13 @@ public class DocGenerator {
 		call.addItem(getDocItem("partial"));
 		call.addItem(getDocItem("memoize"));
 
-
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);
 		test.addItem(getDocItem("fn?"));
 
-
 		final DocSection ex = new DocSection("Exception");
 		all.addSection(ex);
 		ex.addItem(getDocItem("throw"));
-
 
 		final DocSection misc = new DocSection("Misc");
 		all.addSection(misc);
@@ -544,7 +541,27 @@ public class DocGenerator {
 		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
+		
 
+		final DocSection meta = new DocSection("Meta");
+		all.addSection(meta);
+		meta.addItem(getDocItem("meta"));
+		meta.addItem(getDocItem("with-meta"));
+		meta.addItem(getDocItem("vary-meta"));
+		
+		return section;
+	}
+
+
+	private DocSection getSystemSection() {
+		final DocSection section = new DocSection("System");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection test = new DocSection("Test");
+		all.addSection(test);
+		test.addItem(getDocItem("os?"));
 
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
@@ -554,14 +571,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
 		util.addItem(getDocItem("coalesce"));
-		
-
-		final DocSection meta = new DocSection("Meta");
-		all.addSection(meta);
-		meta.addItem(getDocItem("meta"));
-		meta.addItem(getDocItem("with-meta"));
-		meta.addItem(getDocItem("vary-meta"));
-		
+				
 		return section;
 	}
 
