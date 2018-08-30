@@ -6229,7 +6229,7 @@ public class CoreFunctions {
 		{
 			setArgLists("(os? type)");
 			
-			setDoc("Returns true if the OS id of the type otherwise false. Type is one of :windows, :macosx, or :linux");
+			setDoc("Returns true if the OS id of the type otherwise false. Type is one of :windows, :mac-osx, or :linux");
 			
 			setExamples("(os? :mac-osx)", "(os? :windows)");
 		}

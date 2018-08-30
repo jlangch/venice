@@ -572,6 +572,10 @@ public class DocGenerator {
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
 		util.addItem(getDocItem("coalesce"));
+
+		final DocSection shell = new DocSection("Shell");
+		all.addSection(shell);
+		shell.addItem(getDocItem("sh"));
 				
 		return section;
 	}
@@ -752,10 +756,6 @@ public class DocGenerator {
 		all.addSection(load);
 		load.addItem(getDocItem("load-file"));
 		load.addItem(getDocItem("load-string"));
-
-		final DocSection shell = new DocSection("shell");
-		all.addSection(shell);
-		shell.addItem(getDocItem("sh"));
 
 		return section;
 	}
