@@ -68,6 +68,7 @@ public class StreamUtil {
     	}
     	
     	os.write(data);
+    	os.flush();
     }
 
     public static void copyFileToOS(
@@ -96,6 +97,8 @@ public class StreamUtil {
     		encoding == null 
     			? data.getBytes(Charset.defaultCharset())
     			: data.getBytes(encoding));
+    	
+    	os.flush();
     }
 
 	

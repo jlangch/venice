@@ -89,6 +89,22 @@ public class ShellFunctions {
 					"  :exit => sub-process's exit code\n" + 
 					"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
 					"  :err  => sub-process's stderr (String via platform default encoding)");
+			
+			setExamples(
+					"(println (sh \"ls\" \"-l\"))",
+					"(println (sh \"ls\" \"-l\" \"/tmp\"))", 
+					"(println (sh \"sed\" \"s/[aeiou]/oo/g\" :in \"hello there\\n\"))",
+					"(println (sh \"cat\" :in \"x\\u25bax\\n\"))",
+					"(println (sh \"echo\" \"x\\u25bax\"))", 
+					
+					";; reads 4 single-byte chars\n" +
+					"(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
+					
+					";; reads binary file into bytes[]\n" +
+					"(println (sh \"cat\" \"birds.jpg\" :out-enc :bytes))", 
+					
+					";; windows\n" +
+					"(println (sh \"cmd\" \"/c dir 1>&2\"))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -174,7 +190,7 @@ public class ShellFunctions {
 				// slurp the subprocess' stdout (as string or bytebuf)
 				final String enc = getEncoding(outEnc);
 				final Future<VncVal> future_stdout =
-						executor.submit(() -> "byte".equals(enc)
+						executor.submit(() -> "bytes".equals(enc)
 												? new VncByteBuffer(StreamUtil.copyIStoByteArray(stdout))
 												: new VncString(StreamUtil.copyIStoString(stdout, enc)));
 				
