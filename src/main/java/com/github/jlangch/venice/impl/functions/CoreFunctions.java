@@ -6196,6 +6196,35 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction os = new VncFunction("os") {
+		{
+			setArgLists("(os)");
+			
+			setDoc("Returns the OS type");
+			
+			setExamples("(os)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("os", args, 0);
+			
+			final String osName = System.getProperty("os.name");
+			if (osName.startsWith("Windows")) {
+				return new VncKeyword("windows");
+			}
+			else if (osName.startsWith("Mac OS X")) {
+				return new VncKeyword("mac-osx");
+			}
+			else if (osName.startsWith("LINUX")) {
+				return new VncKeyword("linux");
+			}
+			else {
+				return new VncKeyword("unknown");
+			}
+		}
+	};
+
+
 	public static VncFunction os_Q = new VncFunction("os?") {
 		{
 			setArgLists("(os? type)");
@@ -6486,6 +6515,7 @@ public class CoreFunctions {
 				.put("nano-time",			nano_time)
 
 				.put("sleep",				sleep)
+				.put("os",					os)				
 				.put("os?",					os_Q)				
 				.put("version",				version)
 				.put("name",				name)
