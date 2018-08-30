@@ -575,7 +575,7 @@ public class DocGenerator {
 
 		final DocSection shell = new DocSection("Shell");
 		all.addSection(shell);
-		shell.addItem(getDocItem("sh"));
+		shell.addItem(getDocItem("sh", false));
 				
 		return section;
 	}
@@ -597,7 +597,8 @@ public class DocGenerator {
 							"defmacro", 
 							Arrays.asList(
 									"(defmacro unless [pred a b]\n" + 
-									"  `(if (not ~pred) ~a ~b))")),
+									"  `(if (not ~pred) ~a ~b))"), 
+							true),
 						idgen.id()));
 		
 		final DocSection debug = new DocSection("Debug");
@@ -611,7 +612,8 @@ public class DocGenerator {
 						runExamples(
 							"macroexpand", 
 							Arrays.asList(
-									"(macroexpand (-> c (+ 3) (* 2)))")),
+									"(macroexpand (-> c (+ 3) (* 2)))"), 
+							true),
 						idgen.id()));
 
 		final DocSection branch = new DocSection("Branch");
@@ -851,7 +853,8 @@ public class DocGenerator {
 						runExamples(
 							"def", 
 							Arrays.asList(
-									"(def val 5)")),
+									"(def val 5)"), 
+							true),
 						idgen.id()));
 		
 		generic.addItem(
@@ -862,7 +865,8 @@ public class DocGenerator {
 					runExamples(
 						"if", 
 						Arrays.asList(
-								"(if (< 10 20) \"yes\" \"no\")")),
+								"(if (< 10 20) \"yes\" \"no\")"), 
+						true),
 					idgen.id()));
 		
 		generic.addItem(
@@ -873,7 +877,8 @@ public class DocGenerator {
 						runExamples(
 							"do", 
 							Arrays.asList(
-									"(do (println \"Test...\") (+ 1 1))")),
+									"(do (println \"Test...\") (+ 1 1))"), 
+							true),
 						idgen.id()));
 		
 		generic.addItem(
@@ -884,7 +889,8 @@ public class DocGenerator {
 						runExamples(
 							"let", 
 							Arrays.asList(
-									"(let [x 1] x))")),
+									"(let [x 1] x))"), 
+							true),
 						idgen.id()));
 		
 		generic.addItem(
@@ -896,7 +902,8 @@ public class DocGenerator {
 							"fn", 
 							Arrays.asList(
 									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-									"(map (fn [x] (* 2 x)) (range 1 5))")),
+									"(map (fn [x] (* 2 x)) (range 1 5))"), 
+							true),
 						idgen.id()));
 		
 		generic.addItem(
@@ -911,7 +918,8 @@ public class DocGenerator {
 									"(loop [x 10]\n" + 
 									"  (when (> x 1)\n" + 
 									"    (println x)\n" + 
-									"    (recur (- x 2))))")),
+									"    (recur (- x 2))))"), 
+							true),
 						idgen.id()));
 	    
 		generic.addItem(
@@ -920,7 +928,7 @@ public class DocGenerator {
 						Arrays.asList("(recur expr*)"), 
 						"Evaluates the exprs and rebinds the bindings of " + 
 						"the recursion point to the values of the exprs.",
-						runExamples("recur", Arrays.asList()),
+						runExamples("recur", Arrays.asList(), true),
 						idgen.id()));
 		
 		generic.addItem(
@@ -953,6 +961,7 @@ public class DocGenerator {
 									"     (catch :RuntimeException ex \"runtime ex\") \n" +
 									"     (finally (println \"...finally\"))) \n" +
 									")"),
+							true,
 							true),
 						idgen.id()));
 		
@@ -977,6 +986,7 @@ public class DocGenerator {
 								"        (try-with [is (. :FileInputStream :new file)] \n" +
 								"           (io/slurp-stream is :binary false))) \n" +
 								")"),
+							true,
 							true),
 						idgen.id()));
 
@@ -1002,14 +1012,14 @@ public class DocGenerator {
 						javaDot.getName(), 
 						toStringList(javaDot.getArgLists()), 
 						((VncString)javaDot.getDoc()).getValue(),
-						runExamples(javaDot.getName(), toStringList(javaDot.getExamples())),
+						runExamples(javaDot.getName(), toStringList(javaDot.getExamples()), true),
 						idgen.id()));
 		general.addItem(
 				new DocItem(
 						javaProxify.getName(), 
 						toStringList(javaProxify.getArgLists()), 
 						((VncString)javaProxify.getDoc()).getValue(),
-						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples())),
+						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples()), true),
 						idgen.id()));
 		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("Invoke constructors", null));
@@ -1041,12 +1051,16 @@ public class DocGenerator {
 	}
 
 	private DocItem getDocItem(final String name) {
+		return getDocItem(name, true);
+	}
+
+	private DocItem getDocItem(final String name, final boolean runExamples) {
 		final DocItem item = docItems.get(name);
 		if (item != null) {
 			return item;
 		}
 		else {
-			final DocItem item_ = getDocItem_(name);
+			final DocItem item_ = getDocItem_(name, runExamples);
 			if (item_ != null) {
 				docItems.put(name, item_);
 			}
@@ -1054,7 +1068,7 @@ public class DocGenerator {
 		}
 	}
 
-	private DocItem getDocItem_(final String name) {
+	private DocItem getDocItem_(final String name, final boolean runExamples) {
 		if ("()".equals(name)) {
 			return new DocItem(
 					name, 
@@ -1063,7 +1077,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "'(10 20 30)")),
+							 "'(10 20 30)"),
+							runExamples),
 					idgen.id());
 		}
 
@@ -1075,7 +1090,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "[10 20]")),
+							 "[10 20]"),
+							runExamples),
 					idgen.id());
 		}
 
@@ -1087,7 +1103,8 @@ public class DocGenerator {
 					runExamples(
 							name, 
 							Arrays.asList(
-							 "{:a 10 b: 20}")),
+							 "{:a 10 b: 20}"),
+							runExamples),
 					idgen.id());
 		}
 
@@ -1100,7 +1117,8 @@ public class DocGenerator {
 							name, 
 							Arrays.asList(
 							 "(fn [x y] (+ x y))",
-							 "(def sum (fn [x y] (+ x y)))")),
+							 "(def sum (fn [x y] (+ x y)))"),
+							runExamples),
 					idgen.id());
 		}
 
@@ -1113,7 +1131,8 @@ public class DocGenerator {
 							name, 
 							Arrays.asList(
 							 "(eval '(let [a 10] (+ 3 4 a)))",
-							 "(eval (list + 1 2 3))")),
+							 "(eval (list + 1 2 3))"),
+							runExamples),
 					idgen.id());
 		}
 
@@ -1123,18 +1142,27 @@ public class DocGenerator {
 					name, 
 					toStringList(f.getArgLists()), 
 					f.getDoc() == Constants.Nil ? "" : ((VncString)f.getDoc()).getValue(),
-					runExamples(name, toStringList(f.getExamples())),
+					runExamples(name, toStringList(f.getExamples()), runExamples),
 					idgen.id());
 		}
 	
 		return null;
 	}
 
-	private String runExamples(final String name, final List<String> examples) {
-		return runExamples(name, examples, false);
+	private String runExamples(
+			final String name, 
+			final List<String> examples,
+			final boolean run
+	) {
+		return runExamples(name, examples, false, run);
 	}
 
-	private String runExamples(final String name, final List<String> examples, final boolean catchEx) {
+	private String runExamples(
+			final String name, 
+			final List<String> examples, 
+			final boolean catchEx,
+			final boolean run
+	) {
 		final Venice runner = new Venice();
 
 		final StringBuilder sb = new StringBuilder();
@@ -1145,44 +1173,52 @@ public class DocGenerator {
 				.filter(e -> !StringUtil.isEmpty(e))
 				.map(e -> StringUtil.stripMargin(e, '|'))
 				.forEach(e -> {
-					final CapturingPrintStream ps = CapturingPrintStream.create();
-					
-					try {
-						final String result = (String)runner.eval(
-													"(pr-str " + e + ")",
-													Parameters.of("*out*", ps));
+					if (run) {
+						final CapturingPrintStream ps = CapturingPrintStream.create();
 						
-						if (sb.length() > 0) {
-							sb.append("\n\n");
-						}
-						sb.append(e).append("\n");
-						if (!ps.isEmpty()) {
-							final String out = ps.getOutput();
-							sb.append(out);
-							if (!out.endsWith("\n")) sb.append("\n");
-						}
-						sb.append("=> ").append(result);
-					}
-					catch(Exception ex) {
-						if (catchEx) {							
+						try {
+							final String result = (String)runner.eval(
+														"(pr-str " + e + ")",
+														Parameters.of("*out*", ps));
+							
 							if (sb.length() > 0) {
 								sb.append("\n\n");
 							}
-							sb.append(e);
-							sb.append("\n");
+							sb.append(e).append("\n");
 							if (!ps.isEmpty()) {
 								final String out = ps.getOutput();
 								sb.append(out);
 								if (!out.endsWith("\n")) sb.append("\n");
 							}
-							sb.append("=> ")
-							  .append(ex.getClass().getSimpleName())
-							  .append(": ")
-							  .append(ex.getMessage());
+							sb.append("=> ").append(result);
 						}
-						else {
-							throw ex;
+						catch(Exception ex) {
+							if (catchEx) {							
+								if (sb.length() > 0) {
+									sb.append("\n\n");
+								}
+								sb.append(e);
+								sb.append("\n");
+								if (!ps.isEmpty()) {
+									final String out = ps.getOutput();
+									sb.append(out);
+									if (!out.endsWith("\n")) sb.append("\n");
+								}
+								sb.append("=> ")
+								  .append(ex.getClass().getSimpleName())
+								  .append(": ")
+								  .append(ex.getMessage());
+							}
+							else {
+								throw ex;
+							}
 						}
+					}
+					else {
+						if (sb.length() > 0) {
+							sb.append("\n\n");
+						}
+						sb.append(e);
 					}
 				});
 			

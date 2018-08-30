@@ -26,6 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -89,6 +90,22 @@ public class ShellFunctions {
 					"  :exit => sub-process's exit code\n" + 
 					"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
 					"  :err  => sub-process's stderr (String via platform default encoding)");
+			
+			setExamples(
+					"(println (sh \"ls\" \"-l\"))",
+					"(println (sh \"ls\" \"-l\" \"/tmp\"))", 
+					"(println (sh \"sed\" \"s/[aeiou]/oo/g\" :in \"hello there\\n\"))",
+					"(println (sh \"cat\" :in \"x\\u25bax\\n\"))",
+					"(println (sh \"echo\" \"x\\u25bax\"))", 
+					
+					";; reads 4 single-byte chars\n" +
+					"(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
+					
+					";; reads binary file into bytes[]\n" +
+					"(println (sh \"cat\" \"birds.jpg\" :out-enc :bytes))", 
+					
+					";; windows\n" +
+					"(println (sh \"cmd\" \"/c dir 1>&2\"))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -123,6 +140,14 @@ public class ShellFunctions {
 			final VncMap opts, 
 			final ExecutorService executor
 	) {
+		//   Streams:
+		//
+		//   +-----------------+                  +-----------------+
+		//   |              out|----------------->|in               |
+		//   |   PARENT      in|<-----------------|err      CHILD   |
+		//   |               in|<-----------------|out              |
+		//   +-----------------+                  +-----------------+
+		
 		try {
 			final String[] cmdArr = toStringArray(cmd);
 			final String[] envArr = toEnvStrings(opts.get(new VncKeyword(":env")));
@@ -131,8 +156,12 @@ public class ShellFunctions {
 			final VncVal in = opts.get(new VncKeyword(":in"));
 			final VncVal inEnc = opts.get(new VncKeyword(":in-enc"));
 			final VncVal outEnc = opts.get(new VncKeyword(":out-enc"));
+			
+			//new ProcessBuilder().inheritIO().directory(dir_).command(cmdArr).environment()
 					
 			final Process proc = Runtime.getRuntime().exec(cmdArr, envArr, dir_);
+
+			final OutputStream stdin = proc.getOutputStream();
 
 			Future<Object> future_stdin = null;
 			if (in != Nil) {
@@ -142,30 +171,34 @@ public class ShellFunctions {
 					future_stdin = executor.submit(
 										() -> { StreamUtil.copyStringToOS(
 													((VncString)in).getValue(), 
-													proc.getOutputStream(), 
+													stdin, 
 													getEncoding(inEnc));
+												stdin.flush();
+												stdin.close();
 												return null; });
 				}
 				else if (Types.isVncByteBuffer(in)) {
 					future_stdin = executor.submit(
-							() -> { StreamUtil.copyByteArrayToOS(
-										((VncByteBuffer)in).getValue().array(), 
-										proc.getOutputStream());
-									return null; });
+										() -> { StreamUtil.copyByteArrayToOS(
+													((VncByteBuffer)in).getValue().array(), 
+													stdin);
+												stdin.flush();
+												stdin.close();
+												return null; });
 				}
 				else if (Types.isVncJavaObject(in) && ((VncJavaObject)in).getDelegate() instanceof File) {
 					future_stdin = executor.submit(
-							() -> { StreamUtil.copyFileToOS(
-										(File)((VncJavaObject)in).getDelegate(), 
-										proc.getOutputStream());
-									return null; });
-				}
-				else {
-					proc.getOutputStream().close();
+										() -> { StreamUtil.copyFileToOS(
+													(File)((VncJavaObject)in).getDelegate(), 
+													stdin);
+												stdin.flush();
+												stdin.close();
+												return null; });
 				}
 			}
-			else {
-				proc.getOutputStream().close();
+			
+			if (future_stdin == null) {
+				stdin.close();
 			}
 			
 			try(InputStream stdout = proc.getInputStream();
@@ -174,7 +207,7 @@ public class ShellFunctions {
 				// slurp the subprocess' stdout (as string or bytebuf)
 				final String enc = getEncoding(outEnc);
 				final Future<VncVal> future_stdout =
-						executor.submit(() -> "byte".equals(enc)
+						executor.submit(() -> "bytes".equals(enc)
 												? new VncByteBuffer(StreamUtil.copyIStoByteArray(stdout))
 												: new VncString(StreamUtil.copyIStoString(stdout, enc)));
 				
