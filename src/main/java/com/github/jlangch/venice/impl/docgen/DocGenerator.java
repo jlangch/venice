@@ -686,6 +686,12 @@ public class DocGenerator {
 		futures.addItem(getDocItem("future-cancelled?"));
 		futures.addItem(getDocItem("deref"));
 
+		final DocSection promises = new DocSection("Promises");
+		all.addSection(promises);
+		promises.addItem(getDocItem("promise"));
+		promises.addItem(getDocItem("promise?"));
+		promises.addItem(getDocItem("deref"));
+
 		return section;
 	}
 

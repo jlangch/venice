@@ -255,6 +255,9 @@ public class JavaInteropUtil {
 		if (value == null) {
 			return Constants.Nil;
 		}
+		else if (value instanceof VncVal) {
+			return (VncVal)value;
+		}
 		else if (value instanceof Class) {
 			return new VncString(((Class<?>)value).getName());
 		}

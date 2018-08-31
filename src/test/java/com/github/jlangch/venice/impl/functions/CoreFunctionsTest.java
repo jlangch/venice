@@ -2566,6 +2566,25 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(pos? 0.0M)"));
 		assertTrue((Boolean)venice.eval("(pos? 3.0M)"));
 	}
+
+	@Test
+	public void test_promise() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        " +
+				"   (def p (promise))                       " +
+				"   (def task (fn []                        " +
+				"                 (do                       " +
+				"                    (sleep 500)            " +
+				"                    (deliver p 123))))     " +
+				"                                           " +
+				"   (future task)                           " +
+				"   (deref p))                              " +
+				") ";
+
+		assertEquals(Long.valueOf(123), venice.eval(script));
+	}
 	
 	@Test
 	public void test_pr_str() {

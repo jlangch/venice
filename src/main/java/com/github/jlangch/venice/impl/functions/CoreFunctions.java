@@ -42,6 +42,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -5356,6 +5357,35 @@ public class CoreFunctions {
 					ErrorMessage.buildErrLocation(args)));
 		}
 	};
+	
+	public static VncFunction deliver = new VncFunction("deliver") {
+		{
+			setArgLists("(deliver ref value)");
+			
+			setDoc("Delivers the supplied value to the promise, releasing any pending\n" + 
+				   "derefs. A subsequent call to deliver on a promise will have no effect.");
+			
+		}
+
+		@SuppressWarnings("unchecked")
+		public VncVal apply(final VncList args) {
+			assertArity("deliver", args, 2);
+			
+			final Object promise = Coerce.toVncJavaObject(args.first()).getDelegate();
+			final VncVal value = args.second();
+			
+			if (promise instanceof CompletableFuture) {
+				((CompletableFuture<VncVal>)promise).complete(value);
+				return Nil;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'deliver' does not allow type %s as parameter. %s",
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
 
 	public static VncFunction reset_BANG = new VncFunction("reset!") {
 		{
@@ -5415,6 +5445,58 @@ public class CoreFunctions {
 			final VncAtom atm = Coerce.toVncAtom(args.nth(0));		
 			
 			return atm.compare_and_set(args.nth(1), args.nth(2));
+		}
+	};
+
+	public static VncFunction promise = new VncFunction("promise") {
+		{
+			setArgLists("(promise)");
+			
+			setDoc( "Returns a promise object that can be read with deref, and set, " + 
+					"once only, with deliver. Calls to deref prior to delivery will " + 
+					"block, unless the variant of deref with timeout is used. All " + 
+					"subsequent derefs will return the same delivered value without " + 
+					"blocking.");
+			
+			setExamples(
+					"(do                                        \n" +
+					"   (def p (promise))                       \n" +
+					"   (def task (fn []                        \n" +
+					"                 (do                       \n" +
+					"                    (sleep 500)            \n" +
+					"                    (deliver p 123))))     \n" +
+					"                                           \n" +
+					"   (future task)                           \n" +
+					"   (deref p))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("promise", args);
+
+			assertArity("promise", args, 0);
+
+			return new VncJavaObject(new CompletableFuture<VncVal>());
+		}
+	};
+
+	public static VncFunction promise_Q = new VncFunction("promise?") {
+		{
+			setArgLists("(promise? p)");
+			
+			setDoc( "Returns true if f is a Promise otherwise false");
+			
+			setExamples(
+					"(promise? (promise)))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("promise?", args);
+
+			assertArity("promise?", args, 1);
+
+			return Types.isVncJavaObject(args.first())
+					&& (((VncJavaObject)args.first()).getDelegate() instanceof CompletableFuture)
+						? True : False;
 		}
 	};
 
@@ -6757,6 +6839,9 @@ public class CoreFunctions {
 				.put("reset!",				reset_BANG)
 				.put("swap!",				swap_BANG)
 				.put("compare-and-set!", 	compare_and_set_BANG)
+				.put("promise",             promise)
+				.put("promise?",            promise_Q)
+				.put("deliver",             deliver)
 				.put("future",              future)
 				.put("future?",             future_Q)
 				.put("future-done?",        future_done_Q)
