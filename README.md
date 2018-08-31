@@ -238,6 +238,23 @@ Java Callbacks:
    (swing-gui "Test"))
 ```
 
+
+Java Futures:
+
+```clojure
+(do
+   (def counter (atom 0))
+   
+   (def task (fn [] (do (sleep 500) (swap! counter inc)} nil)))
+
+   (let [f (future task)]
+        (deref f))
+        
+   (deref counter)
+)
+```
+
+
 A larger example:
 
 ```clojure
