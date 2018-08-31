@@ -291,7 +291,9 @@ The sandbox is local to a thread. This allows multi-threaded applications to
 isolate execution properly, but it also means you cannot let Venice to create 
 threads, or else it will escape the sandbox.
 
-The easiest way to do this is to ensure you prohibit the use of threads.
+To ensure this you should prohibit the use of threads. The only safe way to 
+work with threads and respecting the sandbox is by using Venice' built-in futures, 
+an abstraction of Java's Futures.
 
 
 #### No blacklisting
