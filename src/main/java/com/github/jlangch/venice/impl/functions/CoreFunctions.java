@@ -5309,24 +5309,24 @@ public class CoreFunctions {
 				final VncAtom atm = (VncAtom)args.first();
 				return atm.deref();
 			}
-			else if (Types.isVncJavaObject(args.first()) 
-						&& ((VncJavaObject)args.first()).getDelegate() instanceof Future
-			) {
-				try {
-					@SuppressWarnings("unchecked")
-					final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
-					return JavaInteropUtil.convertToVncVal(future.get());
-				}
-				catch(Exception ex) {
-					throw new VncException("Failed to deref future", ex);
+			else if (Types.isVncJavaObject(args.first())) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Future) {
+					try {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						return JavaInteropUtil.convertToVncVal(future.get());
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to deref future", ex);
+					}
 				}
 			}
-			else {
-				throw new VncException(String.format(
-						"Function 'deref' does not allow type %s as parameter. %s",
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
-			}
+
+			throw new VncException(String.format(
+					"Function 'deref' does not allow type %s as parameter. %s",
+					Types.getClassName(args.first()),
+					ErrorMessage.buildErrLocation(args)));
 		}
 	};
 
