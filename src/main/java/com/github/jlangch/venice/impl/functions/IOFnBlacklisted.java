@@ -30,16 +30,18 @@ public class IOFnBlacklisted {
 
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
-								"sh",
 								"load-file",
+
+								"sh",
+
+								"io/copy-file",
+								"io/delete-file",
+								"io/exists-dir?",
+								"io/exists-file?",
+								"io/list-files",
+								"io/move-file",
 								"io/slurp",
 								"io/spit",
-								"io/exists-file?",
-								"io/exists-dir?",
-								"io/list-files",
-								"io/delete-file",
-								"io/copy-file",
-								"io/move-file",
 								"io/tmp-dir",
 								"io/user-dir"));
 	}

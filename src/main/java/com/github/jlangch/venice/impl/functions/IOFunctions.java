@@ -77,6 +77,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/file", args);
+
 			assertArity("io/file", args, 1, 2);
 						
 			if (args.size() == 1) {
@@ -137,6 +139,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/file?", args);
+
 			assertArity("io/file?", args, 1);
 						
 			final VncVal path = args.nth(0);
@@ -155,6 +159,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/exists-file?", args);
+
 			assertArity("io/exists-file?", args, 1);
 									
 			if (!isJavaIoFile(args.nth(0)) ) {
@@ -180,6 +186,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/exists-dir?", args);
+
 			assertArity("io/exists-dir?", args, 1);
 									
 			if (!isJavaIoFile(args.nth(0)) ) {
@@ -423,6 +431,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/temp-file", args);
+
 			assertArity("io/temp-file", args, 2);
 
 			final String prefix = Coerce.toVncString(args.first()).getValue();
@@ -540,7 +550,6 @@ public class IOFunctions {
 		public VncVal apply(final VncList args) {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/spit", args);
 
-
 			assertMinArity("io/spit", args, 2);
 
 			try {
@@ -626,6 +635,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/slurp-temp-file", args);
+
 			assertMinArity("io/slurp-temp-file", args, 1);
 
 			try {	
@@ -713,6 +724,8 @@ public class IOFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/slurp-stream", args);
+
 			assertMinArity("io/slurp-stream", args, 1);
 
 			try {	
@@ -818,23 +831,23 @@ public class IOFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()								
-					.put("io/file",				io_file)
-					.put("io/file?",			io_file_Q)
-					.put("io/exists-file?",		io_exists_file_Q)
-					.put("io/exists-dir?",		io_exists_dir_Q)
-					.put("io/list-files",		io_list_files)
-					.put("io/delete-file",		io_delete_file)
-					.put("io/delete-file-on-exit", io_delete_file_on_exit)				
-					.put("io/copy-file",		io_copy_file)
-					.put("io/move-file",		io_move_file)
-					.put("io/temp-file",		io_temp_file)
-					.put("io/tmp-dir",			io_tmp_dir)
-					.put("io/user-dir",			io_user_dir)
-					.put("io/slurp",			io_slurp)
-					.put("io/spit",				io_spit)
-					.put("io/slurp-temp-file",	io_slurp_temp_file)
-					.put("io/slurp-stream",	    io_slurp_stream)
-					.put("io/spit-stream",	    io_spit_stream)							
+					.put("io/file",					io_file)
+					.put("io/file?",				io_file_Q)
+					.put("io/exists-file?",			io_exists_file_Q)
+					.put("io/exists-dir?",			io_exists_dir_Q)
+					.put("io/list-files",			io_list_files)
+					.put("io/delete-file",			io_delete_file)
+					.put("io/delete-file-on-exit",	io_delete_file_on_exit)				
+					.put("io/copy-file",			io_copy_file)
+					.put("io/move-file",			io_move_file)
+					.put("io/temp-file",			io_temp_file)
+					.put("io/tmp-dir",				io_tmp_dir)
+					.put("io/user-dir",				io_user_dir)
+					.put("io/slurp",				io_slurp)
+					.put("io/spit",					io_spit)
+					.put("io/slurp-temp-file",		io_slurp_temp_file)
+					.put("io/slurp-stream",	    	io_slurp_stream)
+					.put("io/spit-stream",	    	io_spit_stream)							
 					.toMap();
 
 	
