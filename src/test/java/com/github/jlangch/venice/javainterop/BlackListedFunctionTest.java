@@ -35,7 +35,7 @@ public class BlackListedFunctionTest {
 	
 	@Test(expected = SecurityException.class)
 	public void test_print_blacklisted() {
-		// all venice 'prn' function blacklisted
+		// all venice 'slurp' function blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:io/slurp"));
 		

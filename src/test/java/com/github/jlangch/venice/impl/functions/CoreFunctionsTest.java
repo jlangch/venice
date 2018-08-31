@@ -35,11 +35,16 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.javainterop.JavaInterceptor;
+import com.github.jlangch.venice.javainterop.JavaSandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class CoreFunctionsTest {
@@ -1000,14 +1005,100 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                                      " +
-				"   (def wait (fn [] (do (sleep 500) 100)))               " +
-				"                                                         " +
-				"   (let [f (future wait)]                                " +
-				"        (deref f))                                       " +
+				"(do                                        " +
+				"   (def wait (fn [] (do (sleep 500) 100))) " +
+				"                                           " +
+				"   (let [f (future wait)]                  " +
+				"        (deref f))                         " +
 				") ";
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
+	}
+	
+	@Test
+	public void test_future_not_sandboxed() {
+			final Venice venice = new Venice();
+	
+			final String script = 
+					"(do                                        " +
+					"   (def wait (fn [] (sandboxed?)))         " +
+					"                                           " +
+					"   (let [f (future wait)]                  " +
+					"        (deref f))                         " +
+					") ";
+
+			assertFalse((Boolean)venice.eval(script));
+	}
+	
+	@Test
+	public void test_future_sandboxed() {
+		// all venice 'file' function blacklisted
+		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+													new SandboxRules().add("blacklist:venice:io/file"));
+
+		final Venice venice = new Venice(interceptor);
+
+		final String script = 
+				"(do                                        " +
+				"   (def wait (fn [] (sandboxed?)))         " +
+				"                                           " +
+				"   (let [f (future wait)]                  " +
+				"        (deref f))                         " +
+				") ";
+
+		assertTrue((Boolean)venice.eval(script));
+	}
+	
+	@Test
+	public void test_future_sandbox_violation() {
+		// all venice 'file' function blacklisted
+		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+													new SandboxRules().add("blacklist:venice:io/file"));
+
+		final Venice venice = new Venice(interceptor);
+
+		final String script = 
+				"(do                                        " +
+				"   (def wait (fn [] (io/file \"a.txt\")))  " +
+				"                                           " +
+				"   (let [f (future wait)]                  " +
+				"        (deref f))                         " +
+				") ";
+
+		try {
+			venice.eval(script);
+			
+			fail("Expected SecurityException");
+		}
+		catch(VncException ex) {
+			if (ex.getCause() instanceof ExecutionException) {
+				if (ex.getCause().getCause() instanceof SecurityException) {
+					return; //ok
+				}
+			}
+
+			fail("Expected SecurityException");
+		}
+	}
+	
+	@Test
+	public void test_future_sandbox_ok() {
+		// all venice 'file' function blacklisted
+		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+													new SandboxRules().add("blacklist:venice:io/slurp"));
+
+		final Venice venice = new Venice(interceptor);
+
+		final String script = 
+				"(do                                        " +
+				"   (def wait (fn [] (io/file \"a.txt\")))  " +
+				"                                           " +
+				"   (let [f (future wait)]                  " +
+				"        (deref f))                         " +
+				") ";
+
+		final File file = (File)venice.eval(script);
+		assertEquals("a.txt", file.getName());
 	}
 
 	@Test

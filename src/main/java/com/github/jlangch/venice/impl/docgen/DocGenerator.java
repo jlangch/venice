@@ -561,6 +561,7 @@ public class DocGenerator {
 
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);
+		test.addItem(getDocItem("sandboxed?"));
 		test.addItem(getDocItem("os?"));
 
 		final DocSection util = new DocSection("Other");
@@ -680,6 +681,9 @@ public class DocGenerator {
 		all.addSection(futures);
 		futures.addItem(getDocItem("future"));
 		futures.addItem(getDocItem("future?"));
+		futures.addItem(getDocItem("future-done?"));
+		futures.addItem(getDocItem("future-cancel"));
+		futures.addItem(getDocItem("future-cancelled?"));
 		futures.addItem(getDocItem("deref"));
 
 		return section;

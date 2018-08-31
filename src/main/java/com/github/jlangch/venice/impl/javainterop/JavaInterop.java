@@ -37,6 +37,9 @@ public class JavaInterop {
 	}
 	
 	
+	public static boolean isSandboxed() {
+		return !(getInterceptor() instanceof AcceptAllInterceptor);
+	}
 	
 	public static void register(final JavaInterceptor interceptor) {
 		threadInterceptor.set(interceptor == null ? new AcceptAllInterceptor() : interceptor);

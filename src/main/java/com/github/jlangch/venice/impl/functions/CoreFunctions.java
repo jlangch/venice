@@ -89,7 +89,9 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.ThreadLocalUtil;
 import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
+import com.github.jlangch.venice.javainterop.JavaInterceptor;
 
 
 public class CoreFunctions {
@@ -5419,12 +5421,24 @@ public class CoreFunctions {
 			assertArity("future", args, 1);
 
 			final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
-											Callable.class, 
-											new VncHashMap(
-												new VncKeyword("call"),
-												Coerce.toVncFunction(args.first())));
+												Callable.class, 
+												new VncHashMap(
+													new VncKeyword("call"),
+													Coerce.toVncFunction(args.first())));
+
+			final JavaInterceptor parentInterceptor = JavaInterop.getInterceptor();
+
+			final Callable<Object> taskWrapper = () -> {
+				try {
+					JavaInterop.register(parentInterceptor);					
+					return task.call();
+				}
+				finally {
+					ThreadLocalUtil.cleanThreadLocals();
+				}
+			};
 			
-			final Future<VncVal> future = executor.submit(task);
+			final Future<Object> future = executor.submit(taskWrapper);
 			
 			return new VncJavaObject(future);
 		}
@@ -5448,6 +5462,116 @@ public class CoreFunctions {
 			return Types.isVncJavaObject(args.first())
 					&& (((VncJavaObject)args.first()).getDelegate() instanceof Future)
 						? True : False;
+		}
+	};
+
+	public static VncFunction future_done_Q = new VncFunction("future-done?") {
+		{
+			setArgLists("(future-done? f)");
+			
+			setDoc( "Returns true if f is a Future is done otherwise false");
+			
+			setExamples(
+					"(future-done? (future (fn [] 100)))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("future-done?", args);
+
+			assertArity("future-done?", args, 1);
+
+			if (Types.isVncJavaObject(args.first())) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Future) {
+					try {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						return future.isDone() ? True : False;
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to check if future is done", ex);
+					}
+				}
+			}
+
+			throw new VncException(String.format(
+					"Function 'future-done?' does not allow type %s as parameter. %s",
+					Types.getClassName(args.first()),
+					ErrorMessage.buildErrLocation(args)));
+		}
+	};
+
+	public static VncFunction future_cancel = new VncFunction("future-cancel") {
+		{
+			setArgLists("(future-cancel f)");
+			
+			setDoc( "Cancels the future");
+			
+			setExamples(
+					"(future-cancel (future (fn [] 100)))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("future-cancel", args);
+
+			assertArity("future-cancel", args, 1);
+
+
+			if (Types.isVncJavaObject(args.first())) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Future) {
+					try {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						future.cancel(true);
+						return args.first();
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to cancel future", ex);
+					}
+				}
+			}
+
+			throw new VncException(String.format(
+					"Function 'future-cancel' does not allow type %s as parameter. %s",
+					Types.getClassName(args.first()),
+					ErrorMessage.buildErrLocation(args)));
+		}
+	};
+
+	public static VncFunction future_cancelled_Q = new VncFunction("future-cancelled?") {
+		{
+			setArgLists("(future-cancelled? f)");
+			
+			setDoc( "Returns true if f is a Future is cancelled otherwise false");
+			
+			setExamples(
+					"(future-cancelled? (future (fn [] 100)))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("future-cancelled?", args);
+
+			assertArity("future-cancelled?", args, 1);
+
+			if (Types.isVncJavaObject(args.first())) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Future) {
+					try {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						return future.isCancelled() ? True : False;
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to check if future is cancelled", ex);
+					}
+				}
+			}
+
+			throw new VncException(String.format(
+					"Function 'future-cancelled?' does not allow type %s as parameter. %s",
+					Types.getClassName(args.first()),
+					ErrorMessage.buildErrLocation(args)));
 		}
 	};
 	
@@ -6311,7 +6435,6 @@ public class CoreFunctions {
 		}
 	};
 
-
 	public static VncFunction os_Q = new VncFunction("os?") {
 		{
 			setArgLists("(os? type)");
@@ -6337,6 +6460,22 @@ public class CoreFunctions {
 					return False;
 					
 			}
+		}
+	};
+
+	public static VncFunction sandboxed_Q = new VncFunction("sandboxed?") {
+		{
+			setArgLists("(sandboxed? )");
+			
+			setDoc("Returns true if there is a sandbox otherwise false");
+			
+			setExamples("(sandboxed? )");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("sandboxed?", args, 0);
+			
+			return JavaInterop.isSandboxed() ? True : False;
 		}
 	};
 
@@ -6595,6 +6734,9 @@ public class CoreFunctions {
 				.put("compare-and-set!", 	compare_and_set_BANG)
 				.put("future",              future)
 				.put("future?",             future_Q)
+				.put("future-done?",        future_done_Q)
+				.put("future-cancel",       future_cancel)
+				.put("future-cancelled?",   future_cancelled_Q)
 				
 				.put("coalesce", 			coalesce)
 				
@@ -6602,6 +6744,7 @@ public class CoreFunctions {
 				.put("uuid",				uuid)
 				.put("current-time-millis",	current_time_millis)
 				.put("nano-time",			nano_time)
+				.put("sandboxed?",			sandboxed_Q)
 
 				.put("sleep",				sleep)
 				.put("os",					os)				
