@@ -97,8 +97,8 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getTimeSection(),
 				getFunctionsSection(),
-				getSystemSection(),
-				getMacrosSection());
+				getMacrosSection(),
+				getSpecialFormsSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -106,7 +106,7 @@ public class DocGenerator {
 				getCollectionsSection(),
 				getConcurrencySection(),
 				getThreadLocalsSection(),
-				getSpecialFormsSection(),
+				getSystemSection(),
 				getJavaInteropSection(),
 				getIOSection(),
 				getMiscellaneousSection());

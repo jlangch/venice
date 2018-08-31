@@ -46,6 +46,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -5296,17 +5298,23 @@ public class CoreFunctions {
 
 	public static VncFunction deref = new VncFunction("deref") {
 		{
-			setArgLists("(deref x)");
+			setArgLists("(deref ref)", "(deref ref timeout-ms timeout-val)");
 			
-			setDoc("Dereferences an atom or a Future object, returns its value");
+			setDoc("Dereferences an atom or a Future object. When applied to an " + 
+					"atom, returns its current state. When applied to a future, " +
+					"will block if computation not complete. The variant taking a " +
+					"timeout can be used for futures and will return timeout-val " + 
+					"if the timeout (in milliseconds) is reached before a value " + 
+					"is available.");
 			
 			setExamples(
 					"(do\n   (def counter (atom 0))\n   (deref counter))",
-					"(do\n   (def wait (fn [] 100))\n   (let [f (future wait)] (deref f)))");
+					"(do\n   (def task (fn [] 100))\n   (let [f (future task)] (deref f)))",
+					"(do\n   (def task (fn [] 100))\n   (let [f (future task)] (deref f 300 :timeout)))");
 		}
 
 		public VncVal apply(final VncList args) {
-			assertArity("deref", args, 1);
+			assertArity("deref", args, 1, 3);
 			
 			if (Types.isVncAtom(args.first())) {
 				final VncAtom atm = (VncAtom)args.first();
@@ -5318,7 +5326,18 @@ public class CoreFunctions {
 					try {
 						@SuppressWarnings("unchecked")
 						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
-						return JavaInteropUtil.convertToVncVal(future.get());
+						if (args.size() == 1) {
+							return JavaInteropUtil.convertToVncVal(future.get());
+						}
+						else {
+							final long timeout = Coerce.toVncLong(args.nth(1)).getValue();
+							try {
+								return JavaInteropUtil.convertToVncVal(future.get(timeout, TimeUnit.MILLISECONDS));
+							}
+							catch(TimeoutException ex) {
+								return args.nth(2);
+							}
+						}
 					}
 					catch(ExecutionException ex) {
 						if (ex.getCause() != null && (ex.getCause() instanceof SecurityException)) {

@@ -999,7 +999,7 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_future() {
+	public void test_future_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
@@ -1011,6 +1011,36 @@ public class CoreFunctionsTest {
 				") ";
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
+	}
+
+	@Test
+	public void test_future_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        " +
+				"   (def wait (fn [] (do (sleep 500) 100))) " +
+				"                                           " +
+				"   (let [f (future wait)]                  " +
+				"        (deref f 700 :timeout))            " +
+				") ";
+
+		assertEquals(Long.valueOf(100), venice.eval(script));
+	}
+
+	@Test
+	public void test_future_timeout() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        " +
+				"   (def wait (fn [] (do (sleep 500) 100))) " +
+				"                                           " +
+				"   (let [f (future wait)]                  " +
+				"        (deref f 300 :timeout))            " +
+				") ";
+
+		assertEquals("timeout", venice.eval(script));
 	}
 	
 	@Test
