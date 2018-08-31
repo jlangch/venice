@@ -41,6 +41,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -54,6 +58,7 @@ import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -84,6 +89,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
 
 
 public class CoreFunctions {
@@ -5287,18 +5293,40 @@ public class CoreFunctions {
 
 	public static VncFunction deref = new VncFunction("deref") {
 		{
-			setArgLists("(deref atom)");
+			setArgLists("(deref x)");
 			
-			setDoc("Dereferences an atom, returns its value");
+			setDoc("Dereferences an atom or a Future object, returns its value");
 			
-			setExamples("(do\n   (def counter (atom 0))\n   (deref counter))");
+			setExamples(
+					"(do\n   (def counter (atom 0))\n   (deref counter))",
+					"(do\n   (def wait (fn [] 100))\n   (let [f (future wait)] (deref f)))");
 		}
-		
+
 		public VncVal apply(final VncList args) {
 			assertArity("deref", args, 1);
 			
-			final VncAtom atm = Coerce.toVncAtom(args.nth(0));
-			return atm.deref();
+			if (Types.isVncAtom(args.first())) {
+				final VncAtom atm = (VncAtom)args.first();
+				return atm.deref();
+			}
+			else if (Types.isVncJavaObject(args.first()) 
+						&& ((VncJavaObject)args.first()).getDelegate() instanceof Future
+			) {
+				try {
+					@SuppressWarnings("unchecked")
+					final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+					return JavaInteropUtil.convertToVncVal(future.get());
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed to deref future", ex);
+				}
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'deref' does not allow type %s as parameter. %s",
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
 		}
 	};
 
@@ -5363,6 +5391,44 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction future = new VncFunction("future") {
+		{
+			setArgLists("(future fn)");
+			
+			setDoc( "Takes a function and yields a future object that will " + 
+					"invoke the function in another thread, and will cache the result and " + 
+					"return it on all subsequent calls to deref. If the computation has " + 
+					"not yet finished, calls to deref will block, unless the variant of " + 
+					"deref with timeout is used.\n" +
+					"The function that is called IS NOT sandboxed. Thus future should be " +
+					"rejected in safe environments.");
+			
+			setExamples(
+					"(do                                         \n" + 
+					"   (def wait (fn [] (do (sleep 500) 100)))  \n" + 
+					"                                            \n" + 
+					"   (let [f (future wait)]                   \n" + 
+					"        (deref f))                          \n" + 
+					")");
+		}
+		
+		@SuppressWarnings("unchecked")
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("future", args);
+
+			assertArity("future", args, 1);
+
+			final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
+											Callable.class, 
+											new VncHashMap(
+												new VncKeyword("call"),
+												Coerce.toVncFunction(args.first())));
+			
+			final Future<VncVal> future = executor.submit(task);
+			
+			return new VncJavaObject(future);
+		}
+	};
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -6506,6 +6572,7 @@ public class CoreFunctions {
 				.put("reset!",				reset_BANG)
 				.put("swap!",				swap_BANG)
 				.put("compare-and-set!", 	compare_and_set_BANG)
+				.put("future",              future)
 				
 				.put("coalesce", 			coalesce)
 				
@@ -6559,4 +6626,6 @@ public class CoreFunctions {
 	
 	private static final AtomicLong gensymValue = new AtomicLong(0);
 	private static final Random random = new Random();
+	
+	private final static ExecutorService executor = Executors.newCachedThreadPool();
 }

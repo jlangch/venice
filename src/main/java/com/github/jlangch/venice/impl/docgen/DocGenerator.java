@@ -104,7 +104,7 @@ public class DocGenerator {
 	private List<DocSection> getRightSections() {
 		return Arrays.asList(
 				getCollectionsSection(),
-				getAtomsSection(),
+				getConcurrencySection(),
 				getThreadLocalsSection(),
 				getSpecialFormsSection(),
 				getJavaInteropSection(),
@@ -661,26 +661,38 @@ public class DocGenerator {
 		return section;
 	}
 
-	private DocSection getAtomsSection() {
-		final DocSection section = new DocSection("Atoms");
+	private DocSection getConcurrencySection() {
+		final DocSection section = new DocSection("Concurrency");
 
-		final DocSection all = new DocSection("");
-		section.addSection(all);
+		final DocSection atoms = new DocSection("Atoms");
+		section.addSection(atoms);
 
 		final DocSection create = new DocSection("Create");
-		all.addSection(create);
+		atoms.addSection(create);
 		create.addItem(getDocItem("atom"));
 
 		final DocSection test = new DocSection("Test");
-		all.addSection(test);
+		atoms.addSection(test);
 		test.addItem(getDocItem("atom?"));
 
 		final DocSection access = new DocSection("Access");
-		all.addSection(access);
+		atoms.addSection(access);
 		access.addItem(getDocItem("deref"));
 		access.addItem(getDocItem("reset!"));
 		access.addItem(getDocItem("swap!"));
 		access.addItem(getDocItem("compare-and-set!"));
+
+
+		final DocSection futures = new DocSection("Futures");
+		section.addSection(futures);
+
+		final DocSection create_future = new DocSection("Create");
+		futures.addSection(create_future);
+		create_future.addItem(getDocItem("future"));
+
+		final DocSection access_future = new DocSection("Access");
+		futures.addSection(access_future);
+		access_future.addItem(getDocItem("deref"));
 
 		return section;
 	}

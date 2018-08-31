@@ -996,6 +996,21 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_future() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                      " +
+				"   (def wait (fn [] (do (sleep 500) 100)))               " +
+				"                                                         " +
+				"   (let [f (future wait)]                                " +
+				"        (deref f))                                       " +
+				") ";
+
+		assertEquals(Long.valueOf(100), venice.eval(script));
+	}
+
+	@Test
 	public void test_gensym() {
 		final Venice venice = new Venice();
 
