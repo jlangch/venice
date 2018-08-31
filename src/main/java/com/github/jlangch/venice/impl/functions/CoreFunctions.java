@@ -5526,12 +5526,23 @@ public class CoreFunctions {
 			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("future", args);
 
 			assertArity("future", args, 1);
+			
+			final VncFunction fn = Coerce.toVncFunction(args.first());
+
+			// wrap the passed function so that its return value can be
+			// wrapped with a VncJavaObject. So that there are no 
+			// VncVal -> Java Object conversions. Thus
+			// the function's return value is not touched (just 
+			// wrapped/unwrapped with a VncJavaObject)!			
+			final VncFunction wrapped = new VncFunction() {
+				public VncVal apply(final VncList args) {
+					return new VncJavaObject(fn.apply(args));
+				}
+			};
 
 			final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
 												Callable.class, 
-												new VncHashMap(
-													new VncKeyword("call"),
-													Coerce.toVncFunction(args.first())));
+												new VncHashMap(new VncKeyword("call"), wrapped));
 
 			final JavaInterceptor parentInterceptor = JavaInterop.getInterceptor();
 

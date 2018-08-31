@@ -1003,14 +1003,14 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                        " +
-				"   (def wait (fn [] (do (sleep 500) 100))) " +
-				"                                           " +
-				"   (let [f (future wait)]                  " +
-				"        (deref f))                         " +
+				"(do                                             " +
+				"   (def wait (fn [] (do (sleep 500) {:a 100}))) " +
+				"                                                " +
+				"   (let [f (future wait)]                       " +
+				"        (deref f))                              " +
 				") ";
 
-		assertEquals(Long.valueOf(100), venice.eval(script));
+		assertEquals("{:a 100}", venice.eval("(str " + script + ")"));
 	}
 
 	@Test
