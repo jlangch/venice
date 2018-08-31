@@ -5429,6 +5429,27 @@ public class CoreFunctions {
 			return new VncJavaObject(future);
 		}
 	};
+
+	public static VncFunction future_Q = new VncFunction("future?") {
+		{
+			setArgLists("(future? f)");
+			
+			setDoc( "Returns true if f is a Future otherwise false");
+			
+			setExamples(
+					"(future? (future (fn [] 100)))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("future?", args);
+
+			assertArity("future?", args, 1);
+
+			return Types.isVncJavaObject(args.first())
+					&& (((VncJavaObject)args.first()).getDelegate() instanceof Future)
+						? True : False;
+		}
+	};
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -6573,6 +6594,7 @@ public class CoreFunctions {
 				.put("swap!",				swap_BANG)
 				.put("compare-and-set!", 	compare_and_set_BANG)
 				.put("future",              future)
+				.put("future?",             future_Q)
 				
 				.put("coalesce", 			coalesce)
 				
