@@ -276,7 +276,6 @@ public class ShellFunctions {
 										new VncKeyword(":dir"), th.get(":*sh-dir*"));
 
 		final VncMap defaultEnv = (VncMap)th.get(":*sh-env*", new VncHashMap());
-
 		
 		final VncVector v = Coerce.toVncVector(
 								CoreFunctions.split_with.apply(
@@ -294,22 +293,24 @@ public class ShellFunctions {
 		opts = opts.assoc(
 					new VncKeyword(":env"),
 					CoreFunctions.merge.apply(
-							new VncList(defaultEnv, sh_opts.get(new VncKeyword(":env")))));
+							new VncList(
+									defaultEnv, 
+									sh_opts.get(new VncKeyword(":env")))));
 		
 		return new VncVector(cmd, opts);
 	}
 	
 	private static String getEncoding(final VncVal enc) {
-		if (enc == Nil) {
-			return Charset.defaultCharset().name();
-		}
-		else {
-			return ((VncString)CoreFunctions.name.apply(new VncList(enc))).getValue();
-		}
+		return enc == Nil
+				? Charset.defaultCharset().name()
+				: ((VncString)CoreFunctions.name.apply(new VncList(enc))).getValue();
 	}
 	
-	private static Object copyAndClose(final VncString data, final String encoding, final OutputStream os) 
-	throws IOException {
+	private static Object copyAndClose(
+			final VncString data, 
+			final String encoding, 
+			final OutputStream os
+	) throws IOException {
 		StreamUtil.copyStringToOS(((VncString)data).getValue(), os, encoding);
 		os.flush();
 		os.close();
