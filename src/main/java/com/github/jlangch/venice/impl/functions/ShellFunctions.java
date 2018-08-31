@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinAr
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -97,12 +98,16 @@ public class ShellFunctions {
 					"(println (sh \"sed\" \"s/[aeiou]/oo/g\" :in \"hello there\\n\"))",
 					"(println (sh \"cat\" :in \"x\\u25bax\\n\"))",
 					"(println (sh \"echo\" \"x\\u25bax\"))", 
+					"(println (sh \"/bin/sh\" \"-c\" \"ls -l\"))", 
 					
 					";; reads 4 single-byte chars\n" +
 					"(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
 					
 					";; reads binary file into bytes[]\n" +
 					"(println (sh \"cat\" \"birds.jpg\" :out-enc :bytes))", 
+					
+					";; working directory\n" +
+					"(println (with-sh-dir \"/tmp\" (sh \"ls\" \"-l\") (sh \"pwd\")))", 
 					
 					";; windows\n" +
 					"(println (sh \"cmd\" \"/c dir 1>&2\"))");
@@ -165,39 +170,24 @@ public class ShellFunctions {
 
 			Future<Object> future_stdin = null;
 			if (in != Nil) {
-				// spit to subprocess' stdin as string, bytebuf, or File
+				// spit to subprocess' stdin a string, a bytebuf, or a File
 				
 				if (Types.isVncString(in)) {
 					future_stdin = executor.submit(
-										() -> { StreamUtil.copyStringToOS(
-													((VncString)in).getValue(), 
-													stdin, 
-													getEncoding(inEnc));
-												stdin.flush();
-												stdin.close();
-												return null; });
+									() -> copyAndClose((VncString)in, getEncoding(inEnc), stdin));
 				}
 				else if (Types.isVncByteBuffer(in)) {
 					future_stdin = executor.submit(
-										() -> { StreamUtil.copyByteArrayToOS(
-													((VncByteBuffer)in).getValue().array(), 
-													stdin);
-												stdin.flush();
-												stdin.close();
-												return null; });
+									() -> copyAndClose((VncByteBuffer)in, stdin));
 				}
 				else if (Types.isVncJavaObject(in) && ((VncJavaObject)in).getDelegate() instanceof File) {
 					future_stdin = executor.submit(
-										() -> { StreamUtil.copyFileToOS(
-													(File)((VncJavaObject)in).getDelegate(), 
-													stdin);
-												stdin.flush();
-												stdin.close();
-												return null; });
+									() -> copyAndClose((File)((VncJavaObject)in).getDelegate(), stdin));
 				}
 			}
 			
 			if (future_stdin == null) {
+				// we're not sending anything to the subprocess' stdin
 				stdin.close();
 			}
 			
@@ -316,6 +306,30 @@ public class ShellFunctions {
 		else {
 			return ((VncString)CoreFunctions.name.apply(new VncList(enc))).getValue();
 		}
+	}
+	
+	private static Object copyAndClose(final VncString data, final String encoding, final OutputStream os) 
+	throws IOException {
+		StreamUtil.copyStringToOS(((VncString)data).getValue(), os, encoding);
+		os.flush();
+		os.close();
+		return null;
+	}
+	
+	private static Object copyAndClose(final VncByteBuffer data, final OutputStream os) 
+	throws IOException {
+		StreamUtil.copyByteArrayToOS(((VncByteBuffer)data).getValue().array(), os);
+		os.flush();
+		os.close();
+		return null;
+	}
+	
+	private static Object copyAndClose(final File data, final OutputStream os) 
+	throws IOException {
+		StreamUtil.copyFileToOS(data, os);
+		os.flush();
+		os.close();
+		return null;
 	}
 
 	
