@@ -245,7 +245,7 @@ Java Futures:
 (do
    (def counter (atom 0))
    
-   (def task (fn [] (do (sleep 500) (swap! counter inc)} nil)))
+   (def task (fn [] (do (sleep 500) (swap! counter inc) nil)))
 
    (let [f (future task)]
         (deref f))
