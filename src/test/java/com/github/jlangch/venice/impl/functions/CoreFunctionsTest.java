@@ -35,13 +35,11 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.JavaInterceptor;
 import com.github.jlangch.venice.javainterop.JavaSandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -1049,7 +1047,7 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval(script));
 	}
 	
-	@Test
+	@Test(expected = SecurityException.class)
 	public void test_future_sandbox_violation() {
 		// all venice 'file' function blacklisted
 		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
@@ -1057,6 +1055,8 @@ public class CoreFunctionsTest {
 
 		final Venice venice = new Venice(interceptor);
 
+		// 'io/file' is black listed, thus a call to 'io/file' must 
+		// throw a SecurityException!
 		final String script = 
 				"(do                                        " +
 				"   (def wait (fn [] (io/file \"a.txt\")))  " +
@@ -1065,20 +1065,7 @@ public class CoreFunctionsTest {
 				"        (deref f))                         " +
 				") ";
 
-		try {
-			venice.eval(script);
-			
-			fail("Expected SecurityException");
-		}
-		catch(VncException ex) {
-			if (ex.getCause() instanceof ExecutionException) {
-				if (ex.getCause().getCause() instanceof SecurityException) {
-					return; //ok
-				}
-			}
-
-			fail("Expected SecurityException");
-		}
+		venice.eval(script);
 	}
 	
 	@Test

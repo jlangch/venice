@@ -42,6 +42,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -5318,6 +5319,11 @@ public class CoreFunctions {
 						@SuppressWarnings("unchecked")
 						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
 						return JavaInteropUtil.convertToVncVal(future.get());
+					}
+					catch(ExecutionException ex) {
+						if (ex.getCause() != null && (ex.getCause() instanceof SecurityException)) {
+							throw (SecurityException)ex.getCause();
+						}
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to deref future", ex);
