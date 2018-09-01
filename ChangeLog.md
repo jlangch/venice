@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added support for Futures (the sandbox is active in the future's thread)
 - added support for Promises
+- added function 'system-prop' to allow sandboxed access to Java system 
+        properties
 
 ### fixed
 
