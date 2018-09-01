@@ -197,8 +197,7 @@ Java Callbacks:
 (do
    (import :java.io.File :java.io.FilenameFilter)
 
-   (def file-filter
-        (fn [dir name] (str/ends-with? name ".txt")))
+   (defn file-filter [dir name] (str/ends-with? name ".txt"))
 
    (let [dir (. :File :new "/tmp")]
         ;; create a dynamic proxy for the interface FilenameFilter
@@ -215,20 +214,18 @@ Java Callbacks:
    (import :javax.swing.JLabel)
    (import :javax.swing.SwingUtilities)
 
-   (def swing-open-window
-        (fn [title]
-            (let [frame (. :JFrame :new title)
-                  label (. :JLabel :new "Hello World")
-                  closeOP (. :JFrame :EXIT_ON_CLOSE)]
-                 (. frame :setDefaultCloseOperation closeOP)
-                 (. frame :add label)
-                 (. frame :setSize 200 200)
-                 (. frame :setVisible true))))
+   (defn swing-open-window [title]
+         (let [frame (. :JFrame :new title)
+               label (. :JLabel :new "Hello World")
+               closeOP (. :JFrame :EXIT_ON_CLOSE)]
+              (. frame :setDefaultCloseOperation closeOP)
+              (. frame :add label)
+              (. frame :setSize 200 200)
+              (. frame :setVisible true)))
 
-   (def swing-gui
-        (fn [title]
-            (. :SwingUtilities :invokeLater
-               (proxify :Runnable { :run (fn [] (swing-open-window title)) } ))))
+   (defn swing-gui [title]
+         (. :SwingUtilities :invokeLater
+            (proxify :Runnable { :run (fn [] (swing-open-window title)) } )))
 
    (swing-gui "Test"))
 ```
@@ -239,7 +236,7 @@ Java Futures & Promises:
 ```clojure
 (do
    (def counter (atom 0))   
-   (def task (fn [] (do (sleep 500) (swap! counter inc) nil)))
+   (defn task [] (do (sleep 500) (swap! counter inc) nil))
 
    (deref (future task))        
    (deref counter))
@@ -248,10 +245,10 @@ Java Futures & Promises:
 ```clojure
 (do
    (def p (promise))
-   (def task (fn []
-                 (do
-                    (sleep 500)
-                    (deliver p 123))))
+   (defn task []
+         (do
+            (sleep 500)
+            (deliver p 123)))
 
    (future task)
    (deref p))
@@ -475,7 +472,7 @@ classpath:
 (do
    (load-module :xchart)
 
-   (def rand-list (fn [count max] (map (fn [x] (rand-long max)) (range count))))
+   (defn rand-list [count max] (map (fn [x] (rand-long max)) (range count)))
 
    (xchart/write-to-file
       (xchart/xy-chart
@@ -512,11 +509,10 @@ classpath:
           {:x  5 :y  5 :bubble 36}
           {:x  6 :y 20 :bubble 50}
           {:x 18 :y 20 :bubble  9} ])
-   (def bubblify
-        (fn [series]
-            {:x (map (fn [t] (:x t)) series)
-             :y (map (fn [t] (:y t)) series)
-             :bubble (map (fn [t] (:bubble t)) series)}))
+   (defn bubblify [series]
+         {:x (map (fn [t] (:x t)) series)
+          :y (map (fn [t] (:y t)) series)
+          :bubble (map (fn [t] (:bubble t)) series)})
 
    (xchart/write-to-file
       (xchart/bubble-chart
