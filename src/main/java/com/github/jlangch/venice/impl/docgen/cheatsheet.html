@@ -6,14 +6,14 @@
         <style type="text/css">
             @page {
                 size: A4 portrait;
-                margin: 2cm 1.5cm;
+                margin: 2cm 1.0cm;
                 padding: 0;
             }
             body {
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
-                font-size: $if(data.pdfmode)$12px$else$16px$endif$;
+                font-size: $if(data.pdfmode)$10px$else$16px$endif$;
                 line-height: 1.5em;
                 font-weight: 400;
             }            
@@ -26,6 +26,7 @@
                 font-weight: 300;
             }
             div.header h1 {
+                margin-top: $if(data.pdfmode)$0.5em$else$1.5em$endif$;
                 font-weight: 500;
             }
             h2 {
@@ -38,7 +39,7 @@
             }
             h3 {
                 margin-top: 1.5em;
-                margin-bottom: 1.5em;
+                margin-bottom: 0.5em;
                 line-height: 1.5em;
                 font-weight: 400;
             }

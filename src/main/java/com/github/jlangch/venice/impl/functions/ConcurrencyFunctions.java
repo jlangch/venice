@@ -234,7 +234,7 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(deliver ref value)");
 			
-			setDoc("Delivers the supplied value to the promise, releasing any pending\n" + 
+			setDoc("Delivers the supplied value to the promise, releasing any pending " + 
 				   "derefs. A subsequent call to deliver on a promise will have no effect.");
 			
 			
