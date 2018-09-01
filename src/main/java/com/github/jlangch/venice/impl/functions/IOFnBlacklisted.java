@@ -30,8 +30,10 @@ public class IOFnBlacklisted {
 
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
+								// load
 								"load-file",
 
+								// Processes
 								"sh",
 								
 								// multi-threading

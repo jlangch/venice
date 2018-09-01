@@ -690,7 +690,7 @@ public class DocGenerator {
 		all.addSection(promises);
 		promises.addItem(getDocItem("promise"));
 		promises.addItem(getDocItem("promise?"));
-		promises.addItem(getDocItem("deref"));
+		promises.addItem(getDocItem("deliver"));
 
 		return section;
 	}
