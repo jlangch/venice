@@ -245,10 +245,7 @@ Java Futures & Promises:
 ```clojure
 (do
    (def p (promise))
-   (defn task []
-         (do
-            (sleep 500)
-            (deliver p 123)))
+   (defn task [] (do (sleep 500) (deliver p 123)))
 
    (future task)
    (deref p))
