@@ -22,6 +22,15 @@
                      :new 
                      (str "Assert failed: " (pr-str '~expr)))))
     ))
+
+
+(defmacro 
+   { :arglists '("(defn name args body)")
+     :doc "Same as (def name (fn [args*] body))" 
+     :examples '("(defn sum [x y] (+ x y))") }
+     
+   defn [name args body]
+      `(def ~name (fn ~args ~body)))
     
 
 (defmacro 
