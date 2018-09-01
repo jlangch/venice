@@ -41,5 +41,4 @@ public class ShellFunctionsTest {
 		assertEquals(0L, result.get("exit"));
 	}
 
-
 }
