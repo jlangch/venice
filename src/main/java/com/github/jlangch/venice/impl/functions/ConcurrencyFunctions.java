@@ -237,6 +237,11 @@ public class ConcurrencyFunctions {
 			setDoc("Delivers the supplied value to the promise, releasing any pending\n" + 
 				   "derefs. A subsequent call to deliver on a promise will have no effect.");
 			
+			
+			setExamples(
+					"(do                   \n" +
+					"   (def p (promise))  \n" +
+					"   (deliver p 123))");
 		}
 
 		@SuppressWarnings("unchecked")
