@@ -101,4 +101,26 @@ public class SandboxRulesTest {
 		
 		assertFalse(wl.isWhiteListed(java.util.List.class, "size"));
 	}
+
+	@Test
+	public void systemPropertyTest() {
+		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
+											new SandboxRules().add(
+												"system.property:foo.org"
+											));
+		
+		assertTrue(wl.isWhiteListedSystemProperty("foo.org"));
+		assertFalse(wl.isWhiteListedSystemProperty("foo.com"));
+	}
+
+	@Test
+	public void systemPropertyAllTest() {
+		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
+											new SandboxRules().add(
+												"system.property:*"
+											));
+		
+		assertTrue(wl.isWhiteListedSystemProperty("foo.org"));
+		assertTrue(wl.isWhiteListedSystemProperty("foo.com"));
+	}
 }
