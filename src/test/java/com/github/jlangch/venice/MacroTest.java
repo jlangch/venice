@@ -226,40 +226,37 @@ public class MacroTest {
 		final Venice venice = new Venice();
 		
 		final String pos = 
-				"(do                                        " +
-				"   (def pos-neg-or-zero                    " +
-				"           (fn [n]                         " +
-				"                (cond                      " +
-				"   		        (< n 0) \"negative\"    " +
-				"                   (> n 0) \"positive\"    " +
-				"                   :else \"zero\")))       " +
-				"                                           " +
-				"   (pos-neg-or-zero 5)                     " +
-				")                                          ";
+				"(do                                 " +
+				"   (defn pos-neg-or-zero [n]        " +
+				"         (cond                      " +
+				"   		 (< n 0) \"negative\"    " +
+				"            (> n 0) \"positive\"    " +
+				"            :else \"zero\"))        " +
+				"                                    " +
+				"   (pos-neg-or-zero 5)              " +
+				")                                   ";
 		
 		final String neg = 
-				"(do                                        " +
-				"   (def pos-neg-or-zero                    " +
-				"           (fn [n]                         " +
-				"                (cond                      " +
-				"   		        (< n 0) \"negative\"    " +
-				"                   (> n 0) \"positive\"    " +
-				"                   :else \"zero\")))       " +
-				"                                           " +
-				"   (pos-neg-or-zero -5)                    " +
-				")                                          ";
+				"(do                                 " +
+				"   (defn pos-neg-or-zero [n]        " +
+				"         (cond                      " +
+				"   		 (< n 0) \"negative\"    " +
+				"            (> n 0) \"positive\"    " +
+				"            :else \"zero\"))        " +
+				"                                    " +
+				"   (pos-neg-or-zero -5)             " +
+				")                                   ";
 		
 		final String zero = 
-				"(do                                        " +
-				"   (def pos-neg-or-zero                    " +
-				"           (fn [n]                         " +
-				"                (cond                      " +
-				"   		        (< n 0) \"negative\"    " +
-				"                   (> n 0) \"positive\"    " +
-				"                   :else \"zero\")))       " +
-				"                                           " +
-				"   (pos-neg-or-zero 0)                     " +
-				")                                          ";
+				"(do                                 " +
+				"   (defn pos-neg-or-zero [n]        " +
+				"         (cond                      " +
+				"   		 (< n 0) \"negative\"    " +
+				"            (> n 0) \"positive\"    " +
+				"            :else \"zero\"))        " +
+				"                                    " +
+				"   (pos-neg-or-zero 0)              " +
+				")                                   ";
 
 		assertEquals("positive", venice.eval(pos));
 		assertEquals("negative", venice.eval(neg));
@@ -447,10 +444,10 @@ public class MacroTest {
 
 		final String script =
 				"(do                                     " +
-				"   (def demo (fn [arg]                  " + 
+				"   (defn demo [arg]                     " + 
 				"      (if-let [x arg]                   " + 
 				"         \"then\"                       " + 
-				"         \"else\")))                    " +
+				"         \"else\"))                     " +
 				"                                        " +
 				"   [ (demo 1) (demo nil) (demo false) ] " +
 				") ";
