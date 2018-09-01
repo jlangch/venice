@@ -568,6 +568,7 @@ public class DocGenerator {
 		all.addSection(util);
 		util.addItem(getDocItem("version"));
 		util.addItem(getDocItem("os"));
+		util.addItem(getDocItem("system-prop"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("current-time-millis"));
@@ -589,6 +590,7 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);		
+		create.addItem(getDocItem("defn", false));
 		create.addItem(
 				new DocItem(
 						"defmacro", 

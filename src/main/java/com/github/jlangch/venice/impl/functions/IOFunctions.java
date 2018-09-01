@@ -53,7 +53,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
-import com.github.jlangch.venice.impl.util.StreamUtil;
+import com.github.jlangch.venice.impl.util.IOStreamUtil;
 
 
 public class IOFunctions {
@@ -736,7 +736,7 @@ public class IOFunctions {
 				final VncVal binary = options.get(new VncKeyword("binary")); 
 
 				if (binary == True) {
-					final byte[] data = StreamUtil.copyIStoByteArray(is);
+					final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 					return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 				}
 				else {
@@ -744,7 +744,7 @@ public class IOFunctions {
 					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 
-					return new VncString(StreamUtil.copyIStoString(is, encoding));
+					return new VncString(IOStreamUtil.copyIStoString(is, encoding));
 				}
 			} 
 			catch (VncException ex) {

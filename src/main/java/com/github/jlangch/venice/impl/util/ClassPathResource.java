@@ -102,7 +102,7 @@ public class ClassPathResource {
 
 	public byte[] getResourceAsBinary() {  
 		try(InputStream is = getInputStream()) {
-			return StreamUtil.copyIStoByteArray(is);
+			return IOStreamUtil.copyIStoByteArray(is);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
@@ -120,7 +120,7 @@ public class ClassPathResource {
 
 	public String getResourceAsString(final String charsetName) {		
 		try(InputStream is = getInputStream()) {
-			return new String(StreamUtil.copyIStoByteArray(is), charsetName);
+			return new String(IOStreamUtil.copyIStoByteArray(is), charsetName);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);

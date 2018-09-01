@@ -124,6 +124,14 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		}
 	}
 
+	public void checkWhiteListedSystemProperty(final String property) {
+		if (!sandboxRules.isWhiteListedSystemProperty(property)) {
+			throw new SecurityException(String.format(
+					"Venice Sandbox: Access denied to system property '%s'", 
+					property));
+		}
+	}
+	
 	private void validateClass(final Object obj) {
 		if (obj != null) {
 			final Class<?> clazz= getClass(obj);

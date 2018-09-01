@@ -203,6 +203,23 @@ public class SystemFunctions {
 		}
 	};
 
+	public static VncFunction system_prop = new VncFunction("system-prop") {
+		{
+			setArgLists("(system-prop p)");
+			
+			setDoc("Returns the system property with the name p");
+			
+			setExamples("(system-prop :os.name)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("system-prop", args, 1);
+			
+			final VncKeyword key = Coerce.toVncKeyword(args.first());
+			return new VncString(System.getProperty(key.getValue()));
+		}
+	};
+
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -219,5 +236,6 @@ public class SystemFunctions {
 					.put("os",					os)				
 					.put("os?",					os_Q)				
 					.put("version",				version)
+					.put("system-prop",			system_prop)
 					.toMap();	
 }

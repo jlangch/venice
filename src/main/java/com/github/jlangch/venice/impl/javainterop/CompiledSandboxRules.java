@@ -41,7 +41,8 @@ public class CompiledSandboxRules {
 	private CompiledSandboxRules(
 			final List<Pattern> whiteListClassPatterns,
 			final List<Pattern> whiteListMethodPatterns,
-			final Set<String> blackListVeniceFunctions
+			final Set<String> blackListVeniceFunctions,
+			final Set<String> whiteListSystemProps
 	) {
 		this.whiteListClassPatterns = whiteListClassPatterns == null 
 											? Collections.emptyList() 
@@ -54,11 +55,13 @@ public class CompiledSandboxRules {
 		this.blackListVeniceFunctions = blackListVeniceFunctions == null 
 											? Collections.emptySet() 
 											: blackListVeniceFunctions;
+											
+		this.whiteListSystemProps = whiteListSystemProps;
 	}
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null);			
+			return new CompiledSandboxRules(null, null, null, null);			
 		}
 		
 		final List<String> filtered = whiteList
@@ -74,6 +77,7 @@ public class CompiledSandboxRules {
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
+					.filter(s -> !s.startsWith("system.property:"))
 					.map(s -> { int pos = s.indexOf(':'); return pos < 0 ? s : s.substring(0, pos); })
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
@@ -82,6 +86,7 @@ public class CompiledSandboxRules {
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
+					.filter(s -> !s.startsWith("system.property:"))
 					.filter(s -> s.indexOf(':') >= 0)
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
@@ -93,6 +98,13 @@ public class CompiledSandboxRules {
 					.map(s -> s.substring("blacklist:venice:".length()))
 					.map(s -> s.equals("*io*") ? IOFnBlacklisted.getAllIoFunctions() : toSet(s))
 					.flatMap(Set::stream)
+					.collect(Collectors.toSet()),
+					
+				// whitelisted system properties
+				filtered
+					.stream()
+					.filter(s -> s.startsWith("system.property:"))
+					.map(s -> s.substring("system.property:".length()))
 					.collect(Collectors.toSet()));
 	}
 	
@@ -178,10 +190,16 @@ public class CompiledSandboxRules {
 		return blackListVeniceFunctions.contains(funcName);
 	}
 	
+	public boolean isWhiteListedSystemProperty(final String property) {
+		return (whiteListSystemProps == null) 
+					|| (property != null && whiteListSystemProps.contains(property));
+	}
+
+	
 	private static Set<String> toSet(final String... args) {
 		return new HashSet<>(Arrays.asList(args));
 	}
-
+	
 	
 	// cached classes and methods that are proofed to be white listed
 	private final ConcurrentHashMap<Class<?>, String> whiteListedClasses = new ConcurrentHashMap<>();
@@ -190,4 +208,5 @@ public class CompiledSandboxRules {
 	private final List<Pattern> whiteListClassPatterns;
 	private final List<Pattern> whiteListMethodPatterns;
 	private final Set<String> blackListVeniceFunctions;
+	private final Set<String> whiteListSystemProps;
 }

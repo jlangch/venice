@@ -90,5 +90,11 @@ public abstract class JavaInterceptor {
 			final String funcName, 
 			final VncList args
 	) {
+		// ok,  no black listed Venice functions
 	}
+	
+	public void checkWhiteListedSystemProperty(final String property) {
+		// ok, all system properties white-listed
+	}
+
 }

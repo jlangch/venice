@@ -54,6 +54,13 @@ import java.util.stream.Collectors;
  * </ul>
  * 
  * <p>
+ * E.g: white listing Java system properties
+ * <ul>
+ *   <li>system.property:file.separator</li>
+ *   <li>system.property:java.home</li>
+ * </ul>
+ * 
+ * <p>
  * E.g: black listing Venice I/O functions
  * <ul>
  *   <li>blacklist:venice:io/slurp (reject calls to 'io/slurp')</li>
@@ -64,7 +71,11 @@ import java.util.stream.Collectors;
 public class SandboxRules {
 	
 	public SandboxRules() {
-		
+		rules = new HashSet<>(DEFAULT_RULES);
+		rules.addAll(DEFAULT_SYSTEM_PROPERTIES
+						.stream()
+						.map(p -> "system.property:" + p)
+						.collect(Collectors.toSet()));		
 	}
 	
 	public SandboxRules add(final Collection<String> rules) {
@@ -116,7 +127,7 @@ public class SandboxRules {
 	public Set<String> getRules() {
 		return Collections.unmodifiableSet(rules);
 	}
-	
+
 	@Override
 	public String toString() {
 		return new ArrayList<String>(rules)
@@ -124,10 +135,15 @@ public class SandboxRules {
 					.sorted()
 					.collect(Collectors.joining("\n"));
 	}
+
 	
-	private static final Set<String> defaultRules = 
+	private static final Set<String> DEFAULT_RULES = 
 			new HashSet<>(
 				Arrays.asList(
+						//------------------------------------------------------------------
+						// Classes
+						//------------------------------------------------------------------
+						
 						// Dynamic proxies based on venice' DynamicInvocationHandler
 						"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
 						
@@ -146,6 +162,25 @@ public class SandboxRules {
 						HashSet.class.getName(),
 						HashMap.class.getName(),
 						LinkedHashMap.class.getName()));
-	
-	private final Set<String> rules = new HashSet<>(defaultRules);
+
+	public static final Set<String> DEFAULT_SYSTEM_PROPERTIES = 
+			Collections.unmodifiableSet(
+				new HashSet<>(
+					Arrays.asList(
+							"file.separator",
+							"java.home",
+							"java.vendor",
+							"java.vendor.url",
+							"java.version",
+							"line.separator",
+							"os.arch",
+							"os.name",
+							"os.version",
+							"path.separator",
+							"user.dir",
+							"user.home",
+							"user.name")));
+
+
+	private final Set<String> rules;
 }

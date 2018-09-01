@@ -112,6 +112,14 @@ public class RejectAllInterceptor extends JavaInterceptor {
 		}
 	}
 
+	public void checkWhiteListedSystemProperty(final String property) {
+		if (property == null || !SandboxRules.DEFAULT_SYSTEM_PROPERTIES.contains(property)) {
+			throw new SecurityException(String.format(
+					"Venice Sandbox: Access denied to system property '%s'", 
+					property));
+		}
+	}
+
 	
 	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getAllIoFunctions();
 }

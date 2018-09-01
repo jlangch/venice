@@ -21,98 +21,47 @@
  */
 package com.github.jlangch.venice.impl.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 public class StreamUtil {
 
-    public static byte[] copyIStoByteArray(final InputStream is) throws IOException{
-    	if (is == null) {
-    		return null;
-    	}
-    	
-    	try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-        	final byte[] buffer = new byte[16 * 1024];
-        	int n;
-        	while (-1 != (n = is.read(buffer))) {
-        		output.write(buffer, 0, n);
-        	}
-
-        	return output.toByteArray();
-        }
-    }
-    
-    public static String copyIStoString(
-    		final InputStream is,
-    		final String encoding
-    ) throws IOException{
-    	return is == null 
-    			? null 
-    			: new String(
-    					StreamUtil.copyIStoByteArray(is), 
-    					encoding == null ? Charset.defaultCharset().name() : encoding);
-    }
-
-    public static void copyByteArrayToOS(
-    		final byte[] data, 
-    		final OutputStream os
-    ) throws IOException{
-    	if (os == null || data == null) {
-    		return;
-    	}
-    	
-    	os.write(data);
-    	os.flush();
-    }
-
-    public static void copyFileToOS(
-    		final File file, 
-    		final OutputStream os
-    ) throws IOException{
-    	if (os == null || file == null) {
-    		return;
-    	}
-    	
-    	try (FileInputStream is = new FileInputStream(file)) {
-    		copy(is, os);
-    	}
-    }
-   
-    public static void copyStringToOS(
-    		final String data, 
-    		final OutputStream os, 
-    		final String encoding
-    ) throws IOException{
-    	if (os == null || data == null) {
-    		return;
-    	}
-    	
-    	os.write(
-    		encoding == null 
-    			? data.getBytes(Charset.defaultCharset())
-    			: data.getBytes(encoding));
-    	
-    	os.flush();
-    }
-
-	
-	public static void copy(final InputStream is, final OutputStream os) 
-	throws IOException {
-		int len;
-		byte[] buf=new byte[4096];
-		 
-		while ((len=is.read(buf))!=-1) {
-			os.write(buf,0,len);
-	
-		}
-		
-		os.flush();
+	/**
+	 * Returns a <tt>Stream</tt> from an <tt>Iterable</tt>
+	 * 
+	 * @param in An iterable
+	 * 
+	 * @return A stream
+	 */
+	public static <T> Stream<T> stream(Iterable<T> in) {
+	    return StreamSupport.stream(in.spliterator(), false);
 	}
 
+	/**
+	 * Returns a <tt>Stream</tt> from an <tt>Enumeration</tt>
+	 * 
+	 * @param in An iterable
+	 * 
+	 * @return A stream
+	 */
+	public static <T> Stream<T> stream(Enumeration<T> e) {
+	    return StreamSupport.stream(
+	        Spliterators.spliteratorUnknownSize(
+	            new Iterator<T>() {
+	                public T next() {
+	                    return e.nextElement();
+	                }
+	                public boolean hasNext() {
+	                    return e.hasMoreElements();
+	                }
+	            },
+	            Spliterator.ORDERED), 
+	        false);
+	}
+ 
 }

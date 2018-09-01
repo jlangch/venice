@@ -51,7 +51,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.StreamUtil;
+import com.github.jlangch.venice.impl.util.IOStreamUtil;
 
 
 public class ShellFunctions {
@@ -125,7 +125,7 @@ public class ShellFunctions {
 
 			final ExecutorService executor = Executors.newFixedThreadPool(3);
 			try {
-				return apply_(cmd, opts, executor);
+				return exec(cmd, opts, executor);
 			}
 			finally {
 				executor.shutdownNow();
@@ -140,7 +140,7 @@ public class ShellFunctions {
 	// Util
 	///////////////////////////////////////////////////////////////////////////
 
-	private static VncVal apply_(
+	private static VncVal exec(
 			final VncList cmd, 
 			final VncMap opts, 
 			final ExecutorService executor
@@ -198,12 +198,12 @@ public class ShellFunctions {
 				final String enc = getEncoding(outEnc);
 				final Future<VncVal> future_stdout =
 						executor.submit(() -> "bytes".equals(enc)
-												? new VncByteBuffer(StreamUtil.copyIStoByteArray(stdout))
-												: new VncString(StreamUtil.copyIStoString(stdout, enc)));
+												? new VncByteBuffer(IOStreamUtil.copyIStoByteArray(stdout))
+												: new VncString(IOStreamUtil.copyIStoString(stdout, enc)));
 				
 				// slurp the subprocess' stderr as string with platform default encoding
 				final Future<VncVal> future_stderr = 
-						executor.submit(() -> new VncString(StreamUtil.copyIStoString(stderr, null)));
+						executor.submit(() -> new VncString(IOStreamUtil.copyIStoString(stderr, null)));
 				
 				final int exitCode = proc.waitFor();
 					
@@ -311,7 +311,7 @@ public class ShellFunctions {
 			final String encoding, 
 			final OutputStream os
 	) throws IOException {
-		StreamUtil.copyStringToOS(((VncString)data).getValue(), os, encoding);
+		IOStreamUtil.copyStringToOS(((VncString)data).getValue(), os, encoding);
 		os.flush();
 		os.close();
 		return null;
@@ -319,7 +319,7 @@ public class ShellFunctions {
 	
 	private static Object copyAndClose(final VncByteBuffer data, final OutputStream os) 
 	throws IOException {
-		StreamUtil.copyByteArrayToOS(((VncByteBuffer)data).getValue().array(), os);
+		IOStreamUtil.copyByteArrayToOS(((VncByteBuffer)data).getValue().array(), os);
 		os.flush();
 		os.close();
 		return null;
@@ -327,7 +327,7 @@ public class ShellFunctions {
 	
 	private static Object copyAndClose(final File data, final OutputStream os) 
 	throws IOException {
-		StreamUtil.copyFileToOS(data, os);
+		IOStreamUtil.copyFileToOS(data, os);
 		os.flush();
 		os.close();
 		return null;

@@ -33,8 +33,9 @@ public class IOFnBlacklisted {
 								// load
 								"load-file",
 
-								// Processes
+								// System
 								"sh",
+								"system-prop",
 								
 								// multi-threading
 								"deliver",
