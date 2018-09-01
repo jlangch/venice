@@ -73,7 +73,7 @@ public class CompiledSandboxRules {
 										.collect(Collectors.toList());
 		
 		return new CompiledSandboxRules(
-				// whitelisted classes
+				// white-listed classes
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
@@ -82,7 +82,7 @@ public class CompiledSandboxRules {
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
-				// whitelisted methods
+				// white-listed methods
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
@@ -91,7 +91,7 @@ public class CompiledSandboxRules {
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
-				// blacklisted venice functions
+				// black-listed venice functions
 				filtered
 					.stream()
 					.filter(s -> s.startsWith("blacklist:venice:"))
@@ -100,12 +100,14 @@ public class CompiledSandboxRules {
 					.flatMap(Set::stream)
 					.collect(Collectors.toSet()),
 					
-				// whitelisted system properties
-				filtered
-					.stream()
-					.filter(s -> s.startsWith("system.property:"))
-					.map(s -> s.substring("system.property:".length()))
-					.collect(Collectors.toSet()));
+				// white-listed system properties
+				allowAccessToAllSystemProperties(filtered)
+					? null
+					: filtered
+						.stream()
+						.filter(s -> s.startsWith("system.property:"))
+						.map(s -> s.substring("system.property:".length()))
+						.collect(Collectors.toSet()));
 	}
 	
 	/**
@@ -194,7 +196,11 @@ public class CompiledSandboxRules {
 		return (whiteListSystemProps == null) 
 					|| (property != null && whiteListSystemProps.contains(property));
 	}
-
+	
+	
+	private static boolean allowAccessToAllSystemProperties(final List<String> rules) {
+		return rules.stream().anyMatch(s -> s.equals("system.property:*"));
+	}
 	
 	private static Set<String> toSet(final String... args) {
 		return new HashSet<>(Arrays.asList(args));

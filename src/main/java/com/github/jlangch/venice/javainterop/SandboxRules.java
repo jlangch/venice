@@ -71,13 +71,14 @@ import java.util.stream.Collectors;
 public class SandboxRules {
 	
 	public SandboxRules() {
-		rules = new HashSet<>(DEFAULT_RULES);
-		rules.addAll(DEFAULT_SYSTEM_PROPERTIES
-						.stream()
-						.map(p -> "system.property:" + p)
-						.collect(Collectors.toSet()));		
 	}
 	
+	/**
+	 * Add rules to the sandbox
+	 * 
+	 * @param rules a collection of rules
+	 * @return this <code>SandboxRules</code>
+	 */
 	public SandboxRules add(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(rules);
@@ -85,6 +86,12 @@ public class SandboxRules {
 		return this;
 	}
 	
+	/**
+	 * Add rules to the sandbox
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
 	public SandboxRules add(final String... rules) {
 		if (rules != null) {
 			this.rules.addAll(Arrays.asList(rules));
@@ -92,6 +99,14 @@ public class SandboxRules {
 		return this;
 	}
 	
+	/**
+	 * Add classes to the sandbox. 
+	 * 
+	 * <p>Adds a rule "x.y.classname:*" for each class
+	 * 
+	 * @param classes classes
+	 * @return this <code>SandboxRules</code>
+	 */
 	public SandboxRules addClasses(final Class<?>... classes) {
 		if (classes != null) {
 			for(Class<?> clazz : classes) {
@@ -101,6 +116,14 @@ public class SandboxRules {
 		return this;
 	}
 	
+	/**
+	 * Add classes to the sandbox. 
+	 * 
+	 * <p>Adds a rule "x.y.classname:*" for each class
+	 * 
+	 * @param classes classes
+	 * @return this <code>SandboxRules</code>
+	 */
 	public SandboxRules addClasses(final Collection<Class<?>> classes) {
 		if (classes != null) {
 			for(Class<?> clazz : classes) {
@@ -110,6 +133,11 @@ public class SandboxRules {
 		return this;
 	}
 	
+	/**
+	 * Reject access to all Venice I/O related functions
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
 	public SandboxRules rejectAllVeniceIoFunctions() {
 		if (rules != null) {
 			this.rules.add("blacklist:venice:*io*");
@@ -117,6 +145,52 @@ public class SandboxRules {
 		return this;
 	}
 	
+	/**
+	 * Allow access to all standard Java system properties
+	 * 
+	 * <p>Standard system properties:
+	 * <ul>
+	 *   <li>file.separator</li>
+	 *   <li>java.home</li>
+	 *   <li>java.vendor</li>
+	 *   <li>java.vendor.url</li>
+	 *   <li>java.version</li>
+	 *   <li>line.separator</li>
+	 *   <li>os.arch</li>
+	 *   <li>os.name</li>
+	 *   <li>os.version</li>
+	 *   <li>path.separator</li>
+	 *   <li>user.dir</li>
+	 *   <li>user.home</li>
+	 *   <li>user.name</li>
+	 * </ul>
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules allowAccessToStandardSystemProperties() {
+		rules.addAll(DEFAULT_SYSTEM_PROPERTIES
+				.stream()
+				.map(p -> "system.property:" + p)
+				.collect(Collectors.toSet()));		
+		return this;
+	}
+	
+	/**
+	 * Allow access to all Java system properties
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules allowAccessToAllSystemProperties() {
+		rules.add("system.property:*");
+		return this;
+	}
+		
+	/**
+	 * Merges this <code>SandboxRules</code> with the passed other 
+	 * <code>SandboxRules</code> 
+	 * 
+	 * @return the new merged <code>SandboxRules</code>
+	 */
 	public SandboxRules merge(final SandboxRules other) {
 		final SandboxRules merged = new SandboxRules();
 		merged.add(this.rules);
@@ -124,6 +198,9 @@ public class SandboxRules {
 		return merged;
 	}
 	
+	/**
+	 * @return the rules of this <code>SandboxRules</code>
+	 */
 	public Set<String> getRules() {
 		return Collections.unmodifiableSet(rules);
 	}
@@ -137,13 +214,9 @@ public class SandboxRules {
 	}
 
 	
-	private static final Set<String> DEFAULT_RULES = 
+	private static final Set<String> DEFAULT_CLASS_RULES = 
 			new HashSet<>(
 				Arrays.asList(
-						//------------------------------------------------------------------
-						// Classes
-						//------------------------------------------------------------------
-						
 						// Dynamic proxies based on venice' DynamicInvocationHandler
 						"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
 						
@@ -182,5 +255,5 @@ public class SandboxRules {
 							"user.name")));
 
 
-	private final Set<String> rules;
+	private final Set<String> rules = new HashSet<>(DEFAULT_CLASS_RULES);
 }

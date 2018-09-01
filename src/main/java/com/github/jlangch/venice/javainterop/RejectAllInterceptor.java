@@ -108,16 +108,14 @@ public class RejectAllInterceptor extends JavaInterceptor {
 	) {
 		if (blacklistedVeniceFunctions.contains(funcName)) {
 			throw new SecurityException(String.format(
-					"Access denied to function %s", funcName));
+					"Access denied to function %s. (reject-all sandbox)", funcName));
 		}
 	}
 
 	public void checkWhiteListedSystemProperty(final String property) {
-		if (property == null || !SandboxRules.DEFAULT_SYSTEM_PROPERTIES.contains(property)) {
-			throw new SecurityException(String.format(
-					"Venice Sandbox: Access denied to system property '%s'", 
-					property));
-		}
+		throw new SecurityException(String.format(
+				"Venice Sandbox: Access denied to system property '%s'. (reject-all sandbox)", 
+				property));
 	}
 
 	
