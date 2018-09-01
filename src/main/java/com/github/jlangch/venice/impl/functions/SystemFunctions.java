@@ -205,18 +205,22 @@ public class SystemFunctions {
 
 	public static VncFunction system_prop = new VncFunction("system-prop") {
 		{
-			setArgLists("(system-prop p)");
+			setArgLists("(system-prop name default-val)");
 			
-			setDoc("Returns the system property with the name p");
+			setDoc("Returns the system property with the given name. Returns " +
+				   "the default-val if the property does not exist");
 			
-			setExamples("(system-prop :os.name)");
+			setExamples("(system-prop :os.name)", "(system-prop :foo.org \"abc\")");
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("system-prop", args, 1);
+			assertArity("system-prop", args, 1, 2);
 			
 			final VncKeyword key = Coerce.toVncKeyword(args.first());
-			return new VncString(System.getProperty(key.getValue()));
+			final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
+			
+			final String val = System.getProperty(key.getValue());
+			return val == null ? defaultVal : new VncString(val);
 		}
 	};
 

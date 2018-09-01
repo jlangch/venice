@@ -21,9 +21,11 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -65,6 +67,8 @@ public class SystemFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertNotNull(venice.eval("(system-prop :os.name)"));
+		assertNull(venice.eval("(system-prop :foo.org)"));
+		assertEquals("abc", venice.eval("(system-prop :foo.org \"abc\")"));
 	}
 
 	@Test
