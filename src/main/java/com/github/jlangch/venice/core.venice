@@ -30,7 +30,7 @@
      :examples '("(defn sum [x y] (+ x y))") }
      
    defn [name args body]
-      `(def ~name (fn ~args ~body)))
+        `(def ~name (fn ~args ~body)))
     
 
 (defmacro 

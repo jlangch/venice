@@ -304,6 +304,19 @@ public class MacroTest {
 	}
 
 	@Test
+	public void test_defn() {
+		final Venice venice = new Venice();
+
+		final String lisp =
+				"(do                                      " +
+				"    (defn sum [x y] (+ x y))             " + 
+				"    (sum 2 5)                            " + 
+				") ";
+
+		assertEquals(Long.valueOf(7), venice.eval(lisp));
+	}
+
+	@Test
 	public void test_dotimes() {
 		final Venice venice = new Venice();
 
