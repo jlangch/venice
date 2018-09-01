@@ -33,7 +33,18 @@ public class IOFnBlacklisted {
 								"load-file",
 
 								"sh",
+								
+								// multi-threading
+								"deliver",
+								"future",
+								"future?",
+								"future-cancel",
+								"future-cancelled?",
+								"future-done?",
+								"promise",
+								"promise?",
 
+								// I/O
 								"io/copy-file",
 								"io/delete-file",
 								"io/exists-dir?",
