@@ -208,7 +208,7 @@ public class SystemFunctions {
 			setArgLists("(system-prop name default-val)");
 			
 			setDoc("Returns the system property with the given name. Returns " +
-				   "the default-val if the property does not exist");
+				   "the default-val if the property does not exist or it's value is nil");
 			
 			setExamples("(system-prop :os.name)", "(system-prop :foo.org \"abc\")");
 		}
