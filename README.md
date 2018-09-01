@@ -140,8 +140,7 @@ Float, Double, and BigDecimal.
 
    ;; class object
    (. :java.lang.Math :class)
-   (. (. :java.time.ZonedDateTime :now) :class)
-)
+   (. (. :java.time.ZonedDateTime :now) :class))
 ```
 
 
@@ -153,8 +152,7 @@ Java enum values can be passed as simple or scoped keywords:
 
    (. :LocalDate :of 1994 :JANUARY 21)
    
-   (. :LocalDate :of 1994 :java.time.Month.JANUARY 21)
-)
+   (. :LocalDate :of 1994 :java.time.Month.JANUARY 21))
 ```
 
 
@@ -176,8 +174,7 @@ Exception handling
       (throw (. :RuntimeException :new "a message"))
       (catch :IOException ex (. ex :getMessage))
       (catch :RuntimeException ex (. ex :getMessage))
-      (finally (println "... finally.")))
-)
+      (finally (println "... finally."))))
 ```
 
 
@@ -190,8 +187,7 @@ Try with resources
    (let [file (io/temp-file "test-", ".txt")]
         (io/spit file "123456789" :append true)
         (try-with [is (. :FileInputStream :new file)]
-           (io/slurp-stream is :binary false)))
-)
+           (io/slurp-stream is :binary false))))
 ```
 
 Java Callbacks:
@@ -207,8 +203,7 @@ Java Callbacks:
    (let [dir (. :File :new "/tmp")]
         ;; create a dynamic proxy for the interface FilenameFilter
         ;; and implement its function 'accept' by 'file-filter'
-        (. dir :list (proxify :FilenameFilter {:accept file-filter})))
-)
+        (. dir :list (proxify :FilenameFilter {:accept file-filter}))))
 ```
 
 ```clojure
@@ -239,19 +234,27 @@ Java Callbacks:
 ```
 
 
-Java Futures:
+Java Futures & Promises:
 
 ```clojure
 (do
-   (def counter (atom 0))
-   
+   (def counter (atom 0))   
    (def task (fn [] (do (sleep 500) (swap! counter inc) nil)))
 
-   (let [f (future task)]
-        (deref f))
-        
-   (deref counter)
-)
+   (deref (future task))        
+   (deref counter))
+```
+
+```clojure
+(do
+   (def p (promise))
+   (def task (fn []
+                 (do
+                    (sleep 500)
+                    (deliver p 123))))
+
+   (future task)
+   (deref p))
 ```
 
 
@@ -273,8 +276,7 @@ A larger example:
         (. :User :new "john" 24 (. :LocalDate :of 1994 7 21)))
         (. :User :new "pete" 48 (. :LocalDate :of 1970 1 12))) ])
 
-   (str (filter (fn [u] (> (get u :age) 30)) users))
-)
+   (str (filter (fn [u] (> (get u :age) 30)) users)))
 ```
 
 ## Sandbox
@@ -402,8 +404,7 @@ The Jackson _jdk8_ module is loaded automatically if it is available
 
    ;; parse json from a string (returns a map/list)
    (json/parse (json/to-json {:a 100 :b 100 c: [10 20 30]}))
-   (json/parse (json/to-json [{:a 100 :b 100}, {:a 200 :b 200}]))
-)
+   (json/parse (json/to-json [{:a 100 :b 100}, {:a 200 :b 200}])))
 ```
 
 
