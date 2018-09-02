@@ -34,22 +34,22 @@ public class StreamUtil {
 	/**
 	 * Returns a <tt>Stream</tt> from an <tt>Iterable</tt>
 	 * 
+	 * @param <T> the type of the stream elements
 	 * @param in An iterable
-	 * 
 	 * @return A stream
 	 */
-	public static <T> Stream<T> stream(Iterable<T> in) {
+	public static <T> Stream<T> stream(final Iterable<T> in) {
 	    return StreamSupport.stream(in.spliterator(), false);
 	}
 
 	/**
 	 * Returns a <tt>Stream</tt> from an <tt>Enumeration</tt>
 	 * 
-	 * @param in An iterable
-	 * 
+	 * @param <T> the type of the stream elements
+	 * @param e An iterable
 	 * @return A stream
 	 */
-	public static <T> Stream<T> stream(Enumeration<T> e) {
+	public static <T> Stream<T> stream(final Enumeration<T> e) {
 	    return StreamSupport.stream(
 	        Spliterators.spliteratorUnknownSize(
 	            new Iterator<T>() {

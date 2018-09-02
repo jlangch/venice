@@ -189,6 +189,7 @@ public class SandboxRules {
 	 * Merges this <code>SandboxRules</code> with the passed other 
 	 * <code>SandboxRules</code> 
 	 * 
+	 * @param other the other SandboxRules to merge with
 	 * @return the new merged <code>SandboxRules</code>
 	 */
 	public SandboxRules merge(final SandboxRules other) {
