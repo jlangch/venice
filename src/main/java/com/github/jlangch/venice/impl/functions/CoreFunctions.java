@@ -3364,8 +3364,7 @@ public class CoreFunctions {
 			
 			setDoc("Returns the class of x");
 			
-			setExamples(
-					"(. :java.lang.Long :class)");
+			setExamples("(class 5)", "(class [1 2])");
 		}
 		
 		public VncVal apply(final VncList args) {
