@@ -304,6 +304,13 @@ things that are problematic, because you'll never know all the static methods
 that are available to the script in the JVM!
 
 
+#### Configuration
+
+ - whitelist Java classes down to individual methods and fields
+ - whitelist Java system property access down to individual properties
+ - blacklist Venice I/O functions like spit, slurp, sh, ...
+ 
+
 #### Example
 
 ```java
