@@ -479,6 +479,8 @@ public class CoreFunctions {
 			setArgLists("(macro? x)");
 			
 			setDoc("Returns true if x is a macro");
+			
+			setExamples("(macro? and)");
 		}
 		
 		public VncVal apply(final VncList args) {

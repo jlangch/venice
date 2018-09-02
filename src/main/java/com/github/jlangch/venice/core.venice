@@ -2,7 +2,10 @@
 
 (defmacro
    { :arglists '("(comment & body)")
-     :doc "Ignores body, yields nil" }
+     :doc "Ignores body, yields nil" 
+     :examples '("(comment 
+                 |   (println 1)
+                 |   (println 5))" ) }
     
    comment [& body] nil)
 
@@ -35,8 +38,9 @@
 
 (defmacro 
    { :arglists '("(and x)" "(and x & next)")
-     :doc "Ands the predicate forms" }
-
+     :doc "Ands the predicate forms"
+     :examples '("(and true true)", "(and true false)") }
+     
    and [x & next]
     (let [arity_ (inc (count next))]
         `(if (== 1 ~arity_)
@@ -47,7 +51,8 @@
 
 (defmacro 
    { :arglists '("(or x)" "(or x & next)")
-     :doc "Ors the predicate forms" }
+     :doc "Ors the predicate forms" 
+     :examples '("(or true false)", "(or false false)") }
 
    or [x & next]
     (let [arity_ (inc (count next))]
@@ -78,7 +83,8 @@
 
 (defmacro 
    { :arglists '("(when test & body)")
-     :doc "Evaluates test. If logical true, evaluates body in an implicit do." }
+     :doc "Evaluates test. If logical true, evaluates body in an implicit do." 
+     :examples '("(when (== 1 1) true)") }
 
    when [test & body]
     (list 'if test (cons 'do body)))
@@ -86,7 +92,8 @@
 
 (defmacro 
    { :arglists '("(when-not test & body)")
-     :doc "Evaluates test. If logical false, evaluates body in an implicit do." }
+     :doc "Evaluates test. If logical false, evaluates body in an implicit do." 
+     :examples '("(when-not (== 1 2) true)") }
 
    when-not [test & body]
     (list 'if test nil (cons 'do body)))
@@ -122,7 +129,11 @@
 
 (defmacro 
    { :arglists '("(while test & body)")
-     :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil" }
+     :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
+     :examples '("(do 
+                 |   (def a (atom 5))
+                 |   (while (pos? (deref a))
+                 |          (do (println (deref a)) (swap! a dec))))" ) } 
 
    while [test & body]
     `(loop [] 
@@ -253,7 +264,6 @@
 
 
 (defmacro
-
    { :arglists '("(load-file name)")
      :doc "Sequentially read and evaluate the set of forms contained in the file." 
      :examples '() }
@@ -264,7 +274,6 @@
 
 
 (defmacro
-
    { :arglists '("(load-classpath-file name)")
      :doc "Sequentially read and evaluate the set of forms contained in the classpath file." 
      :examples '("(do 
@@ -339,7 +348,7 @@
 (def  
    { :arglists '("(newline)")
      :doc "Writes a platform-specific newline to *out*"
-     :examples '() }
+     :examples '("(newline)") }
     
    newline 
    
@@ -349,7 +358,7 @@
 (def  
    { :arglists '("(flush)", "(flush os)")
      :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
-     :examples '() }
+     :examples '("(flush)", "(flush *out*)") }
     
    flush 
    
