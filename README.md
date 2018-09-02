@@ -304,11 +304,11 @@ things that are problematic, because you'll never know all the static methods
 that are available to the script in the JVM!
 
 
-#### Configuration
+#### Features
 
  - whitelist Java classes down to individual methods and fields
  - whitelist Java system property access down to individual properties
- - blacklist Venice I/O functions like spit, slurp, sh, ...
+ - blacklist all or individual Venice I/O functions like spit, slurp, ...
  
 
 #### Example
@@ -342,11 +342,14 @@ venice.eval(
     "      (. :add 1)                     " +
     "      (. :add 2))                    ");
 
-// => FAIL (invoking non white listed static method)
+// => FAIL (invoking non whitelisted static method)
 venice.eval("(. :java.lang.System :exit 0)"); 
 
 // => FAIL (invoking rejected Venice I/O function)
 venice.eval("(io/slurp \"/tmp/file\")"); 
+
+// => FAIL (accessing non whitelisted system property)
+venice.eval("(system-prop \"db.password\")"); 
 ```
 
 Prohibit Venice I/O functions and Java Interop:
