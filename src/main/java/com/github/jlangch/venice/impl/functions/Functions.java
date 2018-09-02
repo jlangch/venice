@@ -19,6 +19,7 @@ public class Functions {
 	static {
 		functions.putAll(CoreFunctions.ns);
 		functions.putAll(StringFunctions.ns);
+		functions.putAll(MathFunctions.ns);
 		functions.putAll(IOFunctions.ns);
 		functions.putAll(TimeFunctions.ns);
 		functions.putAll(ShellFunctions.ns);
