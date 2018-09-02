@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added support for Promises (aka CompletedFuture)
 - added support for sandboxed Java system properties
 - added function 'system-prop' to access to Java system properties
+- added function 'butlast'
+- added threading macro 'as->'
 
 ### fixed
 

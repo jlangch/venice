@@ -3026,15 +3026,61 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("rest", args, 1);
 
-			final VncVal exp = args.nth(0);
-			if (exp == Nil) {
-				return new VncList();
+			final VncVal coll = args.first();
+			if (coll == Nil) {
+				return Nil;
 			}
-			else if (Types.isVncList(exp)) {
-				return ((VncList)exp).rest();
+			else if (Types.isVncVector(coll)) {
+				return ((VncVector)coll).rest();
+			}
+			else if (Types.isVncList(coll)) {
+				return ((VncList)coll).rest();
 			}
 			else {
-				return ((VncVector)exp).rest();
+				throw new VncException(String.format(
+						"Invalid argument type %s while calling function 'rest'. %s",
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
+	public static VncFunction butlast = new VncFunction("butlast") {
+		{
+			setArgLists("(butlast coll)");
+			
+			setDoc("Returns a collection with all but the last list element");
+			
+			setExamples(
+					"(butlast nil)",
+					"(butlast [])",
+					"(butlast [1])",
+					"(butlast [1 2 3])",
+					"(butlast '())",
+					"(butlast '(1))",
+					"(butlast '(1 2 3))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("butlast", args, 1);
+
+			final VncVal coll = args.first();
+			if (coll == Nil) {
+				return Nil;
+			}
+			else if (Types.isVncVector(coll)) {
+				final VncVector vec = (VncVector)coll;
+				return vec.size() > 1 ? vec.slice(0, vec.size()-1) : new VncVector(); 
+			}
+			else if (Types.isVncList(coll)) {
+				final VncList list = (VncList)coll;
+				return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList(); 
+			}
+			else {
+				throw new VncException(String.format(
+						"Invalid argument type %s while calling function 'butlast'. %s",
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
 			}
 		}
 	};
@@ -4669,6 +4715,7 @@ public class CoreFunctions {
 				.put("second",				second)
 				.put("last",				last)
 				.put("rest",				rest)
+				.put("butlast",				butlast)
 				.put("nfirst",				nfirst)
 				.put("nlast",				nlast)
 				.put("empty-to-nil",		emptyToNil)

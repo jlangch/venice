@@ -338,7 +338,6 @@ public class DocGenerator {
 		coll_process.addItem(getDocItem("docoll"));
 
 		
-		
 		final DocSection lists = new DocSection("Lists");
 		section.addSection(lists);
 
@@ -355,6 +354,7 @@ public class DocGenerator {
 		list_access.addItem(getDocItem("last"));
 		list_access.addItem(getDocItem("peek"));
 		list_access.addItem(getDocItem("rest"));
+		list_access.addItem(getDocItem("butlast"));
 		list_access.addItem(getDocItem("nfirst"));
 		list_access.addItem(getDocItem("nlast"));
 
@@ -638,6 +638,7 @@ public class DocGenerator {
 		call.addItem(getDocItem("doto"));
 		call.addItem(getDocItem("->"));
 		call.addItem(getDocItem("->>"));
+		call.addItem(getDocItem("as->"));
 
 		final DocSection loading = new DocSection("Loading");
 		all.addSection(loading);

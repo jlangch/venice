@@ -139,6 +139,22 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_butlast() {
+		final Venice venice = new Venice();
+
+		assertEquals("", venice.eval("(str (butlast nil))"));
+		assertEquals("()", venice.eval("(str (butlast '()))"));
+		assertEquals("()", venice.eval("(str (butlast '(1)))"));
+		assertEquals("(1)", venice.eval("(str (butlast '(1 2)))"));
+		assertEquals("(1 2)", venice.eval("(str (butlast '(1 2 3)))"));
+
+		assertEquals("[]", venice.eval("(str (butlast []))"));
+		assertEquals("[]", venice.eval("(str (butlast [1]))"));
+		assertEquals("[1]", venice.eval("(str (butlast [1 2]))"));
+		assertEquals("[1 2]", venice.eval("(str (butlast [1 2 3]))"));
+	}
+	
+	@Test
 	public void test_bytebuf() {
 		final Venice venice = new Venice();
 
@@ -1971,7 +1987,7 @@ public class CoreFunctionsTest {
 	public void test_rest() {
 		final Venice venice = new Venice();
 
-		assertEquals("()", venice.eval("(str (rest nil))"));
+		assertEquals("", venice.eval("(str (rest nil))"));
 		assertEquals("()", venice.eval("(str (rest '()))"));
 		assertEquals("()", venice.eval("(str (rest '(1)))"));
 		assertEquals("(2)", venice.eval("(str (rest '(1 2)))"));
