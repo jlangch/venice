@@ -274,17 +274,15 @@ public class DocGenerator {
 
 		final DocSection keywords = new DocSection("Keywords");
 		other.addSection(keywords);
+		keywords.addItem(new DocItem(":a :blue", null));
 		keywords.addItem(getDocItem("keyword?"));
 		keywords.addItem(getDocItem("keyword"));
-		keywords.addItem(new DocItem(" ", null));
-		keywords.addItem(new DocItem("literals: :a :xyz", null));
 
 		final DocSection symbols = new DocSection("Symbols");
 		other.addSection(symbols);
+		symbols.addItem(new DocItem("'a 'blue", null));
 		symbols.addItem(getDocItem("symbol?"));
 		symbols.addItem(getDocItem("symbol"));
-		symbols.addItem(new DocItem(" ", null));
-		symbols.addItem(new DocItem("literals: 'a 'xyz", null));
 
 		final DocSection boolean_ = new DocSection("Boolean");
 		other.addSection(boolean_);

@@ -107,7 +107,8 @@
 
 (defmacro 
    { :arglists '("(dotimes bindings & body)")
-     :doc "Repeatedly executes body with name bound to integers from 0 through n-1." }
+     :doc "Repeatedly executes body with name bound to integers from 0 through n-1." 
+     :examples '("(dotimes [n 3] (println (str \"n is \" n)))" ) }
 
    dotimes [bindings & body]
     (let [i (first bindings) 
