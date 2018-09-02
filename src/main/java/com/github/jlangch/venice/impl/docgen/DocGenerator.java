@@ -283,6 +283,8 @@ public class DocGenerator {
 		other.addSection(symbols);
 		symbols.addItem(getDocItem("symbol?"));
 		symbols.addItem(getDocItem("symbol"));
+		keywords.addItem(new DocItem(" ", null));
+		keywords.addItem(new DocItem("literals: 'a 'xyz", null));
 
 		final DocSection boolean_ = new DocSection("Boolean");
 		other.addSection(boolean_);
