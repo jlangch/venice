@@ -151,7 +151,14 @@
                 background-color: #f5f5f5;
                 margin: 0;
                 padding: 0.5em;
-            }                            
+            }
+            table td.shrink {
+                white-space: nowrap;
+                padding-right: 2em;
+            }
+            table td.expand {
+                width: 99%;
+            }                         
         </style>
         $if(!data.pdfmode)$
         <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
@@ -182,8 +189,8 @@
                         <tbody>
                             $s2.sections:{s3|
                             <tr>
-                                <td>$s3.title; format="xml"$</td>
-                                <td><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
+                                <td class="shrink">$s3.title; format="xml"$</td>
+                                <td class="expand"><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
                             </tr>
                             }$
                         </tbody>
@@ -203,8 +210,8 @@
                         <tbody>
                             $s2.sections:{s3|
                             <tr>
-                                <td>$s3.title; format="xml"$</td>
-                                <td><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
+                                <td class="shrink">$s3.title; format="xml"$</td>
+                                <td class="expand"><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
                             </tr>
                             }$
                         </tbody>

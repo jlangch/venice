@@ -105,7 +105,6 @@ public class DocGenerator {
 		return Arrays.asList(
 				getCollectionsSection(),
 				getConcurrencySection(),
-				getThreadLocalsSection(),
 				getSystemSection(),
 				getJavaInteropSection(),
 				getIOSection(),
@@ -695,32 +694,14 @@ public class DocGenerator {
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
 
-		return section;
-	}
-
-	private DocSection getThreadLocalsSection() {
-		final DocSection section = new DocSection("ThreadLocals");
-
-		final DocSection all = new DocSection("");
-		section.addSection(all);
-
-		final DocSection create = new DocSection("Create");
-		all.addSection(create);
-		create.addItem(getDocItem("thread-local"));
-
-		final DocSection test = new DocSection("Test");
-		all.addSection(test);
-		test.addItem(getDocItem("thread-local?"));
-
-		final DocSection clear = new DocSection("Clear");
-		all.addSection(clear);
-		clear.addItem(getDocItem("thread-local-clear"));
-
-		final DocSection access = new DocSection("Access");
-		all.addSection(access);
-		access.addItem(getDocItem("assoc"));
-		access.addItem(getDocItem("dissoc"));
-		access.addItem(getDocItem("get"));
+		final DocSection thlocal = new DocSection("ThreadLocal");
+		all.addSection(thlocal);
+		thlocal.addItem(getDocItem("thread-local"));
+		thlocal.addItem(getDocItem("thread-local?"));
+		thlocal.addItem(getDocItem("thread-local-clear"));
+		thlocal.addItem(getDocItem("assoc"));
+		thlocal.addItem(getDocItem("dissoc"));
+		thlocal.addItem(getDocItem("get"));
 
 		return section;
 	}
