@@ -65,12 +65,11 @@
 (defmacro 
    { :arglists '("(cond & clauses)")
      :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil." 
-     :examples '("(do 
-                 |   (let [n 5]
-                 |        (cond
-                 |           (< n 0) \"negative\"
-                 |           (> n 0) \"positive\"
-                 |           :else \"zero\")))" ) }
+     :examples '("(let [n 5]
+                 |     (cond
+                 |        (< n 0) \"negative\"
+                 |        (> n 0) \"positive\"
+                 |        :else \"zero\"))" ) }
  
    cond [& clauses]
     (when clauses 
@@ -101,7 +100,10 @@
 
 (defmacro 
    { :arglists '("(if-let bindings then)")
-     :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else" }
+     :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else" 
+     :examples '("(if-let [value (* 100 2)]
+                 |    (str \"The expression is true. value=\" value)
+                 |    (str \"The expression is false value=\" value))" ) }
 
    if-let [bindings then else]
    (let [form (first bindings) tst (second bindings)]
