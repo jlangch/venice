@@ -219,6 +219,8 @@ public class SystemFunctions {
 			final VncKeyword key = Coerce.toVncKeyword(args.first());
 			final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 			
+			JavaInterop.getInterceptor().checkWhiteListedSystemProperty(key.getValue());
+
 			final String val = System.getProperty(key.getValue());
 			return val == null ? defaultVal : new VncString(val);
 		}
