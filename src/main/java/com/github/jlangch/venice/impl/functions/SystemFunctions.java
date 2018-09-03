@@ -210,13 +210,18 @@ public class SystemFunctions {
 			setDoc("Returns the system property with the given name. Returns " +
 				   "the default-val if the property does not exist or it's value is nil");
 			
-			setExamples("(system-prop :os.name)", "(system-prop :foo.org \"abc\")");
+			setExamples(
+					"(system-prop :os.name)", 
+					"(system-prop :foo.org \"abc\")", 
+					"(system-prop \"os.name\")");
 		}
 		
 		public VncVal apply(final VncList args) {
 			assertArity("system-prop", args, 1, 2);
 			
-			final VncKeyword key = Coerce.toVncKeyword(args.first());
+			final VncString key = Coerce.toVncString(
+									CoreFunctions.name.apply(
+										new VncList(args.first())));
 			final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 			
 			JavaInterop.getInterceptor().checkWhiteListedSystemProperty(key.getValue());
