@@ -4446,6 +4446,41 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction repeatedly = new VncFunction("repeatedly") {
+		{
+			setArgLists("(repeatedly n fn)");
+			
+			setDoc("Takes a function of no args, presumably with side effects, and" + 
+				   "returns lazy sequence of n calls to it");
+			
+			setExamples(
+					"(repeatedly 5 (fn [] (rand-long 11)))",
+					";; compare with repeat, which only calls the 'rand-long'\n" +
+					";; function once, repeating the value five times. \n" +
+					"(repeat 5 (rand-long 11))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("repeatedly", args, 2);
+
+			
+			final long repeat = Coerce.toVncLong(args.first()).getValue();
+			final VncFunction fn = Coerce.toVncFunction(args.second());
+			
+			if (repeat < 0) {
+				throw new VncException(String.format(
+						"repeatedly: a count n must be grater or equal to 0. %s",
+						ErrorMessage.buildErrLocation(args)));	
+			}
+
+			final List<VncVal> values = new ArrayList<>();
+			for(int ii=0; ii<repeat; ii++) {
+				values.add(fn.apply(new VncList()));
+			}			
+			return new VncList(values);
+		}
+	};
+
 
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -4753,6 +4788,7 @@ public class CoreFunctions {
 				.put("conj",				conj)
 				.put("seq",					seq)
 				.put("repeat",				repeat)
+				.put("repeatedly",			repeatedly)
 		
 				.put("meta",				meta)
 				.put("with-meta",			with_meta)

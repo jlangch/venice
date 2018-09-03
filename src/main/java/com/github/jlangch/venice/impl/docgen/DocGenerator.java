@@ -312,6 +312,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("conj"));
 		generic.addItem(getDocItem("remove"));
 		generic.addItem(getDocItem("repeat"));
+		generic.addItem(getDocItem("repeatedly"));
 		generic.addItem(getDocItem("range"));
 		generic.addItem(getDocItem("group-by"));
 		generic.addItem(getDocItem("get-in"));
