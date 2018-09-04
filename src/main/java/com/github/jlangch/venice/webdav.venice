@@ -59,11 +59,11 @@
 
 (defn webdav/exists? [url] (. (get (thread-local) :sardine) :exists url))
 
-(defn webdav/put! [url data]
+(defn webdav/put! [url data content-type]
    (. (get (thread-local) :sardine) :put url data content-type))
 
-(defn webdav/put-file! [url file]
-   (webdav/put! url (io/slurp file :binary true)))
+(defn webdav/put-file! [url file content-type]
+   (webdav/put! url (io/slurp file :binary true) content-type))
 
 (defn webdav/list [url depth] (. (get (thread-local) :sardine) :list url depth))
 
