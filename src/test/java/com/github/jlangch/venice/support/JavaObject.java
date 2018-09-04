@@ -178,6 +178,10 @@ public class JavaObject {
 		return "" + s1 + "," + s2 + "," + s3;
 	}
 	
+	public String _StringByteArrString(String p1, byte[] p2, String p3) {
+		return "" + p1 + "," + (p2 == null ? "null" : p2.length) + "," + p3;
+	}
+	
 	public static String staticVoid() {
 		return "123";
 	}

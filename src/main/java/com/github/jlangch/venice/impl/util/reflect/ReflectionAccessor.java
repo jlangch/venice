@@ -735,7 +735,10 @@ public class ReflectionAccessor {
 	private static Object boxArrayArg(Class<?> type, final Object arg) {
 		final Class<?> componentType = type.getComponentType();					
 		if (componentType == byte.class) {
-			if (arg.getClass() == String.class) {
+			if (arg == null) {
+				return null;
+			}
+			else if (arg.getClass() == String.class) {
 				return boxStringToByteArray((String)arg);
 			}
 			else if (arg.getClass() == byte[].class) {

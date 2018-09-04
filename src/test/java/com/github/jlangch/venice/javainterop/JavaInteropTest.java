@@ -182,6 +182,16 @@ public class JavaInteropTest {
 	}
 
 	@Test
+	public void testStringByteArrStringAccessor() {
+		final Venice venice = new Venice();
+
+		assertEquals("null,null,null", venice.eval("(. jobj :_StringByteArrString nil nil nil)", symbols()));
+		assertEquals("a,null,null", venice.eval("(. jobj :_StringByteArrString \"a\" nil nil)", symbols()));
+		assertEquals("a,2,null", venice.eval("(. jobj :_StringByteArrString \"a\" (bytebuf '(1 2)) nil)", symbols()));
+		assertEquals("a,2,c", venice.eval("(. jobj :_StringByteArrString \"a\"(bytebuf '(1 2)) \"c\")", symbols()));
+	}
+
+	@Test
 	public void testByteArray() {
 		final Venice venice = new Venice();
 
