@@ -26,11 +26,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.impl.util.Tuple2;
@@ -418,7 +420,7 @@ public class ReflectionAccessor {
 			final Object[] args
 	) {
 		if (methods.isEmpty()) {
-			throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target));
+			throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target, args));
 		} 
 		else if (methods.size() == 1) {
 			final Method m = (Method)methods.get(0);
@@ -449,7 +451,7 @@ public class ReflectionAccessor {
 			}
 		}
 		
-		throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target));
+		throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target, args));
 	}
 	
 	private static Object invoke(final Method method, final Object target, final Object[] args) {		
@@ -783,10 +785,11 @@ public class ReflectionAccessor {
 				target == null ? "<null>" : target.getClass().getName());
 	}
 
-	private static String noMatchingMethodErrMsg(final String methodName, final Object target) {
+	private static String noMatchingMethodErrMsg(final String methodName, final Object target, final Object... methodArgs) {
 		return String.format(
-				"No matching public method found: '%s' for target '%s'",
+				"No matching public method found: %s(%s) for target '%s'",
 				methodName,
+				formatArgTypes(methodArgs),
 				target == null ? "<null>" : target.getClass().getName());
 	}
 
@@ -883,7 +886,16 @@ public class ReflectionAccessor {
 					k ->  ReflectionUtil.getAllPublicInstanceMethods(k._1, k._2, k._3, k._4))
 				: ReflectionUtil.getAllPublicInstanceMethods(clazz,methodName,arity,includeInheritedClasses);
 	}
+	
+	private static String formatArgTypes(final Object[] args) {
+		return Arrays
+				.stream(args)
+				.map(o -> o.getClass())
+				.map(c -> c.getSimpleName())
+				.collect(Collectors.joining(", "));
+	}
 
+	
 	private static final AtomicBoolean cachingEnabled = new AtomicBoolean(true);
 	
 	private static final HashMap<String,Class<?>> classCache = new HashMap<>();
