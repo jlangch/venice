@@ -605,7 +605,7 @@ public class ReflectionAccessor {
 				if (argType == String.class) {
 					return true;
 				}
-				else if (argType == ByteBuffer.class) {
+				else if (ByteBuffer.class.isAssignableFrom(argType)) {
 					return true;
 				}
 			}
@@ -736,7 +736,7 @@ public class ReflectionAccessor {
 		final Class<?> componentType = type.getComponentType();					
 		if (componentType == byte.class) {
 			if (arg == null) {
-				return null;
+				return boxStringToByteArray((String)arg);
 			}
 			else if (arg.getClass() == String.class) {
 				return boxStringToByteArray((String)arg);
@@ -773,7 +773,7 @@ public class ReflectionAccessor {
 	
 	private static byte[] boxStringToByteArray(final String str) {
 		try {
-			return ((String)str).getBytes("UTF-8");
+			return str == null ? null : str.getBytes("UTF-8");
 		}
 		catch(Exception ex) {
 			throw new JavaMethodInvocationException(
