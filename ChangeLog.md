@@ -16,8 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed sandboxed access to system properties
-- fixed Java interop with boxing args to byte[] (works now for all 
-  ByteBuffer subclasses)
+- fixed a Java interop issue with with boxing args to type byte[] (the
+  boxing works now for all ByteBuffer subclasses)
 
 
 
