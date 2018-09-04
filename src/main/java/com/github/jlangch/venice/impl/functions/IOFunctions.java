@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
+import com.github.jlangch.venice.impl.util.MimeTypes;
 
 
 public class IOFunctions {
@@ -823,6 +824,41 @@ public class IOFunctions {
 			}
 		}
 	};
+
+	public static VncFunction io_mime_type = new VncFunction("io/mime-type") {
+		{
+			setArgLists("(io/mime-type file)");
+			
+			setDoc( "Returns the mime-type for the file if available else nil");
+
+			setExamples(
+					"(io/mime-type \"document.pdf\")",
+					"(io/mime-type (io/file \"document.pdf\"))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/mime-type", args);
+
+			assertMinArity("io/mime-type", args, 1);
+
+			if (Types.isVncString(args.first()) ) {
+				return new VncString(
+							MimeTypes.getMimeTypeFromFileName(
+									((VncString)args.first()).getValue()));
+			}
+			else if (isJavaIoFile(args.first()) ) {
+				return new VncString(
+						MimeTypes.getMimeTypeFromFile(
+								(File)(Coerce.toVncJavaObject(args.first()).getDelegate())));
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'io/mime-type' does not allow %s as f. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -848,6 +884,7 @@ public class IOFunctions {
 					.put("io/slurp-temp-file",		io_slurp_temp_file)
 					.put("io/slurp-stream",	    	io_slurp_stream)
 					.put("io/spit-stream",	    	io_spit_stream)							
+					.put("io/mime-type",	    	io_mime_type)							
 					.toMap();
 
 	

@@ -748,6 +748,7 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/temp-file"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
+		io.addItem(getDocItem("io/mime-type"));
 
 		final DocSection load = new DocSection("load");
 		all.addSection(load);

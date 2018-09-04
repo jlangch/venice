@@ -1,5 +1,6 @@
 package com.github.jlangch.venice.impl.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,6 +49,10 @@ public class MimeTypes {
 
 	public static String getMimeTypeFromFileName(final String fileName) {
 		return getMimeTypeFromFileExtension(getFileExt(fileName));
+	}
+
+	public static String getMimeTypeFromFile(final File file) {
+		return getMimeTypeFromFileName(file.getName());
 	}
 
 	public static Set<String> getAvailableMimeTypes() {
