@@ -63,7 +63,7 @@
    (. (get (thread-local) :sardine) :put url data content-type))
 
 (defn webdav/put-file! [url file]
-   (webdav/put url (io/slurp file :binary true)))
+   (webdav/put! url (io/slurp file :binary true)))
 
 (defn webdav/list [url depth] (. (get (thread-local) :sardine) :list url depth))
 
