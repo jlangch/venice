@@ -10,7 +10,8 @@
 ;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
 ;;           (do
 ;;              (webdav/exists? url)
-;;              (webdav/get-as-file url "download.doc")))))
+;;              (webdav/get-as-file url "download.doc")
+;;              (webdav/put-file! url "download.doc" "application/msword")))))
 ;;
 ;; (do
 ;;   (load-module :webdav)
