@@ -417,38 +417,6 @@ public class IOFunctions {
 		}
 	};
 
-	public static VncFunction io_temp_file = new VncFunction("io/temp-file") {
-		{
-			setArgLists("(io/temp-file prefix suffix)");
-			
-			setDoc("Creates an empty temp file with prefix and suffix");
-			
-			setExamples(
-				"(do \n" +
-				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-				"        (io/spit file \"123456789\" :append true) \n" +
-				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
-				")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/temp-file", args);
-
-			assertArity("io/temp-file", args, 2);
-
-			final String prefix = Coerce.toVncString(args.first()).getValue();
-			final String suffix = Coerce.toVncString(args.second()).getValue();
-			try {
-				final String path = File.createTempFile(prefix, suffix).getPath();
-				tempFiles.add(path);
-				return new VncString(path);
-			}
-			catch (Exception ex) {
-				throw new VncException(ex.getMessage(), ex);
-			}
-		}
-	};
-
 	public static VncFunction io_tmp_dir = new VncFunction("io/tmp-dir") {
 		{
 			setArgLists("(io/tmp-dir)");
@@ -618,92 +586,6 @@ public class IOFunctions {
 		}
 	};
 
-	public static VncFunction io_slurp_temp_file = new VncFunction("io/slurp-temp-file") {
-		{
-			setArgLists("(io/slurp-temp-file file & options)");
-			
-			setDoc( "Slurps binary or string data from a previously created temp file. " +
-					"Supports the option :binary to either slurp binary or string data. " +
-					"For string data an optional encoding can be specified. " +
-					"Options: :encoding \"UTF-8\" :binary true/false. ");
-			
-			setExamples(
-				"(do \n" +
-				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-				"        (io/spit file \"123456789\" :append true) \n" +
-				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
-				")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/slurp-temp-file", args);
-
-			assertMinArity("io/slurp-temp-file", args, 1);
-
-			try {	
-				File file;
-				
-				if (Types.isVncString(args.nth(0)) ) {
-					file = new File(((VncString)args.nth(0)).getValue());
-				}
-				else if (isJavaIoFile(args.nth(0)) ) {
-					file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'io/slurp-temp-file' does not allow %s as f. %s",
-							Types.getClassName(args.nth(0)),
-							ErrorMessage.buildErrLocation(args)));
-				}
-
-				
-				if (!tempFiles.contains(file.getPath())) {
-					throw new VncException(String.format(
-							"Function 'io/slurp-temp-file' tries to access the unknown temp file '%s'. %s",
-							file.getPath(),
-							ErrorMessage.buildErrLocation(args)));
-				}
-				
-				final VncHashMap options = new VncHashMap(args.slice(1));
-
-				final VncVal binary = options.get(new VncKeyword("binary")); 
-	
-				final VncVal remove = options.get(new VncKeyword("remove")); 
-
-				if (binary == True) {
-					final byte[] data = Files.readAllBytes(file.toPath());
-					
-					if (remove == True) {
-						file.delete();
-						tempFiles.remove(file.getPath());
-					}
-					
-					return new VncByteBuffer(ByteBuffer.wrap(data));
-				}
-				else {
-					final VncVal encVal = options.get(new VncKeyword("encoding")); 
-					
-					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-									
-					final byte[] data = Files.readAllBytes(file.toPath());
-
-					if (remove == True) {
-						file.delete();
-						tempFiles.remove(file.getPath());
-					}
-
-					return new VncString(new String(data, encoding));
-				}
-			} 
-			catch (VncException ex) {
-				throw ex;
-			}
-			catch (Exception ex) {
-				throw new VncException(ex.getMessage(), ex);
-			}
-		}
-	};
-
 	public static VncFunction io_slurp_stream = new VncFunction("io/slurp-stream") {
 		{
 			setArgLists("(io/slurp-stream is & options)");
@@ -859,6 +741,225 @@ public class IOFunctions {
 			}
 		}
 	};
+
+	
+	///////////////////////////////////////////////////////////////////////////
+	// IO TEMP functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction io_temp_file = new VncFunction("io/temp-file") {
+		{
+			setArgLists("(io/temp-file prefix suffix)");
+			
+			setDoc( "Creates an empty temp file with prefix and suffix. \n" +
+					"io/temp-file with its companions io/spit-temp-file and " +
+					"io/slurp-temp-file provide safe file access in sandboxed " +
+					"environments.");
+			
+			setExamples(
+				"(do \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (io/spit-temp-file file \"123456789\" :append true) \n" +
+				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
+				")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/temp-file", args);
+
+			assertArity("io/temp-file", args, 2);
+
+			final String prefix = Coerce.toVncString(args.first()).getValue();
+			final String suffix = Coerce.toVncString(args.second()).getValue();
+			try {
+				final String path = File.createTempFile(prefix, suffix).getPath();
+				tempFiles.add(path);
+				return new VncString(path);
+			}
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
+	public static VncFunction io_slurp_temp_file = new VncFunction("io/slurp-temp-file") {
+		{
+			setArgLists("(io/slurp-temp-file file & options)");
+			
+			setDoc( "Slurps binary or string data from a previously created temp file. " +
+					"Supports the option :binary to either slurp binary or string data. " +
+					"For string data an optional encoding can be specified. \n" +
+					"Ensures that the caller can only read back files he previously " +
+					"created, but no other files. This allows callers to work with files " +
+					"without escaping the sandbox. The file must have been created with " +
+					"io/temp_file. \n" +
+					"Options: :encoding \"UTF-8\" :binary true/false.");
+			
+			setExamples(
+				"(do \n" +
+				"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+				"        (io/spit-temp-file file \"123456789\" :append true) \n" +
+				"        (io/slurp-temp-file file :binary false :remove true)) \n" +
+				")");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/slurp-temp-file", args);
+
+			assertMinArity("io/slurp-temp-file", args, 1);
+
+			try {	
+				File file;
+				
+				if (Types.isVncString(args.nth(0)) ) {
+					file = new File(((VncString)args.nth(0)).getValue());
+				}
+				else if (isJavaIoFile(args.nth(0)) ) {
+					file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/slurp-temp-file' does not allow %s as f. %s",
+							Types.getClassName(args.nth(0)),
+							ErrorMessage.buildErrLocation(args)));
+				}
+
+				
+				if (!tempFiles.contains(file.getPath())) {
+					throw new VncException(String.format(
+							"Function 'io/slurp-temp-file' tries to access the unknown temp file '%s'. %s",
+							file.getPath(),
+							ErrorMessage.buildErrLocation(args)));
+				}
+				
+				final VncHashMap options = new VncHashMap(args.slice(1));
+
+				final VncVal binary = options.get(new VncKeyword("binary")); 
+	
+				final VncVal remove = options.get(new VncKeyword("remove")); 
+
+				if (binary == True) {
+					final byte[] data = Files.readAllBytes(file.toPath());
+					
+					if (remove == True) {
+						file.delete();
+						tempFiles.remove(file.getPath());
+					}
+					
+					return new VncByteBuffer(ByteBuffer.wrap(data));
+				}
+				else {
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 
+					
+					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+									
+					final byte[] data = Files.readAllBytes(file.toPath());
+
+					if (remove == True) {
+						file.delete();
+						tempFiles.remove(file.getPath());
+					}
+
+					return new VncString(new String(data, encoding));
+				}
+			} 
+			catch (VncException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
+
+	public static VncFunction io_spit_temp_file = new VncFunction("io/spit-temp-file") {
+		{
+			setArgLists("(io/spit-temp-file f content & options)");
+			
+			setDoc( "Spits binary or string data from to previously created temp file. \n" +
+					"Ensures that the caller can only write to files he previously " +
+					"created, but no other files. This allows callers to work with files " +
+					"without escaping the sandbox. The file must have been created with " +
+					"io/temp_file. \n" +
+					"Defaults to append=true and encoding=UTF-8. \n" +
+					"Options: :append true/false, :encoding \"UTF-8\"");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/spit-temp-file", args);
+
+			assertMinArity("io/spit-temp-file", args, 2);
+
+			try {
+				// Currently just string content is supported!
+				
+				File file;
+				
+				if (Types.isVncString(args.nth(0)) ) {
+					file = new File(((VncString)args.nth(0)).getValue());
+				}
+				else if (isJavaIoFile(args.nth(0)) ) {
+					file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/spit-temp-file' does not allow %s as f. %s",
+							Types.getClassName(args.nth(0)),
+							ErrorMessage.buildErrLocation(args)));
+				}
+				
+				if (!tempFiles.contains(file.getPath())) {
+					throw new VncException(String.format(
+							"Function 'io/spit-temp-file' tries to access the unknown temp file '%s'. %s",
+							file.getPath(),
+							ErrorMessage.buildErrLocation(args)));
+				}
+		
+				final VncVal content = args.nth(1);
+
+				final VncHashMap options = new VncHashMap(args.slice(2));
+
+				final VncVal append = options.get(new VncKeyword("append")); 
+				
+				final VncVal encVal = options.get(new VncKeyword("encoding")); 
+					
+				final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+
+				byte[] data;
+				
+				if (Types.isVncString(content)) {
+					data = ((VncString)content).getValue().getBytes(encoding);
+				}
+				else if (Types.isVncByteBuffer(content)) {
+					data = ((VncByteBuffer)content).getValue().array();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/spit-temp-file' does not allow %s as content. %s",
+							Types.getClassName(content),
+							ErrorMessage.buildErrLocation(args)));
+				}
+
+				final List<OpenOption> openOptions = new ArrayList<>();
+				openOptions.add(StandardOpenOption.CREATE);
+				openOptions.add(StandardOpenOption.WRITE);
+				
+				if (append != False) {
+					openOptions.add(StandardOpenOption.TRUNCATE_EXISTING);
+				}
+				
+				Files.write(
+						file.toPath(), 
+						data, 
+						openOptions.toArray(new OpenOption[0]));
+				
+				return Nil;
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -881,6 +982,7 @@ public class IOFunctions {
 					.put("io/user-dir",				io_user_dir)
 					.put("io/slurp",				io_slurp)
 					.put("io/spit",					io_spit)
+					.put("io/spit-temp-file",		io_spit_temp_file)
 					.put("io/slurp-temp-file",		io_slurp_temp_file)
 					.put("io/slurp-stream",	    	io_slurp_stream)
 					.put("io/spit-stream",	    	io_spit_stream)							

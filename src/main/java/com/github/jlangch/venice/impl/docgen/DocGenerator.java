@@ -741,14 +741,18 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/copy-file"));
 		io.addItem(getDocItem("io/move-file"));
 		io.addItem(getDocItem("io/slurp"));
-		io.addItem(getDocItem("io/slurp-temp-file"));
 		io.addItem(getDocItem("io/slurp-stream"));
 		io.addItem(getDocItem("io/spit"));
 		io.addItem(getDocItem("io/spit-stream"));
-		io.addItem(getDocItem("io/temp-file"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
 		io.addItem(getDocItem("io/mime-type"));
+
+		final DocSection io_tmp = new DocSection("file-io temp");
+		all.addSection(io_tmp);
+		io_tmp.addItem(getDocItem("io/temp-file"));
+		io_tmp.addItem(getDocItem("io/slurp-temp-file"));
+		io_tmp.addItem(getDocItem("io/spit-temp-file"));
 
 		final DocSection load = new DocSection("load");
 		all.addSection(load);
