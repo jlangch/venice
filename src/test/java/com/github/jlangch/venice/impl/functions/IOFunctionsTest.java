@@ -315,13 +315,20 @@ public class IOFunctionsTest {
 				assertEquals("123456789",venice.eval(script));					
 	}
 
-	
 	@Test
 	public void test_io_user_dir() {
 		final Venice venice = new Venice();
 
 		assertTrue((Boolean)venice.eval("(not-empty? (io/user-dir))"));	
 		assertTrue((Boolean)venice.eval("(io/file? (io/user-dir))"));	
+	}
+
+	@Test
+	public void test_io_mime_type() {
+		final Venice venice = new Venice();
+
+		assertEquals("application/pdf",venice.eval("(io/mime-type \"document.pdf\")"));	
+		assertEquals("application/pdf",venice.eval("(io/mime-type (io/file \"document.pdf\"))"));	
 	}
 	
 }
