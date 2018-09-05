@@ -160,6 +160,20 @@ public class IOFunctionsTest {
 	}
 	
 	@Test
+	public void test_io_spit_temp_file() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                             " +
+				"   (let [file (io/temp-file \"xchart-\", \".chart\")]           " +
+				"        (io/spit-temp-file file \"123456789\" :append true)     " +
+				"        (io/slurp file :binary false :remove true))             " +
+				") ";
+				
+				assertEquals("123456789",venice.eval(script));					
+	}	
+	
+	@Test
 	public void test_io_slurp_temp_file() {
 		final Venice venice = new Venice();
 
