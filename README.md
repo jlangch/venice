@@ -583,7 +583,7 @@ Venice supports WebDAV if the [Sardine](https://github.com/lookfirst/sardine) li
 
  - sardine-5.9.jar
  
-dependencies:
+transitive dependencies:
  
   - httpclient-4.5.2.jar
   - httpcore-4.4.4.jar
