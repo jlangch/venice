@@ -455,9 +455,9 @@ public class IOFunctions {
 		{
 			setArgLists("(io/slurp file & options)");
 			
-			setDoc( "Returns the file's content as text (string) or binary (bytebuf). " +
-					"Defaults to binary=false and encoding=UTF-8. " +
-					"Options: :encoding \"UTF-8\" :binary true/false. ");
+			setDoc( "Returns the file's content as text (string) or binary (bytebuf). \n" +
+					"Defaults to binary=false and encoding=UTF-8. \n" +
+					"Options: :encoding \"UTF-8\" :binary true/false.");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -511,8 +511,8 @@ public class IOFunctions {
 		{
 			setArgLists("(io/spit f content & options)");
 			
-			setDoc( "Opens f, writes content, and then closes f. Defaults to append=true " +
-					"and encoding=UTF-8. " +
+			setDoc( "Opens f, writes content, and then closes f. \n" +
+					"Options default to append=true and encoding=UTF-8. \n" +
 					"Options: :append true/false, :encoding \"UTF-8\"");
 		}
 		
@@ -592,7 +592,7 @@ public class IOFunctions {
 			
 			setDoc( "Slurps binary or string data from an input stream. " +
 					"Supports the option :binary to either slurp binary or string data. " +
-					"For string data an optional encoding can be specified. " +
+					"For string data an optional encoding can be specified.\n" +
 					"Options: :encoding \"UTF-8\" :binary true/false. ");
 			
 			setExamples(
@@ -646,7 +646,7 @@ public class IOFunctions {
 			setDoc( "Writes content (string or bytebuf) to the output stream os. " +
 					"If content is of type string an optional encoding (defaults to " +
 					"UTF-8) is supported. The stream can optionally be flushed after " +
-					"the operation. " +
+					"the operation.\n" +
 					"Options: :flush true/false :encoding \"UTF-8\"");
 			
 			setExamples(
@@ -881,7 +881,7 @@ public class IOFunctions {
 					"created, but no other files. This allows callers to work with files " +
 					"without escaping the sandbox. The file must have been created with " +
 					"io/temp_file. \n" +
-					"Defaults to append=true and encoding=UTF-8. \n" +
+					"Defaults to append=true and encoding=UTF-8.\n" +
 					"Options: :append true/false, :encoding \"UTF-8\"");
 		}
 		
