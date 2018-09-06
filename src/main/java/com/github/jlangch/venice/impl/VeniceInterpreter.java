@@ -388,8 +388,12 @@ public class VeniceInterpreter {
 		final VncVal ast = READ(script, filename);
 		return EVAL(ast, env);
 	}
-
+	
 	public Env createEnv(final PrintStream stdout) {
+		return createEnv(stdout, null);
+	}
+
+	public Env createEnv(final PrintStream stdout, final List<String> preloadExtensionModules) {
 		final Env env = new Env(null);
 
 		
@@ -414,6 +418,11 @@ public class VeniceInterpreter {
 
 		// load core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
+		
+		if (preloadExtensionModules != null) {
+			preloadExtensionModules.forEach(
+				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env));
+		}
 		
 		return env;
 	}

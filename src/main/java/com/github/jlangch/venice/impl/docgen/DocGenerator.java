@@ -54,7 +54,9 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class DocGenerator {
 
 	public DocGenerator() {
-		this.env = new VeniceInterpreter().createEnv(new PrintStream(System.out));
+		this.env = new VeniceInterpreter().createEnv(
+							new PrintStream(System.out), 
+							Arrays.asList("json"));
 	}
 
 	public static void main(final String[] args) {
@@ -741,12 +743,14 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/copy-file"));
 		io.addItem(getDocItem("io/move-file"));
 		io.addItem(getDocItem("io/slurp"));
-		io.addItem(getDocItem("io/slurp-stream"));
 		io.addItem(getDocItem("io/spit"));
-		io.addItem(getDocItem("io/spit-stream"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
-		io.addItem(getDocItem("io/mime-type"));
+
+		final DocSection stream = new DocSection("stream-io");
+		all.addSection(stream);
+		stream.addItem(getDocItem("io/slurp-stream"));
+		stream.addItem(getDocItem("io/spit-stream"));
 
 		final DocSection io_tmp = new DocSection("file-io temp");
 		all.addSection(io_tmp);
@@ -754,14 +758,10 @@ public class DocGenerator {
 		io_tmp.addItem(getDocItem("io/slurp-temp-file"));
 		io_tmp.addItem(getDocItem("io/spit-temp-file"));
 
-		final DocSection io_cp = new DocSection("classpath");
-		all.addSection(io_cp);
-		io_cp.addItem(getDocItem("io/load-classpath-resource"));
-
-		final DocSection load = new DocSection("load");
-		all.addSection(load);
-		load.addItem(getDocItem("load-file"));
-		load.addItem(getDocItem("load-string"));
+		final DocSection other = new DocSection("other");
+		all.addSection(other);
+		other.addItem(getDocItem("io/load-classpath-resource"));
+		other.addItem(getDocItem("io/mime-type"));
 
 		return section;
 	}
@@ -1041,13 +1041,13 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(new DocItem("json/pretty-print", Arrays.asList("(json/pretty-print json)"), "Pretty print a JSON string", "", idgen.id()));
-		general.addItem(new DocItem("json/to-json", Arrays.asList("(json/to-json val)"), "Convert the value to JSON", "", idgen.id()));
-		general.addItem(new DocItem("json/to-pretty-json", Arrays.asList("(json/to-pretty-json val)"), "Convert the value to pretty-printed JSON", "", idgen.id()));
-		general.addItem(new DocItem("json/parse", Arrays.asList("(json/parse json)"), "Parse a JSON string", "", idgen.id()));
+		general.addItem(getDocItem("json/pretty-print", false));
+		general.addItem(getDocItem("json/to-json", false));
+		general.addItem(getDocItem("json/to-pretty-json", false));
+		general.addItem(getDocItem("json/parse", false));
 		general.addItem(new DocItem(" ", null));
-		general.addItem(new DocItem("json/avail?", Arrays.asList("(json/avail?)"), "Checks if the Jackson JSON libs are on the classpath", "", idgen.id()));
-		general.addItem(new DocItem("json/avail-jdk8-module?", Arrays.asList("(json/avail-jdk8-module?)"), "Checks if the Jackson JSON JDK8 module is on the classpath", "", idgen.id()));
+		general.addItem(getDocItem("json/avail?", false));
+		general.addItem(getDocItem("json/avail-jdk8-module?", false));
 		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", null));
 
