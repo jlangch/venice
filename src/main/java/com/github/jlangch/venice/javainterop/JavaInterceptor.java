@@ -92,7 +92,6 @@ public abstract class JavaInterceptor {
 			return null;
 		}
 		else {
-			// TODO: add security check
 			return new ClassPathResource(resourceName).getResourceAsBinary();
 		}
 	}

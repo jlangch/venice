@@ -23,6 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.javainterop.CompiledSandboxRules;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
@@ -103,6 +104,12 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
 
+	public byte[] onLoadClassPathResource(final String resourceName) {
+		validateClasspathResource(resourceName);
+		
+		return super.onLoadClassPathResource(resourceName);
+	}
+
 	public Object filter(final Object obj) {
 		validateClass(obj);
 		return obj;
@@ -152,7 +159,17 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 						"Venice Sandbox: Access denied to accessor %s::%s", 
 						clazz.getName(), accessor));
 			}
-		}			
+		}
+	}
+
+	private void validateClasspathResource(final String resourceName) {
+		if (!StringUtil.isBlank(resourceName)) {
+			if (!sandboxRules.isWhiteListedClasspathResource(resourceName)) {
+				throw new SecurityException(String.format(
+						"Venice Sandbox: Access denied to classpath resource %s", 
+						resourceName));
+			}
+		}
 	}
 	
 	private Class<?> getClass(final Object obj) {

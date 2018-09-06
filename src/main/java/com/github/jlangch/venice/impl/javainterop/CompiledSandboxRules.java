@@ -41,6 +41,7 @@ public class CompiledSandboxRules {
 	private CompiledSandboxRules(
 			final List<Pattern> whiteListClassPatterns,
 			final List<Pattern> whiteListMethodPatterns,
+			final List<Pattern> whiteListClasspathPatterns,
 			final Set<String> blackListVeniceFunctions,
 			final Set<String> whiteListSystemProps
 	) {
@@ -52,6 +53,10 @@ public class CompiledSandboxRules {
 											? Collections.emptyList() 
 											: whiteListMethodPatterns;
 											
+		this.whiteListClasspathPatterns = whiteListClasspathPatterns == null 
+											? Collections.emptyList() 
+											: whiteListClasspathPatterns;
+											
 		this.blackListVeniceFunctions = blackListVeniceFunctions == null 
 											? Collections.emptySet() 
 											: blackListVeniceFunctions;
@@ -61,7 +66,7 @@ public class CompiledSandboxRules {
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null, null);			
+			return new CompiledSandboxRules(null, null, null, null, null);			
 		}
 		
 		final List<String> filtered = whiteList
@@ -73,7 +78,7 @@ public class CompiledSandboxRules {
 										.collect(Collectors.toList());
 		
 		return new CompiledSandboxRules(
-				// white-listed classes
+				// whitelisted classes
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
@@ -82,7 +87,7 @@ public class CompiledSandboxRules {
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
-				// white-listed methods
+				// whitelisted methods
 				filtered
 					.stream()
 					.filter(s -> !s.startsWith("blacklist:venice:"))
@@ -91,7 +96,15 @@ public class CompiledSandboxRules {
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
-				// black-listed venice functions
+				// whitelisted classpath resources
+					filtered
+					.stream()
+					.filter(s -> s.startsWith("classpath:"))
+					.map(s -> s.substring("classpath:".length()))
+					.map(s -> SandboxRuleCompiler.compile(s))
+					.collect(Collectors.toList()),
+					
+				// blacklisted venice functions
 				filtered
 					.stream()
 					.filter(s -> s.startsWith("blacklist:venice:"))
@@ -100,7 +113,7 @@ public class CompiledSandboxRules {
 					.flatMap(Set::stream)
 					.collect(Collectors.toSet()),
 					
-				// white-listed system properties
+				// whitelisted system properties
 				allowAccessToAllSystemProperties(filtered)
 					? null
 					: filtered
@@ -184,6 +197,35 @@ public class CompiledSandboxRules {
 			return false;
 		}
 	}
+	
+	/**
+	 * Returns <code>true</code> if the classpath resource is white listed otherwise 
+	 * <code>false</code>
+	 * 
+	 * @param resource A classpath resource
+	 * @return <code>true</code> if the classpath resource is white listed otherwise 
+	 * 		   <code>false</code>
+	 */
+	public boolean isWhiteListedClasspathResource(final String resource) {
+		if (resource == null) {
+			return false;
+		}
+		else if (whiteListedClasspathResources.containsKey(resource)) {
+			return true;
+		}
+		else {			
+			final boolean matches = whiteListClasspathPatterns
+										.stream()
+										.anyMatch(p -> p.matcher(resource).matches());
+			if (matches) {
+				// cache the matched class to prevent the expensive pattern matching 
+				// for subsequent checks.
+				whiteListedClasspathResources.put(resource, "");
+				return true;
+			}
+			return false;
+		}
+	}
 
 	public boolean isBlackListedVeniceFunction(
 			final String funcName, 
@@ -210,9 +252,11 @@ public class CompiledSandboxRules {
 	// cached classes and methods that are proofed to be white listed
 	private final ConcurrentHashMap<Class<?>, String> whiteListedClasses = new ConcurrentHashMap<>();
 	private final ConcurrentHashMap<Tuple2<Class<?>,String>, String> whiteListedMethods = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, String> whiteListedClasspathResources = new ConcurrentHashMap<>();
 	
 	private final List<Pattern> whiteListClassPatterns;
 	private final List<Pattern> whiteListMethodPatterns;
+	private final List<Pattern> whiteListClasspathPatterns;
 	private final Set<String> blackListVeniceFunctions;
 	private final Set<String> whiteListSystemProps;
 }
