@@ -110,6 +110,12 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onLoadClassPathResource(resourceName);
 	}
 
+	public String onReadSystemProperty(final String propertyName) {
+		validateSystemProperty(propertyName);
+		
+		return super.onReadSystemProperty(propertyName);
+	}
+
 	public Object filter(final Object obj) {
 		validateClass(obj);
 		return obj;
@@ -166,8 +172,18 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		if (!StringUtil.isBlank(resourceName)) {
 			if (!sandboxRules.isWhiteListedClasspathResource(resourceName)) {
 				throw new SecurityException(String.format(
-						"Venice Sandbox: Access denied to classpath resource %s", 
+						"Venice Sandbox: Access denied to classpath resource '%s'", 
 						resourceName));
+			}
+		}
+	}
+
+	private void validateSystemProperty(final String propertyName) {
+		if (!StringUtil.isBlank(propertyName)) {
+			if (!sandboxRules.isWhiteListedSystemProperty(propertyName)) {
+				throw new SecurityException(String.format(
+						"Venice Sandbox: Access denied to system property '%s'", 
+						propertyName));
 			}
 		}
 	}

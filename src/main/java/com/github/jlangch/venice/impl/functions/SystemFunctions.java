@@ -224,9 +224,8 @@ public class SystemFunctions {
 										new VncList(args.first())));
 			final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 			
-			JavaInterop.getInterceptor().checkWhiteListedSystemProperty(key.getValue());
+			final String val = JavaInterop.getInterceptor().onReadSystemProperty(key.getValue());
 
-			final String val = System.getProperty(key.getValue());
 			return val == null ? defaultVal : new VncString(val);
 		}
 	};

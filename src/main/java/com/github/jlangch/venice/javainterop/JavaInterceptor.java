@@ -95,17 +95,21 @@ public abstract class JavaInterceptor {
 			return new ClassPathResource(resourceName).getResourceAsBinary();
 		}
 	}
-	
 
+	public String onReadSystemProperty(final String propertyName) {
+		if (StringUtil.isBlank(propertyName)) {
+			return null;
+		}
+		else {
+			return System.getProperty(propertyName);
+		}
+	}
+	
 	public void checkBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
 	) {
 		// ok,  no black listed Venice functions
-	}
-	
-	public void checkWhiteListedSystemProperty(final String property) {
-		// ok, all system properties white-listed
 	}
 
 }
