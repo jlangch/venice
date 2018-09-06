@@ -81,6 +81,7 @@ public class CompiledSandboxRules {
 				// whitelisted classes
 				filtered
 					.stream()
+					.filter(s -> !s.startsWith("classpath:"))
 					.filter(s -> !s.startsWith("blacklist:venice:"))
 					.filter(s -> !s.startsWith("system.property:"))
 					.map(s -> { int pos = s.indexOf(':'); return pos < 0 ? s : s.substring(0, pos); })
@@ -90,6 +91,7 @@ public class CompiledSandboxRules {
 				// whitelisted methods
 				filtered
 					.stream()
+					.filter(s -> !s.startsWith("classpath:"))
 					.filter(s -> !s.startsWith("blacklist:venice:"))
 					.filter(s -> !s.startsWith("system.property:"))
 					.filter(s -> s.indexOf(':') >= 0)

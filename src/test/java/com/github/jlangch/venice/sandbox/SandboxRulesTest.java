@@ -103,6 +103,24 @@ public class SandboxRulesTest {
 	}
 
 	@Test
+	public void classpathWildcardTest() {
+		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
+											new SandboxRules().add(
+												"classpath:/foo/org/image.png",
+												"classpath:/foo/org/*.jpg",
+												"classpath:/abc/**/*.png"
+											));
+		
+		assertFalse(wl.isWhiteListedClasspathResource("/foo/org/image.tiff"));
+		assertTrue(wl.isWhiteListedClasspathResource("/foo/org/image.png"));
+		assertTrue(wl.isWhiteListedClasspathResource("/foo/org/image.jpg"));
+		assertFalse(wl.isWhiteListedClasspathResource("/abc/image.png"));
+		assertTrue(wl.isWhiteListedClasspathResource("/abc/x/image.png"));
+		assertTrue(wl.isWhiteListedClasspathResource("/abc/x/y/image.png"));
+		assertFalse(wl.isWhiteListedClasspathResource("/abc/x/y/image.jpg"));
+	}
+
+	@Test
 	public void systemPropertyTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
 											new SandboxRules().add(
