@@ -142,7 +142,7 @@ public interface IVeniceInterceptor {
 	/**
 	 * Loads a classpath resource
 	 * 
-	 * @param resourceName
+	 * @param resourceName a resource name (e.g.: /foo/org/image.png)
 	 * @return the resource data
 	 * @throws SecurityException if the classpath resource is not whitelisted
 	 */
@@ -151,7 +151,7 @@ public interface IVeniceInterceptor {
 	/**
 	 * Reads a Java system property
 	 * 
-	 * @param propertyName
+	 * @param propertyName a proprty name (e.g: user.home)
 	 * @return the property's value
 	 * @throws SecurityException if the property is not whitelisted
 	 */
