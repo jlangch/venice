@@ -277,7 +277,7 @@
 
 (defmacro
    { :arglists '("(load-classpath-file name)")
-     :doc "Sequentially read and evaluate the set of forms contained in the classpath file." 
+     :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'." 
      :examples '("(do 
                  |   (load-classpath-file \"com/github/jlangch/venice/test.venice\")
                  |   (test/println \"hello\"))") }

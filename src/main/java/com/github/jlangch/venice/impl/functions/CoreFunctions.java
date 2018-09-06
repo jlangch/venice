@@ -584,6 +584,12 @@ public class CoreFunctions {
 	};
 
 	public static VncFunction loadCoreModule = new VncFunction("load-core-module") {
+		{
+			setArgLists("(load-core-module name)");
+			
+			setDoc("Loads a Venice extension module.");
+		}
+		
 		public VncVal apply(final VncList args) {
 			try {	
 				assertArity("load-core-module", args, 1);
@@ -617,11 +623,15 @@ public class CoreFunctions {
 				
 				if (Types.isVncString(name)) {
 					final String res = ModuleLoader.loadVeniceResource(((VncString)args.first()).getValue());
-					return new VncString(res);
+					return res == null ? Nil : new VncString(res);
+				}
+				else if (Types.isVncKeyword(name)) {
+					final String res = ModuleLoader.loadVeniceResource(((VncKeyword)args.first()).getValue());
+					return res == null ? Nil : new VncString(res);
 				}
 				else if (Types.isVncSymbol(name)) {
 					final String res = ModuleLoader.loadVeniceResource(((VncSymbol)args.first()).getName());
-					return new VncString(res);
+					return res == null ? Nil : new VncString(res);
 				}
 				else {
 					return Nil;
@@ -632,6 +642,7 @@ public class CoreFunctions {
 			}
 		}
 	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Number functions

@@ -57,7 +57,8 @@ public class IOFnBlacklisted {
 								"io/slurp",
 								"io/spit",
 								"io/tmp-dir",
-								"io/user-dir"));
+								"io/user-dir",
+								"io/load-classpath-resource"));
 	}
 
 }

@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public abstract class JavaInterceptor {
@@ -83,6 +85,16 @@ public abstract class JavaInterceptor {
 			final String fieldName
 	) {
 		return invoker.getInstanceField(receiver, fieldName);
+	}
+
+	public byte[] onLoadClassPathResource(final String resourceName) {
+		if (StringUtil.isBlank(resourceName)) {
+			return null;
+		}
+		else {
+			// TODO: add security check
+			return new ClassPathResource(resourceName).getResourceAsBinary();
+		}
 	}
 	
 

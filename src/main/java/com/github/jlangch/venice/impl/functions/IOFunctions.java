@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
@@ -960,6 +961,46 @@ public class IOFunctions {
 			}
 		}
 	};
+
+	public static VncFunction io_load_classpath_resource = new VncFunction("io/load-classpath-resource") {
+		{
+			setArgLists("(io/load-classpath-resource name)");
+			
+			setDoc("Loads a classpath resource.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			try {	
+				JavaInterop.getInterceptor().checkBlackListedVeniceFunction("io/load-classpath-resource", args);
+
+				assertArity("io/load-classpath-resource", args, 1);
+				
+				final VncVal name = args.first();
+				
+				if (Types.isVncString(name)) {
+					final String res = ((VncString)args.first()).getValue();
+					final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+					return data == null ? Nil : new VncByteBuffer(data);
+				}
+				else if (Types.isVncKeyword(name)) {
+					final String res = ((VncKeyword)args.first()).getValue();
+					final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+					return data == null ? Nil : new VncByteBuffer(data);
+				}
+				else if (Types.isVncSymbol(name)) {
+					final String res = ((VncSymbol)args.first()).getName();
+					final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+					return data == null ? Nil : new VncByteBuffer(data);
+				}
+				else {
+					return Nil;
+				}
+			} 
+			catch (Exception ex) {
+				throw new VncException(ex.getMessage(), ex);
+			}
+		}
+	};
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -968,25 +1009,26 @@ public class IOFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()								
-					.put("io/file",					io_file)
-					.put("io/file?",				io_file_Q)
-					.put("io/exists-file?",			io_exists_file_Q)
-					.put("io/exists-dir?",			io_exists_dir_Q)
-					.put("io/list-files",			io_list_files)
-					.put("io/delete-file",			io_delete_file)
-					.put("io/delete-file-on-exit",	io_delete_file_on_exit)				
-					.put("io/copy-file",			io_copy_file)
-					.put("io/move-file",			io_move_file)
-					.put("io/temp-file",			io_temp_file)
-					.put("io/tmp-dir",				io_tmp_dir)
-					.put("io/user-dir",				io_user_dir)
-					.put("io/slurp",				io_slurp)
-					.put("io/spit",					io_spit)
-					.put("io/spit-temp-file",		io_spit_temp_file)
-					.put("io/slurp-temp-file",		io_slurp_temp_file)
-					.put("io/slurp-stream",	    	io_slurp_stream)
-					.put("io/spit-stream",	    	io_spit_stream)							
-					.put("io/mime-type",	    	io_mime_type)							
+					.put("io/file",						io_file)
+					.put("io/file?",					io_file_Q)
+					.put("io/exists-file?",				io_exists_file_Q)
+					.put("io/exists-dir?",				io_exists_dir_Q)
+					.put("io/list-files",				io_list_files)
+					.put("io/delete-file",				io_delete_file)
+					.put("io/delete-file-on-exit",		io_delete_file_on_exit)				
+					.put("io/copy-file",				io_copy_file)
+					.put("io/move-file",				io_move_file)
+					.put("io/temp-file",				io_temp_file)
+					.put("io/tmp-dir",					io_tmp_dir)
+					.put("io/user-dir",					io_user_dir)
+					.put("io/slurp",					io_slurp)
+					.put("io/spit",						io_spit)
+					.put("io/spit-temp-file",			io_spit_temp_file)
+					.put("io/slurp-temp-file",			io_slurp_temp_file)
+					.put("io/slurp-stream",	    		io_slurp_stream)
+					.put("io/spit-stream",	    		io_spit_stream)							
+					.put("io/mime-type",	    		io_mime_type)	
+					.put("io/load-classpath-resource",	io_load_classpath_resource)
 					.toMap();
 
 	

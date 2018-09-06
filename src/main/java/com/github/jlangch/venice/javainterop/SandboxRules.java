@@ -61,6 +61,14 @@ import java.util.stream.Collectors;
  * </ul>
  * 
  * <p>
+ * E.g: white listing Java classpath resources
+ * <ul>
+ *   <li>classpath:/foo/org/image.png</li>
+ *   <li>classpath:/foo/org/*.png</li>
+ *   <li>classpath:/foo/org/*.jpg</li>
+ * </ul>
+ * 
+ * <p>
  * E.g: black listing Venice I/O functions
  * <ul>
  *   <li>blacklist:venice:io/slurp (reject calls to 'io/slurp')</li>
