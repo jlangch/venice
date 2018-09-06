@@ -334,9 +334,7 @@ public class ConcurrencyFunctions {
 					"invoke the function in another thread, and will cache the result and " + 
 					"return it on all subsequent calls to deref. If the computation has " + 
 					"not yet finished, calls to deref will block, unless the variant of " + 
-					"deref with timeout is used.\n" +
-					"The function that is called IS NOT sandboxed. Thus future should be " +
-					"rejected in safe environments.");
+					"deref with timeout is used.");
 			
 			setExamples(
 					"(do                                         \n" + 
