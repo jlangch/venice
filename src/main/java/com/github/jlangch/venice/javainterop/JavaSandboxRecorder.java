@@ -44,46 +44,55 @@ public class JavaSandboxRecorder extends JavaInterceptor {
 	
 
 
+	@Override
 	public Object onInvokeInstanceMethod(final IInvoker invoker, final Object receiver, final String method, final Object... args) {
 		format("%s:%s(%s)", type(receiver), method, arguments(args));
 		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeStaticMethod(final IInvoker invoker, final Class<?> receiver, final String method, final Object... args) {
 		format("%s:%s(%s)", type(receiver), method, arguments(args));
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeConstructor(final IInvoker invoker, final Class<?> receiver, final Object... args) {
 		format("new %s(%s)", type(receiver), arguments(args));
 		return super.onInvokeConstructor(invoker, receiver, args);
 	}
 
+	@Override
 	public Object onGetBeanProperty(final IInvoker invoker, final Object receiver, final String property) {
 		format("%s.!%s", type(receiver), property);
 		return super.onGetBeanProperty(invoker, receiver,property);
 	}
 
+	@Override
 	public Object onSetBeanProperty(final IInvoker invoker, final Object receiver, final String property, final Object value) {
 		format("%s.!%s=%s", type(receiver), property, type(value));
 		return super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
+	@Override
 	public Object onGetStaticField(final IInvoker invoker, final Class<?> receiver, final String fieldName) {
 		format("%s.@%s", type(receiver), fieldName);
 		return super.onGetStaticField(invoker, receiver, fieldName);
 	}
 
+	@Override
 	public Object onGetInstanceField(final IInvoker invoker, final Object receiver, final String fieldName) {
 		format("%s.%s", type(receiver), fieldName);
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
 
+	@Override
 	public byte[] onLoadClassPathResource(final String resourceName) {
 		format("classpath:%s", resourceName);
 		return super.onLoadClassPathResource(resourceName);
 	}
 
+	@Override
 	public String onReadSystemProperty(final String propertyName) {
 		format("system.property:propertyName", propertyName);
 		return super.onReadSystemProperty(propertyName);

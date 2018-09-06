@@ -26,8 +26,9 @@ import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public abstract class JavaInterceptor {
+public abstract class JavaInterceptor implements IVeniceInterceptor {
  
+	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -37,6 +38,7 @@ public abstract class JavaInterceptor {
 		return invoker.callInstanceMethod(receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -46,6 +48,7 @@ public abstract class JavaInterceptor {
 		return invoker.callStaticMethod(receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -54,6 +57,7 @@ public abstract class JavaInterceptor {
 		return invoker.callConstructor(receiver, args);
 	}
 
+	@Override
 	public Object onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -62,6 +66,7 @@ public abstract class JavaInterceptor {
 		return invoker.getBeanProperty(receiver, property);
 	}
 
+	@Override
 	public Object onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -71,6 +76,7 @@ public abstract class JavaInterceptor {
 		return invoker.setBeanProperty(receiver, property, value);
 	}
 
+	@Override
 	public Object onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -79,6 +85,7 @@ public abstract class JavaInterceptor {
 		return invoker.getStaticField(receiver, fieldName);
 	}
 
+	@Override
 	public Object onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -87,6 +94,7 @@ public abstract class JavaInterceptor {
 		return invoker.getInstanceField(receiver, fieldName);
 	}
 
+	@Override
 	public byte[] onLoadClassPathResource(final String resourceName) {
 		if (StringUtil.isBlank(resourceName)) {
 			return null;
@@ -96,6 +104,7 @@ public abstract class JavaInterceptor {
 		}
 	}
 
+	@Override
 	public String onReadSystemProperty(final String propertyName) {
 		if (StringUtil.isBlank(propertyName)) {
 			return null;
@@ -105,6 +114,7 @@ public abstract class JavaInterceptor {
 		}
 	}
 	
+	@Override
 	public void checkBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args

@@ -24,6 +24,7 @@ package com.github.jlangch.venice.javainterop;
 
 public class JavaValueFilterInterceptor extends JavaInterceptor {
 	
+	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -36,6 +37,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 						invoker, receiver, method, filterArguments(args)));
 	}
 
+	@Override
 	public Object onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -48,6 +50,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 						invoker, receiver, method, filterArguments(args)));
 	}
 
+	@Override
 	public Object onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -59,6 +62,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 						invoker, receiver, filterArguments(args)));
 	}
 
+	@Override
 	public Object onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -70,6 +74,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 						invoker, receiver, property));
 	}
 
+	@Override
 	public Object onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -82,6 +87,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 						invoker, receiver, property, filterArgument(value)));
 	}
 
+	@Override
 	public Object onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -93,6 +99,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 						invoker, receiver, fieldName));
 	}
 
+	@Override
 	public Object onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -105,19 +112,19 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 	}
 
 	
-	public Object filterReturnValue(final Object returnValue) {
+	protected Object filterReturnValue(final Object returnValue) {
 		return filter(returnValue);
 	}
 	
-	public Object filterArgument(final Object arg) {
+	protected Object filterArgument(final Object arg) {
 		return filter(arg);
 	}
 
-	public Object filter(final Object o) {
+	protected Object filter(final Object o) {
 		return o;
 	}
 
-	public Object filterAccessor(final Object o, final String accessor) {
+	protected Object filterAccessor(final Object o, final String accessor) {
 		return o;
 	}
 

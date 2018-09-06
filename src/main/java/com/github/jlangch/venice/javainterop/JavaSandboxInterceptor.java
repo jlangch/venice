@@ -33,6 +33,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 	}
 	
 
+	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -44,6 +45,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -55,6 +57,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver,
@@ -63,6 +66,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onInvokeConstructor(invoker, receiver, args);
 	}
 
+	@Override
 	public Object onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -73,6 +77,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onGetBeanProperty(invoker, receiver, property);
 	}
 
+	@Override
 	public Object onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -84,6 +89,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
+	@Override
 	public Object onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -94,6 +100,7 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onGetStaticField(invoker, receiver, fieldName);
 	}
 
+	@Override
 	public Object onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -104,28 +111,21 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
 
+	@Override
 	public byte[] onLoadClassPathResource(final String resourceName) {
 		validateClasspathResource(resourceName);
 		
 		return super.onLoadClassPathResource(resourceName);
 	}
 
+	@Override
 	public String onReadSystemProperty(final String propertyName) {
 		validateSystemProperty(propertyName);
 		
 		return super.onReadSystemProperty(propertyName);
 	}
 
-	public Object filter(final Object obj) {
-		validateClass(obj);
-		return obj;
-	}
-
-	public Object filterAccessor(final Object o, final String accessor) {
-		validateAccessor(o, accessor);
-		return o;
-	}
-
+	@Override
 	public void checkBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
@@ -137,13 +137,19 @@ public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
 		}
 	}
 
-	public void checkWhiteListedSystemProperty(final String property) {
-		if (!sandboxRules.isWhiteListedSystemProperty(property)) {
-			throw new SecurityException(String.format(
-					"Venice Sandbox: Access denied to system property '%s'", 
-					property));
-		}
+	
+	@Override
+	protected Object filter(final Object obj) {
+		validateClass(obj);
+		return obj;
 	}
+
+	@Override
+	protected Object filterAccessor(final Object o, final String accessor) {
+		validateAccessor(o, accessor);
+		return o;
+	}
+
 	
 	private void validateClass(final Object obj) {
 		if (obj != null) {

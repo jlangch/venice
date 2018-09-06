@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class RejectAllInterceptor extends JavaInterceptor {
 
+	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -40,6 +41,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 					receiver.getClass().getName()));
 	}
 
+	@Override
 	public Object onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -51,6 +53,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 				receiver.getName()));
 	}
 
+	@Override
 	public Object onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver,
@@ -61,6 +64,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 				receiver.getName()));
 	}
 
+	@Override
 	public Object onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -71,6 +75,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 				receiver.getClass().getName()));
 	}
 
+	@Override
 	public Object onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -82,6 +87,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 				receiver.getClass().getName()));
 	}
 
+	@Override
 	public Object onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -92,6 +98,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 				receiver.getName()));
 	}
 
+	@Override
 	public Object onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -102,20 +109,29 @@ public class RejectAllInterceptor extends JavaInterceptor {
 				receiver.getClass().getName()));
 	}
 
+	@Override
+	public byte[] onLoadClassPathResource(final String resourceName) {
+		throw new SecurityException(String.format(
+				"Venice Sandbox: Access denied to classpath resource '%s'", 
+				resourceName));
+	}
+
+	@Override
+	public String onReadSystemProperty(final String propertyName) {
+		throw new SecurityException(String.format(
+				"Venice Sandbox: Access denied to system property '%s'", 
+				propertyName));
+	}
+
+	@Override
 	public void checkBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
 	) {
 		if (blacklistedVeniceFunctions.contains(funcName)) {
 			throw new SecurityException(String.format(
-					"Access denied to function %s. (reject-all sandbox)", funcName));
+					"Access denied to Venice function %s. (reject-all sandbox)", funcName));
 		}
-	}
-
-	public void checkWhiteListedSystemProperty(final String property) {
-		throw new SecurityException(String.format(
-				"Venice Sandbox: Access denied to system property '%s'. (reject-all sandbox)", 
-				property));
 	}
 
 	

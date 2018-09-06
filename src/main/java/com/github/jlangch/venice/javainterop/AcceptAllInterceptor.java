@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 	
@@ -28,6 +29,7 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 	}
 	
 
+	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -37,6 +39,7 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -46,6 +49,7 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
 	}
 
+	@Override
 	public Object onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver,
@@ -54,6 +58,7 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 		return super.onInvokeConstructor(invoker, receiver, args);
 	}
 
+	@Override
 	public Object onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -62,6 +67,7 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 		return super.onGetBeanProperty(invoker, receiver, property);
 	}
 
+	@Override
 	public Object onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
@@ -71,6 +77,7 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 		return super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
+	@Override
 	public Object onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
@@ -79,11 +86,30 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 		return super.onGetStaticField(invoker, receiver, fieldName);
 	}
 
+	@Override
 	public Object onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
 	) {
 		return super.onGetInstanceField(invoker, receiver, fieldName);
+	}
+
+	@Override
+	public byte[] onLoadClassPathResource(final String resourceName) {
+		return super.onLoadClassPathResource(resourceName);
+	}
+
+	@Override
+	public String onReadSystemProperty(final String propertyName) {
+		return super.onReadSystemProperty(propertyName);
+	}
+
+	@Override
+	public void checkBlackListedVeniceFunction(
+			final String funcName, 
+			final VncList args
+	) {
+		super.checkBlackListedVeniceFunction(funcName, args);
 	}
 }
