@@ -78,6 +78,16 @@ public class JavaSandboxRecorder extends JavaInterceptor {
 		format("%s.%s", type(receiver), fieldName);
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
+
+	public byte[] onLoadClassPathResource(final String resourceName) {
+		format("classpath:%s", resourceName);
+		return super.onLoadClassPathResource(resourceName);
+	}
+
+	public String onReadSystemProperty(final String propertyName) {
+		format("system.property:propertyName", propertyName);
+		return super.onReadSystemProperty(propertyName);
+	}
 	
 	
 	
