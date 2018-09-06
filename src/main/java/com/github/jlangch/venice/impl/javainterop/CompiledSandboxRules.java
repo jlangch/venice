@@ -218,7 +218,7 @@ public class CompiledSandboxRules {
 										.stream()
 										.anyMatch(p -> p.matcher(resource).matches());
 			if (matches) {
-				// cache the matched class to prevent the expensive pattern matching 
+				// cache the matched resource to prevent the expensive pattern matching 
 				// for subsequent checks.
 				whiteListedClasspathResources.put(resource, "");
 				return true;
