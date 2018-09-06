@@ -754,6 +754,10 @@ public class DocGenerator {
 		io_tmp.addItem(getDocItem("io/slurp-temp-file"));
 		io_tmp.addItem(getDocItem("io/spit-temp-file"));
 
+		final DocSection io_cp = new DocSection("classpath");
+		all.addSection(io_cp);
+		io_cp.addItem(getDocItem("io/load-classpath-resource"));
+
 		final DocSection load = new DocSection("load");
 		all.addSection(load);
 		load.addItem(getDocItem("load-file"));
