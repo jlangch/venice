@@ -37,8 +37,7 @@ public interface IVeniceInterceptor {
 	 * @param method	a method
 	 * @param args		a list of arguments
 	 * @return the return value
-	 * @throws SecurityException
-	 * 				if the instance method is not whitelisted
+	 * @throws SecurityException if the instance method is not whitelisted
 	 */
 	Object onInvokeInstanceMethod(
 			IInvoker invoker, 
@@ -55,8 +54,7 @@ public interface IVeniceInterceptor {
 	 * @param method	a method
 	 * @param args		a list of arguments
 	 * @return the return value
-	 * @throws SecurityException
-	 * 				if the static method is not whitelisted
+	 * @throws SecurityException if the static method is not whitelisted
 	 */
 	Object onInvokeStaticMethod(
 			IInvoker invoker, 
@@ -72,8 +70,7 @@ public interface IVeniceInterceptor {
 	 * @param receiver	a class
 	 * @param args		a list of arguments
 	 * @return the create object
-	 * @throws SecurityException
-	 * 				if the constructor is not whitelisted
+	 * @throws SecurityException if the constructor is not whitelisted
 	 */
 	Object onInvokeConstructor(
 			IInvoker invoker, 
@@ -88,8 +85,7 @@ public interface IVeniceInterceptor {
 	 * @param receiver	an object
 	 * @param property	a property name
 	 * @return the property's value
-	 * @throws SecurityException
-	 * 				if the bean property (instance method) is not whitelisted
+	 * @throws SecurityException if the bean property (instance method) is not whitelisted
 	 */
 	Object onGetBeanProperty(
 			IInvoker invoker, 
@@ -99,12 +95,12 @@ public interface IVeniceInterceptor {
 
 	/**
 	 * Sets a <tt>Java Bean</tt> property
+	 * 
 	 * @param invoker	the invoker
 	 * @param receiver	an object
 	 * @param property	a property name
 	 * @param value		a property value
-	 * @throws SecurityException
-	 * 				if the bean property (instance method) is not whitelisted
+	 * @throws SecurityException if the bean property (instance method) is not whitelisted
 	 */
 	void onSetBeanProperty(
 			IInvoker invoker, 
@@ -120,8 +116,7 @@ public interface IVeniceInterceptor {
 	 * @param receiver	a class
 	 * @param fieldName	a field name
 	 * @return the field's value
-	 * @throws SecurityException
-	 * 				if the static field is not whitelisted
+	 * @throws SecurityException if the static field is not whitelisted
 	 */
 	Object onGetStaticField(
 			IInvoker invoker, 
@@ -136,8 +131,7 @@ public interface IVeniceInterceptor {
 	 * @param receiver	an object
 	 * @param fieldName	a field name 
 	 * @return the field's value
-	 * @throws SecurityException
-	 * 				if the instance field is not whitelisted
+	 * @throws SecurityException if the instance field is not whitelisted
 	 */
 	Object onGetInstanceField(
 			IInvoker invoker, 
@@ -150,8 +144,7 @@ public interface IVeniceInterceptor {
 	 * 
 	 * @param resourceName
 	 * @return the resource data
-	 * @throws SecurityException
-	 * 				if the classpath resource is not whitelisted
+	 * @throws SecurityException if the classpath resource is not whitelisted
 	 */
 	byte[] onLoadClassPathResource(String resourceName) throws SecurityException;
 
@@ -160,8 +153,7 @@ public interface IVeniceInterceptor {
 	 * 
 	 * @param propertyName
 	 * @return the property's value
-	 * @throws SecurityException
-	 * 				if the property is not whitelisted
+	 * @throws SecurityException if the property is not whitelisted
 	 */
 	String onReadSystemProperty(String propertyName) throws SecurityException;
 	
@@ -171,8 +163,7 @@ public interface IVeniceInterceptor {
 	 * @param funcName A venice function name
 	 * @param args A list of arguments
 	 * 
-	 * @throws SecurityException 
-	 * 				if the function is blacklisted and not allowed to be invoked.
+	 * @throws SecurityException if the function is blacklisted and not allowed to be invoked.
 	 */
 	void validateBlackListedVeniceFunction(
 			String funcName, 
