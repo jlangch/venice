@@ -75,16 +75,15 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 	}
 
 	@Override
-	public Object onSetBeanProperty(
+	public void onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property, 
 			final Object value
 	) {
 		filterAccessor(receiver, property);
-		return filterReturnValue(
-				super.onSetBeanProperty(
-						invoker, receiver, property, filterArgument(value)));
+		super.onSetBeanProperty(
+					invoker, receiver, property, filterArgument(value));
 	}
 
 	@Override

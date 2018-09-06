@@ -67,13 +67,13 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 	}
 
 	@Override
-	public Object onSetBeanProperty(
+	public void onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property, 
 			final Object value
 	) {
-		return invoker.setBeanProperty(receiver, property, value);
+		invoker.setBeanProperty(receiver, property, value);
 	}
 
 	@Override
@@ -96,26 +96,20 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 
 	@Override
 	public byte[] onLoadClassPathResource(final String resourceName) {
-		if (StringUtil.isBlank(resourceName)) {
-			return null;
-		}
-		else {
-			return new ClassPathResource(resourceName).getResourceAsBinary();
-		}
+		return StringUtil.isBlank(resourceName) 
+					? null
+					: new ClassPathResource(resourceName).getResourceAsBinary();
 	}
 
 	@Override
 	public String onReadSystemProperty(final String propertyName) {
-		if (StringUtil.isBlank(propertyName)) {
-			return null;
-		}
-		else {
-			return System.getProperty(propertyName);
-		}
+		return StringUtil.isBlank(propertyName) 
+				? null
+				: System.getProperty(propertyName);
 	}
 	
 	@Override
-	public void checkBlackListedVeniceFunction(
+	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
 	) {

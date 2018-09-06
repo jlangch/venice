@@ -69,9 +69,9 @@ public class JavaSandboxRecorder extends JavaInterceptor {
 	}
 
 	@Override
-	public Object onSetBeanProperty(final IInvoker invoker, final Object receiver, final String property, final Object value) {
+	public void onSetBeanProperty(final IInvoker invoker, final Object receiver, final String property, final Object value) {
 		format("%s.!%s=%s", type(receiver), property, type(value));
-		return super.onSetBeanProperty(invoker, receiver, property, value);
+		super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
 	@Override

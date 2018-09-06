@@ -68,13 +68,13 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 	}
 
 	@Override
-	public Object onSetBeanProperty(
+	public void onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property, 
 			final Object value
 	) {
-		return super.onSetBeanProperty(invoker, receiver, property, value);
+		super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
 	@Override
@@ -106,10 +106,10 @@ public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
 	}
 
 	@Override
-	public void checkBlackListedVeniceFunction(
+	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
 	) {
-		super.checkBlackListedVeniceFunction(funcName, args);
+		super.validateBlackListedVeniceFunction(funcName, args);
 	}
 }

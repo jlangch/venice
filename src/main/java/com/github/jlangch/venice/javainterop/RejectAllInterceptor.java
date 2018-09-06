@@ -76,7 +76,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 	}
 
 	@Override
-	public Object onSetBeanProperty(
+	public void onSetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property, 
@@ -124,7 +124,7 @@ public class RejectAllInterceptor extends JavaInterceptor {
 	}
 
 	@Override
-	public void checkBlackListedVeniceFunction(
+	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
 	) {

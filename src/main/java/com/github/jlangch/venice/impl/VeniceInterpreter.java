@@ -393,7 +393,7 @@ public class VeniceInterpreter {
 		return createEnv(stdout, null);
 	}
 
-	public Env createEnv(final PrintStream stdout, final List<String> preloadExtensionModules) {
+	public Env createEnv(final PrintStream stdout, final List<String> preloadedExtensionModules) {
 		final Env env = new Env(null);
 
 		
@@ -419,8 +419,8 @@ public class VeniceInterpreter {
 		// load core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
 		
-		if (preloadExtensionModules != null) {
-			preloadExtensionModules.forEach(
+		if (preloadedExtensionModules != null) {
+			preloadedExtensionModules.forEach(
 				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env));
 		}
 		

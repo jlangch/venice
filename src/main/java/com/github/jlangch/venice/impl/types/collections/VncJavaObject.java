@@ -61,14 +61,13 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	public void setProperty(final VncString name, final VncVal value) {
-		JavaInteropUtil.convertToVncVal(
-			JavaInterop
-				.getInterceptor()
-				.onSetBeanProperty(
-						new Invoker(), 
-						delegate, 
-						name.getValue(), 
-						JavaInteropUtil.convertToJavaObject(value)));
+		JavaInterop
+			.getInterceptor()
+			.onSetBeanProperty(
+					new Invoker(), 
+					delegate, 
+					name.getValue(), 
+					JavaInteropUtil.convertToJavaObject(value));
 	}
 	
 	@Override
