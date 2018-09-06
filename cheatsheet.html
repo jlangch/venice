@@ -78,6 +78,13 @@
                 vertical-align: top;
                 padding: 0.5em;
             }
+            td.shrink {
+                white-space: nowrap;
+                padding-right: 2em;
+            }
+            td.expand {
+                width: 95%;
+            }                         
             div.header h1 {
                 font-size: 3em;
             }
@@ -152,13 +159,6 @@
                 margin: 0;
                 padding: 0.5em;
             }
-            table td.shrink {
-                white-space: nowrap;
-                padding-right: 2em;
-            }
-            table td.expand {
-                width: 99%;
-            }                         
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500"/>
@@ -174,7 +174,7 @@
     <body>
         <div class="main">
             <div class="header">    
-                 <h1>Venice 0.9.2 Cheat Sheet</h1>
+                 <h1>Venice 0.9.3 Cheat Sheet</h1>
             </div>
 
             <div class="column">
@@ -431,15 +431,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Generic</td>
-                                                                                                <td class="expand"><code><a href="#1038">count</a> <a href="#1062">empty?</a> <a href="#1069">not-empty?</a> <a href="#1039">empty-to-nil</a> <a href="#1169">empty</a> <a href="#1170">into</a> <a href="#1171">conj</a> <a href="#1172">remove</a> <a href="#1173">repeat</a> <a href="#1174">range</a> <a href="#1175">group-by</a> <a href="#1176">get-in</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1038">count</a> <a href="#1062">empty?</a> <a href="#1069">not-empty?</a> <a href="#1039">empty-to-nil</a> <a href="#1169">empty</a> <a href="#1170">into</a> <a href="#1171">conj</a> <a href="#1172">remove</a> <a href="#1173">repeat</a> <a href="#1174">repeatedly</a> <a href="#1175">range</a> <a href="#1176">group-by</a> <a href="#1177">get-in</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Tests</td>
-                                                                                                <td class="expand"><code><a href="#1177">coll?</a> <a href="#1178">list?</a> <a href="#1179">vector?</a> <a href="#1180">set?</a> <a href="#1181">map?</a> <a href="#1182">sequential?</a> <a href="#1183">hash-map?</a> <a href="#1184">ordered-map?</a> <a href="#1185">sorted-map?</a> <a href="#1070">bytebuf?</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1178">coll?</a> <a href="#1179">list?</a> <a href="#1180">vector?</a> <a href="#1181">set?</a> <a href="#1182">map?</a> <a href="#1183">sequential?</a> <a href="#1184">hash-map?</a> <a href="#1185">ordered-map?</a> <a href="#1186">sorted-map?</a> <a href="#1070">bytebuf?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Process</td>
-                                                                                                <td class="expand"><code><a href="#1186">map</a> <a href="#1187">filter</a> <a href="#1188">keep</a> <a href="#1189">docoll</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1187">map</a> <a href="#1188">filter</a> <a href="#1189">keep</a> <a href="#1190">docoll</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -449,19 +449,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Create</td>
-                                                                                                <td class="expand"><code><a href="#1190">()</a> <a href="#1191">list</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1191">()</a> <a href="#1192">list</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Access</td>
-                                                                                                <td class="expand"><code><a href="#1192">first</a> <a href="#1193">second</a> <a href="#1194">nth</a> <a href="#1195">last</a> <a href="#1196">peek</a> <a href="#1197">rest</a> <a href="#1198">butlast</a> <a href="#1199">nfirst</a> <a href="#1200">nlast</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1193">first</a> <a href="#1194">second</a> <a href="#1195">nth</a> <a href="#1196">last</a> <a href="#1197">peek</a> <a href="#1198">rest</a> <a href="#1199">butlast</a> <a href="#1200">nfirst</a> <a href="#1201">nlast</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Modify</td>
-                                                                                                <td class="expand"><code><a href="#1201">cons</a> <a href="#1171">conj</a> <a href="#1197">rest</a> <a href="#1202">pop</a> <a href="#1170">into</a> <a href="#1203">concat</a> <a href="#1204">interpose</a> <a href="#1205">interleave</a> <a href="#1206">mapcat</a> <a href="#1207">flatten</a> <a href="#1208">seq</a> <a href="#1209">reduce</a> <a href="#1210">reverse</a> <a href="#1211">sort</a> <a href="#1212">sort-by</a> <a href="#1213">take</a> <a href="#1214">take-while</a> <a href="#1215">drop</a> <a href="#1216">drop-while</a> <a href="#1217">split-with</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1202">cons</a> <a href="#1171">conj</a> <a href="#1198">rest</a> <a href="#1203">pop</a> <a href="#1170">into</a> <a href="#1204">concat</a> <a href="#1205">interpose</a> <a href="#1206">interleave</a> <a href="#1207">mapcat</a> <a href="#1208">flatten</a> <a href="#1209">seq</a> <a href="#1210">reduce</a> <a href="#1211">reverse</a> <a href="#1212">sort</a> <a href="#1213">sort-by</a> <a href="#1214">take</a> <a href="#1215">take-while</a> <a href="#1216">drop</a> <a href="#1217">drop-while</a> <a href="#1218">split-with</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Test</td>
-                                                                                                <td class="expand"><code><a href="#1218">every?</a> <a href="#1219">any?</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1219">every?</a> <a href="#1220">any?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -471,19 +471,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Create</td>
-                                                                                                <td class="expand"><code><a href="#1220">[]</a> <a href="#1221">vector</a> <a href="#1222">mapv</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1221">[]</a> <a href="#1222">vector</a> <a href="#1223">mapv</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Access</td>
-                                                                                                <td class="expand"><code><a href="#1192">first</a> <a href="#1193">second</a> <a href="#1194">nth</a> <a href="#1195">last</a> <a href="#1196">peek</a> <a href="#1197">rest</a> <a href="#1199">nfirst</a> <a href="#1200">nlast</a> <a href="#1223">subvec</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1193">first</a> <a href="#1194">second</a> <a href="#1195">nth</a> <a href="#1196">last</a> <a href="#1197">peek</a> <a href="#1198">rest</a> <a href="#1200">nfirst</a> <a href="#1201">nlast</a> <a href="#1224">subvec</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Modify</td>
-                                                                                                <td class="expand"><code><a href="#1201">cons</a> <a href="#1171">conj</a> <a href="#1197">rest</a> <a href="#1202">pop</a> <a href="#1170">into</a> <a href="#1203">concat</a> <a href="#1224">distinct</a> <a href="#1225">dedupe</a> <a href="#1226">partition</a> <a href="#1204">interpose</a> <a href="#1205">interleave</a> <a href="#1206">mapcat</a> <a href="#1207">flatten</a> <a href="#1208">seq</a> <a href="#1209">reduce</a> <a href="#1210">reverse</a> <a href="#1211">sort</a> <a href="#1212">sort-by</a> <a href="#1213">take</a> <a href="#1214">take-while</a> <a href="#1215">drop</a> <a href="#1216">drop-while</a> <a href="#1227">assoc-in</a> <a href="#1176">get-in</a> <a href="#1228">update</a> <a href="#1229">update!</a> <a href="#1217">split-with</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1202">cons</a> <a href="#1171">conj</a> <a href="#1198">rest</a> <a href="#1203">pop</a> <a href="#1170">into</a> <a href="#1204">concat</a> <a href="#1225">distinct</a> <a href="#1226">dedupe</a> <a href="#1227">partition</a> <a href="#1205">interpose</a> <a href="#1206">interleave</a> <a href="#1207">mapcat</a> <a href="#1208">flatten</a> <a href="#1209">seq</a> <a href="#1210">reduce</a> <a href="#1211">reverse</a> <a href="#1212">sort</a> <a href="#1213">sort-by</a> <a href="#1214">take</a> <a href="#1215">take-while</a> <a href="#1216">drop</a> <a href="#1217">drop-while</a> <a href="#1228">assoc-in</a> <a href="#1177">get-in</a> <a href="#1229">update</a> <a href="#1230">update!</a> <a href="#1218">split-with</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Test</td>
-                                                                                                <td class="expand"><code><a href="#1230">contains?</a> <a href="#1218">every?</a> <a href="#1219">any?</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1231">contains?</a> <a href="#1219">every?</a> <a href="#1220">any?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -493,15 +493,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Create</td>
-                                                                                                <td class="expand"><code><a href="#1231">set</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1232">set</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Modify</td>
-                                                                                                <td class="expand"><code><a href="#1232">difference</a> <a href="#1233">union</a> <a href="#1234">intersection</a> <a href="#1208">seq</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1233">difference</a> <a href="#1234">union</a> <a href="#1235">intersection</a> <a href="#1209">seq</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Test</td>
-                                                                                                <td class="expand"><code><a href="#1230">contains?</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1231">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -511,19 +511,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Create</td>
-                                                                                                <td class="expand"><code><a href="#1235">{}</a> <a href="#1236">hash-map</a> <a href="#1237">ordered-map</a> <a href="#1238">sorted-map</a> <a href="#1239">zipmap</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1236">{}</a> <a href="#1237">hash-map</a> <a href="#1238">ordered-map</a> <a href="#1239">sorted-map</a> <a href="#1240">zipmap</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Access</td>
-                                                                                                <td class="expand"><code><a href="#1240">find</a> <a href="#1241">get</a> <a href="#1242">keys</a> <a href="#1243">vals</a> <a href="#1244">key</a> <a href="#1245">val</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1241">find</a> <a href="#1242">get</a> <a href="#1243">keys</a> <a href="#1244">vals</a> <a href="#1245">key</a> <a href="#1246">val</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Modify</td>
-                                                                                                <td class="expand"><code><a href="#1201">cons</a> <a href="#1171">conj</a> <a href="#1246">assoc</a> <a href="#1227">assoc-in</a> <a href="#1176">get-in</a> <a href="#1228">update</a> <a href="#1229">update!</a> <a href="#1247">dissoc</a> <a href="#1170">into</a> <a href="#1203">concat</a> <a href="#1207">flatten</a> <a href="#1248">reduce-kv</a> <a href="#1249">merge</a> <a href="#1208">seq</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1202">cons</a> <a href="#1171">conj</a> <a href="#1247">assoc</a> <a href="#1228">assoc-in</a> <a href="#1177">get-in</a> <a href="#1229">update</a> <a href="#1230">update!</a> <a href="#1248">dissoc</a> <a href="#1170">into</a> <a href="#1204">concat</a> <a href="#1208">flatten</a> <a href="#1249">reduce-kv</a> <a href="#1250">merge</a> <a href="#1209">seq</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Test</td>
-                                                                                                <td class="expand"><code><a href="#1230">contains?</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1231">contains?</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -537,19 +537,19 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Atoms</td>
-                                                                                                <td class="expand"><code><a href="#1250">atom</a> <a href="#1251">atom?</a> <a href="#1252">deref</a> <a href="#1253">reset!</a> <a href="#1254">swap!</a> <a href="#1255">compare-and-set!</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1251">atom</a> <a href="#1252">atom?</a> <a href="#1253">deref</a> <a href="#1254">reset!</a> <a href="#1255">swap!</a> <a href="#1256">compare-and-set!</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Futures</td>
-                                                                                                <td class="expand"><code><a href="#1256">future</a> <a href="#1257">future?</a> <a href="#1258">future-done?</a> <a href="#1259">future-cancel</a> <a href="#1260">future-cancelled?</a> <a href="#1252">deref</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1257">future</a> <a href="#1258">future?</a> <a href="#1259">future-done?</a> <a href="#1260">future-cancel</a> <a href="#1261">future-cancelled?</a> <a href="#1253">deref</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Promises</td>
-                                                                                                <td class="expand"><code><a href="#1261">promise</a> <a href="#1262">promise?</a> <a href="#1263">deliver</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1262">promise</a> <a href="#1263">promise?</a> <a href="#1264">deliver</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">ThreadLocal</td>
-                                                                                                <td class="expand"><code><a href="#1264">thread-local</a> <a href="#1265">thread-local?</a> <a href="#1266">thread-local-clear</a> <a href="#1246">assoc</a> <a href="#1247">dissoc</a> <a href="#1241">get</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1265">thread-local</a> <a href="#1266">thread-local?</a> <a href="#1267">thread-local-clear</a> <a href="#1247">assoc</a> <a href="#1248">dissoc</a> <a href="#1242">get</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -563,15 +563,15 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">Test</td>
-                                                                                                <td class="expand"><code><a href="#1267">sandboxed?</a> <a href="#1268">os?</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1268">sandboxed?</a> <a href="#1269">os?</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Other</td>
-                                                                                                <td class="expand"><code><a href="#1269">version</a> <a href="#1270">os</a> <a href="#1271">system-prop</a> <a href="#1272">uuid</a> <a href="#1273">sleep</a> <a href="#1274">current-time-millis</a> <a href="#1275">nano-time</a> <a href="#1276">coalesce</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1270">version</a> <a href="#1271">os</a> <a href="#1272">system-prop</a> <a href="#1273">uuid</a> <a href="#1274">sleep</a> <a href="#1275">current-time-millis</a> <a href="#1276">nano-time</a> <a href="#1277">coalesce</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">Shell</td>
-                                                                                                <td class="expand"><code><a href="#1277">sh</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1278">sh</a> </code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -585,7 +585,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">General</td>
-                                                                                                <td class="expand"><code><a href="#1278">.</a> <a href="#1279">proxify</a> <div> </div><div>Invoke constructors</div><div>Invoke static or instance methods</div><div>Access static or instance fields</div></code></td>
+                                                                                                <td class="expand"><code><a href="#1279">.</a> <a href="#1280">proxify</a> <div> </div><div>Invoke constructors</div><div>Invoke static or instance methods</div><div>Access static or instance fields</div></code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -599,19 +599,23 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">to</td>
-                                                                                                <td class="expand"><code><a href="#1280">print</a> <a href="#1281">println</a> <a href="#1282">flush</a> <a href="#1283">newline</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1281">print</a> <a href="#1282">println</a> <a href="#1283">flush</a> <a href="#1284">newline</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">to-str</td>
-                                                                                                <td class="expand"><code><a href="#1284">pr-str</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1285">pr-str</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">from</td>
-                                                                                                <td class="expand"><code><a href="#1285">readline</a> <a href="#1286">read-string</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1286">readline</a> <a href="#1287">read-string</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">file-io</td>
-                                                                                                <td class="expand"><code><a href="#1287">io/file</a> <a href="#1288">io/file?</a> <a href="#1289">io/exists-file?</a> <a href="#1290">io/exists-dir?</a> <a href="#1291">io/list-files</a> <a href="#1292">io/delete-file</a> <a href="#1293">io/delete-file-on-exit</a> <a href="#1294">io/copy-file</a> <a href="#1295">io/move-file</a> <a href="#1296">io/slurp</a> <a href="#1297">io/slurp-temp-file</a> <a href="#1298">io/slurp-stream</a> <a href="#1299">io/spit</a> <a href="#1300">io/spit-stream</a> <a href="#1301">io/temp-file</a> <a href="#1302">io/tmp-dir</a> <a href="#1303">io/user-dir</a> </code></td>
+                                                                                                <td class="expand"><code><a href="#1288">io/file</a> <a href="#1289">io/file?</a> <a href="#1290">io/exists-file?</a> <a href="#1291">io/exists-dir?</a> <a href="#1292">io/list-files</a> <a href="#1293">io/delete-file</a> <a href="#1294">io/delete-file-on-exit</a> <a href="#1295">io/copy-file</a> <a href="#1296">io/move-file</a> <a href="#1297">io/slurp</a> <a href="#1298">io/slurp-stream</a> <a href="#1299">io/spit</a> <a href="#1300">io/spit-stream</a> <a href="#1301">io/tmp-dir</a> <a href="#1302">io/user-dir</a> <a href="#1303">io/mime-type</a> </code></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td class="shrink">file-io temp</td>
+                                                                                                <td class="expand"><code><a href="#1304">io/temp-file</a> <a href="#1305">io/slurp-temp-file</a> <a href="#1306">io/spit-temp-file</a> </code></td>
                                                                                             </tr>
                                                                                             <tr>
                                                                                                 <td class="shrink">load</td>
@@ -629,7 +633,7 @@
                                                             <tbody>
                                                                                             <tr>
                                                                                                 <td class="shrink">JSON</td>
-                                                                                                <td class="expand"><code><a href="#1304">json/pretty-print</a> <a href="#1305">json/to-json</a> <a href="#1306">json/to-pretty-json</a> <a href="#1307">json/parse</a> <div> </div><a href="#1308">json/avail?</a> <a href="#1309">json/avail-jdk8-module?</a> <div> </div><div>Available if Jackson libs are on runtime classpath</div></code></td>
+                                                                                                <td class="expand"><code><a href="#1307">json/pretty-print</a> <a href="#1308">json/to-json</a> <a href="#1309">json/to-pretty-json</a> <a href="#1310">json/parse</a> <div> </div><a href="#1311">json/avail?</a> <a href="#1312">json/avail-jdk8-module?</a> <div> </div><div>Available if Jackson libs are on runtime classpath</div></code></td>
                                                                                             </tr>
 
                                                             </tbody>
@@ -684,7 +688,7 @@
                                         <code>(!= 0 1)<br/>=&gt; true<br/><br/>(!= 0 0)<br/>=&gt; false<br/><br/>(!= 0 0.0)<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1190">
+                                <div class="detail" id="1191">
                                     <h1>()</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -768,7 +772,7 @@
                                         <code>(-&gt;&gt; 5 (+ 3) (/ 32) (- 1))<br/>=&gt; -3<br/><br/>(-&gt;&gt; [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]<br/>     (map (fn [x] (get x :b)))<br/>     (filter (fn [x] (&gt; x 4)))<br/>     (map inc)))) <br/>=&gt; (7 9)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1278">
+                                <div class="detail" id="1279">
                                     <h1>.</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -779,7 +783,7 @@
                                         <code>Java interop. Calls a constructor or an class/object method or accesses a class/instance field. The function is sandboxed.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-09-03T12:08:33.720+02:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-09-06T12:32:46.176+02:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -866,7 +870,7 @@
                                         <code>(&gt;= 3 2)<br/>=&gt; true<br/><br/>(&gt;= 3 3)<br/>=&gt; true<br/><br/>(&gt;= 3.0 2)<br/>=&gt; true<br/><br/>(&gt;= 3.0M 2)<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1220">
+                                <div class="detail" id="1221">
                                     <h1>[]</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -908,7 +912,7 @@
                                         <code>(and true true)<br/>=&gt; true<br/><br/>(and true false)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1219">
+                                <div class="detail" id="1220">
                                     <h1>any?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -964,7 +968,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1246">
+                                <div class="detail" id="1247">
                                     <h1>assoc</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -978,7 +982,7 @@
                                         <code>(assoc {} :a 1 :b 2)<br/>=&gt; {:a 1 :b 2}<br/><br/>(assoc nil :a 1 :b 2)<br/>=&gt; {:a 1 :b 2}<br/><br/>(assoc [1 2 3] 0 10)<br/>=&gt; [10 2 3]<br/><br/>(assoc [1 2 3] 3 10)<br/>=&gt; [1 2 3 10]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1227">
+                                <div class="detail" id="1228">
                                     <h1>assoc-in</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -992,7 +996,7 @@
                                         <code>(do<br/>   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])<br/>   (assoc-in users [1 :age] 44))<br/>=&gt; [{:age 26 :name &quot;James&quot;} {:age 44 :name &quot;John&quot;}]<br/><br/>(do<br/>   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])<br/>   (assoc-in users [2] {:name &quot;Jack&quot; :age 19}) )<br/>=&gt; [{:age 26 :name &quot;James&quot;} {:age 43 :name &quot;John&quot;} {:age 19 :name &quot;Jack&quot;}]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1250">
+                                <div class="detail" id="1251">
                                     <h1>atom</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1006,7 +1010,7 @@
                                         <code>(do<br/>   (def counter (atom 0))<br/>   (deref counter))<br/>=&gt; 0</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1251">
+                                <div class="detail" id="1252">
                                     <h1>atom?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1048,7 +1052,7 @@
                                         <code>(boolean? true)<br/>=&gt; true<br/><br/>(boolean? false)<br/>=&gt; true<br/><br/>(boolean? nil)<br/>=&gt; false<br/><br/>(boolean? 0)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1198">
+                                <div class="detail" id="1199">
                                     <h1>butlast</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1146,7 +1150,7 @@
                                         <code>(class 5)<br/>=&gt; &quot;venice.Long&quot;<br/><br/>(class [1 2])<br/>=&gt; &quot;venice.Vector&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1276">
+                                <div class="detail" id="1277">
                                     <h1>coalesce</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1160,7 +1164,7 @@
                                         <code>(coalesce )<br/>=&gt; nil<br/><br/>(coalesce 1 2)<br/>=&gt; 1<br/><br/>(coalesce nil)<br/>=&gt; nil<br/><br/>(coalesce nil 1 2)<br/>=&gt; 1</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1177">
+                                <div class="detail" id="1178">
                                     <h1>coll?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1202,7 +1206,7 @@
                                         <code>(filter (comp not zero?) [0 1 0 2 0 3 0 4])<br/>=&gt; [1 2 3 4]<br/><br/>(do <br/>   (def fifth (comp first rest rest rest rest)) <br/>   (fifth [1 2 3 4 5]))<br/>=&gt; 5</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1255">
+                                <div class="detail" id="1256">
                                     <h1>compare-and-set!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1216,7 +1220,7 @@
                                         <code>(do<br/>   (def counter (atom 2))<br/>   (compare-and-set! counter 2 4)<br/>   (deref counter))<br/>=&gt; 4</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1203">
+                                <div class="detail" id="1204">
                                     <h1>concat</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1258,7 +1262,7 @@
                                         <code>(conj [1 2 3] 4)<br/>=&gt; [1 2 3 4]<br/><br/>(conj &apos;(1 2 3) 4)<br/>=&gt; (4 1 2 3)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1201">
+                                <div class="detail" id="1202">
                                     <h1>cons</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1272,7 +1276,7 @@
                                         <code>(cons 1 &apos;(2 3 4 5 6))<br/>=&gt; (1 2 3 4 5 6)<br/><br/>(cons [1 2] [4 5 6])<br/>=&gt; ([1 2] 4 5 6)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1230">
+                                <div class="detail" id="1231">
                                     <h1>contains?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1300,7 +1304,7 @@
                                         <code>(count {:a 1 :b 2})<br/>=&gt; 2<br/><br/>(count [1 2])<br/>=&gt; 2<br/><br/>(count &quot;abc&quot;)<br/>=&gt; 3</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1274">
+                                <div class="detail" id="1275">
                                     <h1>current-time-millis</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1311,7 +1315,7 @@
                                         <code>Returns the current time in milliseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(current-time-millis)<br/>=&gt; 1535969313709</code>
+                                        <code>(current-time-millis)<br/>=&gt; 1536229966164</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1006">
@@ -1412,7 +1416,7 @@
                                         <code>(decimal? 4.0M)<br/>=&gt; true<br/><br/>(decimal? 4.0)<br/>=&gt; false<br/><br/>(decimal? 3)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1225">
+                                <div class="detail" id="1226">
                                     <h1>dedupe</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1468,7 +1472,7 @@
                                         <code>(defn sum [x y] (+ x y))</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1263">
+                                <div class="detail" id="1264">
                                     <h1>deliver</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1482,7 +1486,7 @@
                                         <code>(do                   <br/>   (def p (promise))  <br/>   (deliver p 123))<br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1252">
+                                <div class="detail" id="1253">
                                     <h1>deref</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1496,7 +1500,7 @@
                                         <code>(do<br/>   (def counter (atom 0))<br/>   (deref counter))<br/>=&gt; 0<br/><br/>(do<br/>   (def task (fn [] 100))<br/>   (let [f (future task)] (deref f)))<br/>=&gt; 100<br/><br/>(do<br/>   (def task (fn [] 100))<br/>   (let [f (future task)] (deref f 300 :timeout)))<br/>=&gt; 100</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1232">
+                                <div class="detail" id="1233">
                                     <h1>difference</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1510,7 +1514,7 @@
                                         <code>(difference (set 1 2 3))<br/>=&gt; #{1 2 3}<br/><br/>(difference (set 1 2) (set 2 3))<br/>=&gt; #{1}<br/><br/>(difference (set 1 2) (set 1) (set 1 4) (set 3))<br/>=&gt; #{2}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1247">
+                                <div class="detail" id="1248">
                                     <h1>dissoc</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1524,7 +1528,7 @@
                                         <code>(dissoc {:a 1 :b 2 :c 3} :b)<br/>=&gt; {:a 1 :c 3}<br/><br/>(dissoc {:a 1 :b 2 :c 3} :c :b)<br/>=&gt; {:a 1}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1224">
+                                <div class="detail" id="1225">
                                     <h1>distinct</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1552,7 +1556,7 @@
                                         <code>(do (println &quot;Test...&quot;) (+ 1 1))<br/>Test...<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1189">
+                                <div class="detail" id="1190">
                                     <h1>docoll</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1608,7 +1612,7 @@
                                         <code>(double? 4.0)<br/>=&gt; true<br/><br/>(double? 3)<br/>=&gt; false<br/><br/>(double? true)<br/>=&gt; false<br/><br/>(double? nil)<br/>=&gt; false<br/><br/>(double? {})<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1215">
+                                <div class="detail" id="1216">
                                     <h1>drop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1622,7 +1626,7 @@
                                         <code>(drop 3 [1 2 3 4 5])<br/>=&gt; [5]<br/><br/>(drop 10 [1 2 3 4 5])<br/>=&gt; []</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1216">
+                                <div class="detail" id="1217">
                                     <h1>drop-while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1706,7 +1710,7 @@
                                         <code>(odd? 4)<br/>=&gt; false<br/><br/>(odd? 3)<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1218">
+                                <div class="detail" id="1219">
                                     <h1>every?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1734,7 +1738,7 @@
                                         <code>(false? true)<br/>=&gt; false<br/><br/>(false? false)<br/>=&gt; true<br/><br/>(false? nil)<br/>=&gt; false<br/><br/>(false? 0)<br/>=&gt; false<br/><br/>(false? (== 1 2))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1187">
+                                <div class="detail" id="1188">
                                     <h1>filter</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1748,7 +1752,7 @@
                                         <code>(filter even? [1 2 3 4 5 6 7])<br/>=&gt; [2 4 6]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1240">
+                                <div class="detail" id="1241">
                                     <h1>find</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1762,7 +1766,7 @@
                                         <code>(find {:a 1 :b 2} :b)<br/>=&gt; [:b 2]<br/><br/>(find {:a 1 :b 2} :z)<br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1192">
+                                <div class="detail" id="1193">
                                     <h1>first</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1776,7 +1780,7 @@
                                         <code>(first nil)<br/>=&gt; nil<br/><br/>(first [])<br/>=&gt; nil<br/><br/>(first [1 2 3])<br/>=&gt; 1<br/><br/>(first &apos;())<br/>=&gt; nil<br/><br/>(first &apos;(1 2 3))<br/>=&gt; 1</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1207">
+                                <div class="detail" id="1208">
                                     <h1>flatten</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1790,7 +1794,7 @@
                                         <code>(flatten [])<br/>=&gt; []<br/><br/>(flatten [[1 2 3] [4 5 6] [7 8 9]])<br/>=&gt; [1 2 3 4 5 6 7 8 9]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1282">
+                                <div class="detail" id="1283">
                                     <h1>flush</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1815,7 +1819,7 @@
                                         <code>Creates a function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-71b2533d-648e-4498-b8ca-d9e419dc55f4<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-14018efd-21f1-449d-9e2b-9db8a6d5a269</code>
+                                        <code>(fn [x y] (+ x y))<br/>=&gt; anonymous-fe94e1ca-2367-4f24-a2b7-4adb36ebd4ff<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-78f270d9-4007-4fb6-9045-376c70b5d0f2</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1126">
@@ -1832,7 +1836,7 @@
                                         <code>(do <br/>   (def sum (fn [x] (+ 1 x)))<br/>   (fn? sum))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1256">
+                                <div class="detail" id="1257">
                                     <h1>future</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1846,7 +1850,7 @@
                                         <code>(do                                         <br/>   (def wait (fn [] (do (sleep 500) 100)))  <br/>                                            <br/>   (let [f (future wait)]                   <br/>        (deref f))                          <br/>)<br/>=&gt; 100</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1259">
+                                <div class="detail" id="1260">
                                     <h1>future-cancel</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1860,7 +1864,7 @@
                                         <code>(future-cancel (future (fn [] 100)))<br/>=&gt; java.util.concurrent.FutureTask@71bc1ae4</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1260">
+                                <div class="detail" id="1261">
                                     <h1>future-cancelled?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1874,7 +1878,7 @@
                                         <code>(future-cancelled? (future (fn [] 100)))<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1258">
+                                <div class="detail" id="1259">
                                     <h1>future-done?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1885,10 +1889,10 @@
                                         <code>Returns true if f is a Future is done otherwise false</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(future-done? (future (fn [] 100)))<br/>=&gt; false</code>
+                                        <code>(future-done? (future (fn [] 100)))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1257">
+                                <div class="detail" id="1258">
                                     <h1>future?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1916,7 +1920,7 @@
                                         <code>(gensym )<br/>=&gt; G__2<br/><br/>(gensym &quot;prefix_&quot;)<br/>=&gt; prefix_3</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1241">
+                                <div class="detail" id="1242">
                                     <h1>get</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1930,7 +1934,7 @@
                                         <code>(get {:a 1 :b 2} :b)<br/>=&gt; 2<br/><br/>;; keywords act like functions on maps <br/>(:b {:a 1 :b 2})<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1176">
+                                <div class="detail" id="1177">
                                     <h1>get-in</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1944,7 +1948,7 @@
                                         <code>(get-in {:a 1 :b {:c 2 :d 3}} [:b :c])<br/>=&gt; 2<br/><br/>(get-in [:a :b :c] [0])<br/>=&gt; :a<br/><br/>(get-in [:a :b [:c :d :e]] [2 1])<br/>=&gt; :d<br/><br/>(get-in {:a 1 :b {:c [4 5 6]}} [:b :c 1])<br/>=&gt; 5</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1175">
+                                <div class="detail" id="1176">
                                     <h1>group-by</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1958,7 +1962,7 @@
                                         <code>(group-by count [&quot;a&quot; &quot;as&quot; &quot;asd&quot; &quot;aa&quot; &quot;asdf&quot; &quot;qwer&quot;])<br/>=&gt; {1 [&quot;a&quot;] 2 [&quot;as&quot; &quot;aa&quot;] 3 [&quot;asd&quot;] 4 [&quot;asdf&quot; &quot;qwer&quot;]}<br/><br/>(group-by odd? (range 10))<br/>=&gt; {false [0 2 4 6 8] true [1 3 5 7 9]}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1236">
+                                <div class="detail" id="1237">
                                     <h1>hash-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -1972,7 +1976,7 @@
                                         <code>(hash-map :a 1 :b 2)<br/>=&gt; {:a 1 :b 2}<br/><br/>(hash-map (sorted-map :a 1 :b 2))<br/>=&gt; {:a 1 :b 2}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1183">
+                                <div class="detail" id="1184">
                                     <h1>hash-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2042,7 +2046,7 @@
                                         <code>(inc 10)<br/>=&gt; 11<br/><br/>(inc 10.1)<br/>=&gt; 11.1<br/><br/>(inc 10.12M)<br/>=&gt; 11.12M</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1205">
+                                <div class="detail" id="1206">
                                     <h1>interleave</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2056,7 +2060,7 @@
                                         <code>(interleave [:a :b :c] [1 2])<br/>=&gt; (:a 1 :b 2)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1204">
+                                <div class="detail" id="1205">
                                     <h1>interpose</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2070,7 +2074,7 @@
                                         <code>(interpose &quot;, &quot; [1 2 3])<br/>=&gt; (1 &quot;, &quot; 2 &quot;, &quot; 3)<br/><br/>(apply str (interpose &quot;, &quot; [1 2 3]))<br/>=&gt; &quot;1, 2, 3&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1234">
+                                <div class="detail" id="1235">
                                     <h1>intersection</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2098,7 +2102,7 @@
                                         <code>(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )<br/>=&gt; {:a 1 :b 2 :c 3}<br/><br/>(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )<br/>=&gt; {:a 1 :b 2 :c 3}<br/><br/>(into [] {1 2, 3 4})<br/>=&gt; [[1 2] [3 4]]<br/><br/>(into &apos;() &apos;(1 2 3))<br/>=&gt; (3 2 1)<br/><br/>(into [1 2 3] &apos;(4 5 6))<br/>=&gt; [1 2 3 4 5 6]<br/><br/>(into &apos;() (bytebuf [0 1 2]))<br/>=&gt; (0 1 2)<br/><br/>(into [] (bytebuf [0 1 2]))<br/>=&gt; [0 1 2]<br/><br/>(into &apos;() &quot;abc&quot;)<br/>=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot;)<br/><br/>(into [] &quot;abc&quot;)<br/>=&gt; [&quot;a&quot; &quot;b&quot; &quot;c&quot;]<br/><br/>(into (sorted-map) {:b 2 :c 3 :a 1})<br/>=&gt; {:a 1 :b 2 :c 3}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1294">
+                                <div class="detail" id="1295">
                                     <h1>io/copy-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2112,7 +2116,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1292">
+                                <div class="detail" id="1293">
                                     <h1>io/delete-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2126,7 +2130,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1293">
+                                <div class="detail" id="1294">
                                     <h1>io/delete-file-on-exit</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2140,7 +2144,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1290">
+                                <div class="detail" id="1291">
                                     <h1>io/exists-dir?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2154,7 +2158,7 @@
                                         <code>(io/exists-dir? (io/file &quot;/temp&quot;))<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1289">
+                                <div class="detail" id="1290">
                                     <h1>io/exists-file?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2168,7 +2172,7 @@
                                         <code>(io/exists-file? (io/file &quot;/temp/test.txt&quot;))<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1287">
+                                <div class="detail" id="1288">
                                     <h1>io/file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2182,7 +2186,7 @@
                                         <code>(io/file &quot;/temp/test.txt&quot;)<br/>=&gt; /temp/test.txt<br/><br/>(io/file &quot;/temp&quot; &quot;test.txt&quot;)<br/>=&gt; /temp/test.txt<br/><br/>(io/file (io/file &quot;/temp&quot;) &quot;test.txt&quot;)<br/>=&gt; /temp/test.txt</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1288">
+                                <div class="detail" id="1289">
                                     <h1>io/file?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2196,7 +2200,7 @@
                                         <code>(io/file? (io/file &quot;/temp/test.txt&quot;))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1291">
+                                <div class="detail" id="1292">
                                     <h1>io/list-files</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2210,7 +2214,21 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1295">
+                                <div class="detail" id="1303">
+                                    <h1>io/mime-type</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                          <code>(io/mime-type file)</code>                          
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Returns the mime-type for the file if available else nil</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(io/mime-type &quot;document.pdf&quot;)<br/>=&gt; &quot;application/pdf&quot;<br/><br/>(io/mime-type (io/file &quot;document.pdf&quot;))<br/>=&gt; &quot;application/pdf&quot;</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1296">
                                     <h1>io/move-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2224,7 +2242,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1296">
+                                <div class="detail" id="1297">
                                     <h1>io/slurp</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2232,7 +2250,7 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Returns the file&apos;s content as text (string) or binary (bytebuf). Defaults to binary=false and encoding=UTF-8. Options: :encoding &quot;UTF-8&quot; :binary true/false. </code>
+                                        <code>Returns the file&apos;s content as text (string) or binary (bytebuf). <br/>Defaults to binary=false and encoding=UTF-8. <br/>Options: :encoding &quot;UTF-8&quot; :binary true/false.</code>
                                     </div>
                                     <div class="examples">
                                         <code></code>
@@ -2246,13 +2264,13 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Slurps binary or string data from an input stream. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified. Options: :encoding &quot;UTF-8&quot; :binary true/false. </code>
+                                        <code>Slurps binary or string data from an input stream. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified.<br/>Options: :encoding &quot;UTF-8&quot; :binary true/false. </code>
                                     </div>
                                     <div class="examples">
                                         <code>(do <br/>   (import :java.io.FileInputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (try-with [is (. :FileInputStream :new file)] <br/>           (io/slurp-stream is :binary false))) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1297">
+                                <div class="detail" id="1305">
                                     <h1>io/slurp-temp-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2260,10 +2278,10 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Slurps binary or string data from a previously created temp file. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified. Options: :encoding &quot;UTF-8&quot; :binary true/false. </code>
+                                        <code>Slurps binary or string data from a previously created temp file. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified. <br/>Ensures that the caller can only read back files he previously created, but no other files. This allows callers to work with files without escaping the sandbox. The file must have been created with io/temp_file. <br/>Options: :encoding &quot;UTF-8&quot; :binary true/false.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
+                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit-temp-file file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1299">
@@ -2274,7 +2292,7 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Opens f, writes content, and then closes f. Defaults to append=true and encoding=UTF-8. Options: :append true/false, :encoding &quot;UTF-8&quot;</code>
+                                        <code>Opens f, writes content, and then closes f. <br/>Options default to append=true and encoding=UTF-8. <br/>Options: :append true/false, :encoding &quot;UTF-8&quot;</code>
                                     </div>
                                     <div class="examples">
                                         <code></code>
@@ -2288,13 +2306,27 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Writes content (string or bytebuf) to the output stream os. If content is of type string an optional encoding (defaults to UTF-8) is supported. The stream can optionally be flushed after the operation. Options: :flush true/false :encoding &quot;UTF-8&quot;</code>
+                                        <code>Writes content (string or bytebuf) to the output stream os. If content is of type string an optional encoding (defaults to UTF-8) is supported. The stream can optionally be flushed after the operation.<br/>Options: :flush true/false :encoding &quot;UTF-8&quot;</code>
                                     </div>
                                     <div class="examples">
                                         <code>(do <br/>   (import :java.io.FileOutputStream) <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/delete-file-on-exit file) <br/>        (try-with [os (. :FileOutputStream :new file)] <br/>           (io/spit-stream os &quot;123456789&quot; :flush true))) <br/>)<br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1301">
+                                <div class="detail" id="1306">
+                                    <h1>io/spit-temp-file</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                          <code>(io/spit-temp-file f content &amp; options)</code>                          
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Spits binary or string data from to previously created temp file. <br/>Ensures that the caller can only write to files he previously created, but no other files. This allows callers to work with files without escaping the sandbox. The file must have been created with io/temp_file. <br/>Defaults to append=true and encoding=UTF-8.<br/>Options: :append true/false, :encoding &quot;UTF-8&quot;</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code></code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1304">
                                     <h1>io/temp-file</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2302,13 +2334,13 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Creates an empty temp file with prefix and suffix</code>
+                                        <code>Creates an empty temp file with prefix and suffix. <br/>io/temp-file with its companions io/spit-temp-file and io/slurp-temp-file provide safe file access in sandboxed environments.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
+                                        <code>(do <br/>   (let [file (io/temp-file &quot;test-&quot;, &quot;.txt&quot;)] <br/>        (io/spit-temp-file file &quot;123456789&quot; :append true) <br/>        (io/slurp-temp-file file :binary false :remove true)) <br/>)<br/>=&gt; &quot;123456789&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1302">
+                                <div class="detail" id="1301">
                                     <h1>io/tmp-dir</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2322,7 +2354,7 @@
                                         <code>(io/tmp-dir )<br/>=&gt; /var/folders/rm/pjqr5pln3db4mxh5qq1j5yh80000gn/T</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1303">
+                                <div class="detail" id="1302">
                                     <h1>io/user-dir</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2336,7 +2368,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1309">
+                                <div class="detail" id="1312">
                                     <h1>json/avail-jdk8-module?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2350,7 +2382,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1308">
+                                <div class="detail" id="1311">
                                     <h1>json/avail?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2364,7 +2396,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1307">
+                                <div class="detail" id="1310">
                                     <h1>json/parse</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2378,7 +2410,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1304">
+                                <div class="detail" id="1307">
                                     <h1>json/pretty-print</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2392,7 +2424,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1305">
+                                <div class="detail" id="1308">
                                     <h1>json/to-json</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2406,7 +2438,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1306">
+                                <div class="detail" id="1309">
                                     <h1>json/to-pretty-json</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2420,7 +2452,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1188">
+                                <div class="detail" id="1189">
                                     <h1>keep</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2434,7 +2466,7 @@
                                         <code>(keep even? (range 1 4))<br/>=&gt; (false true false)<br/><br/>(keep (fn [x] (if (odd? x) x)) (range 4))<br/>=&gt; (1 3)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1244">
+                                <div class="detail" id="1245">
                                     <h1>key</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2448,7 +2480,7 @@
                                         <code>(key (find {:a 1 :b 2} :b))<br/>=&gt; :b</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1242">
+                                <div class="detail" id="1243">
                                     <h1>keys</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2490,7 +2522,7 @@
                                         <code>(keyword? (keyword &quot;a&quot;))<br/>=&gt; true<br/><br/>(keyword? :a)<br/>=&gt; true<br/><br/>(keyword? nil)<br/>=&gt; false<br/><br/>(keyword? &apos;a)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1195">
+                                <div class="detail" id="1196">
                                     <h1>last</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2518,7 +2550,7 @@
                                         <code>(let [x 1] x))<br/>=&gt; 1</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1191">
+                                <div class="detail" id="1192">
                                     <h1>list</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2546,7 +2578,7 @@
                                         <code>(list-comp [x (range 10)] x)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(list-comp [x (range 5)] (* x 2))<br/>=&gt; (0 2 4 6 8)<br/><br/>(list-comp [x (range 10) :when (odd? x)] x)<br/>=&gt; (1 3 5 7 9)<br/><br/>(list-comp [x (range 10) :when (odd? x)] (* x 2))<br/>=&gt; (2 6 10 14 18)<br/><br/>(list-comp [x (list &quot;abc&quot;) y [0 1 2]] [x y])<br/>=&gt; ([&quot;abc&quot; 0] [&quot;abc&quot; 1] [&quot;abc&quot; 2])</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1178">
+                                <div class="detail" id="1179">
                                     <h1>list?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2599,7 +2631,7 @@
                                         <code>Loads a Venice predefined extension module.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (load-module :logger))<br/>=&gt; anonymous-02680797-3367-467c-8a43-84ddd370d166</code>
+                                        <code>(do <br/>   (load-module :logger))<br/>=&gt; anonymous-df7b842a-0e35-47b3-bdd7-078040c6431a</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1150">
@@ -2672,7 +2704,7 @@
                                         <code>(macroexpand (-&gt; c (+ 3) (* 2)))<br/>=&gt; (* (+ c 3) 2)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1186">
+                                <div class="detail" id="1187">
                                     <h1>map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2686,7 +2718,7 @@
                                         <code>(map inc [1 2 3 4])<br/>=&gt; (2 3 4 5)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1181">
+                                <div class="detail" id="1182">
                                     <h1>map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2700,7 +2732,7 @@
                                         <code>(map? {:a 1 :b 2})<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1206">
+                                <div class="detail" id="1207">
                                     <h1>mapcat</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2714,7 +2746,7 @@
                                         <code>(mapcat reverse [[3 2 1 0] [6 5 4] [9 8 7]])<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1222">
+                                <div class="detail" id="1223">
                                     <h1>mapv</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2784,7 +2816,7 @@
                                         <code>(do<br/>   (def test (fn [a] (+ a 100)))<br/>   (def test-memo (memoize test))<br/>   (test-memo 1))<br/>=&gt; 101</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1249">
+                                <div class="detail" id="1250">
                                     <h1>merge</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2854,7 +2886,7 @@
                                         <code>(name :x)<br/>=&gt; &quot;x&quot;<br/><br/>(name &apos;x)<br/>=&gt; &quot;x&quot;<br/><br/>(name &quot;x&quot;)<br/>=&gt; &quot;x&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1275">
+                                <div class="detail" id="1276">
                                     <h1>nano-time</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2865,7 +2897,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(nano-time)<br/>=&gt; 634349300683975</code>
+                                        <code>(nano-time)<br/>=&gt; 709699568508424</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1020">
@@ -2882,7 +2914,7 @@
                                         <code>(neg? -3)<br/>=&gt; true<br/><br/>(neg? 3)<br/>=&gt; false<br/><br/>(neg? -3.2)<br/>=&gt; true<br/><br/>(neg? -3.2M)<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1283">
+                                <div class="detail" id="1284">
                                     <h1>newline</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2896,7 +2928,7 @@
                                         <code>(newline)<br/><br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1199">
+                                <div class="detail" id="1200">
                                     <h1>nfirst</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2924,7 +2956,7 @@
                                         <code>(nil? nil)<br/>=&gt; true<br/><br/>(nil? 0)<br/>=&gt; false<br/><br/>(nil? false)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1200">
+                                <div class="detail" id="1201">
                                     <h1>nlast</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -2966,7 +2998,7 @@
                                         <code>(empty? {:a 1})<br/>=&gt; false<br/><br/>(empty? [1 2])<br/>=&gt; false<br/><br/>(empty? &apos;(1 2))<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1194">
+                                <div class="detail" id="1195">
                                     <h1>nth</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3022,7 +3054,7 @@
                                         <code>(or true false)<br/>=&gt; true<br/><br/>(or false false)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1237">
+                                <div class="detail" id="1238">
                                     <h1>ordered-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3036,7 +3068,7 @@
                                         <code>(ordered-map :a 1 :b 2)<br/>=&gt; {:a 1 :b 2}<br/><br/>(ordered-map (hash-map :a 1 :b 2))<br/>=&gt; {:a 1 :b 2}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1184">
+                                <div class="detail" id="1185">
                                     <h1>ordered-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3050,7 +3082,7 @@
                                         <code>(ordered-map? (ordered-map :a 1 :b 2))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1270">
+                                <div class="detail" id="1271">
                                     <h1>os</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3064,7 +3096,7 @@
                                         <code>(os)<br/>=&gt; :mac-osx</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1268">
+                                <div class="detail" id="1269">
                                     <h1>os?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3092,7 +3124,7 @@
                                         <code>(do <br/>   (def hundred-times (partial * 100)) <br/>   (hundred-times 5))<br/>=&gt; 500</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1226">
+                                <div class="detail" id="1227">
                                     <h1>partition</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3106,7 +3138,7 @@
                                         <code>(partition 4 (range 20))<br/>=&gt; ((0 1 2 3) (4 5 6 7) (8 9 10 11) (12 13 14 15) (16 17 18 19))<br/><br/>(partition 4 6 (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19))<br/><br/>(partition 3 6 [&quot;a&quot;] (range 20))<br/>=&gt; ((0 1 2) (6 7 8) (12 13 14) (18 19 &quot;a&quot;))<br/><br/>(partition 4 6 [&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;] (range 20))<br/>=&gt; ((0 1 2 3) (6 7 8 9) (12 13 14 15) (18 19 &quot;a&quot; &quot;b&quot;))</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1196">
+                                <div class="detail" id="1197">
                                     <h1>peek</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3120,7 +3152,7 @@
                                         <code>(peek &apos;(1 2 3 4))<br/>=&gt; 1<br/><br/>(peek [1 2 3 4])<br/>=&gt; 4</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1202">
+                                <div class="detail" id="1203">
                                     <h1>pop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3148,7 +3180,7 @@
                                         <code>(pos? 3)<br/>=&gt; true<br/><br/>(pos? -3)<br/>=&gt; false<br/><br/>(pos? 3.2)<br/>=&gt; true<br/><br/>(pos? 3.2M)<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1284">
+                                <div class="detail" id="1285">
                                     <h1>pr-str</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3162,7 +3194,7 @@
                                         <code>(pr-str )<br/>=&gt; &quot;&quot;<br/><br/>(pr-str 1 2 3)<br/>=&gt; &quot;1 2 3&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1280">
+                                <div class="detail" id="1281">
                                     <h1>print</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3176,7 +3208,7 @@
                                         <code>(print [10 20 30])<br/>[10 20 30]<br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1281">
+                                <div class="detail" id="1282">
                                     <h1>println</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3190,7 +3222,7 @@
                                         <code>(do (println 200) (println [10 20 30]))<br/>200<br/>[10 20 30]<br/>=&gt; nil</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1261">
+                                <div class="detail" id="1262">
                                     <h1>promise</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3204,7 +3236,7 @@
                                         <code>(do                                        <br/>   (def p (promise))                       <br/>   (def task (fn []                        <br/>                 (do                       <br/>                    (sleep 500)            <br/>                    (deliver p 123))))     <br/>                                           <br/>   (future task)                           <br/>   (deref p))<br/>=&gt; 123</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1262">
+                                <div class="detail" id="1263">
                                     <h1>promise?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3218,7 +3250,7 @@
                                         <code>(promise? (promise)))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1279">
+                                <div class="detail" id="1280">
                                     <h1>proxify</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3243,7 +3275,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. Without argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.989960687488757<br/><br/>(rand-double 100.0)<br/>=&gt; 7.371734887430081</code>
+                                        <code>(rand-double)<br/>=&gt; 0.033878980794762925<br/><br/>(rand-double 100.0)<br/>=&gt; 12.212633750568692</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1029">
@@ -3257,7 +3289,7 @@
                                         <code>Without argument returns a Gaussion distributed double value with mean 0.0 and standard deviation 1.0. With argument mean and stddev returns a Gaussion distributed double value with the given mean and standard deviation.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-gaussian)<br/>=&gt; 0.40920792131087697<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; -0.7643837595503888</code>
+                                        <code>(rand-gaussian)<br/>=&gt; 0.46856961806560105<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; 2.6468941987245813</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1027">
@@ -3271,10 +3303,10 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. Without argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 1204663776930281692<br/><br/>(rand-long 100)<br/>=&gt; 80</code>
+                                        <code>(rand-long)<br/>=&gt; 3521043980779464146<br/><br/>(rand-long 100)<br/>=&gt; 48</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1174">
+                                <div class="detail" id="1175">
                                     <h1>range</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3288,7 +3320,7 @@
                                         <code>(range 10)<br/>=&gt; (0 1 2 3 4 5 6 7 8 9)<br/><br/>(range 10 20)<br/>=&gt; (10 11 12 13 14 15 16 17 18 19)<br/><br/>(range 10 20 3)<br/>=&gt; (10 13 16 19)<br/><br/>(range 10 15 0.5)<br/>=&gt; (10 10.5 11.0 11.5 12.0 12.5 13.0 13.5 14.0 14.5)<br/><br/>(range 1.1M 2.2M 0.1M)<br/>=&gt; (1.1M 1.2M 1.3M 1.4M 1.5M 1.6M 1.7M 1.8M 1.9M 2.0M 2.1M)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1286">
+                                <div class="detail" id="1287">
                                     <h1>read-string</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3302,7 +3334,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1285">
+                                <div class="detail" id="1286">
                                     <h1>readline</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3330,7 +3362,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1209">
+                                <div class="detail" id="1210">
                                     <h1>reduce</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3344,7 +3376,7 @@
                                         <code>(reduce (fn [x y] (+ x y)) [1 2 3 4 5 6 7])<br/>=&gt; 28<br/><br/>(reduce (fn [x y] (+ x y)) 10 [1 2 3 4 5 6 7])<br/>=&gt; 38</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1248">
+                                <div class="detail" id="1249">
                                     <h1>reduce-kv</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3386,7 +3418,21 @@
                                         <code>(repeat 5 [1 2])<br/>=&gt; ([1 2] [1 2] [1 2] [1 2] [1 2])</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1253">
+                                <div class="detail" id="1174">
+                                    <h1>repeatedly</h1>
+                                    <div class="arglists">
+                                        <div class="arglist">
+                                          <code>(repeatedly n fn)</code>                          
+                                        </div>
+                                    </div>
+                                    <div class="descr">
+                                        <code>Takes a function of no args, presumably with side effects, andreturns lazy sequence of n calls to it</code>
+                                    </div>
+                                    <div class="examples">
+                                        <code>(repeatedly 5 (fn [] (rand-long 11)))<br/>=&gt; (8 5 6 6 7)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (7 7 7 7 7)</code>
+                                    </div>
+                                </div>
+                                <div class="detail" id="1254">
                                     <h1>reset!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3400,7 +3446,7 @@
                                         <code>(do<br/>   (def counter (atom 0))<br/>   (reset! counter 99)<br/>   (deref counter))<br/>=&gt; 99</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1197">
+                                <div class="detail" id="1198">
                                     <h1>rest</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3414,7 +3460,7 @@
                                         <code>(rest nil)<br/>=&gt; nil<br/><br/>(rest [])<br/>=&gt; []<br/><br/>(rest [1])<br/>=&gt; []<br/><br/>(rest [1 2 3])<br/>=&gt; [2 3]<br/><br/>(rest &apos;())<br/>=&gt; ()<br/><br/>(rest &apos;(1))<br/>=&gt; ()<br/><br/>(rest &apos;(1 2 3))<br/>=&gt; (2 3)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1210">
+                                <div class="detail" id="1211">
                                     <h1>reverse</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3428,7 +3474,7 @@
                                         <code>(reverse [1 2 3 4 5 6])<br/>=&gt; [6 5 4 3 2 1]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1267">
+                                <div class="detail" id="1268">
                                     <h1>sandboxed?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3442,7 +3488,7 @@
                                         <code>(sandboxed? )<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1193">
+                                <div class="detail" id="1194">
                                     <h1>second</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3456,7 +3502,7 @@
                                         <code>(second nil)<br/>=&gt; nil<br/><br/>(second [])<br/>=&gt; nil<br/><br/>(second [1 2 3])<br/>=&gt; 2<br/><br/>(second &apos;())<br/>=&gt; nil<br/><br/>(second &apos;(1 2 3))<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1208">
+                                <div class="detail" id="1209">
                                     <h1>seq</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3470,7 +3516,7 @@
                                         <code>(seq nil)<br/>=&gt; nil<br/><br/>(seq [1 2 3])<br/>=&gt; (1 2 3)<br/><br/>(seq &apos;(1 2 3))<br/>=&gt; (1 2 3)<br/><br/>(seq {:a 1 :b 2})<br/>=&gt; ([:a 1] [:b 2])<br/><br/>(seq &quot;abcd&quot;)<br/>=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;)</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1182">
+                                <div class="detail" id="1183">
                                     <h1>sequential?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3484,7 +3530,7 @@
                                         <code>(sequential? &apos;(1))<br/>=&gt; true<br/><br/>(sequential? [1])<br/>=&gt; true<br/><br/>(sequential? {:a 1})<br/>=&gt; false<br/><br/>(sequential? nil)<br/>=&gt; false<br/><br/>(sequential? &quot;abc&quot;)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1231">
+                                <div class="detail" id="1232">
                                     <h1>set</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3498,7 +3544,7 @@
                                         <code>(set )<br/>=&gt; #{}<br/><br/>(set nil)<br/>=&gt; #{nil}<br/><br/>(set 1)<br/>=&gt; #{1}<br/><br/>(set 1 2 3)<br/>=&gt; #{1 2 3}<br/><br/>(set [1 2] 3)<br/>=&gt; #{[1 2] 3}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1180">
+                                <div class="detail" id="1181">
                                     <h1>set?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3512,7 +3558,7 @@
                                         <code>(set? (set 1))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1277">
+                                <div class="detail" id="1278">
                                     <h1>sh</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3526,7 +3572,7 @@
                                         <code>(println (sh &quot;ls&quot; &quot;-l&quot;))<br/><br/>(println (sh &quot;ls&quot; &quot;-l&quot; &quot;/tmp&quot;))<br/><br/>(println (sh &quot;sed&quot; &quot;s/[aeiou]/oo/g&quot; :in &quot;hello there\n&quot;))<br/><br/>(println (sh &quot;cat&quot; :in &quot;x\u25bax\n&quot;))<br/><br/>(println (sh &quot;echo&quot; &quot;x\u25bax&quot;))<br/><br/>(println (sh &quot;/bin/sh&quot; &quot;-c&quot; &quot;ls -l&quot;))<br/><br/>;; reads 4 single-byte chars<br/>(println (sh &quot;echo&quot; &quot;x\u25bax&quot; :out-enc &quot;ISO-8859-1&quot;))<br/><br/>;; reads binary file into bytes[]<br/>(println (sh &quot;cat&quot; &quot;birds.jpg&quot; :out-enc :bytes))<br/><br/>;; working directory<br/>(println (with-sh-dir &quot;/tmp&quot; (sh &quot;ls&quot; &quot;-l&quot;) (sh &quot;pwd&quot;)))<br/><br/>;; windows<br/>(println (sh &quot;cmd&quot; &quot;/c dir 1&gt;&amp;2&quot;))</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1273">
+                                <div class="detail" id="1274">
                                     <h1>sleep</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3554,7 +3600,7 @@
                                         <code>(some? nil)<br/>=&gt; false<br/><br/>(some? 0)<br/>=&gt; true<br/><br/>(some? 4.0)<br/>=&gt; true<br/><br/>(some? false)<br/>=&gt; true<br/><br/>(some? [])<br/>=&gt; true<br/><br/>(some? {})<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1211">
+                                <div class="detail" id="1212">
                                     <h1>sort</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3568,7 +3614,7 @@
                                         <code>(sort [3 2 5 4 1 6])<br/>=&gt; [1 2 3 4 5 6]<br/><br/>(sort {:c 3 :a 1 :b 2})<br/>=&gt; ([:a 1] [:b 2] [:c 3])</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1212">
+                                <div class="detail" id="1213">
                                     <h1>sort-by</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3582,7 +3628,7 @@
                                         <code>(sort-by count [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])<br/>=&gt; [&quot;c&quot; &quot;bb&quot; &quot;aaa&quot;]<br/><br/>(sort-by first [[1 2] [3 4] [2 3]])<br/>=&gt; [[1 2] [2 3] [3 4]]<br/><br/>(sort-by (fn [x] (get x :rank)) [{:rank 2} {:rank 3} {:rank 1}])<br/>=&gt; [{:rank 1} {:rank 2} {:rank 3}]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1238">
+                                <div class="detail" id="1239">
                                     <h1>sorted-map</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3596,7 +3642,7 @@
                                         <code>(sorted-map :a 1 :b 2)<br/>=&gt; {:a 1 :b 2}<br/><br/>(sorted-map (hash-map :a 1 :b 2))<br/>=&gt; {:a 1 :b 2}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1185">
+                                <div class="detail" id="1186">
                                     <h1>sorted-map?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -3610,7 +3656,7 @@
                                         <code>(sorted-map? (sorted-map :a 1 :b 2))<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1217">
+                                <div class="detail" id="1218">
                                     <h1>split-with</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4002,7 +4048,7 @@
                                         <code>(bytebuf? (bytebuf [1 2]))<br/>=&gt; true<br/><br/>(bytebuf? [1 2])<br/>=&gt; false<br/><br/>(bytebuf? nil)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1223">
+                                <div class="detail" id="1224">
                                     <h1>subvec</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4016,7 +4062,7 @@
                                         <code>(subvec [1 2 3 4 5 6] 2)<br/>=&gt; [3 4 5 6]<br/><br/>(subvec [1 2 3 4 5 6] 4)<br/>=&gt; [5 6]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1254">
+                                <div class="detail" id="1255">
                                     <h1>swap!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4058,7 +4104,7 @@
                                         <code>(symbol? (symbol &quot;a&quot;))<br/>=&gt; true<br/><br/>(symbol? &apos;a)<br/>=&gt; true<br/><br/>(symbol? nil)<br/>=&gt; false<br/><br/>(symbol? :a)<br/>=&gt; false</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1271">
+                                <div class="detail" id="1272">
                                     <h1>system-prop</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4069,10 +4115,10 @@
                                         <code>Returns the system property with the given name. Returns the default-val if the property does not exist or it&apos;s value is nil</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(system-prop :os.name)<br/>=&gt; &quot;Mac OS X&quot;<br/><br/>(system-prop :foo.org &quot;abc&quot;)<br/>=&gt; &quot;abc&quot;</code>
+                                        <code>(system-prop :os.name)<br/>=&gt; &quot;Mac OS X&quot;<br/><br/>(system-prop :foo.org &quot;abc&quot;)<br/>=&gt; &quot;abc&quot;<br/><br/>(system-prop &quot;os.name&quot;)<br/>=&gt; &quot;Mac OS X&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1213">
+                                <div class="detail" id="1214">
                                     <h1>take</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4086,7 +4132,7 @@
                                         <code>(take 3 [1 2 3 4 5])<br/>=&gt; [1 2 3]<br/><br/>(take 10 [1 2 3 4 5])<br/>=&gt; [1 2 3 4 5]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1214">
+                                <div class="detail" id="1215">
                                     <h1>take-while</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4100,7 +4146,7 @@
                                         <code>(take-while neg? [-2 -1 0 1 2 3])<br/>=&gt; [-2 -1]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1264">
+                                <div class="detail" id="1265">
                                     <h1>thread-local</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4114,7 +4160,7 @@
                                         <code>(thread-local :a 1 :b 2)<br/>=&gt; ThreadLocal<br/><br/>(thread-local { :a 1 :b 2 })<br/>=&gt; ThreadLocal<br/><br/>(do <br/>   (thread-local-clear) <br/>   (assoc (thread-local) :a 1 :b 2) <br/>   (dissoc (thread-local) :a) <br/>   (get (thread-local) :b 100) <br/>)<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1266">
+                                <div class="detail" id="1267">
                                     <h1>thread-local-clear</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4128,7 +4174,7 @@
                                         <code>(thread-local-clear)<br/>=&gt; thread-local-clear</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1265">
+                                <div class="detail" id="1266">
                                     <h1>thread-local?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4209,7 +4255,7 @@
                                         <code>Creates a new date. A date is represented by &apos;java.util.Date&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/date)<br/>=&gt; Mon Sep 03 12:08:31 CEST 2018</code>
+                                        <code>(time/date)<br/>=&gt; Thu Sep 06 12:32:44 CEST 2018</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1083">
@@ -4237,7 +4283,7 @@
                                         <code>Returns the day of the month (1..31)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/day-of-month (time/local-date))<br/>=&gt; 3<br/><br/>(time/day-of-month (time/local-date-time))<br/>=&gt; 3<br/><br/>(time/day-of-month (time/zoned-date-time))<br/>=&gt; 3</code>
+                                        <code>(time/day-of-month (time/local-date))<br/>=&gt; 6<br/><br/>(time/day-of-month (time/local-date-time))<br/>=&gt; 6<br/><br/>(time/day-of-month (time/zoned-date-time))<br/>=&gt; 6</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1095">
@@ -4251,7 +4297,7 @@
                                         <code>Returns the day of the week (:MONDAY ... :SUNDAY)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/day-of-week (time/local-date))<br/>=&gt; :MONDAY<br/><br/>(time/day-of-week (time/local-date-time))<br/>=&gt; :MONDAY<br/><br/>(time/day-of-week (time/zoned-date-time))<br/>=&gt; :MONDAY</code>
+                                        <code>(time/day-of-week (time/local-date))<br/>=&gt; :THURSDAY<br/><br/>(time/day-of-week (time/local-date-time))<br/>=&gt; :THURSDAY<br/><br/>(time/day-of-week (time/zoned-date-time))<br/>=&gt; :THURSDAY</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1097">
@@ -4265,7 +4311,7 @@
                                         <code>Returns the day of the year (1..366)</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/day-of-year (time/local-date))<br/>=&gt; 246<br/><br/>(time/day-of-year (time/local-date-time))<br/>=&gt; 246<br/><br/>(time/day-of-year (time/zoned-date-time))<br/>=&gt; 246</code>
+                                        <code>(time/day-of-year (time/local-date))<br/>=&gt; 249<br/><br/>(time/day-of-year (time/local-date-time))<br/>=&gt; 249<br/><br/>(time/day-of-year (time/zoned-date-time))<br/>=&gt; 249</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1116">
@@ -4307,7 +4353,7 @@
                                         <code>Formats a date with a format</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;03-09-2018&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2018-09-03T12:08:31.963CEST&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2018-09-03T12:08:31.965+02:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2018-09-03T12:08:31.967CEST&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2018-09-03T12:08:31.968+02:00&quot;</code>
+                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;06-09-2018&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2018-09-06T12:32:44.338CEST&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2018-09-06T12:32:44.34+02:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2018-09-06T12:32:44.341CEST&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2018-09-06T12:32:44.343+02:00&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1103">
@@ -4377,7 +4423,7 @@
                                         <code>Creates a new local-date. A local-date is represented by &apos;java.time.LocalDate&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/local-date)<br/>=&gt; 2018-09-03<br/><br/>(time/local-date 2018 8 1)<br/>=&gt; 2018-08-01<br/><br/>(time/local-date &quot;2018-08-01&quot;)<br/>=&gt; 2018-08-01<br/><br/>(time/local-date 1375315200000)<br/>=&gt; 2013-08-01<br/><br/>(time/local-date (. :java.util.Date :new))<br/>=&gt; 2018-09-03</code>
+                                        <code>(time/local-date)<br/>=&gt; 2018-09-06<br/><br/>(time/local-date 2018 8 1)<br/>=&gt; 2018-08-01<br/><br/>(time/local-date &quot;2018-08-01&quot;)<br/>=&gt; 2018-08-01<br/><br/>(time/local-date 1375315200000)<br/>=&gt; 2013-08-01<br/><br/>(time/local-date (. :java.util.Date :new))<br/>=&gt; 2018-09-06</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1086">
@@ -4405,7 +4451,7 @@
                                         <code>Creates a new local-date-time. A local-date-time is represented by &apos;java.time.LocalDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/local-date-time)<br/>=&gt; 2018-09-03T12:08:31.830<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2018-09-03T12:08:31.843</code>
+                                        <code>(time/local-date-time)<br/>=&gt; 2018-09-06T12:32:44.204<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2018-09-06T12:32:44.219</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1089">
@@ -4461,7 +4507,7 @@
                                         <code>Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2018-09-01<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2018-09-01T12:08:31.987<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-09-01T12:08:31.988+02:00[Europe/Zurich]</code>
+                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2018-09-04<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2018-09-04T12:32:44.363<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-09-04T12:32:44.364+02:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1099">
@@ -4475,7 +4521,7 @@
                                         <code>Returns the minute of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 8<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 8</code>
+                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 32<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 32</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1094">
@@ -4545,7 +4591,7 @@
                                         <code>Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2018-09-05<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2018-09-05T12:08:31.983<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-09-05T12:08:31.984+02:00[Europe/Zurich]</code>
+                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2018-09-08<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2018-09-08T12:32:44.358<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-09-08T12:32:44.360+02:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1100">
@@ -4559,7 +4605,7 @@
                                         <code>Returns the second of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 31<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 31</code>
+                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 44<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 44</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1119">
@@ -4573,7 +4619,7 @@
                                         <code>Converts the passed date to milliseconds since epoch</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/to-millis (time/local-date))<br/>=&gt; 1535925600000</code>
+                                        <code>(time/to-millis (time/local-date))<br/>=&gt; 1536184800000</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1110">
@@ -4587,7 +4633,7 @@
                                         <code>Sets the time of a date. Returns a new date</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/with-time (time/local-date) 22 00 15 333)<br/>=&gt; 2018-09-03T22:00:15.333<br/><br/>(time/with-time (time/local-date-time) 22 00 15 333)<br/>=&gt; 2018-09-03T22:00:15.333<br/><br/>(time/with-time (time/zoned-date-time) 22 00 15 333)<br/>=&gt; 2018-09-03T22:00:15.333+02:00[Europe/Zurich]</code>
+                                        <code>(time/with-time (time/local-date) 22 00 15 333)<br/>=&gt; 2018-09-06T22:00:15.333<br/><br/>(time/with-time (time/local-date-time) 22 00 15 333)<br/>=&gt; 2018-09-06T22:00:15.333<br/><br/>(time/with-time (time/zoned-date-time) 22 00 15 333)<br/>=&gt; 2018-09-06T22:00:15.333+02:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1109">
@@ -4671,7 +4717,7 @@
                                         <code>Creates a new zoned-date-time. A zoned-date-time is represented by &apos;java.time.ZonedDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/zoned-date-time)<br/>=&gt; 2018-09-03T12:08:31.853+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2018-09-03T12:08:31.868+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2018-09-03T10:08:31.870Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2018-09-03T10:08:31.884Z[UTC]</code>
+                                        <code>(time/zoned-date-time)<br/>=&gt; 2018-09-06T12:32:44.229+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2018-09-06T12:32:44.245+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2018-09-06T10:32:44.247Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2018-09-06T10:32:44.260Z[UTC]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1092">
@@ -4758,7 +4804,7 @@
                                         <code>(type 5)<br/>=&gt; &quot;venice.Long&quot;<br/><br/>(type (. :java.time.ZonedDateTime :now))<br/>=&gt; &quot;venice.JavaObject(java.time.ZonedDateTime)&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1233">
+                                <div class="detail" id="1234">
                                     <h1>union</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4772,7 +4818,7 @@
                                         <code>(union (set 1 2 3))<br/>=&gt; #{1 2 3}<br/><br/>(union (set 1 2) (set 2 3))<br/>=&gt; #{1 2 3}<br/><br/>(union (set 1 2 3) (set 1 2) (set 1 4) (set 3))<br/>=&gt; #{1 2 3 4}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1228">
+                                <div class="detail" id="1229">
                                     <h1>update</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4786,7 +4832,7 @@
                                         <code>(update [] 0 (fn [x] 5))<br/>=&gt; [5]<br/><br/>(update [0 1 2] 0 (fn [x] 5))<br/>=&gt; [5 1 2]<br/><br/>(update [0 1 2] 0 (fn [x] (+ x 1)))<br/>=&gt; [1 1 2]<br/><br/>(update {} :a (fn [x] 5))<br/>=&gt; {:a 5}<br/><br/>(update {:a 0} :b (fn [x] 5))<br/>=&gt; {:a 0 :b 5}<br/><br/>(update {:a 0 :b 1} :a (fn [x] 5))<br/>=&gt; {:a 5 :b 1}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1229">
+                                <div class="detail" id="1230">
                                     <h1>update!</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4800,7 +4846,7 @@
                                         <code>(update! [] 0 (fn [x] 5))<br/>=&gt; [5]<br/><br/>(update! [0 1 2] 0 (fn [x] 5))<br/>=&gt; [5 1 2]<br/><br/>(update! [0 1 2] 0 (fn [x] (+ x 1)))<br/>=&gt; [1 1 2]<br/><br/>(update! {} :a (fn [x] 5))<br/>=&gt; {:a 5}<br/><br/>(update! {:a 0} :b (fn [x] 5))<br/>=&gt; {:a 0 :b 5}<br/><br/>(update! {:a 0 :b 1} :a (fn [x] 5))<br/>=&gt; {:a 5 :b 1}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1272">
+                                <div class="detail" id="1273">
                                     <h1>uuid</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4811,10 +4857,10 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; &quot;a5277a5f-446c-498f-a2c2-61edb97fe72b&quot;</code>
+                                        <code>(uuid )<br/>=&gt; &quot;3542a9f9-f4d2-407e-ae94-c07c45823de5&quot;</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1245">
+                                <div class="detail" id="1246">
                                     <h1>val</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4828,7 +4874,7 @@
                                         <code>(val (find {:a 1 :b 2} :b))<br/>=&gt; 2</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1243">
+                                <div class="detail" id="1244">
                                     <h1>vals</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4856,7 +4902,7 @@
                                         <code></code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1221">
+                                <div class="detail" id="1222">
                                     <h1>vector</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4870,7 +4916,7 @@
                                         <code>(vector )<br/>=&gt; []<br/><br/>(vector 1 2 3)<br/>=&gt; [1 2 3]<br/><br/>(vector 1 2 3 [:a :b])<br/>=&gt; [1 2 3 [:a :b]]</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1179">
+                                <div class="detail" id="1180">
                                     <h1>vector?</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4884,7 +4930,7 @@
                                         <code>(vector? (vector 1 2))<br/>=&gt; true<br/><br/>(vector? [1 2])<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1269">
+                                <div class="detail" id="1270">
                                     <h1>version</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4895,7 +4941,7 @@
                                         <code>Returns the version.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(version )<br/>=&gt; &quot;0.9.2&quot;</code>
+                                        <code>(version )<br/>=&gt; &quot;0.9.3&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1140">
@@ -4968,7 +5014,7 @@
                                         <code>(zero? 0)<br/>=&gt; true<br/><br/>(zero? 2)<br/>=&gt; false<br/><br/>(zero? 0.0)<br/>=&gt; true<br/><br/>(zero? 0.0M)<br/>=&gt; true</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1239">
+                                <div class="detail" id="1240">
                                     <h1>zipmap</h1>
                                     <div class="arglists">
                                         <div class="arglist">
@@ -4982,7 +5028,7 @@
                                         <code>(zipmap [:a :b :c :d :e] [1 2 3 4 5])<br/>=&gt; {:a 1 :b 2 :c 3 :d 4 :e 5}<br/><br/>(zipmap [:a :b :c] [1 2 3 4 5])<br/>=&gt; {:a 1 :b 2 :c 3}</code>
                                     </div>
                                 </div>
-                                <div class="detail" id="1235">
+                                <div class="detail" id="1236">
                                     <h1>{}</h1>
                                     <div class="arglists">
                                         <div class="arglist">
