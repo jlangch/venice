@@ -151,7 +151,7 @@ public interface IVeniceInterceptor {
 	/**
 	 * Reads a Java system property
 	 * 
-	 * @param propertyName a proprty name (e.g: user.home)
+	 * @param propertyName a property name (e.g: user.home)
 	 * @return the property's value
 	 * @throws SecurityException if the property is not whitelisted
 	 */
