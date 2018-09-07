@@ -34,7 +34,7 @@ public abstract class Interceptor implements IInterceptor {
 			final Object receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		return invoker.callInstanceMethod(receiver, method, args);
 	}
 
@@ -44,7 +44,7 @@ public abstract class Interceptor implements IInterceptor {
 			final Class<?> receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		return invoker.callStaticMethod(receiver, method, args);
 	}
 
@@ -53,7 +53,7 @@ public abstract class Interceptor implements IInterceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		return invoker.callConstructor(receiver, args);
 	}
 
@@ -62,7 +62,7 @@ public abstract class Interceptor implements IInterceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
-	) {
+	) throws SecurityException {
 		return invoker.getBeanProperty(receiver, property);
 	}
 
@@ -72,7 +72,7 @@ public abstract class Interceptor implements IInterceptor {
 			final Object receiver, 
 			final String property, 
 			final Object value
-	) {
+	) throws SecurityException {
 		invoker.setBeanProperty(receiver, property, value);
 	}
 
@@ -81,7 +81,7 @@ public abstract class Interceptor implements IInterceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		return invoker.getStaticField(receiver, fieldName);
 	}
 
@@ -90,19 +90,23 @@ public abstract class Interceptor implements IInterceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		return invoker.getInstanceField(receiver, fieldName);
 	}
 
 	@Override
-	public byte[] onLoadClassPathResource(final String resourceName) {
+	public byte[] onLoadClassPathResource(
+			final String resourceName
+	) throws SecurityException {
 		return StringUtil.isBlank(resourceName) 
 					? null
 					: new ClassPathResource(resourceName).getResourceAsBinary();
 	}
 
 	@Override
-	public String onReadSystemProperty(final String propertyName) {
+	public String onReadSystemProperty(
+			final String propertyName
+	) throws SecurityException {
 		return StringUtil.isBlank(propertyName) 
 				? null
 				: System.getProperty(propertyName);
@@ -112,7 +116,7 @@ public abstract class Interceptor implements IInterceptor {
 	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
-	) {
+	) throws SecurityException {
 		// ok,  no black listed Venice functions
 	}
 

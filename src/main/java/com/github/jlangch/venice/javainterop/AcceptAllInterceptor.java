@@ -23,7 +23,8 @@ package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
-public class AcceptAllInterceptor extends ValueFilterInterceptor {
+
+public class AcceptAllInterceptor extends Interceptor {
 	
 	public AcceptAllInterceptor() {
 	}
@@ -35,7 +36,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final Object receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
 	}
 
@@ -45,7 +46,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final Class<?> receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
 	}
 
@@ -54,7 +55,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver,
 			final Object... args
-	) {
+	) throws SecurityException {
 		return super.onInvokeConstructor(invoker, receiver, args);
 	}
 
@@ -63,7 +64,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
-	) {
+	) throws SecurityException {
 		return super.onGetBeanProperty(invoker, receiver, property);
 	}
 
@@ -73,7 +74,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final Object receiver, 
 			final String property, 
 			final Object value
-	) {
+	) throws SecurityException {
 		super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
@@ -82,7 +83,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		return super.onGetStaticField(invoker, receiver, fieldName);
 	}
 
@@ -91,17 +92,21 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
 
 	@Override
-	public byte[] onLoadClassPathResource(final String resourceName) {
+	public byte[] onLoadClassPathResource(
+			final String resourceName
+	) throws SecurityException {
 		return super.onLoadClassPathResource(resourceName);
 	}
 
 	@Override
-	public String onReadSystemProperty(final String propertyName) {
+	public String onReadSystemProperty(
+			final String propertyName
+	) throws SecurityException {
 		return super.onReadSystemProperty(propertyName);
 	}
 
@@ -109,7 +114,7 @@ public class AcceptAllInterceptor extends ValueFilterInterceptor {
 	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
-	) {
+	) throws SecurityException {
 		super.validateBlackListedVeniceFunction(funcName, args);
 	}
 }

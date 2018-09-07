@@ -30,7 +30,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final Object receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, method);
 		return filterReturnValue(
 				super.onInvokeInstanceMethod(
@@ -43,7 +43,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final Class<?> receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, method);
 		return filterReturnValue(
 				super.onInvokeStaticMethod(
@@ -55,7 +55,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, "new");
 		return filterReturnValue(
 				super.onInvokeConstructor(
@@ -67,7 +67,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, property);
 		return filterReturnValue(
 				super.onGetBeanProperty(
@@ -80,7 +80,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final Object receiver, 
 			final String property, 
 			final Object value
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, property);
 		super.onSetBeanProperty(
 					invoker, receiver, property, filterArgument(value));
@@ -91,7 +91,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, fieldName);
 		return filterReturnValue(
 				super.onGetStaticField(
@@ -103,7 +103,7 @@ public class ValueFilterInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		filterAccessor(receiver, fieldName);
 		return filterReturnValue(
 				super.onGetInstanceField(

@@ -45,55 +45,90 @@ public class SandboxRecorder extends Interceptor {
 
 
 	@Override
-	public Object onInvokeInstanceMethod(final IInvoker invoker, final Object receiver, final String method, final Object... args) {
+	public Object onInvokeInstanceMethod(
+			final IInvoker invoker, 
+			final Object receiver, 
+			final String method, 
+			final Object... args
+	) throws SecurityException {
 		format("%s:%s(%s)", type(receiver), method, arguments(args));
 		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
 	}
 
 	@Override
-	public Object onInvokeStaticMethod(final IInvoker invoker, final Class<?> receiver, final String method, final Object... args) {
+	public Object onInvokeStaticMethod(
+			final IInvoker invoker, 
+			final Class<?> receiver, 
+			final String method, 
+			final Object... args
+	) throws SecurityException {
 		format("%s:%s(%s)", type(receiver), method, arguments(args));
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
 	}
 
 	@Override
-	public Object onInvokeConstructor(final IInvoker invoker, final Class<?> receiver, final Object... args) {
+	public Object onInvokeConstructor(
+			final IInvoker invoker, 
+			final Class<?> receiver, 
+			final Object... args
+	) throws SecurityException {
 		format("new %s(%s)", type(receiver), arguments(args));
 		return super.onInvokeConstructor(invoker, receiver, args);
 	}
 
 	@Override
-	public Object onGetBeanProperty(final IInvoker invoker, final Object receiver, final String property) {
+	public Object onGetBeanProperty(
+			final IInvoker invoker, 
+			final Object receiver, 
+			final String property
+	) throws SecurityException {
 		format("%s.!%s", type(receiver), property);
 		return super.onGetBeanProperty(invoker, receiver,property);
 	}
 
 	@Override
-	public void onSetBeanProperty(final IInvoker invoker, final Object receiver, final String property, final Object value) {
+	public void onSetBeanProperty(
+			final IInvoker invoker, 
+			final Object receiver, 
+			final String property, 
+			final Object value
+	) throws SecurityException {
 		format("%s.!%s=%s", type(receiver), property, type(value));
 		super.onSetBeanProperty(invoker, receiver, property, value);
 	}
 
 	@Override
-	public Object onGetStaticField(final IInvoker invoker, final Class<?> receiver, final String fieldName) {
+	public Object onGetStaticField(
+			final IInvoker invoker, 
+			final Class<?> receiver, 
+			final String fieldName
+	) throws SecurityException {
 		format("%s.@%s", type(receiver), fieldName);
 		return super.onGetStaticField(invoker, receiver, fieldName);
 	}
 
 	@Override
-	public Object onGetInstanceField(final IInvoker invoker, final Object receiver, final String fieldName) {
+	public Object onGetInstanceField(
+			final IInvoker invoker, 
+			final Object receiver, 
+			final String fieldName
+	) throws SecurityException {
 		format("%s.%s", type(receiver), fieldName);
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
 
 	@Override
-	public byte[] onLoadClassPathResource(final String resourceName) {
+	public byte[] onLoadClassPathResource(
+			final String resourceName
+	) throws SecurityException {
 		format("classpath:%s", resourceName);
 		return super.onLoadClassPathResource(resourceName);
 	}
 
 	@Override
-	public String onReadSystemProperty(final String propertyName) {
+	public String onReadSystemProperty(
+			final String propertyName
+	) throws SecurityException {
 		format("system.property:propertyName", propertyName);
 		return super.onReadSystemProperty(propertyName);
 	}
@@ -105,10 +140,10 @@ public class SandboxRecorder extends Interceptor {
 		writer.flush();
 	}
 	
-	private String type(final Object o) {
-		return o == null 
+	private String type(final Object obj) {
+		return obj == null 
 				 ? "null" 
-				 : (isClass(o) ? type((Class<?>)o) : type(o.getClass()));
+				 : (isClass(obj) ? type((Class<?>)obj) : type(obj.getClass()));
 	}
 	
 	private String type(final Class<?> c) {
@@ -130,11 +165,10 @@ public class SandboxRecorder extends Interceptor {
 					 .collect(Collectors.joining(","));
 	}
 
-	private boolean isClass(final Object o) {
-		return o instanceof Class;
+	private boolean isClass(final Object obj) {
+		return obj instanceof Class;
 	}
 
  
 	private final PrintWriter writer;
-
 }

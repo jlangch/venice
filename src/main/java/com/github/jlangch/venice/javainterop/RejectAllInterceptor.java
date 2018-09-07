@@ -35,7 +35,7 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 					"Access denied to target %s", 
 					receiver.getClass().getName()));
@@ -47,7 +47,7 @@ public class RejectAllInterceptor extends Interceptor {
 			final Class<?> receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Access denied to target %s", 
 				receiver.getName()));
@@ -58,7 +58,7 @@ public class RejectAllInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver,
 			final Object... args
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Access denied to target %s", 
 				receiver.getName()));
@@ -69,7 +69,7 @@ public class RejectAllInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Access denied to target %s", 
 				receiver.getClass().getName()));
@@ -81,7 +81,7 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object receiver, 
 			final String property, 
 			final Object value
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Access denied to target %s", 
 				receiver.getClass().getName()));
@@ -92,7 +92,7 @@ public class RejectAllInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Access denied to target %s", 
 				receiver.getName()));
@@ -103,21 +103,25 @@ public class RejectAllInterceptor extends Interceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Access denied to target %s", 
 				receiver.getClass().getName()));
 	}
 
 	@Override
-	public byte[] onLoadClassPathResource(final String resourceName) {
+	public byte[] onLoadClassPathResource(
+			final String resourceName
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Venice Sandbox: Access denied to classpath resource '%s'", 
 				resourceName));
 	}
 
 	@Override
-	public String onReadSystemProperty(final String propertyName) {
+	public String onReadSystemProperty(
+			final String propertyName
+	) throws SecurityException {
 		throw new SecurityException(String.format(
 				"Venice Sandbox: Access denied to system property '%s'", 
 				propertyName));
@@ -127,7 +131,7 @@ public class RejectAllInterceptor extends Interceptor {
 	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
-	) {
+	) throws SecurityException {
 		if (blacklistedVeniceFunctions.contains(funcName)) {
 			throw new SecurityException(String.format(
 					"Access denied to Venice function %s. (reject-all sandbox)", funcName));

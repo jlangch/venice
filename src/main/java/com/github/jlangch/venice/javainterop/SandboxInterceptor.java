@@ -39,7 +39,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final Object receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		validateAccessor(receiver, method);
 	
 		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
@@ -51,7 +51,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final Class<?> receiver, 
 			final String method, 
 			final Object... args
-	) {
+	) throws SecurityException {
 		validateAccessor(receiver, method);
 
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
@@ -62,7 +62,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver,
 			final Object... args
-	) {
+	) throws SecurityException {
 		return super.onInvokeConstructor(invoker, receiver, args);
 	}
 
@@ -71,7 +71,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
-	) {
+	) throws SecurityException {
 		validateAccessor(receiver, property);
 		
 		return super.onGetBeanProperty(invoker, receiver, property);
@@ -83,7 +83,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final Object receiver, 
 			final String property, 
 			final Object value
-	) {
+	) throws SecurityException {
 		validateAccessor(receiver, property);
 		
 		super.onSetBeanProperty(invoker, receiver, property, value);
@@ -94,7 +94,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		validateAccessor(receiver, fieldName);
 		
 		return super.onGetStaticField(invoker, receiver, fieldName);
@@ -105,21 +105,25 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
-	) {
+	) throws SecurityException {
 		validateAccessor(receiver, fieldName);
 		
 		return super.onGetInstanceField(invoker, receiver, fieldName);
 	}
 
 	@Override
-	public byte[] onLoadClassPathResource(final String resourceName) {
+	public byte[] onLoadClassPathResource(
+			final String resourceName
+	) throws SecurityException {
 		validateClasspathResource(resourceName);
 		
 		return super.onLoadClassPathResource(resourceName);
 	}
 
 	@Override
-	public String onReadSystemProperty(final String propertyName) {
+	public String onReadSystemProperty(
+			final String propertyName
+	) throws SecurityException {
 		validateSystemProperty(propertyName);
 		
 		return super.onReadSystemProperty(propertyName);
@@ -129,7 +133,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	public void validateBlackListedVeniceFunction(
 			final String funcName, 
 			final VncList args
-	) {
+	) throws SecurityException {
 		if (sandboxRules.isBlackListedVeniceFunction(funcName, args)) {
 			throw new SecurityException(String.format(
 					"Venice Sandbox: Access denied to function %s", 
