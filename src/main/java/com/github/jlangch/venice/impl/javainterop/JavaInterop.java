@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
-import com.github.jlangch.venice.javainterop.JavaInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class JavaInterop {
@@ -41,7 +41,7 @@ public class JavaInterop {
 		return !(getInterceptor() instanceof AcceptAllInterceptor);
 	}
 	
-	public static void register(final JavaInterceptor interceptor) {
+	public static void register(final IInterceptor interceptor) {
 		threadInterceptor.set(interceptor == null ? new AcceptAllInterceptor() : interceptor);
 	}
 
@@ -50,10 +50,10 @@ public class JavaInterop {
 	}
 
 	
-	private static final ThreadLocal<JavaInterceptor> threadInterceptor = 
+	private static final ThreadLocal<IInterceptor> threadInterceptor = 
 			ThreadLocal.withInitial(() -> new AcceptAllInterceptor());
 	
-	public static JavaInterceptor getInterceptor() {
+	public static IInterceptor getInterceptor() {
 		return threadInterceptor.get();
 	}
 }

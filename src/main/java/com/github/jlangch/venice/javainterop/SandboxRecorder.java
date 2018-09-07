@@ -28,17 +28,17 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
-public class JavaSandboxRecorder extends JavaInterceptor {
+public class SandboxRecorder extends Interceptor {
 	
-	public JavaSandboxRecorder(final Writer writer) {
+	public SandboxRecorder(final Writer writer) {
 		this.writer = new PrintWriter(writer);
 	}
 	
-	public JavaSandboxRecorder(final OutputStream os) {
+	public SandboxRecorder(final OutputStream os) {
 		this.writer = new PrintWriter(os);
 	}
 	
-	public JavaSandboxRecorder() {
+	public SandboxRecorder() {
 		this.writer = new PrintWriter(System.out);
 	}
 	

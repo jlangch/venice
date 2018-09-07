@@ -27,7 +27,7 @@ import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class RejectAllInterceptor extends JavaInterceptor {
+public class RejectAllInterceptor extends Interceptor {
 
 	@Override
 	public Object onInvokeInstanceMethod(

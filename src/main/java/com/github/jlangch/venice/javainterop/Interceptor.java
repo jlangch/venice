@@ -21,9 +21,13 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
-public class JavaValueFilterInterceptor extends JavaInterceptor {
-	
+
+public abstract class Interceptor implements IInterceptor {
+ 
 	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
@@ -31,10 +35,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final String method, 
 			final Object... args
 	) {
-		filterAccessor(receiver, method);
-		return filterReturnValue(
-				super.onInvokeInstanceMethod(
-						invoker, receiver, method, filterArguments(args)));
+		return invoker.callInstanceMethod(receiver, method, args);
 	}
 
 	@Override
@@ -44,10 +45,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final String method, 
 			final Object... args
 	) {
-		filterAccessor(receiver, method);
-		return filterReturnValue(
-				super.onInvokeStaticMethod(
-						invoker, receiver, method, filterArguments(args)));
+		return invoker.callStaticMethod(receiver, method, args);
 	}
 
 	@Override
@@ -56,10 +54,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final Class<?> receiver, 
 			final Object... args
 	) {
-		filterAccessor(receiver, "new");
-		return filterReturnValue(
-				super.onInvokeConstructor(
-						invoker, receiver, filterArguments(args)));
+		return invoker.callConstructor(receiver, args);
 	}
 
 	@Override
@@ -68,10 +63,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final Object receiver, 
 			final String property
 	) {
-		filterAccessor(receiver, property);
-		return filterReturnValue(
-				super.onGetBeanProperty(
-						invoker, receiver, property));
+		return invoker.getBeanProperty(receiver, property);
 	}
 
 	@Override
@@ -81,9 +73,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final String property, 
 			final Object value
 	) {
-		filterAccessor(receiver, property);
-		super.onSetBeanProperty(
-					invoker, receiver, property, filterArgument(value));
+		invoker.setBeanProperty(receiver, property, value);
 	}
 
 	@Override
@@ -92,10 +82,7 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final Class<?> receiver, 
 			final String fieldName
 	) {
-		filterAccessor(receiver, fieldName);
-		return filterReturnValue(
-				super.onGetStaticField(
-						invoker, receiver, fieldName));
+		return invoker.getStaticField(receiver, fieldName);
 	}
 
 	@Override
@@ -104,35 +91,29 @@ public class JavaValueFilterInterceptor extends JavaInterceptor {
 			final Object receiver, 
 			final String fieldName
 	) {
-		filterAccessor(receiver, fieldName);
-		return filterReturnValue(
-				super.onGetInstanceField(
-						invoker, receiver, fieldName));
+		return invoker.getInstanceField(receiver, fieldName);
 	}
 
-	
-	protected Object filterReturnValue(final Object returnValue) {
-		return filter(returnValue);
-	}
-	
-	protected Object filterArgument(final Object arg) {
-		return filter(arg);
+	@Override
+	public byte[] onLoadClassPathResource(final String resourceName) {
+		return StringUtil.isBlank(resourceName) 
+					? null
+					: new ClassPathResource(resourceName).getResourceAsBinary();
 	}
 
-	protected Object filter(final Object o) {
-		return o;
-	}
-
-	protected Object filterAccessor(final Object o, final String accessor) {
-		return o;
-	}
-
-	
-	private Object[] filterArguments(final Object[] args) {
-		for (int i=0; i<args.length; i++) {
-			args[i] = filterArgument(args[i]);
-		}
-		return args;
+	@Override
+	public String onReadSystemProperty(final String propertyName) {
+		return StringUtil.isBlank(propertyName) 
+				? null
+				: System.getProperty(propertyName);
 	}
 	
+	@Override
+	public void validateBlackListedVeniceFunction(
+			final String funcName, 
+			final VncList args
+	) {
+		// ok,  no black listed Venice functions
+	}
+
 }

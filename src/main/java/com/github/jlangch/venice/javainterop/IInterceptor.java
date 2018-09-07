@@ -27,7 +27,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 /**
  * Defines a Venice interceptor
  */
-public interface IVeniceInterceptor {
+public interface IInterceptor {
  
 	/**
 	 * Invokes an instance method

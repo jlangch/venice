@@ -23,7 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
-public class AcceptAllInterceptor extends JavaValueFilterInterceptor {
+public class AcceptAllInterceptor extends ValueFilterInterceptor {
 	
 	public AcceptAllInterceptor() {
 	}

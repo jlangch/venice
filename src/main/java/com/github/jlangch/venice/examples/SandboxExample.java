@@ -22,8 +22,9 @@
 package com.github.jlangch.venice.examples;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.JavaInterceptor;
-import com.github.jlangch.venice.javainterop.JavaSandboxInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.Interceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
@@ -56,7 +57,7 @@ public class SandboxExample {
 		// like 'println', 'slurp', ...
 		//
 		// Note: Using the RejectAllInterceptor has the same effect
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().rejectAllVeniceIoFunctions());
 		
 		final Venice venice = new Venice(interceptor);
@@ -66,8 +67,8 @@ public class SandboxExample {
 	}
 	
 	private static void sandboxing_java_calls_with_safe_venice_func() {
-		final JavaInterceptor interceptor =
-				new JavaSandboxInterceptor(
+		final IInterceptor interceptor =
+				new SandboxInterceptor(
 						new SandboxRules()
 								.rejectAllVeniceIoFunctions()
 								.add(

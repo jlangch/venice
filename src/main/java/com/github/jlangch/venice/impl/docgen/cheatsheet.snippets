@@ -69,8 +69,8 @@ import com.github.jlangch.venice.javainterop.*;
 
 public class Example {
    public static void main(String[] args) {
-      JavaInterceptor interceptor =
-         new JavaSandboxInterceptor(
+      Interceptor interceptor =
+         new SandboxInterceptor(
             WhiteList.create(
                 "java.lang.Math:min",
                 "java.lang.Math:max",

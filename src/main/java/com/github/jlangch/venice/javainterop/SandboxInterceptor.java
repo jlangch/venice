@@ -26,9 +26,9 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class JavaSandboxInterceptor extends JavaValueFilterInterceptor {
+public class SandboxInterceptor extends ValueFilterInterceptor {
 	
-	public JavaSandboxInterceptor(final SandboxRules rules) {
+	public SandboxInterceptor(final SandboxRules rules) {
 		this.sandboxRules = CompiledSandboxRules.compile(rules);
 	}
 	

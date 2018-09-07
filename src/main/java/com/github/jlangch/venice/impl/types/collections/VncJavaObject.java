@@ -35,8 +35,8 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.IInvoker;
-import com.github.jlangch.venice.javainterop.JavaInterceptor;
 
 
 public class VncJavaObject extends VncMap implements IVncJavaObject {
@@ -173,7 +173,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	private VncHashMap convertBean() {
 		final VncHashMap.Builder builder = new VncHashMap.Builder();
 		
-		final JavaInterceptor interceptor = JavaInterop.getInterceptor();
+		final IInterceptor interceptor = JavaInterop.getInterceptor();
 		final IInvoker invoker = new Invoker();
 		
 		ReflectionAccessor

@@ -36,7 +36,7 @@ public class BlackListedFunctionTest {
 	@Test(expected = SecurityException.class)
 	public void test_print_blacklisted() {
 		// all venice 'slurp' function blacklisted
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:io/slurp"));
 		
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
@@ -45,7 +45,7 @@ public class BlackListedFunctionTest {
 	@Test(expected = SecurityException.class)
 	public void test_print_blacklisted_io_1() {
 		// all venice IO functions blacklisted
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:*io*"));
 
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
@@ -54,7 +54,7 @@ public class BlackListedFunctionTest {
 	@Test(expected = SecurityException.class)
 	public void test_print_blacklisted_io_2() {
 		// all venice IO functions blacklisted
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().rejectAllVeniceIoFunctions());
 
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");

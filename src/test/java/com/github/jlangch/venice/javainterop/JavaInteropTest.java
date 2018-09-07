@@ -299,7 +299,7 @@ public class JavaInteropTest {
 	@Test
 	@Ignore
 	public void testJavaSandboxRecorder() {
-		final Venice venice = new Venice(new JavaSandboxRecorder());
+		final Venice venice = new Venice(new SandboxRecorder());
 		
 		venice.eval("(. :java.lang.Math :min 20 30)");
 		venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)");

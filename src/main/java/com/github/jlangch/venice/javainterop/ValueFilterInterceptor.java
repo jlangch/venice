@@ -21,13 +21,9 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
-import com.github.jlangch.venice.impl.util.StringUtil;
 
-
-public abstract class JavaInterceptor implements IVeniceInterceptor {
- 
+public class ValueFilterInterceptor extends Interceptor {
+	
 	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 
@@ -35,7 +31,10 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final String method, 
 			final Object... args
 	) {
-		return invoker.callInstanceMethod(receiver, method, args);
+		filterAccessor(receiver, method);
+		return filterReturnValue(
+				super.onInvokeInstanceMethod(
+						invoker, receiver, method, filterArguments(args)));
 	}
 
 	@Override
@@ -45,7 +44,10 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final String method, 
 			final Object... args
 	) {
-		return invoker.callStaticMethod(receiver, method, args);
+		filterAccessor(receiver, method);
+		return filterReturnValue(
+				super.onInvokeStaticMethod(
+						invoker, receiver, method, filterArguments(args)));
 	}
 
 	@Override
@@ -54,7 +56,10 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final Class<?> receiver, 
 			final Object... args
 	) {
-		return invoker.callConstructor(receiver, args);
+		filterAccessor(receiver, "new");
+		return filterReturnValue(
+				super.onInvokeConstructor(
+						invoker, receiver, filterArguments(args)));
 	}
 
 	@Override
@@ -63,7 +68,10 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final Object receiver, 
 			final String property
 	) {
-		return invoker.getBeanProperty(receiver, property);
+		filterAccessor(receiver, property);
+		return filterReturnValue(
+				super.onGetBeanProperty(
+						invoker, receiver, property));
 	}
 
 	@Override
@@ -73,7 +81,9 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final String property, 
 			final Object value
 	) {
-		invoker.setBeanProperty(receiver, property, value);
+		filterAccessor(receiver, property);
+		super.onSetBeanProperty(
+					invoker, receiver, property, filterArgument(value));
 	}
 
 	@Override
@@ -82,7 +92,10 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final Class<?> receiver, 
 			final String fieldName
 	) {
-		return invoker.getStaticField(receiver, fieldName);
+		filterAccessor(receiver, fieldName);
+		return filterReturnValue(
+				super.onGetStaticField(
+						invoker, receiver, fieldName));
 	}
 
 	@Override
@@ -91,29 +104,35 @@ public abstract class JavaInterceptor implements IVeniceInterceptor {
 			final Object receiver, 
 			final String fieldName
 	) {
-		return invoker.getInstanceField(receiver, fieldName);
+		filterAccessor(receiver, fieldName);
+		return filterReturnValue(
+				super.onGetInstanceField(
+						invoker, receiver, fieldName));
 	}
 
-	@Override
-	public byte[] onLoadClassPathResource(final String resourceName) {
-		return StringUtil.isBlank(resourceName) 
-					? null
-					: new ClassPathResource(resourceName).getResourceAsBinary();
-	}
-
-	@Override
-	public String onReadSystemProperty(final String propertyName) {
-		return StringUtil.isBlank(propertyName) 
-				? null
-				: System.getProperty(propertyName);
+	
+	protected Object filterReturnValue(final Object returnValue) {
+		return filter(returnValue);
 	}
 	
-	@Override
-	public void validateBlackListedVeniceFunction(
-			final String funcName, 
-			final VncList args
-	) {
-		// ok,  no black listed Venice functions
+	protected Object filterArgument(final Object arg) {
+		return filter(arg);
 	}
 
+	protected Object filter(final Object o) {
+		return o;
+	}
+
+	protected Object filterAccessor(final Object o, final String accessor) {
+		return o;
+	}
+
+	
+	private Object[] filterArguments(final Object[] args) {
+		for (int i=0; i<args.length; i++) {
+			args[i] = filterArgument(args[i]);
+		}
+		return args;
+	}
+	
 }

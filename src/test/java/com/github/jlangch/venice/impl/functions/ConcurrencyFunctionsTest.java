@@ -30,8 +30,8 @@ import java.io.File;
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.JavaInterceptor;
-import com.github.jlangch.venice.javainterop.JavaSandboxInterceptor;
+import com.github.jlangch.venice.javainterop.Interceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
@@ -119,7 +119,7 @@ public class ConcurrencyFunctionsTest {
 	@Test
 	public void test_future_sandboxed() {
 		// all venice 'file' function blacklisted
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:io/file"));
 
 		final Venice venice = new Venice(interceptor);
@@ -138,7 +138,7 @@ public class ConcurrencyFunctionsTest {
 	@Test(expected = SecurityException.class)
 	public void test_future_sandbox_violation() {
 		// all venice 'file' function blacklisted
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:io/file"));
 
 		final Venice venice = new Venice(interceptor);
@@ -159,7 +159,7 @@ public class ConcurrencyFunctionsTest {
 	@Test
 	public void test_future_sandbox_ok() {
 		// all venice 'file' function blacklisted
-		final JavaInterceptor interceptor = new JavaSandboxInterceptor(
+		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().add("blacklist:venice:io/slurp"));
 
 		final Venice venice = new Venice(interceptor);

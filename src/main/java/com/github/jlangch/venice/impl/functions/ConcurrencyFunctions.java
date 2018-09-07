@@ -56,7 +56,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.ThreadLocalUtil;
 import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
-import com.github.jlangch.venice.javainterop.JavaInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ConcurrencyFunctions {
@@ -368,7 +368,7 @@ public class ConcurrencyFunctions {
 												Callable.class, 
 												new VncHashMap(new VncKeyword("call"), wrapped));
 
-			final JavaInterceptor parentInterceptor = JavaInterop.getInterceptor();
+			final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 
 			final Callable<Object> taskWrapper = () -> {
 				try {

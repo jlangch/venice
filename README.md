@@ -317,8 +317,8 @@ that are available to the script in the JVM!
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.*;
 
-final JavaInterceptor interceptor =
-    new JavaSandboxInterceptor(
+final IInterceptor interceptor =
+    new SandboxInterceptor(
         new SandboxRules()
               .rejectAllVeniceIoFunctions()
               .allowAccessToStandardSystemProperties()
