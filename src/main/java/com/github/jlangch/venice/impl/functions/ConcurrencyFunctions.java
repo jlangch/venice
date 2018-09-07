@@ -585,11 +585,13 @@ public class ConcurrencyFunctions {
 
 	private static ThreadFactory createThreadFactory(
 			final String format, 
-			final AtomicLong threadPoolCounter
+			final AtomicLong threadPoolCounter,
+			final boolean deamon
 	) {
 		return new ThreadFactory() {
 			public Thread newThread(Runnable runnable) {
 				final Thread thread = new Thread(runnable);
+				thread.setDaemon(deamon);
 				thread.setName(String.format(format, threadPoolCounter.getAndIncrement()));
 				return thread;
 			}
@@ -597,6 +599,14 @@ public class ConcurrencyFunctions {
 	}
 
 	
+	public static void shutdown() {
+		executor.shutdown();
+	}
+
+	public static void shutdownNow() {
+		executor.shutdownNow();
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -633,5 +643,6 @@ public class ConcurrencyFunctions {
 			Executors.newCachedThreadPool(
 					createThreadFactory(
 							"venice-future-pool-%d", 
-							futureThreadPoolCounter));
+							futureThreadPoolCounter,
+							true /* daemon threads */));
 }

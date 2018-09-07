@@ -893,7 +893,16 @@ public class DocGenerator {
 						runExamples(
 							"let", 
 							Arrays.asList(
-									"(let [x 1] x))"), 
+									"(let [x 1] x))",
+									";; destructured map \n" +
+									"(let [{:keys [width height title ]\n" + 
+									"       :or {width 640 height 500}\n" + 
+									"       :as styles}\n" +  
+									"      {:width 1000 :title \"Title\"}]\n" +  
+								    "     (println \"width: \" width)\n" +  
+								    "     (println \"height: \" height)\n" +  
+								    "     (println \"title: \" title)\n" + 
+							        "     (println \"styles: \" styles))"),
 							true),
 						idgen.id()));
 		
@@ -906,7 +915,9 @@ public class DocGenerator {
 							"fn", 
 							Arrays.asList(
 									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-									"(map (fn [x] (* 2 x)) (range 1 5))"), 
+									"(map (fn [x] (* 2 x)) (range 1 5))"),
+//									";; anonymous function with two params, the second is destructured\n" + 
+//									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})"), 
 							true),
 						idgen.id()));
 		
