@@ -4193,31 +4193,13 @@ public class CoreFunctions {
 			final VncFunction reduceFn = Coerce.toVncFunction(args.nth(0));
 
 			if (twoArguments) {
+				List<VncVal> coll;
+				
 				if (Types.isVncList(args.nth(1))) {
-					final List<VncVal> coll = Coerce.toVncList(args.nth(1)).getList();
-					if (coll.isEmpty()) {
-						return reduceFn.apply(new VncList());
-					}
-					else {
-						VncVal value = coll.get(0);
-						for(int ii=1; ii<coll.size(); ii++) {
-							value = reduceFn.apply(new VncList(value, coll.get(ii)));
-						}
-						return value;
-					}
+					coll = Coerce.toVncList(args.nth(1)).getList();
 				}
 				else if (Types.isVncMap(args.nth(1))) {
-					final List<VncVal> coll = Coerce.toVncMap(args.nth(1)).toVncList().getList();
-					if (coll.isEmpty()) {
-						return reduceFn.apply(new VncList());
-					}
-					else {
-						VncVal value = coll.get(0);
-						for(int ii=1; ii<coll.size(); ii++) {
-							value = reduceFn.apply(new VncList(value, coll.get(ii)));
-						}
-						return value;
-					}
+					coll = Coerce.toVncMap(args.nth(1)).toVncList().getList();
 				}
 				else {
 					throw new VncException(String.format(
@@ -4225,45 +4207,46 @@ public class CoreFunctions {
 							Types.getClassName(args.nth(1)),
 							ErrorMessage.buildErrLocation(args)));
 				}
+				
+				if (coll.isEmpty()) {
+					return reduceFn.apply(new VncList());
+				}
+				else {
+					VncVal value = coll.get(0);
+					for(int ii=1; ii<coll.size(); ii++) {
+						value = reduceFn.apply(new VncList(value, coll.get(ii)));
+					}
+					return value;
+				}
 			}
 			else {
+				List<VncVal> coll;
+				
 				if (Types.isVncList(args.nth(2))) {
-					final List<VncVal> coll = Coerce.toVncList(args.nth(2)).getList();
-					if (coll.isEmpty()) {
-						return args.nth(1);
-					}
-					else if (coll.size() == 1) {
-						return reduceFn.apply(new VncList(args.nth(1), coll.get(0)));
-					}
-					else {
-						VncVal value = args.nth(1);
-						for(int ii=0; ii<coll.size(); ii++) {
-							value = reduceFn.apply(new VncList(value, coll.get(ii)));
-						}
-						return value;
-					}
+					coll = Coerce.toVncList(args.nth(2)).getList();
 				}
 				else if (Types.isVncMap(args.nth(2))) {
-					final List<VncVal> coll = Coerce.toVncMap(args.nth(2)).toVncList().getList();
-					if (coll.isEmpty()) {
-						return args.nth(1);
-					}
-					else if (coll.size() == 1) {
-						return reduceFn.apply(new VncList(args.nth(1), coll.get(0)));
-					}
-					else {
-						VncVal value = args.nth(1);
-						for(int ii=0; ii<coll.size(); ii++) {
-							value = reduceFn.apply(new VncList(value, coll.get(ii)));
-						}
-						return value;
-					}
+					coll = Coerce.toVncMap(args.nth(2)).toVncList().getList();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'reduce' does not allow %s as coll parameter. %s", 
 							Types.getClassName(args.nth(2)),
 							ErrorMessage.buildErrLocation(args)));
+				}
+				
+				if (coll.isEmpty()) {
+					return args.nth(1);
+				}
+				else if (coll.size() == 1) {
+					return reduceFn.apply(new VncList(args.nth(1), coll.get(0)));
+				}
+				else {
+					VncVal value = args.nth(1);
+					for(int ii=0; ii<coll.size(); ii++) {
+						value = reduceFn.apply(new VncList(value, coll.get(ii)));
+					}
+					return value;
 				}
 			}
 		}
