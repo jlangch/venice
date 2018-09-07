@@ -69,20 +69,38 @@ import com.github.jlangch.venice.javainterop.*;
 
 public class Example {
    public static void main(String[] args) {
-      Interceptor interceptor =
-         new SandboxInterceptor(
-            WhiteList.create(
-                "java.lang.Math:min",
-                "java.lang.Math:max",
-                "java.time.ZonedDateTime:*",
-                "java.util.ArrayList:new"));
-
-      Venice venice = new Venice(interceptor);
-
-
-      venice.eval("(. :java.lang.Math :min 20 30)"); // =>  OK
-      venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)"); // => OK
-      venice.eval("(. :java.util.ArrayList :new)"); // => OK
-      venice.eval("(. :java.lang.System :exit 0)"); // => Sandbox SecurityException
+      final IInterceptor interceptor =
+          new SandboxInterceptor(
+              new SandboxRules()
+                    .rejectAllVeniceIoFunctions()
+                    .allowAccessToStandardSystemProperties()
+                    .add(
+                      "java.lang.Math:min", 
+                      "java.time.ZonedDateTime:*", 
+                      "java.util.ArrayList:new",
+                      "java.util.ArrayList:add"));
+      
+      final Venice venice = new Venice(interceptor);
+      
+      // => OK (static method)
+      venice.eval("(. :java.lang.Math :min 20 30)"); 
+          
+      // => OK (constructor & instance method)
+      venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
+       
+      // => OK (constructor & instance method)
+      venice.eval(
+          "(doto (. :java.util.ArrayList :new)  " +
+          "      (. :add 1)                     " +
+          "      (. :add 2))                    ");
+      
+      // => FAIL (invoking non whitelisted static method)
+      venice.eval("(. :java.lang.System :exit 0)"); 
+      
+      // => FAIL (invoking rejected Venice I/O function)
+      venice.eval("(io/slurp \"/tmp/file\")"); 
+      
+      // => FAIL (accessing non whitelisted system property)
+      venice.eval("(system-prop \"db.password\")"); 
    }
 }
