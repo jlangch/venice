@@ -500,6 +500,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));
 		map_modify.addItem(getDocItem("flatten"));
+		map_modify.addItem(getDocItem("reduce"));
 		map_modify.addItem(getDocItem("reduce-kv"));
 		map_modify.addItem(getDocItem("merge"));
 		map_modify.addItem(getDocItem("seq"));
@@ -910,14 +911,14 @@ public class DocGenerator {
 				new DocItem(
 						"fn", 
 						Arrays.asList("(fn [params*] exprs*)"), 
-						"Evaluates test.",
+						"Defines an anonymous function.",
 						runExamples(
 							"fn", 
 							Arrays.asList(
 									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-									"(map (fn [x] (* 2 x)) (range 1 5))"),
-//									";; anonymous function with two params, the second is destructured\n" + 
-//									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})"), 
+									"(map (fn [x] (* 2 x)) (range 1 5))",
+									";; anonymous function with two params, the second is destructured\n" + 
+									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})"), 
 							true),
 						idgen.id()));
 		
@@ -1132,7 +1133,11 @@ public class DocGenerator {
 							name, 
 							Arrays.asList(
 							 "(fn [x y] (+ x y))",
-							 "(def sum (fn [x y] (+ x y)))"),
+							 "(def sum (fn [x y] (+ x y)))",
+							 "(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
+							 "(map (fn [x] (* 2 x)) (range 1 5))",
+							 ";; anonymous function with two params, the second is destructured\n" + 
+							 "(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})"),
 							runExamples),
 					idgen.id());
 		}

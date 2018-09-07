@@ -381,7 +381,6 @@ public class DestructuringTest {
 		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
 	}
 
-
 	@Test
 	public void test_let() {
 		final Venice venice = new Venice();
@@ -399,7 +398,9 @@ public class DestructuringTest {
 		assertEquals("[u v (w x y z)]", venice.eval("(str (let [[a b & c] \"uvwxyz\"] [a b c]))"));
 		
 		assertEquals("[1 2 3]", venice.eval("(str (let [[a b c] '(1 2 3)] [a b c]))"));
-		assertEquals("[1 2 3]", venice.eval("(str (let [[a b c] '(1 2 3)] [a b c]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (let [[a b c] [1 2 3]] [a b c]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (let [[a [b c]] '(1 (2 3))] [a b c]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (let [[a [b c]] [1 [2 3]]] [a b c]))"));
 		
 		assertEquals("[3 1]", venice.eval("(str (let [[a _ c] '(1 2 3)] [c a]))"));
 	
