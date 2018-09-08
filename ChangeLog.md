@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed documentation for function 'future'. The function is sandboxed!
-- fixed function 'reduce' works now with maps too.
+- fixed function 'reduce' to work with maps too.
 
 
 
