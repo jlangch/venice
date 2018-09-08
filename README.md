@@ -15,7 +15,8 @@ having a safe, powerful scripting and expression language that can be used
 to implement scriptable extension points and rules for applications.
 
 Venice supports macros, comes with Java interoperability and a configurable 
-sandbox.
+sandbox that prevents all sort of dangerous or malicious JVM interactions like 
+calls to _System.exit()_ and even worse actions.
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
