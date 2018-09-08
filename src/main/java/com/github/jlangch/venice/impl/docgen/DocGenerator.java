@@ -306,8 +306,6 @@ public class DocGenerator {
 		final DocSection generic = new DocSection("Generic");
 		collections.addSection(generic);
 		generic.addItem(getDocItem("count"));
-		generic.addItem(getDocItem("empty?"));
-		generic.addItem(getDocItem("not-empty?"));
 		generic.addItem(getDocItem("empty-to-nil"));
 		generic.addItem(getDocItem("empty"));
 		generic.addItem(getDocItem("into"));
@@ -318,9 +316,12 @@ public class DocGenerator {
 		generic.addItem(getDocItem("range"));
 		generic.addItem(getDocItem("group-by"));
 		generic.addItem(getDocItem("get-in"));
+		generic.addItem(getDocItem("seq"));
 
 		final DocSection coll_test = new DocSection("Tests");
 		collections.addSection(coll_test);
+		coll_test.addItem(getDocItem("empty?"));
+		coll_test.addItem(getDocItem("not-empty?"));
 		coll_test.addItem(getDocItem("coll?"));
 		coll_test.addItem(getDocItem("list?"));
 		coll_test.addItem(getDocItem("vector?"));
@@ -336,6 +337,7 @@ public class DocGenerator {
 		collections.addSection(coll_process);
 		coll_process.addItem(getDocItem("map"));
 		coll_process.addItem(getDocItem("filter"));
+		coll_process.addItem(getDocItem("reduce"));
 		coll_process.addItem(getDocItem("keep"));
 		coll_process.addItem(getDocItem("docoll"));
 
@@ -372,8 +374,6 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("interleave"));
 		list_modify.addItem(getDocItem("mapcat"));
 		list_modify.addItem(getDocItem("flatten"));
-		list_modify.addItem(getDocItem("seq"));
-		list_modify.addItem(getDocItem("reduce"));
 		list_modify.addItem(getDocItem("reverse"));
 		list_modify.addItem(getDocItem("sort"));
 		list_modify.addItem(getDocItem("sort-by"));
@@ -405,6 +405,7 @@ public class DocGenerator {
 		vec_access.addItem(getDocItem("nth"));
 		vec_access.addItem(getDocItem("last"));
 		vec_access.addItem(getDocItem("peek"));
+		vec_access.addItem(getDocItem("butlast"));
 		vec_access.addItem(getDocItem("rest"));
 		vec_access.addItem(getDocItem("nfirst"));
 		vec_access.addItem(getDocItem("nlast"));
@@ -425,8 +426,6 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("interleave"));
 		vec_modify.addItem(getDocItem("mapcat"));
 		vec_modify.addItem(getDocItem("flatten"));
-		vec_modify.addItem(getDocItem("seq"));
-		vec_modify.addItem(getDocItem("reduce"));
 		vec_modify.addItem(getDocItem("reverse"));
 		vec_modify.addItem(getDocItem("sort"));
 		vec_modify.addItem(getDocItem("sort-by"));
@@ -459,7 +458,6 @@ public class DocGenerator {
 		set_modify.addItem(getDocItem("difference"));
 		set_modify.addItem(getDocItem("union"));
 		set_modify.addItem(getDocItem("intersection"));
-		set_modify.addItem(getDocItem("seq"));
 
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);
@@ -500,10 +498,8 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));
 		map_modify.addItem(getDocItem("flatten"));
-		map_modify.addItem(getDocItem("reduce"));
 		map_modify.addItem(getDocItem("reduce-kv"));
 		map_modify.addItem(getDocItem("merge"));
-		map_modify.addItem(getDocItem("seq"));
 		
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);
