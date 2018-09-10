@@ -194,8 +194,8 @@ public class VeniceInterpreter {
 			final VncVal a0 = ast.nth(0);		
 			final String a0sym = a0 instanceof VncSymbol ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
-			switch (a0sym) {
-				case "def": {
+			switch (a0sym) {			
+				case "def": { // (def meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
 					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.nth(1), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
