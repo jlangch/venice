@@ -235,6 +235,7 @@ public class Venice {
 			return callable.call();
 		}
 		catch(ValueException ex) {
+			// convert the Venice value to a Java value
 			throw new JavaValueException(
 						JavaInteropUtil.convertToJavaObject(ex.getValue()));
 		}

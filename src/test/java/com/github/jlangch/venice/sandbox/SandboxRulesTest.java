@@ -51,13 +51,19 @@ public class SandboxRulesTest {
 											new SandboxRules().add(
 												"java.lang.Math",
 												"java.lang.String:*",
-												"java.math.*"
+												"java.math.*",
+												"java.awt.**"
 											));
 		
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.lang.String.class));
+		
 		assertTrue(wl.isWhiteListed(java.math.BigDecimal.class));
 		assertTrue(wl.isWhiteListed(java.math.BigInteger.class));
+		
+		assertTrue(wl.isWhiteListed(java.awt.Button.class));
+		assertTrue(wl.isWhiteListed(java.awt.color.ColorSpace.class));
+		assertTrue(wl.isWhiteListed(java.awt.image.renderable.RenderContext.class));
 	}
 
 	@Test
@@ -75,7 +81,7 @@ public class SandboxRulesTest {
 	}
 
 	@Test
-	public void methodsWildcardTest() {
+	public void methodsWildcardTest_1() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
 											new SandboxRules().add(
 												"java.lang.Math:*"
@@ -88,7 +94,7 @@ public class SandboxRulesTest {
 	}
 
 	@Test
-	public void classMethodsWildcardTest() {
+	public void methodsWildcardTest_2() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
 											new SandboxRules().add(
 												"java.lang.*:*"
@@ -103,21 +109,42 @@ public class SandboxRulesTest {
 	}
 
 	@Test
+	public void methodsWildcardTest_3() {
+		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
+											new SandboxRules().add(
+												"java.**:*"
+											));
+
+		assertTrue(wl.isWhiteListed(java.lang.Math.class));
+		assertTrue(wl.isWhiteListed(java.lang.Math.class, "min"));
+		assertTrue(wl.isWhiteListed(java.lang.Math.class, "max"));
+		assertTrue(wl.isWhiteListed(java.lang.Math.class, "abs"));
+		
+		assertTrue(wl.isWhiteListed(java.util.List.class, "size"));
+	}
+
+	@Test
 	public void classpathWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
 											new SandboxRules().add(
 												"classpath:/foo/org/image.png",
 												"classpath:/foo/org/*.jpg",
-												"classpath:/abc/**/*.png"
+												"classpath:/abc/**/*.png",
+												"classpath:/xyz/**"
 											));
 		
 		assertFalse(wl.isWhiteListedClasspathResource("/foo/org/image.tiff"));
 		assertTrue(wl.isWhiteListedClasspathResource("/foo/org/image.png"));
 		assertTrue(wl.isWhiteListedClasspathResource("/foo/org/image.jpg"));
+		
 		assertFalse(wl.isWhiteListedClasspathResource("/abc/image.png"));
 		assertTrue(wl.isWhiteListedClasspathResource("/abc/x/image.png"));
 		assertTrue(wl.isWhiteListedClasspathResource("/abc/x/y/image.png"));
 		assertFalse(wl.isWhiteListedClasspathResource("/abc/x/y/image.jpg"));
+		
+		assertTrue(wl.isWhiteListedClasspathResource("/xyz/image.png"));
+		assertTrue(wl.isWhiteListedClasspathResource("/xyz/x/image.png"));
+		assertTrue(wl.isWhiteListedClasspathResource("/xyz/x/y/image.png"));
 	}
 
 	@Test
@@ -141,4 +168,5 @@ public class SandboxRulesTest {
 		assertTrue(wl.isWhiteListedSystemProperty("foo.org"));
 		assertTrue(wl.isWhiteListedSystemProperty("foo.com"));
 	}
+	
 }
