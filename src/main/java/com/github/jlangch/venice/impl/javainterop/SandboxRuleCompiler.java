@@ -32,7 +32,7 @@ public class SandboxRuleCompiler {
 		rule_ = rule_.replace("$", "[$]");
 		rule_ = rule_.replace(".", "[.]");
 		rule_ = rule_.replaceAll("[*][*]", "@@");
-		rule_ = rule_.replaceAll("[*]", "[^.]*");
+		rule_ = rule_.replaceAll("[*]", "[^./:]*");
 		rule_ = rule_.replaceAll("@@", ".*");
 
 		return Pattern.compile(rule_);

@@ -31,7 +31,7 @@ import org.junit.Test;
 public class SandboxRuleCompilerTest {
 
 	@Test
-	public void testMatch() {
+	public void testClassMethodMatch() {
 		assertTrue(compile("x").asPredicate().test("x"));
 		
 		assertTrue(compile("x.y.z.Aaa").asPredicate().test("x.y.z.Aaa"));
@@ -69,7 +69,7 @@ public class SandboxRuleCompilerTest {
 	}
 
 	@Test
-	public void testNotMatch() {
+	public void testClassMethodNotMatch() {
 		assertFalse(compile("x").asPredicate().test("y"));
 		
 		assertFalse(compile("x.y.z.Aaa").asPredicate().test("x.y.c.Baa"));
