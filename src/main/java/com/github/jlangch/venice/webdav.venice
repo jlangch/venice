@@ -75,3 +75,7 @@
 (defn webdav/move! [srcUrl dstUrl] (. (get (thread-local) :sardine) :move srcUrl dstUrl))
 
 (defn webdav/copy! [srcUrl dstUrl] (. (get (thread-local) :sardine) :copy srcUrl dstUrl))
+
+(defn webdav/lock! [url] (. (get (thread-local) :sardine) :lock url))
+
+(defn webdav/unlock! [url token] (. (get (thread-local) :sardine) :unlock url token))
