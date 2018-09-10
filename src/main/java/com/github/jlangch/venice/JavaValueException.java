@@ -19,25 +19,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util;
-
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+package com.github.jlangch.venice;
 
 
-public abstract class ThreadLocalUtil {
-	
-	public static void cleanThreadLocals() {
-		// for security reason remove thread-local map!
-		try {
-			ThreadLocalMap.clear();
-			ThreadLocalMap.remove();
-		}
-		catch(Exception ex) {}
+public class JavaValueException extends VncException {
 		
-		try {
-			JavaInterop.unregister();
-		}
-		catch(Exception ex) {}
+	public JavaValueException(final Object value) {
+		this.value = value;
+	}
+  
+	public JavaValueException(final Object value, final Throwable cause) {
+		super(cause);
+		this.value = value;
+	}
+	
+	public Object getValue() { 
+		return value; 
 	}
 
+	
+	private static final long serialVersionUID = -7070216020647646364L;
+
+	private final Object value;
 }

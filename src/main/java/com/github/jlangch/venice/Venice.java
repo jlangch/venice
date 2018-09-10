@@ -24,17 +24,16 @@ package com.github.jlangch.venice;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
-import com.github.jlangch.venice.impl.types.Types;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.ThreadLocalUtil;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.util.NullOutputStream;
@@ -105,9 +104,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
-		try {
-			JavaInterop.register(interceptor);
-			
+		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 
 			final Env env = addParams(new Env(precompiled.getEnv()), params);
@@ -115,20 +112,7 @@ public class Venice {
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
 				
 			return JavaInteropUtil.convertToJavaObject(result);
-		}
-		catch(ValueException ex) {
-			final VncVal val = ex.getValue();
-			throw new VncException(
-						Types.isVncString(val) 
-							? ((VncString)val).getValue() 
-							: val.toString());
-		}
-		catch(RuntimeException ex) {
-			throw ex;
-		}
-		finally {
-			cleanAfterRun();
-		}
+		});
 	}
 
 	/**
@@ -173,9 +157,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
 
-		try {
-			JavaInterop.register(interceptor);
-			
+		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 
 			final Env env = createEnv(venice, params);
@@ -183,20 +165,7 @@ public class Venice {
 			final VncVal result = venice.RE(script, scriptName, env);
 			
 			return JavaInteropUtil.convertToJavaObject(result);
-		}
-		catch(ValueException ex) {
-			final VncVal val = ex.getValue();
-			throw new VncException(
-						Types.isVncString(val) 
-							? ((VncString)val).getValue() 
-							: val.toString());
-		}
-		catch(RuntimeException ex) {
-			throw ex;
-		}
-		finally {
-			cleanAfterRun();
-		}
+		});
 	}
 	
 	/**
@@ -258,10 +227,27 @@ public class Venice {
 		
 		return env;
 	}
-
-	private void cleanAfterRun() {
-		// for security reason remove thread-local map!
-		ThreadLocalUtil.cleanThreadLocals();
+	
+	private Object runWithSandbox(final Callable<Object> callable) {
+		try {
+			JavaInterop.register(interceptor);
+			
+			return callable.call();
+		}
+		catch(ValueException ex) {
+			throw new JavaValueException(
+						JavaInteropUtil.convertToJavaObject(ex.getValue()));
+		}
+		catch(RuntimeException ex) {
+			throw ex;
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+		finally {
+			ThreadLocalMap.remove();
+			JavaInterop.unregister();
+		}
 	}
 
 	

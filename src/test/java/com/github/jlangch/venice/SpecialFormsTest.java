@@ -41,12 +41,12 @@ public class SpecialFormsTest {
 		try {
 			venice.eval(lisp);
 		}
-		catch(VncException ex) {
-			assertEquals("test message", ex.getMessage());
+		catch(JavaValueException ex) {
+			assertEquals("test message", ex.getValue());
 			return;
 		}
 		
-		fail("Expected VncException");
+		fail("Expected JavaValueException");
 	}
 	
 	@Test
@@ -61,12 +61,12 @@ public class SpecialFormsTest {
 		try {
 			venice.eval(lisp);
 		}
-		catch(VncException ex) {
-			assertEquals("nil", ex.getMessage());
+		catch(JavaValueException ex) {
+			assertEquals(null, ex.getValue());
 			return;
 		}
 		
-		fail("Expected VncException");
+		fail("Expected JavaValueException");
 	}
 	
 	@Test
@@ -162,10 +162,10 @@ public class SpecialFormsTest {
 			
 			venice.eval(lisp);
 			
-			fail("Expected VncException");
+			fail("Expected JavaValueException");
 		}
-		catch(VncException ex) {
-			assertEquals("100", ex.getMessage());
+		catch(JavaValueException ex) {
+			assertEquals(Long.valueOf(100), ex.getValue());
 		}
 	}
 	

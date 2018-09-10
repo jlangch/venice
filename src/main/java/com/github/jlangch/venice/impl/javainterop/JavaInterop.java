@@ -46,7 +46,12 @@ public class JavaInterop {
 	}
 
 	public static void unregister() {
-		threadInterceptor.remove();
+		try {
+			threadInterceptor.remove();
+		}
+		catch(Exception ex) {
+			// do not care
+		}
 	}
 
 	

@@ -54,7 +54,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
-import com.github.jlangch.venice.impl.util.ThreadLocalUtil;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -376,7 +376,8 @@ public class ConcurrencyFunctions {
 					return task.call();
 				}
 				finally {
-					ThreadLocalUtil.cleanThreadLocals();
+					ThreadLocalMap.remove();
+					JavaInterop.unregister();
 				}
 			};
 			

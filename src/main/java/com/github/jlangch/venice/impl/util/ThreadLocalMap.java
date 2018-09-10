@@ -69,13 +69,25 @@ public class ThreadLocalMap {
 	}
 
 	public static void clear() {
-		get().values.clear();
+		try {
+			get().values.clear();
+		}
+		catch(Exception ex) {
+			// do not care
+		}
 	}
 	
     public static void remove() {
-    	ThreadLocalMap.context.set(null);
-    	ThreadLocalMap.context.remove();
-    }
+		try {
+			get().values.clear();
+			
+			ThreadLocalMap.context.set(null);
+			ThreadLocalMap.context.remove();
+		}
+		catch(Exception ex) {
+			// do not care
+		}
+   }
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();

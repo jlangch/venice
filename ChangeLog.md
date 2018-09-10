@@ -13,7 +13,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added function 'io/load-classpath-resource' to load resources from 
         classpath. The function is sandboxed.
-
 - added function 'lock' and 'unlock' to WebDAV extension module.
 
 ### fixed
