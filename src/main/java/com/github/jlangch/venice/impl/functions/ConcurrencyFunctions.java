@@ -372,10 +372,12 @@ public class ConcurrencyFunctions {
 
 			final Callable<Object> taskWrapper = () -> {
 				try {
-					JavaInterop.register(parentInterceptor);					
+					JavaInterop.register(parentInterceptor);	
+					
 					return task.call();
 				}
 				finally {
+					// clean up
 					ThreadLocalMap.remove();
 					JavaInterop.unregister();
 				}

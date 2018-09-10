@@ -245,6 +245,7 @@ public class Venice {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 		finally {
+			// clean up
 			ThreadLocalMap.remove();
 			JavaInterop.unregister();
 		}
