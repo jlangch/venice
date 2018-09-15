@@ -35,11 +35,10 @@ import java.util.stream.Collectors;
 
 
 /**
- * Defines the sandbox rules.
+ * Defines the Venice's sandbox rules.
  * 
- * <p>The sandbox keeps whitelist rules for the Java Interop and blacklist rules for the
- * Venice functions.
- * 
+ * <p>The sandbox keeps whitelist rules for the Java Interop and blacklist rules 
+ * for the Venice functions.
  */
 public class SandboxRules {
 	
