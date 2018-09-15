@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * Keeps the sandbox rules.
+ * Defines the sandbox rules.
  * 
  * <p>The sandbox keeps whitelist rules for the Java Interop and blacklist rules for the
  * Venice functions.
@@ -88,6 +88,7 @@ public class SandboxRules {
 	 *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
 	 *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
 	 *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
+	 *   <li>ava.awt.**:*  (allow calling all constructors/methods/fields for classes in the package 'java.awt' and all its subpackages)
 	 * </ul>
 	 * 
 	 * @param rules rules
