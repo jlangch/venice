@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,42 +40,6 @@ import java.util.stream.Collectors;
  * <p>The sandbox keeps whitelist rules for the Java Interop and blacklist rules for the
  * Venice functions.
  * 
- * <p>Java whitelist rules for class/instance accessor follow the schema: 
- * '{package}.{className}:{methodName | fieldName}'. The asterix may be used as a wildcard
- * 
- * <p>
- * E.g: white listing Java Interop
- * <ul>
- *   <li>java.lang.Boolean (allow calling Java methods with arguments or return values of type Boolean)</li>
- *   <li>java.lang.* (allow calling Java methods with arguments or return values of any type in the package 'java.lang')</li>
- *   <li>java.lang.Long:new (allow calling Long constructor)</li>
- *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
- *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
- *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
- * </ul>
- * 
- * <p>
- * E.g: white listing Java system properties
- * <ul>
- *   <li>system.property:file.separator</li>
- *   <li>system.property:java.home</li>
- * </ul>
- * 
- * <p>
- * E.g: white listing Java classpath resources
- * <ul>
- *   <li>classpath:/foo/org/image.png</li>
- *   <li>classpath:/foo/org/*.png</li>
- *   <li>classpath:/foo/org/*.jpg</li>
- * </ul>
- * 
- * <p>
- * E.g: black listing Venice I/O functions
- * <ul>
- *   <li>blacklist:venice:io/slurp (reject calls to 'io/slurp')</li>
- *   <li>blacklist:venice:*io* (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
- *   <li>blacklist:venice:. (reject java interop)</li>
- * </ul>
  */
 public class SandboxRules {
 	
@@ -82,64 +47,217 @@ public class SandboxRules {
 	}
 	
 	/**
-	 * Add rules to the sandbox
+	 * Add whitelisted class rules to the sandbox.
 	 * 
-	 * @param rules a collection of rules
-	 * @return this <code>SandboxRules</code>
-	 */
-	public SandboxRules add(final Collection<String> rules) {
-		if (rules != null) {
-			this.rules.addAll(rules);
-		}
-		return this;
-	}
-	
-	/**
-	 * Add rules to the sandbox
+	 * <p>Java whitelist rules for class/instance accessor follow the schema: 
+	 * '{package}.{className}:{methodName | fieldName}'. The asterix may be used as a wildcard
+	 * 
+	 * <p>
+	 * E.g:
+	 * <ul>
+	 *   <li>java.lang.Boolean (allow calling Java methods with arguments or return values of type Boolean)</li>
+	 *   <li>java.lang.* (allow calling Java methods with arguments or return values of any type in the package 'java.lang')</li>
+	 *   <li>java.lang.Long:new (allow calling Long constructor)</li>
+	 *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
+	 *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
+	 *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
+	 * </ul>
 	 * 
 	 * @param rules rules
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules add(final String... rules) {
+	public SandboxRules withClasses(final String... rules) {
 		if (rules != null) {
-			this.rules.addAll(Arrays.asList(rules));
+			withClasses(Arrays.asList(rules));
 		}
 		return this;
 	}
 	
 	/**
-	 * Add classes to the sandbox. 
+	 * Add whitelisted class rules to the sandbox.
 	 * 
-	 * <p>Adds a rule "x.y.classname:*" for each class
+	 * <p>Java whitelist rules for class/instance accessor follow the schema: 
+	 * '{package}.{className}:{methodName | fieldName}'. The asterix may be used as a wildcard
 	 * 
-	 * @param classes classes
+	 * <p>
+	 * E.g:
+	 * <ul>
+	 *   <li>java.lang.Boolean (allow calling Java methods with arguments or return values of type Boolean)</li>
+	 *   <li>java.lang.* (allow calling Java methods with arguments or return values of any type in the package 'java.lang')</li>
+	 *   <li>java.lang.Long:new (allow calling Long constructor)</li>
+	 *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
+	 *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
+	 *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules addClasses(final Class<?>... classes) {
-		if (classes != null) {
-			for(Class<?> clazz : classes) {
-				this.rules.add(clazz.getName() + ":*");
-			}
+	public SandboxRules withClasses(final List<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream().map(r -> "class:" + r).collect(Collectors.toList()));
 		}
 		return this;
 	}
 	
 	/**
-	 * Add classes to the sandbox. 
+	 * Add a rule for classes to the sandbox, whitelisting the class and all its 
+	 * methods and fields 
 	 * 
-	 * <p>Adds a rule "x.y.classname:*" for each class
+	 * <p>Adds a class rule "x.y.classname:*" for each class
 	 * 
 	 * @param classes classes
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules addClasses(final Collection<Class<?>> classes) {
+	public SandboxRules withClasses(final Class<?>... classes) {
 		if (classes != null) {
-			for(Class<?> clazz : classes) {
-				this.rules.add(clazz.getName() + ":*");
-			}
+			withClasses(Arrays.asList(classes));
 		}
 		return this;
 	}
+	
+	/**
+	 * Add a rule for classes to the sandbox, whitelisting the class and all its 
+	 * methods and fields 
+	 * 
+	 * <p>Adds a class rule "x.y.classname:*" for each class
+	 * 
+	 * @param classes classes
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withClasses(final Collection<Class<?>> classes) {
+		if (classes != null) {
+			withClasses(classes.stream().map(c -> c.getName() + ":*").collect(Collectors.toList()));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add whitelisted classpath resource rules to the sandbox.
+	 * 
+	 * E.g: 
+	 * <ul>
+	 *   <li>/foo/org/image.png</li>
+	 *   <li>/foo/org/*.png</li>
+	 *   <li>/foo/org/*.jpg</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withClasspathResources(final String... rules) {
+		if (rules != null) {
+			withClasspathResources(Arrays.asList(rules));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add whitelisted classpath resource rules to the sandbox.
+	 * 
+	 * E.g: 
+	 * <ul>
+	 *   <li>/foo/org/image.png</li>
+	 *   <li>/foo/org/*.png</li>
+	 *   <li>/foo/org/*.jpg</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withClasspathResources(final Collection<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream().map(r -> "classpath:" + r).collect(Collectors.toList()));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add whitelisted system property rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g: white listing Java system properties
+	 * <ul>
+	 *   <li>file.separator</li>
+	 *   <li>java.home</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withSystemProperties(final String... rules) {
+		if (rules != null) {
+			withSystemProperties(Arrays.asList(rules));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add whitelisted system property rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g: white listing Java system properties
+	 * <ul>
+	 *   <li>file.separator</li>
+	 *   <li>java.home</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withSystemProperties(final Collection<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream().map(r -> "system.property:" + r).collect(Collectors.toList()));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add blacklisted Venice IO function rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g:
+	 * <ul>
+	 *   <li>io/slurp (reject calls to 'io/slurp')</li>
+	 *   <li>*io* (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
+	 *   <li>. (reject java interop completely)</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withBlacklistedVeniceFn(final String... rules) {
+		if (rules != null) {
+			withBlacklistedVeniceFn(Arrays.asList(rules));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add blacklisted Venice IO function rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g:
+	 * <ul>
+	 *   <li>io/slurp (reject calls to 'io/slurp')</li>
+	 *   <li>*io* (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
+	 *   <li>. (reject java interop completely)</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withBlacklistedVeniceFn(final Collection<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream().map(r -> "blacklist:venice:" + r).collect(Collectors.toList()));
+		}
+		return this;
+	}
+
 	
 	/**
 	 * Reject access to all Venice I/O related functions
@@ -148,7 +266,7 @@ public class SandboxRules {
 	 */
 	public SandboxRules rejectAllVeniceIoFunctions() {
 		if (rules != null) {
-			this.rules.add("blacklist:venice:*io*");
+			withBlacklistedVeniceFn("*io*");
 		}
 		return this;
 	}
@@ -176,10 +294,7 @@ public class SandboxRules {
 	 * @return this <code>SandboxRules</code>
 	 */
 	public SandboxRules allowAccessToStandardSystemProperties() {
-		rules.addAll(DEFAULT_SYSTEM_PROPERTIES
-				.stream()
-				.map(p -> "system.property:" + p)
-				.collect(Collectors.toSet()));		
+		withSystemProperties(DEFAULT_SYSTEM_PROPERTIES);
 		return this;
 	}
 	
@@ -189,7 +304,7 @@ public class SandboxRules {
 	 * @return this <code>SandboxRules</code>
 	 */
 	public SandboxRules allowAccessToAllSystemProperties() {
-		rules.add("system.property:*");
+		withSystemProperties("*");
 		return this;
 	}
 		
@@ -202,8 +317,8 @@ public class SandboxRules {
 	 */
 	public SandboxRules merge(final SandboxRules other) {
 		final SandboxRules merged = new SandboxRules();
-		merged.add(this.rules);
-		merged.add(other.rules);
+		merged.rules.addAll(this.rules);
+		merged.rules.addAll(other.rules);
 		return merged;
 	}
 	
@@ -221,7 +336,7 @@ public class SandboxRules {
 					.sorted()
 					.collect(Collectors.joining("\n"));
 	}
-
+	
 	
 	private static final Set<String> DEFAULT_CLASS_RULES = 
 			new HashSet<>(

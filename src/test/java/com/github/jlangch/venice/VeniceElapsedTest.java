@@ -71,6 +71,7 @@ public class VeniceElapsedTest {
 		// --------------------------------------------------------
 		final StopWatch	sw = StopWatch.millis();
 		for(int ii=0; ii<1000; ii++) {
+			@SuppressWarnings("unused")
 			boolean res = event.getEventName().matches("webapp[.](started|stopped)")
 							|| event.getEventKey().equals("superuser")
 							|| event.getEventType() == AuditEventType.ALERT;

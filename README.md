@@ -323,7 +323,7 @@ final IInterceptor interceptor =
         new SandboxRules()
               .rejectAllVeniceIoFunctions()
               .allowAccessToStandardSystemProperties()
-              .add(
+              .withClasses(
                 "java.lang.Math:min", 
                 "java.time.ZonedDateTime:*", 
                 "java.util.ArrayList:new",

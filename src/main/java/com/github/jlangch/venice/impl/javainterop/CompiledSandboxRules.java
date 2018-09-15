@@ -81,9 +81,8 @@ public class CompiledSandboxRules {
 				// whitelisted classes
 				filtered
 					.stream()
-					.filter(s -> !s.startsWith("classpath:"))
-					.filter(s -> !s.startsWith("blacklist:venice:"))
-					.filter(s -> !s.startsWith("system.property:"))
+					.filter(s -> s.startsWith("class:"))
+					.map(s -> s.substring("class:".length()))
 					.map(s -> { int pos = s.indexOf(':'); return pos < 0 ? s : s.substring(0, pos); })
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
@@ -91,15 +90,14 @@ public class CompiledSandboxRules {
 				// whitelisted methods
 				filtered
 					.stream()
-					.filter(s -> !s.startsWith("classpath:"))
-					.filter(s -> !s.startsWith("blacklist:venice:"))
-					.filter(s -> !s.startsWith("system.property:"))
+					.filter(s -> s.startsWith("class:"))
+					.map(s -> s.substring("class:".length()))
 					.filter(s -> s.indexOf(':') >= 0)
 					.map(s -> SandboxRuleCompiler.compile(s))
 					.collect(Collectors.toList()),
 					
 				// whitelisted classpath resources
-					filtered
+				filtered
 					.stream()
 					.filter(s -> s.startsWith("classpath:"))
 					.map(s -> s.substring("classpath:".length()))

@@ -35,7 +35,7 @@ public class SandboxRulesTest {
 	@Test
 	public void classesTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
+											new SandboxRules().withClasses(
 												"java.lang.Math",
 												"java.math.BigDecimal"
 											));
@@ -48,7 +48,7 @@ public class SandboxRulesTest {
 	@Test
 	public void classesWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
+											new SandboxRules().withClasses(
 												"java.lang.Math",
 												"java.lang.String:*",
 												"java.math.*",
@@ -69,7 +69,7 @@ public class SandboxRulesTest {
 	@Test
 	public void methodsTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
+											new SandboxRules().withClasses(
 												"java.lang.Math:min",
 												"java.lang.Math:max"
 											));
@@ -83,7 +83,7 @@ public class SandboxRulesTest {
 	@Test
 	public void methodsWildcardTest_1() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
+											new SandboxRules().withClasses(
 												"java.lang.Math:*"
 											));
 
@@ -96,7 +96,7 @@ public class SandboxRulesTest {
 	@Test
 	public void methodsWildcardTest_2() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
+											new SandboxRules().withClasses(
 												"java.lang.*:*"
 											));
 
@@ -111,7 +111,7 @@ public class SandboxRulesTest {
 	@Test
 	public void methodsWildcardTest_3() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
+											new SandboxRules().withClasses(
 												"java.**:*"
 											));
 
@@ -126,11 +126,11 @@ public class SandboxRulesTest {
 	@Test
 	public void classpathWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
-												"classpath:/foo/org/image.png",
-												"classpath:/foo/org/*.jpg",
-												"classpath:/abc/**/*.png",
-												"classpath:/xyz/**"
+											new SandboxRules().withClasspathResources(
+												"/foo/org/image.png",
+												"/foo/org/*.jpg",
+												"/abc/**/*.png",
+												"/xyz/**"
 											));
 		
 		assertFalse(wl.isWhiteListedClasspathResource("/foo/org/image.tiff"));
@@ -150,9 +150,7 @@ public class SandboxRulesTest {
 	@Test
 	public void systemPropertyTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
-												"system.property:foo.org"
-											));
+											new SandboxRules().withSystemProperties("foo.org"));
 		
 		assertTrue(wl.isWhiteListedSystemProperty("foo.org"));
 		assertFalse(wl.isWhiteListedSystemProperty("foo.com"));
@@ -161,9 +159,7 @@ public class SandboxRulesTest {
 	@Test
 	public void systemPropertyAllTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().add(
-												"system.property:*"
-											));
+											new SandboxRules().withSystemProperties("*"));
 		
 		assertTrue(wl.isWhiteListedSystemProperty("foo.org"));
 		assertTrue(wl.isWhiteListedSystemProperty("foo.com"));

@@ -71,7 +71,7 @@ public class SandboxExample {
 				new SandboxInterceptor(
 						new SandboxRules()
 								.rejectAllVeniceIoFunctions()
-								.add(
+								.withClasses(
 									"java.lang.Long",  // Math::min, Math::max arguments/return type
 									"java.lang.Boolean",  // ArrayList::add return type
 									"java.lang.Math:min", 
