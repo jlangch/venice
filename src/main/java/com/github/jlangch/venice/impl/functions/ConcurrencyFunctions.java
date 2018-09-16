@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,6 +54,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -585,22 +585,6 @@ public class ConcurrencyFunctions {
 		}
 	};
 
-
-	private static ThreadFactory createThreadFactory(
-			final String format, 
-			final AtomicLong threadPoolCounter,
-			final boolean deamon
-	) {
-		return new ThreadFactory() {
-			public Thread newThread(Runnable runnable) {
-				final Thread thread = new Thread(runnable);
-				thread.setDaemon(deamon);
-				thread.setName(String.format(format, threadPoolCounter.getAndIncrement()));
-				return thread;
-			}
-		};
-	}
-
 	
 	public static void shutdown() {
 		executor.shutdown();
@@ -644,7 +628,7 @@ public class ConcurrencyFunctions {
 
 	private final static ExecutorService executor = 
 			Executors.newCachedThreadPool(
-					createThreadFactory(
+					ThreadPoolUtil.createThreadFactory(
 							"venice-future-pool-%d", 
 							futureThreadPoolCounter,
 							true /* daemon threads */));

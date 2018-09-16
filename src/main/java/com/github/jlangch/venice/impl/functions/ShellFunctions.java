@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -52,6 +53,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
+import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 
 
 public class ShellFunctions {
@@ -123,7 +125,12 @@ public class ShellFunctions {
 			final VncList cmd = Coerce.toVncList(v.first());
 			final VncMap opts = Coerce.toVncMap(v.second());
 
-			final ExecutorService executor = Executors.newFixedThreadPool(3);
+			final ExecutorService executor = Executors.newFixedThreadPool(
+												3,
+												ThreadPoolUtil.createThreadFactory(
+														"venice-shell-pool-%d", 
+														threadPoolCounter,
+														true /* daemon threads */));
 			try {
 				return exec(cmd, opts, executor);
 			}
@@ -132,7 +139,6 @@ public class ShellFunctions {
 			}
 		}
 	};
-
 
 	
 	
@@ -333,6 +339,8 @@ public class ShellFunctions {
 		return null;
 	}
 
+	
+	private final static AtomicLong threadPoolCounter = new AtomicLong(0);
 	
 	
 	///////////////////////////////////////////////////////////////////////////
