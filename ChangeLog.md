@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [0.9.5] - 2018-09-xx
+
+### Added
+
+- added ability to mix Venice with Java streams
+
+### fixed
+
+- fixed ...
+
+
+
 ## [0.9.4] - 2018-09-15
 
 ### Added
