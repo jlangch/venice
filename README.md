@@ -206,6 +206,29 @@ Java Callbacks:
         (. dir :list (proxify :FilenameFilter {:accept file-filter}))))
 ```
 
+
+Mixing with Java Streams:
+
+```clojure
+(do
+    (import :java.util.ArrayList)
+    (import :java.util.function.Predicate)
+    (import :java.util.stream.Collectors)
+
+    (defn pred-fn [x] (> x 2))
+
+    (let [ data (doto (. :ArrayList :new)
+                      (. :add 1)
+                      (. :add 2)
+                      (. :add 3)
+                      (. :add 4)) ]
+
+         (-> (. data :stream)
+             (. :filter (proxify :Predicate { :test pred-fn })
+             (. :collect (. :Collectors :toList))))
+)
+```
+
 ```clojure
 ;; Swing GUI (demonstrates passing parameters across callbacks)
 (do
