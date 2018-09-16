@@ -295,28 +295,6 @@ public class JavaInteropTest {
 
 		assertEquals("123", venice.eval("(. :com.github.jlangch.venice.support.JavaObject :staticVoid)"));
 	}
-
-	@Test
-	@Ignore
-	public void testJavaSandboxRecorder() {
-		final Venice venice = new Venice(new SandboxRecorder());
-		
-		venice.eval("(. :java.lang.Math :min 20 30)");
-		venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)");
-				
-		final String lisp = 
-				"(do                                                  " +
-				"   (def fmt (. :java.time.format.DateTimeFormatter   " +
-				"               :ofPattern                            " +
-				"               \"YYYY-MM-dd'T'HH:mm:ss.SSS\"))       " +
-				"                                                     " +
-				"   (let [now (. :java.time.ZonedDateTime :now)]      " +
-				"        (. fmt :parse (. fmt :format now))           " +
-				"        (. fmt :format now))                         " +
-				")                                                    ";
-
-		System.out.println(venice.eval(lisp));
-	}
 	
 	@Test
 	public void test_doto() {

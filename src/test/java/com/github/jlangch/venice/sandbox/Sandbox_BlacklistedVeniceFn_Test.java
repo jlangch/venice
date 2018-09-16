@@ -19,15 +19,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.javainterop;
+package com.github.jlangch.venice.sandbox;
 
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.javainterop.Interceptor;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 
-
-public class BlackListedFunctionTest {
-		
+public class Sandbox_BlacklistedVeniceFn_Test {
+	
 	@Test(expected = SecurityException.class)
 	public void test_slurp() {
 		new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
@@ -47,7 +50,7 @@ public class BlackListedFunctionTest {
 		// all venice IO functions blacklisted
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("*io*"));
-
+	
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
 	}
 	
@@ -56,13 +59,8 @@ public class BlackListedFunctionTest {
 		// all venice IO functions blacklisted
 		final Interceptor interceptor = new SandboxInterceptor(
 													new SandboxRules().rejectAllVeniceIoFunctions());
-
-		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
-	}
 	
-	@Test(expected = SecurityException.class)
-	public void test_system_exit() {
-		new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
+		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
 	}
 
 }

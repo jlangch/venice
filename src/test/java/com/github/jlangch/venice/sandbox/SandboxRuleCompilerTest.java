@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.javainterop;
+package com.github.jlangch.venice.sandbox;
 
 import static com.github.jlangch.venice.impl.javainterop.SandboxRuleCompiler.compile;
 import static org.junit.Assert.assertFalse;
