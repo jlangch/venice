@@ -27,8 +27,8 @@ import org.junit.Test;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.SandboxRecorder;
 
-public class Sandbox_Recorder_Test {
 
+public class Sandbox_Recorder_Test {
 
 	@Test
 	@Ignore

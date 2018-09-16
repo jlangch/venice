@@ -29,25 +29,27 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
+
 public class Sandbox_BlacklistedVeniceFn_Test {
 	
 	@Test(expected = SecurityException.class)
-	public void test_slurp() {
+	public void test_RejectAllInterceptor_slurp() {
+		// RejectAllInterceptor -> all Venice IO functions blacklisted
 		new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_print_blacklisted() {
-		// all venice 'slurp' function blacklisted
+	public void test_rejectAllVeniceIoFunctions_slurp() {
+		// Sandbox::rejectAllVeniceIoFunctions() -> all Venice IO functions blacklisted
 		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/slurp"));				
-		
+				new SandboxInterceptor(new SandboxRules().rejectAllVeniceIoFunctions());				
+
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_print_blacklisted_io_1() {
-		// all venice IO functions blacklisted
+	public void test_blacklistedIO_slurp() {
+		// all Venice IO functions blacklisted
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("*io*"));
 	
@@ -55,11 +57,11 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_print_blacklisted_io_2() {
-		// all venice IO functions blacklisted
-		final Interceptor interceptor = new SandboxInterceptor(
-													new SandboxRules().rejectAllVeniceIoFunctions());
-	
+	public void test_withBlacklistedVeniceFn_slurp() {
+		// Venice 'slurp' function blacklisted
+		final Interceptor interceptor = 
+				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/slurp"));				
+		
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
 	}
 
