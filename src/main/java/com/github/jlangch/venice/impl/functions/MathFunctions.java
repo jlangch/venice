@@ -593,7 +593,7 @@ public class MathFunctions {
 			
 			setDoc("Returns true if n is even, throws an exception if n is not an integer");
 			
-			setExamples("(odd? 4)", "(odd? 3)");
+			setExamples("(even? 4)", "(even? 3)");
 		}
 		
 		public VncVal apply(final VncList args) {
