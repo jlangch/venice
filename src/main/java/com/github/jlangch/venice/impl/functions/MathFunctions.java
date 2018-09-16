@@ -378,7 +378,39 @@ public class MathFunctions {
 			}
 		}
 	};
-	
+
+	public static VncFunction negate = new VncFunction("negate") {
+		{
+			setArgLists("(negate x)");
+			
+			setDoc("Negates x");
+			
+			setExamples("(negate 10)", "(negate 1.23)", "(negate 1.23M)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("negate", args, 1);
+			
+			final VncVal arg = args.nth(0);
+			
+			if (Types.isVncLong(arg)) {
+				return new VncLong(Math.negateExact(((VncLong)arg).getValue().longValue()));
+			}
+			else if (Types.isVncDouble(arg)) {
+				return new VncDouble(((VncDouble)arg).getValue().doubleValue() * -1D);
+			}
+			else if (Types.isVncBigDecimal(arg)) {
+				return new VncBigDecimal(Coerce.toVncBigDecimal(args.first()).getValue().negate());
+			}
+			else {
+				throw new VncException(String.format(
+						"Invalid argument type %s while calling function 'negate'. %s",
+						Types.getClassName(arg),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	public static VncFunction rand_long = new VncFunction("rand-long") {
 		{
 			setArgLists("(rand-long)", "(rand-long max)");
@@ -841,6 +873,7 @@ public class MathFunctions {
 					.put("abs",					abs)
 					.put("min",					min)
 					.put("max",					max)
+					.put("negate",				negate)
 
 					.put("dec/add",				dec_add)
 					.put("dec/sub",				dec_sub)

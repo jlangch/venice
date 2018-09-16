@@ -159,6 +159,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("min"));
 		arithmetic.addItem(getDocItem("max"));
 		arithmetic.addItem(getDocItem("abs"));
+		arithmetic.addItem(getDocItem("negate"));
 
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
