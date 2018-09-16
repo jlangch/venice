@@ -507,8 +507,6 @@ public class JavaInteropTest {
 			    "                                                                 " +
 			    "    (def pred-fn (fn[x] (> x 2)))                                " +
 			    "                                                                 " +
-			    "    (def pred-fn-proxy (proxify :Predicate { :test pred-fn }))   " +
-			    "                                                                 " +
 				"    (let [ data (doto (. :ArrayList :new)                        " +
 			    "                      (. :add 1)                                 " +
 			    "                      (. :add 2)                                 " +
@@ -516,7 +514,7 @@ public class JavaInteropTest {
 			    "                      (. :add 4)) ]                              " +
 			    "                                                                 " +
 				"         (-> (. data :stream)                                    " +
-			    "             (. :filter pred-fn-proxy)                           " +
+			    "             (. :filter (proxify :Predicate { :test pred-fn }))  " +
 			    "             (. :collect (. :Collectors :toList))))              " +
 				") ";
 
