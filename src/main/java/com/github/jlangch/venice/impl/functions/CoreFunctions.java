@@ -3375,7 +3375,7 @@ public class CoreFunctions {
 			
 			setDoc("Returns the class of x");
 			
-			setExamples("(class 5)", "(class [1 2])");
+			setExamples("(class 5)", "(class [1 2])", "(class (. :java.time.ZonedDateTime :now))");
 		}
 		
 		public VncVal apply(final VncList args) {
