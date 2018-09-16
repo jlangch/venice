@@ -177,7 +177,7 @@ public class MathFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("abs", args, 2);
+			assertArity("mod", args, 2);
 
 			if (!Types.isVncLong(args.nth(0))) {
 				throw new VncException(String.format(
