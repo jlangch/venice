@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -28,8 +30,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.FileUtil;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -37,7 +41,12 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class Sandbox_BlacklistedVeniceFn_Test {
+
 	
+	// ------------------------------------------------------------------------
+	// Sandbox FAIL
+	// ------------------------------------------------------------------------
+
 	@Test(expected = SecurityException.class)
 	public void test_RejectAllInterceptor_slurp() {
 		// RejectAllInterceptor -> all Venice IO functions blacklisted
@@ -71,10 +80,38 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
 	}
 
+	
+	
+	// ------------------------------------------------------------------------
+	// Sandbox PASS
+	// ------------------------------------------------------------------------
+
+	@Test
+	public void test_NoSandbox_slurp() {
+		// AcceptAllInterceptor -> all Venice IO functions available
+		final Venice venice = new Venice();
+		
+		assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
+	}
+
+	@Test
+	public void test_AcceptAllInterceptor_slurp() {
+		// AcceptAllInterceptor -> all Venice IO functions available
+		final Venice venice = new Venice(new AcceptAllInterceptor());
+		
+		assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
+	}
+
+	
+	
+	// ------------------------------------------------------------------------
+	// Helpers
+	// ------------------------------------------------------------------------
+	
 	@Before
 	public void createTempFile() {
 		try {
-			final File tempFile = File.createTempFile("test__", ".txt");
+			tempFile = File.createTempFile("test__", ".txt");
 			FileUtil.save("1234567890", tempFile, true);
 		}
 		catch(IOException ex) {
