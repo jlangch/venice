@@ -37,7 +37,6 @@ import java.util.Date;
 import com.github.jlangch.venice.FileException;
 
 
-
 /**
  * File utilities
  */
@@ -111,12 +110,7 @@ public class FileUtil {
 			inStream = new FileInputStream(source);
 			outStream = new ByteArrayOutputStream();
 
-			int len;
-			byte[] buf=new byte[2048];
-			 
-			while ((len=inStream.read(buf))!=-1) {
-				outStream.write(buf,0,len);
-			}
+			IOStreamUtil.copy(inStream, outStream);
 			
 			outStream.flush();	
 			return outStream.toByteArray();
@@ -236,12 +230,7 @@ public class FileUtil {
 
 			outStream = new FileOutputStream(destination);
 
-			byte[] buffer = new byte[1024 * 64]; 
-			while(true) {
-				int len = inStream.read(buffer, 0, buffer.length);
-				if (len <= 0) break; // end of stream
-				outStream.write(buffer, 0, len);
-			}
+			IOStreamUtil.copy(inStream, outStream);
 						
 			outStream.flush();
 			
