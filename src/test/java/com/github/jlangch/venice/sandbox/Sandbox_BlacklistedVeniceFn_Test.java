@@ -21,9 +21,15 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -65,4 +71,25 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
 	}
 
+	@Before
+	public void createTempFile() {
+		try {
+			final File tempFile = File.createTempFile("test__", ".txt");
+			FileUtil.save("1234567890", tempFile, true);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException("Failed to create temp file");
+		}
+	}
+
+	@After
+	public void removeTempFile() {
+		if (tempFile != null && tempFile.exists()) {
+			tempFile.delete();
+			tempFile = null;
+		}
+	}
+
+	
+	private File tempFile;
 }
