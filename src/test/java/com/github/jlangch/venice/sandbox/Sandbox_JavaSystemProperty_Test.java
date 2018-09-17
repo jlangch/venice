@@ -37,12 +37,12 @@ public class Sandbox_JavaSystemProperty_Test {
 	// ------------------------------------------------------------------------
 		
 	@Test(expected = SecurityException.class)
-	public void test_RejectAccessToAllSystemProperties_1() {
+	public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
 		new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
 	}
 	
 	@Test(expected = SecurityException.class)
-	public void test_RejectAccessToAllSystemProperties_2() {
+	public void test_RejectAccessToAllSystemProperties_EmptySandbox() {
 		final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());				
 		
 		new Venice(interceptor).eval("(system-prop \"db.password\")");
@@ -95,8 +95,8 @@ public class Sandbox_JavaSystemProperty_Test {
 	
 	@Test
 	public void test_AccessToWhitelistedSystemProperties() {
-		final Interceptor interceptor = new SandboxInterceptor(
-												new SandboxRules().withSystemProperties("db.password"));				
+		final Interceptor interceptor = 
+				new SandboxInterceptor(new SandboxRules().withSystemProperties("db.password"));				
 		
 		new Venice(interceptor).eval("(system-prop \"db.password\")");
 	}
