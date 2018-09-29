@@ -21,17 +21,17 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
@@ -439,7 +439,7 @@ public class JavaInteropTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void test_proxy_SwingInvoker() {
 		final Venice venice = new Venice();
 

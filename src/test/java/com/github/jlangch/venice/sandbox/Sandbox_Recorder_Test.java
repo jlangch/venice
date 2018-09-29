@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.sandbox;
 
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.SandboxRecorder;

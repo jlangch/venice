@@ -21,14 +21,15 @@
  */
 package com.github.jlangch.venice.sandbox;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
@@ -47,37 +48,45 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 	// Sandbox FAIL
 	// ------------------------------------------------------------------------
 
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_RejectAllInterceptor_slurp() {
-		// RejectAllInterceptor -> all Venice IO functions blacklisted
-		new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
+		assertThrows(SecurityException.class, () -> {
+			// RejectAllInterceptor -> all Venice IO functions blacklisted
+			new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
+		});
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_rejectAllVeniceIoFunctions_slurp() {
 		// Sandbox::rejectAllVeniceIoFunctions() -> all Venice IO functions blacklisted
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().rejectAllVeniceIoFunctions());				
 
-		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+		});
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_blacklistedIO_slurp() {
 		// all Venice IO functions blacklisted
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("*io*"));
 	
-		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+		});
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_withBlacklistedVeniceFn_slurp() {
 		// Venice 'slurp' function blacklisted
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/slurp"));				
 		
-		new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+		});
 	}
 
 	
@@ -108,7 +117,7 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 	// Helpers
 	// ------------------------------------------------------------------------
 	
-	@Before
+	@BeforeEach
 	public void createTempFile() {
 		try {
 			tempFile = File.createTempFile("test__", ".txt");
@@ -119,7 +128,7 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void removeTempFile() {
 		if (tempFile != null && tempFile.exists()) {
 			tempFile.delete();

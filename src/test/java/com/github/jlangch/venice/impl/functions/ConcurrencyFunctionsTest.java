@@ -21,13 +21,14 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
@@ -135,7 +136,7 @@ public class ConcurrencyFunctionsTest {
 		assertTrue((Boolean)venice.eval(script));
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_future_sandbox_violation() {
 		// all venice 'file' function blacklisted
 		final Interceptor interceptor = 
@@ -153,7 +154,10 @@ public class ConcurrencyFunctionsTest {
 				"        (deref f))                         " +
 				") ";
 
-		venice.eval(script);
+		assertThrows(SecurityException.class, () -> {
+			venice.eval(script);
+		});
+
 	}
 	
 	@Test

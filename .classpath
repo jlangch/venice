@@ -3,13 +3,12 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/ST-4.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/commons-text-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/commons-lang3-3.7.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/flying-saucer-core-9.1.14.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/flying-saucer-pdf-openpdf-9.1.14.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/openpdf-1.1.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

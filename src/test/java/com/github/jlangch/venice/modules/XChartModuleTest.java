@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.modules;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 
@@ -30,7 +30,7 @@ import com.github.jlangch.venice.Venice;
 public class XChartModuleTest {
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_xy_chart() {
 		final Venice venice = new Venice();
 
@@ -61,7 +61,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_category_chart() {
 		final Venice venice = new Venice();
 
@@ -86,7 +86,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_category_chart_overlapping() {
 		final Venice venice = new Venice();
 
@@ -121,7 +121,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_pie_chart() {
 		final Venice venice = new Venice();
 
@@ -142,7 +142,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_bubble_chart() {
 		final Venice venice = new Venice();
 
@@ -182,7 +182,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_sticks_chart() {
 		final Venice venice = new Venice();
 
@@ -217,7 +217,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_misc_chart() {
 		final Venice venice = new Venice();
 
@@ -252,7 +252,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void test_doto_cond() {
 		final Venice venice = new Venice();
 

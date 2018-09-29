@@ -23,7 +23,7 @@ package com.github.jlangch.venice;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.support.AuditEvent;

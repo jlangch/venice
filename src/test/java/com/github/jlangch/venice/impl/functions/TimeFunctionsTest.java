@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 

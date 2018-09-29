@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.sandbox;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
@@ -36,32 +38,40 @@ public class Sandbox_JavaSystemProperty_Test {
 	// Sandbox FAIL
 	// ------------------------------------------------------------------------
 		
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
-		new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
+		});
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_RejectAccessToAllSystemProperties_EmptySandbox() {
 		final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());				
 		
-		new Venice(interceptor).eval("(system-prop \"db.password\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(system-prop \"db.password\")");
+		});
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_RejectAccessToNonStandardSystemProperties() {
 		final Interceptor interceptor = new SandboxInterceptor(
 												new SandboxRules().allowAccessToStandardSystemProperties());				
 		
-		new Venice(interceptor).eval("(system-prop \"db.password\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(system-prop \"db.password\")");
+		});
 	}
 	
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_RejectAccessToNonWhitelistedSystemProperties() {
 		final Interceptor interceptor = new SandboxInterceptor(
 												new SandboxRules().withSystemProperties("user.home"));				
 		
-		new Venice(interceptor).eval("(system-prop \"db.password\")");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(system-prop \"db.password\")");
+		});
 	}
 
 	

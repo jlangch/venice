@@ -21,11 +21,11 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 

@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.modules;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.Venice;
@@ -29,7 +31,7 @@ import com.github.jlangch.venice.Venice;
 
 public class JsonModuleTest {
 
-	@Test(expected = JavaMethodInvocationException.class)
+	@Test
 	public void test_json_parse() {
 		final Venice venice = new Venice();
 
@@ -40,7 +42,9 @@ public class JsonModuleTest {
 				"   (json/parse {:a 100})                " + 
 				") ";
 
-		venice.eval("(str " + script + ")");
+		assertThrows(JavaMethodInvocationException.class, () -> {
+			venice.eval("(str " + script + ")");
+		});
 	}
 
 }

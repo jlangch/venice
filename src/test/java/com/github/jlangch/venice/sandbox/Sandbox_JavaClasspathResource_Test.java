@@ -21,16 +21,20 @@
  */
 package com.github.jlangch.venice.sandbox;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 public class Sandbox_JavaClasspathResource_Test {
 		
-	@Test(expected = SecurityException.class)
+	@Test
 	public void test_system_exit() {
-		new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
+		assertThrows(SecurityException.class, () -> {
+			new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
+		});
 	}
 
 }
