@@ -81,7 +81,7 @@ public class Env {
 	
 	@Override
 	public String toString() {
-		return String.format("global: %s\n\nlevel %d: %s", globalSymbols, level, symbols);
+		return String.format("level %d: %s\n\nglobal: %s", level, symbols, globalSymbols);
 	}
 	
 	
