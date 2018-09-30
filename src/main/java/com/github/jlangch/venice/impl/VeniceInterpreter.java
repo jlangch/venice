@@ -108,7 +108,7 @@ public class VeniceInterpreter {
 			final VncVal a0 = Coerce.toVncList(ast).nth(0);
 			if (Types.isVncSymbol(a0)) {
 				final VncSymbol macroName = (VncSymbol)a0;
-				if (env.find(macroName) != null) {
+				if (env.findEnv(macroName) != null) {
 					final VncVal fn = env.get(macroName);
 					if (Types.isVncFunction(fn) && ((VncFunction)fn).isMacro()) {
 						return true;

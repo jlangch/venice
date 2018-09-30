@@ -38,12 +38,12 @@ public class Env {
 		this.globalSymbols = outer == null ? new Symbols() : outer.globalSymbols;
 	}
 		
-	public Env find(final VncSymbol key) {
+	public Env findEnv(final VncSymbol key) {
 		if (globalSymbols.contains(key) || symbols.contains(key)) {
 			return this;
 		} 
 		else if (outer != null) {
-			return outer.find(key);
+			return outer.findEnv(key);
 		} 
 		else {
 			return null;
@@ -55,7 +55,7 @@ public class Env {
 			return globalSymbols.get(key);
 		}
 		else {		
-			final Env e = find(key);
+			final Env e = findEnv(key);
 			if (e == null) {
 				throw new VncException("Symbol '" + key.getName() + "' not found");
 			} 

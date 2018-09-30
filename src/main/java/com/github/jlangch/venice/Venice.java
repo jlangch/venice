@@ -215,7 +215,7 @@ public class Venice {
 					}
 				}
 				else {
-					if (env.find(symbol) != null) {
+					if (env.findEnv(symbol) != null) {
 						throw new VncException(String.format(
 								"A parameter with the name '%' already exists", 
 								symbol.getName()));
