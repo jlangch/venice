@@ -361,6 +361,20 @@ public class SpecialFormsTest {
 		
 		assertEquals(14L, venice.eval(script));
 	}
+	
+	@Test
+	public void test_let_with_fn() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                           " +
+				"   (let [x 2]                                 " +
+				"        (defn sum [y] (+ y x)))               " +
+				"   (sum 4)                                    " +
+				")                                             ";
+		
+		assertEquals(6L, venice.eval(script));
+	}
 
 	@Test
 	public void test_loop() {

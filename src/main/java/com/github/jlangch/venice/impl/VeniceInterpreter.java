@@ -201,7 +201,7 @@ public class VeniceInterpreter {
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
-					env.set(defName, MetaUtil.addDefMeta(res, defMeta));
+					env.setGlobal(defName, MetaUtil.addDefMeta(res, defMeta));
 					return res;
 				}
 				

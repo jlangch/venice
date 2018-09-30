@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### fixed
 
-- fixed ...
+- fixed _def_ creates now global variables instead of using the local env context
 
 
 
