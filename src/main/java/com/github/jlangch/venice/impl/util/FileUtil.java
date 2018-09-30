@@ -51,7 +51,6 @@ public class FileUtil {
 	 * @param source The source file
 	 * @param destination The destination file
 	 * @param overwrite if true overwrite the destination file
-	 * @param progressListener an optional progress listener
 	 */
 	public static void copy(
 			final File source, 
@@ -253,7 +252,7 @@ public class FileUtil {
 	/**
 	 * Save to file.
 	 * 
-	 * @param data the data to save to the file
+	 * @param text the text to save to the file
 	 * @param destination The destination file
 	 * @param overwrite if true overwrite the destination file
 	 */
@@ -499,7 +498,6 @@ public class FileUtil {
 	 * Get the file creation date
 	 * 
 	 * @param file A file
-	 * @param fileExt the new file extension
 	 * @return The creation date
 	 */
     public static Date getFileCreationDate(final File file) {
