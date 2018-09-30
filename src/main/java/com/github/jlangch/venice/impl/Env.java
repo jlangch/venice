@@ -21,10 +21,6 @@
  */
 package com.github.jlangch.venice.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -33,17 +29,17 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class Env {
 	
 	public Env() {
-		this.outer = null;
-		this.level = 0;
+		this(null);
 	}
 
 	public Env(final Env outer) {
 		this.outer = outer;
 		this.level = outer == null ? 0 : outer.level() + 1;
+		this.globalSymbols = outer == null ? new Symbols() : outer.globalSymbols;
 	}
 		
 	public Env find(final VncSymbol key) {
-		if (data.containsKey(key.getName())) {
+		if (globalSymbols.contains(key) || symbols.contains(key)) {
 			return this;
 		} 
 		else if (outer != null) {
@@ -55,12 +51,17 @@ public class Env {
 	}
 
 	public VncVal get(final VncSymbol key) {
-		final Env e = find(key);
-		if (e == null) {
-			throw new VncException("Symbol '" + key.getName() + "' not found");
-		} 
-		else {
-			return e.data.get(key.getName());
+		if (globalSymbols.contains(key)) {
+			return globalSymbols.get(key);
+		}
+		else {		
+			final Env e = find(key);
+			if (e == null) {
+				throw new VncException("Symbol '" + key.getName() + "' not found");
+			} 
+			else {
+				return e.symbols.get(key);
+			}
 		}
 	}
 
@@ -69,21 +70,23 @@ public class Env {
 	}
 
 	public Env set(final VncSymbol key, final VncVal value) {
-		data.put(key.getName(), value);
+		symbols.set(key, value);
 		return this;
 	}
-	
-	public Set<Map.Entry<String,VncVal>> getEntries() {
-		return data.entrySet();
+
+	public Env setGlobal(final VncSymbol key, final VncVal value) {
+		globalSymbols.set(key, value);
+		return this;
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("%d: %s", level, data);
+		return String.format("%d: %s", level, symbols);
 	}
 	
 	
 	private final Env outer;
 	private final int level;
-	private final Map<String,VncVal> data = new HashMap<>();
+	private final Symbols globalSymbols;
+	private final Symbols symbols = new Symbols();
 }
