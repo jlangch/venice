@@ -39,28 +39,34 @@ public class Env {
 	}
 		
 	public Env findEnv(final VncSymbol key) {
-		if (globalSymbols.contains(key) || symbols.contains(key)) {
+		if (symbols.contains(key)) {
 			return this;
 		} 
 		else if (outer != null) {
 			return outer.findEnv(key);
 		} 
+		else if (globalSymbols.contains(key)) {
+			return this;
+		}
 		else {
 			return null;
 		}
 	}
 
 	public VncVal get(final VncSymbol key) {
-		if (globalSymbols.contains(key)) {
-			return globalSymbols.get(key);
-		}
-		else {		
-			final Env e = findEnv(key);
-			if (e == null) {
-				throw new VncException("Symbol '" + key.getName() + "' not found");
-			} 
-			else {
+		final Env e = findEnv(key);
+		if (e == null) {
+			throw new VncException("Symbol '" + key.getName() + "' not found");
+		} 
+		else {
+			if (e.symbols.contains(key)) {
 				return e.symbols.get(key);
+			}
+			else if (globalSymbols.contains(key)) {
+				return globalSymbols.get(key);
+			}
+			else {
+				throw new VncException("Symbol '" + key.getName() + "' not found");
 			}
 		}
 	}

@@ -228,6 +228,15 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_def() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Long.valueOf(4), venice.eval("(do (def x 1) (def y 3) (+ x y))"));
+		assertEquals(Long.valueOf(30), venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)))"));
+		assertEquals(Long.valueOf(4), venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
+	}
+
+	@Test
 	public void test_if() {
 		final Venice venice = new Venice();
 

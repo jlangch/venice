@@ -52,41 +52,61 @@ public class EnvTest {
 
 	@Test
 	public void testMultiLevel() {
-		final Env env_1 = new Env();
-		env_1.set(new VncSymbol("a"), new VncLong(100));
+		final Env env_0 = new Env();
+		env_0.set(new VncSymbol("a"), new VncLong(100));
+		
+		final Env env_1 = new Env(env_0);
+		env_1.set(new VncSymbol("b"), new VncLong(200));
 		
 		final Env env_2 = new Env(env_1);
-		env_2.set(new VncSymbol("b"), new VncLong(200));
-		
-		final Env env_3 = new Env(env_2);
-		env_3.set(new VncSymbol("c"), new VncLong(300));
+		env_2.set(new VncSymbol("c"), new VncLong(300));
 
-		env_3.setGlobal(new VncSymbol("g"), new VncLong(900));
+		env_2.setGlobal(new VncSymbol("g"), new VncLong(900));
+
+		assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
+		assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
 
 		assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
+		assertEquals(new VncLong(200), env_1.get(new VncSymbol("b")));
 		assertEquals(new VncLong(900), env_1.get(new VncSymbol("g")));
 
 		assertEquals(new VncLong(100), env_2.get(new VncSymbol("a")));
 		assertEquals(new VncLong(200), env_2.get(new VncSymbol("b")));
+		assertEquals(new VncLong(300), env_2.get(new VncSymbol("c")));
 		assertEquals(new VncLong(900), env_2.get(new VncSymbol("g")));
 
-		assertEquals(new VncLong(100), env_3.get(new VncSymbol("a")));
-		assertEquals(new VncLong(200), env_3.get(new VncSymbol("b")));
-		assertEquals(new VncLong(300), env_3.get(new VncSymbol("c")));
-		assertEquals(new VncLong(900), env_3.get(new VncSymbol("g")));
-
+		assertThrows(VncException.class, () -> env_0.get(new VncSymbol("x")));
 		assertThrows(VncException.class, () -> env_1.get(new VncSymbol("x")));
 		assertThrows(VncException.class, () -> env_2.get(new VncSymbol("x")));
-		assertThrows(VncException.class, () -> env_3.get(new VncSymbol("x")));
 		
-		env_3.set(new VncSymbol("a"), new VncLong(101));
-		env_3.setGlobal(new VncSymbol("g"), new VncLong(901));
+		env_2.set(new VncSymbol("a"), new VncLong(101));
+		env_2.setGlobal(new VncSymbol("g"), new VncLong(901));
+		assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
 		assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
-		assertEquals(new VncLong(100), env_2.get(new VncSymbol("a")));
-		assertEquals(new VncLong(101), env_3.get(new VncSymbol("a")));
+		assertEquals(new VncLong(101), env_2.get(new VncSymbol("a")));
+		assertEquals(new VncLong(901), env_0.get(new VncSymbol("g")));
 		assertEquals(new VncLong(901), env_1.get(new VncSymbol("g")));
 		assertEquals(new VncLong(901), env_2.get(new VncSymbol("g")));
-		assertEquals(new VncLong(901), env_3.get(new VncSymbol("g")));
 	}
-	
+
+	@Test
+	public void testMultiLevel_OverwriteGlobal() {
+		final Env env_0 = new Env();
+		env_0.set(new VncSymbol("a"), new VncLong(100));
+		
+		final Env env_1 = new Env(env_0);
+		env_1.set(new VncSymbol("b"), new VncLong(200));
+		
+		final Env env_2 = new Env(env_1);
+		env_2.set(new VncSymbol("g"), new VncLong(300));
+
+		env_2.setGlobal(new VncSymbol("g"), new VncLong(900));
+
+		assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
+
+		assertEquals(new VncLong(900), env_1.get(new VncSymbol("g")));
+
+		assertEquals(new VncLong(300), env_2.get(new VncSymbol("g")));
+	}
+
 }

@@ -405,15 +405,15 @@ public class JavaInteropTest {
 
 		final String script =
 				"(do                                           " +
-				"  (def filter (fn [dir name] true))           " +
+				"  (def filter-fn (fn [path name] true))       " +
 				"  (def dir (. :java.io.File :new \"/tmp\"))   " +
 				"  (. dir :list                                " +
 				"         (proxify                             " +
 				"             :java.io.FilenameFilter          " +
-				"             {:accept filter}))               " +
+				"             {:accept filter-fn}))               " +
 				") ";
 
-		venice.eval(script);
+		System.out.println(venice.eval(script));
 	}
 
 	@Test
