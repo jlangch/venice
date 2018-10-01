@@ -7,15 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.9.6] - 2018-10-xx
-
-### Added
-
-- added ...
+## [0.9.6] - 2018-10-01
 
 ### fixed
 
-- fixed ...
+- fixed fixed _def_ global variables to be redefined locally
 
 
 
