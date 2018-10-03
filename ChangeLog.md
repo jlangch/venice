@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [0.9.7] - 2018-10-xx
+
+### added
+
+- added function 'str/char' to convert a number into single char string
+
+
+
 ## [0.9.6] - 2018-10-01
 
 ### fixed

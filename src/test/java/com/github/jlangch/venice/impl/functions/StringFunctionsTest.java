@@ -32,6 +32,13 @@ import com.github.jlangch.venice.Venice;
 
 public class StringFunctionsTest {
 	@Test
+	public void test_str_char() {
+		final Venice venice = new Venice();
+		
+		assertEquals("A", venice.eval("(str/char 65)"));
+	}
+
+	@Test
 	public void test_str_contains() {
 		final Venice venice = new Venice();
 		

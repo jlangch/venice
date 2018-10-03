@@ -74,7 +74,29 @@ public class StringFunctions {
 			return StringUtil.isBlank(s) ? True : False;
 		}
 	};
-	
+
+	public static VncFunction str_char = new VncFunction("str/char") {
+		{
+			setArgLists("(str/char n)");
+			
+			setDoc("Converts a number to a single char string.");
+			
+			setExamples("(str/char 65)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("str/char", args, 1);
+
+			if (args.nth(0) == Nil) {
+				return Nil;
+			}
+			
+			final long n = Coerce.toVncLong(args.nth(0)).getValue();		
+
+			return new VncString(String.valueOf((char)n));
+		}
+	};
+
 	public static VncFunction str_starts_with = new VncFunction("str/starts-with?") {
 		{
 			setArgLists("(str/starts-with? s substr)");
@@ -747,5 +769,6 @@ public class StringFunctions {
 					.put("str/strip-indent",	str_strip_indent)
 					.put("str/strip-margin",	str_strip_margin)
 					.put("str/repeat",		    str_repeat)
+					.put("str/char",		    str_char)
 					.toMap();	
 }
