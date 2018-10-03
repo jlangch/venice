@@ -4490,8 +4490,8 @@ public class CoreFunctions {
 		{
 			setArgLists("(repeatedly n fn)");
 			
-			setDoc("Takes a function of no args, presumably with side effects, and" + 
-				   "returns lazy sequence of n calls to it");
+			setDoc("Takes a function of no args, presumably with side effects, and " + 
+				   "returns a collection of n calls to it");
 			
 			setExamples(
 					"(repeatedly 5 (fn [] (rand-long 11)))",
