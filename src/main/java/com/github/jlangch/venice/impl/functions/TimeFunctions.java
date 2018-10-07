@@ -1470,7 +1470,8 @@ public class TimeFunctions {
 
 	public static VncFunction format = new VncFunction("time/format") {
 		{
-			setArgLists("(time/format date format locale?)");
+			setArgLists("(time/format date format locale?)",
+					    "(time/format date formatter locale?)");
 			
 			setDoc("Formats a date with a format");
 			

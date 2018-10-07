@@ -97,6 +97,7 @@ public class DocGenerator {
 	private List<DocSection> getLeftSections() {
 		return Arrays.asList(
 				getPrimitivesSection(),
+				getByteBufSection(),
 				getTimeSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
@@ -249,27 +250,6 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
-
-		
-		final DocSection bytebuf = new DocSection("Byte Buffer");
-		section.addSection(bytebuf);
-
-		final DocSection bb_create = new DocSection("Create");
-		bytebuf.addSection(bb_create);
-		bb_create.addItem(getDocItem("bytebuf"));
-		bb_create.addItem(getDocItem("bytebuf-from-string"));
-		
-		final DocSection bb_test = new DocSection("Test");
-		bytebuf.addSection(bb_test);
-		bb_test.addItem(getDocItem("empty?"));
-		bb_test.addItem(getDocItem("not-empty?"));
-		bb_test.addItem(getDocItem("bytebuf?"));
-
-		final DocSection bb_use = new DocSection("Use");
-		bytebuf.addSection(bb_use);
-		bb_use.addItem(getDocItem("count"));
-		bb_use.addItem(getDocItem("bytebuf-to-string"));
-		bb_use.addItem(getDocItem("bytebuf-sub"));
 
 		
 		final DocSection other = new DocSection("Other");
@@ -761,6 +741,32 @@ public class DocGenerator {
 		all.addSection(other);
 		other.addItem(getDocItem("io/load-classpath-resource"));
 		other.addItem(getDocItem("io/mime-type"));
+
+		return section;
+	}
+	
+	private DocSection getByteBufSection() {
+		final DocSection section = new DocSection("Byte Buffer");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection bb_create = new DocSection("Create");
+		all.addSection(bb_create);
+		bb_create.addItem(getDocItem("bytebuf"));
+		bb_create.addItem(getDocItem("bytebuf-from-string"));
+		
+		final DocSection bb_test = new DocSection("Test");
+		all.addSection(bb_test);
+		bb_test.addItem(getDocItem("empty?"));
+		bb_test.addItem(getDocItem("not-empty?"));
+		bb_test.addItem(getDocItem("bytebuf?"));
+
+		final DocSection bb_use = new DocSection("Use");
+		all.addSection(bb_use);
+		bb_use.addItem(getDocItem("count"));
+		bb_use.addItem(getDocItem("bytebuf-to-string"));
+		bb_use.addItem(getDocItem("bytebuf-sub"));
 
 		return section;
 	}
