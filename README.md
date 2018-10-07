@@ -327,6 +327,7 @@ that are available to the script in the JVM!
  - whitelist Java classes down to individual methods and fields
  - whitelist Java system property access down to individual properties
  - blacklist all or individual Venice I/O functions like spit, slurp, ...
+ - prohibit calls to all Venice I/O functions and Java fully
  
 
 #### Example
