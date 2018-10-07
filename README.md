@@ -1,5 +1,5 @@
-[![](https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/license.svg)](./LICENSE)
-[![](https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
+[![](https://cdn.rawgit.com/jlangch/venice/564e419c/doc/license.svg)](./LICENSE)
+[![](https://cdn.rawgit.com/jlangch/venice/564e419c/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
 # Venice
@@ -26,9 +26,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/92e363cd/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/564e419c/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/92e363cd/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/564e419c/cheatsheet.pdf)
 
 
 ## REPL
@@ -442,7 +442,7 @@ classpath:
 
 ##### Line Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/charts/line-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/564e419c/doc/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -465,7 +465,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/charts/area-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/564e419c/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -493,7 +493,7 @@ classpath:
 
 ##### Scatter Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/charts/scatter-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/564e419c/doc/charts/scatter-chart.png" width="300">
 
 ```clojure
 (do
@@ -520,7 +520,7 @@ classpath:
 
 ##### Bubble Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/charts/bubble-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/564e419c/doc/charts/bubble-chart.png" width="300">
 
 ```clojure
 (do
@@ -557,7 +557,7 @@ classpath:
 
 ##### Bar Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/charts/bar-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/564e419c/doc/charts/bar-chart.png" width="300">
 
 ```clojure
 (do
@@ -578,7 +578,7 @@ classpath:
 
 ##### Pie Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/92e363cd/doc/charts/pie-chart.png" width="300">
+<img src="https://cdn.rawgit.com/jlangch/venice/564e419c/doc/charts/pie-chart.png" width="300">
 
 ```clojure
 (do
