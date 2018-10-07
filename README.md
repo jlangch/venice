@@ -370,7 +370,8 @@ venice.eval("(io/slurp \"/tmp/file\")");
 venice.eval("(system-prop \"db.password\")"); 
 ```
 
-Prohibit Venice I/O functions and Java Interop:
+Prohibit Venice I/O functions and Java Interop for completely safe 
+scripting:
 
 ```java
 import com.github.jlangch.venice.Venice;
