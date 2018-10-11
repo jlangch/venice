@@ -81,6 +81,34 @@
 
 
 (defmacro 
+   { :arglists '("(case expr & clauses)")
+     :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr" 
+     :examples '("(case x
+                 |   10  :ten
+                 |   20  :twenty
+                 |   30  :thirty
+                 |   :dont-know)" ) }
+ 
+      ;; rewrites to (let [e expr]
+      ;;                (cond
+      ;;                  (== e 10) :ten
+      ;;                  (== e 20) :twenty
+      ;;                  (== e 30) :thirty
+      ;;                  :else :dont-know))
+
+   case [expr & clauses]
+    (let [expr-sym (gensym "expr_")
+          default_ (if (odd? (count clauses)) (last clauses) nil)
+          pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]        
+      `(let [~expr-sym ~expr]
+            (cond
+                ~@(map (fn [[test-const_ result-expr_]]
+                           (str `(== ~expr-sym ~test-const_) " " result-expr_))
+                       pairs_)
+                :else ~default_))))
+
+
+(defmacro 
    { :arglists '("(when test & body)")
      :doc "Evaluates test. If logical true, evaluates body in an implicit do." 
      :examples '("(when (== 1 1) true)") }

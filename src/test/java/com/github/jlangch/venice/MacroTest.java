@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashSet;
@@ -262,13 +263,32 @@ public class MacroTest {
 		assertEquals("negative", venice.eval(neg));
 		assertEquals("zero", venice.eval(zero));
 	}
+	
+	@Test
+	public void test_case() {
+		final Venice venice = new Venice();
+		
+		final String script = 
+				"(case (+ 1 9)    " +
+				"   10  :ten      " +
+				"   20  :twenty   " +
+				"   30  :thirty   " +
+				"   :dont-know)   ";
+
+		assertEquals(":ten", venice.eval("(str " + script + ")"));
+		System.out.println(venice.eval("(str (macroexpand " + script + "))"));
+	}
 		
 	@Test
 	public void test_when() {
 		final Venice venice = new Venice();
 
-		assertEquals(Long.valueOf(3), venice.eval("(when (== 1 1) 1 2 3)"));
-		assertEquals(null,            venice.eval("(when (!= 1 1) 1 2 3)"));
+		assertTrue((Boolean)venice.eval("(when (== 1 1) true)"));
+		assertEquals(null, venice.eval("(when (!= 1 1) true)"));
+		
+		assertEquals(Long.valueOf(300), venice.eval("(when (== 1 1) (println 100) 300)", Parameters.of("*out*", null)));
+		assertEquals(Long.valueOf(300), venice.eval("(when (== 1 1) 100 200 300)"));
+		assertEquals(null,              venice.eval("(when (!= 1 1) 100 200 300)"));
 	}
 	
 	@Test
@@ -387,19 +407,19 @@ public class MacroTest {
 
 		final String s1 = 
 				"(do                                        " +
-				"   (defmacro when [expr form]              " +
+				"   (defmacro when1 [expr form]             " +
 				"      (list 'if expr nil form))            " +
 				"                                           " +
-				"   (macroexpand (when true (+ 1 1)))       " +
+				"   (macroexpand (when1 true (+ 1 1)))      " +
 				")                                          ";
 
 
 		final String s2 = 
 				"(do                                        " +
-				"   (defmacro when [expr form]              " +
+				"   (defmacro when1 [expr form]             " +
 				"      (list 'if expr nil form))            " +
 				"                                           " +
-				"   (macroexpand (when false (+ 1 1)))      " +
+				"   (macroexpand (when1 false (+ 1 1)))     " +
 				")                                          ";
 
 		assertEquals("(if true nil (+ 1 1))", venice.eval("(str " + s1 + ")"));
