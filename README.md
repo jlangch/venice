@@ -16,7 +16,7 @@ to implement scriptable extension points and rules for applications.
 
 Venice supports macros, comes with Java interoperability and a configurable 
 sandbox that can prevent all sorts of dangerous JVM interactions like 
-reading/writing files, calls to _System.exit(0)_ or any other malicious actions.
+reading/writing files, invoking _System.exit(0)_ or any other malicious action.
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
