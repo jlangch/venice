@@ -83,13 +83,13 @@
 (defmacro 
    { :arglists '("(case expr & clauses)")
      :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr" 
-     :examples '("(case x
+     :examples '("(case (+ 1 9)
                  |   10  :ten
                  |   20  :twenty
                  |   30  :thirty
                  |   :dont-know)" ) }
  
-      ;; rewrites to (let [e expr]
+      ;; rewrites to (let [e (+ 1 9)]
       ;;                (cond
       ;;                  (== e 10) :ten
       ;;                  (== e 20) :twenty
