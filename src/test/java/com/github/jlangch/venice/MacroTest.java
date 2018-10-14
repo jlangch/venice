@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -268,15 +269,41 @@ public class MacroTest {
 	public void test_case() {
 		final Venice venice = new Venice();
 		
-		final String script = 
+		final String script1 = 
 				"(case (+ 1 9)    " +
 				"   10  :ten      " +
 				"   20  :twenty   " +
 				"   30  :thirty   " +
 				"   :dont-know)   ";
 
-		assertEquals(":ten", venice.eval("(str " + script + ")"));
-		System.out.println(venice.eval("(str (macroexpand " + script + "))"));
+		assertEquals(":ten", venice.eval("(str " + script1 + ")"));
+		//System.out.println(venice.eval("(str (macroexpand " + script1 + "))"));
+		
+		final String script2 = 
+				"(case (+ 1 19)   " +
+				"   10  :ten      " +
+				"   20  :twenty   " +
+				"   30  :thirty   " +
+				"   :dont-know)   ";
+
+		assertEquals(":twenty", venice.eval("(str " + script2 + ")"));
+		
+		final String script3 = 
+				"(case 1          " +
+				"   10  :ten      " +
+				"   20  :twenty   " +
+				"   30  :thirty   " +
+				"   :dont-know)   ";
+
+		assertEquals(":dont-know", venice.eval("(str " + script3 + ")"));
+		
+		final String script4 = 
+				"(case 1          " +
+				"   10  :ten      " +
+				"   20  :twenty   " +
+				"   30  :thirty)  ";
+
+		assertNull(venice.eval(script4));
 	}
 		
 	@Test

@@ -101,11 +101,11 @@
           default_ (if (odd? (count clauses)) (last clauses) nil)
           pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]        
       `(let [~expr-sym ~expr]
-            (cond
-                ~@(map (fn [[test-const_ result-expr_]]
-                           (str `(== ~expr-sym ~test-const_) " " result-expr_))
-                       pairs_)
-                :else ~default_))))
+         (cond
+            ~@(mapcat (fn [[test-const_ result-expr_]]
+                       `((== ~expr-sym ~test-const_) ~result-expr_))
+                      pairs_)
+            :else ~default_))))
 
 
 (defmacro 

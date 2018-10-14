@@ -285,7 +285,7 @@ public class VeniceInterpreter {
 					break;
 	
 				case "defmacro":
-					return defmacro_(ast,env);
+					return defmacro_(ast, env);
 
 				case "macroexpand": 
 					return macroexpand(ast.nth(1), env);
