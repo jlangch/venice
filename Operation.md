@@ -4,6 +4,7 @@
 2. Paste it to [https://rawgit.com/](https://rawgit.com/)
 3. Add it to README.md
 
+[jsDelivr](https://www.jsdelivr.com/)
 
 # Links
 
