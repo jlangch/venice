@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
+- added macro 'case'
 - added function 'str/char' to convert a number into single char string
 
 
