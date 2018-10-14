@@ -27,7 +27,6 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.util.MacroDef;
 
 
 public class Doc {
@@ -43,17 +42,7 @@ public class Doc {
 			sb.append(toString(func.getDoc()));
 			return sb.toString();			
 		}
-		
-		// macro?
-		final MacroDef macro = CoreMacroDefs.getMacroDef(name);
-		if (macro != null) {
-			final StringBuilder sb =  new StringBuilder();
-			sb.append(macro.getSignatures().stream().collect(Collectors.joining(", ")));
-			sb.append("\n");
-			sb.append(macro.getDescription());
-			return sb.toString();			
-		}
-		
+				
 		return "<no documentation available>";			
 	}
 	
