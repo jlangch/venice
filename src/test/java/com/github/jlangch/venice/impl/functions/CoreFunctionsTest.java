@@ -479,7 +479,7 @@ public class CoreFunctionsTest {
 
 		// macro
 		assertEquals(
-				"(and & pred-forms)\nAnds the predicate forms", 
+				"(and & pred-forms)", 
 				venice.eval("(str (doc \"and\"))"));
 	}
 	
