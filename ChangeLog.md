@@ -7,11 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.9.8] - 2018-10-xx
+## [0.9.8] - 2018-10-15
 
-### added
+### fixed
 
-- added ...
+- fixed _partial_ function
 
 
 
@@ -19,9 +19,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added macro 'case'
+- added macro _case_
 - added pre-conditions for functions
-- added function 'str/char' to convert a number into single char string
+- added function _str/char_ to convert a number into single char string
 
 
 

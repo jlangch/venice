@@ -3847,8 +3847,11 @@ public class CoreFunctions {
 					"of those fns. The returned fn takes a variable number of args, " + 
 					"applies the rightmost of fns to the args, the next " + 
 					"fn (right-to-left) to the result, etc. ");
-			
+
 			setExamples(
+					"((comp str +) 8 8 8)", 
+					"(map (comp - (partial + 3) (partial * 2)) [1 2 3 4])", 
+					"((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)",
 					"(filter (comp not zero?) [0 1 0 2 0 3 0 4])", 
 					"(do \n" +
 					"   (def fifth (comp first rest rest rest rest)) \n" +
@@ -3888,6 +3891,8 @@ public class CoreFunctions {
 					"called, the returned function calls f with args + additional args.");
 			
 			setExamples(
+					"((partial * 2) 3)", 
+					"(map (partial * 2) [1 2 3 4])", 
 					"(do \n" +
 					"   (def hundred-times (partial * 100)) \n" +
 					"   (hundred-times 5))");
@@ -3901,7 +3906,7 @@ public class CoreFunctions {
 			
 			return new VncFunction() {
 				public VncVal apply(final VncList args) {
-					return fn.apply(fnArgs.addAtEnd(args));
+					return fn.apply(fnArgs.copy().addAtEnd(args));
 				}
 			};
 		}
@@ -3949,7 +3954,8 @@ public class CoreFunctions {
 				}
 
 				if (hasMore) {
-					result.getList().add(fn.apply(fnArgs));			
+					final VncVal val = fn.apply(fnArgs);
+					result.getList().add(val);			
 					index += 1;
 				}
 			}
@@ -4164,6 +4170,7 @@ public class CoreFunctions {
 			setExamples(
 					"(reduce (fn [x y] (+ x y)) [1 2 3 4 5 6 7])",
 					"(reduce (fn [x y] (+ x y)) 10 [1 2 3 4 5 6 7])",
+					"((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)",
 					"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})");
 		}
 		

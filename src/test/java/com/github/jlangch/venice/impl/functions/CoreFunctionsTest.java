@@ -244,6 +244,12 @@ public class CoreFunctionsTest {
 	public void test_comp() {
 		final Venice venice = new Venice();
 
+		assertEquals("24", venice.eval("((comp str +) 8 8 8)"));
+		
+		assertEquals("(-5 -7 -9 -11)", venice.eval("(str (map (comp - (partial + 3) (partial * 2)) [1 2 3 4]))")); 
+
+		assertEquals("-315", venice.eval("(str (reduce (comp - (partial + 3) (partial * 2)) [1 2 3 4]))")); 
+
 		assertEquals("(1 2 3)", venice.eval("(str (map (comp inc) [0 1 2]))"));
 
 		assertEquals("[false false]", venice.eval("(str (filter (comp not) [false true false]))"));
@@ -1788,6 +1794,10 @@ public class CoreFunctionsTest {
 	public void test_partial() {
 		final Venice venice = new Venice();
 		
+		assertEquals(Long.valueOf(6), venice.eval("((partial * 2) 3)"));
+		
+		assertEquals("[2, 4, 6, 8]", venice.eval("(map (partial * 2) [1 2 3 4])").toString());
+		
 		assertEquals("500", venice.eval(
 								"(do " +
 								"   (def hundred-times (partial * 100)) " +
@@ -1920,6 +1930,9 @@ public class CoreFunctionsTest {
 	public void test_reduce() {
 		final Venice venice = new Venice();
 
+		// ((100 + 3) * 2) + 1 => 207
+		assertEquals(Long.valueOf(207), venice.eval("((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)"));
+		
 		assertEquals(Long.valueOf(15), venice.eval("(reduce + [1 2 3 4 5])"));
 		assertEquals(Long.valueOf(0),  venice.eval("(reduce + [])"));
 		assertEquals(Long.valueOf(1),  venice.eval("(reduce + [1])"));
