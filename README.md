@@ -496,6 +496,7 @@ classpath:
 
 ##### Scatter Chart Example
 
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/scatter-chart.png" width="300">
 <img src="https://cdn.rawgit.com/jlangch/venice/b6f9649/doc/charts/scatter-chart.png" width="300">
 
 ```clojure
