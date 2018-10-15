@@ -82,25 +82,6 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class CoreFunctions {
 
 	///////////////////////////////////////////////////////////////////////////
-	// Documentation
-	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction doc = new VncFunction("doc") {
-		{
-			setArgLists("(doc name)");
-			
-			setDoc("Returns the documentation for the function/macro with the given name");
-		}
-		public VncVal apply(final VncList args) {
-			assertArity("doc", args, 1);
-			
-			return new VncString(Doc.getDoc(Coerce.toVncString(args.first()).getValue()));
-		}
-	};
-
-
-
-	///////////////////////////////////////////////////////////////////////////
 	// Errors/Exceptions
 	///////////////////////////////////////////////////////////////////////////
 
@@ -4695,8 +4676,6 @@ public class CoreFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-				.put("doc",					doc)
-				
 				.put("throw",				throw_ex)
 				
 				.put("nil?",				nil_Q)

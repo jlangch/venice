@@ -6,6 +6,8 @@
 
 [jsDelivr](https://www.jsdelivr.com/)
 
+[xxx](https://webapps.stackexchange.com/questions/48061/can-i-trick-github-into-displaying-the-pdf-in-the-browser-instead-of-downloading)
+
 # Links
 
 [OSSRH Guide](https://central.sonatype.org/pages/ossrh-guide.html)

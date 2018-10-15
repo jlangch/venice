@@ -331,9 +331,8 @@ public class VeniceInterpreter {
 					
 				case "fn":
 					final VncList fnParams = Coerce.toVncList(ast.nth(1));
-					final boolean hasPrePostConditions = ast.size() == 4 && Types.isVncMap(ast.nth(2));
-					final VncVal fnPrePostConditions = hasPrePostConditions ? (VncMap)ast.nth(2) : Nil;
-					final VncVal fnBody = hasPrePostConditions ? ast.nth(3) : ast.nth(2);
+					final VncList preConditions = getFnPreconditions(ast.nth(2));
+					final VncVal fnBody = preConditions == null ? ast.nth(2) : ast.nth(3);
 					final Env cur_env = env;
 					final VncFunction fn = new VncFunction(fnBody, env, fnParams) {
 												public VncVal apply(final VncList args) {
@@ -344,9 +343,7 @@ public class VeniceInterpreter {
 														.destructure(fnParams, args)
 														.forEach(b -> localEnv.set(b.sym, b.val));
 													
-													validateFnPrecondition(
-															getFnPrecondition(fnPrePostConditions), 
-															localEnv);
+													validateFnPreconditions(preConditions, localEnv);
 													
 													return EVAL(fnBody, localEnv);
 												}
@@ -642,42 +639,39 @@ public class VeniceInterpreter {
 		}
 		return null;
 	}
-	
-	private VncVal getFnPrecondition(final VncVal prePostConditions) {
-		return prePostConditions == Nil ? Nil : ((VncMap)prePostConditions).get(new VncKeyword(":pre"));
+
+	private VncList getFnPreconditions(final VncVal prePostConditions) {
+		if (Types.isVncMap(prePostConditions)) {
+			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
+			if (Types.isVncList(val)) {
+				return (VncList)val;
+			}
+		}
+		
+		return null;
 	}
 	
 	private boolean isFnConditionTrue(final VncVal result) {
 		return (Types.isVncList(result)) ? ((VncList)result).first() == True : result == True;
 	}
 
-	private void assertFnPrecondition(final VncVal preCondition) {
-		throw new AssertionException(
-				String.format(
-						"precondition assert failed: %s. %s",
-						((VncString)CoreFunctions.str.apply(new VncList(preCondition))).getValue(),
-						ErrorMessage.buildErrLocation(preCondition)));
-		
-	}
-
-	private void validateFnPrecondition(final VncVal preCondition, final Env env) {
-		if (preCondition != Nil) {
+	private void validateFnPreconditions(final VncList preConditions, final Env env) {
+		if (preConditions != null) {
 	 		final Env local = new Env(env);	
-	 		if (Types.isVncList(preCondition)) {
-	 			((VncList)preCondition).forEach(v -> {
-					if (!isFnConditionTrue(EVAL(v, local))) {
-						assertFnPrecondition(v);
-					}
-	 			});
-	 		}
-	 		else {
-				if (!isFnConditionTrue(EVAL(preCondition, local))) {
-					assertFnPrecondition(preCondition);
+	 		preConditions.forEach(v -> {
+				if (!isFnConditionTrue(EVAL(v, local))) {
+					throw new AssertionException(
+							String.format(
+									"pre-condition assert failed: %s. %s",
+									((VncString)CoreFunctions.str.apply(new VncList(v))).getValue(),
+									ErrorMessage.buildErrLocation(v)));		
 				}
-	 		}
+ 			});
 		}
 	}
+
 	
+	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 
 	private final JavaImports javaImports = new JavaImports();
 }
