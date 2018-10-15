@@ -1,4 +1,4 @@
-[![](https://cdn.rawgit.com/jlangch/venice/b6f9649/doc/license.svg)](./LICENSE)
+[![](https://github.com/jlangch/venice/blob/master/doc/license.svg)](./LICENSE)
 [![](https://cdn.rawgit.com/jlangch/venice/b6f9649/doc/maven-central.svg)](http://mvnrepository.com/artifact/com.github.jlangch/venice)
 
 
@@ -28,7 +28,7 @@ Venice requires Java 8 or newer.
 
 [Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/b6f9649/cheatsheet.html)
 
-[Cheat Sheet PDF](https://github.com/jlangch/venice/blob/master/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/b6f9649/cheatsheet.pdf)
 
 
 ## REPL
@@ -465,7 +465,7 @@ classpath:
 
 ##### Area Chart Example
 
-<img src="https://cdn.rawgit.com/jlangch/venice/b6f9649/doc/charts/area-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/area-chart.png" width="300">
 
 ```clojure
 (do
