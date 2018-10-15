@@ -103,7 +103,7 @@
       `(let [~expr-sym ~expr]
          (cond
             ~@(mapcat (fn [[test-const_ result-expr_]]
-                       `((== ~expr-sym ~test-const_) ~result-expr_))
+                          `((== ~expr-sym ~test-const_) ~result-expr_))
                       pairs_)
             :else ~default_))))
 
@@ -440,9 +440,15 @@
    { :arglists '("(memoize f)")
      :doc "Returns a memoized version of a referentially transparent function." 
      :examples '( "(do
-                  |   (def test (fn [a] (+ a 100)))
-                  |   (def test-memo (memoize test))
-                  |   (test-memo 1))" ) }
+                  |   (def fibonacci
+                  |      (memoize
+                  |         (fn [n]
+                  |             (cond
+                  |                (<= n 0) 0
+                  |                (< n 2) 1
+                  |                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
+                  |          
+                  |   (time (fibonacci 25)))" ) }
      
    memoize
    
