@@ -439,11 +439,11 @@ public class VeniceInterpreter {
 	 * 
 	 * @param className A simple class name like 'Math' or a class name
 	 *                  'java.lang.Math'
-	 * @return the mapped class 'Math' -> 'java.lang.Math' or the passed 
+	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
 	 *         value if a mapping does nor exist 
 	 */
-	public String resolveClassName(final String classname) {
-		return javaImports.resolveClassName(classname);
+	public String resolveClassName(final String className) {
+		return javaImports.resolveClassName(className);
 	}
 	
 	private VncVal defmacro_(final VncList ast, final Env env) {
