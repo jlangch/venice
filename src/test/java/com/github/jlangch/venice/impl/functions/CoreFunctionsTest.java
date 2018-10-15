@@ -469,21 +469,6 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
-	public void test_doc() {
-		final Venice venice = new Venice();
-
-		// function
-		assertEquals(
-				"(nil? x)\nReturns true if x is nil, false otherwise", 
-				venice.eval("(str (doc \"nil?\"))"));
-
-		// macro
-		assertEquals(
-				"(and & pred-forms)", 
-				venice.eval("(str (doc \"and\"))"));
-	}
-	
-	@Test
 	public void test_docoll() {
 		final Venice venice = new Venice();
 

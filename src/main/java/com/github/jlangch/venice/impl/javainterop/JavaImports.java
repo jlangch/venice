@@ -30,10 +30,24 @@ public class JavaImports {
 	}
 	
 	
-	public String lookupClassName(final String className) {
-		return imports.get(className);
+	/**
+	 * Looks up a class name
+	 * 
+	 * @param simpleClassName A simple class name like 'Math'
+	 * @return the class name e.g.: 'java.lang.Math' or <tt>null</tt> if not found
+	 */
+	public String lookupClassName(final String simpleClassName) {
+		return imports.get(simpleClassName);
 	}
 
+	/**
+	 * Resolves a class name.
+	 * 
+	 * @param className A simple class name like 'Math' or a class
+	 *                  'java.lang.Math'
+	 * @return the mapped class 'Math' -> 'java.lang.Math' or the passed 
+	 *         value if a mapping does nor exist 
+	 */
 	public String resolveClassName(final String className) {
 		final String cn = imports.get(className);
 		return cn == null ? className : cn;

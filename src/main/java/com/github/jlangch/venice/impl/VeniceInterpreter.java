@@ -434,6 +434,18 @@ public class VeniceInterpreter {
 		return env;
 	}
 	
+	/**
+	 * Resolves a class name.
+	 * 
+	 * @param className A simple class name like 'Math' or a class name
+	 *                  'java.lang.Math'
+	 * @return the mapped class 'Math' -> 'java.lang.Math' or the passed 
+	 *         value if a mapping does nor exist 
+	 */
+	public String resolveClassName(final String classname) {
+		return javaImports.resolveClassName(classname);
+	}
+	
 	private VncVal defmacro_(final VncList ast, final Env env) {
 		final boolean hasMeta = ast.size() > 4;
 		final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(1), env) : new VncHashMap();
@@ -617,7 +629,7 @@ public class VeniceInterpreter {
 		final VncList block, 
 		final Throwable th
 	) {
-		final String className = javaImports.resolveClassName(((VncString)block.nth(1)).getValue());
+		final String className = resolveClassName(((VncString)block.nth(1)).getValue());
 		final Class<?> targetClass = ReflectionAccessor.classForName(className);
 		
 		if (targetClass.isAssignableFrom(th.getClass())) {
