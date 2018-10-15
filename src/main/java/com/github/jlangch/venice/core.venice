@@ -277,7 +277,7 @@
    time [expr]
     `(let [start_ (nano-time)
            ret_ ~expr]
-         (print (str "Elapsed time: " (/ (- (nano-time) start_) 1000000) " msecs"))
+         (println (str "Elapsed time: " (/ (- (nano-time) start_) 1000000) " msecs"))
          ret_))
          
          

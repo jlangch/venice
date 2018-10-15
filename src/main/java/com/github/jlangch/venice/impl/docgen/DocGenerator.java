@@ -498,7 +498,6 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
-		create.addItem(getDocItem("fn"));
 		create.addItem(getDocItem("identity"));
 
 		final DocSection call = new DocSection("Call");
@@ -915,7 +914,7 @@ public class DocGenerator {
 		generic.addItem(
 				new DocItem(
 						"fn", 
-						Arrays.asList("(fn [params*] exprs*)"), 
+						Arrays.asList("(fn [params*] condition-map? exprs*)"), 
 						"Defines an anonymous function.",
 						runExamples(
 							"fn", 
@@ -923,7 +922,17 @@ public class DocGenerator {
 									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
 									"(map (fn [x] (* 2 x)) (range 1 5))",
 									";; anonymous function with two params, the second is destructured\n" + 
-									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})"), 
+									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
+									";; defining a pre-condition\n" + 
+									"(do \n" +
+									"   (def sqrt \n" +
+									"        (fn [x] \n" +
+									"            { :pre [(>= x 0)] } \n" +
+									"            (. :java.lang.Math.sqrt x))) \n" +
+									" \n" +
+									"   (sqrt -4) \n" +
+									")"),
+							true,
 							true),
 						idgen.id()));
 		

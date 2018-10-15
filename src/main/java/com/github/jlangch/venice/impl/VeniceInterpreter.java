@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.Closeable;
 import java.io.PrintStream;
@@ -30,8 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
@@ -328,20 +331,27 @@ public class VeniceInterpreter {
 					
 				case "fn":
 					final VncList fnParams = Coerce.toVncList(ast.nth(1));
-					final VncVal fnBody = ast.nth(2);
+					final boolean hasPrePostConditions = ast.size() == 4 && Types.isVncMap(ast.nth(2));
+					final VncVal fnPrePostConditions = hasPrePostConditions ? (VncMap)ast.nth(2) : Nil;
+					final VncVal fnBody = hasPrePostConditions ? ast.nth(3) : ast.nth(2);
 					final Env cur_env = env;
-					return new VncFunction(fnBody, env, fnParams) {
-								public VncVal apply(final VncList args) {
-									final Env localEnv = new Env(cur_env);
-									
-									// destructuring fn params -> args
-									Destructuring
-										.destructure(fnParams, args)
-										.forEach(b -> localEnv.set(b.sym, b.val));
-
-									return EVAL(fnBody, localEnv);
-								}
-							};
+					final VncFunction fn = new VncFunction(fnBody, env, fnParams) {
+												public VncVal apply(final VncList args) {
+													final Env localEnv = new Env(cur_env);
+													
+													// destructuring fn params -> args
+													Destructuring
+														.destructure(fnParams, args)
+														.forEach(b -> localEnv.set(b.sym, b.val));
+													
+													validateFnPrecondition(
+															getFnPrecondition(fnPrePostConditions), 
+															localEnv);
+													
+													return EVAL(fnBody, localEnv);
+												}
+											};
+					return fn;
 
 				case "import":
 					ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).getValue()));
@@ -351,16 +361,16 @@ public class VeniceInterpreter {
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					if (Types.isVncFunction(el.nth(0))) {
 						final VncFunction f = (VncFunction)el.nth(0);
-						final VncVal fnast = f.getAst();
-						if (fnast != null) {
-							orig_ast = fnast;
-							env = f.genEnv(el.slice(1));
-						} 
-						else {
+//						final VncVal fnast = f.getAst();
+//						if (fnast != null) {
+//							orig_ast = fnast;
+//							env = f.genEnv(el.slice(1));
+//						} 
+//						else {
 							final VncList fnArgs = el.rest();
 							MetaUtil.copyTokenPos(el, fnArgs);
 							return f.apply(fnArgs);
-						}
+//						}
 					}
 					else if (Types.isVncKeyword(el.nth(0))) {
 						// keyword as function to access map: (:a {:a 100})
@@ -632,7 +642,41 @@ public class VeniceInterpreter {
 		}
 		return null;
 	}
+	
+	private VncVal getFnPrecondition(final VncVal prePostConditions) {
+		return prePostConditions == Nil ? Nil : ((VncMap)prePostConditions).get(new VncKeyword(":pre"));
+	}
+	
+	private boolean isFnConditionTrue(final VncVal result) {
+		return (Types.isVncList(result)) ? ((VncList)result).first() == True : result == True;
+	}
 
+	private void assertFnPrecondition(final VncVal preCondition) {
+		throw new AssertionException(
+				String.format(
+						"precondition assert failed: %s. %s",
+						((VncString)CoreFunctions.str.apply(new VncList(preCondition))).getValue(),
+						ErrorMessage.buildErrLocation(preCondition)));
+		
+	}
+
+	private void validateFnPrecondition(final VncVal preCondition, final Env env) {
+		if (preCondition != Nil) {
+	 		final Env local = new Env(env);	
+	 		if (Types.isVncList(preCondition)) {
+	 			((VncList)preCondition).forEach(v -> {
+					if (!isFnConditionTrue(EVAL(v, local))) {
+						assertFnPrecondition(v);
+					}
+	 			});
+	 		}
+	 		else {
+				if (!isFnConditionTrue(EVAL(preCondition, local))) {
+					assertFnPrecondition(preCondition);
+				}
+	 		}
+		}
+	}
 	
 
 	private final JavaImports javaImports = new JavaImports();

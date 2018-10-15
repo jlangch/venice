@@ -303,6 +303,34 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_fn_precondition() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def sum                            \n" +
+				"        (fn [x y]                      \n" +
+				"            { :pre [(> x 0)] }         \n" +
+				"            (+ x y)))                  \n" +
+				"                                       \n" +
+				"   (sum 1 3)                           \n" +
+				") ";
+
+		assertEquals(Long.valueOf(4), venice.eval(script));
+
+		// this is legal (not a pre-condition)
+		final String script1 = 
+				"(do                                        \n" +
+				"   (def datagen                            \n" +
+				"        (fn [] { :a 100 :b 200 c: 300 } )) \n" +
+				"                                           \n" +
+				"   (datagen )                              \n" +
+				") ";
+
+		venice.eval(script1);
+	}
+
+	@Test
 	public void test_let() {
 		final Venice venice = new Venice();
 		
