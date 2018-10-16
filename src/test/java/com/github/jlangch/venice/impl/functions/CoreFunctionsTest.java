@@ -263,6 +263,52 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_compare() {
+		final Venice venice = new Venice();
+
+		// nil
+		assertEquals(Long.valueOf(-1), venice.eval("(compare nil 1)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare nil nil)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare 1 nil)"));
+
+		// boolean
+		assertEquals(Long.valueOf(0),  venice.eval("(compare false false)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare true true)"));
+		assertEquals(Long.valueOf(-1), venice.eval("(compare false true)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare true false)"));
+
+		// symbol
+		assertEquals(Long.valueOf(-1), venice.eval("(compare 'a 'b)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare 'a 'a)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare 'b 'a)"));
+
+		// keyword
+		assertEquals(Long.valueOf(-1), venice.eval("(compare :a :b)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare :a :a)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare :b :a)"));
+
+		// long
+		assertEquals(Long.valueOf(-1), venice.eval("(compare 0 1)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare 1 1)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare 1 0)"));
+
+		// double
+		assertEquals(Long.valueOf(-1), venice.eval("(compare 0.0 1.0)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare 1.0 1.0)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare 1.0 0.0)"));
+
+		// decimal
+		assertEquals(Long.valueOf(-1), venice.eval("(compare 0.0M 1.0M)"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare 1.0M 1.0M)"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare 1.0M 0.0M)"));
+
+		// string
+		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aaa\" \"bbb\")"));
+		assertEquals(Long.valueOf(0),  venice.eval("(compare \"aaa\" \"aaa\")"));
+		assertEquals(Long.valueOf(1),  venice.eval("(compare \"bbb\" \"aaa\")"));
+	}
+	
+	@Test
 	public void test_conj() {
 		final Venice venice = new Venice();
 

@@ -63,6 +63,10 @@ public class Types {
 		return val != null && (val instanceof VncSymbol);
 	}
 
+	public static boolean isVncBoolean(final VncVal val) {
+		return val == Constants.True || val == Constants.False;
+	}
+
 	public static boolean isVncLong(final VncVal val) {
 		return val != null && (val instanceof VncLong);
 	}

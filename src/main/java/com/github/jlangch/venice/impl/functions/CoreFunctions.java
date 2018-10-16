@@ -3882,6 +3882,76 @@ public class CoreFunctions {
 		}
 	};
 	
+	public static VncFunction compare = new VncFunction("compare") {
+		{
+			setArgLists("(compare x y)");
+			
+			setDoc( "Comparator. Returns a negative number, zero, or a positive number " + 
+					"when x is logically 'less than', 'equal to', or 'greater than' " + 
+					"y.");
+
+			setExamples(
+					"(compare 1 0)", 
+					"(compare 1 1)", 
+					"(compare 1 2)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("compare", args, 2);
+
+			final VncVal x = args.first();
+			final VncVal y = args.second();
+
+			if (x == Nil || y == Nil) {
+				return (x == Nil && y == Nil)
+						? new VncLong(0)
+						: (x == Nil) ?  new VncLong(-1) :  new VncLong(1);
+			}
+			else if (Types.isVncBoolean(x)) {
+				Coerce.toVncBoolean(y);  // ensure y is a boolean
+				return new VncLong(
+							Long.valueOf(x == False ? 0 : 1)
+								.compareTo(Long.valueOf(y == False ? 0 : 1)));				
+			}
+			else if (Types.isVncKeyword(x)) {
+				return new VncLong(
+							Coerce.toVncKeyword(x).getValue()
+								  .compareTo(Coerce.toVncKeyword(y).getValue()));				
+			}
+			else if (Types.isVncSymbol(x)) {
+				return new VncLong(
+							Coerce.toVncSymbol(x).getName()
+								  .compareTo(Coerce.toVncSymbol(y).getName()));				
+			}
+			else if (Types.isVncLong(x)) {
+				if (Coerce.toVncLong(x).lt(y) == True) return new VncLong(-1);
+				if (Coerce.toVncLong(x).gt(y) == True) return new VncLong(1);
+				return  new VncLong(0);
+			}
+			else if (Types.isVncBigDecimal(x)) {
+				if (Coerce.toVncBigDecimal(x).lt(y) == True) return new VncLong(-1);
+				if (Coerce.toVncBigDecimal(x).gt(y) == True) return new VncLong(1);
+				return  new VncLong(0);
+			}
+			else if (Types.isVncDouble(x)) {
+				if (Coerce.toVncDouble(x).lt(y) == True) return new VncLong(-1);
+				if (Coerce.toVncDouble(x).gt(y) == True) return new VncLong(1);
+				return  new VncLong(0);
+			}
+			else if (Types.isVncString(x)) {
+				return new VncLong(
+							Coerce.toVncString(x).getValue()
+								  .compareTo(Coerce.toVncString(y).getValue()));				
+			}
+			else {
+				throw new VncException(String.format(
+						"Cannot compare value of type %s. %s", 
+						Types.getClassName(x),
+						ErrorMessage.buildErrLocation(x)));
+			}
+		}
+	};
+	
 	public static VncFunction partial = new VncFunction("partial") {
 		{
 			setArgLists("(partial f args*)");
@@ -4788,6 +4858,7 @@ public class CoreFunctions {
 				.put("every?",				every_Q)
 				.put("any?",				any_Q)
 				.put("count",				count)
+				.put("compare",				compare)
 				.put("apply",				apply)
 				.put("comp",				comp)
 				.put("partial",				partial)

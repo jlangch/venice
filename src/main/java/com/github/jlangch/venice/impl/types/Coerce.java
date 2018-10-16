@@ -126,6 +126,21 @@ public class Coerce {
 		}
 	}
 	
+	public static VncConstant toVncBoolean(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val == Constants.False || val == Constants.True) {
+			return (VncConstant)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to boolean. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
 	public static VncLong toVncLong(final VncVal val) {
 		if (val == null) {
 			return null;
