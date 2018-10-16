@@ -34,6 +34,7 @@ import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -3562,14 +3563,16 @@ public class CoreFunctions {
 	
 	public static VncFunction sort = new VncFunction("sort") {
 		{
-			setArgLists("(sort coll)", "(sort compfn coll)");
+			setArgLists("(sort coll)", "(sort comparefn coll)");
 			
 			setDoc( "Returns a sorted list of the items in coll. If no compare function " + 
-					"compfn is supplied, uses the natural compare. The compare function " + 
+					"comparefn is supplied, uses the natural compare. The compare function " + 
 					"takes two arguments and returns -1, 0, or 1");
 			
 			setExamples(
 					"(sort [3 2 5 4 1 6])", 
+					"(sort compare [3 2 5 4 1 6])", 
+					"(sort (comp (partial * -1) compare) [3 2 5 4 1 6])", 
 					"(sort {:c 3 :a 1 :b 2})");
 		}
 
@@ -3621,12 +3624,14 @@ public class CoreFunctions {
 				final VncFunction compfn = Coerce.toVncFunction(args.nth(0));
 				final VncVal coll = args.nth(1);
 				
+				final Comparator<VncVal> c = (x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue();
+				
 				if (Types.isVncVector(coll)) {
 					return new VncVector(
 							((VncVector)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncList(coll)) {
@@ -3634,7 +3639,7 @@ public class CoreFunctions {
 							((VncList)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncSet(coll)) {
@@ -3642,7 +3647,7 @@ public class CoreFunctions {
 							((VncSet)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncMap(coll)) {
@@ -3650,7 +3655,7 @@ public class CoreFunctions {
 							 ((VncMap)coll).toVncList()
 								.getList()
 								.stream()
-								.sorted((x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else {
@@ -3687,13 +3692,15 @@ public class CoreFunctions {
 			if (args.size() == 2) {
 				final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
 				final VncVal coll = args.nth(1);
-				
+
+				final Comparator<VncVal> c = (x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y)));
+
 				if (Types.isVncVector(coll)) {
 					return new VncVector(
 							((VncVector)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y))))
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncList(coll)) {
@@ -3701,7 +3708,7 @@ public class CoreFunctions {
 							((VncList)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y))))
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncMap(coll)) {
@@ -3709,7 +3716,7 @@ public class CoreFunctions {
 							 ((VncMap)coll).toVncList()
 								.getList()
 								.stream()
-								.sorted((x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y))))
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else {
@@ -3722,18 +3729,21 @@ public class CoreFunctions {
 				final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
 				final VncFunction compfn = Coerce.toVncFunction(args.nth(1));
 				final VncVal coll = args.nth(2);
-				
+
+				final Comparator<VncVal> c = (x,y) -> Coerce.toVncLong(
+														compfn.apply(
+															new VncList(
+																	keyfn.apply(new VncList(x)),
+																	keyfn.apply(new VncList(y)))
+																)
+															).getValue().intValue();
+
 				if (Types.isVncVector(coll)) {
 					return new VncVector(
 							((VncVector)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> Coerce.toVncLong(compfn.apply(
-														new VncList(
-															keyfn.apply(new VncList(x)),
-															keyfn.apply(new VncList(y)))
-														)
-													).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncList(coll)) {
@@ -3741,12 +3751,7 @@ public class CoreFunctions {
 							((VncList)coll)
 								.getList()
 								.stream()
-								.sorted((x,y) -> Coerce.toVncLong(compfn.apply(
-														new VncList(
-															keyfn.apply(new VncList(x)),
-															keyfn.apply(new VncList(y)))
-														)
-													).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else if (Types.isVncMap(coll)) {
@@ -3754,12 +3759,7 @@ public class CoreFunctions {
 							 ((VncMap)coll).toVncList()
 								.getList()
 								.stream()
-								.sorted((x,y) -> Coerce.toVncLong(compfn.apply(
-														new VncList(
-															keyfn.apply(new VncList(x)),
-															keyfn.apply(new VncList(y)))
-														)
-													).getValue().intValue())
+								.sorted(c)
 								.collect(Collectors.toList()));
 				}
 				else {
@@ -3886,9 +3886,8 @@ public class CoreFunctions {
 		{
 			setArgLists("(compare x y)");
 			
-			setDoc( "Comparator. Returns a negative number, zero, or a positive number " + 
-					"when x is logically 'less than', 'equal to', or 'greater than' " + 
-					"y.");
+			setDoc( "Comparator. Returns -1, 0, or 1 when x is logically 'less than', " +
+					"'equal to', or 'greater than' y.");
 
 			setExamples(
 					"(compare 1 0)", 
@@ -3951,7 +3950,7 @@ public class CoreFunctions {
 			}
 		}
 	};
-	
+		
 	public static VncFunction partial = new VncFunction("partial") {
 		{
 			setArgLists("(partial f args*)");

@@ -2188,7 +2188,9 @@ public class CoreFunctionsTest {
 
 		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2))", venice.eval("(str (sort '((1 2) (1 1) (2 1) (1 3) (2 2))))"));
 
-		
+		assertEquals("(1 2 3)", venice.eval("(str (sort compare '(2 3 1)))"));
+		assertEquals("(3 2 1)", venice.eval("(str (sort (comp (partial * -1) compare) '(2 3 1)))"));
+
 		// vector
 		assertEquals("[]", venice.eval("(str (sort []))"));
 		assertEquals("[1]", venice.eval("(str (sort [1]))"));
