@@ -31,7 +31,44 @@ public class ParametersExample {
 		final Venice venice = new Venice();
 		
 		System.out.println(
-				(Long)venice.eval("(+ x y 3)", Parameters.of("x", 6, "y", 3L)));
+				venice.eval(
+						"(+ x y 1)", 
+						Parameters.of("x", 6, "y", 3L)));
+	
+		System.out.println(
+				venice.eval(
+						"(str (:firstname user) \" \" (:lastname user))", 
+						Parameters.of("user", new User("Dent", "Arthur", 42))));
 	}
 	
+	
+	public static class User {
+		public User(
+				final String lastname,
+				final String firstname,
+				final int age
+		) {
+			this.lastname = lastname;
+			this.firstname = firstname;
+			this.age = age;
+		}
+		
+		
+		public String getLastname() {
+			return lastname;
+		}
+		
+		public String getFirstname() {
+			return firstname;
+		}
+		
+		public int getAge() {
+			return age;
+		}
+
+
+		private final String lastname;
+		private final String firstname;
+		private final int age;
+	}
 }
