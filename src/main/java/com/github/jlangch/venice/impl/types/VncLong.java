@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.math.BigDecimal;
 
 import com.github.jlangch.venice.VncException;
@@ -60,78 +57,6 @@ public class VncLong extends VncVal {
 	public VncLong dec() {
 		return new VncLong(value - 1);
 	}
-	
-	public VncConstant lt(final VncVal other) {
-		if (other instanceof VncLong) {
-			return (value < ((VncLong)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncDouble) {
-			return (value < ((VncDouble)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncBigDecimal) {
-			return (new BigDecimal(value).compareTo(((VncBigDecimal)other).getValue())) < 0 ? True : False;
-		}
-		else {
-			throw new VncException(String.format(
-									"Function '<' with operand 1 of type %s does not allow %s as operand 2", 
-									this.getClass().getSimpleName(),
-									other.getClass().getSimpleName()));
-		}
-	}
-	
-	public VncConstant lte(final VncVal other) {
-		if (other instanceof VncLong) {
-			return (value <= ((VncLong)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncDouble) {
-			return (value <= ((VncDouble)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncBigDecimal) {
-			return (new BigDecimal(value).compareTo(((VncBigDecimal)other).getValue())) <= 0 ? True : False;
-		}
-		else {
-			throw new VncException(String.format(
-									"Function '<=' with operand 1 of type %s does not allow %s as operand 2", 
-									this.getClass().getSimpleName(),
-									other.getClass().getSimpleName()));
-		}
-	}
-	
-	public VncConstant gt(final VncVal other) {
-		if (other instanceof VncLong) {
-			return (value > ((VncLong)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncDouble) {
-			return (value > ((VncDouble)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncBigDecimal) {
-			return (new BigDecimal(value).compareTo(((VncBigDecimal)other).getValue())) > 0 ? True : False;
-		}
-		else {
-			throw new VncException(String.format(
-									"Function '>' with operand 1 of type %s does not allow %s as operand 2", 
-									this.getClass().getSimpleName(),
-									other.getClass().getSimpleName()));
-		}
-	}
-	
-	public VncConstant gte(final VncVal other) {
-		if (other instanceof VncLong) {
-			return (value >= ((VncLong)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncDouble) {
-			return (value >= ((VncDouble)other).getValue()) ? True : False;
-		}
-		else if (other instanceof VncBigDecimal) {
-			return (new BigDecimal(value).compareTo(((VncBigDecimal)other).getValue())) >= 0 ? True : False;
-		}
-		else {
-			throw new VncException(String.format(
-									"Function '>=' with operand 1 of type %s does not allow %s as operand 2", 
-									this.getClass().getSimpleName(),
-									other.getClass().getSimpleName()));
-		}
-	}
 
 	public VncDouble toDouble() {
 		return new VncDouble(Double.valueOf(value.longValue()));
@@ -143,7 +68,21 @@ public class VncLong extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		return Types.isVncLong(o) ? getValue().compareTo(((VncLong)o).getValue()) : 0;
+		if (o instanceof VncLong) {
+			return value.compareTo(((VncLong)o).getValue());
+		}
+		else if (o instanceof VncDouble) {
+			return new Double(value.doubleValue()).compareTo(((VncDouble)o).getValue());
+		}
+		else if (o instanceof VncBigDecimal) {
+			return new BigDecimal(value.doubleValue()).compareTo(((VncBigDecimal)o).getValue());
+		}
+		else {
+			throw new VncException(String.format(
+									"Function 'compareTo' with operand 1 of type %s does not allow %s as operand 2", 
+									this.getClass().getSimpleName(),
+									o.getClass().getSimpleName()));
+		}
 	}
 
 	@Override

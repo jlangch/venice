@@ -283,14 +283,8 @@ public class MathFunctions {
 			
 			VncVal max = op1;
 			for(VncVal op : args.rest().getList()) {
-				if (Types.isVncLong(max)) {
-					max = ((VncLong)max).gte(op) == True ? max : op;
-				}
-				else if (Types.isVncDouble(max)) {
-					max = ((VncDouble)max).gte(op) == True ? max : op;
-				}
-				else if (Types.isVncBigDecimal(max)) {
-					max = ((VncBigDecimal)max).gte(op) == True ? max : op;
+				if (Types.isVncLong(op) || Types.isVncDouble(op) || Types.isVncBigDecimal(op)) {
+					max = op.compareTo(max) > 0 ? op : max;
 				}
 				else {
 					throw new VncException(String.format(
@@ -326,14 +320,8 @@ public class MathFunctions {
 			
 			VncVal min = op1;
 			for(VncVal op : args.rest().getList()) {
-				if (Types.isVncLong(min)) {
-					min = ((VncLong)min).lte(op) == True ? min : op;
-				}
-				else if (Types.isVncDouble(min)) {
-					min = ((VncDouble)min).lte(op) == True ? min : op;
-				}
-				else if (Types.isVncBigDecimal(min)) {
-					min = ((VncBigDecimal)min).lte(op) == True ? min : op;
+				if (Types.isVncLong(op) || Types.isVncDouble(op) || Types.isVncBigDecimal(op)) {
+					min = op.compareTo(min) < 0 ? op : min;
 				}
 				else {
 					throw new VncException(String.format(

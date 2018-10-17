@@ -734,14 +734,9 @@ public class CoreFunctions {
 
 			final VncVal op1 = args.nth(0);
 			final VncVal op2 = args.nth(1);
-			if (Types.isVncLong(op1)) {
-				return ((VncLong)op1).lt(op2);
-			}
-			else if (Types.isVncDouble(op1)) {
-				return ((VncDouble)op1).lt(op2);
-			}
-			else if (Types.isVncBigDecimal(op1)) {
-				return ((VncBigDecimal)op1).lt(op2);
+			
+			if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				return op1.compareTo(op2) < 0 ? True : False;
 			}
 			else if (Types.isVncString(op1)) {
 				if (!Types.isVncString(op2)) {
@@ -779,14 +774,9 @@ public class CoreFunctions {
 
 			final VncVal op1 = args.nth(0);
 			final VncVal op2 = args.nth(1);
-			if (Types.isVncLong(op1)) {
-				return ((VncLong)op1).lte(op2);
-			}
-			else if (Types.isVncDouble(op1)) {
-				return ((VncDouble)op1).lte(op2);
-			}
-			else if (Types.isVncBigDecimal(op1)) {
-				return ((VncBigDecimal)op1).lte(op2);
+			
+			if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				return op1.compareTo(op2) <= 0 ? True : False;
 			}
 			else if (Types.isVncString(op1)) {
 				if (!Types.isVncString(op2)) {
@@ -824,14 +814,9 @@ public class CoreFunctions {
 
 			final VncVal op1 = args.nth(0);
 			final VncVal op2 = args.nth(1);
-			if (Types.isVncLong(op1)) {
-				return ((VncLong)op1).gt(op2);
-			}
-			else if (Types.isVncDouble(op1)) {
-				return ((VncDouble)op1).gt(op2);
-			}
-			else if (Types.isVncBigDecimal(op1)) {
-				return ((VncBigDecimal)op1).gt(op2);
+			
+			if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				return op1.compareTo(op2) > 0 ? True : False;
 			}
 			else if (Types.isVncString(op1)) {
 				if (!Types.isVncString(op2)) {
@@ -869,14 +854,9 @@ public class CoreFunctions {
 
 			final VncVal op1 = args.nth(0);
 			final VncVal op2 = args.nth(1);
-			if (Types.isVncLong(op1)) {
-				return ((VncLong)op1).gte(op2);
-			}
-			else if (Types.isVncDouble(op1)) {
-				return ((VncDouble)op1).gte(op2);
-			}
-			else if (Types.isVncBigDecimal(op1)) {
-				return ((VncBigDecimal)op1).gte(op2);
+			
+			if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				return op1.compareTo(op2) >= 0 ? True : False;
 			}
 			else if (Types.isVncString(op1)) {
 				if (!Types.isVncString(op2)) {
@@ -3801,36 +3781,6 @@ public class CoreFunctions {
 				return new VncLong(
 							Long.valueOf(x == False ? 0 : 1)
 								.compareTo(Long.valueOf(y == False ? 0 : 1)));				
-			}
-			else if (Types.isVncKeyword(x)) {
-				return new VncLong(
-							Coerce.toVncKeyword(x).getValue()
-								  .compareTo(Coerce.toVncKeyword(y).getValue()));				
-			}
-			else if (Types.isVncSymbol(x)) {
-				return new VncLong(
-							Coerce.toVncSymbol(x).getName()
-								  .compareTo(Coerce.toVncSymbol(y).getName()));				
-			}
-			else if (Types.isVncLong(x)) {
-				if (Coerce.toVncLong(x).lt(y) == True) return new VncLong(-1);
-				if (Coerce.toVncLong(x).gt(y) == True) return new VncLong(1);
-				return new VncLong(0);
-			}
-			else if (Types.isVncBigDecimal(x)) {
-				if (Coerce.toVncBigDecimal(x).lt(y) == True) return new VncLong(-1);
-				if (Coerce.toVncBigDecimal(x).gt(y) == True) return new VncLong(1);
-				return new VncLong(0);
-			}
-			else if (Types.isVncDouble(x)) {
-				if (Coerce.toVncDouble(x).lt(y) == True) return new VncLong(-1);
-				if (Coerce.toVncDouble(x).gt(y) == True) return new VncLong(1);
-				return new VncLong(0);
-			}
-			else if (Types.isVncString(x)) {
-				return new VncLong(
-							Coerce.toVncString(x).getValue()
-								  .compareTo(Coerce.toVncString(y).getValue()));				
 			}
 			else {
 				return new VncLong(x.compareTo(y));				
