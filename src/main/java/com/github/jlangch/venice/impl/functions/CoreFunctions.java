@@ -3802,6 +3802,11 @@ public class CoreFunctions {
 							Long.valueOf(x == False ? 0 : 1)
 								.compareTo(Long.valueOf(y == False ? 0 : 1)));				
 			}
+			else if (Types.isVncKeyword(x)) {
+				return new VncLong(
+							Coerce.toVncKeyword(x).getValue()
+								  .compareTo(Coerce.toVncKeyword(y).getValue()));				
+			}
 			else if (Types.isVncSymbol(x)) {
 				return new VncLong(
 							Coerce.toVncSymbol(x).getName()
