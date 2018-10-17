@@ -48,6 +48,10 @@ public class VncLong extends VncVal {
 	public Long getValue() { 
 		return value; 
 	}
+	
+	public Integer getIntValue() { 
+		return value.intValue(); 
+	}
 		
 	public VncLong inc() {
 		return new VncLong(value + 1);

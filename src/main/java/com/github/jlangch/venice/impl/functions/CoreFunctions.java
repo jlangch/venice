@@ -3581,7 +3581,12 @@ public class CoreFunctions {
 			assertArity("sort", args, 1, 2);
 
 			if (args.size() == 1) {
-				return sort("sort", args, args.nth(0), Comparator.naturalOrder());
+				// no compare function -> sort by natural order
+				return sort(
+						"sort", 
+						args, 
+						args.nth(0), 
+						(x,y) -> Coerce.toVncLong(compare.apply(new VncList(x,y))).getIntValue());
 			}
 			else if (args.size() == 2) {
 				final VncFunction compfn = Coerce.toVncFunction(args.nth(0));
@@ -3590,7 +3595,7 @@ public class CoreFunctions {
 						"sort", 
 						args, 
 						args.nth(1), 
-						(x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue());
+						(x,y) -> Coerce.toVncLong(compfn.apply(new VncList(x,y))).getIntValue());
 			}
 			else {
 				throw new VncException(String.format(
@@ -3630,7 +3635,12 @@ public class CoreFunctions {
 						"sort-by", 
 						args, 
 						args.nth(1), 
-						(x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y))));
+						(x,y) -> Coerce.toVncLong(
+									compare.apply(
+										new VncList(
+												keyfn.apply(new VncList(x)),
+												keyfn.apply(new VncList(y))))
+								 ).getIntValue());
 			}
 			else if (args.size() == 3) {
 				final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
@@ -3646,7 +3656,7 @@ public class CoreFunctions {
 												keyfn.apply(new VncList(x)),
 												keyfn.apply(new VncList(y)))
 											)
-										).getValue().intValue());
+								 ).getIntValue());
 			}
 			else {
 				throw new VncException(String.format(
@@ -3792,11 +3802,6 @@ public class CoreFunctions {
 							Long.valueOf(x == False ? 0 : 1)
 								.compareTo(Long.valueOf(y == False ? 0 : 1)));				
 			}
-			else if (Types.isVncKeyword(x)) {
-				return new VncLong(
-							Coerce.toVncKeyword(x).getValue()
-								  .compareTo(Coerce.toVncKeyword(y).getValue()));				
-			}
 			else if (Types.isVncSymbol(x)) {
 				return new VncLong(
 							Coerce.toVncSymbol(x).getName()
@@ -3805,17 +3810,17 @@ public class CoreFunctions {
 			else if (Types.isVncLong(x)) {
 				if (Coerce.toVncLong(x).lt(y) == True) return new VncLong(-1);
 				if (Coerce.toVncLong(x).gt(y) == True) return new VncLong(1);
-				return  new VncLong(0);
+				return new VncLong(0);
 			}
 			else if (Types.isVncBigDecimal(x)) {
 				if (Coerce.toVncBigDecimal(x).lt(y) == True) return new VncLong(-1);
 				if (Coerce.toVncBigDecimal(x).gt(y) == True) return new VncLong(1);
-				return  new VncLong(0);
+				return new VncLong(0);
 			}
 			else if (Types.isVncDouble(x)) {
 				if (Coerce.toVncDouble(x).lt(y) == True) return new VncLong(-1);
 				if (Coerce.toVncDouble(x).gt(y) == True) return new VncLong(1);
-				return  new VncLong(0);
+				return new VncLong(0);
 			}
 			else if (Types.isVncString(x)) {
 				return new VncLong(
@@ -3823,10 +3828,7 @@ public class CoreFunctions {
 								  .compareTo(Coerce.toVncString(y).getValue()));				
 			}
 			else {
-				throw new VncException(String.format(
-						"Cannot compare value of type %s. %s", 
-						Types.getClassName(x),
-						ErrorMessage.buildErrLocation(x)));
+				return new VncLong(x.compareTo(y));				
 			}
 		}
 	};

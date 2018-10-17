@@ -148,7 +148,7 @@ public class VncBigDecimal extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		return Types.isVncDouble(o) ? getValue().compareTo(((VncBigDecimal)o).getValue()) : 0;
+		return Types.isVncBigDecimal(o) ? getValue().compareTo(((VncBigDecimal)o).getValue()) : 0;
 	}
 
 	@Override
