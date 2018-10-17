@@ -135,6 +135,23 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
+	public void test_try_catch_4b() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(do                                                     " +
+				"  (import :java.lang.RuntimeException)                  " +
+				"  (import :java.io.IOException)                         " +
+				"  (try                                                  " +
+				"     (throw (. :RuntimeException :new \"message\"))     " +
+				"     (catch :IOException ex (:message ex))              " +
+				"     (catch :RuntimeException ex (:message ex))))       " +
+				")                                                       ";
+
+		assertEquals("message", venice.eval(lisp));
+	}
+	
+	@Test
 	public void test_try_catch_5() {
 		final Venice venice = new Venice();
 
@@ -144,6 +161,22 @@ public class SpecialFormsTest {
 				"  (try                                                     " +
 				"     (throw [1 2 3])                                       " +
 				"     (catch :ValueException ex (pr-str (. ex :getValue)))  " +
+				"     (catch :RuntimeException ex \"???\")))                " +
+				")                                                          ";
+
+		assertEquals("[1 2 3]", venice.eval(lisp));
+	}
+
+	@Test
+	public void test_try_catch_5b() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(do                                                        " +
+				"  (import :com.github.jlangch.venice.ValueException)       " +
+				"  (try                                                     " +
+				"     (throw [1 2 3])                                       " +
+				"     (catch :ValueException ex (pr-str (:value ex)))       " +
 				"     (catch :RuntimeException ex \"???\")))                " +
 				")                                                          ";
 

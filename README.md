@@ -26,9 +26,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/e44ecd0/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/44a5df0/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/e44ecd0/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/44a5df0/cheatsheet.pdf)
 
 
 ## REPL
@@ -173,9 +173,19 @@ Exception handling
   
    (try
       (throw (. :RuntimeException :new "a message"))
-      (catch :IOException ex (. ex :getMessage))
-      (catch :RuntimeException ex (. ex :getMessage))
+      (catch :IOException ex (:message ex))
+      (catch :RuntimeException ex (:message ex))
       (finally (println "... finally."))))
+```
+
+```clojure
+(do
+   (import :java.lang.RuntimeException)
+   (import :com.github.jlangch.venice.ValueException)
+  
+   (try
+      (throw [1 2 3])  ; ValueException
+      (catch :ValueException ex (pr-str (:value ex)))))
 ```
 
 
