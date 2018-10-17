@@ -982,13 +982,13 @@ public class DocGenerator {
 									"  (import :java.lang.RuntimeException) \n" +
 									"  (try \n" +
 									"     (throw (. :RuntimeException :new \"message\")) \n" +
-									"     (catch :RuntimeException ex (. ex :getMessage)))) \n" +
+									"     (catch :RuntimeException ex (:message ex)))) \n" +
 									")",
 									"(do \n" +
 									"  (import :com.github.jlangch.venice.ValueException) \n" +
 									"  (try \n" +
 									"     (throw [1 2 3]) \n" +
-									"     (catch :ValueException ex (str (. ex :getValue))) \n" +
+									"     (catch :ValueException ex (str (:value ex))) \n" +
 									"     (catch :RuntimeException ex \"runtime ex\") \n" +
 									"     (finally (println \"...finally\"))) \n" +
 									")"),

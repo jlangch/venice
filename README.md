@@ -180,7 +180,6 @@ Exception handling
 
 ```clojure
 (do
-   (import :java.lang.RuntimeException)
    (import :com.github.jlangch.venice.ValueException)
   
    (try
