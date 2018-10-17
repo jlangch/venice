@@ -73,7 +73,10 @@ public class VncBigDecimal extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		if (o instanceof VncLong) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (o instanceof VncLong) {
 			return value.compareTo(toDecimal((VncLong)o).getValue());
 		}
 		else if (o instanceof VncDouble) {

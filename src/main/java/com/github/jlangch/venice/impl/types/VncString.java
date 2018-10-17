@@ -88,7 +88,15 @@ public class VncString extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		return Types.isVncString(o) ? getValue().compareTo(((VncString)o).getValue()) : 0;
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncString(o)) {
+			return getValue().compareTo(((VncString)o).getValue());
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	@Override

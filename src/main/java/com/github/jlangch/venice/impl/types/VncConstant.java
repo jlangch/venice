@@ -21,13 +21,31 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 public class VncConstant extends VncVal {
 
 	public VncConstant(final String name) { 
 		value = name; 
 	}
-	
+
+	@Override 
+	public int compareTo(final VncVal o) {
+		if (this == Nil) {
+			return o == Nil ? 0 : -1;
+		}
+		else if (o == Nil) {
+			return 1;
+		}
+		else if (Types.isVncBoolean(this) && Types.isVncBoolean(o)) {
+			return Long.valueOf(this == False ? 0L : 1L).compareTo(o == False ? 0L : 1L);				
+		}
+		else {
+			return 0;
+		}
+	}
+
 	public VncConstant copy() { 
 		final VncConstant v = new VncConstant(value); 
 		v.setMeta(getMeta());

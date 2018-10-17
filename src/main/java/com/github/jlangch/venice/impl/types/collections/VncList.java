@@ -157,7 +157,10 @@ public class VncList extends VncSequence {
 
 	@Override
 	public int compareTo(final VncVal o) {
-		if (Types.isVncList(o)) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncList(o)) {
 			for(int ii=0; ii<Math.min(size(), ((VncList)o).size()); ii++) {
 				int c = nth(ii).compareTo(((VncList)o).nth(ii));
 				if (c != 0) {

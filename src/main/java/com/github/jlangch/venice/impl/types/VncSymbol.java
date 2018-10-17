@@ -43,7 +43,15 @@ public class VncSymbol extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		return Types.isVncSymbol(o) ? getName().compareTo(((VncSymbol)o).getName()) : 0;
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncSymbol(o)) {
+			return getName().compareTo(((VncSymbol)o).getName());
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	@Override

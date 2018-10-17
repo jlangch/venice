@@ -3768,23 +3768,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("compare", args, 2);
 
-			final VncVal x = args.first();
-			final VncVal y = args.second();
-
-			if (x == Nil || y == Nil) {
-				return (x == Nil && y == Nil)
-						? new VncLong(0)
-						: (x == Nil) ?  new VncLong(-1) :  new VncLong(1);
-			}
-			else if (Types.isVncBoolean(x)) {
-				Coerce.toVncBoolean(y);  // ensure y is a boolean
-				return new VncLong(
-							Long.valueOf(x == False ? 0 : 1)
-								.compareTo(Long.valueOf(y == False ? 0 : 1)));				
-			}
-			else {
-				return new VncLong(x.compareTo(y));				
-			}
+			return new VncLong(args.first().compareTo(args.second()));				
 		}
 	};
 		

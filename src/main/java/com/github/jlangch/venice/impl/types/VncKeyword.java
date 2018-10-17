@@ -58,7 +58,15 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		return Types.isVncKeyword(o) ? getValue().compareTo(((VncKeyword)o).getValue()) : 0;
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncKeyword(o)) {
+			return getValue().compareTo(((VncKeyword)o).getValue());
+		}
+		else {
+			return 0;
+		}
 	}
 
 	@Override 

@@ -61,7 +61,15 @@ public class VncByteBuffer extends VncVal {
 	
 	@Override 
 	public int compareTo(final VncVal o) {
-		return Types.isVncByteBuffer(o) ? getValue().compareTo(((VncByteBuffer)o).getValue()) : 0;
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if(Types.isVncByteBuffer(o)) {
+			return getValue().compareTo(((VncByteBuffer)o).getValue());
+		}
+		else {
+			return 0;
+		}
 	}
 
 	@Override

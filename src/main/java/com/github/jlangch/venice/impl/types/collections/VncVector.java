@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -80,7 +81,10 @@ public class VncVector extends VncList {
 
 	@Override
 	public int compareTo(final VncVal o) {
-		if (Types.isVncList(o)) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncList(o)) {
 			for(int ii=0; ii<Math.min(size(), ((VncList)o).size()); ii++) {
 				int c = nth(ii).compareTo(((VncList)o).nth(ii));
 				if (c != 0) {

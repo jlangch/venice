@@ -168,8 +168,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
-	public int compareTo(final VncVal o) {  // TODO
-		if (Types.isVncList(o)) {
+	public int compareTo(final VncVal o) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncList(o)) {
 			for(int ii=0; ii<Math.min(size(), ((VncJavaList)o).size()); ii++) {
 				int c = nth(ii).compareTo(((VncJavaList)o).nth(ii));
 				if (c != 0) {

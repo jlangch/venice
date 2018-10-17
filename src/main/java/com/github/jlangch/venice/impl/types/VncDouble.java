@@ -23,8 +23,6 @@ package com.github.jlangch.venice.impl.types;
 
 import java.math.BigDecimal;
 
-import com.github.jlangch.venice.VncException;
-
 
 public class VncDouble extends VncVal {
 
@@ -64,7 +62,10 @@ public class VncDouble extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		if (o instanceof VncLong) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (o instanceof VncLong) {
 			return value.compareTo(new Double(((VncLong)o).getValue()));
 		}
 		else if (o instanceof VncDouble) {
@@ -74,10 +75,7 @@ public class VncDouble extends VncVal {
 			return new BigDecimal(value.doubleValue()).compareTo(((VncBigDecimal)o).getValue());
 		}
 		else {
-			throw new VncException(String.format(
-									"Function 'compareTo' with operand 1 of type %s does not allow %s as operand 2", 
-									this.getClass().getSimpleName(),
-									o.getClass().getSimpleName()));
+			return 0;
 		}
 	}
 
