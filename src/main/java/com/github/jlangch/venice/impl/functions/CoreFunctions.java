@@ -3760,6 +3760,8 @@ public class CoreFunctions {
 					"'equal to', or 'greater than' y.");
 
 			setExamples(
+					"(compare nil 0)", 
+					"(compare 0 nil)", 
 					"(compare 1 0)", 
 					"(compare 1 1)", 
 					"(compare 1 2)");
