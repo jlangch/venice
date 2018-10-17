@@ -45,11 +45,11 @@ public class VncDouble extends VncVal {
 	}
 	
 	public VncDouble inc() {
-		return new VncDouble(value + 1.D);
+		return new VncDouble(value + 1.0D);
 	}
 	
 	public VncDouble dec() {
-		return new VncDouble(value - 1D);
+		return new VncDouble(value - 1.0D);
 	}
 
 	public VncLong toLong() {

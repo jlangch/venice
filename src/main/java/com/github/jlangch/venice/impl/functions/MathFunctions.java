@@ -283,7 +283,7 @@ public class MathFunctions {
 			
 			VncVal max = op1;
 			for(VncVal op : args.rest().getList()) {
-				if (Types.isVncLong(op) || Types.isVncDouble(op) || Types.isVncBigDecimal(op)) {
+				if (Types.isVncNumber(op)) {
 					max = op.compareTo(max) > 0 ? op : max;
 				}
 				else {
@@ -320,7 +320,7 @@ public class MathFunctions {
 			
 			VncVal min = op1;
 			for(VncVal op : args.rest().getList()) {
-				if (Types.isVncLong(op) || Types.isVncDouble(op) || Types.isVncBigDecimal(op)) {
+				if (Types.isVncNumber(op)) {
 					min = op.compareTo(min) < 0 ? op : min;
 				}
 				else {
