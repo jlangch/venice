@@ -3581,89 +3581,16 @@ public class CoreFunctions {
 			assertArity("sort", args, 1, 2);
 
 			if (args.size() == 1) {
-				final VncVal coll = args.nth(0);
-				
-				if (Types.isVncVector(coll)) {
-					return new VncVector(
-							((VncVector)coll)
-								.getList()
-								.stream()
-								.sorted()
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncList(coll)) {
-					return new VncList(
-							((VncList)coll)
-								.getList()
-								.stream()
-								.sorted()
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncSet(coll)) {
-					return new VncList(
-							((VncSet)coll)
-								.getList()
-								.stream()
-								.sorted()
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncMap(coll)) {
-					return new VncList(
-							 ((VncMap)coll).toVncList()
-								.getList()
-								.stream()
-								.sorted()
-								.collect(Collectors.toList()));
-				}
-				else {
-					throw new VncException(String.format(
-							"sort: collection type not supported. %s",
-							ErrorMessage.buildErrLocation(args)));
-				}
+				return sort("sort", args, args.nth(0), Comparator.naturalOrder());
 			}
 			else if (args.size() == 2) {
 				final VncFunction compfn = Coerce.toVncFunction(args.nth(0));
-				final VncVal coll = args.nth(1);
 				
-				final Comparator<VncVal> c = (x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue();
-				
-				if (Types.isVncVector(coll)) {
-					return new VncVector(
-							((VncVector)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncList(coll)) {
-					return new VncList(
-							((VncList)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncSet(coll)) {
-					return new VncList(
-							((VncSet)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncMap(coll)) {
-					return new VncList(
-							 ((VncMap)coll).toVncList()
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else {
-					throw new VncException(String.format(
-							"sort: collection type not supported. %s",
-							ErrorMessage.buildErrLocation(args)));
-				}
+				return sort(
+						"sort", 
+						args, 
+						args.nth(1), 
+						(x,y) -> ((VncLong)compfn.apply(new VncList(x,y))).getValue().intValue());
 			}
 			else {
 				throw new VncException(String.format(
@@ -3698,82 +3625,28 @@ public class CoreFunctions {
 
 			if (args.size() == 2) {
 				final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
-				final VncVal coll = args.nth(1);
 
-				final Comparator<VncVal> c = (x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y)));
-
-				if (Types.isVncVector(coll)) {
-					return new VncVector(
-							((VncVector)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncList(coll)) {
-					return new VncList(
-							((VncList)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncMap(coll)) {
-					return new VncList(
-							 ((VncMap)coll).toVncList()
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else {
-					throw new VncException(String.format(
-							"sort-by: collection type not supported. %s",
-							ErrorMessage.buildErrLocation(args)));
-				}
+				return sort(
+						"sort-by", 
+						args, 
+						args.nth(1), 
+						(x,y) -> keyfn.apply(new VncList(x)).compareTo(keyfn.apply(new VncList(y))));
 			}
 			else if (args.size() == 3) {
 				final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
 				final VncFunction compfn = Coerce.toVncFunction(args.nth(1));
-				final VncVal coll = args.nth(2);
 
-				final Comparator<VncVal> c = (x,y) -> Coerce.toVncLong(
-														compfn.apply(
-															new VncList(
-																	keyfn.apply(new VncList(x)),
-																	keyfn.apply(new VncList(y)))
-																)
-															).getValue().intValue();
-
-				if (Types.isVncVector(coll)) {
-					return new VncVector(
-							((VncVector)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncList(coll)) {
-					return new VncList(
-							((VncList)coll)
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else if (Types.isVncMap(coll)) {
-					return new VncList(
-							 ((VncMap)coll).toVncList()
-								.getList()
-								.stream()
-								.sorted(c)
-								.collect(Collectors.toList()));
-				}
-				else {
-					throw new VncException(String.format(
-							"sort-by: collection type not supported. %s",
-							ErrorMessage.buildErrLocation(args)));
-				}
+				return sort(
+						"sort-by", 
+						args, 
+						args.nth(2), 
+						(x,y) -> Coerce.toVncLong(
+									compfn.apply(
+										new VncList(
+												keyfn.apply(new VncList(x)),
+												keyfn.apply(new VncList(y)))
+											)
+										).getValue().intValue());
 			}
 			else {
 				throw new VncException(String.format(
@@ -4749,6 +4622,52 @@ public class CoreFunctions {
 		}
 		else {
 			result.add(value);
+		}
+	}
+	
+	private static VncVal sort(
+			final String fnName, 
+			final VncVal fnArgs, 
+			final VncVal coll, 
+			final Comparator<VncVal> c
+	) {
+		if (Types.isVncVector(coll)) {
+			return new VncVector(
+					((VncVector)coll)
+						.getList()
+						.stream()
+						.sorted(c)
+						.collect(Collectors.toList()));
+		}
+		else if (Types.isVncList(coll)) {
+			return new VncList(
+					((VncList)coll)
+						.getList()
+						.stream()
+						.sorted(c)
+						.collect(Collectors.toList()));
+		}
+		else if (Types.isVncSet(coll)) {
+			return new VncList(
+					((VncSet)coll)
+						.getList()
+						.stream()
+						.sorted(c)
+						.collect(Collectors.toList()));
+		}
+		else if (Types.isVncMap(coll)) {
+			return new VncList(
+					 ((VncMap)coll).toVncList()
+						.getList()
+						.stream()
+						.sorted(c)
+						.collect(Collectors.toList()));
+		}
+		else {
+			throw new VncException(String.format(
+					"%s: collection type not supported. %s",
+					fnName,
+					ErrorMessage.buildErrLocation(fnArgs)));
 		}
 	}
 
