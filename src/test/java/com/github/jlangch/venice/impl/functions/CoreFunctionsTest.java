@@ -303,6 +303,9 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(1),  venice.eval("(compare 1.0M 0.0M)"));
 
 		// string
+		assertEquals(Long.valueOf(-1), venice.eval("(compare \"a\" \"b\")"));
+		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aa\" \"b\")"));
+		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aaa\" \"bb\")"));
 		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aaa\" \"bbb\")"));
 		assertEquals(Long.valueOf(0),  venice.eval("(compare \"aaa\" \"aaa\")"));
 		assertEquals(Long.valueOf(1),  venice.eval("(compare \"bbb\" \"aaa\")"));
