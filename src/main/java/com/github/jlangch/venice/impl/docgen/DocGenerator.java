@@ -930,9 +930,17 @@ public class DocGenerator {
 									"        (fn [x] \n" +
 									"            { :pre [(>= x 0)] } \n" +
 									"            (. :java.lang.Math.sqrt x))) \n" +
-									" \n" +
 									"   (sqrt -4) \n" +
-									")"),
+									")",
+									";; higher-order function\n" + 
+									"(do \n" +
+									"   (def discount \n" +
+									"        (fn [percentage] \n" +
+									"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
+									"            (fn [price] (- price (* price percentage 0.01)))))\n" +
+									"   ((discount 50) 300) \n" +
+									")"
+									),
 							true,
 							true),
 						idgen.id()));
