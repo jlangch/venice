@@ -14,9 +14,9 @@ Venice's goal is not to build just another Lisp, it's born from the need of
 having a safe, powerful scripting and expression language that can be used 
 to implement scriptable extension points and rules for applications.
 
-Venice supports macros, comes with Java interoperability and a configurable 
-sandbox that can prevent all sorts of dangerous JVM interactions like 
-reading/writing files, invoking _System.exit(0)_ or any other malicious action.
+Venice supports macros, tail-recursion, comes with excellent Java interoperability,
+and a configurable sandbox that can prevent all sorts of dangerous JVM interactions 
+like reading/writing files, invoking _System.exit(0)_ or any other malicious action.
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
@@ -164,6 +164,21 @@ Java VarArgs:
 ```
 
 
+Tail recursion:
+
+```clojure
+  (do
+    (def sum
+      (fn [n]
+        (loop [cnt n acc 0]
+            (if (zero? cnt)
+                acc
+                (recur (dec cnt) (+ acc cnt))))))
+
+     (sum 100000))
+```
+
+
 Exception handling
 
 ```clojure
@@ -299,6 +314,7 @@ Another example:
 
    (str (filter (fn [u] (> (get u :age) 30)) users)))
 ```
+
 
 ## Sandbox
 

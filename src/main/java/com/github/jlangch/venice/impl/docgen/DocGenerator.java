@@ -900,6 +900,7 @@ public class DocGenerator {
 							"let", 
 							Arrays.asList(
 									"(let [x 1] x))",
+									
 									";; destructured map \n" +
 									"(let [{:keys [width height title ]\n" + 
 									"       :or {width 640 height 500}\n" + 
@@ -921,9 +922,12 @@ public class DocGenerator {
 							"fn", 
 							Arrays.asList(
 									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
+									
 									"(map (fn [x] (* 2 x)) (range 1 5))",
+									
 									";; anonymous function with two params, the second is destructured\n" + 
 									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
+									
 									";; defining a pre-condition\n" + 
 									"(do \n" +
 									"   (def sqrt \n" +
@@ -932,6 +936,7 @@ public class DocGenerator {
 									"            (. :java.lang.Math.sqrt x))) \n" +
 									"   (sqrt -4) \n" +
 									")",
+									
 									";; higher-order function\n" + 
 									"(do \n" +
 									"   (def discount \n" +
@@ -954,10 +959,21 @@ public class DocGenerator {
 						runExamples(
 							"loop", 
 							Arrays.asList(
-									"(loop [x 10]\n" + 
-									"  (when (> x 1)\n" + 
-									"    (println x)\n" + 
-									"    (recur (- x 2))))"), 
+									";; tail recursion                                   \n" +
+									"(loop [x 10]                                        \n" + 
+									"   (when (> x 1)                                    \n" + 
+									"      (println x)                                   \n" + 
+									"      (recur (- x 2))))                               ", 
+							
+									";; tail recursion                                   \n" +
+									"(do                                                 \n" +
+									"   (def sum                                         \n" +
+									"      (fn [n]                                       \n" +
+									"          (loop [cnt n acc 0]                       \n" +
+									"             (if (zero? cnt)                        \n" +
+									"                 acc                                \n" +
+									"                 (recur (dec cnt) (+ acc cnt))))))  \n" +
+									"   (sum 10000))                                       "),
 							true),
 						idgen.id()));
 	    
@@ -982,23 +998,37 @@ public class DocGenerator {
 							"try", 
 							Arrays.asList(
 									"(try (throw))",
-									"(try (throw \"test message\"))",
-									"(try \n   (throw 100) \n   (catch :java.lang.Exception ex -100)))",
-									"(try \n   (throw 100) \n   (finally (println \"...finally\")))",
-									"(try \n   (throw 100) \n   (catch :java.lang.Exception ex -100) \n   (finally (println \"...finally\")))",
-									"(do \n" +
-									"  (import :java.lang.RuntimeException) \n" +
-									"  (try \n" +
-									"     (throw (. :RuntimeException :new \"message\")) \n" +
-									"     (catch :RuntimeException ex (:message ex)))) \n" +
+									
+									"(try                                      \n" +
+									"   (throw \"test message\"))                ",
+									
+									"(try                                       \n" +
+									"   (throw 100)                             \n" +
+									"   (catch :java.lang.Exception ex -100)))    ",
+									
+									"(try                                       \n" +
+									"   (throw 100)                             \n" +
+									"   (finally (println \"...finally\")))       ",
+									
+									"(try                                       \n" +
+									"   (throw 100)                             \n" +
+									"   (catch :java.lang.Exception ex -100)    \n" +
+									"   (finally (println \"...finally\")))       ",
+									
+									"(do                                                  \n" +
+									"   (import :java.lang.RuntimeException)              \n" +
+									"   (try                                              \n" +
+									"      (throw (. :RuntimeException :new \"message\")) \n" +
+									"      (catch :RuntimeException ex (:message ex))))   \n" +
 									")",
-									"(do \n" +
-									"  (import :com.github.jlangch.venice.ValueException) \n" +
-									"  (try \n" +
-									"     (throw [1 2 3]) \n" +
-									"     (catch :ValueException ex (str (:value ex))) \n" +
-									"     (catch :RuntimeException ex \"runtime ex\") \n" +
-									"     (finally (println \"...finally\"))) \n" +
+									
+									"(do                                                   \n" +
+									"   (import :com.github.jlangch.venice.ValueException) \n" +
+									"   (try                                               \n" +
+									"      (throw [1 2 3])                                 \n" +
+									"      (catch :ValueException ex (str (:value ex)))    \n" +
+									"      (catch :RuntimeException ex \"runtime ex\")     \n" +
+									"      (finally (println \"...finally\")))             \n" +
 									")"),
 							true,
 							true),
@@ -1018,12 +1048,12 @@ public class DocGenerator {
 						runExamples(
 							"try", 
 							Arrays.asList(
-								"(do \n" +
-								"   (import :java.io.FileInputStream) \n" +
-								"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-								"        (io/spit file \"123456789\" :append true) \n" +
+								"(do                                                   \n" +
+								"   (import :java.io.FileInputStream)                  \n" +
+								"   (let [file (io/temp-file \"test-\", \".txt\")]     \n" +
+								"        (io/spit file \"123456789\" :append true)     \n" +
 								"        (try-with [is (. :FileInputStream :new file)] \n" +
-								"           (io/slurp-stream is :binary false))) \n" +
+								"           (io/slurp-stream is :binary false)))       \n" +
 								")"),
 							true,
 							true),

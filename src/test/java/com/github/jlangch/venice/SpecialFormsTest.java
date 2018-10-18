@@ -470,20 +470,20 @@ public class SpecialFormsTest {
 	public void test_loop_deep() {
 		final Venice venice = new Venice();
 		
+		
 		final String lisp = 
 				"(do                                             " +
 				"  (def sum                                      " +
 				"    (fn [n]                                     " +
-				"      (loop [cnt n                              " +
-				"             acc 0]                             " +
+				"      (loop [cnt n acc 0]                       " +
 				"          (if (zero? cnt)                       " +
 				"              acc                               " +
 				"              (recur (dec cnt) (+ acc cnt)))))) " +
 				"                                                " +
-				"   (sum 10000)                                  " +
+				"   (sum 100000)                                 " +
 				")                                               ";
 
-		assertEquals(Long.valueOf(50005000), venice.eval(lisp));
+		assertEquals(Long.valueOf(5000050000L), venice.eval(lisp));
 	}
 
 	@Test
