@@ -168,12 +168,11 @@ Tail recursion:
 
 ```clojure
   (do
-    (def sum
-      (fn [n]
-        (loop [cnt n acc 0]
-            (if (zero? cnt)
-                acc
-                (recur (dec cnt) (+ acc cnt))))))
+    (defn sum [n]
+       (loop [cnt n acc 0]
+             (if (zero? cnt)
+                 acc
+                 (recur (dec cnt) (+ acc cnt)))))
 
      (sum 100000))
 ```
