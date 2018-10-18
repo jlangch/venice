@@ -12,8 +12,7 @@ a safe scripting language.
 
 Venice's goal is not to build just another Lisp, it's born from the need of 
 having a safe, powerful scripting and expression language that can be used 
-to implement scriptable extension points and rules for applications. Venice
-is powerful enough to drive larger applications.
+to implement scriptable extension points and rules for applications.
 
 Venice supports macros, tail-recursion, dynamic code loading, comes with excellent 
 Java interoperability, and a configurable sandbox that can prevent all sorts of 
