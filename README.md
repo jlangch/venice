@@ -167,14 +167,14 @@ Java VarArgs:
 Tail recursion:
 
 ```clojure
-  (do
-    (defn sum [n]
-       (loop [cnt n acc 0]
-             (if (zero? cnt)
-                 acc
-                 (recur (dec cnt) (+ acc cnt)))))
+(do
+  (defn sum [n]
+     (loop [cnt n acc 0]
+           (if (zero? cnt)
+               acc
+               (recur (dec cnt) (+ acc cnt)))))
 
-     (sum 100000))
+   (sum 100000))
 ```
 
 
