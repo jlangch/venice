@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.math.BigDecimal;
+import com.github.jlangch.venice.impl.functions.Numeric;
 
 
 public class VncDouble extends VncVal {
@@ -52,27 +52,13 @@ public class VncDouble extends VncVal {
 		return new VncDouble(value - 1.0D);
 	}
 
-	public VncLong toLong() {
-		return new VncLong(Long.valueOf(value.longValue()));
-	}
-
-	public VncBigDecimal toDecimal() {
-		return new VncBigDecimal(new BigDecimal(value.doubleValue()));
-	}
-
 	@Override 
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (o instanceof VncLong) {
-			return value.compareTo(new Double(((VncLong)o).getValue()));
-		}
-		else if (o instanceof VncDouble) {
-			return value.compareTo(((VncDouble)o).getValue());
-		}
-		else if (o instanceof VncBigDecimal) {
-			return new BigDecimal(value.doubleValue()).compareTo(((VncBigDecimal)o).getValue());
+		else if (Types.isVncNumber(o)) {
+			return value.compareTo(Numeric.toDouble(o).getValue());
 		}
 		else {
 			return 0;

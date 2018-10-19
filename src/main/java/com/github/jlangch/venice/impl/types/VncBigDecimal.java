@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.functions.Numeric;
 
 
 public class VncBigDecimal extends VncVal {
@@ -51,22 +52,6 @@ public class VncBigDecimal extends VncVal {
 		return new VncBigDecimal(value.subtract(new BigDecimal(1)));
 	}
 
-	public VncLong toLong() {
-		return new VncLong(Long.valueOf(value.longValue()));
-	}
-
-	public VncDouble toDouble() {
-		return new VncDouble(Double.valueOf(value.doubleValue()));
-	}
-
-	public static VncBigDecimal toDecimal(final VncLong val) {
-		return new VncBigDecimal(new BigDecimal(((VncLong)val).getValue()));
-	}
-
-	public static VncBigDecimal toDecimal(final VncDouble val) {
-		return new VncBigDecimal(new BigDecimal(((VncDouble)val).getValue()));
-	}
-
 	public static RoundingMode toRoundingMode(final VncString val) {
 		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
 	}
@@ -76,20 +61,15 @@ public class VncBigDecimal extends VncVal {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (o instanceof VncLong) {
-			return value.compareTo(toDecimal((VncLong)o).getValue());
-		}
-		else if (o instanceof VncDouble) {
-			return value.compareTo(toDecimal((VncDouble)o).getValue());
-		}
-		else if (o instanceof VncBigDecimal) {
-			return value.compareTo(((VncBigDecimal)o).getValue());
+		else if (Types.isVncNumber(o)) {
+			return value.compareTo(Numeric.toDecimal(o).getValue());
 		}
 		else {
-			throw new VncException(String.format(
-									"Function 'compareTo' with operand 1 of type %s does not allow %s as operand 2", 
-									this.getClass().getSimpleName(),
-									o.getClass().getSimpleName()));
+			throw new VncException(
+					String.format(
+						"Function 'compareTo' with operand 1 of type %s does not allow %s as operand 2", 
+						this.getClass().getSimpleName(),
+						o.getClass().getSimpleName()));
 		}
 	}
 

@@ -67,7 +67,7 @@ public class MathFunctions {
 			}
 
 			VncVal val = args.first();
-			for(VncVal v : args.slice(1).getList()) { val = Calc.add(val, v); }
+			for(VncVal v : args.slice(1).getList()) { val = Numeric.add(val, v); }
 			return val;
 		}
 	};
@@ -89,13 +89,13 @@ public class MathFunctions {
 			else if (args.size() == 1) {
 				final VncVal first = args.nth(0);
 				if (Types.isVncLong(first)) {
-					return Calc.mul(first, new VncLong(-1L));
+					return Numeric.mul(first, new VncLong(-1L));
 				}
 				else if (Types.isVncDouble(first)) {
-					return Calc.mul(first, new VncDouble(-1D));
+					return Numeric.mul(first, new VncDouble(-1D));
 				}
 				else if (Types.isVncBigDecimal(first)) {
-					return Calc.mul(first, new VncBigDecimal(new BigDecimal("-1.0")));
+					return Numeric.mul(first, new VncBigDecimal(new BigDecimal("-1.0")));
 				}
 				else {
 					return first;
@@ -103,7 +103,7 @@ public class MathFunctions {
 			}
 
 			VncVal val = args.first();
-			for(VncVal v : args.slice(1).getList()) { val = Calc.sub(val, v); }
+			for(VncVal v : args.slice(1).getList()) { val = Numeric.sub(val, v); }
 			return val;
 		}
 	};
@@ -126,7 +126,7 @@ public class MathFunctions {
 			}
 
 			VncVal val = args.first();
-			for(VncVal v : args.slice(1).getList()) { val = Calc.mul(val, v); }
+			for(VncVal v : args.slice(1).getList()) { val = Numeric.mul(val, v); }
 			return val;
 		}
 	};
@@ -148,13 +148,13 @@ public class MathFunctions {
 			else if (args.size() == 1) {
 				final VncVal first = args.nth(0);
 				if (Types.isVncLong(first)) {
-					return Calc.div(new VncLong(1L), first);
+					return Numeric.div(new VncLong(1L), first);
 				}
 				else if (Types.isVncDouble(first)) {
-					return Calc.div(new VncDouble(1D), first);
+					return Numeric.div(new VncDouble(1D), first);
 				}
 				else if (Types.isVncBigDecimal(first)) {
-					return Calc.div(new VncBigDecimal(BigDecimal.ONE), first);
+					return Numeric.div(new VncBigDecimal(BigDecimal.ONE), first);
 				}
 				else {
 					return first;
@@ -162,7 +162,7 @@ public class MathFunctions {
 			}
 
 			VncVal val = args.first();
-			for(VncVal v : args.slice(1).getList()) { val = Calc.div(val, v); }
+			for(VncVal v : args.slice(1).getList()) { val = Numeric.div(val, v); }
 			return val;
 		}
 	};

@@ -1075,16 +1075,8 @@ public class CoreFunctions {
 					final BigDecimal dec = new BigDecimal(((VncString)arg).getValue());
 					return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 				}
-				else if (Types.isVncLong(arg)) {
-					final BigDecimal dec = new BigDecimal(((VncLong)arg).getValue());
-					return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
-				}
-				else if (Types.isVncDouble(arg)) {
-					final BigDecimal dec = VncBigDecimal.toDecimal((VncDouble)arg).getValue();
-					return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
-				}
-				else if (Types.isVncBigDecimal(arg)) {
-					final BigDecimal dec = ((VncBigDecimal)arg).getValue();
+				else if (Types.isVncNumber(arg)) {
+					final BigDecimal dec = Numeric.toDecimal(arg).getValue();
 					return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 				}
 				else {
