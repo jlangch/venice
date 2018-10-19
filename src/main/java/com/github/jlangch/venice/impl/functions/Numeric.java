@@ -36,9 +36,9 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 /**
  * Numeric operations
  * 
- * <p>mixed precision math for types long, double, and bigdecimal with
- * function: +, -, *, /
+ * <p>type conversion between long, double, and decimal 
  * 
+ * <p>mixed precision math for types long, double, and decimal with for +, -, *, /
  */
 public class Numeric {
 	
