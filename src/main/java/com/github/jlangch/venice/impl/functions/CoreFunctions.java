@@ -93,8 +93,33 @@ public class CoreFunctions {
 			setDoc("Throws exception with passed value x");
 			
 			setExamples(
-					"(try\n   (throw 100)\n   (catch :java.lang.Exception ex\n          (do (+ 1 2) -1)))",
-					"(try\n   (throw 100)\n   (catch :java.lang.Exception ex\n          (do (+ 1 2) -1))\n   (finally (println \"finally\")))");
+					"(do                                                     \n" +
+					"   (import :com.github.jlangch.venice.ValueException)   \n" +
+					"   (try                                                 \n" +
+					"     (throw 100)                                        \n" +
+					"     (catch :ValueException ex (:value ex))))             ",
+					
+					"(do                                                     \n" +
+					"   (import :java.lang.Exception)                        \n" +
+					"   (try                                                 \n" +
+					"      (throw [100 {:a 3}])                              \n" +
+					"      (catch :Exception ex (:value ex))                 \n" +
+					"      (finally (println \"#finally\"))))                  ",
+					
+					"(do                                                     \n" +
+					"   (import :java.lang.RuntimeException)                 \n" +
+					"   (try                                                 \n" +
+					"      (throw (. :RuntimeException :new \"#test\"))      \n" +  
+					"      (catch :RuntimeException ex (:message ex))))        ",
+					
+					";; Venice wraps thrown checked exceptions with a RuntimeException! \n" +
+					"(do                                                                \n" +
+					"   (import :java.lang.RuntimeException)                            \n" +
+					"   (import :java.io.IOException)                                   \n" +
+					"   (try                                                            \n" +
+					"      (throw (. :IOException :new \"#test\"))                      \n" +  
+					"      (catch :RuntimeException ex (:message (:cause ex)))))          "
+					);
 		}
 		
 		public VncVal apply(final VncList args) {
