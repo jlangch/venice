@@ -42,10 +42,13 @@ public class REPL {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 		if (cli.switchPresent("-file") || cli.switchPresent("-script")) {
 			exec(cli);
-			return;
 		}
-		
-		
+		else {
+			repl(args);
+		}
+	}
+
+	private static void repl(final String[] args) {
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		
 		final Env env = venice.createEnv(new PrintStream(System.out));
@@ -90,7 +93,7 @@ public class REPL {
 			}
 		}
 	}
-	
+
 	private static void exec(final CommandLineArgs cli) {
 		if (cli.switchPresent("-file")) {
 			final String file = cli.switchValue("-file");
