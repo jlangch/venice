@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added _compare_ function
+- added support to execute scripts: ``java -jar venice-0.9.9.jar -script "(+ 1 1)"``
 
 
 

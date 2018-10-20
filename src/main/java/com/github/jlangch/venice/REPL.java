@@ -32,7 +32,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.FileUtil;
-import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.github.jlangch.venice.util.CommandLineArgs;
 
 
@@ -97,17 +96,18 @@ public class REPL {
 	private static void exec(final CommandLineArgs cli) {
 		if (cli.switchPresent("-file")) {
 			final String file = cli.switchValue("-file");
+			final String script = new String(FileUtil.load(new File(file)));
 			
-			new Venice().eval(
-					new String(FileUtil.load(new File(file))), 
-					Parameters.of("*out*", CapturingPrintStream.create()));
+			final VeniceInterpreter venice = new VeniceInterpreter();
+			final Env env = venice.createEnv(new PrintStream(System.out));
+			System.out.println(venice.PRINT(venice.RE(script, "exec", env)));
 		}
 		else if (cli.switchPresent("-script")) {
 			final String script = cli.switchValue("-script");
 			
-			new Venice().eval(
-					script, 
-					Parameters.of("*out*", CapturingPrintStream.create()));
+			final VeniceInterpreter venice = new VeniceInterpreter();
+			final Env env = venice.createEnv(new PrintStream(System.out));
+			System.out.println(venice.PRINT(venice.RE(script, "exec", env)));
 		}
 	}
 	

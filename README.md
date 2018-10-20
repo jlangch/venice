@@ -53,7 +53,7 @@ venice>
 ```
 
 ```text
-venice> "(+ 1 1)" > script.vnc
+venice> echo "(+ 1 1)" > script.vnc
 venice> java -jar venice-0.9.9.jar -file script.vnc
 => 2
 venice>
