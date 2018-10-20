@@ -44,6 +44,21 @@ venice> (+ 1 1)
 venice>
 ```
 
+## Execute script
+
+```text
+venice> java -jar venice-0.9.9.jar -script "(+ 1 1)"
+=> 2
+venice>
+```
+
+```text
+venice> "(+ 1 1)" > script.vnc
+venice> java -jar venice-0.9.9.jar -file script.vnc
+=> 2
+venice>
+```
+
 ## Venice as expression engine
 
 ```java
