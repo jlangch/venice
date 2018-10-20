@@ -44,7 +44,7 @@ venice> (+ 1 1)
 venice>
 ```
 
-## Execute script
+## Executing scripts
 
 ```text
 venice> java -jar venice-0.9.9.jar -script "(+ 1 1)"
