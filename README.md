@@ -49,14 +49,12 @@ venice>
 ```text
 foo> java -jar venice-0.9.9.jar -script "(+ 1 1)"
 => 2
-foo>
 ```
 
 ```text
 foo> echo "(+ 1 1)" > script.vnc
 foo> java -jar venice-0.9.9.jar -file script.vnc
 => 2
-foo>
 ```
 
 ## Venice as expression engine
