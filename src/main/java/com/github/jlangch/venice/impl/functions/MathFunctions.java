@@ -213,13 +213,13 @@ public class MathFunctions {
 
 			final VncVal arg = args.nth(0);
 			if (Types.isVncLong(arg)) {
-				return ((VncLong)arg).inc();
+				return new VncLong(((VncLong)arg).getValue() + 1);
 			}
 			else if (Types.isVncDouble(arg)) {
-				return ((VncDouble)arg).inc();
+				return new VncDouble(((VncDouble)arg).getValue() + 1D);
 			}
 			else if (Types.isVncBigDecimal(arg)) {
-				return ((VncBigDecimal)arg).inc();
+				return new VncBigDecimal(((VncBigDecimal)arg).getValue().add(new BigDecimal(1)));
 			}
 			else {
 				throw new VncException(String.format(
@@ -244,13 +244,13 @@ public class MathFunctions {
 
 			final VncVal arg = args.nth(0);
 			if (Types.isVncLong(arg)) {
-				return ((VncLong)arg).dec();
+				return new VncLong(((VncLong)arg).getValue() - 1);
 			}
 			else if (Types.isVncDouble(arg)) {
-				return ((VncDouble)arg).dec();
+				return new VncDouble(((VncDouble)arg).getValue() - 1D);
 			}
 			else if (Types.isVncBigDecimal(arg)) {
-				return ((VncBigDecimal)arg).dec();
+				return new VncBigDecimal(((VncBigDecimal)arg).getValue().subtract(new BigDecimal(1)));
 			}
 			else {
 				throw new VncException(String.format(

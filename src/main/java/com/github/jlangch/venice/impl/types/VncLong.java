@@ -47,15 +47,7 @@ public class VncLong extends VncVal {
 	public Integer getIntValue() { 
 		return value.intValue(); 
 	}
-		
-	public VncLong inc() {
-		return new VncLong(value + 1);
-	}
 	
-	public VncLong dec() {
-		return new VncLong(value - 1);
-	}
-
 	@Override 
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {

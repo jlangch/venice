@@ -43,14 +43,6 @@ public class VncDouble extends VncVal {
 	public Double getValue() { 
 		return value; 
 	}
-	
-	public VncDouble inc() {
-		return new VncDouble(value + 1.0D);
-	}
-	
-	public VncDouble dec() {
-		return new VncDouble(value - 1.0D);
-	}
 
 	@Override 
 	public int compareTo(final VncVal o) {

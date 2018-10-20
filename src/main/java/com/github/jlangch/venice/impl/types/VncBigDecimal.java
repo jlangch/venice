@@ -43,14 +43,6 @@ public class VncBigDecimal extends VncVal {
 	public BigDecimal getValue() { 
 		return value; 
 	}
-		
-	public VncBigDecimal inc() {
-		return new VncBigDecimal(value.add(new BigDecimal(1)));
-	}
-	
-	public VncBigDecimal dec() {
-		return new VncBigDecimal(value.subtract(new BigDecimal(1)));
-	}
 
 	public static RoundingMode toRoundingMode(final VncString val) {
 		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
