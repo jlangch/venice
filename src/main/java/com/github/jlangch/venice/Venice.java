@@ -182,7 +182,6 @@ public class Venice {
 	public boolean isJavaInteropReflectionCacheEnabled() {
 		return ReflectionAccessor.isCacheEnabled();
 	}
-
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
 		final Env env = venice.createEnv(new PrintStream(System.out));

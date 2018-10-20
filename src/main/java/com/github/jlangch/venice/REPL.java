@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.File;
 import java.io.PrintStream;
 
 import com.github.jlangch.venice.impl.Env;
@@ -30,11 +31,21 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.FileUtil;
+import com.github.jlangch.venice.util.CapturingPrintStream;
+import com.github.jlangch.venice.util.CommandLineArgs;
 
 
 public class REPL {
 	
 	public static void main(final String[] args) {
+		final CommandLineArgs cli = new CommandLineArgs(args);
+		if (cli.switchPresent("-file") || cli.switchPresent("-script")) {
+			exec(cli);
+			return;
+		}
+		
+		
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		
 		final Env env = venice.createEnv(new PrintStream(System.out));
@@ -77,6 +88,23 @@ public class REPL {
 				e.printStackTrace();
 				continue;
 			}
+		}
+	}
+	
+	private static void exec(final CommandLineArgs cli) {
+		if (cli.switchPresent("-file")) {
+			final String file = cli.switchValue("-file");
+			
+			new Venice().eval(
+					new String(FileUtil.load(new File(file))), 
+					Parameters.of("*out*", CapturingPrintStream.create()));
+		}
+		else if (cli.switchPresent("-script")) {
+			final String script = cli.switchValue("-script");
+			
+			new Venice().eval(
+					script, 
+					Parameters.of("*out*", CapturingPrintStream.create()));
 		}
 	}
 	
