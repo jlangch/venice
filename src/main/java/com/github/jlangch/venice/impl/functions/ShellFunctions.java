@@ -90,6 +90,7 @@ public class ShellFunctions {
 					"  :dir       override the process dir with a String or java.io.File.\n" + 
 					"  :throw-ex  If true throw an exception if the exit code is not equal to\n" + 
 					"             zero, if false returns the exit code. Defaults to false.\n" + 
+					"             It's recommended to use (with-sh-throw (sh \"foo\")) instead.\n" + 
 					"\n" +
 					"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
 					"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
