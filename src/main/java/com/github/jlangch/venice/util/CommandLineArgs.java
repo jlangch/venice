@@ -22,7 +22,9 @@
 package com.github.jlangch.venice.util;
 
 import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 public class CommandLineArgs {
@@ -115,7 +117,7 @@ public class CommandLineArgs {
 	public String[] targets() {
 		final String[] targetArray = new String[args.length - takenIndexes.size()];
 		int targetIndex = 0;
-		for(int ii = 0; ii < args.length ; ii++) {
+		for(int ii=0; ii < args.length ; ii++) {
 			if( !takenIndexes.contains(ii) ) {
 				targetArray[targetIndex++] = args[ii];
 			}
@@ -127,6 +129,6 @@ public class CommandLineArgs {
 	
 	private final String[] args;
 	
-	private HashMap<String, Integer> switchIndexes = new HashMap<String, Integer>();
-	private TreeSet<Integer> takenIndexes  = new TreeSet<Integer>();
+	private Map<String, Integer> switchIndexes = new HashMap<>();
+	private Set<Integer> takenIndexes  = new HashSet<>();
 }

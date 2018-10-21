@@ -67,7 +67,7 @@ public class ShellFunctions {
 		{
 			setArgLists("(sh & args)");
 			
-			setDoc("Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
+			setDoc( "Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
 					"\n" +
 					" Options are\n" + 
 					"  :in      may be given followed by input source as InputStream, Reader, \n" + 
