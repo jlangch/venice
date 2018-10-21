@@ -121,15 +121,7 @@ public class ShellFunctions {
 
 			assertMinArity("sh", args, 1);
 
-			args.forEach(arg -> {
-				if (!(Types.isVncString(arg) || Types.isVncKeyword(arg))) {
-					throw new VncException(
-							String.format(
-									"sh: accepts strings and keyword only. Got an argument of type %s. %s",
-									Types.getClassName(arg),
-									ErrorMessage.buildErrLocation(arg)));
-				}
-			});
+			validateArgs(args);
 			
 			final VncVector v = parseArgs(args);
 
@@ -284,6 +276,18 @@ public class ShellFunctions {
 		}
 	}
 	
+	private static void validateArgs(final VncList args) {
+		args.forEach(arg -> {
+			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg))) {
+				throw new VncException(
+						String.format(
+								"sh: accepts strings and keyword only. Got an argument of type %s. %s",
+								Types.getClassName(arg),
+								ErrorMessage.buildErrLocation(arg)));
+			}
+		});
+	}
+
 	private static VncVector parseArgs(final VncList args) {
 		final VncThreadLocal th = new VncThreadLocal();
 		
