@@ -699,6 +699,7 @@ public class DocGenerator {
 		all.addSection(to);
 		to.addItem(getDocItem("print"));
 		to.addItem(getDocItem("println"));
+		to.addItem(getDocItem("printf"));
 		to.addItem(getDocItem("flush"));
 		to.addItem(getDocItem("newline"));
 

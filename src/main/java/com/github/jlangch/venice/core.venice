@@ -364,6 +364,17 @@
                  :default (. *out* :append (str/join " " (map (fn [y] (str y)) xs))))
                  
                nil)))
+
+
+(def
+   { :arglists '("(printf fmt & args)")
+     :doc "Prints formatted output, as per format"
+     :examples '("(printf \"%s: %d\" \"abc\" 100)") }
+
+   printf
+   
+   (fn [fmt & args] (print (apply str/format fmt args))))
+   
    
 (def
    { :arglists '("(println & xs)")
