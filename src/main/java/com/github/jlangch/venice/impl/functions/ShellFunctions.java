@@ -117,7 +117,7 @@ public class ShellFunctions {
 					";; working directory\n" +
 					"(println (with-sh-dir \"/tmp\" (sh \"ls\" \"-l\") (sh \"pwd\")))", 
 					
-					";; throw exception on shell subprocess exit code not equal to 0\n" +
+					";; throw an exception if the shell's subprocess exit code is not equal to 0\n" +
 					"(println (with-sh-throw (sh \"ls\" \"-l\")))", 
 					
 					";; windows\n" +
