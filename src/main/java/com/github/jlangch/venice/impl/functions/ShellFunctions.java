@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 
@@ -120,6 +121,16 @@ public class ShellFunctions {
 
 			assertMinArity("sh", args, 1);
 
+			args.forEach(arg -> {
+				if (!(Types.isVncString(arg) || Types.isVncKeyword(arg))) {
+					throw new VncException(
+							String.format(
+									"sh: accepts strings and keyword only. Got an argument of type %s. %s",
+									Types.getClassName(arg),
+									ErrorMessage.buildErrLocation(arg)));
+				}
+			});
+			
 			final VncVector v = parseArgs(args);
 
 			final VncList cmd = Coerce.toVncList(v.first());

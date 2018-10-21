@@ -94,20 +94,28 @@ public class REPL {
 	}
 
 	private static void exec(final CommandLineArgs cli) {
+		final VncList argv = new VncList();
+		for (int ii=0; ii<cli.args().length; ii++) {
+			argv.addAtEnd(new VncString(cli.args()[ii]));
+		}
+
+		
 		if (cli.switchPresent("-file")) {
 			final String file = cli.switchValue("-file");
 			final String script = new String(FileUtil.load(new File(file)));
 			
 			final VeniceInterpreter venice = new VeniceInterpreter();
 			final Env env = venice.createEnv(new PrintStream(System.out));
-			System.out.println(venice.PRINT(venice.RE(script, "exec", env)));
+			env.set(new VncSymbol("*ARGV*"), argv);
+			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
 		}
 		else if (cli.switchPresent("-script")) {
 			final String script = cli.switchValue("-script");
 			
 			final VeniceInterpreter venice = new VeniceInterpreter();
 			final Env env = venice.createEnv(new PrintStream(System.out));
-			System.out.println(venice.PRINT(venice.RE(script, "exec", env)));
+			env.set(new VncSymbol("*ARGV*"), argv);
+			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 		}
 	}
 	

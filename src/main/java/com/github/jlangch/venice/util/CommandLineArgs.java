@@ -28,11 +28,12 @@ import java.util.TreeSet;
 public class CommandLineArgs {
 
 	public CommandLineArgs(final String[] args){
+		this.args = args;
+		
 		parse(args);
 	}
 	
 	public void parse(final String[] arguments){
-		this.args = arguments;
 		switchIndexes.clear();
 		takenIndexes.clear();
 		for(int ii=0; ii < args.length; ii++) {
@@ -124,7 +125,7 @@ public class CommandLineArgs {
 	}
 	
 	
-	private String[] args = null;
+	private final String[] args;
 	
 	private HashMap<String, Integer> switchIndexes = new HashMap<String, Integer>();
 	private TreeSet<Integer> takenIndexes  = new TreeSet<Integer>();
