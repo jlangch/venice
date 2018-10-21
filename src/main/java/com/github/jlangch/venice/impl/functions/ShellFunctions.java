@@ -251,7 +251,12 @@ public class ShellFunctions {
 			throw ex;
 		}
 		catch(Exception ex) {
-			throw new VncException("Failed to exec shell", ex);
+			throw new VncException(
+					String.format(
+						"Shell execution processing failed: (sh %s). %s", 
+						((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
+						ErrorMessage.buildErrLocation(cmd)),
+					ex);
 		}
 	}
 
