@@ -22,12 +22,14 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class ShellFunctionsTest {
@@ -41,4 +43,20 @@ public class ShellFunctionsTest {
 		assertEquals(0L, result.get("exit"));
 	}
 
+	@Test
+	public void test_shell_error_exit_code() {
+		final Venice venice = new Venice();
+		
+		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"rm\" \"x.any\")");
+		assertEquals(1L, result.get("exit"));
+	}
+
+	@Test
+	public void test_shell_error_throw_exception() {
+		final Venice venice = new Venice();
+		
+		assertThrows(
+	            VncException.class, 
+	            () -> venice.eval("(with-sh-throw (sh \"rm\" \"x.any\"))"));
+	}
 }

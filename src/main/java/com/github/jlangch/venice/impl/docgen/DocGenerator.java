@@ -559,6 +559,9 @@ public class DocGenerator {
 		final DocSection shell = new DocSection("Shell");
 		all.addSection(shell);
 		shell.addItem(getDocItem("sh", false));
+		shell.addItem(getDocItem("with-sh-dir", false));
+		shell.addItem(getDocItem("with-sh-env", false));
+		shell.addItem(getDocItem("with-sh-throw", false));
 				
 		return section;
 	}

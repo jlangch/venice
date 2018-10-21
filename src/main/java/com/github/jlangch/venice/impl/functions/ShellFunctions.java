@@ -37,8 +37,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Coerce;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -70,25 +72,27 @@ public class ShellFunctions {
 			setDoc( "Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
 					"\n" +
 					" Options are\n" + 
-					"  :in      may be given followed by input source as InputStream, Reader, \n" + 
-					"           File, ByteBuf, or String, to be fed to the sub-process's stdin.\n" + 
-					"  :in-enc  option may be given followed by a String, used as a character\n" + 
-					"           encoding name (for example \"UTF-8\" or \"ISO-8859-1\") to\n" + 
-					"           convert the input string specified by the :in option to the\n" + 
-					"           sub-process's stdin.  Defaults to UTF-8.\n" + 
-					"           If the :in option provides a byte array, then the bytes are passed\n" + 
-					"           unencoded, and this option is ignored.\n" + 
-					"  :out-enc option may be given followed by :bytes or a String. If a\n" + 
-					"           String is given, it will be used as a character encoding\n" + 
-					"           name (for example \"UTF-8\" or \"ISO-8859-1\") to convert\n" + 
-					"           the sub-process's stdout to a String which is returned.\n" + 
-					"           If :bytes is given, the sub-process's stdout will be stored\n" + 
-					"           in a Bytebuf and returned.  Defaults to UTF-8.\n" + 
-					"  :env     override the process env with a map.\n" + 
-					"  :dir     override the process dir with a String or java.io.File.\n" + 
+					"  :in        may be given followed by input source as InputStream, Reader, \n" + 
+					"             File, ByteBuf, or String, to be fed to the sub-process's stdin.\n" + 
+					"  :in-enc    option may be given followed by a String, used as a character\n" + 
+					"             encoding name (for example \"UTF-8\" or \"ISO-8859-1\") to\n" + 
+					"             convert the input string specified by the :in option to the\n" + 
+					"             sub-process's stdin.  Defaults to UTF-8.\n" + 
+					"             If the :in option provides a byte array, then the bytes are passed\n" + 
+					"             unencoded, and this option is ignored.\n" + 
+					"  :out-enc   option may be given followed by :bytes or a String. If a\n" + 
+					"             String is given, it will be used as a character encoding\n" + 
+					"             name (for example \"UTF-8\" or \"ISO-8859-1\") to convert\n" + 
+					"             the sub-process's stdout to a String which is returned.\n" + 
+					"             If :bytes is given, the sub-process's stdout will be stored\n" + 
+					"             in a Bytebuf and returned.  Defaults to UTF-8.\n" + 
+					"  :env       override the process env with a map.\n" + 
+					"  :dir       override the process dir with a String or java.io.File.\n" + 
+					"  :throw-ex  If true throw an exception if the exit code is not equal to\n" + 
+					"             zero, if false returns the exit code. Defaults to false.\n" + 
 					"\n" +
-					"You can bind :env or :dir for multiple operations using with-sh-env\n" + 
-					"and with-sh-dir.\n" + 
+					"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
+					"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
 					"\n" +
 					" sh returns a map of\n" + 
 					"  :exit => sub-process's exit code\n" + 
@@ -112,6 +116,9 @@ public class ShellFunctions {
 					";; working directory\n" +
 					"(println (with-sh-dir \"/tmp\" (sh \"ls\" \"-l\") (sh \"pwd\")))", 
 					
+					";; throw exception on shell subprocess exit code not equal to 0\n" +
+					"(println (with-sh-throw (sh \"ls\" \"-l\")))", 
+					
 					";; windows\n" +
 					"(println (sh \"cmd\" \"/c dir 1>&2\"))");
 		}
@@ -128,6 +135,9 @@ public class ShellFunctions {
 			final VncList cmd = Coerce.toVncList(v.first());
 			final VncMap opts = Coerce.toVncMap(v.second());
 
+			MetaUtil.copyTokenPos(args, cmd);
+			MetaUtil.copyTokenPos(args, opts);
+			
 			final ExecutorService executor = Executors.newFixedThreadPool(
 												3,
 												ThreadPoolUtil.createThreadFactory(
@@ -142,8 +152,7 @@ public class ShellFunctions {
 			}
 		}
 	};
-
-	
+		
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Util
@@ -219,12 +228,23 @@ public class ShellFunctions {
 				if (future_stdin != null) {
 					future_stdin.get();
 				}
-				
-				return new VncHashMap(
-						new VncKeyword(":exit"), new VncLong(exitCode),
-						new VncKeyword(":out"),  future_stdout.get(),
-						new VncKeyword(":err"),  future_stderr.get());
+
+				if (exitCode != 0 && opts.get(new VncKeyword(":throw-ex")) == Constants.True) {
+					throw new VncException(String.format(
+								"Shell execution failed. Exit code: %d. %s", 
+								exitCode,
+								ErrorMessage.buildErrLocation(cmd)));
+				}
+				else {				
+					return new VncHashMap(
+							new VncKeyword(":exit"), new VncLong(exitCode),
+							new VncKeyword(":out"),  future_stdout.get(),
+							new VncKeyword(":err"),  future_stderr.get());
+				}
 			}
+		}
+		catch(VncException ex) {
+			throw ex;
 		}
 		catch(Exception ex) {
 			throw new VncException("Failed to exec shell", ex);
@@ -294,7 +314,8 @@ public class ShellFunctions {
 		final VncMap defaultOptions = new VncHashMap(
 										new VncKeyword(":out-enc"), new VncString("UTF-8"),
 										new VncKeyword(":in-enc"), new VncString("UTF-8"),
-										new VncKeyword(":dir"), th.get(":*sh-dir*"));
+										new VncKeyword(":dir"), th.get(":*sh-dir*"),
+										new VncKeyword(":throw-ex"), th.get(":*sh-throw-ex*"));
 
 		final VncMap defaultEnv = (VncMap)th.get(":*sh-env*", new VncHashMap());
 		

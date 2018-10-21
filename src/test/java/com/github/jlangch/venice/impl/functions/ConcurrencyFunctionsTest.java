@@ -154,9 +154,7 @@ public class ConcurrencyFunctionsTest {
 				"        (deref f))                         " +
 				") ";
 
-		assertThrows(SecurityException.class, () -> {
-			venice.eval(script);
-		});
+		assertThrows(SecurityException.class, () -> venice.eval(script));
 
 	}
 	

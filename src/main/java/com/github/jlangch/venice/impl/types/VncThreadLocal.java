@@ -76,9 +76,9 @@ public class VncThreadLocal extends VncVal {
 		return key != null && ThreadLocalMap.containsKey(key) ? True : False;
 	}
 
-	public VncThreadLocal assoc(final VncVal... mvs) {
-		for (int i=0; i<mvs.length; i+=2) {
-			set(Coerce.toVncKeyword(mvs[i]), mvs[i+1]);
+	public VncThreadLocal assoc(final VncVal... kvs) {
+		for (int ii=0; ii<kvs.length; ii+=2) {
+			set(Coerce.toVncKeyword(kvs[ii]), kvs[ii+1]);
 		}
 		return this;
 	}
@@ -93,6 +93,13 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal dissoc(final VncList lst) {
 		for (int i=0; i<lst.getList().size(); i++) {
 			remove(Coerce.toVncKeyword(lst.nth(i)));
+		}
+		return this;
+	}
+
+	public VncThreadLocal dissoc(final VncKeyword... ks) {
+		for (int ii=0; ii<ks.length; ii++) {
+			remove(ks[ii]);
 		}
 		return this;
 	}

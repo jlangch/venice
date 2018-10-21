@@ -326,9 +326,9 @@
    `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
 
 (defmacro 
-   { :arglists '("(sh dir & forms)")
+   { :arglists '("(with-sh-dir dir & forms)")
      :doc "Sets the directory for use with sh, see sh for details." 
-     :examples '("(sh \"/home/foo\")") }
+     :examples '("(with-sh-dir \"/tmp\" (sh \"ls\" \"-l\"))") }
 
   with-sh-dir [dir & forms]
   
@@ -339,8 +339,9 @@
          (finally (dissoc (thread-local) :*sh-dir*)))))
 
 (defmacro 
-   { :arglists '("(sh env & forms)")
-     :doc "Sets the environment for use with sh, see sh for details." }
+   { :arglists '("(with-sh-env env & forms)")
+     :doc "Sets the environment for use with sh, see sh for details."
+     :examples '("(with-sh-env {\"NAME\" \"foo\"} (sh \"ls\" \"-l\"))") }
 
   with-sh-env [env & forms]
   
@@ -349,6 +350,19 @@
       (try
          (do ~@forms)
          (finally (dissoc (thread-local) :*sh-env*)))))
+
+(defmacro 
+   { :arglists '("(with-sh-throw forms)")
+     :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
+     :examples '("(with-sh-throw (sh \"ls\" \"-l\"))") }
+
+  with-sh-throw [& forms]
+  
+  `(do
+      (thread-local :*sh-throw-ex* true)
+      (try
+         (do ~@forms)
+         (finally (dissoc (thread-local) :*sh-throw-ex*)))))
 
 (def
    { :arglists '("(print & xs)")
