@@ -237,7 +237,8 @@ public class ShellFunctions {
 									"Shell execution failed: (sh %s). Exit code: %d. %s", 
 									((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
 									exitCode,
-									ErrorMessage.buildErrLocation(cmd)));
+									ErrorMessage.buildErrLocation(cmd)),
+								exitCode);
 				}
 				else {				
 					return new VncHashMap(

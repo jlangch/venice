@@ -26,16 +26,39 @@ public class ShellException extends RuntimeException {
 
 	public ShellException(final String message) {
 		super(message);
+		this.exitCode = null;
+	}
+
+	public ShellException(final String message, final Integer exitCode) {
+		super(message);
+		this.exitCode = exitCode;
 	}
 
 	public ShellException(final String message, final Throwable cause) {
 		super(message, cause);
+		this.exitCode = null;
+	}
+
+	public ShellException(final String message, final Integer exitCode, final Throwable cause) {
+		super(message, cause);
+		this.exitCode = exitCode;
 	}
 
 	public ShellException(final Throwable cause) {
 		super(cause);
+		this.exitCode = null;
+	}
+
+	public ShellException(final Integer exitCode, final Throwable cause) {
+		super(cause);
+		this.exitCode = exitCode;
 	}
 	
+	public Integer getExitCode() {
+		return exitCode;
+	}
 
 	private static final long serialVersionUID = 5439694361809280080L;
+	
+	private Integer exitCode;
 }
