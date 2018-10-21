@@ -36,6 +36,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
@@ -231,11 +232,12 @@ public class ShellFunctions {
 				}
 
 				if (exitCode != 0 && opts.get(new VncKeyword(":throw-ex")) == Constants.True) {
-					throw new VncException(String.format(
-								"Shell execution failed: (sh %s). Exit code: %d. %s", 
-								((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
-								exitCode,
-								ErrorMessage.buildErrLocation(cmd)));
+					throw new ShellException(
+								String.format(
+									"Shell execution failed: (sh %s). Exit code: %d. %s", 
+									((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
+									exitCode,
+									ErrorMessage.buildErrLocation(cmd)));
 				}
 				else {				
 					return new VncHashMap(
@@ -245,7 +247,7 @@ public class ShellFunctions {
 				}
 			}
 		}
-		catch(VncException ex) {
+		catch(ShellException ex) {
 			throw ex;
 		}
 		catch(Exception ex) {

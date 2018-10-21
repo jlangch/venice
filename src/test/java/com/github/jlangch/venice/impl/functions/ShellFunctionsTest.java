@@ -28,8 +28,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 
 
 public class ShellFunctionsTest {
@@ -56,7 +56,7 @@ public class ShellFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertThrows(
-	            VncException.class, 
+	            ShellException.class, 
 	            () -> venice.eval("(with-sh-throw (sh \"rm\" \"x.any\"))"));
 	}
 }
