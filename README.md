@@ -71,8 +71,8 @@ System.out.println(venice.eval("(+ 1 1)"));
 ### Passing parameters to Venice
 
 Venice expects Java data types (Long, Double, String, List, Map, ...) as 
-parameters and returns Java data types as the expression result. It boxes 
-and unboxes Java to/from Venice data types implicitly.
+parameters and returns Java data types as the expression result. It coerces 
+Java to/from Venice data types implicitly.
 
 Java bean parameters expose its getters as Map keys in Venice, so the 
 getters can be accessed simply through `(get bean :getterName)`
