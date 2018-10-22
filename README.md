@@ -373,7 +373,7 @@ UNIX shell script replacement:
                    (printf "Error compacting %s: %s" prefix (:message ex))))))
 
    (defn first-day-last-month []
-         (time/minus (time/first-day-of-month (time/local-date)) :month 1))
+         (-> (time/local-date) (time/first-day-of-month) (time/minus :month 1)))
 
    (defn error [text] (throw (. :ShellException :new text)))
 
@@ -391,8 +391,7 @@ UNIX shell script replacement:
          (zip-tomcat-logs "localhost" dir year month)
          (zip-tomcat-logs "catalina" dir year month)
          (println "Done."))
-      (catch :ShellException ex
-         (printf "Error: %s\n" (:message ex)))))
+      (catch :ShellException ex (printf "Error: %s\n" (:message ex)))))
 ```
 
 
