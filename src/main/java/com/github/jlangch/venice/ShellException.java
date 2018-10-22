@@ -22,7 +22,7 @@
 package com.github.jlangch.venice;
 
 
-public class ShellException extends RuntimeException {
+public class ShellException extends VncException {
 
 	public ShellException(final String message) {
 		super(message);
