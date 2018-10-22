@@ -74,16 +74,30 @@ public class IOFunctionsTest {
 		final Venice venice = new Venice();
 
 		try {
-			final File file = File.createTempFile("spit", ".txt");
+			final File file1 = File.createTempFile("spit", ".txt");
+			final File file2 = File.createTempFile("spit", ".txt");
+			final File file3 = File.createTempFile("spit", ".txt");
 			venice.eval(
 					"(io/spit file \"123456789\" :append true)", 
-					Parameters.of("file", file));
+					Parameters.of("file", file1));
+			venice.eval(
+					"(io/spit file \"123456789\" :append true)", 
+					Parameters.of("file", file2));
+			venice.eval(
+					"(io/spit file \"123456789\" :append true)", 
+					Parameters.of("file", file3));
 
-			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file)));	
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file1)));	
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file2)));	
+			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file3)));	
 			
-			venice.eval("(io/delete-file f))", Parameters.of("f", file));	
+			venice.eval("(io/delete-file f))", Parameters.of("f", file1));
+			
+			venice.eval("(io/delete-file f1 f2))", Parameters.of("f1", file2, "f2", file3));	
 
-			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file)));	
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file1)));	
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file2)));	
+			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", file3)));	
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);

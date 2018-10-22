@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added function _with-sh-throw_ that causes subsequent _sh_ calls to throw an 
         exception if the exit code of the spawned shell process is not equal
         to 0.
+- added function _io/delete-file_ supports multiple files
 
 
 ## [0.9.9] - 2018-10-21

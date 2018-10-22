@@ -335,7 +335,7 @@ UNIX shell script replacement:
 ;; ----------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
-;; > java -jar venice-0.9.9.jar -file zip-tomcat-logs.venice ./tomcat/logs
+;; > java -jar venice-0.9.10.jar -file zip-tomcat-logs.venice ./logs
 ;; ----------------------------------------------------------------------------------
 (do
    (import :java.io.FilenameFilter)
@@ -355,10 +355,6 @@ UNIX shell script replacement:
    (defn zip-files [zip files]
          (apply sh (concat ["zip" (:path zip)] (map (fn [f] (:path f)) files))))
 
-   (defn remove-files [files]
-         (docoll io/delete-file files)
-         (printf "   Removed %d files\n" (count files)))
-
    (defn zip-tomcat-logs [prefix dir year month]
          (with-sh-throw
             (try
@@ -370,11 +366,12 @@ UNIX shell script replacement:
                         (printf "   Found %d log files\n" (count logs))
                         (when-not (empty? logs)
                            (zip-files zip logs)
-                           (remove-files logs)
-                           (printf "   Zipped to %s\n" (:name zip)))))))
-            (catch :ShellException ex 
-                (printf "Error compacting %s: %s" prefix (:message ex)))))
-            
+                           (printf "   Zipped to %s\n" (:name zip))
+                           (apply io/delete-file logs)
+                           (printf "   Removed %d files\n" (count logs))))))
+               (catch :ShellException ex
+                   (printf "Error compacting %s: %s" prefix (:message ex))))))
+
    (defn first-day-last-month []
          (time/minus (time/first-day-of-month (time/local-date)) :month 1))
 

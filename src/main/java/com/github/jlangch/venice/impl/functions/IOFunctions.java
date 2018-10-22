@@ -206,32 +206,34 @@ public class IOFunctions {
 
 	public static VncFunction io_delete_file = new VncFunction("io/delete-file") {
 		{
-			setArgLists("(io/delete-file x)");
+			setArgLists("(io/delete-file f & files)");
 			
-			setDoc("Deletes a file. x must be a java.io.File.");
+			setDoc("Deletes one or multiple files. f must be a java.io.File.");
 		}
 		
 		public VncVal apply(final VncList args) {
 			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/delete-file", args);
 
-			assertArity("io/delete-file", args, 1);
+			assertMinArity("io/delete-file", args, 1);
 
-			if (!isJavaIoFile(args.nth(0)) ) {
-				throw new VncException(String.format(
-						"Function 'io/delete-file' does not allow %s as x. %s",
-						Types.getClassName(args.nth(0)),
-						ErrorMessage.buildErrLocation(args)));
-			}
+			args.forEach(f -> {
+				if (!isJavaIoFile(f) ) {
+					throw new VncException(String.format(
+							"Function 'io/delete-file' does not allow %s as f. %s",
+							Types.getClassName(args.nth(0)),
+							ErrorMessage.buildErrLocation(args)));
+				}
 
-			final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
-			try {
-				Files.deleteIfExists(file.toPath());	
-			}
-			catch(Exception ex) {
-				throw new VncException(
-						String.format("Failed to delete file %s", file.getPath()),
-						ex);
-			}
+				final File file = (File)((VncJavaObject)f).getDelegate();
+				try {
+					Files.deleteIfExists(file.toPath());	
+				}
+				catch(Exception ex) {
+					throw new VncException(
+							String.format("Failed to delete file %s", file.getPath()),
+							ex);
+				}
+			});
 			
 			return Nil;
 		}
