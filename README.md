@@ -329,7 +329,7 @@ Another example:
 ```
 
 
-UNIX shell script replacement:
+Alternative to UNIX shell scripts:
 
 ```clojure
 ;; ----------------------------------------------------------------------------------
