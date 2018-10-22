@@ -329,6 +329,74 @@ Another example:
 ```
 
 
+UNIX shell script replacement:
+
+```clojure
+;; ----------------------------------------------------------------------------------
+;; Zips the last month's Tomcat log files
+;;
+;; > java -jar venice-0.9.9.jar -file zip-tomcat-logs.venice ./tomcat/logs
+;; ----------------------------------------------------------------------------------
+(do
+   (import :java.io.FilenameFilter)
+   (import :com.github.jlangch.venice.ShellException)
+
+   (defn tomcat-log-file-filter [prefix year month]
+         (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]
+            (fn [dir name] (match name regex))))
+
+   (defn tomcat-log-file-zip [prefix dir year month]
+         (io/file dir (str/format "%s.%d-%02d.zip" prefix year month)))
+
+   (defn find-log-files [dir filter]
+         (map (fn [f] (io/file dir f))
+              (. dir :list (proxify :FilenameFilter {:accept filter}))))
+
+   (defn zip-files [zip files]
+         (apply sh (concat ["zip" (:path zip)] (map (fn [f] (:path f)) files))))
+
+   (defn remove-files [files]
+         (docoll io/delete-file files)
+         (printf "   Removed %d files\n" (count files)))
+
+   (defn zip-tomcat-logs [prefix dir year month]
+         (with-sh-throw
+            (try
+               (let [zip (tomcat-log-file-zip prefix dir year month)
+                     filter (tomcat-log-file-filter prefix year month)]
+                  (when-not (io/exists-file? zip)
+                     (let [logs (find-log-files dir filter)]
+                        (printf "Compacting %s ...\n" prefix)
+                        (printf "   Found %d log files\n" (count logs))
+                        (when-not (empty? logs)
+                           (zip-files zip logs)
+                           (remove-files logs)
+                           (printf "   Zipped to %s\n" (:name zip)))))))
+            (catch :ShellException ex 
+                (printf "Error compacting %s: %s" prefix (:message ex)))))
+            
+   (defn first-day-last-month []
+         (time/minus (time/first-day-of-month (time/local-date)) :month 1))
+
+   (defn error [text]
+         (throw (. :java.lang.RuntimeException :new text)))
+
+   (let [dir (io/file (nth *ARGV* 2))
+         date (first-day-last-month)
+         year  (time/year date)
+         month (time/month date)]
+      (when-not (io/exists-dir? dir)
+         (error (str/format "The tomcat log dir '%s' does not exist" dir)))
+      (printf "Compacting %d-%02d logs from '%s' ...\n" year month dir)
+      (zip-tomcat-logs "localhost_access_log" dir year month)
+      (zip-tomcat-logs "host-manager" dir year month)
+      (zip-tomcat-logs "manager" dir year month)
+      (zip-tomcat-logs "localhost" dir year month)
+      (zip-tomcat-logs "catalina" dir year month)
+      (println "Done.")))
+```
+
+
 ## Sandbox
 
 The Venice sandbox allows a program to execute _Venice_ in a restricted sandbox 
