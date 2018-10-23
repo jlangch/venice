@@ -375,23 +375,20 @@ Alternative to UNIX shell scripts:
    (defn first-day-last-month []
          (-> (time/local-date) (time/first-day-of-month) (time/minus :month 1)))
 
-   (defn error [text] (throw (. :ShellException :new text)))
-
-   (try
-      (let [dir (io/file (nth *ARGV* 2))
-            date (first-day-last-month)
-            year  (time/year date)
-            month (time/month date)]
-         (when-not (io/exists-dir? dir)
-            (error (str/format "The tomcat log dir '%s' does not exist" dir)))
-         (printf "Compacting %d-%02d logs from '%s' ...\n" year month dir)
-         (zip-tomcat-logs "localhost_access_log" dir year month)
-         (zip-tomcat-logs "host-manager" dir year month)
-         (zip-tomcat-logs "manager" dir year month)
-         (zip-tomcat-logs "localhost" dir year month)
-         (zip-tomcat-logs "catalina" dir year month)
-         (println "Done."))
-      (catch :ShellException ex (printf "Error: %s\n" (:message ex)))))
+   (let [dir (io/file (nth *ARGV* 2))
+         date (first-day-last-month)
+         year  (time/year date)
+         month (time/month date)]
+      (if (io/exists-dir? dir)
+         (do
+            (printf "Compacting %d-%02d logs from '%s' ...\n" year month dir)
+            (zip-tomcat-logs "localhost_access_log" dir year month)
+            (zip-tomcat-logs "host-manager" dir year month)
+            (zip-tomcat-logs "manager" dir year month)
+            (zip-tomcat-logs "localhost" dir year month)
+            (zip-tomcat-logs "catalina" dir year month)
+            (println "Done."))
+         (printf "Error: The tomcat log dir '%s' does not exist" dir))))
 ```
 
 
