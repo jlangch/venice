@@ -1357,12 +1357,12 @@ public class TimeFunctions {
 								.withNano(nanos));
 			}
 			else if (dt instanceof LocalDateTime) {
-			return new VncJavaObject(
-						((LocalDateTime)dt).toLocalDate().atTime(
-							Coerce.toVncLong(args.nth(1)).getValue().intValue(),
-							Coerce.toVncLong(args.nth(2)).getValue().intValue(),
-							Coerce.toVncLong(args.nth(3)).getValue().intValue(),
-							nanos));
+				return new VncJavaObject(
+							((LocalDateTime)dt).toLocalDate().atTime(
+								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
+								Coerce.toVncLong(args.nth(3)).getValue().intValue(),
+								nanos));
 			}
 			else if (dt instanceof LocalDate) {
 				return new VncJavaObject(
