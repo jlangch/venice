@@ -2495,16 +2495,39 @@ public class CoreFunctions {
 			}
 			else {				
 				final VncFunction pred = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
+				final VncCollection coll = Coerce.toVncCollection(args.second());
 
 				if (coll.isEmpty()) {
 					return False;
 				}
 				
-				return coll.getList()
+				return coll.toVncList()
+						   .getList()
 						   .stream()
 						   .allMatch(v -> pred.apply(new VncList(v)) == True) ? True : False;
 			}
+		}
+	};
+	
+	public static VncFunction not_every_Q = new VncFunction("not-every?") {
+		{
+			setArgLists("(not-every? pred coll)");
+			
+			setDoc( "Returns false if the predicate is true for all collection items, " +
+					"true otherwise");
+			
+			setExamples(
+					"(not-every? (fn [x] (number? x)) nil)",
+					"(not-every? (fn [x] (number? x)) [])",
+					"(not-every? (fn [x] (number? x)) [1 2 3 4])",
+					"(not-every? (fn [x] (number? x)) [1 2 3 :a])",
+					"(not-every? (fn [x] (>= x 10)) [10 11 12])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("not-every?", args, 2);
+				
+			return every_Q.apply(args) == True ? False : True;
 		}
 	};
 	
@@ -2531,16 +2554,39 @@ public class CoreFunctions {
 			}
 			else {
 				final VncFunction pred = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
+				final VncCollection coll = Coerce.toVncCollection(args.second());
 				
 				if (coll.isEmpty()) {
 					return False;
 				}
 								
-				return coll.getList()
+				return coll.toVncList()
+						   .getList()
 						   .stream()
 						   .anyMatch(v -> pred.apply(new VncList(v)) == True) ? True : False;
 			}
+		}
+	};
+	
+	public static VncFunction not_any_Q = new VncFunction("not-any?") {
+		{
+			setArgLists("(not-any? pred coll)");
+			
+			setDoc( "Returns false if the predicate is true for at least one collection item, " +
+					"true otherwise");
+			
+			setExamples(
+					"(not-any? (fn [x] (number? x)) nil)",
+					"(not-any? (fn [x] (number? x)) [])",
+					"(not-any? (fn [x] (number? x)) [1 :a :b])",
+					"(not-any? (fn [x] (number? x)) [1 2 3])",
+					"(not-any? (fn [x] (>= x 10)) [1 5 10])");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("not-any?", args, 2);
+			
+			return any_Q.apply(args) == True ? False : True;
 		}
 	};
 
@@ -4741,7 +4787,9 @@ public class CoreFunctions {
 				.put("empty?",				empty_Q)
 				.put("not-empty?",			not_empty_Q)
 				.put("every?",				every_Q)
+				.put("not-every?",			not_every_Q)
 				.put("any?",				any_Q)
+				.put("not-any?",			not_any_Q)
 				.put("count",				count)
 				.put("compare",				compare)
 				.put("apply",				apply)

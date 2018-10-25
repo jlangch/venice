@@ -369,7 +369,9 @@ public class DocGenerator {
 		final DocSection list_test = new DocSection("Test");
 		lists.addSection(list_test);
 		list_test.addItem(getDocItem("every?"));
+		list_test.addItem(getDocItem("not-every?"));
 		list_test.addItem(getDocItem("any?"));
+		list_test.addItem(getDocItem("not-any?"));
 		
 		
 		final DocSection vectors = new DocSection("Vectors");
@@ -426,7 +428,9 @@ public class DocGenerator {
 		vectors.addSection(vec_test);
 		vec_test.addItem(getDocItem("contains?"));
 		vec_test.addItem(getDocItem("every?"));
+		vec_test.addItem(getDocItem("not-every?"));
 		vec_test.addItem(getDocItem("any?"));
+		vec_test.addItem(getDocItem("not-any?"));
 	
 		
 		final DocSection sets = new DocSection("Sets");
