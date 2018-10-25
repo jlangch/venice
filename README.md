@@ -338,9 +338,6 @@ Alternative to UNIX shell scripts:
 ;; > java -jar venice-0.9.10.jar -file zip-tomcat-logs.venice ./logs
 ;; ----------------------------------------------------------------------------------
 (do
-   (import :java.io.FilenameFilter)
-   (import :com.github.jlangch.venice.ShellException)
-
    (defn tomcat-log-file-filter [prefix year month]
          (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]
             (fn [dir name] (match name regex))))
@@ -350,7 +347,7 @@ Alternative to UNIX shell scripts:
 
    (defn find-log-files [dir filter]
          (map (fn [f] (io/file dir f))
-              (. dir :list (proxify :FilenameFilter {:accept filter}))))
+              (. dir :list (proxify :java.io.FilenameFilter {:accept filter}))))
 
    (defn zip-files [zip files]
          (apply sh (concat ["zip" (:path zip)] (map (fn [f] (:path f)) files))))
@@ -369,7 +366,7 @@ Alternative to UNIX shell scripts:
                            (printf "   Zipped to %s\n" (:name zip))
                            (apply io/delete-file logs)
                            (printf "   Removed %d files\n" (count logs))))))
-               (catch :ShellException ex
+               (catch :com.github.jlangch.venice.ShellException ex
                    (printf "Error compacting %s: %s" prefix (:message ex))))))
 
    (defn first-day-last-month []

@@ -1210,7 +1210,119 @@ public class TimeFunctions {
 			}
 		}
 	};
+	
+	public static VncFunction length_of_year = new VncFunction("time/length-of-year") {
+		{
+			setArgLists("(time/length-of-year date)");
+			
+			setDoc("Returns the length of the year represented by this date.");
+			
+			setExamples(
+					"(time/length-of-year (time/local-date 2000 1 1))",
+					"(time/length-of-year (time/local-date 2001 1 1))",
+					"(time/length-of-year (time/local-date-time))",
+					"(time/length-of-year (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/length-of-year", args, 1);
+				
+			
+			final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
 
+			if (dt instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)dt).toLocalDateTime().toLocalDate().lengthOfYear());
+			}
+			else if (dt instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)dt).toLocalDate().lengthOfYear());
+			}
+			else if (dt instanceof LocalDate) {
+				return new VncLong(((LocalDate)dt).lengthOfYear());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/length-of-year' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction length_of_month = new VncFunction("time/length-of-month") {
+		{
+			setArgLists("(time/length-of-month date)");
+			
+			setDoc("Returns the length of the month represented by this date.");
+			
+			setExamples(
+					"(time/length-of-month (time/local-date 2000 2 1))",
+					"(time/length-of-month (time/local-date 2001 2 1))",
+					"(time/length-of-month (time/local-date-time))",
+					"(time/length-of-month (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/length-of-month", args, 1);
+				
+			
+			final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+			if (dt instanceof ZonedDateTime) {
+				return new VncLong(((ZonedDateTime)dt).toLocalDateTime().toLocalDate().lengthOfMonth());
+			}
+			else if (dt instanceof LocalDateTime) {
+				return new VncLong(((LocalDateTime)dt).toLocalDate().lengthOfMonth());
+			}
+			else if (dt instanceof LocalDate) {
+				return new VncLong(((LocalDate)dt).lengthOfMonth());
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/length-of-month' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+	
+	public static VncFunction leap_yearQ = new VncFunction("time/leap-year?") {
+		{
+			setArgLists("(time/leap-year? date)");
+			
+			setDoc("Checks if the year is a leap year.");
+			
+			setExamples(
+					"(time/leap-year? 2000)",
+					"(time/leap-year? (time/local-date 2000 1 1))",
+					"(time/leap-year? (time/local-date-time))",
+					"(time/leap-year? (time/zoned-date-time))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/leap-year?", args, 1);
+				
+			
+			if (args.first() instanceof VncLong) {
+				return LocalDate.of(Coerce.toVncLong(args.first()).getValue().intValue(), 1, 1)
+						        .isLeapYear() ? True : False;
+			}
+
+			final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+			if (dt instanceof ZonedDateTime) {
+				return ((ZonedDateTime)dt).toLocalDateTime().toLocalDate().isLeapYear() ? True : False;
+			}
+			else if (dt instanceof LocalDateTime) {
+				return ((LocalDateTime)dt).toLocalDate().isLeapYear() ? True : False;
+			}
+			else if (dt instanceof LocalDate) {
+				return ((LocalDate)dt).isLeapYear() ? True : False;
+			}	
+			else {
+				throw new VncException(String.format(
+						"Function 'time/leap-year?' does not allow %s as parameter. %s", 
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Miscallenous
@@ -1805,6 +1917,9 @@ public class TimeFunctions {
 				.put("time/hour",						hour)
 				.put("time/minute",						minute)
 				.put("time/second",						second)
+				.put("time/leap-year?",					leap_yearQ)
+				.put("time/length-of-year",				length_of_year)
+				.put("time/length-of-month",			length_of_month)
 				.put("time/zone",						zone)
 				.put("time/zone-offset",				zone_offset)
 				.put("time/after?",						after_Q)

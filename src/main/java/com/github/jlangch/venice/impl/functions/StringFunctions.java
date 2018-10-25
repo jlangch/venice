@@ -372,9 +372,8 @@ public class StringFunctions {
 				return args.nth(0);
 			}
 
-			String searchText = text;
 			int start = 0;
-			int end = searchText.indexOf(searchString, start);
+			int end = text.indexOf(searchString, start);
 			if (end == -1) {
 				return args.nth(0);
 			}
@@ -383,7 +382,7 @@ public class StringFunctions {
 			while (end != -1) {
 				buf.append(text, start, end).append(replacement);
 				start = end + replLength;
-				end = searchText.indexOf(searchString, start);
+				end = text.indexOf(searchString, start);
 			}
 			buf.append(text, start, text.length());
 			return new VncString(buf.toString());

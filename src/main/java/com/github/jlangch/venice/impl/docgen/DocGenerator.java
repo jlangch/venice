@@ -809,12 +809,14 @@ public class DocGenerator {
 		all.addSection(fields);
 		fields.addItem(getDocItem("time/year"));
 		fields.addItem(getDocItem("time/month"));
-		fields.addItem(getDocItem("time/day-of-week"));
-		fields.addItem(getDocItem("time/day-of-month"));
-		fields.addItem(getDocItem("time/day-of-year"));
 		fields.addItem(getDocItem("time/hour"));
 		fields.addItem(getDocItem("time/minute"));
 		fields.addItem(getDocItem("time/second"));
+		fields.addItem(getDocItem("time/length-of-year"));
+		fields.addItem(getDocItem("time/length-of-month"));
+		fields.addItem(getDocItem("time/day-of-week"));
+		fields.addItem(getDocItem("time/day-of-month"));
+		fields.addItem(getDocItem("time/day-of-year"));
 		fields.addItem(getDocItem("time/zone"));
 		fields.addItem(getDocItem("time/zone-offset"));
 
@@ -830,6 +832,7 @@ public class DocGenerator {
 		compare.addItem(getDocItem("time/before?"));
 		compare.addItem(getDocItem("time/not-before?"));
 		compare.addItem(getDocItem("time/within?"));
+		compare.addItem(getDocItem("time/leap-year?"));
 		
 		final DocSection misc = new DocSection("Miscellaneous");
 		all.addSection(misc);

@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
         exception if the exit code of the spawned shell process is not equal
         to 0.
 - added function _io/delete-file_ supports multiple files
+- added function _time/leap-year?_
+- added function _time/length-of-year_
+- added function _time/length-of-month_
+
 
 
 ## [0.9.9] - 2018-10-21
