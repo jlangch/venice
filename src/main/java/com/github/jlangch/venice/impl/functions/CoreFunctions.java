@@ -2746,7 +2746,8 @@ public class CoreFunctions {
 			
 			setExamples(
 					"(cons 1 '(2 3 4 5 6))",
-					"(cons [1 2] [4 5 6])");
+					"(cons [1 2] [4 5 6])",
+					"(cons 3 (set 1 2))");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -2757,6 +2758,12 @@ public class CoreFunctions {
 				list.addAtStart(args.nth(0));
 				list.addAtEnd((VncList)args.nth(1));
 				return list;
+			}
+			else if (Types.isVncSet(args.nth(1))) {
+				final VncSet src_seq = (VncSet)args.nth(1);
+				final VncSet new_seq = new VncSet(src_seq.toVncList());
+				new_seq.add(args.nth(0));
+				return (VncVal)new_seq;
 			}
 			else if (Types.isVncMap(args.nth(1)) && Types.isVncMap(args.nth(0))) {
 				final VncMap map = ((VncMap)args.nth(1)).copy();
@@ -4278,11 +4285,14 @@ public class CoreFunctions {
 			
 			setExamples(
 					"(conj [1 2 3] 4)",
-					"(conj '(1 2 3) 4)");
+					"(conj '(1 2 3) 4)",
+					"(conj (set 1 2 3) 4)");
 		}
 
 		public VncVal apply(final VncList args) {			
-			if (args.nth(0) instanceof VncVector) {
+			assertMinArity("conj", args, 2);
+
+			if (Types.isVncVector(args.nth(0))) {
 				final VncList new_seq = new VncVector();
 				final VncList src_seq = (VncList)args.nth(0);
 				new_seq.getList().addAll(src_seq.getList());
@@ -4291,7 +4301,7 @@ public class CoreFunctions {
 				}
 				return (VncVal)new_seq;
 			} 
-			else if (args.nth(0) instanceof VncList) {
+			else if (Types.isVncList(args.nth(0))) {
 				final VncList new_seq = new VncList();
 				final VncList src_seq = (VncList)args.nth(0);
 				new_seq.getList().addAll(src_seq.getList());
@@ -4300,7 +4310,16 @@ public class CoreFunctions {
 				}
 				return (VncVal)new_seq;
 			}
-			else if (args.nth(0) instanceof VncMap) {
+			else if (Types.isVncSet(args.nth(0))) {
+				final VncSet src_seq = (VncSet)args.nth(0);
+				final VncSet new_seq = new VncSet(src_seq.toVncList());
+				new_seq.getList().addAll(src_seq.getList());
+				for(int i=1; i<args.size(); i++) {
+					new_seq.add(args.nth(i));
+				}
+				return (VncVal)new_seq;
+			}
+			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap src_map = (VncMap)args.nth(0);
 				final VncMap new_map = src_map.copy();
 			
@@ -4330,12 +4349,42 @@ public class CoreFunctions {
 		}
 	};
 
+
+	public static VncFunction disj = new VncFunction("disj") {
+		{
+			setArgLists("(disj coll x)", "(disj coll x & xs)");
+			
+			setDoc( "Returns a new set with the x, xs removed.");
+			
+			setExamples("(disj (set 1 2 3) 3)");
+		}
+
+		public VncVal apply(final VncList args) {			
+			assertMinArity("disj", args, 2);
+			
+			if (args.nth(0) instanceof VncSet) {
+				final VncSet src_seq = (VncSet)args.nth(0);
+				final VncSet new_seq = new VncSet(src_seq.toVncList());
+				for(int i=1; i<args.size(); i++) {
+					new_seq.remove(args.nth(i));
+				}
+				return (VncVal)new_seq;
+			}
+			else {
+				throw new VncException(String.format(
+						"Invalid coll %s while calling function 'disj'. %s",
+						Types.getClassName(args.nth(0)),
+						ErrorMessage.buildErrLocation(args)));
+			}
+		}
+	};
+
 	public static VncFunction seq = new VncFunction("seq") {
 		{
 			setArgLists("(seq coll)");
 			
 			setDoc( "Returns a seq on the collection. If the collection is " + 
-					"empty, returns nil.  (seq nil) returns nil. seq also works on " + 
+					"empty, returns nil. (seq nil) returns nil. seq also works on " + 
 					"Strings.");
 			
 			setExamples(
@@ -4816,6 +4865,7 @@ public class CoreFunctions {
 		
 				.put("merge",				merge)
 				.put("conj",				conj)
+				.put("disj",				disj)
 				.put("seq",					seq)
 				.put("repeat",				repeat)
 				.put("repeatedly",			repeatedly)

@@ -339,6 +339,9 @@ public class CoreFunctionsTest {
 		assertEquals("[[1 2] [3 4]]", venice.eval("(str (conj [[1 2]] [3 4]))"));
 		assertEquals("[[1 2] [3 4] [5 6] 7]", venice.eval("(str (conj [[1 2]] [3 4] [5 6] 7))"));
 		
+		// Set
+		assertEquals("#{1}", venice.eval("(str (conj (set ) 1))"));
+		
 		// Map
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (conj (ordered-map :a 1 :b 2) [:c 3]))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (conj (ordered-map :a 1 :b 2) {:c 3}))"));
@@ -523,6 +526,16 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(decimal? '())"));
 		assertFalse((Boolean)venice.eval("(decimal? [])"));
 		assertFalse((Boolean)venice.eval("(decimal? {})"));
+	}
+
+	@Test
+	public void test_disj() {
+		final Venice venice = new Venice();
+		
+		// Set
+		assertEquals("#{}", venice.eval("(str (disj (set 1) 1))"));
+		assertEquals("#{1}", venice.eval("(str (disj (set 1) 2))"));
+		assertEquals("#{1}", venice.eval("(str (disj (set 1 2) 2))"));
 	}
 	
 	@Test

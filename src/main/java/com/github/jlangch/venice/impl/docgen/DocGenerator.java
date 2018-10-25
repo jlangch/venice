@@ -442,6 +442,9 @@ public class DocGenerator {
 
 		final DocSection set_modify = new DocSection("Modify");
 		sets.addSection(set_modify);
+		set_modify.addItem(getDocItem("cons"));
+		set_modify.addItem(getDocItem("conj"));
+		set_modify.addItem(getDocItem("disj"));
 		set_modify.addItem(getDocItem("difference"));
 		set_modify.addItem(getDocItem("union"));
 		set_modify.addItem(getDocItem("intersection"));
@@ -449,6 +452,10 @@ public class DocGenerator {
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);
 		set_test.addItem(getDocItem("contains?"));
+		set_test.addItem(getDocItem("every?"));
+		set_test.addItem(getDocItem("not-every?"));
+		set_test.addItem(getDocItem("any?"));
+		set_test.addItem(getDocItem("not-any?"));
 
 		
 		final DocSection maps = new DocSection("Maps");

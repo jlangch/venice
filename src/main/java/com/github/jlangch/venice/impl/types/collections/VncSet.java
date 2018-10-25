@@ -60,6 +60,10 @@ public class VncSet extends VncCollection {
 		value.add(val);
 	}
 	
+	public void remove(final VncVal val) {
+		value.remove(val);
+	}
+	
 	public boolean contains(final VncVal val) {
 		return value.contains(val);
 	}
