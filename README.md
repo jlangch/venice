@@ -99,7 +99,7 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 
 final Venice venice = new Venice();
 
-// prevent writing to stdout by redirect to the <null> device
+// redirect stdout to the <null> device
 venice.eval(
     "(println [1 2])", 
     Parameters.of("*out*", null));
@@ -394,7 +394,7 @@ Alternative to UNIX shell scripts:
 The Venice sandbox allows a program to execute _Venice_ in a restricted sandbox 
 environment regarding Java interop. It is useful for applications that want 
 to provide some degree of scriptability to users, without allowing them to 
-execute `System.exit(0)` or any other undesirable operations.
+read/write files, execute `System.exit(0)`, or any other undesirable operations.
 
 
 #### Multi-Threading
