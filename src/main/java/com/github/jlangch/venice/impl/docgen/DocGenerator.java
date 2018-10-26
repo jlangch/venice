@@ -944,6 +944,10 @@ public class DocGenerator {
 									
 									"(map (fn [x] (* 2 x)) (range 1 5))",
 									
+									"(map #(* 2 %) (range 1 5))",
+									
+									"(map #(* 2 %1) (range 1 5))",
+									
 									";; anonymous function with two params, the second is destructured\n" + 
 									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
 									

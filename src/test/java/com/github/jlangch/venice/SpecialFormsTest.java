@@ -301,8 +301,10 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 		
 		assertEquals("(1 4 9 16 25 36 49 64 81)", venice.eval("(str (map #(* %1 %1) (range 1 10)))"));
+		assertEquals("(1 4 9 16 25 36 49 64 81)", venice.eval("(str (map #(* % %) (range 1 10)))"));
 		
-		assertEquals("(2 4 6 8)", venice.eval("(str (map #(* 2 %1) (range 1 5)))"));
+		assertEquals("(2 4 6 8)", venice.eval("(str (map #(* 2 %1) (range 1 5)))"));	
+		assertEquals("(2 4 6 8)", venice.eval("(str (map #(* 2 %) (range 1 5)))"));
 	}
 
 	@Test

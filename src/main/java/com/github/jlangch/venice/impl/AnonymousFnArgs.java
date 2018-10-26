@@ -58,16 +58,27 @@ public class AnonymousFnArgs {
 	public VncVector buildArgDef() {
 		final VncVector argDef = new VncVector();
 		
-		for(int ii=1; ii<=getMaArgxPos(); ii++) {
-			argDef.addAtEnd(new VncSymbol("%" + ii));
+		if (fnArgs.size() == 1 && fnArgs.contains("%")) {
+			argDef.addAtEnd(new VncSymbol("%"));
 		}
-		
+		else {
+			for(int ii=1; ii<=getMaArgxPos(); ii++) {
+				argDef.addAtEnd(new VncSymbol("%" + ii));
+			}
+			
+			if (fnArgs.contains("%&")) {
+				argDef.addAtEnd(new VncSymbol("&"));
+				argDef.addAtEnd(new VncSymbol("%&"));
+			}
+		}
+
 		return argDef;
 	}
 	
 	
 	private int getMaArgxPos() {
 		return fnArgs.stream()
+					 .filter(s -> s.matches("%[1-9][0-9]*"))
 				     .map(s -> Integer.parseInt(s.substring(1)))
 				     .max(Integer::compareTo)
 				     .orElse(Integer.valueOf(-1));
@@ -79,7 +90,7 @@ public class AnonymousFnArgs {
 	private final Set<String> possibleFnArgs = new HashSet<>(Arrays.asList(
 													"%1", "%2","%3","%4","%5",
 													"%6", "%7","%8","%9","%10",
-													"%&"));
+													"%", "%&"));
 	
 	private final Set<String> fnArgs = new HashSet<>();
 	
