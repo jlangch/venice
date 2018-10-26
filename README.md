@@ -27,9 +27,9 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/fdb4c64/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/d2d69c0/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/fdb4c64/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/d2d69c0/cheatsheet.pdf)
 
 
 ## REPL
@@ -346,7 +346,7 @@ Alternative to UNIX shell scripts:
          (io/file dir (str/format "%s.%d-%02d.zip" prefix year month)))
 
    (defn find-log-files [dir filter]
-         (map (fn [f] (io/file dir f))
+         (map #(io/file dir &)
               (. dir :list (proxify :java.io.FilenameFilter {:accept filter}))))
 
    (defn zip-files [zip files]
