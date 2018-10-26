@@ -249,6 +249,7 @@ public class Reader {
 					form = new VncSet(read_list(rdr, new VncList(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
+					//  anonymous function literal #()
 					if (rdr.anonymousFnArgs.isCapturing()) {
 						throw new ParseError(String.format(
 								" #() forms cannot be nested.",
