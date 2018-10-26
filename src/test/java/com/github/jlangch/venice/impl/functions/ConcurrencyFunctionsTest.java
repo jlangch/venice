@@ -58,6 +58,19 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_future_deref() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                             " +
+				"   (let [f (future (fn [] {:a 100}))]           " +
+				"        @f)                                     " +
+				") ";
+
+		assertEquals("{:a 100}", venice.eval("(str " + script + ")"));
+	}
+
+	@Test
 	public void test_future_1() {
 		final Venice venice = new Venice();
 
@@ -177,5 +190,5 @@ public class ConcurrencyFunctionsTest {
 		final File file = (File)venice.eval(script);
 		assertEquals("a.txt", file.getName());
 	}
-	
+
 }

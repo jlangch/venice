@@ -2168,6 +2168,11 @@ public class CoreFunctionsTest {
 		assertEquals("#{1 2 3}", venice.eval("(str (set 1 2 3))"));
 		assertEquals("#{[1 2]}", venice.eval("(str (set [1 2]))"));
 		assertEquals("#{[1 2] 4}", venice.eval("(str (set [1 2] 4))"));
+
+		assertEquals("#{}", venice.eval("(str #{})"));
+		assertEquals("#{1 2 3}", venice.eval("(str #{1 2 3})"));
+		assertEquals("#{[1 2]}", venice.eval("(str #{[1 2]})"));
+		assertEquals("#{[1 2] 4}", venice.eval("(str #{[1 2] 4})"));
 	}
 	
 	@Test

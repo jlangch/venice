@@ -438,6 +438,7 @@ public class DocGenerator {
 
 		final DocSection set_create = new DocSection("Create");
 		sets.addSection(set_create);
+		set_create.addItem(getDocItem("#{}"));
 		set_create.addItem(getDocItem("set"));
 
 		final DocSection set_modify = new DocSection("Modify");
@@ -1177,6 +1178,19 @@ public class DocGenerator {
 							name, 
 							Arrays.asList(
 							 "[10 20]"),
+							runExamples),
+					idgen.id());
+		}
+
+		if ("#{}".equals(name)) {
+			return new DocItem(
+					name, 
+					Arrays.asList(""), 
+					"Creates a set.",
+					runExamples(
+							name, 
+							Arrays.asList(
+							 "#{10 20}"),
 							runExamples),
 					idgen.id());
 		}

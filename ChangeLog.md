@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added function _time/length-of-year_
 - added function _time/length-of-month_
 - added _cons_, _conj_, _disj_ for sets
+- added support for reader form  #{1 2} to create sets
+- added support for @ for dereference (@a -> (deref a)
 
 
 

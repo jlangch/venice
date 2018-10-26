@@ -75,12 +75,33 @@ public class ConcurrencyFunctions {
 					"will block if computation not complete. The variant taking a " +
 					"timeout can be used for futures and will return timeout-val " + 
 					"if the timeout (in milliseconds) is reached before a value " + 
-					"is available.");
+					"is available. \n" +
+					"Also reader macro: @atom/@future/@promise.");
+			
 			
 			setExamples(
-					"(do\n   (def counter (atom 0))\n   (deref counter))",
-					"(do\n   (def task (fn [] 100))\n   (let [f (future task)] (deref f)))",
-					"(do\n   (def task (fn [] 100))\n   (let [f (future task)] (deref f 300 :timeout)))");
+					"(do                             \n" +
+					"   (def counter (atom 0))       \n" +
+					"   (deref counter))               ",
+
+					"(do                             \n" +
+					"   (def counter (atom 0))       \n" +
+					"   @counter)                      ",
+
+					"(do                             \n" +
+					"   (def task (fn [] 100))       \n" +
+					"   (let [f (future task)]       \n" +
+					"        (deref f)))               ",
+
+					"(do                             \n" +
+					"   (def task (fn [] 100))       \n" +
+					"   (let [f (future task)]       \n" +
+					"        @f))                      ",
+
+					"(do                             \n" +
+					"   (def task (fn [] 100))       \n" +
+					"   (let [f (future task)]       \n" +
+					"        (deref f 300 :timeout)))  ");
 		}
 
 		public VncVal apply(final VncList args) {

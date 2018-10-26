@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -240,6 +241,19 @@ public class Reader {
 				return MetaUtil.withTokenPos(
 						new VncList(new VncSymbol("deref"), read_form(rdr)), 
 						token);
+				
+			case '#': 
+				rdr.next();
+				Token t = rdr.peek();
+				if (t.charAt(0) == '{') {
+					form = new VncSet(read_list(rdr, new VncList(), '{' , '}')); 
+				}
+				else {
+					throw new ParseError(String.format(
+							"Expected '{'. %s",
+							ErrorMessage.buildErrLocation(t)));
+				}
+				break;
 			
 			case '(': 
 				form = read_list(rdr, new VncList(), '(' , ')'); 
