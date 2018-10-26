@@ -142,4 +142,17 @@ public class AtomTest {
 	
 		assertEquals("{:b 2}", venice.eval("(str " + s + ")"));
 	}
+
+	@Test
+	public void testDeref() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                            \n" +
+				"   (def counter (atom 0))      \n" +
+				"   @counter                    \n" +
+				")                              ";
+	
+		assertEquals("0", venice.eval("(str " + s + ")"));
+	}
 }

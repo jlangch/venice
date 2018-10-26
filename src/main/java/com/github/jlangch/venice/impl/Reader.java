@@ -144,9 +144,9 @@ public class Reader {
 					token);
 		} 
 		else if (matcher.group(9) != null) {
-			return MetaUtil.withTokenPos(
-					new VncSymbol(matcher.group(9)), 
-					token);
+			final VncSymbol sym = new VncSymbol(matcher.group(9));
+			rdr.anonymousFnArgs.addSymbol(sym);
+			return MetaUtil.withTokenPos(sym, token);
 		} 
 		else {
 			throw new ParseError(String.format(
@@ -248,9 +248,21 @@ public class Reader {
 				if (t.charAt(0) == '{') {
 					form = new VncSet(read_list(rdr, new VncList(), '{' , '}')); 
 				}
+				else if (t.charAt(0) == '(') {
+					if (rdr.anonymousFnArgs.isCapturing()) {
+						throw new ParseError(String.format(
+								" #() forms cannot be nested.",
+								ErrorMessage.buildErrLocation(t)));						
+					}
+					rdr.anonymousFnArgs.startCapture();
+					final VncVal body = read_list(rdr, new VncList(), '(' , ')');
+					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef();
+					form = new VncList(new VncSymbol("fn"), argsDef, body);
+					rdr.anonymousFnArgs.stopCapture();
+				}
 				else {
 					throw new ParseError(String.format(
-							"Expected '{'. %s",
+							"Expected '{' or '('. %s",
 							ErrorMessage.buildErrLocation(t)));
 				}
 				break;
@@ -327,4 +339,5 @@ public class Reader {
 
 	private ArrayList<Token> tokens;
 	private int position;
+	private final AnonymousFnArgs anonymousFnArgs = new AnonymousFnArgs();
 }
