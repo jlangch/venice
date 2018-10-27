@@ -279,8 +279,7 @@ Mixing Venice functions with Java streams:
 
     (-> (. [1 2 3 4] :stream)
         (. :filter (proxify :Predicate { :test #(> % 2) }))
-        (. :collect (. :Collectors :toList))) 
-)
+        (. :collect (. :Collectors :toList))))
 ```
 
 
