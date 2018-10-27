@@ -346,7 +346,7 @@ Alternative to UNIX shell scripts:
          (io/file dir (str/format "%s.%d-%02d.zip" prefix year month)))
 
    (defn find-log-files [dir filter]
-         (map #(io/file dir &)
+         (map #(io/file dir %)
               (. dir :list (proxify :java.io.FilenameFilter {:accept filter}))))
 
    (defn zip-files [zip files]
