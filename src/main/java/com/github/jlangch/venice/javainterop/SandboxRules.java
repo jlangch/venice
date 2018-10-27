@@ -346,6 +346,28 @@ public class SandboxRules {
 	public Set<String> getRules() {
 		return Collections.unmodifiableSet(rules);
 	}
+	
+	/**
+	 * Returns the default rules used for Venice sandboxes.
+	 * 
+	 * <p>Note: The default rules can be omitted by calling
+	 * <pre>
+	 *    SandboxRules
+	 *        .noDefaults()
+	 *        .withClasses(
+	 *            "java.lang.Math",
+	 *            "java.math.BigDecimal");
+	 * </pre>
+	 * 
+	 * @return the default rules used for the <code>Sandbox</code>
+	 */
+	public static List<String> getDefaultRules() {
+		return new SandboxRules()
+					.getRules()
+					.stream()
+					.sorted()
+					.collect(Collectors.toList());
+	}
 
 	@Override
 	public String toString() {
@@ -367,7 +389,6 @@ public class SandboxRules {
 				// Venice dynamic proxies
 				"com.sun.proxy.$Proxy*:*",
 				
-
 				"java.lang.IllegalArgumentException:*",
 				"java.lang.RuntimeException:*",
 				"java.lang.Exception:*",
@@ -377,38 +398,33 @@ public class SandboxRules {
 				"java.io.PrintStream",
 				"java.io.InputStream",
 				"java.io.OutputStream",
-				
-				"java.nio.ByteBuffer",
-				"java.nio.HeapByteBuffer:*",
 
 				"java.lang.Object",
 				"java.lang.Object:class",
 	
-				java.lang.Character.class.getName(),
-				java.lang.String.class.getName(),
-				java.lang.Boolean.class.getName(),
-				java.lang.Integer.class.getName(),
-				java.lang.Long.class.getName(),
-				java.lang.Float.class.getName(),
-				java.lang.Double.class.getName(),
-				java.lang.Byte.class.getName(),
-				java.lang.StringBuffer.class.getName(),
-				java.lang.StringBuilder.class.getName(),
+				"java.lang.Character",
+				"java.lang.String",
+				"java.lang.Boolean",
+				"java.lang.Integer",
+				"java.lang.Long",
+				"java.lang.Float",
+				"java.lang.Double",
+				"java.lang.Byte",
+				"java.lang.StringBuffer",
+				"java.lang.StringBuilder",
 				
-				java.math.BigInteger.class.getName(),
-				java.math.BigDecimal.class.getName(),
+				"java.math.BigInteger",
+				"java.math.BigDecimal",
 				
-				java.util.Date.class.getName(),						
-				java.util.ArrayList.class.getName(),
-				java.util.HashSet.class.getName(),
-				java.util.HashMap.class.getName(),
-				java.util.LinkedHashMap.class.getName(),
-				java.util.Locale.class.getName(),
-
-				java.util.ArrayList.class.getName(),
-				java.util.HashSet.class.getName(),
-				java.util.HashMap.class.getName(),
-				java.util.LinkedHashMap.class.getName());
+				"java.nio.ByteBuffer",
+				"java.nio.HeapByteBuffer:*",
+				
+				"java.util.Date:*",						
+				"java.util.ArrayList:*",
+				"java.util.HashSet:*",
+				"java.util.HashMap:*",
+				"java.util.LinkedHashMap:*",
+				"java.util.Locale:*");
 
 	public static final Set<String> DEFAULT_SYSTEM_PROPERTIES = 
 			Collections.unmodifiableSet(
