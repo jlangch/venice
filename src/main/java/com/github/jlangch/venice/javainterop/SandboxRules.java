@@ -21,14 +21,11 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,8 +40,24 @@ import java.util.stream.Collectors;
 public class SandboxRules {
 	
 	public SandboxRules() {
+		this(true);
 	}
-	
+
+	private SandboxRules(boolean withDefaults) {
+		if (withDefaults) {
+			withDefaultClasses();
+		}
+	}
+
+	/**
+	 * Creates new SandboxRules starting without any defaults.
+	 * 
+	 * @return <code>SandboxRules</code>
+	 */
+	public static SandboxRules noDefaults() {
+		return new SandboxRules(false);
+	}
+
 	/**
 	 * Add whitelisted class rules to the sandbox.
 	 * 
@@ -130,6 +143,11 @@ public class SandboxRules {
 		if (classes != null) {
 			withClasses(classes.stream().map(c -> c.getName() + ":*").collect(Collectors.toList()));
 		}
+		return this;
+	}
+	
+	public SandboxRules withDefaultClasses() {
+		withClasses(DEFAULT_CLASS_RULES);
 		return this;
 	}
 	
@@ -336,39 +354,61 @@ public class SandboxRules {
 					.sorted()
 					.collect(Collectors.joining("\n"));
 	}
-	
-	
-	private static final Set<String> DEFAULT_CLASS_RULES = 
-			new HashSet<>(
-				Arrays.asList(
-						// Dynamic proxies based on venice' DynamicInvocationHandler
-						"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
-						
-						// ValueException
-						"com.github.jlangch.venice.ValueException:*",
-						"com.github.jlangch.venice.impl.types.collections.VncVector",
-						
-						"java.lang.Object:class",
+		
+	private static final List<String> DEFAULT_CLASS_RULES = 
+			Arrays.asList(
+				// Dynamic proxies based on venice' DynamicInvocationHandler
+				"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
+				
+				// ValueException
+				"com.github.jlangch.venice.ValueException:*",
+				"com.github.jlangch.venice.impl.types.collections.VncVector",
+				
+				// Venice dynamic proxies
+				"com.sun.proxy.$Proxy*:*",
+				
 
-						"java.lang.IllegalArgumentException:*",
-						"java.lang.RuntimeException:*",
-						"java.lang.Exception:*",
-						"java.lang.SecurityException:*",
-						"java.io.IOException:*",
+				"java.lang.IllegalArgumentException:*",
+				"java.lang.RuntimeException:*",
+				"java.lang.Exception:*",
+				"java.lang.SecurityException:*",
+				"java.io.IOException:*",
+				
+				"java.io.PrintStream",
+				"java.io.InputStream",
+				"java.io.OutputStream",
+				
+				"java.nio.ByteBuffer",
+				"java.nio.HeapByteBuffer:*",
 
-						Byte.class.getName(),
-						Short.class.getName(),
-						Integer.class.getName(),
-						Long.class.getName(),
-						Float.class.getName(),
-						Double.class.getName(),
-						BigDecimal.class.getName(),
-						String.class.getName(),
-						
-						ArrayList.class.getName(),
-						HashSet.class.getName(),
-						HashMap.class.getName(),
-						LinkedHashMap.class.getName()));
+				"java.lang.Object",
+				"java.lang.Object:class",
+	
+				java.lang.Character.class.getName(),
+				java.lang.String.class.getName(),
+				java.lang.Boolean.class.getName(),
+				java.lang.Integer.class.getName(),
+				java.lang.Long.class.getName(),
+				java.lang.Float.class.getName(),
+				java.lang.Double.class.getName(),
+				java.lang.Byte.class.getName(),
+				java.lang.StringBuffer.class.getName(),
+				java.lang.StringBuilder.class.getName(),
+				
+				java.math.BigInteger.class.getName(),
+				java.math.BigDecimal.class.getName(),
+				
+				java.util.Date.class.getName(),						
+				java.util.ArrayList.class.getName(),
+				java.util.HashSet.class.getName(),
+				java.util.HashMap.class.getName(),
+				java.util.LinkedHashMap.class.getName(),
+				java.util.Locale.class.getName(),
+
+				java.util.ArrayList.class.getName(),
+				java.util.HashSet.class.getName(),
+				java.util.HashMap.class.getName(),
+				java.util.LinkedHashMap.class.getName());
 
 	public static final Set<String> DEFAULT_SYSTEM_PROPERTIES = 
 			Collections.unmodifiableSet(
@@ -389,5 +429,5 @@ public class SandboxRules {
 							"user.name")));
 
 
-	private final Set<String> rules = new HashSet<>(DEFAULT_CLASS_RULES);
+	private final Set<String> rules = new HashSet<>();
 }

@@ -35,10 +35,12 @@ public class SandboxRulesTest {
 	@Test
 	public void classesTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().withClasses(
-												"java.lang.Math",
-												"java.math.BigDecimal"
-											));
+											SandboxRules
+												.noDefaults()
+												.withClasses(
+													"java.lang.Math",
+													"java.math.BigDecimal"
+												));
 		
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.math.BigDecimal.class));
@@ -48,18 +50,21 @@ public class SandboxRulesTest {
 	@Test
 	public void classesWildcardTest() {
 		final CompiledSandboxRules wl = CompiledSandboxRules.compile(
-											new SandboxRules().withClasses(
-												"java.lang.Math",
-												"java.lang.String:*",
-												"java.math.*",
-												"java.awt.**"
-											));
+											SandboxRules
+												.noDefaults()
+												.withClasses(
+													"java.lang.Math",
+													"java.lang.String:*",
+													"java.math.*",
+													"java.awt.**"
+												));
 		
 		assertTrue(wl.isWhiteListed(java.lang.Math.class));
 		assertTrue(wl.isWhiteListed(java.lang.String.class));
 		
 		assertTrue(wl.isWhiteListed(java.math.BigDecimal.class));
 		assertTrue(wl.isWhiteListed(java.math.BigInteger.class));
+		assertTrue(wl.isWhiteListed(java.math.MathContext.class));
 		
 		assertTrue(wl.isWhiteListed(java.awt.Button.class));
 		assertTrue(wl.isWhiteListed(java.awt.color.ColorSpace.class));
