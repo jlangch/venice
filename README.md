@@ -277,10 +277,8 @@ Mixing Venice functions with Java streams:
     (import :java.util.function.Predicate)
     (import :java.util.stream.Collectors)
 
-    (defn pred-fn [x] (> x 2))
-
     (-> (. [1 2 3 4] :stream)
-        (. :filter (proxify :Predicate { :test pred-fn }))
+        (. :filter (proxify :Predicate { :test #(> % 2) }))
         (. :collect (. :Collectors :toList))) 
 )
 ```
@@ -325,7 +323,7 @@ Another example:
         (. :User :new "john" 24 (. :LocalDate :of 1994 7 21)))
         (. :User :new "pete" 48 (. :LocalDate :of 1970 1 12))) ])
 
-   (str (filter (fn [u] (> (get u :age) 30)) users)))
+   (str (filter #(> (:age %) 30) users)))
 ```
 
 
