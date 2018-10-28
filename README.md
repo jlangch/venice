@@ -52,8 +52,8 @@ foo> java -jar venice-0.9.10.jar -script "(+ 1 1)"
 ```
 
 ```text
-foo> echo "(+ 1 1)" > script.vnc
-foo> java -jar venice-0.9.10.jar -file script.vnc
+foo> echo "(+ 1 1)" > script.venice
+foo> java -jar venice-0.9.10.jar -file script.venice
 => 2
 ```
 
