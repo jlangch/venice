@@ -27,16 +27,16 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/d2d69c0/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/088b28f/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/d2d69c0/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/088b28f/cheatsheet.pdf)
 
 
 ## REPL
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-0.9.9.jar`
+Start the REPL with `java -jar venice-0.9.10.jar`
 
 ```text
 venice> (+ 1 1)
@@ -47,13 +47,13 @@ venice>
 ## Executing scripts
 
 ```text
-foo> java -jar venice-0.9.9.jar -script "(+ 1 1)"
+foo> java -jar venice-0.9.10.jar -script "(+ 1 1)"
 => 2
 ```
 
 ```text
 foo> echo "(+ 1 1)" > script.vnc
-foo> java -jar venice-0.9.9.jar -file script.vnc
+foo> java -jar venice-0.9.10.jar -file script.vnc
 => 2
 ```
 
@@ -729,7 +729,7 @@ transitive dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:0.9.9'
+    compile 'com.github.jlangch:venice:0.9.10'
 }
 ```
 
@@ -741,7 +741,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>0.9.9</version>
+        <version>0.9.10</version>
     </dependency>
 </dependencies>
 ```
