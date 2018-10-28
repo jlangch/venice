@@ -246,11 +246,11 @@ public class Reader {
 				rdr.next();
 				Token t = rdr.peek();
 				if (t.charAt(0) == '{') {
-					//  set literal #{1 2}
+					// set literal #{1 2}
 					form = new VncSet(read_list(rdr, new VncList(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
-					//  anonymous function literal #(> % 2)
+					// anonymous function literal #(> % 2)
 					if (rdr.anonymousFnArgs.isCapturing()) {
 						throw new ParseError(String.format(
 								" #() forms cannot be nested.",
