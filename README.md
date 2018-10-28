@@ -264,7 +264,7 @@ Java Callbacks:
 
    (defn swing-gui [title]
          (. :SwingUtilities :invokeLater
-            (proxify :Runnable { :run (fn [] (swing-open-window title)) } )))
+            (proxify :Runnable { :run #(swing-open-window title) } )))
 
    (swing-gui "Test"))
 ```

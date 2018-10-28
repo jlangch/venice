@@ -444,30 +444,30 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                              " +
-				"   (import :java.lang.Runnable)                                                  " +
-				"   (import :javax.swing.JPanel)                                                  " +
-				"   (import :javax.swing.JFrame)                                                  " +
-				"   (import :javax.swing.JLabel)                                                  " +
-				"   (import :javax.swing.SwingUtilities)                                          " +
-				"                                                                                 " +
-				"   (def swing-open-window                                                        " +
-				"        (fn [title]                                                              " +
-				"            (let [frame (. :JFrame :new title)                                   " +
-				"                  label (. :JLabel :new \"Hello World\")                         " +
-				"                  closeOP (. :JFrame :EXIT_ON_CLOSE)]                            " +
-				"                 (. frame :setDefaultCloseOperation closeOP)                     " +
-				"                 (. frame :add label)                                            " +
-				"                 (. frame :setSize 200 200)                                      " +
-				"                 (. frame :setVisible true))))                                   " +
-				"                                                                                 " +
-				"   (def swing-view                                                               " +
-				"        (fn [title]                                                              " +
-				"            (. :SwingUtilities :invokeLater                                      " +
-				"               (proxify :Runnable { :run (fn [] (swing-open-window title))}))))  " +
-				"                                                                                 " +
-				"   (swing-view \"test\")                                                         " +
-				"   (sleep 20000)                                                                 " +
+				"(do                                                                        " +
+				"   (import :java.lang.Runnable)                                            " +
+				"   (import :javax.swing.JPanel)                                            " +
+				"   (import :javax.swing.JFrame)                                            " +
+				"   (import :javax.swing.JLabel)                                            " +
+				"   (import :javax.swing.SwingUtilities)                                    " +
+				"                                                                           " +
+				"   (def swing-open-window                                                  " +
+				"        (fn [title]                                                        " +
+				"            (let [frame (. :JFrame :new title)                             " +
+				"                  label (. :JLabel :new \"Hello World\")                   " +
+				"                  closeOP (. :JFrame :EXIT_ON_CLOSE)]                      " +
+				"                 (. frame :setDefaultCloseOperation closeOP)               " +
+				"                 (. frame :add label)                                      " +
+				"                 (. frame :setSize 200 200)                                " +
+				"                 (. frame :setVisible true))))                             " +
+				"                                                                           " +
+				"   (def swing-view                                                         " +
+				"        (fn [title]                                                        " +
+				"            (. :SwingUtilities :invokeLater                                " +
+				"               (proxify :Runnable { :run #(swing-open-window title) }))))  " +
+				"                                                                           " +
+				"   (swing-view \"test\")                                                   " +
+				"   (sleep 20000)                                                           " +
 				") ";
 
 		venice.eval(script);
