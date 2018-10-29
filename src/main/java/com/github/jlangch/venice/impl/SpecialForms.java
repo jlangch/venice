@@ -31,6 +31,10 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
+/**
+ * The special from functions just server for documentation for the cheat-sheet and 
+ * the 'doc' function!
+ */
 public class SpecialForms {
 
 	public static VncFunction doc = new VncFunction("doc") {
