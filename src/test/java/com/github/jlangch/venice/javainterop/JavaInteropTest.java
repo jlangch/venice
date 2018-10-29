@@ -410,7 +410,7 @@ public class JavaInteropTest {
 				"  (. dir :list                                " +
 				"         (proxify                             " +
 				"             :java.io.FilenameFilter          " +
-				"             {:accept filter-fn}))               " +
+				"             {:accept filter-fn}))            " +
 				") ";
 
 		System.out.println(venice.eval(script));
