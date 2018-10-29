@@ -888,15 +888,15 @@ public class DocGenerator {
 		
 		generic.addItem(
 				new DocItem(
-					"if", 
-					Arrays.asList("(if test true-expr false-expr)"), 
-					"Evaluates test.",
-					runExamples(
 						"if", 
-						Arrays.asList(
-								"(if (< 10 20) \"yes\" \"no\")"), 
-						true),
-					idgen.id()));
+						Arrays.asList("(if test true-expr false-expr)"), 
+						"Evaluates test.",
+						runExamples(
+							"if", 
+							Arrays.asList(
+									"(if (< 10 20) \"yes\" \"no\")"), 
+							true),
+						idgen.id()));
 		
 		generic.addItem(
 				new DocItem(

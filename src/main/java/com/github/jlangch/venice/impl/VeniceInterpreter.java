@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CatchBlock;
+import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
@@ -207,7 +208,12 @@ public class VeniceInterpreter {
 					env.setGlobal(defName, MetaUtil.addDefMeta(res, defMeta));
 					return res;
 				}
-				
+
+				case "doc":
+					final String name = ((VncString)CoreFunctions.name.apply(ast.slice(1))).getValue();					
+					orig_ast = new VncList(new VncSymbol("println"), Doc.getDoc(env.get(new VncSymbol(name))));
+					break;
+
 				case "eval":
 					orig_ast = Coerce.toVncList(eval_ast(ast.slice(1), env)).last();
 					break;
