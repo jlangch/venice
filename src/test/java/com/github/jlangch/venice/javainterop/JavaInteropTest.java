@@ -474,7 +474,7 @@ public class JavaInteropTest {
 	}
 			
 	@Test
-	public void test_proxy_Streams_Filter() {
+	public void test_proxy_Streams_filter() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -482,14 +482,45 @@ public class JavaInteropTest {
 				"    (import :java.util.function.Predicate)                       " +
 				"    (import :java.util.stream.Collectors)                        " +
 			    "                                                                 " +
-			    "    (def pred-fn (fn[x] (> x 2)))                                " +
-			    "                                                                 " +
 				"    (-> (. [1 2 3 4] :stream)                                    " +
-			    "        (. :filter (proxify :Predicate { :test pred-fn }))       " +
+			    "        (. :filter (proxify :Predicate { :test #(> % 2) }))      " +
 			    "        (. :collect (. :Collectors :toList)))                    " +
 				") ";
 
 		assertEquals("[3, 4]", venice.eval(script).toString());
+	}
+		
+	@Test
+	public void test_proxy_Streams_reduce() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(do                                                                      " +
+				"    (import :java.util.function.BinaryOperator)                          " +
+				"    (import :java.util.stream.Collectors)                                " +
+			    "                                                                         " +
+				"    (-> (. [1 2 3 4] :stream)                                            " +
+			    "        (. :reduce 0 (proxify :BinaryOperator { :apply #(+ %1 %2) })))   " +
+				") ";
+		
+		assertEquals("10", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_reduce_optional() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(do                                                                      " +
+				"    (import :java.util.function.BinaryOperator)                          " +
+				"    (import :java.util.stream.Collectors)                                " +
+			    "                                                                         " +
+				"    (-> (. [1 2 3 4] :stream)                                            " +
+			    "        (. :reduce (proxify :BinaryOperator { :apply #(+ %1 %2) }))      " +
+				"        (. :orElse 0))                                                   " +
+				") ";
+		
+		assertEquals("10", venice.eval(script).toString());
 	}
 
 	

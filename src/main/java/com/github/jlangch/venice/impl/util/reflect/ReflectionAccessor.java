@@ -44,6 +44,7 @@ import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.impl.util.Tuple2;
@@ -492,72 +493,74 @@ public class ReflectionAccessor {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Object invokeStreamMethod(final String methodName, final Object target, final Object[] args) {
+		final Stream<Object> stream = (Stream<Object>)target;
+		
 		switch(methodName) {
 			case "allMatch":
-				return ((java.util.stream.Stream<?>)target).allMatch((Predicate<Object>)args[0]);
+				return stream.allMatch((Predicate<Object>)args[0]);
 			case "anyMatch":
-				return ((java.util.stream.Stream<?>)target).anyMatch((Predicate<Object>)args[0]);
+				return stream.anyMatch((Predicate<Object>)args[0]);
 			case "collect":
 				switch(args.length) {
 					case 1:
-						return ((java.util.stream.Stream<?>)target).collect((Collector<Object,Object,Object>)args[0]);
+						return stream.collect((Collector<Object,Object,Object>)args[0]);
 					case 3:
-						return ((java.util.stream.Stream<?>)target).collect(
+						return stream.collect(
 										(Supplier<Object>)args[0],
 										(BiConsumer<Object,Object>)args[1],
 										(BiConsumer<Object,Object>)args[2]);
 					default:
 						throw new JavaMethodInvocationException(
-									"Unsupported stream method collect with " + args.length + " parameters");
+									"Unsupported stream method 'collect' with " + args.length + " parameters");
 				}
 			case "distinct":
-				return ((java.util.stream.Stream<?>)target).distinct();
+				return stream.distinct();
 			case "filter":
-				return ((java.util.stream.Stream<?>)target).filter((Predicate<Object>)args[0]);
+				return stream.filter((Predicate<Object>)args[0]);
 			case "findAny":
-				return ((java.util.stream.Stream<?>)target).findAny();
+				return stream.findAny();
 			case "findFirst":
-				return ((java.util.stream.Stream<?>)target).findFirst();
+				return stream.findFirst();
 			case "limit":
-				return ((java.util.stream.Stream<?>)target).limit((Long)args[0]);
+				return stream.limit((Long)args[0]);
 			case "map":
-				return ((java.util.stream.Stream<?>)target).map((Function<Object,Object>)args[0]);
+				return stream.map((Function<Object,Object>)args[0]);
 			case "mapToDouble":
-				return ((java.util.stream.Stream<?>)target).mapToDouble((ToDoubleFunction<Object>)args[0]);
+				return stream.mapToDouble((ToDoubleFunction<Object>)args[0]);
 			case "mapToInt":
-				return ((java.util.stream.Stream<?>)target).mapToInt((ToIntFunction<Object>)args[0]);
+				return stream.mapToInt((ToIntFunction<Object>)args[0]);
 			case "mapToLong":
-				return ((java.util.stream.Stream<?>)target).mapToLong((ToLongFunction<Object>)args[0]);
+				return stream.mapToLong((ToLongFunction<Object>)args[0]);
 			case "max":
-				return ((java.util.stream.Stream<?>)target).max((Comparator<Object>)args[0]);
+				return stream.max((Comparator<Object>)args[0]);
 			case "min":
-				return ((java.util.stream.Stream<?>)target).min((Comparator<Object>)args[0]);
+				return stream.min((Comparator<Object>)args[0]);
 			case "noneMatch":
-				return ((java.util.stream.Stream<?>)target).noneMatch((Predicate<Object>)args[0]);
+				return stream.noneMatch((Predicate<Object>)args[0]);
 			case "reduce":
 				switch(args.length) {
 					case 1:
-						return ((java.util.stream.Stream<?>)target).reduce((BinaryOperator)args[0]);
-					//case 2:
-					//	return ((java.util.stream.Stream<?>)target).reduce(args[0], (BinaryOperator)args[1]);
+						return stream.reduce((BinaryOperator)args[0]);
+					case 2:
+						return stream.reduce(args[0], (BinaryOperator)args[1]);
 					case 3:
-						return ((java.util.stream.Stream<?>)target).reduce(
+						return stream.reduce(
 										args[0],
 										(BiFunction<Object,Object,Object>)args[1],
 										(BinaryOperator<Object>)args[2]);
 					default:
 						throw new JavaMethodInvocationException(
-									"Unsupported stream method reduce with " + args.length + " parameters");
+									"Unsupported stream method 'reduce' with " + args.length + " parameters");
 				}
 			case "sorted":
 				return args.length == 0
-						? ((java.util.stream.Stream<?>)target).sorted()
-						: ((java.util.stream.Stream<?>)target).sorted((Comparator<Object>)args[0]);
+						? stream.sorted()
+						: stream.sorted((Comparator<Object>)args[0]);
 			case "skip":
-				return ((java.util.stream.Stream<?>)target).skip((Long)args[0]);
+				return stream.skip((Long)args[0]);
 			default:
 				throw new JavaMethodInvocationException(
-							"Unsupported stream method " + methodName);
+							"Unsupported stream method '" + methodName + "'");
 		}
 	}
 

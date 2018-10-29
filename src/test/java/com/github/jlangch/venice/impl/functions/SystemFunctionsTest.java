@@ -82,6 +82,6 @@ public class SystemFunctionsTest {
 	public void test_version() {
 		final Venice venice = new Venice();
 
-		assertTrue(((String)venice.eval("(version)")).matches("[0-9]+[.][0-9]+[.][0-9]+"));
+		assertTrue(((String)venice.eval("(version)")).matches("[0-9]+[.][0-9]+[.][0-9]+(-snapshot)*"));
 	}
 }
