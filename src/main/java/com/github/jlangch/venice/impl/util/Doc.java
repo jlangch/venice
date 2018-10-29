@@ -58,9 +58,11 @@ public class Doc {
 							.stream()
 							.map(s -> toString(s))
 							.map(e -> StringUtil.stripMargin(e, '|'))
-							.collect(Collectors.joining("\n")));
+							.collect(Collectors.joining("\n\n")));
 			}
-			
+
+			sb.append("\n");
+
 			return new VncString(sb.toString());			
 		}
 				
