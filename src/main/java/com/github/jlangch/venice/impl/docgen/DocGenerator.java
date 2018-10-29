@@ -535,6 +535,7 @@ public class DocGenerator {
 
 		final DocSection misc = new DocSection("Misc");
 		all.addSection(misc);
+		misc.addItem(getDocItem("doc"));
 		misc.addItem(getDocItem("class"));
 		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));

@@ -33,6 +33,19 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class SpecialForms {
 
+	public static VncFunction doc = new VncFunction("doc") {
+		{
+			setArgLists("(doc name)");			
+			setDoc("Prints documentation for a var or special form given its name");			
+			setExamples("(doc +)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			return Nil;
+		}
+	};
+
+	
 	public static VncFunction list = new VncFunction("()") {
 		{
 			setArgLists("");			
@@ -346,8 +359,10 @@ public class SpecialForms {
 	};	
 	
 	
+	
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
+					.put("doc", 		doc)
 					.put("()", 			list)
 					.put("[]", 			vector)
 					.put("#{}",			set)
