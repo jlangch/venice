@@ -36,6 +36,7 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
@@ -511,14 +512,18 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
+		create.addItem(getDocItem("fn"));
+		create.addItem(getDocItem("defn"));
 		create.addItem(getDocItem("identity"));
+		create.addItem(getDocItem("comp"));
+		create.addItem(getDocItem("partial"));
+		create.addItem(getDocItem("memoize"));
 
 		final DocSection call = new DocSection("Call");
 		all.addSection(call);
 		call.addItem(getDocItem("apply"));
-		call.addItem(getDocItem("comp"));
-		call.addItem(getDocItem("partial"));
-		call.addItem(getDocItem("memoize"));
+		call.addItem(getDocItem("->"));
+		call.addItem(getDocItem("->>"));
 
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);
@@ -570,10 +575,10 @@ public class DocGenerator {
 
 		final DocSection shell = new DocSection("Shell");
 		all.addSection(shell);
-		shell.addItem(getDocItem("sh", false));
-		shell.addItem(getDocItem("with-sh-dir", false));
-		shell.addItem(getDocItem("with-sh-env", false));
-		shell.addItem(getDocItem("with-sh-throw", false));
+		shell.addItem(getDocItem("sh", false, false));
+		shell.addItem(getDocItem("with-sh-dir", false, false));
+		shell.addItem(getDocItem("with-sh-env", false, false));
+		shell.addItem(getDocItem("with-sh-throw", false, false));
 				
 		return section;
 	}
@@ -586,34 +591,9 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);		
-		create.addItem(getDocItem("defn", false));
-		create.addItem(
-				new DocItem(
-						"defmacro", 
-						Arrays.asList("(defmacro name [params*] body)"), 
-						"Macro definition",
-						runExamples(
-							"defmacro", 
-							Arrays.asList(
-									"(defmacro unless [pred a b]\n" + 
-									"  `(if (not ~pred) ~a ~b))"), 
-							true),
-						idgen.id()));
-		
-		final DocSection debug = new DocSection("Debug");
-		all.addSection(debug);		
-		debug.addItem(
-				new DocItem(
-						"macroexpand", 
-						Arrays.asList("(macroexpand form)"), 
-						"If form represents a macro form, returns its expansion, " + 
-						"else returns form",
-						runExamples(
-							"macroexpand", 
-							Arrays.asList(
-									"(macroexpand (-> c (+ 3) (* 2)))"), 
-							true),
-						idgen.id()));
+		create.addItem(getDocItem("defn", false, false));
+		create.addItem(getDocItem("defmacro"));
+		create.addItem(getDocItem("macroexpand"));
 
 		final DocSection branch = new DocSection("Branch");
 		all.addSection(branch);
@@ -873,214 +853,16 @@ public class DocGenerator {
 
 		final DocSection generic = new DocSection("Forms");
 		all.addSection(generic);
-		
-		generic.addItem(
-				new DocItem(
-						"def", 
-						Arrays.asList("(def name expr)"), 
-						"Creates a global variable.",
-						runExamples(
-							"def", 
-							Arrays.asList(
-									"(def val 5)"), 
-							true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"if", 
-						Arrays.asList("(if test true-expr false-expr)"), 
-						"Evaluates test.",
-						runExamples(
-							"if", 
-							Arrays.asList(
-									"(if (< 10 20) \"yes\" \"no\")"), 
-							true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"do", 
-						Arrays.asList("(do exprs)"), 
-						"Evaluates the expressions in order and returns the value of the last.",
-						runExamples(
-							"do", 
-							Arrays.asList(
-									"(do (println \"Test...\") (+ 1 1))"), 
-							true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"let", 
-						Arrays.asList("(let [bindings*] exprs*)"), 
-						"Evaluates the expressions and binds the values to symbols to new local context",
-						runExamples(
-							"let", 
-							Arrays.asList(
-									"(let [x 1] x))",
-									
-									";; destructured map \n" +
-									"(let [{:keys [width height title ]\n" + 
-									"       :or {width 640 height 500}\n" + 
-									"       :as styles}\n" +  
-									"      {:width 1000 :title \"Title\"}]\n" +  
-								    "     (println \"width: \" width)\n" +  
-								    "     (println \"height: \" height)\n" +  
-								    "     (println \"title: \" title)\n" + 
-							        "     (println \"styles: \" styles))"),
-							true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"fn", 
-						Arrays.asList("(fn [params*] condition-map? exprs*)"), 
-						"Defines an anonymous function.",
-						runExamples(
-							"fn", 
-							Arrays.asList(
-									"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-									
-									"(map (fn [x] (* 2 x)) (range 1 5))",
-									
-									"(map #(* 2 %) (range 1 5))",
-									
-									"(map #(* 2 %1) (range 1 5))",
-									
-									";; anonymous function with two params, the second is destructured\n" + 
-									"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
-									
-									";; defining a pre-condition\n" + 
-									"(do \n" +
-									"   (def sqrt \n" +
-									"        (fn [x] \n" +
-									"            { :pre [(>= x 0)] } \n" +
-									"            (. :java.lang.Math.sqrt x))) \n" +
-									"   (sqrt -4) \n" +
-									")",
-									
-									";; higher-order function\n" + 
-									"(do \n" +
-									"   (def discount \n" +
-									"        (fn [percentage] \n" +
-									"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
-									"            (fn [price] (- price (* price percentage 0.01)))))\n" +
-									"   ((discount 50) 300) \n" +
-									")"
-									),
-							true,
-							true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"loop", 
-						Arrays.asList("(loop [bindings*] exprs*)"), 
-						"Evaluates the exprs and binds the bindings. " + 
-						"Creates a recursion point with the bindings.",
-						runExamples(
-							"loop", 
-							Arrays.asList(
-									";; tail recursion                                   \n" +
-									"(loop [x 10]                                        \n" + 
-									"   (when (> x 1)                                    \n" + 
-									"      (println x)                                   \n" + 
-									"      (recur (- x 2))))                               ", 
-							
-									";; tail recursion                                   \n" +
-									"(do                                                 \n" +
-									"   (defn sum [n]                                    \n" +
-									"         (loop [cnt n acc 0]                        \n" +
-									"            (if (zero? cnt)                         \n" +
-									"                acc                                 \n" +
-									"                (recur (dec cnt) (+ acc cnt)))))    \n" +
-									"   (sum 10000))                                       "),
-							true),
-						idgen.id()));
-	    
-		generic.addItem(
-				new DocItem(
-						"recur", 
-						Arrays.asList("(recur expr*)"), 
-						"Evaluates the exprs and rebinds the bindings of " + 
-						"the recursion point to the values of the exprs.",
-						runExamples("recur", Arrays.asList(), true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"try", 
-						Arrays.asList(
-								"(try expr)",
-								"(try expr (catch exClass exSym expr))",
-								"(try expr (catch exClass exSym expr) (finally expr))"),
-						"Exception handling: try - catch -finally ",
-						runExamples(
-							"try", 
-							Arrays.asList(
-									"(try (throw))",
-									
-									"(try                                      \n" +
-									"   (throw \"test message\"))                ",
-									
-									"(try                                       \n" +
-									"   (throw 100)                             \n" +
-									"   (catch :java.lang.Exception ex -100)))    ",
-									
-									"(try                                       \n" +
-									"   (throw 100)                             \n" +
-									"   (finally (println \"...finally\")))       ",
-									
-									"(try                                       \n" +
-									"   (throw 100)                             \n" +
-									"   (catch :java.lang.Exception ex -100)    \n" +
-									"   (finally (println \"...finally\")))       ",
-									
-									"(do                                                  \n" +
-									"   (import :java.lang.RuntimeException)              \n" +
-									"   (try                                              \n" +
-									"      (throw (. :RuntimeException :new \"message\")) \n" +
-									"      (catch :RuntimeException ex (:message ex))))   \n" +
-									")",
-									
-									"(do                                                   \n" +
-									"   (import :com.github.jlangch.venice.ValueException) \n" +
-									"   (try                                               \n" +
-									"      (throw [1 2 3])                                 \n" +
-									"      (catch :ValueException ex (str (:value ex)))    \n" +
-									"      (catch :RuntimeException ex \"runtime ex\")     \n" +
-									"      (finally (println \"...finally\")))             \n" +
-									")"),
-							true,
-							true),
-						idgen.id()));
-		
-		generic.addItem(
-				new DocItem(
-						"try-with", 
-						Arrays.asList(
-								"(try-with [bindings*] expr)",
-								"(try-with [bindings*] expr (catch :java.lang.Exception ex expr))",
-								"(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))"),
-						"try-with resources allows the declaration of resources to be used in a try block "
-								+ "with the assurance that the resources will be closed after execution "
-								+ "of that block. The resources declared must implement the Closeable or "
-								+ "AutoCloseable interface.",
-						runExamples(
-							"try", 
-							Arrays.asList(
-								"(do                                                   \n" +
-								"   (import :java.io.FileInputStream)                  \n" +
-								"   (let [file (io/temp-file \"test-\", \".txt\")]     \n" +
-								"        (io/spit file \"123456789\" :append true)     \n" +
-								"        (try-with [is (. :FileInputStream :new file)] \n" +
-								"           (io/slurp-stream is :binary false)))       \n" +
-								")"),
-							true,
-							true),
-						idgen.id()));
 
+		generic.addItem(getDocItem("def"));
+		generic.addItem(getDocItem("if"));
+		generic.addItem(getDocItem("do"));
+		generic.addItem(getDocItem("let"));
+		generic.addItem(getDocItem("fn"));
+		generic.addItem(getDocItem("loop"));
+		generic.addItem(getDocItem("recur"));
+		generic.addItem(getDocItem("try", true, true));   // FIXME: try
+		generic.addItem(getDocItem("try-with", true, true));
 
 		return section;
 	}
@@ -1103,14 +885,14 @@ public class DocGenerator {
 						javaDot.getName(), 
 						toStringList(javaDot.getArgLists()), 
 						((VncString)javaDot.getDoc()).getValue(),
-						runExamples(javaDot.getName(), toStringList(javaDot.getExamples()), true),
+						runExamples(javaDot.getName(), toStringList(javaDot.getExamples()), true, false),
 						idgen.id()));
 		general.addItem(
 				new DocItem(
 						javaProxify.getName(), 
 						toStringList(javaProxify.getArgLists()), 
 						((VncString)javaProxify.getDoc()).getValue(),
-						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples()), true),
+						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples()), true, false),
 						idgen.id()));
 		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("Invoke constructors", null));
@@ -1128,13 +910,13 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(getDocItem("json/pretty-print", false));
-		general.addItem(getDocItem("json/to-json", false));
-		general.addItem(getDocItem("json/to-pretty-json", false));
-		general.addItem(getDocItem("json/parse", false));
+		general.addItem(getDocItem("json/pretty-print", false, false));
+		general.addItem(getDocItem("json/to-json", false, false));
+		general.addItem(getDocItem("json/to-pretty-json", false, false));
+		general.addItem(getDocItem("json/parse", false, false));
 		general.addItem(new DocItem(" ", null));
-		general.addItem(getDocItem("json/avail?", false));
-		general.addItem(getDocItem("json/avail-jdk8-module?", false));
+		general.addItem(getDocItem("json/avail?", false, false));
+		general.addItem(getDocItem("json/avail-jdk8-module?", false, false));
 		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", null));
 
@@ -1142,16 +924,16 @@ public class DocGenerator {
 	}
 
 	private DocItem getDocItem(final String name) {
-		return getDocItem(name, true);
+		return getDocItem(name, true, false);
 	}
 
-	private DocItem getDocItem(final String name, final boolean runExamples) {
+	private DocItem getDocItem(final String name, final boolean runExamples, final boolean catchEx) {
 		final DocItem item = docItems.get(name);
 		if (item != null) {
 			return item;
 		}
 		else {
-			final DocItem item_ = getDocItem_(name, runExamples);
+			final DocItem item_ = getDocItem_(name, runExamples, catchEx);
 			if (item_ != null) {
 				docItems.put(name, item_);
 			}
@@ -1159,98 +941,26 @@ public class DocGenerator {
 		}
 	}
 
-	private DocItem getDocItem_(final String name, final boolean runExamples) {
-		if ("()".equals(name)) {
+	private DocItem getDocItem_(final String name, final boolean runExamples, final boolean catchEx) {
+		// Special forms
+		VncFunction fn = (VncFunction)SpecialForms.ns.get(new VncSymbol(name));
+		if (fn != null) {
 			return new DocItem(
 					name, 
-					Arrays.asList(""), 
-					"Creates a list.",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "'(10 20 30)"),
-							runExamples),
+					toStringList(fn.getArgLists()), 
+					fn.getDoc() == Constants.Nil ? "" : ((VncString)fn.getDoc()).getValue(),
+					runExamples(name, toStringList(fn.getExamples()), runExamples, catchEx),
 					idgen.id());
 		}
-
-		if ("[]".equals(name)) {
+		
+		// functions & macros
+		fn = getFunction(name);
+		if (fn != null) {
 			return new DocItem(
 					name, 
-					Arrays.asList(""), 
-					"Creates a vector",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "[10 20]"),
-							runExamples),
-					idgen.id());
-		}
-
-		if ("#{}".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList(""), 
-					"Creates a set.",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "#{10 20}"),
-							runExamples),
-					idgen.id());
-		}
-
-		if ("{}".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList(""), 
-					"Creates a hash map.",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "{:a 10 b: 20}"),
-							runExamples),
-					idgen.id());
-		}
-
-		if ("fn".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(fn [params*] expr)"), 
-					"Creates a function.",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "(fn [x y] (+ x y))",
-							 "(def sum (fn [x y] (+ x y)))",
-							 "(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-							 "(map (fn [x] (* 2 x)) (range 1 5))",
-							 ";; anonymous function with two params, the second is destructured\n" + 
-							 "(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})"),
-							runExamples),
-					idgen.id());
-		}
-
-		if ("eval".equals(name)) {
-			return new DocItem(
-					name, 
-					Arrays.asList("(eval form)"), 
-					"Evaluates the form data structure (not text!) and returns the result.",
-					runExamples(
-							name, 
-							Arrays.asList(
-							 "(eval '(let [a 10] (+ 3 4 a)))",
-							 "(eval (list + 1 2 3))"),
-							runExamples),
-					idgen.id());
-		}
-
-		final VncFunction f = getFunction(name);
-		if (f != null) {
-			return new DocItem(
-					name, 
-					toStringList(f.getArgLists()), 
-					f.getDoc() == Constants.Nil ? "" : ((VncString)f.getDoc()).getValue(),
-					runExamples(name, toStringList(f.getExamples()), runExamples),
+					toStringList(fn.getArgLists()), 
+					fn.getDoc() == Constants.Nil ? "" : ((VncString)fn.getDoc()).getValue(),
+					runExamples(name, toStringList(fn.getExamples()), runExamples, catchEx),
 					idgen.id());
 		}
 	
@@ -1259,17 +969,9 @@ public class DocGenerator {
 
 	private String runExamples(
 			final String name, 
-			final List<String> examples,
-			final boolean run
-	) {
-		return runExamples(name, examples, false, run);
-	}
-
-	private String runExamples(
-			final String name, 
 			final List<String> examples, 
-			final boolean catchEx,
-			final boolean run
+			final boolean run,
+			final boolean catchEx
 	) {
 		final Venice runner = new Venice();
 

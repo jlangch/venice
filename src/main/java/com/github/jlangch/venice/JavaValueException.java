@@ -25,11 +25,12 @@ package com.github.jlangch.venice;
 public class JavaValueException extends VncException {
 		
 	public JavaValueException(final Object value) {
+		super("");
 		this.value = value;
 	}
   
 	public JavaValueException(final Object value, final Throwable cause) {
-		super(cause);
+		super("", cause);
 		this.value = value;
 	}
 	

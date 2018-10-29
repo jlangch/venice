@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.CapturingPrintStream;
+
 
 public class SpecialFormsTest {
 
@@ -272,9 +274,12 @@ public class SpecialFormsTest {
 
 	@Test
 	public void test_doc() {
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+		
 		final Venice venice = new Venice();
 		
-		assertNotNull(venice.eval("(doc +)"));
+		venice.eval("(doc +)", Parameters.of("*out*", ps));
+		assertNotNull(ps.getOutput());
 	}
 
 	@Test
