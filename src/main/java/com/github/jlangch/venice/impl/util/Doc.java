@@ -28,6 +28,7 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class Doc {
@@ -35,10 +36,31 @@ public class Doc {
 	public static VncString getDoc(final VncVal val) {
 		if (val != null && Types.isVncFunction(val)) {
 			final VncFunction fn = (VncFunction)val;
+			final VncList argsList = fn.getArgLists();
+			final VncList examples = fn.getExamples();
+			
 			final StringBuilder sb =  new StringBuilder();
-			sb.append(fn.getArgLists().getList().stream().map(s -> toString(s)).collect(Collectors.joining(", ")));
-			sb.append("\n");
+						
+			sb.append(argsList
+						.getList()
+						.stream()
+						.map(s -> toString(s))
+						.collect(Collectors.joining(", ")));
+			
+			sb.append("\n\n");
 			sb.append(toString(fn.getDoc()));
+			
+			if (!examples.isEmpty()) {
+				sb.append("\n\n");
+				sb.append("Examples:\n");
+				sb.append(examples
+							.getList()
+							.stream()
+							.map(s -> toString(s))
+							.map(e -> StringUtil.stripMargin(e, '|'))
+							.collect(Collectors.joining("\n")));
+			}
+			
 			return new VncString(sb.toString());			
 		}
 				
