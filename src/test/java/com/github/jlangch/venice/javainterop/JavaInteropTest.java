@@ -497,7 +497,6 @@ public class JavaInteropTest {
 		final String script =
 				"(do                                                                      " +
 				"    (import :java.util.function.BinaryOperator)                          " +
-				"    (import :java.util.stream.Collectors)                                " +
 			    "                                                                         " +
 				"    (-> (. [1 2 3 4] :stream)                                            " +
 			    "        (. :reduce 0 (proxify :BinaryOperator { :apply #(+ %1 %2) })))   " +
@@ -513,7 +512,6 @@ public class JavaInteropTest {
 		final String script =
 				"(do                                                                      " +
 				"    (import :java.util.function.BinaryOperator)                          " +
-				"    (import :java.util.stream.Collectors)                                " +
 			    "                                                                         " +
 				"    (-> (. [1 2 3 4] :stream)                                            " +
 			    "        (. :reduce (proxify :BinaryOperator { :apply #(+ %1 %2) }))      " +
