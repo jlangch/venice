@@ -213,7 +213,7 @@ public class VeniceInterpreter {
 					final String name = ((VncString)CoreFunctions.name.apply(ast.slice(1))).getValue();
 					VncVal docVal = SpecialForms.ns.get(new VncSymbol(name));
 					if (docVal == null) {
-						docVal = Doc.getDoc(env.get(new VncSymbol(name)));
+						docVal = env.get(new VncSymbol(name));
 					}
 					orig_ast = new VncList(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
