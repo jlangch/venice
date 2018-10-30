@@ -195,15 +195,15 @@ public class SpecialForms {
 			setExamples(
 					"(let [x 1] x))",
 					
-					";; destructured map \n" +
-					"(let [{:keys [width height title ]\n" + 
-					"       :or {width 640 height 500}\n" + 
-					"       :as styles}\n" +  
-					"      {:width 1000 :title \"Title\"}]\n" +  
-				    "     (println \"width: \" width)\n" +  
-				    "     (println \"height: \" height)\n" +  
-				    "     (println \"title: \" title)\n" + 
-			        "     (println \"styles: \" styles))");
+					";; destructured map                     \n" +
+					"(let [{:keys [width height title ]      \n" + 
+					"       :or {width 640 height 500}       \n" + 
+					"       :as styles}                      \n" +  
+					"      {:width 1000 :title \"Title\"}]   \n" +  
+				    "     (println \"width: \" width)        \n" +  
+				    "     (println \"height: \" height)      \n" +  
+				    "     (println \"title: \" title)        \n" + 
+			        "     (println \"styles: \" styles))       ");
 		}
 		
 		public VncVal apply(final VncList args) {
