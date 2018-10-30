@@ -945,17 +945,11 @@ public class DocGenerator {
 	private DocItem getDocItem_(final String name, final boolean runExamples, final boolean catchEx) {
 		// Special forms
 		VncFunction fn = (VncFunction)SpecialForms.ns.get(new VncSymbol(name));
-		if (fn != null) {
-			return new DocItem(
-					name, 
-					toStringList(fn.getArgLists()), 
-					fn.getDoc() == Constants.Nil ? "" : ((VncString)fn.getDoc()).getValue(),
-					runExamples(name, toStringList(fn.getExamples()), runExamples, catchEx),
-					idgen.id());
+		if (fn == null) {
+			// functions & macros
+			fn = getFunction(name);
 		}
 		
-		// functions & macros
-		fn = getFunction(name);
 		if (fn != null) {
 			return new DocItem(
 					name, 
