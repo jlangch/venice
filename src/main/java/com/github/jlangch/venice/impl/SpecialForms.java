@@ -32,8 +32,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 /**
- * The special from functions just server for documentation for the cheat-sheet and 
- * the 'doc' function!
+ * The special form pseudo functions just serve for the cheat-sheet generation 
+ * and the 'doc' function!
  */
 public class SpecialForms {
 
@@ -48,7 +48,6 @@ public class SpecialForms {
 			return Nil;
 		}
 	};
-
 	
 	public static VncFunction list = new VncFunction("()") {
 		{
