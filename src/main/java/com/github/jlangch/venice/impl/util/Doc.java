@@ -57,7 +57,7 @@ public class Doc {
 							.getList()
 							.stream()
 							.map(s -> toString(s))
-							.map(e -> StringUtil.stripMargin(e, '|'))
+							.map(e -> indent(StringUtil.stripMargin(e, '|'), "    "))
 							.collect(Collectors.joining("\n\n")));
 			}
 
@@ -67,6 +67,19 @@ public class Doc {
 		}
 				
 		return new VncString("<no documentation available>");			
+	}
+	
+	private static String indent(final String text, final String indent) {
+		if (StringUtil.isBlank(text)) {
+			return text;
+		}
+		else {
+			return StringUtil
+						.splitIntoLines(text)
+						.stream()
+						.map(s -> indent + s)
+						.collect(Collectors.joining("\n"));
+		}
 	}
 	
 	private static String toString(final VncVal val) {
