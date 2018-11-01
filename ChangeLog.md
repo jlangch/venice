@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added function _doc_
+- added function _list*_
 - added the _with-sh-dir_ macro checks now the directory exists exists
 
 

@@ -1133,6 +1133,55 @@ public class CoreFunctions {
 		}
 	};
 
+	public static VncFunction new_list_ASTERISK = new VncFunction("list*") {
+		{
+			setArgLists(	
+		    	"(list* args)",
+		    	"(list* a args)",
+		    	"(list* a b args)",
+		    	"(list* a b c args)",
+		    	"(list* a b c d & more)");
+		    
+		    
+			setDoc("Creates a new list containing the items prepended to the rest, the\n" + 
+					"last of which will be treated as a collection.");
+			
+			setExamples(
+					"(list* 1 [2 3])", 
+					"(list* 1 2 3 [4])", 
+					"(list* '(1 2) 3 [4])", 
+					"(list* nil)",
+					"(list* nil [2 3])",
+					"(list* 1 2 nil)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("list*", args, 1);
+			
+			if (args.size() == 1 && args.first() == Nil) {
+				return Nil;
+			}
+			
+			if (args.last() == Nil) {
+				final VncList list = new VncList();
+				list.addAllAtEnd(args.slice(0, args.size()-1));
+				return list;
+			}
+			
+			if (!Types.isVncList(args.last())) {
+				throw new VncException(String.format(
+						"Function 'list*' does not allow %s as last argument. %s", 
+						Types.getClassName(args.last()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+			
+			final VncList list = new VncList();
+			list.addAllAtEnd(args.slice(0, args.size()-1));
+			list.addAllAtEnd((VncList)args.last());
+			return list;
+		}
+	};
+
 	static public boolean list_Q(VncVal mv) {
 		return mv.getClass().equals(VncList.class);
 	}
@@ -2756,7 +2805,7 @@ public class CoreFunctions {
 			if (Types.isVncList(args.nth(1))) {
 				final VncList list = new VncList();
 				list.addAtStart(args.nth(0));
-				list.addAtEnd((VncList)args.nth(1));
+				list.addAllAtEnd((VncList)args.nth(1));
 				return list;
 			}
 			else if (Types.isVncSet(args.nth(1))) {
@@ -2867,7 +2916,7 @@ public class CoreFunctions {
 				for(int ii=0; ii<lists.size(); ii++) {
 					item.addAtEnd(lists.get(ii).nth(nn));
 				}
-				result.addAtEnd(item);
+				result.addAllAtEnd(item);
 			}
 					
 			return result;
@@ -3331,17 +3380,17 @@ public class CoreFunctions {
 			final VncList result = new VncList();
 			for(List<VncVal> split : splits) {
 				if (n == split.size()) {
-					result.addList(new VncList(split));
+					result.addAtEnd(new VncList(split));
 				}
 				else if (n < split.size()) {
-					result.addList(new VncList(split.subList(0, n)));
+					result.addAtEnd(new VncList(split.subList(0, n)));
 				}
 				else {
 					final List<VncVal> split_ = new ArrayList<>(split);
 					for(int ii=0; ii<(n-split.size()) && ii<padcoll.size(); ii++) {
 						split_.add(padcoll.get(ii));
 					}
-					result.addList(new VncList(split_));
+					result.addAtEnd(new VncList(split_));
 				}
 			}
 			return result;
@@ -3868,7 +3917,7 @@ public class CoreFunctions {
 			
 			return new VncFunction() {
 				public VncVal apply(final VncList args) {
-					return fn.apply(fnArgs.copy().addAtEnd(args));
+					return fn.apply(fnArgs.copy().addAllAtEnd(args));
 				}
 			};
 		}
@@ -4777,6 +4826,7 @@ public class CoreFunctions {
 				.put("bytebuf-from-string",	bytebuf_from_string)			
 				
 				.put("list",				new_list)
+				.put("list*",				new_list_ASTERISK)
 				.put("list?",				list_Q)
 				.put("vector",				new_vector)
 				.put("vector?",				vector_Q)

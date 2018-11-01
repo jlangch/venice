@@ -134,7 +134,7 @@ public class VncList extends VncSequence {
 		return this;
 	}
 	
-	public VncList addAtStart(final VncList list) {
+	public VncList addAllAtStart(final VncList list) {
 		final List<VncVal> items = list.getList();
 		for(int ii=items.size()-1; ii>=0; ii++) {
 			value.add(0, items.get(ii));
@@ -147,13 +147,8 @@ public class VncList extends VncSequence {
 		return this;
 	}
 	
-	public VncList addAtEnd(final VncList list) {
+	public VncList addAllAtEnd(final VncList list) {
 		value.addAll(list.getList());
-		return this;
-	}
-	
-	public VncList addList(final VncList list) {
-		value.add(list);
 		return this;
 	}
 

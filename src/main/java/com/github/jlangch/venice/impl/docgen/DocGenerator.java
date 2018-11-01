@@ -333,6 +333,7 @@ public class DocGenerator {
 		lists.addSection(list_create);
 		list_create.addItem(getDocItem("()"));
 		list_create.addItem(getDocItem("list"));
+		list_create.addItem(getDocItem("list*"));
 
 		final DocSection list_access = new DocSection("Access");
 		lists.addSection(list_access);
