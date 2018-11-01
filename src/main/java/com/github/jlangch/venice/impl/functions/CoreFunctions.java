@@ -1160,25 +1160,22 @@ public class CoreFunctions {
 			
 			if (args.size() == 1 && args.first() == Nil) {
 				return Nil;
+			}			
+			else if (args.last() == Nil) {
+				return new VncList(args.slice(0, args.size()-1).getList());
 			}
-			
-			if (args.last() == Nil) {
-				final VncList list = new VncList();
-				list.addAllAtEnd(args.slice(0, args.size()-1));
-				return list;
-			}
-			
-			if (!Types.isVncList(args.last())) {
+			else if (!Types.isVncList(args.last())) {
 				throw new VncException(String.format(
 						"Function 'list*' does not allow %s as last argument. %s", 
 						Types.getClassName(args.last()),
 						ErrorMessage.buildErrLocation(args)));
 			}
-			
-			final VncList list = new VncList();
-			list.addAllAtEnd(args.slice(0, args.size()-1));
-			list.addAllAtEnd((VncList)args.last());
-			return list;
+			else {			
+				final VncList list = new VncList();
+				list.addAllAtEnd(args.slice(0, args.size()-1));
+				list.addAllAtEnd((VncList)args.last());
+				return list;
+			}
 		}
 	};
 

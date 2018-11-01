@@ -1311,7 +1311,23 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertNull(venice.eval("(list* nil)"));
+		assertEquals("(1 2)", venice.eval("(str (list* 1 2 nil))"));
 		
+		// list
+		assertEquals("(1)", venice.eval("(str (list* '(1)))"));
+		assertEquals("(1 2)", venice.eval("(str (list* '(1 2)))"));
+		assertEquals("(1 2 3)", venice.eval("(str (list* '(1 2 3)))"));
+		
+		assertEquals("(1 9)", venice.eval("(str (list* 1 '(9)))"));
+		assertEquals("(1 2 3 8 9)", venice.eval("(str (list* 1 2 3 '(8 9)))"));
+		assertEquals("(1 2 3 7 8 9)", venice.eval("(str (list* 1 2 3 '(7 8 9)))"));
+		
+		assertEquals("([1 2] 3 7 8 9)", venice.eval("(str (list* [1 2] 3 '(7 8 9)))"));
+		
+		assertEquals("(nil 1 2)", venice.eval("(str (list* nil '(1 2)))"));
+		assertEquals("(nil 1 2 3)", venice.eval("(str (list* nil 1 '(2 3)))"));
+		
+		// vector
 		assertEquals("(1)", venice.eval("(str (list* [1]))"));
 		assertEquals("(1 2)", venice.eval("(str (list* [1 2]))"));
 		assertEquals("(1 2 3)", venice.eval("(str (list* [1 2 3]))"));
@@ -1322,7 +1338,6 @@ public class CoreFunctionsTest {
 		
 		assertEquals("([1 2] 3 7 8 9)", venice.eval("(str (list* [1 2] 3 [7 8 9]))"));
 		
-		assertEquals("(1 2)", venice.eval("(str (list* 1 2 nil))"));
 		assertEquals("(nil 1 2)", venice.eval("(str (list* nil [1 2]))"));
 		assertEquals("(nil 1 2 3)", venice.eval("(str (list* nil 1 [2 3]))"));
 	}
