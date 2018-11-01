@@ -44,6 +44,15 @@ public class ShellFunctionsTest {
 	}
 
 	@Test
+	public void test_shell_with_dir() {
+		final Venice venice = new Venice();
+		
+		final Map<?,?> result = (Map<?,?>)venice.eval("(with-sh-dir \"/tmp\" (sh \"ls\"))");
+		
+		assertEquals(0L, result.get("exit"));
+	}
+
+	@Test
 	public void test_shell_error_exit_code() {
 		final Venice venice = new Venice();
 		
