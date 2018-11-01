@@ -57,7 +57,7 @@ foo> java -jar venice-0.9.10.jar -file script.venice
 => 2
 ```
 
-## Venice as expression engine
+## Venice as scripting/expression engine
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -151,11 +151,11 @@ Float, Double, and BigDecimal.
    (. :java.lang.Math :min 20 30)
 
    ;; constructor and instance method
-   (. (. :java.time.ZonedDateTime :now) :plusDays 5)
+   (-> (. :java.time.ZonedDateTime :now) (. :plusDays 5))
 
    ;; class object
    (. :java.lang.Math :class)
-   (. (. :java.time.ZonedDateTime :now) :class))
+   (-> (. :java.time.ZonedDateTime :now) (. :class))
 ```
 
 
@@ -178,7 +178,7 @@ Java VarArgs:
 ```
 
 
-Tail recursion:
+Recursion:
 
 ```clojure
 (do
