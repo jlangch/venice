@@ -57,7 +57,7 @@ foo> java -jar venice-0.9.10.jar -file script.venice
 => 2
 ```
 
-## Venice as scripting/expression engine
+## Venice as scripting engine
 
 ```java
 import com.github.jlangch.venice.Venice;
