@@ -73,25 +73,29 @@ public class ShellFunctions {
 			setDoc( "Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
 					"\n" +
 					" Options are\n" + 
-					"  :in        may be given followed by input source as InputStream, Reader, \n" + 
-					"             File, ByteBuf, or String, to be fed to the sub-process's stdin.\n" + 
-					"  :in-enc    option may be given followed by a String, used as a character\n" + 
-					"             encoding name (for example \"UTF-8\" or \"ISO-8859-1\") to\n" + 
-					"             convert the input string specified by the :in option to the\n" + 
-					"             sub-process's stdin.  Defaults to UTF-8.\n" + 
-					"             If the :in option provides a byte array, then the bytes are passed\n" + 
-					"             unencoded, and this option is ignored.\n" + 
-					"  :out-enc   option may be given followed by :bytes or a String. If a\n" + 
-					"             String is given, it will be used as a character encoding\n" + 
-					"             name (for example \"UTF-8\" or \"ISO-8859-1\") to convert\n" + 
-					"             the sub-process's stdout to a String which is returned.\n" + 
-					"             If :bytes is given, the sub-process's stdout will be stored\n" + 
-					"             in a Bytebuf and returned.  Defaults to UTF-8.\n" + 
+					"  :in        may be given followed by input source as InputStream,\n" + 
+					"             Reader, File, ByteBuf, or String, to be fed to the\n" + 
+					"             sub-process's stdin.\n" + 
+					"  :in-enc    option may be given followed by a String, used as a\n" + 
+					"             character encoding name (for example \"UTF-8\" or\n" + 
+					"             \"ISO-8859-1\") to convert the input string specified\n" + 
+					"             by the :in option to the sub-process's stdin. Defaults\n" + 
+					"             to UTF-8. If the :in option provides a byte array,\n" + 
+					"             then the bytes are passed unencoded, and this option\n" + 
+					"             is ignored.\n" + 
+					"  :out-enc   option may be given followed by :bytes or a String. If\n" + 
+					"             a String is given, it will be used as a character\n" + 
+					"             encoding name (for example \"UTF-8\" or \"ISO-8859-1\")\n" + 
+					"             to convert the sub-process's stdout to a String which is\n" + 
+					"             returned. If :bytes is given, the sub-process's stdout\n" + 
+					"             will be stored in a Bytebuf and returned. Defaults to\n" + 
+					"             UTF-8.\n" + 
 					"  :env       override the process env with a map.\n" + 
 					"  :dir       override the process dir with a String or java.io.File.\n" + 
-					"  :throw-ex  If true throw an exception if the exit code is not equal to\n" + 
-					"             zero, if false returns the exit code. Defaults to false.\n" + 
-					"             It's recommended to use (with-sh-throw (sh \"foo\")) instead.\n" + 
+					"  :throw-ex  If true throw an exception if the exit code is not equal\n" + 
+					"             to zero, if false returns the exit code. Defaults to\n" + 
+					"             false. It's recommended to use (with-sh-throw (sh \"foo\"))\n" + 
+					"             instead.\n" + 
 					"\n" +
 					"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
 					"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
