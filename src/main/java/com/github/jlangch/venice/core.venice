@@ -333,6 +333,10 @@
   with-sh-dir [dir & forms]
   
   `(do
+      (when-not (io/exists-dir? (io/file ~dir))
+         (throw (. :com.github.jlangch.venice.ShellException 
+                   :new 
+                   (str/format "The dir '%s' does not exist" ~dir))))     
       (thread-local :*sh-dir* ~dir)
       (try
          (do ~@forms)
