@@ -332,7 +332,7 @@ Alternative to UNIX shell scripts:
 ;; ----------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
-;; > java -jar venice-0.9.10.jar -file zip-tomcat-logs.venice ./logs
+;; > java -jar venice-0.9.11.jar -file zip-tomcat-logs.venice ./logs
 ;; ----------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
@@ -346,25 +346,26 @@ Alternative to UNIX shell scripts:
          (map #(io/file dir %)
               (. dir :list (proxify :java.io.FilenameFilter {:accept filter}))))
 
-   (defn zip-files [zip files]
-         (apply sh (concat ["zip" (:path zip)] (map (fn [f] (:path f)) files))))
+   (defn zip-files [dir zip files]
+         (with-sh-throw
+            (with-sh-dir dir
+               (apply sh (concat ["zip" (:name zip)] (map #(:name %) files))))))
 
    (defn zip-tomcat-logs [prefix dir year month]
-         (with-sh-throw
-            (try
-               (let [zip (tomcat-log-file-zip prefix dir year month)
-                     filter (tomcat-log-file-filter prefix year month)]
-                  (when-not (io/exists-file? zip)
-                     (let [logs (find-log-files dir filter)]
-                        (printf "Compacting %s ...\n" prefix)
-                        (printf "   Found %d log files\n" (count logs))
-                        (when-not (empty? logs)
-                           (zip-files zip logs)
-                           (printf "   Zipped to %s\n" (:name zip))
-                           (apply io/delete-file logs)
-                           (printf "   Removed %d files\n" (count logs))))))
-               (catch :com.github.jlangch.venice.ShellException ex
-                   (printf "Error compacting %s: %s" prefix (:message ex))))))
+         (try
+            (let [zip (tomcat-log-file-zip prefix dir year month)
+                  filter (tomcat-log-file-filter prefix year month)]
+               (when-not (io/exists-file? zip)
+                  (let [logs (find-log-files dir filter)]
+                     (printf "Compacting %s ...\n" prefix)
+                     (printf "   Found %d log files\n" (count logs))
+                     (when-not (empty? logs)
+                        (zip-files dir zip logs)
+                        (printf "   Zipped to %s\n" (:name zip))
+                        (apply io/delete-file logs)
+                        (printf "   Removed %d files\n" (count logs))))))
+            (catch :com.github.jlangch.venice.ShellException ex
+                (printf "Error compacting %s: %s" prefix (:message ex)))))
 
    (defn first-day-last-month []
          (-> (time/local-date) (time/first-day-of-month) (time/minus :month 1)))
