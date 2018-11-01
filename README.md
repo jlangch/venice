@@ -151,11 +151,13 @@ Float, Double, and BigDecimal.
    (. :java.lang.Math :min 20 30)
 
    ;; constructor and instance method
-   (-> (. :java.time.ZonedDateTime :now) (. :plusDays 5))
+   (-> (. :java.time.ZonedDateTime :now) 
+       (. :plusDays 5))
 
    ;; class object
    (. :java.lang.Math :class)
-   (-> (. :java.time.ZonedDateTime :now) (. :class))
+   (-> (. :java.time.ZonedDateTime :now) 
+       (. :class))
 ```
 
 
@@ -165,8 +167,7 @@ Java enum values can be passed as simple or scoped keywords:
 (do
    (import :java.time.LocalDate)
 
-   (. :LocalDate :of 1994 :JANUARY 21)
-   
+   (. :LocalDate :of 1994 :JANUARY 21)   
    (. :LocalDate :of 1994 :java.time.Month.JANUARY 21))
 ```
 
@@ -182,11 +183,11 @@ Recursion:
 
 ```clojure
 (do
-  (defn sum [n]
-     (loop [cnt n acc 0]
-           (if (zero? cnt)
-               acc
-               (recur (dec cnt) (+ acc cnt)))))
+   (defn sum [n]
+      (loop [cnt n acc 0]
+            (if (zero? cnt)
+                acc
+                (recur (dec cnt) (+ acc cnt)))))
 
    (sum 100000))
 ```
