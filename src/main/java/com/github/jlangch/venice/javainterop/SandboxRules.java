@@ -413,6 +413,10 @@ public class SandboxRules {
 				"java.lang.StringBuffer",
 				"java.lang.StringBuilder",
 				
+				"java.time.ZonedDateTime:*",
+				"java.time.LocalDateTime:*",
+				"java.time.LocalDate:*",
+							
 				"java.math.BigInteger",
 				"java.math.BigDecimal",
 				
