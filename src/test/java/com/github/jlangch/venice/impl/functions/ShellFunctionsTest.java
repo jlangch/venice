@@ -44,10 +44,19 @@ public class ShellFunctionsTest {
 	}
 
 	@Test
-	public void test_shell_with_dir() {
+	public void test_shell_with_dir_1() {
 		final Venice venice = new Venice();
 		
 		final Map<?,?> result = (Map<?,?>)venice.eval("(with-sh-dir \"/tmp\" (sh \"ls\"))");
+		
+		assertEquals(0L, result.get("exit"));
+	}
+
+	@Test
+	public void test_shell_with_dir_2() {
+		final Venice venice = new Venice();
+		
+		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" :dir \"/tmp\")");
 		
 		assertEquals(0L, result.get("exit"));
 	}
@@ -61,11 +70,20 @@ public class ShellFunctionsTest {
 	}
 
 	@Test
-	public void test_shell_error_throw_exception() {
+	public void test_shell_error_throw_exception_1() {
 		final Venice venice = new Venice();
 		
 		assertThrows(
 	            ShellException.class, 
 	            () -> venice.eval("(with-sh-throw (sh \"rm\" \"x.any\"))"));
+	}
+
+	@Test
+	public void test_shell_error_throw_exception_2() {
+		final Venice venice = new Venice();
+		
+		assertThrows(
+	            ShellException.class, 
+	            () -> venice.eval("(sh \"rm\" \"x.any\" :throw-ex true)"));
 	}
 }
