@@ -117,9 +117,11 @@ public class ShellFunctions {
 					
 					";; working directory\n" +
 					"(println (with-sh-dir \"/tmp\" (sh \"ls\" \"-l\") (sh \"pwd\")))", 
+					"(println (sh \"pwd\" :dir \"/tmp\"))", 
 					
 					";; throw an exception if the shell's subprocess exit code is not equal to 0\n" +
 					"(println (with-sh-throw (sh \"ls\" \"-l\")))", 
+					"(println (sh \"ls\" \"-l\" :throw-ex true))", 
 					
 					";; windows\n" +
 					"(println (sh \"cmd\" \"/c dir 1>&2\"))");
@@ -308,10 +310,10 @@ public class ShellFunctions {
 	
 	private static void validateArgs(final VncList args) {
 		args.forEach(arg -> {
-			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg))) {
+			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg) || Types.isVncBoolean(arg))) {
 				throw new VncException(
 						String.format(
-								"sh: accepts strings and keyword only. Got an argument of type %s. %s",
+								"sh: accepts strings, keywords, and booleans only. Got an argument of type %s. %s",
 								Types.getClassName(arg),
 								ErrorMessage.buildErrLocation(arg)));
 			}
