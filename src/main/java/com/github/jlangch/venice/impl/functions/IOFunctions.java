@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -127,6 +128,30 @@ public class IOFunctions {
 							ErrorMessage.buildErrLocation(args)));
 				}
 			}		
+		}
+	};
+
+	public static VncFunction io_file_size = new VncFunction("io/file-size") {
+		{
+			setArgLists("(io/file-size f)");
+			
+			setDoc("Returns the size of the file f. f must be a java.io.File.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/file-size", args);
+
+			assertArity("io/file-size", args, 1);
+
+			if (!isJavaIoFile(args.first()) ) {
+				throw new VncException(String.format(
+						"Function 'io/file-size' does not allow %s as f. %s",
+						Types.getClassName(args.first()),
+						ErrorMessage.buildErrLocation(args)));
+			}
+
+			final File file = (File)((VncJavaObject)args.first()).getDelegate();
+			return new VncLong(file.length());
 		}
 	};
 
@@ -1010,9 +1035,10 @@ public class IOFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()								
+			new VncHashMap.Builder()
 					.put("io/file",						io_file)
 					.put("io/file?",					io_file_Q)
+					.put("io/file-size",				io_file_size)
 					.put("io/exists-file?",				io_exists_file_Q)
 					.put("io/exists-dir?",				io_exists_dir_Q)
 					.put("io/list-files",				io_list_files)
@@ -1029,7 +1055,7 @@ public class IOFunctions {
 					.put("io/slurp-temp-file",			io_slurp_temp_file)
 					.put("io/slurp-stream",				io_slurp_stream)
 					.put("io/spit-stream",				io_spit_stream)
-					.put("io/mime-type",				io_mime_type)	
+					.put("io/mime-type",				io_mime_type)
 					.put("io/load-classpath-resource",	io_load_classpath_resource)
 					.toMap();
 

@@ -48,6 +48,7 @@ public class IOFnBlacklisted {
 								"promise?",
 
 								// I/O
+								"io/file-size",
 								"io/copy-file",
 								"io/delete-file",
 								"io/exists-dir?",
