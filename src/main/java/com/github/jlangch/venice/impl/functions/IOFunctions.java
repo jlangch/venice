@@ -136,6 +136,8 @@ public class IOFunctions {
 			setArgLists("(io/file-size f)");
 			
 			setDoc("Returns the size of the file f. f must be a java.io.File.");
+			
+			setExamples("(io/file-size (io/file \"/bin/sh\"))");
 		}
 		
 		public VncVal apply(final VncList args) {
