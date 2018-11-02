@@ -29,7 +29,7 @@ public class ValueException extends VncException {
 	public ValueException(final VncVal value) {
 		this.value = value;
 	}
-  
+
 	public ValueException(final VncVal value, final Throwable cause) {
 		super(cause);
 		this.value = value;

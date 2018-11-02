@@ -86,14 +86,16 @@ public class VeniceInterpreter {
 			else if (is_pair(a0)) {
 				final VncVal a00 = Coerce.toVncList(a0).nth(0);
 				if ((a00 instanceof VncSymbol) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
-					return new VncList(new VncSymbol("concat"),
-										Coerce.toVncList(a0).nth(1),
-									   quasiquote(((VncList)ast).rest()));
+					return new VncList(
+								new VncSymbol("concat"),
+								Coerce.toVncList(a0).nth(1),
+								quasiquote(((VncList)ast).rest()));
 				}
 			}
-			return new VncList(new VncSymbol("cons"),
-							   quasiquote(a0),
-							   quasiquote(((VncList)ast).rest()));
+			return new VncList(
+						new VncSymbol("cons"),
+						quasiquote(a0),
+						quasiquote(((VncList)ast).rest()));
 		}
 	}
 

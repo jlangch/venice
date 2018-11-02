@@ -79,9 +79,9 @@ public class AnonymousFnArgs {
 	private int getMaArgxPos() {
 		return fnArgs.stream()
 					 .filter(s -> s.matches("%[1-9][0-9]*"))
-				     .map(s -> Integer.parseInt(s.substring(1)))
-				     .max(Integer::compareTo)
-				     .orElse(Integer.valueOf(-1));
+					 .map(s -> Integer.parseInt(s.substring(1)))
+					 .max(Integer::compareTo)
+					 .orElse(Integer.valueOf(-1));
 	}
 	
 	

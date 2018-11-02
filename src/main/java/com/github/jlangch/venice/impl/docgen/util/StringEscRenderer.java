@@ -57,7 +57,7 @@ public class StringEscRenderer implements AttributeRenderer {
 	}
 
 
-    @Override
+	@Override
 	public String toString(
 			final Object attribute, 
 			final String format, 
@@ -95,7 +95,7 @@ public class StringEscRenderer implements AttributeRenderer {
 		}
 	}
 
-    private static String urlEncode(final String text) {
+	private static String urlEncode(final String text) {
 		try {
 			return URLEncoder.encode(text, "UTF-8");
 		} 
@@ -103,18 +103,18 @@ public class StringEscRenderer implements AttributeRenderer {
 			// UTF-8 is standard, should always be available
 			throw new RuntimeException(ex);
 		}
-    }
+	}
 
-    
-    private static String multiline(final String text) {
-    		if (text == null) {
-    			return null;
-    		}
-    		else {
-    			return StringUtil
+
+	private static String multiline(final String text) {
+			if (text == null) {
+				return null;
+			}
+			else {
+				return StringUtil
 						.splitIntoLines(text)
 						.stream()
 						.collect(Collectors.joining("<br/>"));
-    		}
-    }
+			}
+	}
 }

@@ -44,6 +44,6 @@ public class PdfRenderer {
 		}		
 	}
 
-    private static final int DOTS_PER_PIXEL = 20;
-    private static final float DOTS_PER_POINT = (float)DOTS_PER_PIXEL * 96f / 72f;
+	private static final int DOTS_PER_PIXEL = 20;
+	private static final float DOTS_PER_POINT = (float)DOTS_PER_PIXEL * 96f / 72f;
 }

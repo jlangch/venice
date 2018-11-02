@@ -35,7 +35,7 @@ public class CodeSnippetReader {
 		try {
 			final List<String> lines = load();
 			
-			final List<Integer> snippetStartLines = new ArrayList<>();			
+			final List<Integer> snippetStartLines = new ArrayList<>();
 			for(int ii=0; ii<lines.size(); ii++) {
 				if (lines.get(ii).startsWith("**")) {
 					snippetStartLines.add(ii);

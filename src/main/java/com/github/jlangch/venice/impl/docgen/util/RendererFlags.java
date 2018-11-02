@@ -48,9 +48,9 @@ public class RendererFlags {
 	public static RendererFlags parse(final String format) {
 		return new RendererFlags(
 				Arrays.stream(StringUtil.trimToEmpty(format).split("[:]"))
-				      .map(f -> StringUtil.trimToNull(f))
-				      .filter(f -> f != null)
-				      .collect(Collectors.toSet()));
+					  .map(f -> StringUtil.trimToNull(f))
+					  .filter(f -> f != null)
+					  .collect(Collectors.toSet()));
 	}
 
 	public boolean contains(final String flag) {

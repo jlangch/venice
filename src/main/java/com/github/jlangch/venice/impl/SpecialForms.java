@@ -39,8 +39,8 @@ public class SpecialForms {
 
 	public static VncFunction doc = new VncFunction("doc") {
 		{
-			setArgLists("(doc name)");			
-			setDoc("Prints documentation for a var or special form given its name");			
+			setArgLists("(doc name)");
+			setDoc("Prints documentation for a var or special form given its name");
 			setExamples("(doc +)");
 		}
 		
@@ -51,8 +51,8 @@ public class SpecialForms {
 	
 	public static VncFunction list = new VncFunction("()") {
 		{
-			setArgLists("");			
-			setDoc("Creates a list.");			
+			setArgLists("");
+			setDoc("Creates a list.");
 			setExamples("'(10 20 30)");
 		}
 		
@@ -63,8 +63,8 @@ public class SpecialForms {
 
 	public static VncFunction vector = new VncFunction("[]") {
 		{
-			setArgLists("");			
-			setDoc("Creates a vector.");			
+			setArgLists("");
+			setDoc("Creates a vector.");
 			setExamples("[10 20 30]");
 		}
 		
@@ -75,8 +75,8 @@ public class SpecialForms {
 
 	public static VncFunction set = new VncFunction("#{}") {
 		{
-			setArgLists("");			
-			setDoc("Creates a set.");			
+			setArgLists("");
+			setDoc("Creates a set.");
 			setExamples("#{10 20 30}");
 		}
 		
@@ -87,8 +87,8 @@ public class SpecialForms {
 
 	public static VncFunction map = new VncFunction("{}") {
 		{
-			setArgLists("");			
-			setDoc("Creates a hash map.");			
+			setArgLists("");
+			setDoc("Creates a hash map.");
 			setExamples("{:a 10 b: 20}");
 		}
 		
@@ -99,8 +99,8 @@ public class SpecialForms {
 
 	public static VncFunction fn = new VncFunction("fn") {
 		{
-			setArgLists("(fn [params*] condition-map? expr*)");			
-			setDoc("Defines an anonymous function.");			
+			setArgLists("(fn [params*] condition-map? expr*)");
+			setDoc("Defines an anonymous function.");
 			setExamples(
 					"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
 					
@@ -139,7 +139,7 @@ public class SpecialForms {
 	public static VncFunction eval = new VncFunction("eval") {
 		{
 			setArgLists("(eval form)");			
-			setDoc("Evaluates the form data structure (not text!) and returns the result.");			
+			setDoc("Evaluates the form data structure (not text!) and returns the result.");
 			setExamples(
 					 "(eval '(let [a 10] (+ 3 4 a)))",
 					 "(eval (list + 1 2 3))");
@@ -152,8 +152,8 @@ public class SpecialForms {
 
 	public static VncFunction def = new VncFunction("def") {
 		{
-			setArgLists("(def name expr)");			
-			setDoc("Creates a global variable.");			
+			setArgLists("(def name expr)");
+			setDoc("Creates a global variable.");
 			setExamples(
 					 "(def val 5)",
 					 "(def sum (fn [x y] (+ x y)))");
@@ -166,8 +166,8 @@ public class SpecialForms {
 
 	public static VncFunction do_ = new VncFunction("do") {
 		{
-			setArgLists("(do exprs)");			
-			setDoc("Evaluates the expressions in order and returns the value of the last.");			
+			setArgLists("(do exprs)");
+			setDoc("Evaluates the expressions in order and returns the value of the last.");
 			setExamples("(do (println \"Test...\") (+ 1 1))");
 		}
 		
@@ -178,8 +178,8 @@ public class SpecialForms {
 
 	public static VncFunction if_ = new VncFunction("if") {
 		{
-			setArgLists("(if test true-expr false-expr)");			
-			setDoc("Evaluates test.");			
+			setArgLists("(if test true-expr false-expr)");
+			setDoc("Evaluates test.");
 			setExamples("(if (< 10 20) \"yes\" \"no\")");
 		}
 		
@@ -190,20 +190,20 @@ public class SpecialForms {
 
 	public static VncFunction let = new VncFunction("let") {
 		{
-			setArgLists("(let [bindings*] exprs*)");			
-			setDoc("Evaluates the expressions and binds the values to symbols to new local context");			
+			setArgLists("(let [bindings*] exprs*)");
+			setDoc("Evaluates the expressions and binds the values to symbols to new local context");
 			setExamples(
 					"(let [x 1] x))",
 					
 					";; destructured map                     \n" +
-					"(let [{:keys [width height title ]      \n" + 
-					"       :or {width 640 height 500}       \n" + 
-					"       :as styles}                      \n" +  
-					"      {:width 1000 :title \"Title\"}]   \n" +  
-				    "     (println \"width: \" width)        \n" +  
-				    "     (println \"height: \" height)      \n" +  
-				    "     (println \"title: \" title)        \n" + 
-			        "     (println \"styles: \" styles))       ");
+					"(let [{:keys [width height title ]      \n" +
+					"       :or {width 640 height 500}       \n" +
+					"       :as styles}                      \n" +
+					"      {:width 1000 :title \"Title\"}]   \n" +
+					"     (println \"width: \" width)        \n" +
+					"     (println \"height: \" height)      \n" +
+					"     (println \"title: \" title)        \n" +
+					"     (println \"styles: \" styles))       ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -213,15 +213,15 @@ public class SpecialForms {
 
 	public static VncFunction loop = new VncFunction("loop") {
 		{
-			setArgLists("(loop [bindings*] exprs*)");			
+			setArgLists("(loop [bindings*] exprs*)");
 			setDoc( "Evaluates the exprs and binds the bindings. " + 
-					"Creates a recursion point with the bindings.");			
+					"Creates a recursion point with the bindings.");
 			setExamples(
 					";; tail recursion                                   \n" +
-					"(loop [x 10]                                        \n" + 
-					"   (when (> x 1)                                    \n" + 
-					"      (println x)                                   \n" + 
-					"      (recur (- x 2))))                               ", 
+					"(loop [x 10]                                        \n" +
+					"   (when (> x 1)                                    \n" +
+					"      (println x)                                   \n" +
+					"      (recur (- x 2))))                               ",
 			
 					";; tail recursion                                   \n" +
 					"(do                                                 \n" +
@@ -240,15 +240,15 @@ public class SpecialForms {
 
 	public static VncFunction recur = new VncFunction("recur") {
 		{
-			setArgLists("(recur expr*)");			
+			setArgLists("(recur expr*)");
 			setDoc( "Evaluates the exprs and rebinds the bindings of " + 
-					"the recursion point to the values of the exprs.");			
+					"the recursion point to the values of the exprs.");
 			setExamples(
 					";; tail recursion                                   \n" +
-					"(loop [x 10]                                        \n" + 
-					"   (when (> x 1)                                    \n" + 
-					"      (println x)                                   \n" + 
-					"      (recur (- x 2))))                               ", 
+					"(loop [x 10]                                        \n" +
+					"   (when (> x 1)                                    \n" +
+					"      (println x)                                   \n" +
+					"      (recur (- x 2))))                               ",
 			
 					";; tail recursion                                   \n" +
 					"(do                                                 \n" +
@@ -270,8 +270,8 @@ public class SpecialForms {
 			setArgLists(
 					"(try expr)",
 					"(try expr (catch exClass exSym expr))",
-					"(try expr (catch exClass exSym expr) (finally expr))");			
-			setDoc( "Exception handling: try - catch -finally ");			
+					"(try expr (catch exClass exSym expr) (finally expr))");
+			setDoc( "Exception handling: try - catch -finally ");
 			setExamples(
 					"(try (throw))",
 					
@@ -320,7 +320,7 @@ public class SpecialForms {
 					"(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))");
 			setDoc( "try-with resources allows the declaration of resources to be used in a try block "
 						+ "with the assurance that the resources will be closed after execution "
-						+ "of that block. The resources declared must implement the Closeable or ");			
+						+ "of that block. The resources declared must implement the Closeable or ");
 			setExamples(
 					"(do                                                   \n" +
 					"   (import :java.io.FileInputStream)                  \n" +
@@ -337,8 +337,8 @@ public class SpecialForms {
 
 	public static VncFunction defmacro = new VncFunction("defmacro") {
 		{
-			setArgLists("(defmacro name [params*] body)");			
-			setDoc( "Macro definition");			
+			setArgLists("(defmacro name [params*] body)");
+			setDoc( "Macro definition");
 			setExamples(
 					"(defmacro unless [pred a b]         \n" + 
 							"  `(if (not ~pred) ~a ~b))    ");
@@ -351,8 +351,8 @@ public class SpecialForms {
 
 	public static VncFunction macroexpand = new VncFunction("macroexpand") {
 		{
-			setArgLists("(macroexpand form)");			
-			setDoc("If form represents a macro form, returns its expansion, else returns form");			
+			setArgLists("(macroexpand form)");
+			setDoc("If form represents a macro form, returns its expansion, else returns form");
 			setExamples("(macroexpand (-> c (+ 3) (* 2)))");
 		}
 		
