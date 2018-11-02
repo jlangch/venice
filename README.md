@@ -234,7 +234,7 @@ Java Callbacks:
 ```clojure
 ;; File filter
 (do
-   (import :java.io.File :java.io.FilenameFilter)
+   (import :java.io.FilenameFilter)
 
    (defn file-filter [dir name] (str/ends-with? name ".txt"))
 
