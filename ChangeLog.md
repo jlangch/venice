@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added function _doc_
 - added function _list*_
+- added function _io/file-size_
 - added the _with-sh-dir_ macro checks now the directory exists exists
 
 
