@@ -23,6 +23,8 @@ package com.github.jlangch.venice;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
@@ -50,15 +52,11 @@ public class REPL {
 	private static void repl(final String[] args) {
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		
+		final VncList argv = toList(args);
+		
 		final Env env = venice.createEnv(new PrintStream(System.out));
-
-		final VncList argv = new VncList();
-		for (int ii=1; ii<args.length; ii++) {
-			argv.addAtEnd(new VncString(args[ii]));
-		}
 		env.set(new VncSymbol("*ARGV*"), argv);
 		
-
 		// REPL loop
 		while (true) {
 			String line;
@@ -94,29 +92,31 @@ public class REPL {
 	}
 
 	private static void exec(final CommandLineArgs cli) {
-		final VncList argv = new VncList();
-		for (int ii=0; ii<cli.args().length; ii++) {
-			argv.addAtEnd(new VncString(cli.args()[ii]));
-		}
+		final VncList argv = toList(cli.args());
 
-		
+		final VeniceInterpreter venice = new VeniceInterpreter();
+		final Env env = venice.createEnv(new PrintStream(System.out));
+		env.set(new VncSymbol("*ARGV*"), argv);
+
 		if (cli.switchPresent("-file")) {
 			final String file = cli.switchValue("-file");
 			final String script = new String(FileUtil.load(new File(file)));
 			
-			final VeniceInterpreter venice = new VeniceInterpreter();
-			final Env env = venice.createEnv(new PrintStream(System.out));
-			env.set(new VncSymbol("*ARGV*"), argv);
 			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
 		}
 		else if (cli.switchPresent("-script")) {
 			final String script = cli.switchValue("-script");
 			
-			final VeniceInterpreter venice = new VeniceInterpreter();
-			final Env env = venice.createEnv(new PrintStream(System.out));
-			env.set(new VncSymbol("*ARGV*"), argv);
 			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 		}
+	}
+	
+	private static VncList toList(final String[] args) {
+		return new VncList(Arrays
+							.asList(args)
+							.stream()
+							.map(s -> new VncString(s))
+							.collect(Collectors.toList()));
 	}
 	
 	

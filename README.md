@@ -350,7 +350,7 @@ Alternative to UNIX shell scripts:
    (defn zip-files [dir zip files]
          (with-sh-throw
             (with-sh-dir dir
-               (apply sh (concat ["zip" (:name zip)] (map #(:name %) files))))))
+               (apply sh (list* "zip" (:name zip) (map #(:name %) files))))))
 
    (defn zip-tomcat-logs [prefix dir year month]
          (try
