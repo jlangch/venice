@@ -43,9 +43,9 @@ public class VncList extends VncSequence {
 		value = new ArrayList<VncVal>(Arrays.asList(mvs));
 	}
 
-    public void forEach(Consumer<? super VncVal> action) {
-    	value.forEach(v -> action.accept(v));
-    }
+	public void forEach(Consumer<? super VncVal> action) {
+		value.forEach(v -> action.accept(v));
+	}
 
 	@SuppressWarnings("unchecked")
 	public VncList copy() {
@@ -163,7 +163,7 @@ public class VncList extends VncSequence {
 				if (c != 0) {
 					return c;
 				}
-			}			
+			}
 		}
 		
 		return 0;

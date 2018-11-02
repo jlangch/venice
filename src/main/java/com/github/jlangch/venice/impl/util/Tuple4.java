@@ -36,24 +36,24 @@ import java.util.Comparator;
 public class Tuple4<A,B,C,D> implements Comparable<Tuple4<A,B,C,D>>, Serializable {
 
 	public Tuple4(final A _1, final B _2, final C _3, final D _4){
-	    this._1 = _1;
-	    this._2 = _2;
-	    this._3 = _3;
-	    this._4 = _4;
+		this._1 = _1;
+		this._2 = _2;
+		this._3 = _3;
+		this._4 = _4;
 	}
 
 	public A getFirst() {
-	    return _1;
+		return _1;
 	}
-	   
+	
 	public B getSecond() {
 		return _2;
 	}
-	   
+	
 	public C getThird() {
 		return _3;
 	}
-	   
+	
 	public D getFourth() {
 		return _4;
 	}
@@ -64,22 +64,22 @@ public class Tuple4<A,B,C,D> implements Comparable<Tuple4<A,B,C,D>>, Serializabl
 	}
 	
 	public static Tuple4<String,String,String,String> splitString(final String s, final String regex) {
-		  final String[] elements = s.split(regex);
-		  if (elements == null || elements.length == 0) {
-			  throw new RuntimeException("No elements");
-		  }
-		  else if (elements.length == 1) {
-			  return new Tuple4<>(elements[0], null, null, null); 
-		  }
-		  else if (elements.length == 2) {
-			  return new Tuple4<>(elements[0], elements[1], null, null); 
-		  }
-		  else if (elements.length == 3) {
-			  return new Tuple4<>(elements[0], elements[1], elements[2], null); 
-		  }
-		  else {
-			  return new Tuple4<>(elements[0], elements[1], elements[2], elements[3]); 
-		  }
+		final String[] elements = s.split(regex);
+		if (elements == null || elements.length == 0) {
+			throw new RuntimeException("No elements");
+		}
+		else if (elements.length == 1) {
+			return new Tuple4<>(elements[0], null, null, null); 
+		}
+		else if (elements.length == 2) {
+			return new Tuple4<>(elements[0], elements[1], null, null); 
+		}
+		else if (elements.length == 3) {
+			return new Tuple4<>(elements[0], elements[1], elements[2], null); 
+		}
+		else {
+			return new Tuple4<>(elements[0], elements[1], elements[2], elements[3]); 
+		}
 	}
 
 
@@ -174,11 +174,11 @@ public class Tuple4<A,B,C,D> implements Comparable<Tuple4<A,B,C,D>>, Serializabl
 			final Tuple4<?,?,?,?> o2
 	) {
 		return Comparator
-			       .comparing((Tuple4<T1,T2,T3,T4> t) -> t.getFirst())
-			       .thenComparing((Tuple4<T1,T2,T3,T4> t) -> t.getSecond())
-			       .thenComparing((Tuple4<T1,T2,T3,T4> t) -> t.getThird())
-			       .thenComparing((Tuple4<T1,T2,T3,T4> t) -> t.getFourth())
-			       .compare((Tuple4<T1,T2,T3,T4>)o1, (Tuple4<T1,T2,T3,T4>)o2);
+					.comparing((Tuple4<T1,T2,T3,T4> t) -> t.getFirst())
+					.thenComparing((Tuple4<T1,T2,T3,T4> t) -> t.getSecond())
+					.thenComparing((Tuple4<T1,T2,T3,T4> t) -> t.getThird())
+					.thenComparing((Tuple4<T1,T2,T3,T4> t) -> t.getFourth())
+					.compare((Tuple4<T1,T2,T3,T4>)o1, (Tuple4<T1,T2,T3,T4>)o2);
 	}
 
 

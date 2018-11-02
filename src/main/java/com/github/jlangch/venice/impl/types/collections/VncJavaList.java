@@ -47,9 +47,9 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	
-    public void forEach(Consumer<? super VncVal> action) {
-    	value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
-    }
+	public void forEach(Consumer<? super VncVal> action) {
+		value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
+	}
 
 	public VncList copy() {
 		final VncList v = new VncList(getList());
@@ -178,7 +178,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 				if (c != 0) {
 					return c;
 				}
-			}			
+			}
 		}
 		
 		return 0;

@@ -38,26 +38,26 @@ public class VeniceScriptEngine
 	extends AbstractScriptEngine 
 	implements ScriptEngine, Compilable, Invocable {
 
-    public VeniceScriptEngine() {
-        this.factory = null;
-    }
+	public VeniceScriptEngine() {
+		this.factory = null;
+	}
 
-    public VeniceScriptEngine(final ScriptEngineFactory factory) {
-        this.factory = factory;
-    }
+	public VeniceScriptEngine(final ScriptEngineFactory factory) {
+		this.factory = factory;
+	}
 
-    public VeniceScriptEngine(final Bindings bindings) {
-        super(bindings);
-        this.factory = null;
-    }
+	public VeniceScriptEngine(final Bindings bindings) {
+		super(bindings);
+		this.factory = null;
+	}
 
-    public VeniceScriptEngine(
-    		final ScriptEngineFactory factory, 
-    		final Bindings bindings
-    ) {
-        super(bindings);
-        this.factory = factory;
-    }
+	public VeniceScriptEngine(
+	 		final ScriptEngineFactory factory, 
+			final Bindings bindings
+	) {
+		super(bindings);
+		this.factory = factory;
+	}
 
 	@Override
 	public Object invokeMethod(

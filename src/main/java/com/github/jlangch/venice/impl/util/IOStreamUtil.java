@@ -32,74 +32,73 @@ import java.nio.charset.Charset;
 
 public class IOStreamUtil {
 
-    public static byte[] copyIStoByteArray(final InputStream is) throws IOException{
-    	if (is == null) {
-    		return null;
-    	}
-    	
-    	try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-        	final byte[] buffer = new byte[16 * 1024];
-        	int n;
-        	while (-1 != (n = is.read(buffer))) {
-        		output.write(buffer, 0, n);
-        	}
+	public static byte[] copyIStoByteArray(final InputStream is) throws IOException{
+		if (is == null) {
+			return null;
+		}
+		
+		try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+			final byte[] buffer = new byte[16 * 1024];
+			int n;
+			while (-1 != (n = is.read(buffer))) {
+				output.write(buffer, 0, n);
+			}
 
-        	return output.toByteArray();
-        }
-    }
-    
-    public static String copyIStoString(
-    		final InputStream is,
-    		final String encoding
-    ) throws IOException{
-    	return is == null 
-    			? null 
-    			: new String(
-    					IOStreamUtil.copyIStoByteArray(is), 
-    					encoding == null ? Charset.defaultCharset().name() : encoding);
-    }
+			return output.toByteArray();
+		}
+	}
+	
+	public static String copyIStoString(
+			final InputStream is,
+			final String encoding
+	) throws IOException{
+		return is == null 
+				? null 
+				: new String(
+						IOStreamUtil.copyIStoByteArray(is), 
+						encoding == null ? Charset.defaultCharset().name() : encoding);
+	}
 
-    public static void copyByteArrayToOS(
-    		final byte[] data, 
-    		final OutputStream os
-    ) throws IOException{
-    	if (os == null || data == null) {
-    		return;
-    	}
-    	
-    	os.write(data);
-    	os.flush();
-    }
+	public static void copyByteArrayToOS(
+			final byte[] data, 
+			final OutputStream os
+	) throws IOException{
+		if (os == null || data == null) {
+			return;
+		}
+		
+		os.write(data);
+		os.flush();
+	}
 
-    public static void copyFileToOS(
-    		final File file, 
-    		final OutputStream os
-    ) throws IOException{
-    	if (os == null || file == null) {
-    		return;
-    	}
-    	
-    	try (FileInputStream is = new FileInputStream(file)) {
-    		copy(is, os);
-    	}
-    }
-   
-    public static void copyStringToOS(
-    		final String data, 
-    		final OutputStream os, 
-    		final String encoding
-    ) throws IOException{
-    	if (os == null || data == null) {
-    		return;
-    	}
-    	
-    	os.write(
-    		encoding == null 
-    			? data.getBytes(Charset.defaultCharset())
-    			: data.getBytes(encoding));
-    	
-    	os.flush();
-    }
+	public static void copyFileToOS(
+			final File file, 
+			final OutputStream os
+	) throws IOException{
+		if (os == null || file == null) {
+			return;
+		}
+		
+		try (FileInputStream is = new FileInputStream(file)) {
+			copy(is, os);
+		}
+	}
+
+	public static void copyStringToOS(
+			final String data, 
+			final OutputStream os, 
+			final String encoding
+	) throws IOException{
+		if (os == null || data == null) {
+			return;
+		}
+		
+		os.write(encoding == null 
+					? data.getBytes(Charset.defaultCharset())
+					: data.getBytes(encoding));
+		
+		os.flush();
+	}
 
 	
 	public static void copy(final InputStream is, final OutputStream os) 
@@ -109,10 +108,8 @@ public class IOStreamUtil {
 		 
 		while ((len=is.read(buf))!=-1) {
 			os.write(buf,0,len);
-	
 		}
 		
 		os.flush();
 	}
-
 }

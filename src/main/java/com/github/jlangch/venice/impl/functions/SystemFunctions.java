@@ -163,7 +163,9 @@ public class SystemFunctions {
 		{
 			setArgLists("(os? type)");
 			
-			setDoc("Returns true if the OS id of the type otherwise false. Type is one of :windows, :mac-osx, or :linux");
+			setDoc(
+				"Returns true if the OS id of the type otherwise false. Type is one " +
+				"of :windows, :mac-osx, or :linux");
 			
 			setExamples("(os? :mac-osx)", "(os? :windows)");
 		}
@@ -241,10 +243,10 @@ public class SystemFunctions {
 					.put("uuid",				uuid)
 					.put("current-time-millis",	current_time_millis)
 					.put("nano-time",			nano_time)
-					.put("sandboxed?",			sandboxed_Q)		
+					.put("sandboxed?",			sandboxed_Q)
 					.put("sleep",				sleep)
-					.put("os",					os)				
-					.put("os?",					os_Q)				
+					.put("os",					os)
+					.put("os?",					os_Q)
 					.put("version",				version)
 					.put("system-prop",			system_prop)
 					.toMap();	

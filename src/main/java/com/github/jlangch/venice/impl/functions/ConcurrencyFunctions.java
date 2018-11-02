@@ -629,15 +629,15 @@ public class ConcurrencyFunctions {
 					.put("swap!",				swap_BANG)
 					.put("compare-and-set!", 	compare_and_set_BANG)
 
-					.put("promise",             promise)
-					.put("promise?",            promise_Q)
-					.put("deliver",             deliver)
+					.put("promise",				promise)
+					.put("promise?",			promise_Q)
+					.put("deliver",				deliver)
 					
-					.put("future",              future)
-					.put("future?",             future_Q)
-					.put("future-done?",        future_done_Q)
-					.put("future-cancel",       future_cancel)
-					.put("future-cancelled?",   future_cancelled_Q)
+					.put("future",				future)
+					.put("future?",				future_Q)
+					.put("future-done?",		future_done_Q)
+					.put("future-cancel",		future_cancel)
+					.put("future-cancelled?",	future_cancelled_Q)
 					
 					.put("thread-local",		new_thread_local)
 					.put("thread-local?",		thread_local_Q)

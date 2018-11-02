@@ -169,6 +169,6 @@ public class SandboxRecorder extends Interceptor {
 		return obj instanceof Class;
 	}
 
- 
+
 	private final PrintWriter writer;
 }

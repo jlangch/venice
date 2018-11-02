@@ -33,7 +33,7 @@ public class FunctionsUtil {
 			final int minArity
 	) {
 		final int arity = args.size();
-		if (arity < minArity) {		
+		if (arity < minArity) {
 			throw new ArityException(args, arity, fnName);
 		}
 	}
@@ -42,13 +42,13 @@ public class FunctionsUtil {
 		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
 	}
 
-	public static VncList removeNilValues(final VncList list) {		
+	public static VncList removeNilValues(final VncList list) {
 		return new VncList(removeNilValues(list.getList()));
 	}
 
-	public static List<VncVal> removeNilValues(final List<VncVal> items) {		
+	public static List<VncVal> removeNilValues(final List<VncVal> items) {
 		return items.stream()
-				    .filter(v -> v != Nil)
-				    .collect(Collectors.toList());
+					.filter(v -> v != Nil)
+					.collect(Collectors.toList());
 	}
 }

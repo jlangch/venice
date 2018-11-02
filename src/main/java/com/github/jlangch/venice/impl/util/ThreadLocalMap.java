@@ -77,7 +77,7 @@ public class ThreadLocalMap {
 		}
 	}
 	
-    public static void remove() {
+	public static void remove() {
 		try {
 			get().values.clear();
 			
@@ -87,7 +87,7 @@ public class ThreadLocalMap {
 		catch(Exception ex) {
 			// do not care
 		}
-   }
+	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();

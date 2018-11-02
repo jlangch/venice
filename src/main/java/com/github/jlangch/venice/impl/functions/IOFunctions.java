@@ -86,7 +86,7 @@ public class IOFunctions {
 			if (args.size() == 1) {
 				final VncVal path = args.nth(0);
 				if (Types.isVncString(path)) {
-					return new VncJavaObject(new File(((VncString)path).getValue()));					
+					return new VncJavaObject(new File(((VncString)path).getValue()));
 				}
 				else if (isJavaIoFile(path) ) {
 					return path;
@@ -105,7 +105,7 @@ public class IOFunctions {
 				File parentFile;
 
 				if (Types.isVncString(parent)) {
-					parentFile = new File(((VncString)parent).getValue());					
+					parentFile = new File(((VncString)parent).getValue());
 				}
 				else if (isJavaIoFile(parent) ) {
 					parentFile = (File)((VncJavaObject)parent).getDelegate();
@@ -118,7 +118,7 @@ public class IOFunctions {
 				}
 
 				if (Types.isVncString(child)) {
-					 return new VncJavaObject(new File(parentFile, ((VncString)child).getValue()));					
+					 return new VncJavaObject(new File(parentFile, ((VncString)child).getValue()));
 				}
 				else {
 					throw new VncException(String.format(
@@ -144,7 +144,7 @@ public class IOFunctions {
 			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/file?", args);
 
 			assertArity("io/file?", args, 1);
-						
+
 			final VncVal path = args.nth(0);
 			return isJavaIoFile(path) ? True : False;
 		}
@@ -164,7 +164,7 @@ public class IOFunctions {
 			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/exists-file?", args);
 
 			assertArity("io/exists-file?", args, 1);
-									
+
 			if (!isJavaIoFile(args.nth(0)) ) {
 				throw new VncException(String.format(
 						"Function 'io/exists-file?' does not allow %s as x. %s",
@@ -191,7 +191,7 @@ public class IOFunctions {
 			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/exists-dir?", args);
 
 			assertArity("io/exists-dir?", args, 1);
-									
+
 			if (!isJavaIoFile(args.nth(0)) ) {
 				throw new VncException(String.format(
 						"Function 'io/exists-dir?' does not allow %s as x. %s",
@@ -307,7 +307,7 @@ public class IOFunctions {
 				for(File f : file.listFiles()) {
 					final VncVal result = (filterFn == null) 
 											? True 
-											: filterFn.apply(new VncList(new VncJavaObject(f)));						
+											: filterFn.apply(new VncList(new VncJavaObject(f)));
 					if (result == True) {
 						files.addAtEnd(new VncJavaObject(f));
 					}
@@ -498,7 +498,7 @@ public class IOFunctions {
 					final VncVal encVal = options.get(new VncKeyword("encoding")); 
 					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-									
+
 					final byte[] data = Files.readAllBytes(file.toPath());
 					
 					return new VncString(new String(data, encoding));
@@ -1017,7 +1017,7 @@ public class IOFunctions {
 					.put("io/exists-dir?",				io_exists_dir_Q)
 					.put("io/list-files",				io_list_files)
 					.put("io/delete-file",				io_delete_file)
-					.put("io/delete-file-on-exit",		io_delete_file_on_exit)				
+					.put("io/delete-file-on-exit",		io_delete_file_on_exit)
 					.put("io/copy-file",				io_copy_file)
 					.put("io/move-file",				io_move_file)
 					.put("io/temp-file",				io_temp_file)
@@ -1027,9 +1027,9 @@ public class IOFunctions {
 					.put("io/spit",						io_spit)
 					.put("io/spit-temp-file",			io_spit_temp_file)
 					.put("io/slurp-temp-file",			io_slurp_temp_file)
-					.put("io/slurp-stream",	    		io_slurp_stream)
-					.put("io/spit-stream",	    		io_spit_stream)							
-					.put("io/mime-type",	    		io_mime_type)	
+					.put("io/slurp-stream",				io_slurp_stream)
+					.put("io/spit-stream",				io_spit_stream)
+					.put("io/mime-type",				io_mime_type)	
 					.put("io/load-classpath-resource",	io_load_classpath_resource)
 					.toMap();
 

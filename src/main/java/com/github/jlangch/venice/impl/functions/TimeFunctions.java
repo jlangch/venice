@@ -177,7 +177,7 @@ public class TimeFunctions {
 						return new VncJavaObject(((ZonedDateTime)obj).toLocalDate());
 					}
 					else if (obj instanceof LocalDateTime) {
-						return new VncJavaObject(((LocalDateTime)obj).toLocalDate());						
+						return new VncJavaObject(((LocalDateTime)obj).toLocalDate());
 					}
 					else if (obj instanceof LocalDate) {
 						return val;
@@ -305,7 +305,7 @@ public class TimeFunctions {
 						return val;
 					}
 					else if (obj instanceof LocalDate) {
-						return new VncJavaObject( ((LocalDate)obj).atTime(0, 0, 0));						
+						return new VncJavaObject( ((LocalDate)obj).atTime(0, 0, 0));
 					}	
 					else {
 						throw new VncException(String.format(

@@ -138,8 +138,8 @@ public class StringFunctions {
 				return False;
 			}
 
-			final VncString string = Coerce.toVncString(args.nth(0));		
-			final VncString suffix = Coerce.toVncString(args.nth(1));		
+			final VncString string = Coerce.toVncString(args.nth(0));
+			final VncString suffix = Coerce.toVncString(args.nth(1));
 			
 			return string.getValue().endsWith(suffix.getValue()) ? True : False;
 		}
@@ -162,8 +162,8 @@ public class StringFunctions {
 				return False;
 			}
 
-			final VncString string = Coerce.toVncString(args.nth(0));		
-			final VncString text = Coerce.toVncString(args.nth(1));		
+			final VncString string = Coerce.toVncString(args.nth(0));
+			final VncString text = Coerce.toVncString(args.nth(1));
 			
 			return string.getValue().contains(text.getValue()) ? True : False;
 		}
@@ -295,8 +295,8 @@ public class StringFunctions {
 			}
 
 			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
-			final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
+			final String searchString = Coerce.toVncString(args.nth(1)).getValue();
+			final String replacement = Coerce.toVncString(args.nth(2)).getValue();
 
 			if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
 				return args.nth(0);
@@ -330,8 +330,8 @@ public class StringFunctions {
 			}
 
 			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
-			final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
+			final String searchString = Coerce.toVncString(args.nth(1)).getValue();
+			final String replacement = Coerce.toVncString(args.nth(2)).getValue();
 
 			if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
 				return args.nth(0);
@@ -406,7 +406,7 @@ public class StringFunctions {
 				return Nil;
 			}
 
-			final VncString string = Coerce.toVncString(args.nth(0));		
+			final VncString string = Coerce.toVncString(args.nth(0));
 			
 			return new VncString(string.getValue().toLowerCase());
 		}
@@ -429,7 +429,7 @@ public class StringFunctions {
 				return Nil;
 			}
 
-			final VncString string = Coerce.toVncString(args.nth(0));		
+			final VncString string = Coerce.toVncString(args.nth(0));
 			
 			return new VncString(string.getValue().toUpperCase());
 		}
@@ -501,7 +501,7 @@ public class StringFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("str/split", args, 2);
 
-			final VncString string = Coerce.toVncString(args.nth(0));		
+			final VncString string = Coerce.toVncString(args.nth(0));
 			final VncString regex = Coerce.toVncString(args.nth(1));
 			
 			return new VncList(
@@ -546,7 +546,7 @@ public class StringFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			final VncString fmt = (VncString)args.nth(0);		
+			final VncString fmt = (VncString)args.nth(0);
 			final List<Object> fmtArgs = args
 										.slice(1)
 										.getList()
@@ -554,7 +554,7 @@ public class StringFunctions {
 										.map(v -> JavaInteropUtil.convertToJavaObject(v))
 										.collect(Collectors.toList());
 			
-			return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));		
+			return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));
 		}
 	};
 	
@@ -605,7 +605,7 @@ public class StringFunctions {
 			return new VncString(
 						StringUtil.truncate(
 							Coerce.toVncString(args.nth(0)).getValue(), 
-							Coerce.toVncLong(args.nth(1)).getValue().intValue(), 					
+							Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 							Coerce.toVncString(args.nth(2)).getValue()));		
 		}
 	};
@@ -631,7 +631,7 @@ public class StringFunctions {
 			final String s = Coerce.toVncString(args.nth(0)).getValue();
 			final String substr = Coerce.toVncString(args.nth(1)).getValue();
 			
-			return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);		
+			return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);
 		}
 	};
 
@@ -656,7 +656,7 @@ public class StringFunctions {
 			final String s = Coerce.toVncString(args.nth(0)).getValue();
 			final String substr = Coerce.toVncString(args.nth(1)).getValue();
 			
-			return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);		
+			return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);
 		}
 	};
 
@@ -731,7 +731,7 @@ public class StringFunctions {
 				if (ii>0)sb.append(sep);
 				sb.append(s);
 			}			
-			return new VncString(sb.toString());		
+			return new VncString(sb.toString());
 		}
 	};
 
@@ -767,7 +767,7 @@ public class StringFunctions {
 					.put("str/strip-end",		str_strip_end)
 					.put("str/strip-indent",	str_strip_indent)
 					.put("str/strip-margin",	str_strip_margin)
-					.put("str/repeat",		    str_repeat)
-					.put("str/char",		    str_char)
+					.put("str/repeat",			str_repeat)
+					.put("str/char",			str_char)
 					.toMap();	
 }

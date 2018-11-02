@@ -66,7 +66,7 @@ public class CompiledSandboxRules {
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null, null, null);			
+			return new CompiledSandboxRules(null, null, null, null, null);
 		}
 		
 		final List<String> filtered = whiteList

@@ -1911,7 +1911,7 @@ public class CoreFunctions {
 								}
 								else {
 									break;
-								}								
+								}
 							}
 						}
 						else {
@@ -4784,7 +4784,7 @@ public class CoreFunctions {
 				.put("nil?",				nil_Q)
 				.put("some?",				some_Q)
 				.put("true?",				true_Q)
-				.put("false?",				false_Q)			
+				.put("false?",				false_Q)
 				.put("boolean?",			boolean_Q)
 				.put("long?",				long_Q)
 				.put("double?",				double_Q)
@@ -4805,7 +4805,7 @@ public class CoreFunctions {
 				.put("read-string",			read_string)
 				
 				.put("==",					equal_Q)
-				.put("!=",					not_equal_Q)			
+				.put("!=",					not_equal_Q)
 				.put("<",					lt)
 				.put("<=",					lte)
 				.put(">",					gt)
@@ -4820,7 +4820,7 @@ public class CoreFunctions {
 				.put("decimal",				decimal_cast)
 				.put("bytebuf",				bytebuf_cast)
 				.put("bytebuf-to-string",	bytebuf_to_string)
-				.put("bytebuf-from-string",	bytebuf_from_string)			
+				.put("bytebuf-from-string",	bytebuf_from_string)
 				
 				.put("list",				new_list)
 				.put("list*",				new_list_ASTERISK)
@@ -4835,7 +4835,7 @@ public class CoreFunctions {
 				.put("ordered-map",			new_ordered_map)
 				.put("sorted-map",			new_sorted_map)
 				.put("assoc",				assoc)
-				.put("assoc-in",			assoc_in)				
+				.put("assoc-in",			assoc_in)
 				.put("dissoc",				dissoc)
 				.put("contains?", 			contains_Q)
 				.put("find",				find)
@@ -4847,20 +4847,20 @@ public class CoreFunctions {
 				.put("vals",				vals)
 				.put("update",				update)
 				.put("update!",				update_BANG)
-				.put("subvec", 				subvec)
-				.put("bytebuf-sub", 		bytebuf_sub)
-				.put("empty", 				empty)
+				.put("subvec",				subvec)
+				.put("bytebuf-sub",			bytebuf_sub)
+				.put("empty",				empty)
 
 				.put("set?",				set_Q)
 				.put("set",					new_set)
-				.put("difference", 			difference)
-				.put("union", 				union)
-				.put("intersection", 		intersection)
+				.put("difference",			difference)
+				.put("union",				union)
+				.put("intersection",		intersection)
 
 				.put("split-with",			split_with)
 				.put("into",				into)
-				.put("sequential?",	    	sequential_Q)
-				.put("coll?",	    		coll_Q)
+				.put("sequential?",			sequential_Q)
+				.put("coll?",				coll_Q)
 				.put("cons",				cons)
 				.put("co",					cons)
 				.put("concat",				concat)
@@ -4899,16 +4899,16 @@ public class CoreFunctions {
 				.put("partition",			partition)
 				.put("remove",				remove)
 				.put("reduce",				reduce)
-				.put("reduce-kv", 			reduce_kv)
-				.put("take", 				take)
-				.put("take-while", 			take_while)
-				.put("drop", 				drop)
-				.put("drop-while", 			drop_while)
-				.put("flatten", 			flatten)
-				.put("reverse", 			reverse)
-				.put("group-by", 			group_by)
-				.put("sort", 				sort)
-				.put("sort-by", 			sort_by)
+				.put("reduce-kv",			reduce_kv)
+				.put("take",				take)
+				.put("take-while",			take_while)
+				.put("drop",				drop)
+				.put("drop-while",			drop_while)
+				.put("flatten",			flatten)
+				.put("reverse",				reverse)
+				.put("group-by",			group_by)
+				.put("sort",				sort)
+				.put("sort-by",				sort_by)
 		
 				.put("merge",				merge)
 				.put("conj",				conj)
@@ -4921,16 +4921,16 @@ public class CoreFunctions {
 				.put("with-meta",			with_meta)
 				.put("vary-meta",			vary_meta)
 				
-				.put("coalesce", 			coalesce)
+				.put("coalesce",			coalesce)
 				
 				.put("gensym",				gensym)
 				.put("name",				name)
 				.put("type",				type)
 				
-				.put("class",				className)	
-				.put("load-core-module",	loadCoreModule)
-				.put("load-classpath-venice", loadClasspathVenice)
-							
+				.put("class",					className)	
+				.put("load-core-module",		loadCoreModule)
+				.put("load-classpath-venice",	loadClasspathVenice)
+
 				.toMap();
 
 	

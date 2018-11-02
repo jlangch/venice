@@ -423,7 +423,7 @@ public class SandboxRules {
 				"java.nio.ByteBuffer",
 				"java.nio.HeapByteBuffer:*",
 				
-				"java.util.Date:*",						
+				"java.util.Date:*",
 				"java.util.ArrayList:*",
 				"java.util.HashSet:*",
 				"java.util.HashMap:*",

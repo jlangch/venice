@@ -124,7 +124,7 @@ public class Logger {
 	}
 	
 	private String getPrefix(final Level level) {
-		final StringBuilder sb = new StringBuilder();		
+		final StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		
 		if (decorateWithTimestamp.get()) {
@@ -158,7 +158,7 @@ public class Logger {
 		Throwable th = ex.getCause();
 		while(th != null) {
 			msg.append("\nCaused by: ")
-			   .append(getSafeExceptionMessage(ex));		
+			   .append(getSafeExceptionMessage(ex));
 			th = th.getCause();
 		}
 		
@@ -166,7 +166,7 @@ public class Logger {
 	}
 
 	private String getSafeExceptionMessage(final Throwable ex) {
-		final StringBuilder msg = new StringBuilder();		
+		final StringBuilder msg = new StringBuilder();
 
 		msg.append(ex.getClass());
 		if (ex.getMessage() != null) {
@@ -200,18 +200,18 @@ public class Logger {
 		}
 	}
 
-    private String getStackTrace(final Throwable throwable) {
-        final StringWriter sw = new StringWriter();
-        final PrintWriter pw = new PrintWriter(sw, true);
-        throwable.printStackTrace(pw);
-        return sw.getBuffer().toString();
-    }
-    
-    private Level safeLevel(final Level level) {
-    	return level == null ? Level.DEBUG : level;
-    }
+	private String getStackTrace(final Throwable throwable) {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
+		throwable.printStackTrace(pw);
+		return sw.getBuffer().toString();
+	}
+	
+	private Level safeLevel(final Level level) {
+		return level == null ? Level.DEBUG : level;
+	}
 
-    private PrintStream createPrintStream(final OutputStream os) {
+	private PrintStream createPrintStream(final OutputStream os) {
 		try {
 			return (os instanceof PrintStream)
 						? (PrintStream)os
@@ -220,8 +220,8 @@ public class Logger {
 		catch(UnsupportedEncodingException ex) {
 			throw new RuntimeException("Unsupported encoding UTF-8", ex);
 		}
-    }
-    
+	}
+
 	
 	private final int MAX_PROTOCOL_SIZE = 20 * 1024 * 1024; // 20MB
 	

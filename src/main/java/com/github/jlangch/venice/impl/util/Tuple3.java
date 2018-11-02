@@ -35,19 +35,19 @@ import java.util.Comparator;
 public class Tuple3<F,S,T> implements Comparable<Tuple3<F,S,T>>, Serializable {
 
 	public Tuple3(final F _1, final S _2, final T _3){
-	    this._1 = _1;
-	    this._2 = _2;
-	    this._3 = _3;
+		this._1 = _1;
+		this._2 = _2;
+		this._3 = _3;
 	}
 
 	public F getFirst() {
-	    return _1;
+		return _1;
 	}
-	   
+	
 	public S getSecond() {
 		return _2;
 	}
-	   
+	
 	public T getThird() {
 		return _3;
 	}
@@ -58,19 +58,19 @@ public class Tuple3<F,S,T> implements Comparable<Tuple3<F,S,T>>, Serializable {
 	}
 	
 	public static Tuple3<String,String,String> splitString(final String s, final String regex) {
-		  final String[] elements = s.split(regex);
-		  if (elements == null || elements.length == 0) {
-			  throw new RuntimeException("No elements");
-		  }
-		  else if (elements.length == 1) {
-			  return new Tuple3<>(elements[0], null, null); 
-		  }
-		  else if (elements.length == 2) {
-			  return new Tuple3<>(elements[0], elements[1], null); 
-		  }
-		  else {
-			  return new Tuple3<>(elements[0], elements[1], elements[2]); 
-		  }
+		final String[] elements = s.split(regex);
+		if (elements == null || elements.length == 0) {
+			throw new RuntimeException("No elements");
+		}
+		else if (elements.length == 1) {
+			return new Tuple3<>(elements[0], null, null); 
+		}
+		else if (elements.length == 2) {
+			return new Tuple3<>(elements[0], elements[1], null); 
+		}
+		else {
+			return new Tuple3<>(elements[0], elements[1], elements[2]); 
+		}
 	}
 
 
@@ -151,10 +151,10 @@ public class Tuple3<F,S,T> implements Comparable<Tuple3<F,S,T>>, Serializable {
 			final Tuple3<?,?,?> o2
 	) {
 		return Comparator
-			       .comparing((Tuple3<T1,T2,T3> t) -> t.getFirst())
-			       .thenComparing((Tuple3<T1,T2,T3> t) -> t.getSecond())
-			       .thenComparing((Tuple3<T1,T2,T3> t) -> t.getThird())
-			       .compare((Tuple3<T1,T2,T3>)o1, (Tuple3<T1,T2,T3>)o2);
+				.comparing((Tuple3<T1,T2,T3> t) -> t.getFirst())
+				.thenComparing((Tuple3<T1,T2,T3> t) -> t.getSecond())
+				.thenComparing((Tuple3<T1,T2,T3> t) -> t.getThird())
+				.compare((Tuple3<T1,T2,T3>)o1, (Tuple3<T1,T2,T3>)o2);
 	}
 
 

@@ -79,7 +79,7 @@ public class HexFormatter {
 				? ""
 				: IntStream.range(0, binary.length)
 						   .mapToObj(idx -> toHex(binary[idx], prefixWith0x))
-			               .collect(Collectors.joining(delimiter == null ? "" : delimiter));
+						   .collect(Collectors.joining(delimiter == null ? "" : delimiter));
 	}
 
 	

@@ -129,9 +129,9 @@ public class Tuple2<F,S> implements Comparable<Tuple2<F,S>>, Serializable {
 			final Tuple2<?,?> o2
 	) {
 		return Comparator
-			       .comparing((Tuple2<T1,T2> t) -> t.getFirst())
-			       .thenComparing((Tuple2<T1,T2> t) -> t.getSecond())
-			       .compare((Tuple2<T1,T2>)o1, (Tuple2<T1,T2>)o2);
+					.comparing((Tuple2<T1,T2> t) -> t.getFirst())
+					.thenComparing((Tuple2<T1,T2> t) -> t.getSecond())
+					.compare((Tuple2<T1,T2>)o1, (Tuple2<T1,T2>)o2);
 	}
 
 	@Override

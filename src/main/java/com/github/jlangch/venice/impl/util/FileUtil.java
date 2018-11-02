@@ -424,7 +424,7 @@ public class FileUtil {
 		if (!dir.isDirectory()) {
 			boolean created = dir.mkdir();
 			if (!created) {
-				throw new FileException("Failed to create directory <" + dir + ">.");			
+				throw new FileException("Failed to create directory <" + dir + ">.");
 			}
 		}
 	}
@@ -465,7 +465,7 @@ public class FileUtil {
 		}
 		catch(Exception ex) {
 			throw new FileException(
-					"Failed to delete directory <" + dir + ">.", ex);			
+					"Failed to delete directory <" + dir + ">.", ex);
 		}
 	}
 
@@ -490,7 +490,7 @@ public class FileUtil {
 		}
 		catch(RuntimeException ex) {
 			throw new FileException(
-					"Failed to copy directory <" + srcdir + ">.", ex);			
+					"Failed to copy directory <" + srcdir + ">.", ex);
 		}
 	}
 
@@ -500,18 +500,18 @@ public class FileUtil {
 	 * @param file A file
 	 * @return The creation date
 	 */
-    public static Date getFileCreationDate(final File file) {
-    	try {
-	    	final BasicFileAttributes attr = Files.readAttributes(
-	    										file.toPath(),
-	    										BasicFileAttributes.class);
-	    	
-	    	return new Date(attr.creationTime().toMillis());
-    	}
-    	catch(Exception ex) {
-			throw new FileException("Failed to get file creation date. File " + file.getPath(), ex);			
-    	}
-    }
+	public static Date getFileCreationDate(final File file) {
+		try {
+			final BasicFileAttributes attr = Files.readAttributes(
+												file.toPath(),
+												BasicFileAttributes.class);
+			
+			return new Date(attr.creationTime().toMillis());
+		}
+		catch(Exception ex) {
+			throw new FileException("Failed to get file creation date. File " + file.getPath(), ex);
+		}
+	}
 
 	/**
 	 * Replace a file extension. If the file name has no file extension it will be added.
@@ -564,30 +564,30 @@ public class FileUtil {
 
 	private static void doRmDir(final File dir, final int level) {
 		if (level > MAX_DIR_LEVELS) {
-			throw new FileException("Reached max dir level (" + MAX_DIR_LEVELS + ")");		
+			throw new FileException("Reached max dir level (" + MAX_DIR_LEVELS + ")");
 		}
 		
 		for (File file : dir.listFiles()) {
-        	if (file.isDirectory()) {
-        		doRmDir(file, level + 1);
-        	}
-        	else {
-        		if (!file.delete()) {
+			if (file.isDirectory()) {
+				doRmDir(file, level + 1);
+			}
+			else {
+				if (!file.delete()) {
 					throw new RuntimeException(
-							"Could not delete file " + file.getAbsolutePath());        			
-        		}
-        	}
-        }
+							"Could not delete file " + file.getAbsolutePath());
+				}
+			}
+		}
 
 		if (!dir.delete()) {
 			throw new RuntimeException(
-					"Could not delete directory " + dir.getAbsolutePath());        			
+					"Could not delete directory " + dir.getAbsolutePath());
 		}
 	}
 
 	private static void doCopyDir(final File srcdir, final File dstdir, final int level) {
 		if (level > MAX_DIR_LEVELS) {
-			throw new FileException("Reached max dir level (" + MAX_DIR_LEVELS + ")");		
+			throw new FileException("Reached max dir level (" + MAX_DIR_LEVELS + ")");
 		}
 
 		if (!dstdir.exists()) {
@@ -595,15 +595,15 @@ public class FileUtil {
 		}
 		
 		for (File file : srcdir.listFiles()) {
-        	if (file.isDirectory()) {
-        		doCopyDir(
-        				new File(srcdir, file.getName()), 
-        				new File(dstdir, file.getName()), level + 1);
-        	}
-        	else {
-        		copy(file, new File(dstdir, file.getName()), true);
-        	}
-        }
+			if (file.isDirectory()) {
+				doCopyDir(
+						new File(srcdir, file.getName()), 
+						new File(dstdir, file.getName()), level + 1);
+			}
+			else {
+				copy(file, new File(dstdir, file.getName()), true);
+			}
+		}
 	}
 
 
