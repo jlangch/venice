@@ -37,67 +37,47 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
  */
 public class SpecialForms {
 
-	public static VncFunction doc = new VncFunction("doc") {
+	public static VncFunction doc = new SpecialFormsDocFunction("doc") {
 		{
 			setArgLists("(doc name)");
 			setDoc("Prints documentation for a var or special form given its name");
 			setExamples("(doc +)");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 	
-	public static VncFunction list = new VncFunction("()") {
+	public static VncFunction list = new SpecialFormsDocFunction("()") {
 		{
 			setArgLists("");
 			setDoc("Creates a list.");
 			setExamples("'(10 20 30)");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction vector = new VncFunction("[]") {
+	public static VncFunction vector = new SpecialFormsDocFunction("[]") {
 		{
 			setArgLists("");
 			setDoc("Creates a vector.");
 			setExamples("[10 20 30]");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction set = new VncFunction("#{}") {
+	public static VncFunction set = new SpecialFormsDocFunction("#{}") {
 		{
 			setArgLists("");
 			setDoc("Creates a set.");
 			setExamples("#{10 20 30}");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction map = new VncFunction("{}") {
+	public static VncFunction map = new SpecialFormsDocFunction("{}") {
 		{
 			setArgLists("");
 			setDoc("Creates a hash map.");
 			setExamples("{:a 10 b: 20}");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction fn = new VncFunction("fn") {
+	public static VncFunction fn = new SpecialFormsDocFunction("fn") {
 		{
 			setArgLists("(fn [params*] condition-map? expr*)");
 			setDoc("Defines an anonymous function.");
@@ -130,13 +110,9 @@ public class SpecialForms {
 					"   ((discount 50) 300))                                              "
 					);
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};	
 
-	public static VncFunction eval = new VncFunction("eval") {
+	public static VncFunction eval = new SpecialFormsDocFunction("eval") {
 		{
 			setArgLists("(eval form)");			
 			setDoc("Evaluates the form data structure (not text!) and returns the result.");
@@ -144,13 +120,9 @@ public class SpecialForms {
 					 "(eval '(let [a 10] (+ 3 4 a)))",
 					 "(eval (list + 1 2 3))");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction def = new VncFunction("def") {
+	public static VncFunction def = new SpecialFormsDocFunction("def") {
 		{
 			setArgLists("(def name expr)");
 			setDoc("Creates a global variable.");
@@ -158,37 +130,25 @@ public class SpecialForms {
 					 "(def val 5)",
 					 "(def sum (fn [x y] (+ x y)))");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction do_ = new VncFunction("do") {
+	public static VncFunction do_ = new SpecialFormsDocFunction("do") {
 		{
 			setArgLists("(do exprs)");
 			setDoc("Evaluates the expressions in order and returns the value of the last.");
 			setExamples("(do (println \"Test...\") (+ 1 1))");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction if_ = new VncFunction("if") {
+	public static VncFunction if_ = new SpecialFormsDocFunction("if") {
 		{
 			setArgLists("(if test true-expr false-expr)");
 			setDoc("Evaluates test.");
 			setExamples("(if (< 10 20) \"yes\" \"no\")");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction let = new VncFunction("let") {
+	public static VncFunction let = new SpecialFormsDocFunction("let") {
 		{
 			setArgLists("(let [bindings*] exprs*)");
 			setDoc("Evaluates the expressions and binds the values to symbols to new local context");
@@ -205,13 +165,9 @@ public class SpecialForms {
 					"     (println \"title: \" title)        \n" +
 					"     (println \"styles: \" styles))       ");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction loop = new VncFunction("loop") {
+	public static VncFunction loop = new SpecialFormsDocFunction("loop") {
 		{
 			setArgLists("(loop [bindings*] exprs*)");
 			setDoc( "Evaluates the exprs and binds the bindings. " + 
@@ -232,17 +188,16 @@ public class SpecialForms {
 					"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 					"   (sum 10000))                                       ");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction recur = new VncFunction("recur") {
+	public static VncFunction recur = new SpecialFormsDocFunction("recur") {
 		{
 			setArgLists("(recur expr*)");
-			setDoc( "Evaluates the exprs and rebinds the bindings of " + 
-					"the recursion point to the values of the exprs.");
+			setDoc( "Evaluates the exprs and rebinds the bindings of the recursion " + 
+					"point to the values of the exprs. The recur expression must be " +
+					"at the tail position. The tail position is a postion which an " +
+					"expression would return a value from. There are no more forms " +
+					"evaluated after the form in the tail position is evaluated.");
 			setExamples(
 					";; tail recursion                                   \n" +
 					"(loop [x 10]                                        \n" +
@@ -259,13 +214,9 @@ public class SpecialForms {
 					"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 					"   (sum 10000))                                       ");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction try_ = new VncFunction("try") {
+	public static VncFunction try_ = new SpecialFormsDocFunction("try") {
 		{
 			setArgLists(
 					"(try expr)",
@@ -306,13 +257,9 @@ public class SpecialForms {
 					"      (finally (println \"...finally\"))))             "
 					);
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction try_with = new VncFunction("try-with") {
+	public static VncFunction try_with = new SpecialFormsDocFunction("try-with") {
 		{
 			setArgLists(
 					"(try-with [bindings*] expr)",
@@ -329,13 +276,9 @@ public class SpecialForms {
 					"        (try-with [is (. :FileInputStream :new file)] \n" +
 					"           (io/slurp-stream is :binary false))))        ");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction defmacro = new VncFunction("defmacro") {
+	public static VncFunction defmacro = new SpecialFormsDocFunction("defmacro") {
 		{
 			setArgLists("(defmacro name [params*] body)");
 			setDoc( "Macro definition");
@@ -343,24 +286,26 @@ public class SpecialForms {
 					"(defmacro unless [pred a b]         \n" + 
 							"  `(if (not ~pred) ~a ~b))    ");
 		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
 	};
 
-	public static VncFunction macroexpand = new VncFunction("macroexpand") {
+	public static VncFunction macroexpand = new SpecialFormsDocFunction("macroexpand") {
 		{
 			setArgLists("(macroexpand form)");
 			setDoc("If form represents a macro form, returns its expansion, else returns form");
 			setExamples("(macroexpand (-> c (+ 3) (* 2)))");
 		}
+	};	
+	
+	
+	private static class SpecialFormsDocFunction extends VncFunction {
+		public SpecialFormsDocFunction(final String name) {
+			super(name);
+		}
 		
 		public VncVal apply(final VncList args) {
 			return Nil;
 		}
-	};	
-	
+	};
 	
 	
 	public static Map<VncVal, VncVal> ns = 
