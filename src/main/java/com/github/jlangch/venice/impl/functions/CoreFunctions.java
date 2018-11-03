@@ -4532,7 +4532,7 @@ public class CoreFunctions {
 				   "returns a collection of n calls to it");
 			
 			setExamples(
-					"(repeatedly 5 (fn [] (rand-long 11)))",
+					"(repeatedly 5 #(rand-long 11))",
 					";; compare with repeat, which only calls the 'rand-long'\n" +
 					";; function once, repeating the value five times. \n" +
 					"(repeat 5 (rand-long 11))");
