@@ -107,8 +107,7 @@ public class SpecialForms {
 					"        (fn [percentage]                                           \n" +
 					"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
 					"            (fn [price] (- price (* price percentage 0.01)))))     \n" +
-					"   ((discount 50) 300))                                              "
-					);
+					"   ((discount 50) 300))                                              ");
 		}
 	};	
 
@@ -254,8 +253,7 @@ public class SpecialForms {
 					"      (throw [1 2 3])                                 \n" +
 					"      (catch :ValueException ex (str (:value ex)))    \n" +
 					"      (catch :RuntimeException ex \"runtime ex\")     \n" +
-					"      (finally (println \"...finally\"))))             "
-					);
+					"      (finally (println \"...finally\"))))             ");
 		}
 	};
 
