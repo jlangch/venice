@@ -276,21 +276,20 @@ public class VeniceInterpreter {
 				}
 
 				case "recur":  // (recur exprs*)
-					/*
-|---------------------+-------------------------------------------+---------------|
-| Form                | Tail Position                             | recur target? |
-|---------------------+-------------------------------------------+---------------|
-| fn, defn            | (fn [args] expressions tail)              | Yes           |
-| loop                | (loop [bindings] expressions tail)        | Yes           |
-| let                 | (let [bindings] expressions tail)         | No            |
-| do                  | (do expressions tail)                     | No            |
-| if, if-not          | (if test then tail else tail)             | No            |
-| when, when-not      | (when test expressions tail)              | No            |
-| cond                | (cond test test tail ... :else else tail) | No            |
-| or, and             | (or test test ... tail)                   | No            |
-| case                | (case const const tail ... default tail)  | No            |
-|---------------------+-------------------------------------------+---------------|
-					*/
+					// +----------------+-------------------------------------------+---------------+
+					// | Form           | Tail Position                             | recur target? |
+					// +----------------+-------------------------------------------+---------------+
+					// | fn, defn       | (fn [args] expressions tail)              | No            |
+					// | loop           | (loop [bindings] expressions tail)        | Yes           |
+					// | let            | (let [bindings] expressions tail)         | No            |
+					// | do             | (do expressions tail)                     | No            |
+					// | if, if-not     | (if test then tail else tail)             | No            |
+					// | when, when-not | (when test expressions tail)              | No            |
+					// | cond           | (cond test test tail ... :else else tail) | No            |
+					// | case           | (case const const tail ... default tail)  | No            |
+					// | or, and        | (or test test ... tail)                   | No            |
+					// +----------------+-------------------------------------------+---------------+
+
 					// [1] calculate new values
 					final VncList recur_values = new VncList();
 					for(int i=1; i<ast.size(); i++) {
@@ -303,6 +302,7 @@ public class VeniceInterpreter {
 						final VncSymbol key = Coerce.toVncSymbol(recur_bindingNames.nth(i));
 						recur_env.set(key, recur_values.nth(i));
 					}
+					// [3] jump
 					orig_ast = recursionPoint.getLoopExpressions();
 					env = recur_env;
 					break;
