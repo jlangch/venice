@@ -276,6 +276,21 @@ public class VeniceInterpreter {
 				}
 
 				case "recur":  // (recur exprs*)
+					/*
+|---------------------+-------------------------------------------+---------------|
+| Form                | Tail Position                             | recur target? |
+|---------------------+-------------------------------------------+---------------|
+| fn, defn            | (fn [args] expressions tail)              | Yes           |
+| loop                | (loop [bindings] expressions tail)        | Yes           |
+| let                 | (let [bindings] expressions tail)         | No            |
+| do                  | (do expressions tail)                     | No            |
+| if, if-not          | (if test then tail else tail)             | No            |
+| when, when-not      | (when test expressions tail)              | No            |
+| cond                | (cond test test tail ... :else else tail) | No            |
+| or, and             | (or test test ... tail)                   | No            |
+| case                | (case const const tail ... default tail)  | No            |
+|---------------------+-------------------------------------------+---------------|
+					*/
 					// [1] calculate new values
 					final VncList recur_values = new VncList();
 					for(int i=1; i<ast.size(); i++) {
