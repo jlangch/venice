@@ -195,8 +195,7 @@ public class SpecialForms {
 			setDoc( "Evaluates the exprs and rebinds the bindings of the recursion " + 
 					"point to the values of the exprs. The recur expression must be " +
 					"at the tail position. The tail position is a postion which an " +
-					"expression would return a value from. There are no more forms " +
-					"evaluated after the form in the tail position is evaluated.");
+					"expression would return a value from.");
 			setExamples(
 					";; tail recursion                                   \n" +
 					"(loop [x 10]                                        \n" +

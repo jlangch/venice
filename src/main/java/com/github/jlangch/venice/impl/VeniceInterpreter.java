@@ -302,7 +302,7 @@ public class VeniceInterpreter {
 						final VncSymbol key = Coerce.toVncSymbol(recur_bindingNames.nth(i));
 						recur_env.set(key, recur_values.nth(i));
 					}
-					// [3] jump
+					// [3] continue on the loop with the new parameters
 					orig_ast = recursionPoint.getLoopExpressions();
 					env = recur_env;
 					break;
