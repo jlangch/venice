@@ -184,7 +184,7 @@ Recursion:
 ```clojure
 (do
    (defn sum [n]
-      (loop [cnt n acc 0]
+      (loop [cnt n, acc 0]
             (if (zero? cnt)
                 acc
                 (recur (dec cnt) (+ acc cnt)))))
@@ -552,12 +552,12 @@ classpath:
          { "y(x)" { :x [0.0 1.0 2.0]
                     :y [0.0 0.8 2.0] } }
          { :title "Line Chart"
-           :render-style :line   ;; :step
+           :render-style :line   ; :step
            :x-axis { :title "X" :decimal-pattern "#0.0"}
            :y-axis { :title "Y" :decimal-pattern "#0.0"}
            :theme :xchart } )
-      :png ;; write as PNG
-      120  ;; render with 120 dpi
+      :png ; write as PNG
+      120  ; render with 120 dpi
       (. :java.io.File :new "line-chart.png")))
 ```
 
@@ -579,13 +579,13 @@ classpath:
                  :y [1.0  2.0  4.0  3.0  4.0] } }
 
          { :title "Area Chart"
-           :render-style :area   ;; :step-area
+           :render-style :area   ; :step-area
            :legend {:position :inside-ne}
            :x-axis { :title "X" :decimal-pattern "#0.#"}
            :y-axis { :title "Y" :decimal-pattern "#0.#"}
            :theme :xchart } )
-      :png ;; write as PNG
-      120  ;; render with 120 dpi
+      :png ; write as PNG
+      120  ; render with 120 dpi
       (. :java.io.File :new "area-chart.png")))
 ```
 
@@ -611,8 +611,8 @@ classpath:
            :x-axis { :title "X" :decimal-pattern "#0.0" :min 0.0 :max 10.0 }
            :y-axis { :title "Y" :decimal-pattern "#0.0" :min 0.0 :max 10.0 }
            :theme :xchart } )
-      :png ;; write as PNG
-      120  ;; render with 120 dpi
+      :png ; write as PNG
+      120  ; render with 120 dpi
       (. :java.io.File :new "scatter-chart.png")))
 ```
 
