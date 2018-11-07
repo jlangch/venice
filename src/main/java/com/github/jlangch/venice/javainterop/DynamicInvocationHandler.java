@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
 /**
@@ -73,7 +74,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				
 			// [SECURITY]
 			//
-			// Ensure that the Venice callback is running in the Venice's 
+			// Ensure that the Venice callback function is running in the Venice's 
 			// sandbox. The Java callback parent could actually fork a thread
 			// to run this Venice proxy callback!
 			
@@ -83,7 +84,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
 			}
 			else {
-				// the call back run's in another thread, 
+				// the callback function run's in another thread
+				ThreadLocalMap.getClearCallStack();
+				
 				try {
 					JavaInterop.register(parentInterceptor);
 					

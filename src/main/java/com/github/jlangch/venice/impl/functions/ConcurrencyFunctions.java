@@ -392,9 +392,10 @@ public class ConcurrencyFunctions {
 												new VncHashMap(new VncKeyword("call"), wrapped));
 
 			final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-
+			
 			final Callable<Object> taskWrapper = () -> {
 				try {
+					ThreadLocalMap.getClearCallStack();
 					JavaInterop.register(parentInterceptor);	
 					
 					return task.call();
