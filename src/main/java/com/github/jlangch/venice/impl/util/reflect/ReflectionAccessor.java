@@ -753,7 +753,8 @@ public class ReflectionAccessor {
 		throw new JavaMethodInvocationException(
 				String.format(
 						"Unexpected param type, expected: %s, given: %s",
-						paramType.getName(), arg.getClass().getName()));
+						paramType.getName(), 
+						arg.getClass().getName()));
 	}
 
 	private static Object boxNumberArg(final Class<?> paramType, final Number arg) {

@@ -139,14 +139,21 @@ public class SystemFunctions {
 			
 			setDoc("Returns the current callstack.");
 			
-			setExamples("(callstack 30)");
+			setExamples(
+					"(do                             \n" +
+					"   (defn f1 [x] (f2 x))         \n" +
+					"   (defn f2 [x] (f3 x))         \n" +
+					"   (defn f3 [x] (f4 x))         \n" +
+					"   (defn f4 [x] (callstack))    \n" +
+					"   (f1 100))                      ");
+
 		}
 		
 		public VncVal apply(final VncList args) {
 			assertArity("callstack", args, 0);
 			
 			final CallStack stack = ThreadLocalMap.getCallStack();			
-			return stack.toVncList();
+			return stack.toVncVector();
 		}
 	};
 

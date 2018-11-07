@@ -27,8 +27,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 public class CallStack {
@@ -67,23 +71,28 @@ public class CallStack {
 					.collect(Collectors.toList());
 		
 		Collections.reverse(callstack); 
-		
-		if (callstack.isEmpty()) {
-			return callstack;
-		}
-		else {
-			final String first = callstack.get(0);
-			return first.startsWith("callstack")
-					? callstack.subList(1, callstack.size())
-					: callstack;
-		}
+
+		return callstack;
 	}
 
-	public VncList toVncList() {
-		return new VncList(toList()
-							.stream()
-							.map(f -> new VncString(f.toString()))
-							.collect(Collectors.toList()));
+	public VncVector toVncVector() {
+		final List<VncVal> callstack =
+				Arrays
+					.stream(queue.toArray(new CallFrame[] {}))
+					.map(f -> new VncOrderedMap(
+									new VncKeyword(":fn-name"),
+									new VncString(f.getFnName()),
+									new VncKeyword(":file"),
+									new VncString(f.getFile()),
+									new VncKeyword(":line"),
+									new VncLong(f.getLine()),
+									new VncKeyword(":col"),
+									new VncLong(f.getCol())))
+					.collect(Collectors.toList());
+		
+		Collections.reverse(callstack); 		
+		
+		return new VncVector(callstack);
 	}
 
 	@Override

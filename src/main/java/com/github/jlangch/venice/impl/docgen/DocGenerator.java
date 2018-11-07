@@ -541,6 +541,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
+		misc.addItem(getDocItem("callstack"));
 		
 
 		final DocSection meta = new DocSection("Meta");
@@ -990,6 +991,7 @@ public class DocGenerator {
 						
 						try {
 							final String result = (String)runner.eval(
+														"example",
 														"(pr-str " + e + ")",
 														Parameters.of("*out*", ps));
 							

@@ -326,10 +326,9 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(promise? p)");
 			
-			setDoc( "Returns true if f is a Promise otherwise false");
+			setDoc("Returns true if f is a Promise otherwise false");
 			
-			setExamples(
-					"(promise? (promise)))");
+			setExamples("(promise? (promise)))");
 		}
 		
 		public VncVal apply(final VncList args) {

@@ -71,12 +71,11 @@ public class VeniceInterpreter {
 		return Reader.read_str(script, filename);
 	}
 
-	// eval
-	public static boolean is_pair(final VncVal x) {
+	private static boolean is_pair(final VncVal x) {
 		return x instanceof VncList && !((VncList)x).isEmpty();
 	}
 
-	public static VncVal quasiquote(final VncVal ast) {
+	private static VncVal quasiquote(final VncVal ast) {
 		if (!is_pair(ast)) {
 			return new VncList(new VncSymbol("quote"), ast);
 		} 
@@ -111,7 +110,7 @@ public class VeniceInterpreter {
 	 * @param env env
 	 * @return true if the ast starts with a macro
 	 */
-	public boolean is_macro_call(final VncVal ast, final Env env) {
+	private boolean is_macro_call(final VncVal ast, final Env env) {
 		if (Types.isVncList(ast) && !((VncList)ast).isEmpty()) {
 			final VncVal a0 = Coerce.toVncList(ast).nth(0);
 			if (Types.isVncSymbol(a0)) {
@@ -141,7 +140,7 @@ public class VeniceInterpreter {
 	 * @param env env
 	 * @return the expanded macro
 	 */
-	public VncVal macroexpand(VncVal ast, final Env env) {
+	private VncVal macroexpand(VncVal ast, final Env env) {
 		while (is_macro_call(ast, env)) {
 			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncList(ast).nth(0));
 			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
@@ -151,7 +150,7 @@ public class VeniceInterpreter {
 		return ast;
 	}
 
-	public VncVal eval_ast(final VncVal ast, final Env env) {
+	private VncVal eval_ast(final VncVal ast, final Env env) {
 		if (ast instanceof VncSymbol) {
 			return env.get((VncSymbol)ast);
 		} 
@@ -489,7 +488,7 @@ public class VeniceInterpreter {
 	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
 	 *         value if a mapping does nor exist 
 	 */
-	public String resolveClassName(final String className) {
+	private String resolveClassName(final String className) {
 		return javaImports.resolveClassName(className);
 	}
 	
