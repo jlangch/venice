@@ -7,7 +7,7 @@
 
    json/avail? 
    
-   (fn [] (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class))))
+   (fn json/avail? [] (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class))))
 
 (def 
    { :arglists '("(json/avail-jdk8-module?)")
@@ -16,7 +16,8 @@
 
    json/avail-jdk8-module? 
    
-   (fn [] (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class))))
+   (fn json/avail-jdk8-module? [] 
+       (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class))))
 
 (def 
    { :arglists '("(json/pretty-print json)")
@@ -25,7 +26,7 @@
 
    json/pretty-print 
    
-   (fn [json] (json/to-pretty-json (json/parse json))))
+   (fn json/pretty-prin [json] (json/to-pretty-json (json/parse json))))
    
 (def 
    { :arglists '("(json/to-json val)")
@@ -34,9 +35,10 @@
 
    json/to-json 
    
-   (fn [val]
+   (fn json/to-json [val]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
+            (when (json/avail-jdk8-module?) 
+                  (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
                 (. :writeValueAsString val)))))
@@ -48,9 +50,10 @@
 
    json/to-pretty-json 
    
-   (fn [val]
+   (fn json/to-pretty-json [val]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
+            (when (json/avail-jdk8-module?) 
+                  (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
@@ -64,9 +67,10 @@
 
    json/parse 
    
-   (fn [text]
+   (fn json/parse [text]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (json/avail-jdk8-module?) (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
+            (when (json/avail-jdk8-module?) 
+                  (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
                 (. :readValue text (. :java.lang.Object :class))))))

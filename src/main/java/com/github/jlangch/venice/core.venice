@@ -375,13 +375,14 @@
 
    print
    
-   (fn [& xs] (do 
-               (cond
-                 (empty? xs)  nil
-                 (== 1 (count xs))  (. *out* :append (str (first xs)))
-                 :default (. *out* :append (str/join " " (map (fn [y] (str y)) xs))))
+   (fn print [& xs] 
+       (do 
+          (cond
+             (empty? xs)  nil
+             (== 1 (count xs))  (. *out* :append (str (first xs)))
+             :default (. *out* :append (str/join " " (map (fn [y] (str y)) xs))))
                  
-               nil)))
+          nil)))
 
 
 (def
@@ -391,7 +392,7 @@
 
    printf
    
-   (fn [fmt & args] (print (apply str/format fmt args))))
+   (fn printf [fmt & args] (print (apply str/format fmt args))))
    
    
 (def
@@ -401,7 +402,7 @@
 
    println
    
-   (fn [& xs] (do (apply print xs) (newline) nil)))
+   (fn println [& xs] (do (apply print xs) (newline) nil)))
 
 
 (def  
@@ -411,7 +412,7 @@
     
    newline 
    
-   (fn [] (do (. *out* :append "\n") nil)))
+   (fn newline [] (do (. *out* :append "\n") nil)))
 
 
 (def  
@@ -421,7 +422,7 @@
     
    flush 
    
-   (fn [os] (let [out (coalesce os *out*)] (. out :flush) nil)))
+   (fn flush [os] (let [out (coalesce os *out*)] (. out :flush) nil)))
 
 
 (def 
@@ -432,7 +433,7 @@
      
    not 
    
-   (fn [x] (if x false true)))
+   (fn not [x] (if x false true)))
 
 
 (def 
@@ -443,7 +444,7 @@
      
    identity 
    
-   (fn [x] x))
+   (fn identity [x] x))
 
 
 (def 
@@ -454,7 +455,7 @@
 
    zipmap
    
-   (fn [keys vals]     
+   (fn zipmap [keys vals]     
       (loop [map (ordered-map)
              ks (seq keys)
              vs (seq vals)]
@@ -481,7 +482,7 @@
      
    memoize
    
-   (fn [f]
+   (fn memoize [f]
       (let [mem (atom {})]
          (fn [& args]
             (if-let [e (find @mem args)]
