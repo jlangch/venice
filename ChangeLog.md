@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ...
+- added readable Venice stack traces as an alternative to pure Java stack traces
+        that are pretty difficult to read
 
 
 
