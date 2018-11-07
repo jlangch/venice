@@ -174,7 +174,7 @@
     <body>
         <div class="main">
             <div class="header">    
-                 <h1>Venice 0.9.11-snapshot Cheat Sheet</h1>
+                 <h1>Venice 0.9.11 Cheat Sheet</h1>
             </div>
 
             <div class="column">
@@ -805,7 +805,7 @@
                                         <code>Java interop. Calls a constructor or an class/object method or accesses a class/instance field. The function is sandboxed.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-11-07T11:52:45.101+01:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2018-11-07T12:06:03.695+01:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -1365,7 +1365,7 @@
                                         <code>Returns the current time in milliseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(current-time-millis)<br/>=&gt; 1541587965089</code>
+                                        <code>(current-time-millis)<br/>=&gt; 1541588763682</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1006">
@@ -1491,7 +1491,7 @@
                                         <code>Creates a global variable.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(def val 5)<br/>=&gt; 5<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-d89539b5-ba24-4817-b12c-cce2b55912b0</code>
+                                        <code>(def val 5)<br/>=&gt; 5<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-ce67a24d-7a40-4d49-a06c-91fa13c72375</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1145">
@@ -2751,7 +2751,7 @@
                                         <code>Loads a Venice predefined extension module.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (load-module :logger))<br/>=&gt; anonymous-aa53240f-a474-4f26-b42a-51d825d989ca</code>
+                                        <code>(do <br/>   (load-module :logger))<br/>=&gt; anonymous-cad1b5ae-f616-43ec-a45e-ac65e03e481f</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1157">
@@ -2933,7 +2933,7 @@
                                         <code>Returns a memoized version of a referentially transparent function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do<br/>   (def fibonacci<br/>      (memoize<br/>         (fn [n]<br/>             (cond<br/>                (&lt;= n 0) 0<br/>                (&lt; n 2) 1<br/>                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))<br/>          <br/>   (time (fibonacci 25)))<br/>Elapsed time: 9 msecs<br/>=&gt; 75025</code>
+                                        <code>(do<br/>   (def fibonacci<br/>      (memoize<br/>         (fn [n]<br/>             (cond<br/>                (&lt;= n 0) 0<br/>                (&lt; n 2) 1<br/>                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))<br/>          <br/>   (time (fibonacci 25)))<br/>Elapsed time: 8 msecs<br/>=&gt; 75025</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1262">
@@ -3017,7 +3017,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(nano-time)<br/>=&gt; 9882373474501</code>
+                                        <code>(nano-time)<br/>=&gt; 10680964813737</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1022">
@@ -3451,7 +3451,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. Without argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.646914795831013<br/><br/>(rand-double 100.0)<br/>=&gt; 26.081345541982493</code>
+                                        <code>(rand-double)<br/>=&gt; 0.16211113418480838<br/><br/>(rand-double 100.0)<br/>=&gt; 60.50714737612416</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1031">
@@ -3465,7 +3465,7 @@
                                         <code>Without argument returns a Gaussion distributed double value with mean 0.0 and standard deviation 1.0. With argument mean and stddev returns a Gaussion distributed double value with the given mean and standard deviation.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-gaussian)<br/>=&gt; 1.1405764102966887<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; -2.217160298605136</code>
+                                        <code>(rand-gaussian)<br/>=&gt; 0.04689292201397436<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; 3.4516964471032496</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1029">
@@ -3479,7 +3479,7 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. Without argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 4383040486582598509<br/><br/>(rand-long 100)<br/>=&gt; 52</code>
+                                        <code>(rand-long)<br/>=&gt; 3732704491040365041<br/><br/>(rand-long 100)<br/>=&gt; 57</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1182">
@@ -3605,7 +3605,7 @@
                                         <code>Takes a function of no args, presumably with side effects, and returns a collection of n calls to it</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(repeatedly 5 #(rand-long 11))<br/>=&gt; (2 5 3 5 8)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (0 0 0 0 0)</code>
+                                        <code>(repeatedly 5 #(rand-long 11))<br/>=&gt; (0 7 6 5 0)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (5 5 5 5 5)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1266">
@@ -4473,7 +4473,7 @@
                                         <code>Creates a new date. A date is represented by &apos;java.util.Date&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/date)<br/>=&gt; Wed Nov 07 11:52:42 CET 2018</code>
+                                        <code>(time/date)<br/>=&gt; Wed Nov 07 12:06:01 CET 2018</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1086">
@@ -4571,7 +4571,7 @@
                                         <code>Formats a date with a format</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;07-11-2018&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2018-11-07T11:52:42.868CET&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2018-11-07T11:52:42.87+01:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2018-11-07T11:52:42.872CET&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2018-11-07T11:52:42.873+01:00&quot;</code>
+                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;07-11-2018&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2018-11-07T12:06:01.672CET&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2018-11-07T12:06:01.673+01:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2018-11-07T12:06:01.675CET&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2018-11-07T12:06:01.676+01:00&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1108">
@@ -4599,7 +4599,7 @@
                                         <code>Returns the hour of the date 1..24</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/hour (time/local-date))<br/>=&gt; 0<br/><br/>(time/hour (time/local-date-time))<br/>=&gt; 11<br/><br/>(time/hour (time/zoned-date-time))<br/>=&gt; 11</code>
+                                        <code>(time/hour (time/local-date))<br/>=&gt; 0<br/><br/>(time/hour (time/local-date-time))<br/>=&gt; 12<br/><br/>(time/hour (time/zoned-date-time))<br/>=&gt; 12</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1121">
@@ -4711,7 +4711,7 @@
                                         <code>Creates a new local-date-time. A local-date-time is represented by &apos;java.time.LocalDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/local-date-time)<br/>=&gt; 2018-11-07T11:52:42.757<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2018-11-07T11:52:42.767</code>
+                                        <code>(time/local-date-time)<br/>=&gt; 2018-11-07T12:06:01.563<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2018-11-07T12:06:01.573</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1092">
@@ -4767,7 +4767,7 @@
                                         <code>Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2018-11-05<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2018-11-05T11:52:42.903<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-11-05T11:52:42.905+01:00[Europe/Zurich]</code>
+                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2018-11-05<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2018-11-05T12:06:01.708<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-11-05T12:06:01.710+01:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1099">
@@ -4781,7 +4781,7 @@
                                         <code>Returns the minute of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 52<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 52</code>
+                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 6<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 6</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1097">
@@ -4851,7 +4851,7 @@
                                         <code>Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2018-11-09<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2018-11-09T11:52:42.899<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-11-09T11:52:42.900+01:00[Europe/Zurich]</code>
+                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2018-11-09<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2018-11-09T12:06:01.704<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2018-11-09T12:06:01.706+01:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1100">
@@ -4865,7 +4865,7 @@
                                         <code>Returns the second of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 42<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 42</code>
+                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 1<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 1</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1125">
@@ -4977,7 +4977,7 @@
                                         <code>Creates a new zoned-date-time. A zoned-date-time is represented by &apos;java.time.ZonedDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/zoned-date-time)<br/>=&gt; 2018-11-07T11:52:42.774+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2018-11-07T11:52:42.784+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2018-11-07T10:52:42.786Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2018-11-07T10:52:42.796Z[UTC]</code>
+                                        <code>(time/zoned-date-time)<br/>=&gt; 2018-11-07T12:06:01.579+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2018-11-07T12:06:01.589+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2018-11-07T11:06:01.591Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2018-11-07T11:06:01.600Z[UTC]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1095">
@@ -5117,7 +5117,7 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; &quot;d3662bcd-e3bf-428c-8fe7-3d8e7419f633&quot;</code>
+                                        <code>(uuid )<br/>=&gt; &quot;2ce54eeb-8f6c-4b02-afb6-da3c9696b396&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1258">
@@ -5201,7 +5201,7 @@
                                         <code>Returns the version.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(version )<br/>=&gt; &quot;0.9.11-snapshot&quot;</code>
+                                        <code>(version )<br/>=&gt; &quot;0.9.11&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1149">
