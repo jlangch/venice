@@ -46,6 +46,8 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -606,6 +608,47 @@ public class ConcurrencyFunctions {
 		}
 	};
 
+
+
+	///////////////////////////////////////////////////////////////////////////
+	// Thread utils
+	///////////////////////////////////////////////////////////////////////////
+
+
+	public static VncFunction thread_id = new VncFunction("thread-id") {
+		{
+			setArgLists("(thread-id)");
+			
+			setDoc( "Returns the identifier of this Thread. The thread ID is a " +
+					"positive number generated when this thread was created. " +
+					"The thread ID  is unique and remains unchanged during its " +
+					"lifetime. When a thread is terminated, this thread ID may " +
+					"be reused.");
+			
+			setExamples("(thread-id)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("thread-id", args, 0);
+			return new VncLong(Thread.currentThread().getId());
+		}
+	};
+
+	public static VncFunction thread_name = new VncFunction("thread-name") {
+		{
+			setArgLists("(thread-name)");
+			
+			setDoc("Returns this thread's name.");
+			
+			setExamples("(thread-name)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("thread-name", args, 0);
+			return new VncString(Thread.currentThread().getName());
+		}
+	};
+
 	
 	public static void shutdown() {
 		executor.shutdown();
@@ -638,6 +681,9 @@ public class ConcurrencyFunctions {
 					.put("future-done?",		future_done_Q)
 					.put("future-cancel",		future_cancel)
 					.put("future-cancelled?",	future_cancelled_Q)
+					
+					.put("thread-id",			thread_id)
+					.put("thread-name",			thread_name)
 					
 					.put("thread-local",		new_thread_local)
 					.put("thread-local?",		thread_local_Q)

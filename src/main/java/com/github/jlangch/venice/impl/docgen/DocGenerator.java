@@ -683,6 +683,11 @@ public class DocGenerator {
 		thlocal.addItem(getDocItem("dissoc"));
 		thlocal.addItem(getDocItem("get"));
 
+		final DocSection util = new DocSection("Util");
+		all.addSection(util);
+		util.addItem(getDocItem("thread-id"));
+		util.addItem(getDocItem("thread-name"));
+
 		return section;
 	}
 

@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 
@@ -189,6 +189,20 @@ public class ConcurrencyFunctionsTest {
 
 		final File file = (File)venice.eval(script);
 		assertEquals("a.txt", file.getName());
+	}
+	
+	@Test
+	public void test_thread_id() {
+		final Venice venice = new Venice();
+
+		assertNotNull((Long)venice.eval("(thread-id)"));
+	}
+	
+	@Test
+	public void test_thread_name() {
+		final Venice venice = new Venice();
+
+		assertNotNull((String)venice.eval("(thread-name)"));
 	}
 
 }
