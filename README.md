@@ -388,6 +388,25 @@ Alternative to UNIX shell scripts:
          (printf "Error: The tomcat log dir '%s' does not exist" dir))))
 ```
 
+Venice stack traces
+
+```clojure
+(do
+   (defn f1 [x] (f2 x))
+   (defn f2 [x] (f3 x))
+   (defn f3 [x] (/ 1 x))
+   (f1 0))
+   
+=>
+/ by zero
+
+Stacktrace:
+    / (repl: line 5, col 18)
+    f3 (repl: line 4, col 18)
+    f2 (repl: line 3, col 18)
+    f1 (repl: line 2, col 5)
+```
+
 
 ## Sandbox
 
