@@ -66,7 +66,7 @@ public class Sandbox_JavaDynProxy_Test {
 		    "                                                                        \n" +
 		    "    (defn pred-fn [x]                                                   \n" +
 			"          (do                                                           \n" +
-			"             (when-not (== (deref parent-th-id) (thread-id))            \n" +
+			"             (when-not (== @parent-th-id (thread-id))                   \n" +
 			"                       (. :java.lang.System :currentTimeMillis))        \n" +
 			"             (> x 2)))                                                  \n" +
 			"                                                                        \n" +
@@ -102,7 +102,7 @@ public class Sandbox_JavaDynProxy_Test {
 		    "                                                                        \n" +
 		    "    (defn pred-fn [x]                                                   \n" +
 			"          (do                                                           \n" +
-			"             (when-not (== (deref parent-th-id) (thread-id))            \n" +
+			"             (when-not (== @parent-th-id (thread-id))                   \n" +
 			"                       (. :java.lang.System :currentTimeMillis))        \n" +
 			"             (> x 2)))                                                  \n" +
 			"                                                                        \n" +
@@ -116,7 +116,7 @@ public class Sandbox_JavaDynProxy_Test {
 				new SandboxInterceptor(
 						new SandboxRules()
 								.withClasses(
-										"java.lang.System:currentTimeMillis", // no Security exception
+										"java.lang.System:currentTimeMillis", // NO Security exception
 										"java.io.PrintStream:*",
 										"java.util.ArrayList:*",
 										"java.util.function.*:*",
