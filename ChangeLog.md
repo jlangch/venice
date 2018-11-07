@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added anonymous function to support an optional name. e.g. `(fn double [x] (* 2 x))`
+- added support for optional name for anonymous functions. e.g. `(fn double [x] (* 2 x))`
 - added function _doc_
 - added function _list*_
 - added function _io/file-size_
