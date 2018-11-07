@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 
@@ -394,16 +395,15 @@ public class VeniceInterpreter {
 						final VncFunction f = (VncFunction)el.nth(0);
 						final VncList fnArgs = el.rest();
 						MetaUtil.copyTokenPos(el, fnArgs);
-						MetaUtil.copyTokenPos(f, el);
-						return f.apply(fnArgs);
+						final CallFrame frame = makeCallFrame(f, ast.nth(0));
 						
-//						try {
-//							final CallFrame frame = makeCallFrame(f);
-//							return f.apply(fnArgs);
-//						}
-//						finally {
-//							
-//						}
+						ThreadLocalMap.getCallStack().push(frame);
+						try {
+							return f.apply(fnArgs);
+						}
+						finally {
+							ThreadLocalMap.getCallStack().pop();
+						}
 
 //						final VncFunction f = (VncFunction)el.nth(0);
 //						final VncVal fnast = f.getAst();
@@ -738,16 +738,21 @@ public class VeniceInterpreter {
 		}
 	}
 
-	private CallFrame makeCallFrame(final VncFunction fn) {
-		final VncVal file = fn.getMetaVal(MetaUtil.FILE);
-		final VncVal line = fn.getMetaVal(MetaUtil.LINE);
-		final VncVal column = fn.getMetaVal(MetaUtil.COLUMN);
-		
-		return new CallFrame(
-					fn.getName(), 		
-					file == Nil ? "unknown" : ((VncString)file).getValue(),
-					line == Nil ? -1 : ((VncLong)line).getIntValue(),
-					column == Nil ? -1 : ((VncLong)column).getIntValue());
+	private CallFrame makeCallFrame(final VncFunction fn, final VncVal fnSym) {
+		if (Types.isVncSymbol(fnSym)) {
+			final VncVal file = fnSym.getMetaVal(MetaUtil.FILE);
+			final VncVal line = fnSym.getMetaVal(MetaUtil.LINE);
+			final VncVal column = fnSym.getMetaVal(MetaUtil.COLUMN);
+			
+			return new CallFrame(
+						fn.getName(), 		
+						file == Nil ? "unknown" : ((VncString)file).getValue(),
+						line == Nil ? -1 : ((VncLong)line).getIntValue(),
+						column == Nil ? -1 : ((VncLong)column).getIntValue());
+		}
+		else {
+			return new CallFrame(fn.getName(), "unknown", -1, -1);
+		}
 	}
 	
 	

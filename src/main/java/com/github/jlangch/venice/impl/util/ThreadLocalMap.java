@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.CallStack;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -64,6 +65,14 @@ public class ThreadLocalMap {
 		return key == null ? false : get().values.containsKey(key);
 	}
 
+	public static void getClearCallStack() {
+		get().callStack.clear();
+	}
+
+	public static CallStack getCallStack() {
+		return  get().callStack;
+	}
+	
 	private static ThreadLocalMap get() {
 		return ThreadLocalMap.context.get();
 	}
@@ -71,6 +80,7 @@ public class ThreadLocalMap {
 	public static void clear() {
 		try {
 			get().values.clear();
+			get().callStack.clear();
 		}
 		catch(Exception ex) {
 			// do not care
@@ -91,6 +101,7 @@ public class ThreadLocalMap {
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
+	private final CallStack callStack = new CallStack();
 	
 	private static ThreadLocal<ThreadLocalMap> context = 
 			InheritableThreadLocal.withInitial(() -> new ThreadLocalMap()); 

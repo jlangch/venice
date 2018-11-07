@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.github.jlangch.venice.Version;
+import com.github.jlangch.venice.impl.CallStack;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -39,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
 public class SystemFunctions {
@@ -128,6 +130,23 @@ public class SystemFunctions {
 			}
 			
 			return Nil;
+		}
+	};
+
+	public static VncFunction callstack = new VncFunction("callstack") {
+		{
+			setArgLists("(callstack )");
+			
+			setDoc("Returns the current callstack.");
+			
+			setExamples("(callstack 30)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("callstack", args, 0);
+			
+			final CallStack stack = ThreadLocalMap.getCallStack();			
+			return stack.toVncList();
 		}
 	};
 
@@ -245,6 +264,7 @@ public class SystemFunctions {
 					.put("nano-time",			nano_time)
 					.put("sandboxed?",			sandboxed_Q)
 					.put("sleep",				sleep)
+					.put("callstack",			callstack)
 					.put("os",					os)
 					.put("os?",					os_Q)
 					.put("version",				version)

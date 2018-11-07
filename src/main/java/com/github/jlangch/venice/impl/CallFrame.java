@@ -56,7 +56,7 @@ public class CallFrame {
 
 	@Override
 	public String toString() {
-		return String.format("%s (file: %s, line %d, column %d)", fnName, file, line, col);
+		return String.format("%s (%s: line %d, col %d)", fnName, file, line, col);
 	}
 
 	

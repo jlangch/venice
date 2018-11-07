@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -83,5 +85,26 @@ public class SystemFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertTrue(((String)venice.eval("(version)")).matches("[0-9]+[.][0-9]+[.][0-9]+(-snapshot)*"));
+	}
+
+	@Test
+	public void test_callstack() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                     \n" +
+				"   (def cs (atom nil))                                  \n" +
+				"   (defn f1 [x] (f2 x))                                 \n" +
+				"   (defn f2 [x] (f3 x))                                 \n" +
+				"   (defn f3 [x] (f4 x))                                 \n" +
+				"   (defn f4 [x] (f5 x))                                 \n" +
+				"   (defn f5 [x] (do (reset! cs (callstack)) x))         \n" +
+				"   (f1 1)                                               \n" +
+				"   @cs)                                                   ";
+	
+		@SuppressWarnings("unchecked")
+		final List<String> callstack = (List<String>)venice.eval("test", s);
+		
+		assertEquals(5, callstack.size());
 	}
 }
