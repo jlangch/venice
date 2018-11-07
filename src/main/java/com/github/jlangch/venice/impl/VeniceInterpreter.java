@@ -390,17 +390,20 @@ public class VeniceInterpreter {
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					if (Types.isVncFunction(el.nth(0))) {
+						// invoke function
 						final VncFunction f = (VncFunction)el.nth(0);
 						final VncList fnArgs = el.rest();
 						MetaUtil.copyTokenPos(el, fnArgs);
 						MetaUtil.copyTokenPos(f, el);
-						try {
-							final CallFrame frame = makeCallFrame(f);
-							return f.apply(fnArgs);
-						}
-						finally {
-							
-						}
+						return f.apply(fnArgs);
+						
+//						try {
+//							final CallFrame frame = makeCallFrame(f);
+//							return f.apply(fnArgs);
+//						}
+//						finally {
+//							
+//						}
 
 //						final VncFunction f = (VncFunction)el.nth(0);
 //						final VncVal fnast = f.getAst();

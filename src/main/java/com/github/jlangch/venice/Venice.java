@@ -123,11 +123,18 @@ public class Venice {
 	 * @return The result
 	 */
 	public Object eval(final String script) {
-		if (StringUtil.isBlank(script)) {
-			throw new IllegalArgumentException("A 'script' must not be blank");
-		}
-
 		return eval(null, script, null);
+	}
+
+	/**
+	 * Evaluates a script with parameters
+	 * 
+	 * @param scriptName An optional scriptName
+	 * @param script A mandatory script
+	 * @return The result
+	 */
+	public Object eval(final String scriptName, final String script) {
+		return eval(scriptName, script, null);
 	}
 
 	/**
@@ -138,10 +145,6 @@ public class Venice {
 	 * @return The result
 	 */
 	public Object eval(final String script, final Map<String,Object> params) {
-		if (StringUtil.isBlank(script)) {
-			throw new IllegalArgumentException("A 'script' must not be blank");
-		}
-
 		return eval(null, script, params);
 	}
 

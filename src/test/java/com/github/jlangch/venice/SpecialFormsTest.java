@@ -330,7 +330,7 @@ public class SpecialFormsTest {
 	public void test_fn_def() {
 		final Venice venice = new Venice();
 		
-		assertEquals(Long.valueOf(7), venice.eval("(do (def add5 (fn [x] (+ x 5))) (add5 2))"));
+		assertEquals(Long.valueOf(7), venice.eval("test", "(do (defn add5 [x] (+ x 5)) (add5 2))"));
 	}
 
 	@Test
