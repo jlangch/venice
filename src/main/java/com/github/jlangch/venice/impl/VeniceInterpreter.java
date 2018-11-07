@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -340,7 +341,7 @@ public class VeniceInterpreter {
 					
 				case "if": 
 					final VncVal condArg = ast.nth(1);
-					VncVal cond = EVAL(condArg, env);
+					final VncVal cond = EVAL(condArg, env);
 					if (cond == Nil || cond == False) {
 						// eval false slot form
 						if (ast.size() > 3) {
@@ -357,11 +358,16 @@ public class VeniceInterpreter {
 					break;
 					
 				case "fn":
-					final VncList fnParams = Coerce.toVncList(ast.nth(1));
-					final VncList preConditions = getFnPreconditions(ast.nth(2));
-					final VncVal fnBody = preConditions == null ? ast.nth(2) : ast.nth(3);
+					// (fn name? [params*] condition-map? expr*)
+					int argPos = 1;
+					final String fnName = getFnName(ast.nth(argPos));
+					if (fnName != null) argPos++;
+					final VncList fnParams = Coerce.toVncList(ast.nth(argPos++));
+					final VncList preConditions = getFnPreconditions(ast.nth(argPos));
+					if (preConditions != null) argPos++;
+					final VncVal fnBody = ast.nth(argPos);
 					final Env cur_env = env;
-					final VncFunction fn = new VncFunction(fnBody, env, fnParams) {
+					final VncFunction fn = new VncFunction(fnName, fnBody, env, fnParams) {
 												public VncVal apply(final VncList args) {
 													final Env localEnv = new Env(cur_env);
 													
@@ -385,16 +391,28 @@ public class VeniceInterpreter {
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					if (Types.isVncFunction(el.nth(0))) {
 						final VncFunction f = (VncFunction)el.nth(0);
+						final VncList fnArgs = el.rest();
+						MetaUtil.copyTokenPos(el, fnArgs);
+						MetaUtil.copyTokenPos(f, el);
+						try {
+							final CallFrame frame = makeCallFrame(f);
+							return f.apply(fnArgs);
+						}
+						finally {
+							
+						}
+
+//						final VncFunction f = (VncFunction)el.nth(0);
 //						final VncVal fnast = f.getAst();
 //						if (fnast != null) {
 //							orig_ast = fnast;
 //							env = f.genEnv(el.slice(1));
 //						} 
 //						else {
-							final VncList fnArgs = el.rest();
-							MetaUtil.copyTokenPos(el, fnArgs);
-							return f.apply(fnArgs);
-//						}
+//							final VncList fnArgs = el.rest();
+//							MetaUtil.copyTokenPos(el, fnArgs);
+//							return f.apply(fnArgs);
+//						}							
 					}
 					else if (Types.isVncKeyword(el.nth(0))) {
 						// keyword as function to access map: (:a {:a 100})
@@ -404,8 +422,7 @@ public class VeniceInterpreter {
 						return k.apply(fnArgs);
 					}
 					else {
-						throw new VncException(
-								String.format(
+						throw new VncException(String.format(
 										"Not a function or keyword: '%s'", 
 										PRINT(el.nth(0))));
 					}
@@ -679,6 +696,15 @@ public class VeniceInterpreter {
 		return null;
 	}
 
+	private String getFnName(final VncVal name) {
+		if (name == Nil) {
+			return null;
+		}
+		else {
+			return Types.isVncSymbol(name) ? ((VncSymbol)name).getName() : null;
+		}
+	}
+
 	private VncList getFnPreconditions(final VncVal prePostConditions) {
 		if (Types.isVncMap(prePostConditions)) {
 			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
@@ -709,6 +735,18 @@ public class VeniceInterpreter {
 		}
 	}
 
+	private CallFrame makeCallFrame(final VncFunction fn) {
+		final VncVal file = fn.getMetaVal(MetaUtil.FILE);
+		final VncVal line = fn.getMetaVal(MetaUtil.LINE);
+		final VncVal column = fn.getMetaVal(MetaUtil.COLUMN);
+		
+		return new CallFrame(
+					fn.getName(), 		
+					file == Nil ? "unknown" : ((VncString)file).getValue(),
+					line == Nil ? -1 : ((VncLong)line).getIntValue(),
+					column == Nil ? -1 : ((VncLong)column).getIntValue());
+	}
+	
 	
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 

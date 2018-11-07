@@ -79,12 +79,12 @@ public class SpecialForms {
 
 	public static VncFunction fn = new SpecialFormsDocFunction("fn") {
 		{
-			setArgLists("(fn [params*] condition-map? expr*)");
+			setArgLists("(fn name? [params*] condition-map? expr*)");
 			setDoc("Defines an anonymous function.");
 			setExamples(
 					"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
 					
-					"(map (fn [x] (* 2 x)) (range 1 5))",
+					"(map (fn double [x] (* 2 x)) (range 1 5))",
 					
 					"(map #(* 2 %) (range 1 5))",
 					

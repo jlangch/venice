@@ -38,8 +38,7 @@ public class SpecialFormsTest {
 
 		final String lisp = 
 				"(try                          " +
-				"  (throw \"test message\")    " +
-				")                             ";
+				"  (throw \"test message\"))   ";
 
 		try {
 			venice.eval(lisp);
@@ -58,8 +57,7 @@ public class SpecialFormsTest {
 
 		final String lisp = 
 				"(try                          " +
-				"  (throw )                    " +
-				")                             ";
+				"  (throw ))                   ";
 
 		try {
 			venice.eval(lisp);
@@ -83,8 +81,7 @@ public class SpecialFormsTest {
 				"         (do                         " +
 				"            (+ 1 2)                  " +
 				"            (+ 3 4)                  " +
-				"            -1)))                    " +
-				")                                    ";
+				"            -1)))                    ";
 
 		assertEquals(Long.valueOf(-1L), venice.eval(lisp));
 	}
@@ -130,7 +127,7 @@ public class SpecialFormsTest {
 				"  (import :java.io.IOException)                         " +
 				"  (try                                                  " +
 				"     (throw (. :RuntimeException :new \"message\"))     " +
-				"     (catch :IOException ex (. ex :getMessage))       " +
+				"     (catch :IOException ex (. ex :getMessage))         " +
 				"     (catch :RuntimeException ex (. ex :getMessage))))  " +
 				")                                                       ";
 
@@ -310,6 +307,15 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_fn_anonymous_named() {
+		final Venice venice = new Venice();
+		
+		assertEquals("(1 4 9 16 25 36 49 64 81)", venice.eval("(str (map (fn square [x] (* x x)) (range 1 10)))"));
+		
+		assertEquals("(2 4 6 8)", venice.eval("(str (map (fn double [x] (* 2 x)) (range 1 5)))"));
+	}
+
+	@Test
 	public void test_fn_anonymous_short() {
 		final Venice venice = new Venice();
 		
@@ -382,6 +388,34 @@ public class SpecialFormsTest {
 				"        (fn [] { :a 100 :b 200 c: 300 } )) \n" +
 				"                                           \n" +
 				"   (datagen )                              \n" +
+				") ";
+
+		venice.eval(script1);
+	}
+
+	@Test
+	public void test_fn_precondition_named() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def sum                            \n" +
+				"        (fn sum [x y]                  \n" +
+				"            { :pre [(> x 0)] }         \n" +
+				"            (+ x y)))                  \n" +
+				"                                       \n" +
+				"   (sum 1 3)                           \n" +
+				") ";
+
+		assertEquals(Long.valueOf(4), venice.eval(script));
+
+		// this is legal (not a pre-condition)
+		final String script1 = 
+				"(do                                             \n" +
+				"   (def datagen                                 \n" +
+				"        (fn test [] { :a 100 :b 200 c: 300 } )) \n" +
+				"                                                \n" +
+				"   (datagen )                                   \n" +
 				") ";
 
 		venice.eval(script1);
@@ -536,7 +570,6 @@ public class SpecialFormsTest {
 		
 		final String lisp = 
 				"(do                                                            " +
-				"                                                               " +
 				"  (def fib                                                     " +
 				"    (fn [n]                                                    " +
 				"      (loop [x [0 1]]                                          " +
@@ -547,8 +580,7 @@ public class SpecialFormsTest {
 				"                                                               " +
 				"  (def sum-fib                                                 " +
 				"    (fn [n]                                                    " +
-				"      (loop [cnt n                                             " +
-				"             acc 0]                                            " +
+				"      (loop [cnt n, acc 0]                                     " +
 				"          (if (zero? cnt)                                      " +
 				"              acc                                              " +
 				"              (recur (dec cnt) (+ acc (last (fib cnt))))))))   " +
