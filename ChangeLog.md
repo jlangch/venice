@@ -20,8 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - fixed the _with-sh-dir_ macro to check that the directory exists. If not
         an exception is thrown.
-- fixed put sandbox for proxy methods. Venice proxy callbacks can potentially
-        run in an other thread than the Venice parent function. The Venice parent
+- fixed sandbox for proxy methods. Venice proxy callbacks can potentially
+        run in a thread other than the Venice parent function. The Venice parent
         function's sandbox is now applied to the proxy function.
 
 
