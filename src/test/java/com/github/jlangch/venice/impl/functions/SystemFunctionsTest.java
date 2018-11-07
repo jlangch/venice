@@ -105,6 +105,6 @@ public class SystemFunctionsTest {
 		@SuppressWarnings("unchecked")
 		final List<String> callstack = (List<String>)venice.eval("test", s);
 		
-		assertEquals(5, callstack.size());
+		assertEquals(6, callstack.size());
 	}
 }

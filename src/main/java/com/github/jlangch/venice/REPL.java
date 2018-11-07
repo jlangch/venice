@@ -69,6 +69,13 @@ public class REPL {
 			catch (EofException e) {
 				break;
 			} 
+			catch (VncException e) {
+				System.out.println(e.getMessage());
+				if (e.hasCallStack()) {
+					System.out.println(e.getCallStackAsString("    "));
+				}
+				break;
+			}
 			catch (Exception e) {
 				e.printStackTrace();
 				break;
@@ -81,9 +88,17 @@ public class REPL {
 				continue;
 			} 
 			catch (ValueException e) {
-				System.out.println("Error: " + Printer._pr_str(e.getValue(), false));
+				System.out.println(e.getMessage());
+				System.out.println("Value: " + Printer._pr_str(e.getValue(), false));
 				continue;
 			} 
+			catch (VncException e) {
+				System.out.println(e.getMessage());
+				if (e.hasCallStack()) {
+					System.out.println(e.getCallStackAsString("    "));
+				}
+				continue;
+			}
 			catch (Exception e) {
 				e.printStackTrace();
 				continue;

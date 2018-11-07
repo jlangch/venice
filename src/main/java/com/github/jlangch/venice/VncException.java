@@ -21,6 +21,16 @@
  */
 package com.github.jlangch.venice;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.jlangch.venice.impl.CallStack;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 public class VncException extends RuntimeException {
 
@@ -38,7 +48,43 @@ public class VncException extends RuntimeException {
 	public VncException(final Throwable cause) {
 		super(cause);
 	}
-	
 
+	public boolean hasCallStack() {
+		return !callstack.isEmpty();
+	}
+
+	public VncVector getCallStack() {
+		return callstack;
+	}
+
+	public List<String> getCallStackAsStringList() {
+		return getCallStack()
+					.getList()
+					.stream()
+					.map(v -> callFrameToString((VncMap)v))
+					.collect(Collectors.toList());
+	}
+
+	public String getCallStackAsString(final String indent) {
+		return getCallStack()
+					.getList()
+					.stream()
+					.map(v -> StringUtil.trimToEmpty(indent) + callFrameToString((VncMap)v))
+					.collect(Collectors.joining("\n"));
+	}
+	
+	private String callFrameToString(final VncMap callFrame) {
+		return String.format(
+				"%s (%s: line %d, col %d)", 
+				((VncString)callFrame.get(CallStack.KEY_FN_NAME)).getValue(),
+				((VncString)callFrame.get(CallStack.KEY_FILE)).getValue(),
+				((VncLong)callFrame.get(CallStack.KEY_LINE)).getValue(),
+				((VncLong)callFrame.get(CallStack.KEY_COL)).getValue());
+
+	}
+
+	
 	private static final long serialVersionUID = 5439694361809280080L;
+	
+	private final VncVector callstack = ThreadLocalMap.getCallStack().toVncVector();
 }

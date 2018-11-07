@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class Env {
@@ -56,8 +57,10 @@ public class Env {
 	public VncVal get(final VncSymbol key) {
 		final Env e = findEnv(key);
 		if (e == null) {
-			throw new VncException("Symbol '" + key.getName() + "' not found");
-		} 
+			throw new VncException(String.format(
+					"Symbol '" + key.getName() + "' not found. %s",
+					ErrorMessage.buildErrLocation(key)));
+		}
 		else {
 			if (e.symbols.contains(key)) {
 				return e.symbols.get(key);
@@ -66,7 +69,9 @@ public class Env {
 				return globalSymbols.get(key);
 			}
 			else {
-				throw new VncException("Symbol '" + key.getName() + "' not found");
+				throw new VncException(String.format(
+						"Symbol '" + key.getName() + "' not found. %s",
+						ErrorMessage.buildErrLocation(key)));
 			}
 		}
 	}

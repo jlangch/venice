@@ -80,14 +80,10 @@ public class CallStack {
 				Arrays
 					.stream(queue.toArray(new CallFrame[] {}))
 					.map(f -> new VncOrderedMap(
-									new VncKeyword(":fn-name"),
-									new VncString(f.getFnName()),
-									new VncKeyword(":file"),
-									new VncString(f.getFile()),
-									new VncKeyword(":line"),
-									new VncLong(f.getLine()),
-									new VncKeyword(":col"),
-									new VncLong(f.getCol())))
+									KEY_FN_NAME, new VncString(f.getFnName()),
+									KEY_FILE, new VncString(f.getFile()),
+									KEY_LINE, new VncLong(f.getLine()),
+									KEY_COL, new VncLong(f.getCol())))
 					.collect(Collectors.toList());
 		
 		Collections.reverse(callstack); 		
@@ -103,5 +99,10 @@ public class CallStack {
 	}
 
 	
-	final ConcurrentLinkedQueue<CallFrame> queue = new ConcurrentLinkedQueue<>();
+	public static final VncKeyword KEY_FN_NAME = new VncKeyword(":fn-name");
+	public static final VncKeyword KEY_FILE = new VncKeyword(":file");
+	public static final VncKeyword KEY_LINE = new VncKeyword(":line");
+	public static final VncKeyword KEY_COL = new VncKeyword(":col");
+	
+	private final ConcurrentLinkedQueue<CallFrame> queue = new ConcurrentLinkedQueue<>();
 }
