@@ -56,7 +56,7 @@ public class Sandbox_JavaDynProxy_Test {
 	}
 	
 	@Test
-	public void test_proxy_thread_violation() {
+	public void test_proxy_thread_sandbox_violation_YES() {
 		final String script =
 			"(do                                                                     \n" +
 			"    (import :java.util.function.Predicate)                              \n" +
@@ -92,7 +92,7 @@ public class Sandbox_JavaDynProxy_Test {
 	}
 	
 	@Test
-	public void test_proxy_thread_violation_NO() {
+	public void test_proxy_thread_sandbox_violation_NO() {
 		final String script =
 			"(do                                                                     \n" +
 			"    (import :java.util.function.Predicate)                              \n" +
