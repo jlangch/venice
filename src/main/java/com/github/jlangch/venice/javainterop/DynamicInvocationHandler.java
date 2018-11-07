@@ -27,6 +27,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Types;
@@ -52,6 +53,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	public DynamicInvocationHandler(final Map<String, VncFunction> methods) {
 		this.methods = methods;
+		this.parentInterceptor = JavaInterop.getInterceptor();
 	}
 		 
 	@Override
@@ -68,7 +70,29 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					vncArgs.addAtEnd(JavaInteropUtil.convertToVncVal(arg));
 				}
 			}
-			return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
+				
+			// [SECURITY]
+			//
+			// Ensure that the Venice callback is running in the Venice's 
+			// sandbox. The Java callback parent could actually fork a thread
+			// to run this Venice proxy callback!
+			
+			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
+			if (proxyInterceptor == parentInterceptor) {
+				// we run in the same thread
+				return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
+			}
+			else {
+				// the call back run's in another thread, 
+				try {
+					JavaInterop.register(parentInterceptor);
+					
+					return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
+				}
+				finally {
+					JavaInterop.unregister();
+				}
+			}
 		}
 		else {
 			throw new UnsupportedOperationException(
@@ -107,4 +131,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	
 	final Map<String, VncFunction> methods;
+	final IInterceptor parentInterceptor;
 }

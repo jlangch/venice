@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.util.NullOutputStream;
 
@@ -51,7 +52,7 @@ public class Venice {
 	 * @param interceptor an interceptor that defines the sandbox 
 	 */
 	public Venice(final IInterceptor interceptor) {
-		this.interceptor = interceptor;
+		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
 	}
 	
 	

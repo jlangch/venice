@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.sandbox;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
@@ -39,7 +40,7 @@ public class Sandbox_JavaDynProxy_Test {
 			"    (import :java.util.stream.Collectors)                    \n" +
 			"                                                             \n" +
 			"    (-> (. [1 2 3 4] :stream)                                \n" +
-			"       (. :filter (proxify :Predicate { :test #(> % 2) }))   \n" +
+			"        (. :filter (proxify :Predicate { :test #(> % 2) }))  \n" +
 			"        (. :collect (. :Collectors :toList))))                 ";
 
 		
@@ -51,6 +52,77 @@ public class Sandbox_JavaDynProxy_Test {
 										"java.util.function.*:*",
 										"java.util.stream.*:*"));				
 
+		new Venice(interceptor).eval(script);
+	}
+	
+	@Test
+	public void test_proxy_thread_violation() {
+		final String script =
+			"(do                                                                     \n" +
+			"    (import :java.util.function.Predicate)                              \n" +
+			"    (import :java.util.stream.Collectors)                               \n" +
+		    "                                                                        \n" +
+			"    (def parent-th-id (atom (thread-id)))                               \n" +
+		    "                                                                        \n" +
+		    "    (defn pred-fn [x]                                                   \n" +
+			"          (do                                                           \n" +
+			"             (when-not (== (deref parent-th-id) (thread-id))            \n" +
+			"                       (. :java.lang.System :currentTimeMillis))        \n" +
+			"             (> x 2)))                                                  \n" +
+			"                                                                        \n" +
+			"    ;; parallel stream -> different threads for callback                \n" +
+			"    (-> (. [1 2 3 4] :parallelStream)                                   \n" +
+			"        (. :filter (proxify :Predicate { :test pred-fn }))              \n" +
+			"        (. :collect (. :Collectors :toList))))                            ";
+	
+		
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.withClasses(
+										"java.io.PrintStream:*",
+										"java.util.ArrayList:*",
+										"java.util.function.*:*",
+										"java.util.stream.*:*"));				
+
+		// (. :java.lang.System :currentTimeMillis) causes a Security exception
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval(script);
+		});
+	}
+	
+	@Test
+	public void test_proxy_thread_violation_NO() {
+		final String script =
+			"(do                                                                     \n" +
+			"    (import :java.util.function.Predicate)                              \n" +
+			"    (import :java.util.stream.Collectors)                               \n" +
+		    "                                                                        \n" +
+			"    (def parent-th-id (atom (thread-id)))                               \n" +
+		    "                                                                        \n" +
+		    "    (defn pred-fn [x]                                                   \n" +
+			"          (do                                                           \n" +
+			"             (when-not (== (deref parent-th-id) (thread-id))            \n" +
+			"                       (. :java.lang.System :currentTimeMillis))        \n" +
+			"             (> x 2)))                                                  \n" +
+			"                                                                        \n" +
+			"    ;; parallel stream -> different threads for callback                \n" +
+			"    (-> (. [1 2 3 4] :parallelStream)                                   \n" +
+			"        (. :filter (proxify :Predicate { :test pred-fn }))              \n" +
+			"        (. :collect (. :Collectors :toList))))                            ";
+	
+		
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.withClasses(
+										"java.lang.System:currentTimeMillis", // no Security exception
+										"java.io.PrintStream:*",
+										"java.util.ArrayList:*",
+										"java.util.function.*:*",
+										"java.util.stream.*:*"));				
+
+		// (. :java.lang.System :currentTimeMillis) does NOT cause a Security exception
 		new Venice(interceptor).eval(script);
 	}
 

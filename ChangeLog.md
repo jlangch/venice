@@ -17,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added function _io/file-size_
 - added the _with-sh-dir_ macro checks now the directory exists exists
 
+### fixed
+
+- fixed put sandbox for proxy methods. Venice proxy callbacks can potentially
+        run in an other thread than the Venice parent function. The Venice parent
+        function's sandbox is now applied to the proxy function.
+
 
 
 ## [0.9.10] - 2018-10-28

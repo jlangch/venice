@@ -156,12 +156,20 @@ public class JavaInteropUtil {
 			}
 		}
 		catch(JavaMethodInvocationException ex) {
-			throw new JavaMethodInvocationException(
-					String.format(
+			if (ex.getCause() != null && ex.getCause() instanceof SecurityException) {
+				throw new SecurityException(String.format(
 						"%s. %s", 
 						ex.getMessage(),
-						ErrorMessage.buildErrLocation(args)),
-					ex);
+						ErrorMessage.buildErrLocation(args)));
+			}
+			else {
+				throw new JavaMethodInvocationException(
+						String.format(
+							"%s. %s", 
+							ex.getMessage(),
+							ErrorMessage.buildErrLocation(args)),
+						ex);
+			}
 		}
 		catch(SecurityException ex) {
 			throw new SecurityException(String.format(
