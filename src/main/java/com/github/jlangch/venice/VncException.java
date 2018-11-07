@@ -29,7 +29,6 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 public class VncException extends RuntimeException {
@@ -69,7 +68,7 @@ public class VncException extends RuntimeException {
 		return getCallStack()
 					.getList()
 					.stream()
-					.map(v -> StringUtil.trimToEmpty(indent) + callFrameToString((VncMap)v))
+					.map(v -> (indent == null ? "" : indent) + callFrameToString((VncMap)v))
 					.collect(Collectors.joining("\n"));
 	}
 	

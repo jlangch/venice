@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -31,6 +32,7 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class MathFunctionsTest {
@@ -153,7 +155,25 @@ public class MathFunctionsTest {
 		assertEquals(new BigDecimal("6.0000000000000000"), venice.eval("(/ 12.0M 2)"));
 		assertEquals(new BigDecimal("6.0000000000000000"), venice.eval("(/ 12.0M 2.0)"));
 	}
+
+	@Test
+	public void test_div_by_zero() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                        \n" +
+				"   (defn f1 [x] (f2 x))    \n" +
+				"   (defn f2 [x] (f3 x))    \n" +
+				"   (defn f3 [x] (f4 x))    \n" +
+				"   (defn f4 [x] (f5 x))    \n" +
+				"   (defn f5 [x] (/ 1 x))   \n" +
+				"   (f1 0))                    ";
 	
+		assertThrows(VncException.class, () -> {
+			venice.eval("test", s);
+		});
+	}
+
 	@Test
 	public void test_even_Q() {
 		final Venice venice = new Venice();
