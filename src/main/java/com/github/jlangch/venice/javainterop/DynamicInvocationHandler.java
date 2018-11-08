@@ -85,7 +85,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			}
 			else {
 				// the callback function run's in another thread
-				ThreadLocalMap.getClearCallStack();
+				ThreadLocalMap.clearCallStack();
 				
 				try {
 					JavaInterop.register(parentInterceptor);

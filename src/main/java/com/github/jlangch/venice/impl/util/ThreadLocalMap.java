@@ -65,7 +65,7 @@ public class ThreadLocalMap {
 		return key == null ? false : get().values.containsKey(key);
 	}
 
-	public static void getClearCallStack() {
+	public static void clearCallStack() {
 		get().callStack.clear();
 	}
 

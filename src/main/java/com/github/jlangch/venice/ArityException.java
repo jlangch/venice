@@ -22,14 +22,12 @@
 package com.github.jlangch.venice;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.CallFrameBuilder;
-import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
 public class ArityException extends VncException {
 
 	public ArityException(final VncList args, final int arity, final String fnName) {
-		super(message(args, arity, fnName));
+		super(String.format("Wrong number of args %d passed to %s", arity, fnName));
 		
 		this.arity = arity;
 		this.name = fnName;
@@ -42,11 +40,6 @@ public class ArityException extends VncException {
 
 	public String getName() {
 		return name;
-	}
-
-	private static String message(final VncList args, final int arity, final String fnName) {
-		ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, args));
-		return String.format("Wrong number of args %d passed to %s", arity, fnName);
 	}
 	
 	

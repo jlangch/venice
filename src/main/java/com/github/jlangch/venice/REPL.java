@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.FileUtil;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.util.CommandLineArgs;
 
 
@@ -80,6 +81,7 @@ public class REPL {
 			}
 			
 			try {
+				ThreadLocalMap.clearCallStack();
 				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
 			} 
 			catch (ContinueException e) {

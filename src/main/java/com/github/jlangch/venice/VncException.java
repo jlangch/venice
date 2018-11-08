@@ -97,6 +97,8 @@ public class VncException extends RuntimeException {
 		if (getCause() != null) {
 			printVeniceCauseStackTrace(pw, getCause());
 		}
+		
+		pw.flush();
 	}
 
 	public String printVeniceStackTraceToString() {
