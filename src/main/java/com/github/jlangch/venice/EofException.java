@@ -30,14 +30,6 @@ public class EofException extends VncException {
 	public EofException(final String message) {
 		super(message);
 	}
-
-	public EofException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
-
-	public EofException(final Throwable cause) {
-		super(cause);
-	}
 	
 
 	private static final long serialVersionUID = -23568367901801596L;
