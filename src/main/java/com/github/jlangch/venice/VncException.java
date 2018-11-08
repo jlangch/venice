@@ -83,8 +83,31 @@ public class VncException extends RuntimeException {
 		if (hasCallStack()) {
 			System.out.println(getCallStackAsString("    at: "));
 		}
+		
+		if (getCause() != null) {
+			printVncCauseStacktrace(getCause());
+		}
 	}
-	
+
+	private void printVncCauseStacktrace(final Throwable ex) {
+		System.out.println();
+		System.out.println(String.format(
+				"Caused by: %s: %s",
+				ex.getClass().getSimpleName(),
+				ex.getMessage()));
+
+		if (ex instanceof VncException) {
+			final VncException vncEx = (VncException)ex;
+			if (vncEx.hasCallStack()) {
+				System.out.println(vncEx.getCallStackAsString("    at: "));
+			}
+		}
+		
+		if (ex.getCause() != null) {
+			printVncCauseStacktrace(ex.getCause());
+		}
+	}
+
 	private String callFrameToString(final VncMap callFrame) {
 		return String.format(
 				"%s (%s: line %d, col %d)", 
@@ -92,7 +115,6 @@ public class VncException extends RuntimeException {
 				((VncString)callFrame.get(CallStack.KEY_FILE)).getValue(),
 				((VncLong)callFrame.get(CallStack.KEY_LINE)).getValue(),
 				((VncLong)callFrame.get(CallStack.KEY_COL)).getValue());
-
 	}
 
 	

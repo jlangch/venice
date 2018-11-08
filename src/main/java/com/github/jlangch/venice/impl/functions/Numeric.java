@@ -164,7 +164,7 @@ public class Numeric {
 			}
 		}
 		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage());
+			throw new VncException(ex.getMessage(), ex);
 		}
 	}
 
@@ -179,7 +179,7 @@ public class Numeric {
 			}
 		}
 		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage());
+			throw new VncException(ex.getMessage(), ex);
 		}
 	}
 
@@ -194,7 +194,7 @@ public class Numeric {
 			}
 		}
 		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage());
+			throw new VncException(ex.getMessage(), ex);
 		}
 	}
 
