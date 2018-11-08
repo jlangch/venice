@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -425,7 +426,7 @@ public class VeniceInterpreter {
 						return k.apply(fnArgs);
 					}
 					else {
-						ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
 						throw new VncException(String.format(
 										"Not a function or keyword: '%s'", 
 										PRINT(el.nth(0))));
@@ -574,7 +575,7 @@ public class VeniceInterpreter {
 				boundResources.add(new Binding((VncSymbol)sym, val));
 			}
 			else {
-				ThreadLocalMap.getCallStack().push(CallFrame.fromVal("try-with", ast));
+				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
 				throw new VncException(
 						String.format(
 								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
@@ -626,7 +627,7 @@ public class VeniceInterpreter {
 							((AutoCloseable)r).close();
 						}
 						catch(Exception ex) {
-							ThreadLocalMap.getCallStack().push(CallFrame.fromVal("try-with", ast));
+							ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
 							throw new VncException(
 									String.format(
 											"'try-with' failed to close resource %s.",
@@ -638,7 +639,7 @@ public class VeniceInterpreter {
 							((Closeable)r).close();
 						}
 						catch(Exception ex) {
-							ThreadLocalMap.getCallStack().push(CallFrame.fromVal("try-with", ast));
+							ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
 							throw new VncException(
 									String.format(
 											"'try-with' failed to close resource %s.",

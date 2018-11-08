@@ -21,12 +21,6 @@
  */
 package com.github.jlangch.venice.util;
 
-import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.VncVal;
-
 public class CallFrame {
 
 	public CallFrame(
@@ -39,28 +33,6 @@ public class CallFrame {
 		this.file = file == null || file.isEmpty() ? "unknown" : file;
 		this.line = line;
 		this.col = col;
-	}
-	
-	public static CallFrame fromVal(final String fnName, final VncVal val) {
-		final VncVal file = val.getMetaVal(MetaUtil.FILE);
-		final VncVal line = val.getMetaVal(MetaUtil.LINE);
-		final VncVal column = val.getMetaVal(MetaUtil.COLUMN);
-		return new CallFrame(
-				fnName,
-				file == Constants.Nil ? "unknown" : ((VncString)file).getValue(),
-				line == Constants.Nil ? 1 : ((VncLong)line).getValue().intValue(),
-				column == Constants.Nil ? 1 : ((VncLong)column).getValue().intValue());
-	}
-	
-	public static CallFrame fromVal(final VncVal val) {
-		final VncVal file = val.getMetaVal(MetaUtil.FILE);
-		final VncVal line = val.getMetaVal(MetaUtil.LINE);
-		final VncVal column = val.getMetaVal(MetaUtil.COLUMN);
-		return new CallFrame(
-				null,
-				file == Constants.Nil ? "unknown" : ((VncString)file).getValue(),
-				line == Constants.Nil ? 1 : ((VncLong)line).getValue().intValue(),
-				column == Constants.Nil ? 1 : ((VncLong)column).getValue().intValue());
 	}
 	
 	public String getFnName() {
