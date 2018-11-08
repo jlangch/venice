@@ -61,6 +61,7 @@ foo> java -jar venice-0.9.11.jar -file script.venice
 
 ```java
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 try {
    final Venice venice = new Venice();
