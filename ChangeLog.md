@@ -7,11 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [0.9.12] - 2018-11-xx
+## [1.0.0] - 2018-11-xx
 
 ### added
 
-- added readable Venice stack traces as an alternative to pure Java stack traces
+- added user friendly stack traces as an alternative to pure Java stack traces
         that are pretty difficult to read
 
 
