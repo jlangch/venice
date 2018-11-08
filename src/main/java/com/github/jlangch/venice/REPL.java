@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Readline;
+import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;

@@ -45,12 +45,12 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
+import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;

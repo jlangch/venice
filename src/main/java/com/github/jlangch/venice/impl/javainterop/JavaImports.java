@@ -23,10 +23,13 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import java.util.HashMap;
 
+import com.github.jlangch.venice.impl.ValueException;
+
 
 public class JavaImports {
 
-	public JavaImports() {		
+	public JavaImports() {
+		add(ValueException.class.getName());
 	}
 	
 	

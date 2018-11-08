@@ -229,8 +229,6 @@ Exception handling
 
 ```clojure
 (do
-   (import :com.github.jlangch.venice.ValueException)
-  
    (try
       (throw [1 2 3])  ; ValueException
       (catch :ValueException ex (pr-str (:value ex)))))

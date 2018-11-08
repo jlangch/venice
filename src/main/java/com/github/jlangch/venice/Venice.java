@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;

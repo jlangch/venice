@@ -157,7 +157,7 @@ public class SpecialFormsTest {
 
 		final String lisp = 
 				"(do                                                        " +
-				"  (import :com.github.jlangch.venice.ValueException)       " +
+				"  (import :java.lang.RuntimeException)                     " +
 				"  (try                                                     " +
 				"     (throw [1 2 3])                                       " +
 				"     (catch :ValueException ex (pr-str (. ex :getValue)))  " +
@@ -173,7 +173,7 @@ public class SpecialFormsTest {
 
 		final String lisp = 
 				"(do                                                        " +
-				"  (import :com.github.jlangch.venice.ValueException)       " +
+				"  (import :java.lang.RuntimeException)                     " +
 				"  (try                                                     " +
 				"     (throw [1 2 3])                                       " +
 				"     (catch :ValueException ex (pr-str (:value ex)))       " +
