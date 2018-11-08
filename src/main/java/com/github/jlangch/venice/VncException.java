@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,23 +76,39 @@ public class VncException extends RuntimeException {
 	}
 	
 	public void printVeniceStackTrace() {
-		System.out.println(String.format(
+		printVeniceStackTrace(System.out);
+	}
+
+	public void printVeniceStackTrace(final PrintStream ps) {
+		printVeniceStackTrace(new PrintWriter(ps));
+	}
+	
+	public void printVeniceStackTrace(final PrintWriter pw) {
+		pw.println(String.format(
 				"Exception in thread \"%s\" %s: %s",
 				Thread.currentThread().getName(),
 				getClass().getSimpleName(),
 				getMessage()));
 		
 		if (hasCallStack()) {
-			System.out.println(getCallStackAsString("    at: "));
+			pw.println(getCallStackAsString("    at: "));
 		}
 		
 		if (getCause() != null) {
-			printVeniceCauseStackTrace(getCause());
+			printVeniceCauseStackTrace(pw, getCause());
 		}
 	}
 
-	private void printVeniceCauseStackTrace(final Throwable ex) {
-		System.out.println(String.format(
+	public String printVeniceStackTraceToString() {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw);
+		printVeniceStackTrace(pw);
+		pw.flush();
+		return sw.toString();
+	}
+
+	private void printVeniceCauseStackTrace(final PrintWriter pw, final Throwable ex) {
+		pw.println(String.format(
 				"Caused by: %s: %s",
 				ex instanceof VncException
 					? ex.getClass().getSimpleName()
@@ -99,12 +118,12 @@ public class VncException extends RuntimeException {
 		if (ex instanceof VncException) {
 			final VncException vncEx = (VncException)ex;
 			if (vncEx.hasCallStack()) {
-				System.out.println(vncEx.getCallStackAsString("    at: "));
+				pw.println(vncEx.getCallStackAsString("    at: "));
 			}
 		}
 		
 		if (ex.getCause() != null) {
-			printVeniceCauseStackTrace(ex.getCause());
+			printVeniceCauseStackTrace(pw, ex.getCause());
 		}
 	}
 

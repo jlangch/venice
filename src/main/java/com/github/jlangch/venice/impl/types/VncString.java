@@ -52,7 +52,10 @@ public class VncString extends VncVal {
 
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.length()) {
-			throw new VncException("nth: index out of range");
+			throw new VncException(String.format(
+					"nth: index %d out of range for a string of length %d",
+					idx,
+					value.length()));
 		}
 
 		return new VncString(String.valueOf(value.charAt(idx)));
