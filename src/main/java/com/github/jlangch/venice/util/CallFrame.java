@@ -26,13 +26,13 @@ public class CallFrame {
 	public CallFrame(
 			final String fnName, 
 			final String file, 
-			final int line, 
-			final int col
+			final Integer line, 
+			final Integer col
 	) {
 		this.fnName = fnName;
 		this.file = file == null || file.isEmpty() ? "unknown" : file;
-		this.line = line;
-		this.col = col;
+		this.line = line == null ? -1 : line;
+		this.col = col == null ? -1 : col;
 	}
 	
 	public String getFnName() {

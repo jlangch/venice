@@ -44,7 +44,6 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -317,17 +316,41 @@ public class VeniceInterpreter {
 					break;
 	
 				case "defmacro":
-					return defmacro_(ast, env);
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("defmacro", ast));
+						return defmacro_(ast, env);
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 
 				case "macroexpand": 
-					return macroexpand(ast.nth(1), env);
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("macroexpand", ast));
+						return macroexpand(ast.nth(1), env);
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
-					return try_(ast, env);
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try", ast));
+						return try_(ast, env);
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 					
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
-					env = new Env(env);
-					return try_with_(ast, env);
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
+						env = new Env(env);
+						return try_with_(ast, env);
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 					
 				case "do":
 					if (ast.size() < 2) {
@@ -385,8 +408,14 @@ public class VeniceInterpreter {
 					return fn;
 
 				case "import":
-					ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).getValue()));
-					return Nil;
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("import", ast));
+						ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).getValue()));
+						return Nil;
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
@@ -395,10 +424,10 @@ public class VeniceInterpreter {
 						final VncFunction f = (VncFunction)el.nth(0);
 						final VncList fnArgs = el.rest();
 						MetaUtil.copyTokenPos(el, fnArgs);
-						final CallFrame frame = makeCallFrame(f, ast.nth(0));
+						final CallFrame frame = CallFrameBuilder.fromFunction(f, ast.nth(0));
 						
-						ThreadLocalMap.getCallStack().push(frame);
 						try {
+							ThreadLocalMap.getCallStack().push(frame);
 							return f.apply(fnArgs);
 						}
 						finally {
@@ -574,7 +603,6 @@ public class VeniceInterpreter {
 				boundResources.add(new Binding((VncSymbol)sym, val));
 			}
 			else {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
 				throw new VncException(
 						String.format(
 								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
@@ -626,7 +654,6 @@ public class VeniceInterpreter {
 							((AutoCloseable)r).close();
 						}
 						catch(Exception ex) {
-							ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
 							throw new VncException(
 									String.format(
 											"'try-with' failed to close resource %s.",
@@ -638,7 +665,6 @@ public class VeniceInterpreter {
 							((Closeable)r).close();
 						}
 						catch(Exception ex) {
-							ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
 							throw new VncException(
 									String.format(
 											"'try-with' failed to close resource %s.",
@@ -740,23 +766,6 @@ public class VeniceInterpreter {
 									((VncString)CoreFunctions.str.apply(new VncList(v))).getValue()));		
 				}
  			});
-		}
-	}
-
-	private CallFrame makeCallFrame(final VncFunction fn, final VncVal fnSym) {
-		if (Types.isVncSymbol(fnSym)) {
-			final VncVal file = fnSym.getMetaVal(MetaUtil.FILE);
-			final VncVal line = fnSym.getMetaVal(MetaUtil.LINE);
-			final VncVal column = fnSym.getMetaVal(MetaUtil.COLUMN);
-			
-			return new CallFrame(
-						fn.getName(), 		
-						file == Nil ? "unknown" : ((VncString)file).getValue(),
-						line == Nil ? -1 : ((VncLong)line).getIntValue(),
-						column == Nil ? -1 : ((VncLong)column).getIntValue());
-		}
-		else {
-			return new CallFrame(fn.getName(), "unknown", -1, -1);
 		}
 	}
 	
