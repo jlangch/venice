@@ -90,10 +90,11 @@ public class VncException extends RuntimeException {
 	}
 
 	private void printVncCauseStacktrace(final Throwable ex) {
-		System.out.println();
 		System.out.println(String.format(
 				"Caused by: %s: %s",
-				ex.getClass().getSimpleName(),
+				ex instanceof VncException
+					? ex.getClass().getSimpleName()
+					: ex.getClass().getName(),
 				ex.getMessage()));
 
 		if (ex instanceof VncException) {
