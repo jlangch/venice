@@ -425,8 +425,9 @@ public class VeniceInterpreter {
 					}
 					else {
 						throw new VncException(String.format(
-										"Not a function or keyword: '%s'", 
-										PRINT(el.nth(0))));
+										"Not a function or keyword: '%s'. %s", 
+										PRINT(el.nth(0)),
+										ErrorMessage.buildErrLocation(ast)));
 					}
 			}
 		}

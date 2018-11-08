@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
+
 public class VncException extends RuntimeException {
 
 	public VncException() {
@@ -70,6 +71,18 @@ public class VncException extends RuntimeException {
 					.stream()
 					.map(v -> (indent == null ? "" : indent) + callFrameToString((VncMap)v))
 					.collect(Collectors.joining("\n"));
+	}
+	
+	public void printVncStacktrace() {
+		System.out.println(String.format(
+				"Exception in thread \"%s\" %s: %s",
+				Thread.currentThread().getName(),
+				getClass().getSimpleName(),
+				getMessage()));
+		
+		if (hasCallStack()) {
+			System.out.println(getCallStackAsString("    at: "));
+		}
 	}
 	
 	private String callFrameToString(final VncMap callFrame) {

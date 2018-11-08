@@ -70,12 +70,7 @@ public class REPL {
 				break;
 			} 
 			catch (VncException e) {
-				System.out.println(e.getMessage());
-				if (e.hasCallStack()) {
-					System.out.println();
-					System.out.println("Stacktrace:");
-					System.out.println(e.getCallStackAsString("    "));
-				}
+				e.printVncStacktrace();
 				break;
 			}
 			catch (Exception e) {
@@ -95,12 +90,7 @@ public class REPL {
 				continue;
 			} 
 			catch (VncException e) {
-				System.out.println(e.getMessage());
-				if (e.hasCallStack()) {
-					System.out.println();
-					System.out.println("Stacktrace:");
-					System.out.println(e.getCallStackAsString("    "));
-				}
+				e.printVncStacktrace();
 				continue;
 			}
 			catch (Exception e) {
