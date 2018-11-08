@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added user friendly stack traces as an alternative to pure Java stack traces
         that are pretty difficult to read
 
+### fixed
+
+- fixed internal datatypes on public APIs.
+
 
 
 ## [0.9.11] - 2018-11-07
