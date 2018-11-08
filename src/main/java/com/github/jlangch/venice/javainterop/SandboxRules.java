@@ -383,7 +383,7 @@ public class SandboxRules {
 				"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
 				
 				// ValueException
-				"com.github.jlangch.venice.ValueException:*",
+				"com.github.jlangch.venice.impl.ValueException:*",
 				"com.github.jlangch.venice.impl.types.collections.VncVector",
 				
 				// Venice dynamic proxies

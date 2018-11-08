@@ -38,13 +38,6 @@ import com.github.jlangch.venice.VncException;
 public class MathFunctionsTest {
 
 	@Test
-	public void x() {
-		final Venice venice = new Venice();
-
-		venice.eval("(+ true 3)");
-	}
-
-	@Test
 	public void test_abs() {
 		final Venice venice = new Venice();
 

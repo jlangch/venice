@@ -93,7 +93,6 @@ public class CoreFunctions {
 			
 			setExamples(
 					"(do                                                     \n" +
-					"   (import :com.github.jlangch.venice.ValueException)   \n" +
 					"   (try                                                 \n" +
 					"     (throw 100)                                        \n" +
 					"     (catch :ValueException ex (:value ex))))             ",

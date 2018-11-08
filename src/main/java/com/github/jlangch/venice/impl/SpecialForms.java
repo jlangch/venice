@@ -247,7 +247,6 @@ public class SpecialForms {
 					"      (catch :RuntimeException ex (:message ex))))   \n",
 					
 					"(do                                                   \n" +
-					"   (import :com.github.jlangch.venice.ValueException) \n" +
 					"   (try                                               \n" +
 					"      (throw [1 2 3])                                 \n" +
 					"      (catch :ValueException ex (str (:value ex)))    \n" +
