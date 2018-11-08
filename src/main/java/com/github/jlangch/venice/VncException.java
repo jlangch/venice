@@ -32,18 +32,22 @@ import com.github.jlangch.venice.util.CallStack;
 public class VncException extends RuntimeException {
 
 	public VncException() {
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 	
 	public VncException(final String message) {
 		super(message);
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 
 	public VncException(final String message, final Throwable cause) {
 		super(message, cause);
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 
 	public VncException(final Throwable cause) {
 		super(cause);
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 
 	public boolean hasCallStack() {
@@ -122,5 +126,5 @@ public class VncException extends RuntimeException {
 	
 	private static final long serialVersionUID = 5439694361809280080L;
 	
-	private final CallStack callstack = ThreadLocalMap.getCallStack();
+	private final CallStack callstack;
 }

@@ -27,10 +27,6 @@ public class ContinueException extends VncException {
 	public ContinueException() {
 	}
 	
-	public ContinueException(final String message) {
-		super(message);
-	}
-	
 
 	private static final long serialVersionUID = 7978400430881723919L; 
 }

@@ -44,7 +44,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class MathFunctions {
@@ -181,15 +180,13 @@ public class MathFunctions {
 
 			if (!Types.isVncLong(args.nth(0))) {
 				throw new VncException(String.format(
-						"Function 'mod' does not allow %s as numerator. %s", 
-						Types.getClassName(args.nth(0)),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'mod' does not allow %s as numerator", 
+						Types.getClassName(args.nth(0))));
 			}
 			if (!Types.isVncLong(args.nth(1))) {
 				throw new VncException(String.format(
-						"Function 'mod' does not allow %s as denominator. %s", 
-						Types.getClassName(args.nth(1)),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'mod' does not allow %s as denominator", 
+						Types.getClassName(args.nth(1))));
 			}
 			
 			return new VncLong(
@@ -223,9 +220,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Invalid argument type %s while calling function 'inc'. %s",
-						Types.getClassName(arg),
-						ErrorMessage.buildErrLocation(args)));
+						"Invalid argument type %s while calling function 'inc'",
+						Types.getClassName(arg)));
 			}
 		}
 	};
@@ -254,9 +250,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Invalid argument type %s while calling function 'dec'. %s",
-						Types.getClassName(arg),
-						ErrorMessage.buildErrLocation(args)));
+						"Invalid argument type %s while calling function 'dec's",
+						Types.getClassName(arg)));
 			}
 		}
 	};
@@ -288,9 +283,8 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'max' does not allow %s as operand 1. %s", 
-											Types.getClassName(max),
-											ErrorMessage.buildErrLocation(args)));
+											"Function 'max' does not allow %s as operand 1", 
+											Types.getClassName(max)));
 				}
 			}
 			
@@ -325,9 +319,8 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'min' does not allow %s as operand 1. %s", 
-											Types.getClassName(min),
-											ErrorMessage.buildErrLocation(args)));
+											"Function 'min' does not allow %s as operand 1", 
+											Types.getClassName(min)));
 				}
 			}
 			
@@ -360,9 +353,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Invalid argument type %s while calling function 'abs'. %s",
-						Types.getClassName(arg),
-						ErrorMessage.buildErrLocation(args)));
+						"Invalid argument type %s while calling function 'abs'",
+						Types.getClassName(arg)));
 			}
 		}
 	};
@@ -392,9 +384,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Invalid argument type %s while calling function 'negate'. %s",
-						Types.getClassName(arg),
-						ErrorMessage.buildErrLocation(args)));
+						"Invalid argument type %s while calling function 'negate'",
+						Types.getClassName(arg)));
 			}
 		}
 	};
@@ -445,9 +436,8 @@ public class MathFunctions {
 			else {
 				final double max = Coerce.toVncDouble(args.first()).getValue();
 				if (max < 0.0) {
-					throw new VncException(String.format(
-							"Function 'rand-double' does not allow negative max values. %s",
-							ErrorMessage.buildErrLocation(args)));
+					throw new VncException(
+							"Function 'rand-double' does not allow negative max values");
 
 				}
 				return new VncDouble(random.nextDouble() * max);
@@ -506,9 +496,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'zero' does not allow %s as operand 1. %s", 
-										Types.getClassName(op1),
-										ErrorMessage.buildErrLocation(args)));
+										"Function 'zero' does not allow %s as operand 1", 
+										Types.getClassName(op1)));
 			}
 		}
 	};
@@ -537,9 +526,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'pos' does not allow %s as operand 1. %s", 
-										Types.getClassName(op1),
-										ErrorMessage.buildErrLocation(args)));
+										"Function 'pos' does not allow %s as operand 1", 
+										Types.getClassName(op1)));
 			}
 		}
 	};
@@ -568,9 +556,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'plus' does not allow %s as operand 1. %s", 
-										Types.getClassName(op1),
-										ErrorMessage.buildErrLocation(args)));
+										"Function 'neg?' does not allow %s as operand 1s", 
+										Types.getClassName(op1)));
 			}
 		}
 	};
@@ -593,9 +580,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'even' does not allow %s as operand. %s", 
-										Types.getClassName(op1),
-										ErrorMessage.buildErrLocation(args)));
+										"Function 'even' does not allow %s as operand.", 
+										Types.getClassName(op1)));
 			}
 		}
 	};
@@ -618,9 +604,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'odd' does not allow %s as operand. %s", 
-										Types.getClassName(op1),
-										ErrorMessage.buildErrLocation(args)));
+										"Function 'odd' does not allow %s as operand", 
+										Types.getClassName(op1)));
 			}
 		}
 	};
@@ -744,9 +729,8 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'dec/scale' does not allow %s as operand 1. %s",
-										Types.getClassName(arg),
-										ErrorMessage.buildErrLocation(args)));
+										"Function 'dec/scale' does not allow %s as operand 1s",
+										Types.getClassName(arg)));
 			}
 		}
 	};
@@ -791,34 +775,24 @@ public class MathFunctions {
 			}
 						
 			if (!Types.isVncNumber(start)) {
-				throw new VncException(String.format(
-						"range: start value must be a number. %s",
-						ErrorMessage.buildErrLocation(args)));
+				throw new VncException("range: start value must be a number");
 			}
 			if (!Types.isVncNumber(end)) {
-				throw new VncException(String.format(
-						"range: end value must be a number. %s",
-						ErrorMessage.buildErrLocation(args)));	
+				throw new VncException("range: end value must be a number");	
 			}
 			if (!Types.isVncNumber(step)) {
-				throw new VncException(String.format(
-						"range: step value must be a number. %s",
-						ErrorMessage.buildErrLocation(args)));	
+				throw new VncException("range: step value must be a number");	
 			}
 
 			final List<VncVal> values = new ArrayList<>();
 
 			if (zero_Q.apply(new VncList(step)) == True) {
-				throw new VncException(String.format(
-						"range: a step value must not be 0. %s",
-						ErrorMessage.buildErrLocation(args)));	
+				throw new VncException("range: a step value must not be 0");	
 			}
 			
 			if (MathFunctions.pos_Q.apply(new VncList(step)) == True) {
 				if (CoreFunctions.lt.apply(new VncList(end, start)) == True) {
-					throw new VncException(String.format(
-							"range positive step: end must not be lower than start. %s",
-							ErrorMessage.buildErrLocation(args)));	
+					throw new VncException("range positive step: end must not be lower than start");	
 				}
 				
 				VncVal val = start;
@@ -829,9 +803,7 @@ public class MathFunctions {
 			}
 			else {
 				if (CoreFunctions.gt.apply(new VncList(end, start)) == True) {
-					throw new VncException(String.format(
-							"range negative step: end must not be greater than start. %s",
-							ErrorMessage.buildErrLocation(args)));	
+					throw new VncException("range negative step: end must not be greater than start");	
 				}
 				
 				VncVal val = start;

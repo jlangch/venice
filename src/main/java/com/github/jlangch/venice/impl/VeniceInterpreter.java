@@ -55,7 +55,6 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.CallFrame;
@@ -378,7 +377,7 @@ public class VeniceInterpreter {
 														.destructure(fnParams, args)
 														.forEach(b -> localEnv.set(b.sym, b.val));
 													
-													validateFnPreconditions(preConditions, localEnv);
+													validateFnPreconditions(fnName, preConditions, localEnv);
 													
 													return EVAL(fnBody, localEnv);
 												}
@@ -725,16 +724,20 @@ public class VeniceInterpreter {
 		return (Types.isVncList(result)) ? ((VncList)result).first() == True : result == True;
 	}
 
-	private void validateFnPreconditions(final VncList preConditions, final Env env) {
+	private void validateFnPreconditions(
+			final String fnName, 
+			final VncList preConditions, 
+			final Env env
+	) {
 		if (preConditions != null) {
 	 		final Env local = new Env(env);	
 	 		preConditions.forEach(v -> {
 				if (!isFnConditionTrue(EVAL(v, local))) {
+					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, v));
 					throw new AssertionException(
 							String.format(
-									"pre-condition assert failed: %s. %s",
-									((VncString)CoreFunctions.str.apply(new VncList(v))).getValue(),
-									ErrorMessage.buildErrLocation(v)));		
+									"pre-condition assert failed: %s",
+									((VncString)CoreFunctions.str.apply(new VncList(v))).getValue()));		
 				}
  			});
 		}

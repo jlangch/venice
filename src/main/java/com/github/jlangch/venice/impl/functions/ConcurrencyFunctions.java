@@ -54,7 +54,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
@@ -144,9 +143,8 @@ public class ConcurrencyFunctions {
 			}
 
 			throw new VncException(String.format(
-					"Function 'deref' does not allow type %s as parameter. %s",
-					Types.getClassName(args.first()),
-					ErrorMessage.buildErrLocation(args)));
+					"Function 'deref' does not allow type %s as parameter.",
+					Types.getClassName(args.first())));
 		}
 	};
 
@@ -284,9 +282,8 @@ public class ConcurrencyFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Function 'deliver' does not allow type %s as parameter. %s",
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'deliver' does not allow type %s as parameter",
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -463,9 +460,8 @@ public class ConcurrencyFunctions {
 			}
 
 			throw new VncException(String.format(
-					"Function 'future-done?' does not allow type %s as parameter. %s",
-					Types.getClassName(args.first()),
-					ErrorMessage.buildErrLocation(args)));
+					"Function 'future-done?' does not allow type %s as parameter",
+					Types.getClassName(args.first())));
 		}
 	};
 
@@ -501,9 +497,8 @@ public class ConcurrencyFunctions {
 			}
 
 			throw new VncException(String.format(
-					"Function 'future-cancel' does not allow type %s as parameter. %s",
-					Types.getClassName(args.first()),
-					ErrorMessage.buildErrLocation(args)));
+					"Function 'future-cancel' does not allow type %s as parameter.",
+					Types.getClassName(args.first())));
 		}
 	};
 
@@ -537,9 +532,8 @@ public class ConcurrencyFunctions {
 			}
 
 			throw new VncException(String.format(
-					"Function 'future-cancelled?' does not allow type %s as parameter. %s",
-					Types.getClassName(args.first()),
-					ErrorMessage.buildErrLocation(args)));
+					"Function 'future-cancelled?' does not allow type %s as parameter",
+					Types.getClassName(args.first())));
 		}
 	};
 

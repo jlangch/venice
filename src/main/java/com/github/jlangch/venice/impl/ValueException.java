@@ -22,12 +22,16 @@
 package com.github.jlangch.venice.impl;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.CallFrameBuilder;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
 public class ValueException extends VncException {
 		
-	public ValueException(final VncVal value) {
+	public ValueException(final String fnName, final VncVal value) {
+		super(message(fnName, value));
 		this.value = value;
 	}
 
@@ -40,6 +44,11 @@ public class ValueException extends VncException {
 		return value; 
 	}
 
+
+	private static String message(final String fnName, final VncVal value) {
+		ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, value));
+		return String.format("%s value thrown from %s", Types.getClassName(value), fnName);
+	}
 	
 	private static final long serialVersionUID = -7070216020647646364L;
 

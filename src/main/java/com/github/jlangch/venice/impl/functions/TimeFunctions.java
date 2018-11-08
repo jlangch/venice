@@ -112,9 +112,8 @@ public class TimeFunctions {
 				}
 				
 				throw new VncException(String.format(
-						"Function 'time/date' does not allow %s as parameter. %s", 
-						Types.getClassName(val),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/date' does not allow %s as parameter", 
+						Types.getClassName(val)));
 			}
 		}
 	};
@@ -184,9 +183,8 @@ public class TimeFunctions {
 					}	
 					else {
 						throw new VncException(String.format(
-								"Function 'time/local-date' does not allow %s as parameter. %s", 
-								Types.getClassName(val),
-								ErrorMessage.buildErrLocation(args)));
+								"Function 'time/local-date' does not allow %s as parameters", 
+								Types.getClassName(val)));
 					}
 				}
 				else if (Types.isVncString(val)) {
@@ -203,9 +201,8 @@ public class TimeFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'time/local-date' does not allow %s as parameter. %s", 
-							Types.getClassName(val),
-							ErrorMessage.buildErrLocation(args)));
+							"Function 'time/local-date' does not allow %s as parameter", 
+							Types.getClassName(val)));
 				}
 			}
 			else {
@@ -309,9 +306,8 @@ public class TimeFunctions {
 					}	
 					else {
 						throw new VncException(String.format(
-								"Function 'time/local-date-time' does not allow %s as parameter. %s", 
-								Types.getClassName(val),
-								ErrorMessage.buildErrLocation(args)));
+								"Function 'time/local-date-time' does not allow %s as parameters", 
+								Types.getClassName(val)));
 					}
 				}
 				else if (Types.isVncString(val)) {
@@ -328,9 +324,8 @@ public class TimeFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'time/local-date-time' does not allow %s as parameter. %s", 
-							Types.getClassName(val),
-							ErrorMessage.buildErrLocation(args)));
+							"Function 'time/local-date-time' does not allow %s as parameter", 
+							Types.getClassName(val)));
 				}
 			}
 			else if (args.size() == 3) {
@@ -479,9 +474,8 @@ public class TimeFunctions {
 					}	
 					else {
 						throw new VncException(String.format(
-								"Function 'time/zoned-date-time' does not allow %s as parameter. %s", 
-								Types.getClassName(val),
-								ErrorMessage.buildErrLocation(args)));
+								"Function 'time/zoned-date-time' does not allow %s as parameter", 
+								Types.getClassName(val)));
 					}
 				}
 				else if (Types.isVncString(val)) {
@@ -499,9 +493,8 @@ public class TimeFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'time/zoned-date-time' does not allow %s as parameter. %s", 
-							Types.getClassName(val),
-							ErrorMessage.buildErrLocation(args)));
+							"Function 'time/zoned-date-time' does not allow %s as parameter", 
+							Types.getClassName(val)));
 				}
 			}
 			else if (argList.size() == 3) {
@@ -613,10 +606,9 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/after?' does not allow %s %s as date1 / date2 parameter. %s", 
+						"Function 'time/after?' does not allow %s %s as date1 / date2 parameter", 
 						Types.getClassName(args.first()),
-						Types.getClassName(args.second()),
-						ErrorMessage.buildErrLocation(args)));
+						Types.getClassName(args.second())));
 			}
 		}
 	};
@@ -647,10 +639,9 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/not-after?' does not allow %s %s as date1 / date2 parameter. %s", 
+						"Function 'time/not-after?' does not allow %s %s as date1 / date2 parameter", 
 						Types.getClassName(args.first()),
-						Types.getClassName(args.second()),
-						ErrorMessage.buildErrLocation(args)));
+						Types.getClassName(args.second())));
 			}
 		}
 	};
@@ -681,10 +672,9 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/before?' does not allow %s %s as date1 / date2 parameter. %s", 
+						"Function 'time/before?' does not allow %s %s as date1 / date2 parameter", 
 						Types.getClassName(args.first()),
-						Types.getClassName(args.second()),
-						ErrorMessage.buildErrLocation(args)));
+						Types.getClassName(args.second())));
 			}
 		}
 	};
@@ -715,10 +705,9 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/not-before?' does not allow %s %s as date1 / date2 parameter. %s", 
+						"Function 'time/not-before?' does not allow %s %s as date1 / date2 parameter", 
 						Types.getClassName(args.first()),
-						Types.getClassName(args.second()),
-						ErrorMessage.buildErrLocation(args)));
+						Types.getClassName(args.second())));
 			}
 		}
 	};
@@ -748,9 +737,8 @@ public class TimeFunctions {
 			
 			if (unit == null) {
 				throw new VncException(String.format(
-						"Function 'time/plus' invalid time unit %s. %s", 
-						Coerce.toVncKeyword(args.second()).getValue(),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/plus' invalid time unit %s", 
+						Coerce.toVncKeyword(args.second()).getValue()));
 			}
 			
 			if (date instanceof ZonedDateTime) {
@@ -764,9 +752,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/plus' does not allow %s as date parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/plus' does not allow %s as date parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -791,9 +778,8 @@ public class TimeFunctions {
 			
 			if (unit == null) {
 				throw new VncException(String.format(
-						"Function 'time/minus' invalid time unit %s. %s", 
-						Coerce.toVncKeyword(args.second()).getValue(),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/minus' invalid time unit %ss", 
+						Coerce.toVncKeyword(args.second()).getValue()));
 			}
 			
 			if (date instanceof ZonedDateTime) {
@@ -807,9 +793,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/minus' does not allow %s as date parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/minus' does not allow %s as date parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -836,9 +821,8 @@ public class TimeFunctions {
 			
 			if (unit == null) {
 				throw new VncException(String.format(
-						"Function 'time/period' invalid time unit %s. %s", 
-						Coerce.toVncKeyword(args.second()).getValue(),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/period' invalid time unit %s", 
+						Coerce.toVncKeyword(args.second()).getValue()));
 			}
 				
 			if (from instanceof ZonedDateTime && to instanceof ZonedDateTime) {
@@ -852,10 +836,9 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/period' does not allow %s %s as from / to parameter. %s", 
+						"Function 'time/period' does not allow %s %s as from / to parameter", 
 						Types.getClassName(args.first()),
-						Types.getClassName(args.second()),
-						ErrorMessage.buildErrLocation(args)));
+						Types.getClassName(args.second())));
 			}
 		}
 	};
@@ -892,9 +875,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/year' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/year' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -926,9 +908,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/month' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/month' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -960,9 +941,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/day-of-week' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/day-of-week' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -994,9 +974,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/day-of-month' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/day-of-month' does not allow %s as parameters", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1028,9 +1007,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/day-of-year' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/day-of-year' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1065,9 +1043,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/first-day-of-month' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/first-day-of-month' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1102,9 +1079,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/last-day-of-month' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/last-day-of-month' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1136,9 +1112,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/hour' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/hour' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1170,9 +1145,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/minute' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/minute' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1204,9 +1178,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/second' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/second' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1240,9 +1213,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/length-of-year' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/length-of-year' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1276,9 +1248,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/length-of-month' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/length-of-month' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1317,9 +1288,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/leap-year?' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/leap-year?' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1374,9 +1344,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/with-time' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/with-time' does not allow %s as parameters", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1481,9 +1450,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/within?' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/within?' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1512,9 +1480,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/zone' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/zone' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1543,9 +1510,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/zone-offset' does not allow %s as parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/zone-offset' does not allow %s as parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1599,9 +1565,8 @@ public class TimeFunctions {
 	
 			if (!Types.isVncJavaObject(args.first())) {
 				throw new VncException(String.format(
-						"Function 'time/format' does not allow %s as date parameter. %s", 
-						Types.getClassName(date),
-						ErrorMessage.buildErrLocation(args.first())));
+						"Function 'time/format' does not allow %s as date parameter", 
+						Types.getClassName(date)));
 			}
 		
 			// locale
@@ -1628,9 +1593,8 @@ public class TimeFunctions {
 			}	
 			else {
 				throw new VncException(String.format(
-						"Function 'time/format' does not allow %s as date parameter. %s", 
-						Types.getClassName(args.first()),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/format' does not allow %s as date parameter", 
+						Types.getClassName(args.first())));
 			}
 		}
 	};
@@ -1720,9 +1684,8 @@ public class TimeFunctions {
 			}
 
 			throw new VncException(String.format(
-						"Function 'time/to-millis' does not allow %s as parameter. %s", 
-						Types.getClassName(val),
-						ErrorMessage.buildErrLocation(args)));
+						"Function 'time/to-millis' does not allow %s as parameter", 
+						Types.getClassName(val)));
 		}
 	};
 

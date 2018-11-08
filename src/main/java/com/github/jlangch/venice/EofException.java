@@ -27,10 +27,6 @@ public class EofException extends VncException {
 	public EofException() {
 	}
 	
-	public EofException(final String message) {
-		super(message);
-	}
-	
 
 	private static final long serialVersionUID = -23568367901801596L;
 }

@@ -30,7 +30,6 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 /**
@@ -54,9 +53,8 @@ public class Numeric {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot convert value of type %s to long. %s", 
-					Types.getClassName(val),
-					ErrorMessage.buildErrLocation(val)));
+					"Cannot convert value of type %s to long", 
+					Types.getClassName(val)));
 		}
 	}
 	
@@ -72,9 +70,8 @@ public class Numeric {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot convert value of type %s to double. %s", 
-					Types.getClassName(val),
-					ErrorMessage.buildErrLocation(val)));
+					"Cannot convert value of type %s to double", 
+					Types.getClassName(val)));
 		}
 	}
 
@@ -90,9 +87,8 @@ public class Numeric {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot convert value of type %s to decimal. %s", 
-					Types.getClassName(val),
-					ErrorMessage.buildErrLocation(val)));
+					"Cannot convert value of type %s to decimal", 
+					Types.getClassName(val)));
 		}
 	}
 
