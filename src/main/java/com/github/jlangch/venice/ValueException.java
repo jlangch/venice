@@ -24,6 +24,18 @@ package com.github.jlangch.venice;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
+/**
+ * <b>Note:</b> 
+ * 
+ * <p>This class exposes <code>VncVal</code> an implementation type
+ * that is not public. So it should be in the <code>impl</code> package.
+ * 
+ * <p>On the other hand when catching a <code>ValueException</code> in a Venice 
+ * script it has to imported  <code>(import :com.github.jlangch.venice.ValueException)</code>.
+ * But importing from an <code>impl</code> package is also not a good idea.
+ *       
+ * <p>TODO: find a good solution
+ */
 public class ValueException extends VncException {
 		
 	public ValueException(final VncVal value) {

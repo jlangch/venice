@@ -127,6 +127,10 @@ public class Types {
 		return val != null && (val instanceof VncFunction);
 	}
 
+	public static boolean isVncMacro(final VncVal val) {
+		return isVncFunction(val) && ((VncFunction)val).isMacro();
+	}
+
 	public static boolean isVncFunctionOrKeyword(final VncVal val) {
 		return val != null && ((val instanceof VncFunction) || (val instanceof VncKeyword));
 	}

@@ -19,20 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.util;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
-
-import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
-import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 public class CallStack {
@@ -75,20 +68,12 @@ public class CallStack {
 		return callstack;
 	}
 
-	public VncVector toVncVector() {
-		final List<VncVal> callstack =
-				Arrays
-					.stream(queue.toArray(new CallFrame[] {}))
-					.map(f -> new VncOrderedMap(
-									KEY_FN_NAME, new VncString(f.getFnName()),
-									KEY_FILE, new VncString(f.getFile()),
-									KEY_LINE, new VncLong(f.getLine()),
-									KEY_COL, new VncLong(f.getCol())))
-					.collect(Collectors.toList());
+	public List<CallFrame> callstack() {
+		final List<CallFrame> callstack = Arrays.asList(queue.toArray(new CallFrame[] {}));
 		
-		Collections.reverse(callstack); 		
-		
-		return new VncVector(callstack);
+		Collections.reverse(callstack); 
+
+		return callstack;
 	}
 
 	@Override
@@ -99,10 +84,6 @@ public class CallStack {
 	}
 
 	
-	public static final VncKeyword KEY_FN_NAME = new VncKeyword(":fn-name");
-	public static final VncKeyword KEY_FILE = new VncKeyword(":file");
-	public static final VncKeyword KEY_LINE = new VncKeyword(":line");
-	public static final VncKeyword KEY_COL = new VncKeyword(":col");
 	
 	private final ConcurrentLinkedQueue<CallFrame> queue = new ConcurrentLinkedQueue<>();
 }

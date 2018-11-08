@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.util.CallFrame;
 
 
 public class VeniceInterpreter {
@@ -117,7 +118,7 @@ public class VeniceInterpreter {
 				final VncSymbol macroName = (VncSymbol)a0;
 				if (env.findEnv(macroName) != null) {
 					final VncVal fn = env.get(macroName);
-					if (Types.isVncFunction(fn) && ((VncFunction)fn).isMacro()) {
+					if (Types.isVncMacro(fn)) {
 						return true;
 					}
 				}
@@ -424,10 +425,10 @@ public class VeniceInterpreter {
 						return k.apply(fnArgs);
 					}
 					else {
+						ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
 						throw new VncException(String.format(
-										"Not a function or keyword: '%s'. %s", 
-										PRINT(el.nth(0)),
-										ErrorMessage.buildErrLocation(ast)));
+										"Not a function or keyword: '%s'", 
+										PRINT(el.nth(0))));
 					}
 			}
 		}
@@ -573,11 +574,11 @@ public class VeniceInterpreter {
 				boundResources.add(new Binding((VncSymbol)sym, val));
 			}
 			else {
+				ThreadLocalMap.getCallStack().push(CallFrame.fromVal("try-with", ast));
 				throw new VncException(
 						String.format(
-								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol. %s",
-								Types.getClassName(sym),
-								ErrorMessage.buildErrLocation(ast)));
+								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
+								Types.getClassName(sym)));
 			}
 		}
 
@@ -625,11 +626,11 @@ public class VeniceInterpreter {
 							((AutoCloseable)r).close();
 						}
 						catch(Exception ex) {
+							ThreadLocalMap.getCallStack().push(CallFrame.fromVal("try-with", ast));
 							throw new VncException(
 									String.format(
-											"'try-with' failed to close resource %s. %s",
-											b.sym.getName(),
-											ErrorMessage.buildErrLocation(ast)));
+											"'try-with' failed to close resource %s.",
+											b.sym.getName()));
 						}
 					}
 					else if (r instanceof Closeable) {
@@ -637,11 +638,11 @@ public class VeniceInterpreter {
 							((Closeable)r).close();
 						}
 						catch(Exception ex) {
+							ThreadLocalMap.getCallStack().push(CallFrame.fromVal("try-with", ast));
 							throw new VncException(
 									String.format(
-											"'try-with' failed to close resource %s. %s",
-											b.sym.getName(),
-											ErrorMessage.buildErrLocation(ast)));
+											"'try-with' failed to close resource %s.",
+											b.sym.getName()));
 						}
 					}
 				}

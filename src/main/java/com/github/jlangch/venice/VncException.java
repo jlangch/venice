@@ -24,12 +24,9 @@ package com.github.jlangch.venice;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.CallStack;
-import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.util.CallFrame;
+import com.github.jlangch.venice.util.CallStack;
 
 
 public class VncException extends RuntimeException {
@@ -53,23 +50,21 @@ public class VncException extends RuntimeException {
 		return !callstack.isEmpty();
 	}
 
-	public VncVector getCallStack() {
-		return callstack;
+	public List<CallFrame> getCallStack() {
+		return callstack.callstack();
 	}
 
 	public List<String> getCallStackAsStringList() {
 		return getCallStack()
-					.getList()
 					.stream()
-					.map(v -> callFrameToString((VncMap)v))
+					.map(v -> callFrameToString(v))
 					.collect(Collectors.toList());
 	}
 
 	public String getCallStackAsString(final String indent) {
 		return getCallStack()
-					.getList()
 					.stream()
-					.map(v -> (indent == null ? "" : indent) + callFrameToString((VncMap)v))
+					.map(v -> (indent == null ? "" : indent) + callFrameToString(v))
 					.collect(Collectors.joining("\n"));
 	}
 	
@@ -109,17 +104,23 @@ public class VncException extends RuntimeException {
 		}
 	}
 
-	private String callFrameToString(final VncMap callFrame) {
-		return String.format(
-				"%s (%s: line %d, col %d)", 
-				((VncString)callFrame.get(CallStack.KEY_FN_NAME)).getValue(),
-				((VncString)callFrame.get(CallStack.KEY_FILE)).getValue(),
-				((VncLong)callFrame.get(CallStack.KEY_LINE)).getValue(),
-				((VncLong)callFrame.get(CallStack.KEY_COL)).getValue());
+	private String callFrameToString(final CallFrame callFrame) {
+		return callFrame.getFnName() == null
+				? String.format(
+						"%s: line %d, col %d", 
+						callFrame.getFile(), 
+						callFrame.getLine(), 
+						callFrame.getCol())
+				: String.format(
+						"%s (%s: line %d, col %d)", 
+						callFrame.getFnName(), 
+						callFrame.getFile(), 
+						callFrame.getLine(), 
+						callFrame.getCol());
 	}
 
 	
 	private static final long serialVersionUID = 5439694361809280080L;
 	
-	private final VncVector callstack = ThreadLocalMap.getCallStack().toVncVector();
+	private final CallStack callstack = ThreadLocalMap.getCallStack();
 }

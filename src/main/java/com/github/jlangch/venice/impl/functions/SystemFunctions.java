@@ -28,11 +28,12 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Version;
-import com.github.jlangch.venice.impl.CallStack;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Coerce;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -40,7 +41,10 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.util.CallStack;
 
 
 public class SystemFunctions {
@@ -152,8 +156,20 @@ public class SystemFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("callstack", args, 0);
 			
-			final CallStack stack = ThreadLocalMap.getCallStack();			
-			return stack.toVncVector();
+			final CallStack stack = ThreadLocalMap.getCallStack();
+			
+			return new VncVector(
+					stack
+						.callstack()
+						.stream()
+						.map(f -> new VncOrderedMap(
+										CALLSTACK_KEY_FN_NAME, f.getFnName() == null 
+														? Constants.Nil 
+														: new VncString(f.getFnName()),
+										CALLSTACK_KEY_FILE, new VncString(f.getFile()),
+										CALLSTACK_KEY_LINE, new VncLong(f.getLine()),
+										CALLSTACK_KEY_COL, new VncLong(f.getCol())))
+						.collect(Collectors.toList()));
 		}
 	};
 
@@ -277,4 +293,11 @@ public class SystemFunctions {
 					.put("version",				version)
 					.put("system-prop",			system_prop)
 					.toMap();	
+	
+	
+	
+	public static final VncKeyword CALLSTACK_KEY_FN_NAME = new VncKeyword(":fn-name");
+	public static final VncKeyword CALLSTACK_KEY_FILE = new VncKeyword(":file");
+	public static final VncKeyword CALLSTACK_KEY_LINE = new VncKeyword(":line");
+	public static final VncKeyword CALLSTACK_KEY_COL = new VncKeyword(":col");
 }

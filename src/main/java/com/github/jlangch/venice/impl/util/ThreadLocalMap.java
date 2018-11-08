@@ -24,10 +24,10 @@ package com.github.jlangch.venice.impl.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.CallStack;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.util.CallStack;
 
 
 public class ThreadLocalMap {

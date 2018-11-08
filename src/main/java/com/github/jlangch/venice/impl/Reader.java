@@ -253,7 +253,7 @@ public class Reader {
 					// anonymous function literal #(> % 2)
 					if (rdr.anonymousFnArgs.isCapturing()) {
 						throw new ParseError(String.format(
-								" #() forms cannot be nested.",
+								" #() forms cannot be nested. %s",
 								ErrorMessage.buildErrLocation(t)));						
 					}
 					rdr.anonymousFnArgs.startCapture();
