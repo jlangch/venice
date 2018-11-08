@@ -62,9 +62,17 @@ foo> java -jar venice-0.9.11.jar -file script.venice
 ```java
 import com.github.jlangch.venice.Venice;
 
-final Venice venice = new Venice();
+try {
+   final Venice venice = new Venice();
 
-System.out.println(venice.eval("(+ 1 1)"));
+   System.out.println(venice.eval("(+ 1 1)"));
+} 
+catch(VncException ex) {
+   ex.printVeniceStackTrace();
+}
+catch(Exception ex) {
+   ex.printStackTrace();
+}
 ```
 
 
