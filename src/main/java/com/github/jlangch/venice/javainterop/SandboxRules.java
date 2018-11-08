@@ -395,7 +395,7 @@ public class SandboxRules {
 				"java.lang.SecurityException:*",
 				"java.io.IOException:*",
 				
-				"java.io.PrintStream",
+				"java.io.PrintStream:append",
 				"java.io.InputStream",
 				"java.io.OutputStream",
 
