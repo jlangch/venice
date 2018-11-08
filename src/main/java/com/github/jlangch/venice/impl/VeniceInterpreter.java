@@ -336,6 +336,7 @@ public class VeniceInterpreter {
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					try {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try", ast));
+						env = new Env(env);
 						return try_(ast, env);
 					}
 					finally {
@@ -390,22 +391,21 @@ public class VeniceInterpreter {
 					final VncList preConditions = getFnPreconditions(ast.nth(argPos));
 					if (preConditions != null) argPos++;
 					final VncVal fnBody = ast.nth(argPos);
-					final Env cur_env = env;
-					final VncFunction fn = new VncFunction(fnName, fnBody, env, fnParams) {
-												public VncVal apply(final VncList args) {
-													final Env localEnv = new Env(cur_env);
-													
-													// destructuring fn params -> args
-													Destructuring
-														.destructure(fnParams, args)
-														.forEach(b -> localEnv.set(b.sym, b.val));
-													
-													validateFnPreconditions(fnName, preConditions, localEnv);
-													
-													return EVAL(fnBody, localEnv);
-												}
-											};
-					return fn;
+					final Env fn_env = env;
+					return new VncFunction(fnName, fnBody, env, fnParams) {
+								public VncVal apply(final VncList args) {
+									final Env localEnv = new Env(fn_env);
+									
+									// destructuring fn params -> args
+									Destructuring
+										.destructure(fnParams, args)
+										.forEach(b -> localEnv.set(b.sym, b.val));
+									
+									validateFnPreconditions(fnName, preConditions, localEnv);
+									
+									return EVAL(fnBody, localEnv);
+								}
+							};
 
 				case "import":
 					try {
@@ -433,18 +433,6 @@ public class VeniceInterpreter {
 						finally {
 							ThreadLocalMap.getCallStack().pop();
 						}
-
-//						final VncFunction f = (VncFunction)el.nth(0);
-//						final VncVal fnast = f.getAst();
-//						if (fnast != null) {
-//							orig_ast = fnast;
-//							env = f.genEnv(el.slice(1));
-//						} 
-//						else {
-//							final VncList fnArgs = el.rest();
-//							MetaUtil.copyTokenPos(el, fnArgs);
-//							return f.apply(fnArgs);
-//						}							
 					}
 					else if (Types.isVncKeyword(el.nth(0))) {
 						// keyword as function to access map: (:a {:a 100})
