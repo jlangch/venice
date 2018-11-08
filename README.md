@@ -71,7 +71,7 @@ try {
 catch(VncException ex) {
    ex.printVeniceStackTrace();
 }
-catch(Exception ex) {
+catch(RuntimeException ex) {
    ex.printStackTrace();
 }
 ```
