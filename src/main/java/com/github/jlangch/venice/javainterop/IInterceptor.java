@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.types.collections.VncList;
-
-
 /**
  * Defines a Venice interceptor
  */
@@ -161,13 +158,9 @@ public interface IInterceptor {
 	 * Validates the invocation of a Venice function with args.
 	 * 
 	 * @param funcName A venice function name
-	 * @param args A list of arguments
 	 * 
 	 * @throws SecurityException if the function is blacklisted and not allowed to be invoked.
 	 */
-	void validateBlackListedVeniceFunction(
-			String funcName, 
-			VncList args
-	) throws SecurityException;
+	void validateBlackListedVeniceFunction(String funcName) throws SecurityException;
 
 }

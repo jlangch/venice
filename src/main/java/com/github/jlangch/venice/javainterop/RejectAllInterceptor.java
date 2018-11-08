@@ -24,7 +24,6 @@ package com.github.jlangch.venice.javainterop;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class RejectAllInterceptor extends Interceptor {
@@ -129,8 +128,7 @@ public class RejectAllInterceptor extends Interceptor {
 
 	@Override
 	public void validateBlackListedVeniceFunction(
-			final String funcName, 
-			final VncList args
+			final String funcName
 	) throws SecurityException {
 		if (blacklistedVeniceFunctions.contains(funcName)) {
 			throw new SecurityException(String.format(

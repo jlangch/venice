@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -114,8 +113,7 @@ public abstract class Interceptor implements IInterceptor {
 	
 	@Override
 	public void validateBlackListedVeniceFunction(
-			final String funcName, 
-			final VncList args
+			final String funcName
 	) throws SecurityException {
 		// ok,  no black listed Venice functions
 	}

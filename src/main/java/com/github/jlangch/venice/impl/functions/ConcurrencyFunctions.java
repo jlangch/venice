@@ -271,7 +271,7 @@ public class ConcurrencyFunctions {
 
 		@SuppressWarnings("unchecked")
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("deliver", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("deliver");
 
 			assertArity("deliver", args, 2);
 			
@@ -314,7 +314,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("promise", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("promise");
 
 			assertArity("promise", args, 0);
 
@@ -332,7 +332,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("promise?", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("promise?");
 
 			assertArity("promise?", args, 1);
 
@@ -369,7 +369,7 @@ public class ConcurrencyFunctions {
 		
 		@SuppressWarnings("unchecked")
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future");
 
 			assertArity("future", args, 1);
 			
@@ -423,7 +423,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future?", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future?");
 
 			assertArity("future?", args, 1);
 
@@ -444,7 +444,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future-done?", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future-done?");
 
 			assertArity("future-done?", args, 1);
 
@@ -480,7 +480,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future-cancel", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future-cancel");
 
 			assertArity("future-cancel", args, 1);
 
@@ -518,7 +518,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future-cancelled?", args);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("future-cancelled?");
 
 			assertArity("future-cancelled?", args, 1);
 

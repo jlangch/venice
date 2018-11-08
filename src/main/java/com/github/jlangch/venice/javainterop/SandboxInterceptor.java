@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.javainterop.CompiledSandboxRules;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -131,10 +130,9 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 
 	@Override
 	public void validateBlackListedVeniceFunction(
-			final String funcName, 
-			final VncList args
+			final String funcName
 	) throws SecurityException {
-		if (sandboxRules.isBlackListedVeniceFunction(funcName, args)) {
+		if (sandboxRules.isBlackListedVeniceFunction(funcName)) {
 			throw new SecurityException(String.format(
 					"Venice Sandbox: Access denied to function %s", 
 					funcName));

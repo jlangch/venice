@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.types.collections.VncList;
-
-
 public class AcceptAllInterceptor extends Interceptor {
 	
 	public AcceptAllInterceptor() {
@@ -112,9 +109,8 @@ public class AcceptAllInterceptor extends Interceptor {
 
 	@Override
 	public void validateBlackListedVeniceFunction(
-			final String funcName, 
-			final VncList args
+			final String funcName
 	) throws SecurityException {
-		super.validateBlackListedVeniceFunction(funcName, args);
+		super.validateBlackListedVeniceFunction(funcName);
 	}
 }

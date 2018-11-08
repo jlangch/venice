@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
@@ -227,10 +226,7 @@ public class CompiledSandboxRules {
 		}
 	}
 
-	public boolean isBlackListedVeniceFunction(
-			final String funcName, 
-			final VncList args
-	) {
+	public boolean isBlackListedVeniceFunction(final String funcName) {
 		return blackListVeniceFunctions.contains(funcName);
 	}
 	
