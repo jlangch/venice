@@ -3009,7 +3009,7 @@ public class CoreFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Invalid argument type %s while calling function 'nth's",
+						"Invalid argument type %s while calling function 'nth'",
 						Types.getClassName(val)));
 			}
 		}

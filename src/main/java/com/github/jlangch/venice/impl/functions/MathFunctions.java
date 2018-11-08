@@ -250,7 +250,7 @@ public class MathFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Invalid argument type %s while calling function 'dec's",
+						"Invalid argument type %s while calling function 'dec'",
 						Types.getClassName(arg)));
 			}
 		}
@@ -283,7 +283,7 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'max' does not allow %s as operand 1", 
+											"Function 'max' does not allow %s as operand", 
 											Types.getClassName(max)));
 				}
 			}
@@ -319,7 +319,7 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'min' does not allow %s as operand 1", 
+											"Function 'min' does not allow %s as operand", 
 											Types.getClassName(min)));
 				}
 			}

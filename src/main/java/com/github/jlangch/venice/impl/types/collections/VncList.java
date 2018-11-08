@@ -73,7 +73,7 @@ public class VncList extends VncSequence {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range. list size: %d", 
+						"nth: index %d out of range for list of size %d", 
 						idx, size()));
 		}
 
