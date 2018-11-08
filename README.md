@@ -138,17 +138,17 @@ Venice provides user friendly stack traces
 
 ```clojure
 (do
-   (defn f1 [x] (f2 x))
-   (defn f2 [x] (f3 x))
-   (defn f3 [x] (/ 1 x))
-   (f1 0))
+   (defn fn1 [x] (fn2 x))
+   (defn fn2 [x] (fn3 x))
+   (defn fn3 [x] (/ 1 x))
+   (fn1 0))
    
 =>
 Exception in thread "main" VncException: / by zero
     at: / (repl: line 5, col 18)
-    at: f3 (repl: line 4, col 18)
-    at: f2 (repl: line 3, col 18)
-    at: f1 (repl: line 2, col 5)
+    at: fn3 (repl: line 4, col 18)
+    at: fn2 (repl: line 3, col 18)
+    at: fn1 (repl: line 2, col 5)
 ```
 
 
