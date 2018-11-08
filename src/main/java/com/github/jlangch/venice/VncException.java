@@ -72,7 +72,7 @@ public class VncException extends RuntimeException {
 					.collect(Collectors.joining("\n"));
 	}
 	
-	public void printVncStacktrace() {
+	public void printVeniceStackTrace() {
 		System.out.println(String.format(
 				"Exception in thread \"%s\" %s: %s",
 				Thread.currentThread().getName(),
@@ -84,11 +84,11 @@ public class VncException extends RuntimeException {
 		}
 		
 		if (getCause() != null) {
-			printVncCauseStacktrace(getCause());
+			printVeniceCauseStackTrace(getCause());
 		}
 	}
 
-	private void printVncCauseStacktrace(final Throwable ex) {
+	private void printVeniceCauseStackTrace(final Throwable ex) {
 		System.out.println(String.format(
 				"Caused by: %s: %s",
 				ex instanceof VncException
@@ -104,7 +104,7 @@ public class VncException extends RuntimeException {
 		}
 		
 		if (ex.getCause() != null) {
-			printVncCauseStacktrace(ex.getCause());
+			printVeniceCauseStackTrace(ex.getCause());
 		}
 	}
 

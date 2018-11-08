@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.examples;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -37,8 +38,11 @@ public class SandboxExample {
 		try {
 			sandboxing_strict();
 		}
+		catch(VncException ex) {
+			ex.printVeniceStackTrace();		
+		}
 		catch(Exception ex) {
-			ex.printStackTrace();
+			ex.printStackTrace();		
 		}
 		
 		// --------------------------------------------------------------
@@ -46,6 +50,9 @@ public class SandboxExample {
 		// --------------------------------------------------------------
 		try {
 			sandboxing_java_calls_with_safe_venice_func();
+		}
+		catch(VncException ex) {
+			ex.printVeniceStackTrace();		
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();

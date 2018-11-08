@@ -71,7 +71,7 @@ public class REPL {
 				break;
 			} 
 			catch (VncException e) {
-				e.printVncStacktrace();
+				e.printVeniceStackTrace();
 				break;
 			}
 			catch (Exception e) {
@@ -91,7 +91,7 @@ public class REPL {
 				continue;
 			} 
 			catch (VncException e) {
-				e.printVncStacktrace();
+				e.printVeniceStackTrace();
 				continue;
 			}
 			catch (Exception e) {
