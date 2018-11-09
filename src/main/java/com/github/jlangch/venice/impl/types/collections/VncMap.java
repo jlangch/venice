@@ -49,4 +49,6 @@ public abstract class VncMap extends VncCollection {
 	
 	public abstract VncVector toVncVector();
 
+
+    private static final long serialVersionUID = -1848883965231344442L;
 }

@@ -68,5 +68,7 @@ public class JavaInteropFn extends VncFunction {
 	}
 
 	
-	private final JavaImports javaImports;
+    private static final long serialVersionUID = -1848883965231344442L;
+
+    private final JavaImports javaImports;
 }

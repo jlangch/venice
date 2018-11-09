@@ -393,19 +393,21 @@ public class VeniceInterpreter {
 					final VncVal fnBody = ast.nth(argPos);
 					final Env fn_env = env;
 					return new VncFunction(fnName, fnBody, env, fnParams) {
-								public VncVal apply(final VncList args) {
-									final Env localEnv = new Env(fn_env);
+									public VncVal apply(final VncList args) {
+										final Env localEnv = new Env(fn_env);
+										
+										// destructuring fn params -> args
+										Destructuring
+											.destructure(fnParams, args)
+											.forEach(b -> localEnv.set(b.sym, b.val));
+										
+										validateFnPreconditions(fnName, preConditions, localEnv);
+										
+										return EVAL(fnBody, localEnv);
+									}
 									
-									// destructuring fn params -> args
-									Destructuring
-										.destructure(fnParams, args)
-										.forEach(b -> localEnv.set(b.sym, b.val));
-									
-									validateFnPreconditions(fnName, preConditions, localEnv);
-									
-									return EVAL(fnBody, localEnv);
-								}
-							};
+								    private static final long serialVersionUID = -1L;
+								};
 
 				case "import":
 					try {
@@ -537,6 +539,8 @@ public class VeniceInterpreter {
 						final VncVal result = EVAL(macroFnAst, localEnv);
 						return result;
 					}
+					
+				    private static final long serialVersionUID = -1L;
 				};
 
 		macroFn.setMacro();

@@ -77,4 +77,7 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	public String toString(final boolean print_readably) {
 		return toString();
 	}
+	
+	
+    private static final long serialVersionUID = -1848883965231344442L;
 }

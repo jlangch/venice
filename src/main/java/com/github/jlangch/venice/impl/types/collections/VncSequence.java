@@ -36,4 +36,7 @@ public abstract class VncSequence extends VncCollection {
 	public  Stream<VncVal> stream() {
 		return getList().stream();
 	}
+
+
+	private static final long serialVersionUID = -1848883965231344442L;
 }

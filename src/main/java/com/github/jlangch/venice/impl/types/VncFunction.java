@@ -135,6 +135,8 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	}
 	
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	public VncVal ast;
 	public Env env;
 	public VncList params;

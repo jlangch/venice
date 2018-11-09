@@ -207,5 +207,7 @@ public class VncOrderedMap extends VncMap {
 	}
 	
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final LinkedHashMap<VncVal,VncVal> value;	
 }

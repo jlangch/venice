@@ -140,6 +140,8 @@ public class CoreFunctions {
 				throw new ValueException("throw",args.nth(0));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -164,6 +166,8 @@ public class CoreFunctions {
 			
 			return args.nth(0) == Nil ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction some_Q = new VncFunction("some?") {
@@ -186,6 +190,8 @@ public class CoreFunctions {
 			
 			return args.nth(0) == Nil ? False : True;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction true_Q = new VncFunction("true?") {
@@ -207,6 +213,8 @@ public class CoreFunctions {
 			
 			return args.nth(0) == True ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction false_Q = new VncFunction("false?") {
@@ -228,6 +236,8 @@ public class CoreFunctions {
 			
 			return args.nth(0) == False ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction boolean_Q = new VncFunction("boolean?") {
@@ -248,6 +258,8 @@ public class CoreFunctions {
 			
 			return args.nth(0) == True || args.nth(0) == False ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction long_Q = new VncFunction("long?") {
@@ -269,6 +281,8 @@ public class CoreFunctions {
 
 			return Types.isVncLong(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction double_Q = new VncFunction("double?") {
@@ -290,6 +304,8 @@ public class CoreFunctions {
 			
 			return Types.isVncDouble(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction decimal_Q = new VncFunction("decimal?") {
@@ -309,6 +325,8 @@ public class CoreFunctions {
 			
 			return Types.isVncBigDecimal(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction number_Q = new VncFunction("number?") {
@@ -332,6 +350,8 @@ public class CoreFunctions {
 					|| Types.isVncDouble(args.nth(0))
 					|| Types.isVncBigDecimal(args.nth(0))? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction string_Q = new VncFunction("string?") {
@@ -359,6 +379,8 @@ public class CoreFunctions {
 				return False;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction symbol = new VncFunction("symbol") {
@@ -387,6 +409,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction symbol_Q = new VncFunction("symbol?") {
@@ -407,6 +431,8 @@ public class CoreFunctions {
 			
 			return Types.isVncSymbol(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction keyword = new VncFunction("keyword") {
@@ -435,6 +461,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction keyword_Q = new VncFunction("keyword?") {
@@ -455,6 +483,8 @@ public class CoreFunctions {
 			
 			return Types.isVncKeyword(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction fn_Q = new VncFunction("fn?") {
@@ -475,6 +505,8 @@ public class CoreFunctions {
 			}
 			return ((VncFunction)args.nth(0)).isMacro() ? False : True;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction macro_Q = new VncFunction("macro?") {
@@ -494,6 +526,8 @@ public class CoreFunctions {
 			}
 			return ((VncFunction)args.nth(0)).isMacro() ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -521,6 +555,8 @@ public class CoreFunctions {
 								.map(v -> Printer._pr_str(v, true))
 								.collect(Collectors.joining(" ")));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str = new VncFunction("str") {
@@ -544,6 +580,8 @@ public class CoreFunctions {
 								.map(v -> Printer._pr_str(v, false))
 								.collect(Collectors.joining("")));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction readline = new VncFunction("readline") {
@@ -565,6 +603,8 @@ public class CoreFunctions {
 				return Nil;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction read_string = new VncFunction("read-string") {
@@ -584,6 +624,8 @@ public class CoreFunctions {
 				return Nil;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction loadCoreModule = new VncFunction("load-core-module") {
@@ -615,6 +657,8 @@ public class CoreFunctions {
 				throw new VncException(ex.getMessage(), ex);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction loadClasspathVenice = new VncFunction("load-classpath-venice") {
@@ -644,6 +688,8 @@ public class CoreFunctions {
 				throw new VncException(ex.getMessage(), ex);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -665,6 +711,8 @@ public class CoreFunctions {
 			
 			return Types._equal_Q(args.nth(0), args.nth(1)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction not_equal_Q = new VncFunction("!=") {
@@ -681,6 +729,8 @@ public class CoreFunctions {
 			
 			return Types._equal_Q(args.nth(0), args.nth(1)) ? False : True;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction match_Q = new VncFunction("match") {
@@ -708,6 +758,8 @@ public class CoreFunctions {
 
 			return Types._match_Q(args.nth(0), args.nth(1)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction match_not_Q = new VncFunction("match-not") {
@@ -735,6 +787,8 @@ public class CoreFunctions {
 			
 			return Types._match_Q(args.nth(0), args.nth(1)) ? False : True;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction lt = new VncFunction("<") {
@@ -773,6 +827,8 @@ public class CoreFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction lte = new VncFunction("<=") {
@@ -811,6 +867,8 @@ public class CoreFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction gt = new VncFunction(">") {
@@ -849,6 +907,8 @@ public class CoreFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction gte = new VncFunction(">=") {
@@ -887,6 +947,8 @@ public class CoreFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 
@@ -922,6 +984,8 @@ public class CoreFunctions {
 				return True;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
  	
 	public static VncFunction long_cast = new VncFunction("long") {
@@ -979,6 +1043,8 @@ public class CoreFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction double_cast = new VncFunction("double") {
@@ -1036,6 +1102,8 @@ public class CoreFunctions {
 							Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction decimal_cast = new VncFunction("decimal") {
@@ -1091,6 +1159,8 @@ public class CoreFunctions {
 				}
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1110,6 +1180,8 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			return new VncList(args.getList());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction new_list_ASTERISK = new VncFunction("list*") {
@@ -1155,6 +1227,8 @@ public class CoreFunctions {
 				return list;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	static public boolean list_Q(VncVal mv) {
@@ -1175,6 +1249,8 @@ public class CoreFunctions {
 			
 			return list_Q(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1193,6 +1269,8 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			return new VncVector(args.getList());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	static public boolean vector_Q(VncVal mv) {
@@ -1213,6 +1291,8 @@ public class CoreFunctions {
 			
 			return vector_Q(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction subvec = new VncFunction("subvec") {
@@ -1238,6 +1318,8 @@ public class CoreFunctions {
 								? vec.getList().subList(from.getValue().intValue(), vec.size())
 								: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1262,6 +1344,8 @@ public class CoreFunctions {
 			
 			return Types.isVncByteBuffer(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction bytebuf_cast = new VncFunction("bytebuf") {
@@ -1325,6 +1409,8 @@ public class CoreFunctions {
 						"Function 'bytebuf' does not allow %s as argument", 
 						Types.getClassName(arg)));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction bytebuf_from_string = new VncFunction("bytebuf-from-string") {
@@ -1356,6 +1442,8 @@ public class CoreFunctions {
 						"Failed to convert string to bytebuffer"));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction bytebuf_to_string = new VncFunction("bytebuf-to-string") {
@@ -1387,6 +1475,8 @@ public class CoreFunctions {
 						"Failed to convert bytebuffer to string"));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction bytebuf_sub = new VncFunction("bytebuf-sub") {
@@ -1423,6 +1513,8 @@ public class CoreFunctions {
 												from.getValue().intValue(), 
 												to.getValue().intValue())));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1442,6 +1534,8 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			return new VncSet(args);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction set_Q = new VncFunction("set?") {
@@ -1458,6 +1552,8 @@ public class CoreFunctions {
 			
 			return Types.isVncSet(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction difference = new VncFunction("difference") {
@@ -1483,6 +1579,8 @@ public class CoreFunctions {
 			
 			return new VncSet(set);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction union = new VncFunction("union") {
@@ -1508,6 +1606,8 @@ public class CoreFunctions {
 			
 			return new VncSet(set);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction intersection = new VncFunction("intersection") {
@@ -1546,6 +1646,8 @@ public class CoreFunctions {
 			
 			return new VncSet(intersection);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1575,6 +1677,8 @@ public class CoreFunctions {
 				return new VncHashMap(args);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction new_ordered_map = new VncFunction("ordered-map") {
@@ -1596,6 +1700,8 @@ public class CoreFunctions {
 				return new VncOrderedMap(args);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction new_sorted_map = new VncFunction("sorted-map") {
@@ -1617,6 +1723,8 @@ public class CoreFunctions {
 				return new VncSortedMap(args);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction map_Q = new VncFunction("map?") {
@@ -1633,6 +1741,8 @@ public class CoreFunctions {
 			
 			return Types.isVncMap(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction hash_map_Q = new VncFunction("hash-map?") {
@@ -1649,6 +1759,8 @@ public class CoreFunctions {
 			
 			return Types.isVncHashMap(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction ordered_map_Q = new VncFunction("ordered-map?") {
@@ -1665,6 +1777,8 @@ public class CoreFunctions {
 			
 			return Types.isVncOrderedMap(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction sorted_map_Q = new VncFunction("sorted-map?") {
@@ -1681,6 +1795,8 @@ public class CoreFunctions {
 			
 			return Types.isVncSortedMap(args.nth(0)) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction contains_Q = new VncFunction("contains?") {
@@ -1729,6 +1845,8 @@ public class CoreFunctions {
 						Types.getClassName(coll)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction assoc = new VncFunction("assoc") {
@@ -1811,6 +1929,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction assoc_in = new VncFunction("assoc-in") {
@@ -1897,6 +2017,8 @@ public class CoreFunctions {
 			
 			return coll_copy;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction dissoc = new VncFunction("dissoc") {
@@ -1962,6 +2084,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction get = new VncFunction("get") {
@@ -2004,6 +2128,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction get_in = new VncFunction("get-in") {
@@ -2072,6 +2198,8 @@ public class CoreFunctions {
 			
 			return key_not_found;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction find = new VncFunction("find") {
@@ -2097,6 +2225,8 @@ public class CoreFunctions {
 				return value == Nil ? Nil : new VncVector(key, value);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction key = new VncFunction("key") {
@@ -2114,6 +2244,8 @@ public class CoreFunctions {
 			final VncList entry = Coerce.toVncList(args.nth(0));
 			return entry.first();
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction keys = new VncFunction("keys") {
@@ -2136,6 +2268,8 @@ public class CoreFunctions {
 			}
 			return key_lst;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction val = new VncFunction("val") {
@@ -2153,6 +2287,8 @@ public class CoreFunctions {
 			final VncList entry = Coerce.toVncList(args.nth(0));
 			return entry.second();
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction vals = new VncFunction("vals") {
@@ -2175,6 +2311,8 @@ public class CoreFunctions {
 			}
 			return val_lst;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction update = new VncFunction("update") {
@@ -2228,6 +2366,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction update_BANG = new VncFunction("update!") {
@@ -2281,6 +2421,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -2336,6 +2478,8 @@ public class CoreFunctions {
 				return new VncVector(new VncList(items), new VncList());
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction into = new VncFunction("into") {
@@ -2441,6 +2585,8 @@ public class CoreFunctions {
 			
 			return to;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction sequential_Q = new VncFunction("sequential?") {
@@ -2461,6 +2607,8 @@ public class CoreFunctions {
 			
 			return Types.isVncSequence(args.first()) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction coll_Q = new VncFunction("coll?") {
@@ -2477,6 +2625,8 @@ public class CoreFunctions {
 			
 			return Types.isVncCollection(args.first()) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction every_Q = new VncFunction("every?") {
@@ -2514,6 +2664,8 @@ public class CoreFunctions {
 						   .allMatch(v -> pred.apply(new VncList(v)) == True) ? True : False;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction not_every_Q = new VncFunction("not-every?") {
@@ -2536,6 +2688,8 @@ public class CoreFunctions {
 				
 			return every_Q.apply(args) == True ? False : True;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction any_Q = new VncFunction("any?") {
@@ -2573,6 +2727,8 @@ public class CoreFunctions {
 						   .anyMatch(v -> pred.apply(new VncList(v)) == True) ? True : False;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction not_any_Q = new VncFunction("not-any?") {
@@ -2595,6 +2751,8 @@ public class CoreFunctions {
 			
 			return any_Q.apply(args) == True ? False : True;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -2645,6 +2803,8 @@ public class CoreFunctions {
 						Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction empty = new VncFunction("empty") {
@@ -2678,6 +2838,8 @@ public class CoreFunctions {
 						Types.getClassName(coll)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction empty_Q = new VncFunction("empty?") {
@@ -2709,6 +2871,8 @@ public class CoreFunctions {
 				return False;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction not_empty_Q = new VncFunction("not-empty?") {
@@ -2740,6 +2904,8 @@ public class CoreFunctions {
 				return True;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction cons = new VncFunction("cons") {
@@ -2781,6 +2947,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(1))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction concat = new VncFunction("concat") {
@@ -2841,6 +3009,8 @@ public class CoreFunctions {
 			
 			return new VncList(result);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction interleave = new VncFunction("interleave") {
@@ -2875,6 +3045,8 @@ public class CoreFunctions {
 					
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction interpose = new VncFunction("interpose") {
@@ -2904,6 +3076,8 @@ public class CoreFunctions {
 						
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction first = new VncFunction("first") {
@@ -2940,6 +3114,8 @@ public class CoreFunctions {
 						Types.getClassName(val)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction second = new VncFunction("second") {
@@ -2977,6 +3153,8 @@ public class CoreFunctions {
 						Types.getClassName(val)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction nth = new VncFunction("nth") {
@@ -3013,6 +3191,8 @@ public class CoreFunctions {
 						Types.getClassName(val)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction last = new VncFunction("last") {
@@ -3049,6 +3229,8 @@ public class CoreFunctions {
 						Types.getClassName(val)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction rest = new VncFunction("rest") {
@@ -3086,6 +3268,8 @@ public class CoreFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction butlast = new VncFunction("butlast") {
@@ -3125,6 +3309,8 @@ public class CoreFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction nfirst = new VncFunction("nfirst") {
@@ -3169,6 +3355,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction nlast = new VncFunction("nlast") {
@@ -3213,6 +3401,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction distinct = new VncFunction("distinct") {
@@ -3245,6 +3435,8 @@ public class CoreFunctions {
 			
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction dedupe = new VncFunction("dedupe") {
@@ -3278,6 +3470,8 @@ public class CoreFunctions {
 			
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -3339,6 +3533,8 @@ public class CoreFunctions {
 			}
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction coalesce = new VncFunction("coalesce") {
@@ -3357,6 +3553,8 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			return args.stream().filter(v -> v != Nil).findFirst().orElse(Nil);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction emptyToNil = new VncFunction("empty-to-nil") {
@@ -3392,6 +3590,8 @@ public class CoreFunctions {
 				return arg;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction className = new VncFunction("class") {
@@ -3408,6 +3608,8 @@ public class CoreFunctions {
 			
 			return Types.getClassName(args.nth(0));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction pop = new VncFunction("pop") {
@@ -3438,6 +3640,8 @@ public class CoreFunctions {
 				return ml.isEmpty() ? new VncList() : ml.slice(1);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction peek = new VncFunction("peek") {
@@ -3467,6 +3671,8 @@ public class CoreFunctions {
 				return ml.isEmpty() ? Nil : ml.nth(0);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction take_while = new VncFunction("take-while") {
@@ -3493,6 +3699,8 @@ public class CoreFunctions {
 			}
 			return coll;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction take = new VncFunction("take") {
@@ -3513,6 +3721,8 @@ public class CoreFunctions {
 
 			return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction drop_while = new VncFunction("drop-while") {
@@ -3539,6 +3749,8 @@ public class CoreFunctions {
 			}
 			return coll.empty();
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction drop = new VncFunction("drop") {
@@ -3558,6 +3770,8 @@ public class CoreFunctions {
 
 			return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction flatten = new VncFunction("flatten") {
@@ -3580,6 +3794,8 @@ public class CoreFunctions {
 			flatten(coll, result);			
 			return Types.isVncVector(coll) ? new VncVector(result) : new VncList(result);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction reverse = new VncFunction("reverse") {
@@ -3602,6 +3818,8 @@ public class CoreFunctions {
 			}	
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction sort = new VncFunction("sort") {
@@ -3644,6 +3862,8 @@ public class CoreFunctions {
 				throw new VncException("sort: args not supported");
 			}			
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction sort_by = new VncFunction("sort-by") {
@@ -3703,6 +3923,8 @@ public class CoreFunctions {
 				throw new VncException("sort-by: args not supported");
 			}			
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction group_by = new VncFunction("group-by") {
@@ -3739,6 +3961,8 @@ public class CoreFunctions {
 			
 			return map;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	// General sequence functions
@@ -3766,6 +3990,8 @@ public class CoreFunctions {
 			}
 			return fn.apply(fn_args);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction comp = new VncFunction("comp") {
@@ -3807,8 +4033,12 @@ public class CoreFunctions {
 					}
 					return result;
 				}
+
+			    private static final long serialVersionUID = -1L;
 			};
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction compare = new VncFunction("compare") {
@@ -3831,6 +4061,8 @@ public class CoreFunctions {
 
 			return new VncLong(args.first().compareTo(args.second()));				
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 		
 	public static VncFunction partial = new VncFunction("partial") {
@@ -3859,8 +4091,12 @@ public class CoreFunctions {
 				public VncVal apply(final VncList args) {
 					return fn.apply(fnArgs.copy().addAllAtEnd(args));
 				}
+
+			    private static final long serialVersionUID = -1L;
 			};
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction map = new VncFunction("map") {
@@ -3913,6 +4149,8 @@ public class CoreFunctions {
 	
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction mapv = new VncFunction("mapv") {
@@ -3961,6 +4199,8 @@ public class CoreFunctions {
 	
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction keep = new VncFunction("keep") {
@@ -3985,6 +4225,8 @@ public class CoreFunctions {
 					? Nil
 					: removeNilValues(Coerce.toVncList(result));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction docoll = new VncFunction("docoll") {
@@ -4029,6 +4271,8 @@ public class CoreFunctions {
 				
 			return Nil;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction mapcat = new VncFunction("mapcat") {
@@ -4045,6 +4289,8 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {			
 			return concat.apply(Coerce.toVncList(map.apply(args)));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction filter = new VncFunction("filter") {
@@ -4073,6 +4319,8 @@ public class CoreFunctions {
 			}
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction remove = new VncFunction("remove") {
@@ -4101,6 +4349,8 @@ public class CoreFunctions {
 			}
 			return result;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction reduce = new VncFunction("reduce") {
@@ -4186,6 +4436,8 @@ public class CoreFunctions {
 				}
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction reduce_kv = new VncFunction("reduce-kv") {
@@ -4225,6 +4477,8 @@ public class CoreFunctions {
 				return value;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction merge = new VncFunction("merge") {
@@ -4259,6 +4513,8 @@ public class CoreFunctions {
 				return new VncHashMap(map);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction conj = new VncFunction("conj") {
@@ -4331,6 +4587,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -4360,6 +4618,8 @@ public class CoreFunctions {
 						Types.getClassName(args.nth(0))));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction seq = new VncFunction("seq") {
@@ -4424,6 +4684,8 @@ public class CoreFunctions {
 				throw new VncException("seq: called on non-sequence");
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction repeat = new VncFunction("repeat") {
@@ -4455,6 +4717,8 @@ public class CoreFunctions {
 			}			
 			return new VncList(values);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction repeatedly = new VncFunction("repeatedly") {
@@ -4488,6 +4752,8 @@ public class CoreFunctions {
 			}			
 			return new VncList(values);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -4508,6 +4774,8 @@ public class CoreFunctions {
 
 			return args.nth(0).getMeta();
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction with_meta = new VncFunction("with-meta") {
@@ -4528,6 +4796,8 @@ public class CoreFunctions {
 			new_obj.setMeta(args.nth(1));
 			return new_obj;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction vary_meta = new VncFunction("vary-meta") {
@@ -4553,6 +4823,8 @@ public class CoreFunctions {
 			new_obj.setMeta(fn.apply(fnArgs));
 			return new_obj;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -4584,6 +4856,8 @@ public class CoreFunctions {
 			
 			return new VncSymbol(prefix + String.valueOf(gensymValue.incrementAndGet()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction name = new VncFunction("name") {
@@ -4618,6 +4892,8 @@ public class CoreFunctions {
 						Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction type = new VncFunction("type") {
@@ -4635,6 +4911,8 @@ public class CoreFunctions {
 			assertArity("type", args, 1);
 			return Types.getClassName(args.first());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	private static void flatten(final VncVal value, final List<VncVal> result) {

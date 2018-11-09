@@ -116,6 +116,8 @@ public class TimeFunctions {
 						Types.getClassName(val)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -134,6 +136,8 @@ public class TimeFunctions {
 			return Types.isVncJavaObject(val) 
 					&& ((VncJavaObject)val).getDelegate() instanceof Date ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -213,6 +217,8 @@ public class TimeFunctions {
 								Coerce.toVncLong(args.nth(2)).getValue().intValue()));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction local_date_Q = new VncFunction("time/local-date?") {
@@ -230,6 +236,8 @@ public class TimeFunctions {
 			return Types.isVncJavaObject(val) 
 					&& ((VncJavaObject)val).getDelegate() instanceof LocalDate ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction local_date_parse = new VncFunction("time/local-date-parse") {
@@ -250,6 +258,8 @@ public class TimeFunctions {
 		
 			return new VncJavaObject(LocalDate.parse(date.getValue(), localize(formatter, locale)));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	
@@ -359,6 +369,8 @@ public class TimeFunctions {
 							Coerce.toVncLong(args.nth(6)).getValue().intValue() * 1_000_000));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction local_date_time_Q = new VncFunction("time/local-date-time?") {
@@ -376,6 +388,8 @@ public class TimeFunctions {
 			return Types.isVncJavaObject(val) 
 					&& ((VncJavaObject)val).getDelegate() instanceof LocalDateTime ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction local_date_time_parse = new VncFunction("time/local-date-time-parse") {
@@ -397,6 +411,8 @@ public class TimeFunctions {
 		
 			return new VncJavaObject(LocalDateTime.parse(date.getValue(), localize(formatter, locale)));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -437,7 +453,7 @@ public class TimeFunctions {
 					"(time/zoned-date-time :UTC \"2018-08-01T14:20:10.200+01:00\")",
 					"(time/zoned-date-time :UTC 1375315200000)",
 					"(time/zoned-date-time :UTC (. :java.util.Date :new))");
-		}
+		}	
 		public VncVal apply(final VncList args) {
 			assertArity("time/zoned-date-time", args, 0, 1, 2, 3, 4, 6, 7, 8);
 			
@@ -531,6 +547,8 @@ public class TimeFunctions {
 							orDefaultZone(zoneId)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction zoned_date_time_Q = new VncFunction("time/zoned-date-time?") {
@@ -548,6 +566,8 @@ public class TimeFunctions {
 			return Types.isVncJavaObject(val) 
 					&& ((VncJavaObject)val).getDelegate() instanceof ZonedDateTime ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction zoned_date_time_parse = new VncFunction("time/zoned-date-time-parse") {
@@ -572,6 +592,8 @@ public class TimeFunctions {
 		
 			return new VncJavaObject(ZonedDateTime.parse(date.getValue(), localize(formatter, locale)));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	
@@ -611,6 +633,8 @@ public class TimeFunctions {
 						Types.getClassName(args.second())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction not_after_Q = new VncFunction("time/not-after?") {
@@ -644,6 +668,8 @@ public class TimeFunctions {
 						Types.getClassName(args.second())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction before_Q = new VncFunction("time/before?") {
@@ -677,6 +703,8 @@ public class TimeFunctions {
 						Types.getClassName(args.second())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction not_before_Q = new VncFunction("time/not-before?") {
@@ -710,6 +738,8 @@ public class TimeFunctions {
 						Types.getClassName(args.second())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	
@@ -756,6 +786,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction minus = new VncFunction("time/minus") {
@@ -797,6 +829,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -841,6 +875,8 @@ public class TimeFunctions {
 						Types.getClassName(args.second())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -879,6 +915,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction month = new VncFunction("time/month") {
@@ -912,6 +950,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction day_of_week = new VncFunction("time/day-of-week") {
@@ -945,6 +985,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction day_of_month = new VncFunction("time/day-of-month") {
@@ -978,6 +1020,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction day_of_year = new VncFunction("time/day-of-year") {
@@ -1011,6 +1055,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction first_day_of_month = new VncFunction("time/first-day-of-month") {
@@ -1047,6 +1093,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction last_day_of_month = new VncFunction("time/last-day-of-month") {
@@ -1083,6 +1131,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction hour = new VncFunction("time/hour") {
@@ -1116,6 +1166,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction minute = new VncFunction("time/minute") {
@@ -1149,6 +1201,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction second = new VncFunction("time/second") {
@@ -1182,6 +1236,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction length_of_year = new VncFunction("time/length-of-year") {
@@ -1217,6 +1273,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction length_of_month = new VncFunction("time/length-of-month") {
@@ -1252,6 +1310,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction leap_yearQ = new VncFunction("time/leap-year?") {
@@ -1292,6 +1352,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1348,6 +1410,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction latest = new VncFunction("time/latest") {
@@ -1382,6 +1446,8 @@ public class TimeFunctions {
 				return latest;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction earliest = new VncFunction("time/earliest") {
@@ -1416,6 +1482,8 @@ public class TimeFunctions {
 				return latest;
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction within_Q = new VncFunction("time/within?") {
@@ -1454,6 +1522,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction zone = new VncFunction("time/zone") {
@@ -1484,6 +1554,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction zone_offset = new VncFunction("time/zone-offset") {
@@ -1514,6 +1586,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 		
 	
@@ -1544,6 +1618,8 @@ public class TimeFunctions {
 			// formatter
 			return new VncJavaObject(localize(getDateTimeFormatter(args.first()), locale));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction format = new VncFunction("time/format") {
@@ -1597,6 +1673,8 @@ public class TimeFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1646,6 +1724,8 @@ public class TimeFunctions {
 
 			return map;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction to_millis = new VncFunction("time/to-millis") {
@@ -1687,6 +1767,8 @@ public class TimeFunctions {
 						"Function 'time/to-millis' does not allow %s as parameter", 
 						Types.getClassName(val)));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 		

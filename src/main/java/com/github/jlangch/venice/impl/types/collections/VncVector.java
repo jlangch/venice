@@ -106,4 +106,6 @@ public class VncVector extends VncList {
 		return "[" + Printer.join(getList(), " ", print_readably) + "]";
 	}
 
+
+	private static final long serialVersionUID = -1848883965231344442L;
 }

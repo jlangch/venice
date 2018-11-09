@@ -146,6 +146,8 @@ public class ConcurrencyFunctions {
 					"Function 'deref' does not allow type %s as parameter.",
 					Types.getClassName(args.first())));
 		}
+	
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -168,6 +170,8 @@ public class ConcurrencyFunctions {
 			
 			return new VncAtom(args.nth(0));
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction atom_Q = new VncFunction("atom?") {
@@ -184,6 +188,8 @@ public class ConcurrencyFunctions {
 			
 			return Types.isVncAtom(args.nth(0)) ? True : False;
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -203,6 +209,8 @@ public class ConcurrencyFunctions {
 			final VncAtom atm = Coerce.toVncAtom(args.nth(0));
 			return atm.reset(args.nth(1));
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction swap_BANG = new VncFunction("swap!") {
@@ -226,6 +234,8 @@ public class ConcurrencyFunctions {
 			
 			return atm.swap(fn, swapArgs);
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction compare_and_set_BANG = new VncFunction("compare-and-set!") {
@@ -246,6 +256,8 @@ public class ConcurrencyFunctions {
 			
 			return atm.compare_and_set(args.nth(1), args.nth(2));
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -286,6 +298,8 @@ public class ConcurrencyFunctions {
 						Types.getClassName(args.first())));
 			}
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction promise = new VncFunction("promise") {
@@ -317,6 +331,8 @@ public class ConcurrencyFunctions {
 
 			return new VncJavaObject(new CompletableFuture<VncVal>());
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction promise_Q = new VncFunction("promise?") {
@@ -337,6 +353,8 @@ public class ConcurrencyFunctions {
 					&& (((VncJavaObject)args.first()).getDelegate() instanceof CompletableFuture)
 						? True : False;
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -381,6 +399,8 @@ public class ConcurrencyFunctions {
 				public VncVal apply(final VncList args) {
 					return new VncJavaObject(fn.apply(args));
 				}
+				
+			    private static final long serialVersionUID = -1L;
 			};
 
 			final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
@@ -407,6 +427,8 @@ public class ConcurrencyFunctions {
 			
 			return new VncJavaObject(future);
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_Q = new VncFunction("future?") {
@@ -428,6 +450,8 @@ public class ConcurrencyFunctions {
 					&& (((VncJavaObject)args.first()).getDelegate() instanceof Future)
 						? True : False;
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_done_Q = new VncFunction("future-done?") {
@@ -463,6 +487,8 @@ public class ConcurrencyFunctions {
 					"Function 'future-done?' does not allow type %s as parameter",
 					Types.getClassName(args.first())));
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_cancel = new VncFunction("future-cancel") {
@@ -500,6 +526,8 @@ public class ConcurrencyFunctions {
 					"Function 'future-cancel' does not allow type %s as parameter.",
 					Types.getClassName(args.first())));
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_cancelled_Q = new VncFunction("future-cancelled?") {
@@ -535,6 +563,8 @@ public class ConcurrencyFunctions {
 					"Function 'future-cancelled?' does not allow type %s as parameter",
 					Types.getClassName(args.first())));
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -568,6 +598,8 @@ public class ConcurrencyFunctions {
 				return new VncThreadLocal(args);
 			}
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction thread_local_Q = new VncFunction("thread-local?") {
@@ -584,6 +616,8 @@ public class ConcurrencyFunctions {
 			
 			return Types.isVncThreadLocal(args.nth(0)) ? True : False;
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction thread_local_clear = new VncFunction("thread-local-clear") {
@@ -600,6 +634,8 @@ public class ConcurrencyFunctions {
 			new VncThreadLocal().clear();
 			return this;
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -626,6 +662,8 @@ public class ConcurrencyFunctions {
 			assertArity("thread-id", args, 0);
 			return new VncLong(Thread.currentThread().getId());
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction thread_name = new VncFunction("thread-name") {
@@ -641,6 +679,8 @@ public class ConcurrencyFunctions {
 			assertArity("thread-name", args, 0);
 			return new VncString(Thread.currentThread().getName());
 		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	

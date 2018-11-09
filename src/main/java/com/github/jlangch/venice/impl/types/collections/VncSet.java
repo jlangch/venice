@@ -134,5 +134,7 @@ public class VncSet extends VncCollection {
 	}
 
 	
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final HashSet<VncVal> value;	
 }

@@ -88,5 +88,7 @@ public class VncDouble extends VncVal {
 	}
 
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final Double value;
 }

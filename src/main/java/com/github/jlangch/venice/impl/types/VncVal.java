@@ -21,10 +21,12 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.io.Serializable;
+
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 
 
-abstract public class VncVal implements Comparable<VncVal> {
+abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	abstract public VncVal copy();
 	
@@ -90,6 +92,8 @@ abstract public class VncVal implements Comparable<VncVal> {
 		return true;
 	}
 
+	
+    private static final long serialVersionUID = -1848883965231344442L;
 
 	private VncVal meta = Constants.Nil;
 }

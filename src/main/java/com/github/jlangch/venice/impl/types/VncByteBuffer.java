@@ -118,5 +118,7 @@ public class VncByteBuffer extends VncVal {
 	}
 
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final ByteBuffer value;
 }

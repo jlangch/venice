@@ -69,6 +69,8 @@ public class MathFunctions {
 			for(VncVal v : args.slice(1).getList()) { val = Numeric.add(val, v); }
 			return val;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction subtract = new VncFunction("-") {
@@ -105,6 +107,8 @@ public class MathFunctions {
 			for(VncVal v : args.slice(1).getList()) { val = Numeric.sub(val, v); }
 			return val;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction multiply = new VncFunction("*") {
@@ -128,6 +132,8 @@ public class MathFunctions {
 			for(VncVal v : args.slice(1).getList()) { val = Numeric.mul(val, v); }
 			return val;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction divide = new VncFunction("/") {
@@ -164,6 +170,8 @@ public class MathFunctions {
 			for(VncVal v : args.slice(1).getList()) { val = Numeric.div(val, v); }
 			return val;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction modulo = new VncFunction("mod") {
@@ -194,6 +202,8 @@ public class MathFunctions {
 						% 
 						((VncLong)args.nth(1)).getValue().longValue());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction inc = new VncFunction("inc") {
@@ -224,6 +234,8 @@ public class MathFunctions {
 						Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction dec = new VncFunction("dec") {
@@ -254,6 +266,8 @@ public class MathFunctions {
 						Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction max = new VncFunction("max") {
@@ -290,6 +304,8 @@ public class MathFunctions {
 			
 			return max;			
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction min = new VncFunction("min") {
@@ -326,6 +342,8 @@ public class MathFunctions {
 			
 			return min;			
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction abs = new VncFunction("abs") {
@@ -357,6 +375,8 @@ public class MathFunctions {
 						Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction negate = new VncFunction("negate") {
@@ -388,6 +408,8 @@ public class MathFunctions {
 						Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction rand_long = new VncFunction("rand-long") {
@@ -415,6 +437,8 @@ public class MathFunctions {
 				return new VncLong(Math.abs(random.nextLong()) % max);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction rand_double = new VncFunction("rand-double") {
@@ -443,6 +467,8 @@ public class MathFunctions {
 				return new VncDouble(random.nextDouble() * max);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction rand_gaussian = new VncFunction("rand-gaussian") {
@@ -470,6 +496,8 @@ public class MathFunctions {
 				return new VncDouble(mean + stddev * random.nextGaussian());
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction zero_Q = new VncFunction("zero?") {
@@ -500,6 +528,8 @@ public class MathFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction pos_Q = new VncFunction("pos?") {
@@ -530,6 +560,8 @@ public class MathFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction neg_Q = new VncFunction("neg?") {
@@ -560,6 +592,8 @@ public class MathFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction even_Q = new VncFunction("even?") {
@@ -584,6 +618,8 @@ public class MathFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction odd_Q = new VncFunction("odd?") {
@@ -608,6 +644,8 @@ public class MathFunctions {
 										Types.getClassName(op1)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	
@@ -633,6 +671,8 @@ public class MathFunctions {
 							.add(op2.getValue())
 							.setScale(scale.getValue().intValue(), roundingMode));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction dec_sub = new VncFunction("dec/sub") {
@@ -655,6 +695,8 @@ public class MathFunctions {
 				
 			return new VncBigDecimal(op1.getValue().subtract(op2.getValue()).setScale(scale.getValue().intValue(), roundingMode));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction dec_mul = new VncFunction("dec/mul") {
@@ -677,6 +719,8 @@ public class MathFunctions {
 				
 			return new VncBigDecimal(op1.getValue().multiply(op2.getValue()).setScale(scale.getValue().intValue(), roundingMode));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction dec_div = new VncFunction("dec/div") {
@@ -699,6 +743,8 @@ public class MathFunctions {
 				
 			return new VncBigDecimal(op1.getValue().divide(op2.getValue(), scale.getValue().intValue(), roundingMode));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction dec_scale = new VncFunction("dec/scale") {
@@ -733,6 +779,8 @@ public class MathFunctions {
 										Types.getClassName(arg)));
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -815,6 +863,8 @@ public class MathFunctions {
 			
 			return new VncList(values);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	///////////////////////////////////////////////////////////////////////////

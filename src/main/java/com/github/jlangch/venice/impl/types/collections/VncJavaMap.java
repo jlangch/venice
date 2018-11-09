@@ -200,5 +200,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 	
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final Map<Object,Object> value;	
 }

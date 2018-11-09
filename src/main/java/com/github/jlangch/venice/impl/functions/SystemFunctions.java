@@ -67,6 +67,8 @@ public class SystemFunctions {
 			
 			return new VncString(Version.VERSION);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -83,6 +85,8 @@ public class SystemFunctions {
 			assertArity("uuid", args, 0);
 			return new VncString(UUID.randomUUID().toString());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction current_time_millis = new VncFunction("current-time-millis") {
@@ -98,6 +102,8 @@ public class SystemFunctions {
 			
 			return new VncLong(System.currentTimeMillis());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction nano_time = new VncFunction("nano-time") {
@@ -114,6 +120,8 @@ public class SystemFunctions {
 			
 			return new VncLong(System.nanoTime());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction sleep = new VncFunction("sleep") {
@@ -135,6 +143,8 @@ public class SystemFunctions {
 			
 			return Nil;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction callstack = new VncFunction("callstack") {
@@ -171,6 +181,8 @@ public class SystemFunctions {
 										CALLSTACK_KEY_COL, new VncLong(f.getCol())))
 						.collect(Collectors.toList()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction os = new VncFunction("os") {
@@ -199,6 +211,8 @@ public class SystemFunctions {
 				return new VncKeyword("unknown");
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction os_Q = new VncFunction("os?") {
@@ -229,6 +243,8 @@ public class SystemFunctions {
 					
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction sandboxed_Q = new VncFunction("sandboxed?") {
@@ -245,6 +261,8 @@ public class SystemFunctions {
 			
 			return JavaInterop.isSandboxed() ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction system_prop = new VncFunction("system-prop") {
@@ -272,6 +290,8 @@ public class SystemFunctions {
 
 			return val == null ? defaultVal : new VncString(val);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	

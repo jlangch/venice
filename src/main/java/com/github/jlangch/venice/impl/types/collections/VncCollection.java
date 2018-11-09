@@ -38,4 +38,6 @@ public abstract class VncCollection extends VncVal {
 
 	public abstract String toString(boolean print_readably);
 
+	
+    private static final long serialVersionUID = -1848883965231344442L;
 }

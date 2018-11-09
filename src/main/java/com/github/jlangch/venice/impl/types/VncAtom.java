@@ -87,5 +87,7 @@ public class VncAtom extends VncVal {
 	}
 	
 	
+    private static final long serialVersionUID = -1848883965231344442L;
+	
 	private final AtomicReference<VncVal> state = new AtomicReference<>();
 }

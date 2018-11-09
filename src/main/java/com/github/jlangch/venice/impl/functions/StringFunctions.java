@@ -73,6 +73,8 @@ public class StringFunctions {
 
 			return StringUtil.isBlank(s) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_char = new VncFunction("str/char") {
@@ -95,6 +97,8 @@ public class StringFunctions {
 
 			return new VncString(String.valueOf((char)n));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_starts_with = new VncFunction("str/starts-with?") {
@@ -119,6 +123,8 @@ public class StringFunctions {
 			
 			return string.getValue().startsWith(prefix.getValue()) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_ends_with = new VncFunction("str/ends-with?") {
@@ -143,6 +149,8 @@ public class StringFunctions {
 			
 			return string.getValue().endsWith(suffix.getValue()) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_contains = new VncFunction("str/contains?") {
@@ -167,6 +175,8 @@ public class StringFunctions {
 			
 			return string.getValue().contains(text.getValue()) ? True : False;
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_trim = new VncFunction("str/trim") {
@@ -187,6 +197,8 @@ public class StringFunctions {
 
 			return new VncString(Coerce.toVncString(args.nth(0)).getValue().trim());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_trim_to_nil = new VncFunction("str/trim-to-nil") {
@@ -213,6 +225,8 @@ public class StringFunctions {
 			final String str = Coerce.toVncString(args.nth(0)).getValue().trim();
 			return str.isEmpty() ? Nil : new VncString(str);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_index_of = new VncFunction("str/index-of") {
@@ -242,6 +256,8 @@ public class StringFunctions {
 				return pos < 0 ? Nil : new VncLong(pos);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_last_index_of = new VncFunction("str/last-index-of") {
@@ -275,6 +291,8 @@ public class StringFunctions {
 				return pos < 0 ? Nil : new VncLong(pos);
 			}
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_replace_first = new VncFunction("str/replace-first") {
@@ -310,6 +328,8 @@ public class StringFunctions {
 						text.substring(pos + replacement.length()))
 			 	: args.nth(0);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_replace_last = new VncFunction("str/replace-last") {
@@ -345,6 +365,8 @@ public class StringFunctions {
 						text.substring(pos + replacement.length()))
 			 	: args.nth(0);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_replace_all = new VncFunction("str/replace-all") {
@@ -387,6 +409,8 @@ public class StringFunctions {
 			buf.append(text, start, text.length());
 			return new VncString(buf.toString());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_lower_case = new VncFunction("str/lower-case") {
@@ -410,6 +434,8 @@ public class StringFunctions {
 			
 			return new VncString(string.getValue().toLowerCase());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_upper_case = new VncFunction("str/upper-case") {
@@ -433,6 +459,8 @@ public class StringFunctions {
 			
 			return new VncString(string.getValue().toUpperCase());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_join = new VncFunction("str/join") {
@@ -461,6 +489,8 @@ public class StringFunctions {
 								.collect(Collectors.joining(delim.getValue()))
 							: "");
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_subs = new VncFunction("str/subs") {
@@ -487,6 +517,8 @@ public class StringFunctions {
 								? string.getValue().substring(from.getValue().intValue())
 								: string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_split = new VncFunction("str/split") {
@@ -511,6 +543,8 @@ public class StringFunctions {
 						.map(s -> new VncString(s))
 						.collect(Collectors.toList()));			
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_split_lines = new VncFunction("str/split-lines") {
@@ -534,6 +568,8 @@ public class StringFunctions {
 								.map(s -> new VncString(s))
 								.collect(Collectors.toList()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_format = new VncFunction("str/format") {
@@ -556,6 +592,8 @@ public class StringFunctions {
 			
 			return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_quote = new VncFunction("str/quote") {
@@ -580,6 +618,8 @@ public class StringFunctions {
 
 			return new VncString(start + s + end);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
 	public static VncFunction str_truncate = new VncFunction("str/truncate") {
@@ -608,6 +648,8 @@ public class StringFunctions {
 							Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 							Coerce.toVncString(args.nth(2)).getValue()));		
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_strip_start = new VncFunction("str/strip-start") {
@@ -633,6 +675,8 @@ public class StringFunctions {
 			
 			return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_strip_end = new VncFunction("str/strip-end") {
@@ -658,6 +702,8 @@ public class StringFunctions {
 			
 			return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_strip_indent = new VncFunction("str/strip-indent") {
@@ -679,6 +725,8 @@ public class StringFunctions {
 			
 			return new VncString(StringUtil.stripIndent(Coerce.toVncString(args.first()).getValue()));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_strip_margin = new VncFunction("str/strip-margin") {
@@ -701,6 +749,8 @@ public class StringFunctions {
 			
 			return new VncString(StringUtil.stripMargin(Coerce.toVncString(args.first()).getValue(), '|'));
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction str_repeat = new VncFunction("str/repeat") {
@@ -733,6 +783,8 @@ public class StringFunctions {
 			}			
 			return new VncString(sb.toString());
 		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	

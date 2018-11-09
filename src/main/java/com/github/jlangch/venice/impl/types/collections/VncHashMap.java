@@ -207,5 +207,7 @@ public class VncHashMap extends VncMap {
 	}
 	
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final HashMap<VncVal,VncVal> value;	
 }

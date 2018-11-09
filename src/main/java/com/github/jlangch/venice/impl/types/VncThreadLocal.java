@@ -114,4 +114,7 @@ public class VncThreadLocal extends VncVal {
 	public String toString() {
 		return "ThreadLocal";
 	}
+	
+	
+    private static final long serialVersionUID = -1848883965231344442L;
 }

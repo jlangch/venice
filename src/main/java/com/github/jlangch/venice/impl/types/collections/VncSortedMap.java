@@ -208,5 +208,7 @@ public class VncSortedMap extends VncMap {
 	}
 	
 
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final TreeMap<VncVal,VncVal> value;	
 }

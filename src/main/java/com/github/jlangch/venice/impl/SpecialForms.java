@@ -43,6 +43,8 @@ public class SpecialForms {
 			setDoc("Prints documentation for a var or special form given its name");
 			setExamples("(doc +)");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 	
 	public static VncFunction list = new SpecialFormsDocFunction("()") {
@@ -51,6 +53,8 @@ public class SpecialForms {
 			setDoc("Creates a list.");
 			setExamples("'(10 20 30)");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction vector = new SpecialFormsDocFunction("[]") {
@@ -59,6 +63,8 @@ public class SpecialForms {
 			setDoc("Creates a vector.");
 			setExamples("[10 20 30]");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction set = new SpecialFormsDocFunction("#{}") {
@@ -67,6 +73,8 @@ public class SpecialForms {
 			setDoc("Creates a set.");
 			setExamples("#{10 20 30}");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction map = new SpecialFormsDocFunction("{}") {
@@ -75,6 +83,8 @@ public class SpecialForms {
 			setDoc("Creates a hash map.");
 			setExamples("{:a 10 b: 20}");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction fn = new SpecialFormsDocFunction("fn") {
@@ -109,6 +119,8 @@ public class SpecialForms {
 					"            (fn [price] (- price (* price percentage 0.01)))))     \n" +
 					"   ((discount 50) 300))                                              ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};	
 
 	public static VncFunction eval = new SpecialFormsDocFunction("eval") {
@@ -119,6 +131,8 @@ public class SpecialForms {
 					 "(eval '(let [a 10] (+ 3 4 a)))",
 					 "(eval (list + 1 2 3))");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction def = new SpecialFormsDocFunction("def") {
@@ -129,6 +143,8 @@ public class SpecialForms {
 					 "(def val 5)",
 					 "(def sum (fn [x y] (+ x y)))");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction do_ = new SpecialFormsDocFunction("do") {
@@ -137,6 +153,8 @@ public class SpecialForms {
 			setDoc("Evaluates the expressions in order and returns the value of the last.");
 			setExamples("(do (println \"Test...\") (+ 1 1))");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction if_ = new SpecialFormsDocFunction("if") {
@@ -145,6 +163,8 @@ public class SpecialForms {
 			setDoc("Evaluates test.");
 			setExamples("(if (< 10 20) \"yes\" \"no\")");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction let = new SpecialFormsDocFunction("let") {
@@ -164,6 +184,8 @@ public class SpecialForms {
 					"     (println \"title: \" title)        \n" +
 					"     (println \"styles: \" styles))       ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction loop = new SpecialFormsDocFunction("loop") {
@@ -187,6 +209,8 @@ public class SpecialForms {
 					"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 					"   (sum 10000))                                       ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction recur = new SpecialFormsDocFunction("recur") {
@@ -212,6 +236,8 @@ public class SpecialForms {
 					"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 					"   (sum 10000))                                       ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction try_ = new SpecialFormsDocFunction("try") {
@@ -253,6 +279,8 @@ public class SpecialForms {
 					"      (catch :RuntimeException ex \"runtime ex\")     \n" +
 					"      (finally (println \"...finally\"))))             ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction try_with = new SpecialFormsDocFunction("try-with") {
@@ -272,6 +300,8 @@ public class SpecialForms {
 					"        (try-with [is (. :FileInputStream :new file)] \n" +
 					"           (io/slurp-stream is :binary false))))        ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction defmacro = new SpecialFormsDocFunction("defmacro") {
@@ -282,6 +312,8 @@ public class SpecialForms {
 					"(defmacro unless [pred a b]         \n" + 
 							"  `(if (not ~pred) ~a ~b))    ");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 
 	public static VncFunction macroexpand = new SpecialFormsDocFunction("macroexpand") {
@@ -290,6 +322,8 @@ public class SpecialForms {
 			setDoc("If form represents a macro form, returns its expansion, else returns form");
 			setExamples("(macroexpand (-> c (+ 3) (* 2)))");
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};	
 	
 	
@@ -301,6 +335,8 @@ public class SpecialForms {
 		public VncVal apply(final VncList args) {
 			return Nil;
 		}
+		
+	    private static final long serialVersionUID = -1;
 	};
 	
 	
