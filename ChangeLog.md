@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added ...
 
+### fixed
+
+- fixed error message for map creation with an odd number of items
+
+
 
 
 ## [1.0.0] - 2018-11-09
