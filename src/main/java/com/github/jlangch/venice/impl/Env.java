@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.io.Serializable;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -28,7 +30,7 @@ import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
-public class Env {
+public class Env implements Serializable {
 	
 	public Env() {
 		this(null);
@@ -97,6 +99,8 @@ public class Env {
 	}
 	
 	
+	private static final long serialVersionUID = 9002640180394221858L;
+
 	private final Env outer;
 	private final int level;
 	private final Symbols globalSymbols;

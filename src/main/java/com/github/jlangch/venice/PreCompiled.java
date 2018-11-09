@@ -21,10 +21,12 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.Serializable;
+
 import com.github.jlangch.venice.impl.Env;
 
 
-public class PreCompiled {
+public class PreCompiled implements Serializable {
 	
 	public PreCompiled(final String name, final Object precompiled, final Env env) {
 		this.name = name;
@@ -44,7 +46,9 @@ public class PreCompiled {
 		return env;
 	}
 	
-	
+
+	private static final long serialVersionUID = -3044466744877602703L;
+
 	private final String name;
 	private final Object precompiled;
 	private final Env env;
