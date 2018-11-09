@@ -93,6 +93,16 @@ public class Env implements Serializable {
 		return this;
 	}
 	
+	public boolean hasGlobalSymbol(final VncSymbol key) {
+		return globalSymbols.contains(key);
+	}
+
+	public Env getRootEnv() {
+		Env env = this;
+		while(env.outer != null) env = env.outer;
+		return env;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("level %d: %s\n\nglobal: %s", level, symbols, globalSymbols);

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class PrecompiledTest {
 		
 	@Test
-	public void test_simpe() {
+	public void test_simple() {
 		final Venice venice = new Venice();
 		
 		final PreCompiled precomp = venice.precompile("test", "(+ 1 3)");

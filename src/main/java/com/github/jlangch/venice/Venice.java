@@ -31,8 +31,10 @@ import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -73,8 +75,14 @@ public class Venice {
 		}
 		
 		final VeniceInterpreter venice = new VeniceInterpreter();
+		
+		final Env env = createEnv(venice, null);
+		
+		// The default stdout PrintStream is not serializable, so remove it
+		final Env root = env.getRootEnv();
+		root.set(new VncSymbol("*out*"), Constants.Nil);
 
-		return new PreCompiled(scriptName, venice.READ(script, scriptName), createEnv(venice, null));
+		return new PreCompiled(scriptName, venice.READ(script, scriptName), env);
 	}
 
 	/**
@@ -106,6 +114,10 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
+		// The stdout PrintStream is not serializable, so readd it as default stream
+		final Env root = precompiled.getEnv().getRootEnv();
+		root.set(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)));
+		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 
