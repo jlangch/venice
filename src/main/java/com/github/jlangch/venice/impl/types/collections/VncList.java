@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncList extends VncSequence {
@@ -73,10 +74,11 @@ public class VncList extends VncSequence {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a %s of size %d", 
+						"nth: index %d out of range for a %s of size %d. %s", 
 						idx, 
 						Types.isVncVector(this) ? "vector" : "list",
-						size()));
+						size(),
+						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
 		}
 
 		return value.get((int)idx);

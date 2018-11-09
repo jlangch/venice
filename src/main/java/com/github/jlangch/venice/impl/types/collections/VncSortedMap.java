@@ -27,10 +27,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncSortedMap extends VncMap {
@@ -42,11 +44,23 @@ public class VncSortedMap extends VncMap {
 	}
 	
 	public VncSortedMap(final VncList lst) {
+		if (lst != null && (lst.size() %2 != 0)) {
+			throw new VncException(String.format(
+					"sorted-map: create requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(lst)));
+		}
+
 		value = new TreeMap<>();
 		assoc(lst);
 	}
 	
 	public VncSortedMap(final VncVal... mvs) {
+		if (mvs != null && (mvs.length %2 != 0)) {
+			throw new VncException(String.format(
+					"sorted-map: create requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(mvs[0])));
+		}
+		
 		value = new TreeMap<>();
 		assoc(mvs);
 	}

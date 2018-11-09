@@ -27,10 +27,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncHashMap extends VncMap {
 
@@ -41,11 +43,23 @@ public class VncHashMap extends VncMap {
 	}
 	
 	public VncHashMap(final VncList lst) {
+		if (lst != null && (lst.size() %2 != 0)) {
+			throw new VncException(String.format(
+					"hash-map: create requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(lst)));
+		}
+		
 		value = new HashMap<>();
 		assoc(lst);
 	}
 	
 	public VncHashMap(final VncVal... mvs) {
+		if (mvs != null && (mvs.length %2 != 0)) {
+			throw new VncException(String.format(
+					"hash-map: create requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(mvs[0])));
+		}
+		
 		value = new HashMap<>();
 		assoc(mvs);
 	}

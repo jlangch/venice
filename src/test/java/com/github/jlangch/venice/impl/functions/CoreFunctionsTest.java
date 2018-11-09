@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class CoreFunctionsTest {
@@ -1142,6 +1144,13 @@ public class CoreFunctionsTest {
 		assertEquals("{1 [a] 2 [as aa] 3 [asd] 4 [asdf qwer]}", venice.eval("(str (group-by count [\"a\" \"as\" \"asd\" \"aa\" \"asdf\" \"qwer\"]))"));
 
 		assertEquals("{false [0 2 4 6 8] true [1 3 5 7 9]}", venice.eval("(str (group-by odd? (range 0 10)))"));
+	}
+	
+	@Test
+	public void test_hash_map_exception() {
+		assertThrows(VncException.class, () -> {
+			new Venice().eval("{:a 1, :b}");
+		});
 	}
 	
 	@Test
