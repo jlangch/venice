@@ -21,6 +21,12 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import com.github.jlangch.venice.impl.Env;
@@ -46,6 +52,28 @@ public class PreCompiled implements Serializable {
 		return env;
 	}
 	
+	public byte[] serialize() {
+		try(ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			final ObjectOutput out = new ObjectOutputStream(bos);   
+			out.writeObject(this);
+			out.flush();
+			return bos.toByteArray();
+		} 
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to serialize pre-compile Venice script", ex);
+		}
+	}
+
+	public  static PreCompiled deserialize(final byte[] precompiled) {
+		try(ByteArrayInputStream bis = new ByteArrayInputStream(precompiled)) {
+			final ObjectInputStream in = new ObjectInputStream(bis);   
+			return (PreCompiled)in.readObject(); 
+		} 
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to deserialize pre-compile Venice script", ex);
+		}
+	}
+
 
 	private static final long serialVersionUID = -3044466744877602703L;
 
