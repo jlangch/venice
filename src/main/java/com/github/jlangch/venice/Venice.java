@@ -217,19 +217,7 @@ public class Venice {
 				final VncSymbol symbol = new VncSymbol(key);
 
 				if (key.equals("*out*")) {
-					if (val == null) {
-						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream(new NullOutputStream())));
-					}
-					else if (val instanceof PrintStream) {
-						env.set(symbol, JavaInteropUtil.convertToVncVal(val));
-					}
-					else if (val instanceof OutputStream) {
-						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream((OutputStream)val, true)));
-					}
-					else {
-						throw new VncException(
-								"The *out* parameter value must be an instance of PrintStream or OutputStream");
-					}
+					env.set(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val)));
 				}
 				else {
 					if (env.findEnv(symbol) != null) {
@@ -243,6 +231,23 @@ public class Venice {
 		}
 		
 		return env;
+	}
+	
+	private PrintStream buildStdOutPrintStream(final Object val) {
+		if (val == null) {
+			return new PrintStream(new NullOutputStream());
+		}
+		else if (val instanceof PrintStream) {
+			return (PrintStream)val;
+		}
+		else if (val instanceof OutputStream) {
+			return new PrintStream((OutputStream)val, true);
+		}
+		else {
+			throw new VncException(
+					"The *out* parameter value must be either null or an "
+							+ "instance of PrintStream or OutputStream");
+		}
 	}
 	
 	private Object runWithSandbox(final Callable<Object> callable) {
