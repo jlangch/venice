@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -317,42 +318,27 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 	
 				case "defmacro":
-					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("defmacro", ast));
-						return defmacro_(ast, env);
-					}
-					finally {
-						ThreadLocalMap.getCallStack().pop();
-					}
+					return runWithCallStack("defmacro", ast, env, (a,e) -> defmacro_(a, e));
 
 				case "macroexpand": 
-					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("macroexpand", ast));
-						return macroexpand(ast.nth(1), env);
-					}
-					finally {
-						ThreadLocalMap.getCallStack().pop();
-					}
+					return runWithCallStack("macroexpand", ast, env, (a,e) -> macroexpand(a.nth(1), e));
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
-					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try", ast));
-						env = new Env(env);
-						return try_(ast, env);
-					}
-					finally {
-						ThreadLocalMap.getCallStack().pop();
-					}
+					return runWithCallStack("try", ast, env, (a,e) -> try_(a, new Env(e)));
 					
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
-					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("try-with", ast));
-						env = new Env(env);
-						return try_with_(ast, env);
-					}
-					finally {
-						ThreadLocalMap.getCallStack().pop();
-					}
+					return runWithCallStack("try-with", ast, env, (a,e) -> try_with_(a, new Env(e)));
+
+				case "import":
+					return runWithCallStack(
+								"import", ast, env, 
+								(a,e) -> {
+									a.slice(1)
+									 .stream()
+									 .map(clazzName -> Coerce.toVncString(clazzName).getValue())
+									 .forEach(clazzName -> javaImports.add(clazzName));
+									return Nil;
+								});
 					
 				case "do":
 					if (ast.size() < 2) {
@@ -409,16 +395,6 @@ public class VeniceInterpreter implements Serializable  {
 									
 								    private static final long serialVersionUID = -1L;
 								};
-
-				case "import":
-					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("import", ast));
-						ast.slice(1).forEach(clazz -> javaImports.add(Coerce.toVncString(clazz).getValue()));
-						return Nil;
-					}
-					finally {
-						ThreadLocalMap.getCallStack().pop();
-					}
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
@@ -759,7 +735,22 @@ public class VeniceInterpreter implements Serializable  {
  			});
 		}
 	}
-	
+
+	private VncVal runWithCallStack(
+			final String fnName, 
+			final VncList ast, 
+			final Env env, 
+			final BiFunction<VncList,Env,VncVal> fn
+	) {
+		try {
+			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, ast));
+			return fn.apply(ast, env);
+		}
+		finally {
+			ThreadLocalMap.getCallStack().pop();
+		}
+	}
+
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 
