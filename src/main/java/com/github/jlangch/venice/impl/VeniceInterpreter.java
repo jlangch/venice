@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.Closeable;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,8 +60,8 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.CallFrame;
 
 
-public class VeniceInterpreter {
-	
+public class VeniceInterpreter implements Serializable  {
+
 	public VeniceInterpreter() {
 		
 	}
@@ -467,7 +468,10 @@ public class VeniceInterpreter {
 		return createEnv(stdout, null);
 	}
 
-	public Env createEnv(final PrintStream stdout, final List<String> preloadedExtensionModules) {
+	public Env createEnv(
+			final PrintStream stdout, 
+			final List<String> preloadedExtensionModules
+	) {
 		final Env env = new Env(null);
 
 		
@@ -762,6 +766,8 @@ public class VeniceInterpreter {
 	}
 	
 	
+	private static final long serialVersionUID = -8130740279914790685L;
+
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 
 	private final JavaImports javaImports = new JavaImports();

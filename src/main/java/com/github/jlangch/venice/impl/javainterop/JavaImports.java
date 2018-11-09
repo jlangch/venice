@@ -21,12 +21,13 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import com.github.jlangch.venice.impl.ValueException;
 
 
-public class JavaImports {
+public class JavaImports implements Serializable {
 
 	public JavaImports() {
 		add(ValueException.class.getName());
@@ -71,5 +72,7 @@ public class JavaImports {
 	}
 	
 	
+	private static final long serialVersionUID = 1784667662341909868L;
+
 	private final HashMap<String,String> imports = new HashMap<>();
 }

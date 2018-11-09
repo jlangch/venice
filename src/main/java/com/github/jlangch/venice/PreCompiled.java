@@ -23,7 +23,6 @@ package com.github.jlangch.venice;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
@@ -59,7 +58,7 @@ public class PreCompiled implements Serializable {
 			out.flush();
 			return bos.toByteArray();
 		} 
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new RuntimeException("Failed to serialize pre-compile Venice script", ex);
 		}
 	}
