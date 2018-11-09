@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.docgen;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -55,9 +54,7 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class DocGenerator {
 
 	public DocGenerator() {
-		this.env = new VeniceInterpreter().createEnv(
-							new PrintStream(System.out), 
-							Arrays.asList("json"));
+		this.env = new VeniceInterpreter().createEnv(Arrays.asList("json"));
 	}
 
 	public static void main(final String[] args) {

@@ -35,6 +35,7 @@ public class PrecompiledTest {
 		final PreCompiled precomp = venice.precompile("test", "(+ 1 3)");
 		
 		final byte[] data = precomp.serialize();
+		System.out.println("PreCompiled size: " + data.length);
 		assertEquals(Long.valueOf(4), venice.eval(PreCompiled.deserialize(data)));
 	}
 	

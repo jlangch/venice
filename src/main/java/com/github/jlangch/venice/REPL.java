@@ -22,7 +22,6 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -56,7 +55,7 @@ public class REPL {
 		
 		final VncList argv = toList(args);
 		
-		final Env env = venice.createEnv(new PrintStream(System.out));
+		final Env env = venice.createEnv();
 		env.set(new VncSymbol("*ARGV*"), argv);
 		
 		// REPL loop
@@ -107,7 +106,7 @@ public class REPL {
 		final VncList argv = toList(cli.args());
 
 		final VeniceInterpreter venice = new VeniceInterpreter();
-		final Env env = venice.createEnv(new PrintStream(System.out));
+		final Env env = venice.createEnv();
 		env.set(new VncSymbol("*ARGV*"), argv);
 
 		if (cli.switchPresent("-file")) {

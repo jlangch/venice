@@ -124,7 +124,7 @@ System.out.println(ps.getOutput());
 
 ### Precompiling Venice
 
-Precompiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
+Pre-compiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
 
 ```java
 import com.github.jlangch.venice.Venice;

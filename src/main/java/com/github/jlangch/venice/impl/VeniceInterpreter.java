@@ -464,22 +464,17 @@ public class VeniceInterpreter implements Serializable  {
 		return EVAL(ast, env);
 	}
 	
-	public Env createEnv(final PrintStream stdout) {
-		return createEnv(stdout, null);
+	public Env createEnv() {
+		return createEnv(null);
 	}
 
-	public Env createEnv(
-			final PrintStream stdout, 
-			final List<String> preloadedExtensionModules
-	) {
+	public Env createEnv(final List<String> preloadedExtensionModules) {
 		final Env env = new Env(null);
-
-		
+	
 		// core functions defined in Java
-		Functions.functions.keySet().forEach(
-				key -> env.set(
-						Types.isVncSymbol(key) ? (VncSymbol)key : ((VncString)key).toSymbol(), 
-						Functions.functions.get(key)));
+		Functions.functions
+				 .keySet()
+				 .forEach(key -> env.set((VncSymbol)key, Functions.functions.get(key)));
 
 		// JavaInterop function
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
@@ -492,11 +487,11 @@ public class VeniceInterpreter implements Serializable  {
 		env.set(new VncSymbol("*newline*"), new VncString(System.lineSeparator()));
 
 		// set system stdout
-		env.set(new VncSymbol("*out*"), new VncJavaObject(stdout == null ? new PrintStream(System.out, true) : stdout));
+		env.set(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)));
 
 		// load core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
-		
+
 		if (preloadedExtensionModules != null) {
 			preloadedExtensionModules.forEach(
 				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env));

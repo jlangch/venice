@@ -201,7 +201,7 @@ public class Venice {
 	}
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		final Env env = venice.createEnv(new PrintStream(System.out));
+		final Env env = venice.createEnv();
 		
 		addParams(env, params);
 		
@@ -227,7 +227,8 @@ public class Venice {
 						env.set(symbol, JavaInteropUtil.convertToVncVal(new PrintStream((OutputStream)val, true)));
 					}
 					else {
-						throw new VncException("The *out* parameter value must be an instance of OutputStream");
+						throw new VncException(
+								"The *out* parameter value must be an instance of PrintStream or OutputStream");
 					}
 				}
 				else {
