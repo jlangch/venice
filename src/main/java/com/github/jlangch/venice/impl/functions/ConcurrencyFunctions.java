@@ -39,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Coerce;
@@ -56,7 +57,6 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
-import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 

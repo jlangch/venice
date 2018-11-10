@@ -29,7 +29,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
-import com.github.jlangch.venice.javainterop.DynamicInvocationHandler;
 
 
 public class JavaInteropProxifyFn extends VncFunction {

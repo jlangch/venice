@@ -380,7 +380,7 @@ public class SandboxRules {
 	private static final List<String> DEFAULT_CLASS_RULES = 
 			Arrays.asList(
 				// Dynamic proxies based on venice' DynamicInvocationHandler
-				"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
+				"com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler*:*",
 				
 				"com.github.jlangch.venice.util.CapturingPrintStream:*",
 				
