@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 
 /**
@@ -50,7 +51,7 @@ public class CapturingPrintStream extends PrintStream {
 	}
 
 	public static CapturingPrintStream create() {
-		return create("UTF-8");
+		return create(Charset.defaultCharset().name());
 	}
 
 	public void reset() {
