@@ -452,7 +452,7 @@ public class VeniceInterpreter implements Serializable  {
 				 .keySet()
 				 .forEach(key -> env.set((VncSymbol)key, Functions.functions.get(key)));
 
-		// JavaInterop function
+		// core functions Java interoperability
 		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
 		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
 
@@ -465,7 +465,7 @@ public class VeniceInterpreter implements Serializable  {
 		// set system stdout
 		env.set(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)));
 
-		// load core.venice 
+		// core module: core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
 
 		if (preloadedExtensionModules != null) {

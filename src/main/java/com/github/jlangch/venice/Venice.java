@@ -114,7 +114,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
-		// The stdout PrintStream is not serializable, so readd it as default stream
+		// The stdout PrintStream is not serializable, so re-add it as default stream
 		final Env root = precompiled.getEnv().getRootEnv();
 		root.set(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)));
 		
