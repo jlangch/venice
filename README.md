@@ -214,9 +214,9 @@ Recursion:
 (do
    (defn sum [n]
       (loop [cnt n, acc 0]
-            (if (zero? cnt)
-                acc
-                (recur (dec cnt) (+ acc cnt)))))
+         (if (zero? cnt)
+            acc
+            (recur (dec cnt) (+ acc cnt)))))
 
    (sum 100000))
 ```
@@ -397,7 +397,9 @@ Alternative to UNIX shell scripts:
                 (printf "Error compacting %s: %s" prefix (:message ex)))))
 
    (defn first-day-last-month []
-         (-> (time/local-date) (time/first-day-of-month) (time/minus :month 1)))
+         (-> (time/local-date) 
+             (time/first-day-of-month) 
+             (time/minus :month 1)))
 
    (let [dir (io/file (nth *ARGV* 2))
          date (first-day-last-month)
