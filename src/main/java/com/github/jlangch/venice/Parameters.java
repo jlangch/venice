@@ -41,7 +41,9 @@ public class Parameters {
 			final String key1, final Object val1,
 			final String key2, final Object val2
 	) {
-		return new Parameters().put(key1, val1).put(key2, val2).toMap();
+		return new Parameters()
+					.put(key1, val1).put(key2, val2)
+					.toMap();
 	}
 
 	public static Map<String,Object> of(
@@ -49,7 +51,10 @@ public class Parameters {
 			final String key2, final Object val2,
 			final String key3, final Object val3
 	) {
-		return new Parameters().put(key1, val1).put(key2, val2).put(key3, val3).toMap();
+		return new Parameters()
+					.put(key1, val1).put(key2, val2)
+					.put(key3, val3)
+					.toMap();
 	}
 
 	public static Map<String,Object> of(
@@ -59,8 +64,9 @@ public class Parameters {
 			final String key4, final Object val4
 	) {
 		return new Parameters()
-					.put(key1, val1).put(key2, val2).put(key3, val3)
-					.put(key4, val4).toMap();
+					.put(key1, val1).put(key2, val2)
+					.put(key3, val3).put(key4, val4)
+					.toMap();
 	}
 
 	public static Map<String,Object> of(
@@ -71,8 +77,9 @@ public class Parameters {
 			final String key5, final Object val5
 	) {
 		return new Parameters()
-					.put(key1, val1).put(key2, val2).put(key3, val3)
-					.put(key4, val4).put(key5, val5)
+					.put(key1, val1).put(key2, val2)
+					.put(key3, val3).put(key4, val4)
+					.put(key5, val5)
 					.toMap();
 	}
 
@@ -85,8 +92,9 @@ public class Parameters {
 			final String key6, final Object val6
 	) {
 		return new Parameters()
-					.put(key1, val1).put(key2, val2).put(key3, val3)
-					.put(key4, val4).put(key5, val5).put(key6, val6)
+					.put(key1, val1).put(key2, val2)
+					.put(key3, val3).put(key4, val4)
+					.put(key5, val5).put(key6, val6)
 					.toMap();
 	}
 
@@ -102,6 +110,7 @@ public class Parameters {
 	public Map<String,Object> toMap() {
 		return symbols;
 	}
+	
 	
 	private final Map<String,Object> symbols = new HashMap<>();
 }
