@@ -382,6 +382,8 @@ public class SandboxRules {
 				// Dynamic proxies based on venice' DynamicInvocationHandler
 				"com.github.jlangch.venice.javainterop.DynamicInvocationHandler*:*",
 				
+				"com.github.jlangch.venice.util.CapturingPrintStream:*",
+				
 				// ValueException
 				"com.github.jlangch.venice.impl.ValueException:*",
 				"com.github.jlangch.venice.impl.types.collections.VncVector",
