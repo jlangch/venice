@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
@@ -1044,6 +1045,25 @@ public class IOFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 	
+	public static VncFunction io_default_charset = new VncFunction("io/default-charset") {
+		{
+			setArgLists("(io/default-charset)");
+			
+			setDoc("Returns the default charset.");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/default-charset");
+
+			assertArity("io/default-charset", args, 0);
+
+			return new VncString(Charset.defaultCharset().name());
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+	
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -1071,6 +1091,7 @@ public class IOFunctions {
 					.put("io/slurp-stream",				io_slurp_stream)
 					.put("io/spit-stream",				io_spit_stream)
 					.put("io/mime-type",				io_mime_type)
+					.put("io/default-charset",			io_default_charset)
 					.put("io/load-classpath-resource",	io_load_classpath_resource)
 					.toMap();
 

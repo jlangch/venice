@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
@@ -343,6 +344,14 @@ public class IOFunctionsTest {
 
 		assertEquals("application/pdf",venice.eval("(io/mime-type \"document.pdf\")"));	
 		assertEquals("application/pdf",venice.eval("(io/mime-type (io/file \"document.pdf\"))"));	
+	}
+
+	@Test
+	public void test_io_default_charset() {
+		final Venice venice = new Venice();
+
+		final String charset = Charset.defaultCharset().name();
+		assertEquals(charset, venice.eval("(io/default-charset)"));	
 	}
 	
 }
