@@ -210,7 +210,17 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
-					env.setGlobal(defName, MetaUtil.addDefMeta(res, defMeta));
+					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
+					return res;
+				}
+				
+				case "def-dynamic": { // (def-dynamic meta-data? name value)
+					final boolean hasMeta = ast.size() > 3;
+					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.nth(1), env) : new VncHashMap();
+					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
+					final VncVal res = EVAL(defVal, env);
+					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
 					return res;
 				}
 
@@ -251,6 +261,35 @@ public class VeniceInterpreter implements Serializable  {
 						orig_ast = expressions.last();
 					}
 					break;
+				}
+				
+				case "binding":  { // (binding [bindings*] exprs*)
+					env = new Env(env);
+	
+					final VncList bindings = Coerce.toVncList(ast.nth(1));
+					final VncList expressions = ast.slice(2);
+				
+					final List<Var> vars = new ArrayList<>();
+					for(int i=0; i<bindings.size(); i+=2) {
+						final VncVal sym = bindings.nth(i);
+						final VncVal val = EVAL(bindings.nth(i+1), env);
+	
+						Destructuring
+							.destructure(sym, val)
+							.forEach(b -> vars.add(new Var(b.sym, b.val, true)));
+					}
+						
+					// TODO: implement push/pop on multiple dynamic vars
+					final Env _env = env;
+					vars.forEach(v -> _env.setGlobalDynamic(v));
+					
+					if (expressions.isEmpty()) {
+						return Constants.Nil;
+					}
+					else {
+						eval_ast(expressions.slice(0, expressions.size()-1), env);
+						return ((VncList)eval_ast(new VncList(expressions.last()), env)).first();
+					}
 				}
 					
 				case "loop": { // (loop [bindings*] exprs*)
@@ -457,13 +496,13 @@ public class VeniceInterpreter implements Serializable  {
 		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
 
 		// set Venice version
-		env.set(new VncSymbol("*version*"), new VncString(Version.VERSION));
+		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION)));
 
 		// set system newline
-		env.set(new VncSymbol("*newline*"), new VncString(System.lineSeparator()));
+		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator())));
 
-		// set system stdout
-		env.set(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)));
+		// set system stdout (dynamic)
+		env.setGlobal(new Var(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)), true));
 
 		// core module: core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);

@@ -745,6 +745,7 @@ public class DocGenerator {
 		other.addItem(getDocItem("io/load-classpath-resource"));
 		other.addItem(getDocItem("io/mime-type"));
 		other.addItem(getDocItem("io/default-charset"));
+		other.addItem(getDocItem("with-out-str"));
 
 		return section;
 	}

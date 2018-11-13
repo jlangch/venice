@@ -463,6 +463,20 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
+	public void test_let_4() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                " +
+				"   (let [a 1, b 2]                 " +
+				"      (defn get-a [] a)            " +
+				"      (let [a 3]                   " +
+				"         (str [a b (get-a )]))))   ";
+		
+		assertEquals("[3 2 1]", venice.eval(script));
+	}
+	
+	@Test
 	public void test_let_destructuring_1() {
 		final Venice venice = new Venice();
 

@@ -47,7 +47,7 @@ public class CapturingPrintStream extends PrintStream {
 		}
 		catch(UnsupportedEncodingException ex) {
 			throw new RuntimeException("Unsupported encoding: " + encoding, ex);
-		}
+		}		
 	}
 
 	public static CapturingPrintStream create() {

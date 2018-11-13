@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import java.io.Serializable;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
@@ -66,10 +67,10 @@ public class Env implements Serializable {
 		}
 		else {
 			if (e.symbols.contains(key)) {
-				return e.symbols.get(key);
+				return e.symbols.get(key).getVal();
 			}
 			else if (globalSymbols.contains(key)) {
-				return globalSymbols.get(key);
+				return globalSymbols.get(key).getVal();
 			}
 			else {
 				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
@@ -83,16 +84,29 @@ public class Env implements Serializable {
 		return level;
 	}
 
-	public Env set(final VncSymbol key, final VncVal value) {
-		symbols.set(key, value);
+	public Env set(final VncSymbol name, final VncVal val) {
+		symbols.set(new Var(name, val));
 		return this;
 	}
 
-	public Env setGlobal(final VncSymbol key, final VncVal value) {
-		globalSymbols.set(key, value);
+	public Env setGlobal(final Var val) {
+		globalSymbols.set(val);
 		return this;
 	}
-	
+
+	public Env setGlobalDynamic(final Var val) {
+		final Var v = globalSymbols.get(val.getName());
+		if (v != null) {
+			v.setValDynamic(val.getVal());
+		}
+		else {
+			final Var vn = new Var(val.getName(), Constants.Nil, true);
+			globalSymbols.set(vn);
+			vn.setValDynamic(val.getVal());
+		}
+		return this;
+	}
+
 	public boolean hasGlobalSymbol(final VncSymbol key) {
 		return globalSymbols.contains(key);
 	}

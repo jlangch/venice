@@ -368,6 +368,18 @@
          (do ~@forms)
          (finally (dissoc (thread-local) :*sh-throw-ex*)))))
 
+(defmacro 
+   { :arglists '("(with-out-str & forms)")
+     :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
+     :examples '("(with-out-str (println \"a string\"))") }
+
+  with-out-str [& forms]
+  
+  `(do
+      (binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
+         (do ~@forms)
+         (. *out* :getOutput))))
+
 (def
    { :arglists '("(print & xs)")
      :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
@@ -380,7 +392,7 @@
           (cond
              (empty? xs)  nil
              (== 1 (count xs))  (. *out* :append (str (first xs)))
-             :default (. *out* :append (str/join " " (map (fn [y] (str y)) xs))))
+             :default (. *out* :append (str/join " " (map #(str %) xs))))
                  
           nil)))
 

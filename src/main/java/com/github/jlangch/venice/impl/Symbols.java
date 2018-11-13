@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class Symbols implements Serializable {
@@ -38,13 +37,13 @@ public class Symbols implements Serializable {
 		return symbols.containsKey(key.getName());
 	}
 
-	public VncVal get(final VncSymbol key) {
+	public Var get(final VncSymbol key) {
 		return symbols.get(key.getName());
 	}
 
-	public void set(final VncSymbol key, final VncVal value) {
-		if (key != null) {
-			symbols.put(key.getName(), value);
+	public void set(final Var val) {
+		if (val != null) {
+			symbols.put(val.getName().getName(), val);
 		}
 	}
 	
@@ -56,5 +55,5 @@ public class Symbols implements Serializable {
 	
 	private static final long serialVersionUID = 3492619735176761007L;
 
-	private final Map<String,VncVal> symbols = new HashMap<>();
+	private final Map<String,Var> symbols = new HashMap<>();
 }

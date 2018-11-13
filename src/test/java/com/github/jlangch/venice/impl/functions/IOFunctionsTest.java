@@ -310,7 +310,7 @@ public class IOFunctionsTest {
 				"           (io/slurp-stream is :binary false)))            " +
 				")";
 				
-				assertEquals("123456789",venice.eval(script));					
+		assertEquals("123456789",venice.eval(script));					
 	}
 	
 	@Test
@@ -327,7 +327,7 @@ public class IOFunctionsTest {
 				"        (io/slurp-temp-file file :binary false))              " +
 				")";
 				
-				assertEquals("123456789",venice.eval(script));					
+		assertEquals("123456789",venice.eval(script));					
 	}
 
 	@Test
@@ -352,6 +352,23 @@ public class IOFunctionsTest {
 
 		final String charset = Charset.defaultCharset().name();
 		assertEquals(charset, venice.eval("(io/default-charset)"));	
+	}
+
+	@Test
+	public void test_shell_with_out_str() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(do                                                                   " +
+				"   (import :com.github.jlangch.venice.util.CapturingPrintStream)      " +
+				"   (binding [*out* (. :CapturingPrintStream :create)]                 " +
+				"        (print \"hello\")                                             " +
+				"        (. *out* :getOutput)))                                        ";
+				
+		assertEquals("hello", venice.eval(script));					
+		
+
+		assertEquals("s: hello", venice.eval("(str \"s: \" (with-out-str (print \"hello\")))"));
 	}
 	
 }

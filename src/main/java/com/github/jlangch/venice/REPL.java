@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -56,7 +57,7 @@ public class REPL {
 		final VncList argv = toList(args);
 		
 		final Env env = venice.createEnv();
-		env.set(new VncSymbol("*ARGV*"), argv);
+		env.setGlobal(new Var(new VncSymbol("*ARGV*"), argv));
 		
 		// REPL loop
 		while (true) {
@@ -107,7 +108,7 @@ public class REPL {
 
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		final Env env = venice.createEnv();
-		env.set(new VncSymbol("*ARGV*"), argv);
+		env.setGlobal(new Var(new VncSymbol("*ARGV*"), argv));
 
 		if (cli.switchPresent("-file")) {
 			final String file = cli.switchValue("-file");

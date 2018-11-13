@@ -28,6 +28,7 @@ import java.util.concurrent.Callable;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
@@ -80,7 +81,7 @@ public class Venice {
 		
 		// The default stdout PrintStream is not serializable, so remove it
 		final Env root = env.getRootEnv();
-		root.set(new VncSymbol("*out*"), Constants.Nil);
+		root.setGlobal(new Var(new VncSymbol("*out*"), Constants.Nil, true));
 
 		return new PreCompiled(scriptName, venice.READ(script, scriptName), env);
 	}
@@ -116,7 +117,7 @@ public class Venice {
 
 		// The stdout PrintStream is not serializable, so re-add it as default stream
 		final Env root = precompiled.getEnv().getRootEnv();
-		root.set(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)));
+		root.setGlobal(new Var(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)), true));
 		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
@@ -217,15 +218,15 @@ public class Venice {
 				final VncSymbol symbol = new VncSymbol(key);
 
 				if (key.equals("*out*")) {
-					env.set(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val)));
+					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val)), true));
 				}
 				else {
-					if (env.findEnv(symbol) != null) {
-						throw new VncException(String.format(
-								"A parameter with the name '%' already exists", 
-								symbol.getName()));
-					}
-					env.set(symbol, JavaInteropUtil.convertToVncVal(val));
+//					if (env.findEnv(symbol) != null) {
+//						throw new VncException(String.format(
+//								"A parameter with the name '%s' already exists", 
+//								symbol.getName()));
+//					}
+					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));
 				}
 			});
 		}

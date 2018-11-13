@@ -40,7 +40,7 @@ public class EnvTest {
 		env.set(new VncSymbol("a"), new VncLong(100));
 		env.set(new VncSymbol("b"), new VncLong(200));
 		env.set(new VncSymbol("c"), new VncLong(300));
-		env.setGlobal(new VncSymbol("g"), new VncLong(900));
+		env.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
 		
 		assertEquals(new VncLong(100), env.get(new VncSymbol("a")));
 		assertEquals(new VncLong(200), env.get(new VncSymbol("b")));
@@ -61,7 +61,7 @@ public class EnvTest {
 		final Env env_2 = new Env(env_1);
 		env_2.set(new VncSymbol("c"), new VncLong(300));
 
-		env_2.setGlobal(new VncSymbol("g"), new VncLong(900));
+		env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
 
 		assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
 		assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
@@ -80,7 +80,7 @@ public class EnvTest {
 		assertThrows(VncException.class, () -> env_2.get(new VncSymbol("x")));
 		
 		env_2.set(new VncSymbol("a"), new VncLong(101));
-		env_2.setGlobal(new VncSymbol("g"), new VncLong(901));
+		env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(901)));
 		assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
 		assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
 		assertEquals(new VncLong(101), env_2.get(new VncSymbol("a")));
@@ -100,7 +100,7 @@ public class EnvTest {
 		final Env env_2 = new Env(env_1);
 		env_2.set(new VncSymbol("g"), new VncLong(300));
 
-		env_2.setGlobal(new VncSymbol("g"), new VncLong(900));
+		env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
 
 		assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
 
