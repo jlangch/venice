@@ -15,8 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### fixed
 
-- fixed error message for map creation with an odd number of items. 
-        Improved text and added file location.
+- fixed error message for map creation with an odd number of items 
+        and added file location.
 
 
 
