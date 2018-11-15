@@ -158,7 +158,7 @@ Exception in thread "main" VncException: / by zero
     at: / (repl: line 5, col 18)
     at: fn3 (repl: line 4, col 18)
     at: fn2 (repl: line 3, col 18)
-    at: fn1 (repl: linoe 2, col 5)
+    at: fn1 (repl: line 2, col 5)
 ```
 
 
