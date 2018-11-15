@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added dynamic (thread-local) binding. e.g: `(binding [x 100] ...)
+- added dynamic (thread-local) binding. e.g: `(binding [x 100] (print x))`
+- added _with-out-str_ macro that captures stdout.
 
 ### fixed
 
