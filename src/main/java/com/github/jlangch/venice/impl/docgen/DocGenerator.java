@@ -716,6 +716,9 @@ public class DocGenerator {
 		all.addSection(io);
 		io.addItem(getDocItem("io/file"));
 		io.addItem(getDocItem("io/file?"));
+		io.addItem(getDocItem("io/file-parent"));
+		io.addItem(getDocItem("io/file-name"));
+		io.addItem(getDocItem("io/file-path"));
 		io.addItem(getDocItem("io/exists-file?"));
 		io.addItem(getDocItem("io/exists-dir?"));
 		io.addItem(getDocItem("io/list-files"));

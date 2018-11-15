@@ -157,6 +157,87 @@ public class IOFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	public static VncFunction io_file_path = new VncFunction("io/file-path") {
+		{
+			setArgLists("(io/file-path f)");
+			
+			setDoc("Returns the path of the file f. f must be a java.io.File.");
+			
+			setExamples("(io/file-path (io/file \"/tmp/test/x.txt\"))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/file-path");
+
+			assertArity("io/file-path", args, 1);
+
+			if (!isJavaIoFile(args.first()) ) {
+				throw new VncException(String.format(
+						"Function 'io/file-path' does not allow %s as f",
+						Types.getClassName(args.first())));
+			}
+
+			final File file = (File)((VncJavaObject)args.first()).getDelegate();
+			return new VncString(file.getPath());
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction io_file_parent = new VncFunction("io/file-parent") {
+		{
+			setArgLists("(io/file-parent f)");
+			
+			setDoc("Returns the parent file of the file f. f must be a java.io.File.");
+			
+			setExamples("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/file-parent");
+
+			assertArity("io/file-parent", args, 1);
+
+			if (!isJavaIoFile(args.first()) ) {
+				throw new VncException(String.format(
+						"Function 'io/file-parent' does not allow %s as f",
+						Types.getClassName(args.first())));
+			}
+
+			final File file = (File)((VncJavaObject)args.first()).getDelegate();
+			return new VncJavaObject(file.getParentFile());
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction io_file_name = new VncFunction("io/file-name") {
+		{
+			setArgLists("(io/file-name f)");
+			
+			setDoc("Returns the name of the file f. f must be a java.io.File.");
+			
+			setExamples("(io/file-name (io/file \"/tmp/test/x.txt\"))");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/file-name");
+
+			assertArity("io/file-name", args, 1);
+
+			if (!isJavaIoFile(args.first()) ) {
+				throw new VncException(String.format(
+						"Function 'io/file-name' does not allow %s as f",
+						Types.getClassName(args.first())));
+			}
+
+			final File file = (File)((VncJavaObject)args.first()).getDelegate();
+			return new VncString(file.getName());
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	public static VncFunction io_file_Q = new VncFunction("io/file?") {
 		{
 			setArgLists("(io/file? x)");
@@ -1073,6 +1154,9 @@ public class IOFunctions {
 			new VncHashMap.Builder()
 					.put("io/file",						io_file)
 					.put("io/file?",					io_file_Q)
+					.put("io/file-path",				io_file_path)
+					.put("io/file-parent",				io_file_parent)
+					.put("io/file-name",				io_file_name)
 					.put("io/file-size",				io_file_size)
 					.put("io/exists-file?",				io_exists_file_Q)
 					.put("io/exists-dir?",				io_exists_dir_Q)

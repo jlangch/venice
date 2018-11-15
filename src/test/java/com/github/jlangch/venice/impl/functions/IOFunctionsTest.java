@@ -120,6 +120,27 @@ public class IOFunctionsTest {
 		assertTrue((Boolean)venice.eval("(io/file? (io/file \"/tmp\" \"a.txt\"))"));	
 		assertTrue((Boolean)venice.eval("(io/file? (io/file (io/file \"/tmp\") \"a.txt\"))"));	
 	}
+
+	@Test
+	public void test_io_file_parent() {
+		final Venice venice = new Venice();
+
+		assertEquals("/tmp/test", venice.eval("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))"));	
+	}
+
+	@Test
+	public void test_io_file_path() {
+		final Venice venice = new Venice();
+
+		assertEquals("/tmp/test/x.txt", venice.eval("(io/file-path (io/file \"/tmp/test/x.txt\"))"));	
+	}
+
+	@Test
+	public void test_io_file_name() {
+		final Venice venice = new Venice();
+
+		assertEquals("x.txt", venice.eval("(io/file-name (io/file \"/tmp/test/x.txt\"))"));	
+	}
 	
 	@Test
 	public void test_io_file_Q() {
