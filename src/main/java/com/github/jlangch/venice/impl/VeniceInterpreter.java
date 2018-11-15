@@ -210,7 +210,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
+					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta)));
 					return res;
 				}
 				
@@ -220,7 +220,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
+					env.setGlobal(new DynamicVar(defName, MetaUtil.addDefMeta(res, defMeta)));
 					return res;
 				}
 
@@ -276,19 +276,23 @@ public class VeniceInterpreter implements Serializable  {
 	
 						Destructuring
 							.destructure(sym, val)
-							.forEach(b -> vars.add(new Var(b.sym, b.val, true)));
+							.forEach(b -> vars.add(new DynamicVar(b.sym, b.val)));
 					}
 						
-					// TODO: implement push/pop on multiple dynamic vars
 					final Env _env = env;
-					vars.forEach(v -> _env.setGlobalDynamic(v));
-					
-					if (expressions.isEmpty()) {
-						return Constants.Nil;
+					try {
+						vars.forEach(v -> _env.pushGlobalDynamic(v));
+						
+						if (expressions.isEmpty()) {
+							return Constants.Nil;
+						}
+						else {
+							eval_ast(expressions.slice(0, expressions.size()-1), env);
+							return ((VncList)eval_ast(new VncList(expressions.last()), env)).first();
+						}
 					}
-					else {
-						eval_ast(expressions.slice(0, expressions.size()-1), env);
-						return ((VncList)eval_ast(new VncList(expressions.last()), env)).first();
+					finally {
+						vars.forEach(v -> _env.popGlobalDynamic(v.getName()));
 					}
 				}
 					
@@ -502,7 +506,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator())));
 
 		// set system stdout (dynamic)
-		env.setGlobal(new Var(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)), true));
+		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
 
 		// core module: core.venice 
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);

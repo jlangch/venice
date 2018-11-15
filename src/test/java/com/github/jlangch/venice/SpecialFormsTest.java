@@ -270,6 +270,22 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_def_dynamic() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def-dynamic x 100)            \n" +
+				"   (with-out-str                  \n" +
+				"      (print x)                   \n" +
+				"      (binding [x 200]            \n" +
+				"        (print (str \"-\" x)))    \n" +
+				"      (print (str \"-\" x))))       ";
+				
+		assertEquals("100-200-100", venice.eval(script));					
+	}
+
+	@Test
 	public void test_doc() {
 		final CapturingPrintStream ps = CapturingPrintStream.create();
 		

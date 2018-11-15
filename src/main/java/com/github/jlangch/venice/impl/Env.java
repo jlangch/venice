@@ -70,7 +70,8 @@ public class Env implements Serializable {
 				return e.symbols.get(key).getVal();
 			}
 			else if (globalSymbols.contains(key)) {
-				return globalSymbols.get(key).getVal();
+				final Var v = globalSymbols.get(key);
+				return v instanceof DynamicVar ? ((DynamicVar)v).peekVal(key) : v.getVal();
 			}
 			else {
 				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
@@ -94,17 +95,58 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public Env setGlobalDynamic(final Var val) {
-		final Var v = globalSymbols.get(val.getName());
-		if (v != null) {
-			v.setValDynamic(val.getVal());
+	public Env pushGlobalDynamic(final Var val) {
+		final Var dv = globalSymbols.get(val.getName());
+		if (dv != null) {
+			if (dv instanceof DynamicVar) {
+				((DynamicVar)dv).pushVal(val.getVal());
+			}
+			else {
+				throw new VncException(String.format(
+						"The var %s is not defined as dynamic",
+						val.getName()));
+			}
 		}
 		else {
-			final Var vn = new Var(val.getName(), Constants.Nil, true);
-			globalSymbols.set(vn);
-			vn.setValDynamic(val.getVal());
+			final DynamicVar nv = new DynamicVar(val.getName(), Constants.Nil);
+			globalSymbols.set(nv);
+			nv.pushVal(val.getVal());
 		}
 		return this;
+	}
+
+	public VncVal popGlobalDynamic(final VncSymbol sym) {
+		final Var dv = globalSymbols.get(sym);
+		if (dv != null) {
+			if (dv instanceof DynamicVar) {
+				return ((DynamicVar)dv).popVal(sym);
+			}
+			else {
+				throw new VncException(String.format(
+						"The var %s is not defined as dynamic",
+						sym.getName()));
+			}
+		}
+		else {
+			return Constants.Nil;
+		}
+	}
+
+	public VncVal peekGlobalDynamic(final VncSymbol sym) {
+		final Var dv = globalSymbols.get(sym);
+		if (dv != null) {
+			if (dv instanceof DynamicVar) {
+				return ((DynamicVar)dv).peekVal(sym);
+			}
+			else {
+				throw new VncException(String.format(
+						"The var %s is not defined as dynamic",
+						sym.getName()));
+			}
+		}
+		else {
+			return Constants.Nil;
+		}
 	}
 
 	public boolean hasGlobalSymbol(final VncSymbol key) {

@@ -24,9 +24,11 @@ package com.github.jlangch.venice.impl.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.util.CallStack;
 
 
@@ -45,16 +47,31 @@ public class ThreadLocalMap {
 		}
 		else {
 			final VncVal v = get().values.get(key);
-			return v == null ? defaultValue : v;
+			if (v instanceof VncStack) {
+				final VncVal thVal = ((VncStack)v).peek();
+				return thVal == Constants.Nil ? defaultValue : thVal;
+			}
+			else {
+				return v == null ? defaultValue : v;
+			}
 		}
 	}
 	
 	public static void set(final VncKeyword key, final VncVal val) {
 		if (key != null) {
-			get().values.put(key, val == null ? Constants.Nil : val);
+			final VncVal v = get().values.get(key);
+			if (v == null) {
+				get().values.put(key, val == null ? Constants.Nil : val);
+			}
+			else if (v instanceof VncStack) {
+				((VncStack)v).push(val == null ? Constants.Nil : val);
+			}
+			else {
+				get().values.put(key, val);
+			}
 		}
 	}
-	
+
 	public static void remove(final VncKeyword key) {
 		if (key != null) {
 			get().values.remove(key);
@@ -63,6 +80,66 @@ public class ThreadLocalMap {
 	
 	public static boolean containsKey(final VncKeyword key) {
 		return key == null ? false : get().values.containsKey(key);
+	}
+
+	public static void push(final VncKeyword key, final VncVal val) {
+		if (key != null) {
+			final ThreadLocalMap tmap = get();
+			if (tmap.values.containsKey(key)) {
+				final VncVal v = tmap.values.get(key);
+				if (v instanceof VncStack) {
+					((VncStack)v).push(val == null ? Constants.Nil : val);
+				}
+				else {
+					throw new VncException(String.format(
+							"The var %s is not defined as dynamic on the thread-local map",
+							key.getValue()));
+				}
+			}
+			else {
+				final VncStack stack = new VncStack();
+				stack.push(val == null ? Constants.Nil : val);
+				tmap.values.put(key, stack);
+			}
+		}
+	}
+
+	public static VncVal pop(final VncKeyword key) {
+		if (key != null) {
+			final ThreadLocalMap tmap = get();
+			if (tmap.values.containsKey(key)) {
+				final VncVal v = tmap.values.get(key);
+				if (v instanceof VncStack) {
+					return ((VncStack)v).pop();
+				}
+				else {
+					throw new VncException(String.format(
+							"The var %s is not defined as dynamic on the thread-local map",
+							key.getValue()));
+				}
+			}
+		}
+
+		return Constants.Nil;
+	}
+
+	public static VncVal peek(final VncKeyword key) {
+		if (key != null) {
+			final ThreadLocalMap tmap = get();
+			if (tmap.values.containsKey(key)) {
+				final VncVal v = tmap.values.get(key);
+				if (v instanceof VncStack) {
+					return ((VncStack)v).peek();
+				}
+				else {
+					throw new VncException(String.format(
+							"The var %s is not defined as dynamic on the thread-local map",
+							key.getValue()));
+				}
+			}
+		}
+
+		return Constants.Nil;
 	}
 
 	public static void clearCallStack() {

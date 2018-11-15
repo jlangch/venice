@@ -147,6 +147,25 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction def_dynamic = new SpecialFormsDocFunction("def-dynamic") {
+		{
+			setArgLists("(def-dynamic name expr)");
+			setDoc(
+					"Creates a dynamic variable that starts off as a global variable " +
+					"and can be bound with 'binding' to the local thread.");
+			setExamples(
+					"(do                      \n" +
+					"   (def-dynamic x 100)   \n" +
+					"   (println x)           \n" +
+					"   (binding [x 200]      \n" +
+					"      (println x))       \n" +
+					"   (println x)))           ");
+
+		}
+		
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction do_ = new SpecialFormsDocFunction("do") {
 		{
 			setArgLists("(do exprs)");
@@ -350,6 +369,7 @@ public class SpecialForms {
 					.put("fn", 			fn)
 					.put("eval",		eval)
 					.put("def",			def)
+					.put("def-dynamic",	def_dynamic)
 					.put("do",			do_)
 					.put("if",			if_)
 					.put("let",			let)

@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
@@ -81,7 +82,7 @@ public class Venice {
 		
 		// The default stdout PrintStream is not serializable, so remove it
 		final Env root = env.getRootEnv();
-		root.setGlobal(new Var(new VncSymbol("*out*"), Constants.Nil, true));
+		root.setGlobal(new DynamicVar(new VncSymbol("*out*"), Constants.Nil));
 
 		return new PreCompiled(scriptName, venice.READ(script, scriptName), env);
 	}
@@ -117,7 +118,7 @@ public class Venice {
 
 		// The stdout PrintStream is not serializable, so re-add it as default stream
 		final Env root = precompiled.getEnv().getRootEnv();
-		root.setGlobal(new Var(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true)), true));
+		root.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
 		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
@@ -218,7 +219,7 @@ public class Venice {
 				final VncSymbol symbol = new VncSymbol(key);
 
 				if (key.equals("*out*")) {
-					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val)), true));
+					env.setGlobal(new DynamicVar(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val))));
 				}
 				else {
 //					if (env.findEnv(symbol) != null) {

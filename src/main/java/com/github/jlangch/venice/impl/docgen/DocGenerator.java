@@ -863,6 +863,7 @@ public class DocGenerator {
 		all.addSection(generic);
 
 		generic.addItem(getDocItem("def"));
+		generic.addItem(getDocItem("def-dynamic"));
 		generic.addItem(getDocItem("if"));
 		generic.addItem(getDocItem("do"));
 		generic.addItem(getDocItem("let"));

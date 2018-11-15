@@ -21,45 +21,51 @@
  */
 package com.github.jlangch.venice.impl;
 
-import java.io.Serializable;
-
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
-public class Var implements Serializable {
+public class DynamicVar extends Var {
 
-	public Var(final VncSymbol name, final VncVal val) {
-		this.name = name;
-		this.val = val == null ? Constants.Nil : val;
+	public DynamicVar(final VncSymbol name, final VncVal val) {
+		super(name, val);
+		th_keyword = new VncKeyword(name.getName());
 	}
-	
-	public VncVal getVal() {
-		return val;
+		
+	public void pushVal(final VncVal val) {
+		ThreadLocalMap.push(th_keyword, val == null ? Constants.Nil : val);
 	}
-	
-	public void setVal(final VncVal val) {
-		this.val = val == null ? Constants.Nil : val;
+
+	public VncVal peekVal(final VncVal val) {
+		final VncVal thVal = ThreadLocalMap.peek(th_keyword);
+		return thVal == Constants.Nil ? super.getVal() : thVal;
 	}
-	
-	public VncSymbol getName() {
-		return name;
+
+	public VncVal popVal(final VncVal val) {
+		final VncVal thVal = ThreadLocalMap.pop(th_keyword);
+		return thVal == Constants.Nil ? super.getVal() : thVal;
 	}
-	
+
 	@Override 
 	public String toString() {
-		return String.format("{%s %s}", name.toString(), val.toString());
+		return String.format(
+				"{%s %s}", 
+				super.getName().toString(), 
+				super.getVal().toString());
 	}
 	
 	public String toString(final boolean print_readably) {
-		return String.format("{%s %s}", name.toString(print_readably), val.toString(print_readably));
+		return String.format(
+				"{%s %s}", 
+				super.getName().toString(print_readably), 
+				super.getVal().toString(print_readably));
 	}
-	
 
-	
+
 	private static final long serialVersionUID = 1598432086227773369L;
-
-	private final VncSymbol name;
-	private VncVal val;
+	
+	private final VncKeyword th_keyword;
 }
