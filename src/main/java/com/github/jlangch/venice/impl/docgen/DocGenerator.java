@@ -867,6 +867,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("if"));
 		generic.addItem(getDocItem("do"));
 		generic.addItem(getDocItem("let"));
+		generic.addItem(getDocItem("binding"));
 		generic.addItem(getDocItem("fn"));
 		generic.addItem(getDocItem("loop"));
 		generic.addItem(getDocItem("recur"));

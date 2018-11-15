@@ -166,6 +166,22 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction binding = new SpecialFormsDocFunction("binding") {
+		{
+			setArgLists("(binding [bindings*] exprs*)");
+			setDoc("Evaluates the expressions and binds the values to dynamic (thread-local) symbols");
+			setExamples(
+					"(do                      \n" +
+					"   (binding [x 100]      \n" +
+					"      (println x)        \n" +
+					"      (binding [x 200]   \n" +
+					"         (println x))    \n" +
+					"      (println x)))        ");
+		}
+		
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction do_ = new SpecialFormsDocFunction("do") {
 		{
 			setArgLists("(do exprs)");
@@ -370,6 +386,7 @@ public class SpecialForms {
 					.put("eval",		eval)
 					.put("def",			def)
 					.put("def-dynamic",	def_dynamic)
+					.put("binding",		binding)
 					.put("do",			do_)
 					.put("if",			if_)
 					.put("let",			let)
