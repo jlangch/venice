@@ -21,9 +21,10 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.io.Serializable;
 
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -32,7 +33,7 @@ public class Var implements Serializable {
 
 	public Var(final VncSymbol name, final VncVal val) {
 		this.name = name;
-		this.val = val == null ? Constants.Nil : val;
+		this.val = val == null ? Nil : val;
 	}
 	
 	public VncVal getVal() {
@@ -40,7 +41,7 @@ public class Var implements Serializable {
 	}
 	
 	public void setVal(final VncVal val) {
-		this.val = val == null ? Constants.Nil : val;
+		this.val = val == null ? Nil : val;
 	}
 	
 	public VncSymbol getName() {

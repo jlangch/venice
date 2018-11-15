@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
-import com.github.jlangch.venice.impl.types.Constants;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -36,17 +37,17 @@ public class DynamicVar extends Var {
 	}
 		
 	public void pushVal(final VncVal val) {
-		ThreadLocalMap.push(th_keyword, val == null ? Constants.Nil : val);
+		ThreadLocalMap.push(th_keyword, val == null ? Nil : val);
 	}
 
 	public VncVal peekVal(final VncVal val) {
 		final VncVal thVal = ThreadLocalMap.peek(th_keyword);
-		return thVal == Constants.Nil ? super.getVal() : thVal;
+		return thVal == Nil ? super.getVal() : thVal;
 	}
 
 	public VncVal popVal(final VncVal val) {
 		final VncVal thVal = ThreadLocalMap.pop(th_keyword);
-		return thVal == Constants.Nil ? super.getVal() : thVal;
+		return thVal == Nil ? super.getVal() : thVal;
 	}
 
 	@Override 

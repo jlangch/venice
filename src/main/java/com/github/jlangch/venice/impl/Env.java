@@ -21,10 +21,11 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.io.Serializable;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
@@ -108,7 +109,7 @@ public class Env implements Serializable {
 			}
 		}
 		else {
-			final DynamicVar nv = new DynamicVar(val.getName(), Constants.Nil);
+			final DynamicVar nv = new DynamicVar(val.getName(), Nil);
 			globalSymbols.set(nv);
 			nv.pushVal(val.getVal());
 		}
@@ -128,7 +129,7 @@ public class Env implements Serializable {
 			}
 		}
 		else {
-			return Constants.Nil;
+			return Nil;
 		}
 	}
 
@@ -145,7 +146,7 @@ public class Env implements Serializable {
 			}
 		}
 		else {
-			return Constants.Nil;
+			return Nil;
 		}
 	}
 

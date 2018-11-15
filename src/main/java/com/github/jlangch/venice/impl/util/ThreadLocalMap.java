@@ -21,16 +21,16 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.util.CallStack;
-
 
 public class ThreadLocalMap {
 	
@@ -38,18 +38,18 @@ public class ThreadLocalMap {
 	}
 	
 	public static VncVal get(final VncKeyword key) {
-		return get(key, Constants.Nil);
+		return get(key, Nil);
 	}
 	
 	public static VncVal get(final VncKeyword key, final VncVal defaultValue) {
 		if (key == null) {
-			return Constants.Nil;
+			return Nil;
 		}
 		else {
 			final VncVal v = get().values.get(key);
 			if (v instanceof VncStack) {
 				final VncVal thVal = ((VncStack)v).peek();
-				return thVal == Constants.Nil ? defaultValue : thVal;
+				return thVal == Nil ? defaultValue : thVal;
 			}
 			else {
 				return v == null ? defaultValue : v;
@@ -61,10 +61,12 @@ public class ThreadLocalMap {
 		if (key != null) {
 			final VncVal v = get().values.get(key);
 			if (v == null) {
-				get().values.put(key, val == null ? Constants.Nil : val);
+				get().values.put(key, val == null ? Nil : val);
 			}
 			else if (v instanceof VncStack) {
-				((VncStack)v).push(val == null ? Constants.Nil : val);
+				// TODO: maybe it's better to throw an exception to prevent
+				//       uncontrolled stack growing
+				((VncStack)v).push(val == null ? Nil : val);
 			}
 			else {
 				get().values.put(key, val);
@@ -88,7 +90,7 @@ public class ThreadLocalMap {
 			if (tmap.values.containsKey(key)) {
 				final VncVal v = tmap.values.get(key);
 				if (v instanceof VncStack) {
-					((VncStack)v).push(val == null ? Constants.Nil : val);
+					((VncStack)v).push(val == null ? Nil : val);
 				}
 				else {
 					throw new VncException(String.format(
@@ -98,7 +100,7 @@ public class ThreadLocalMap {
 			}
 			else {
 				final VncStack stack = new VncStack();
-				stack.push(val == null ? Constants.Nil : val);
+				stack.push(val == null ? Nil : val);
 				tmap.values.put(key, stack);
 			}
 		}
@@ -120,7 +122,7 @@ public class ThreadLocalMap {
 			}
 		}
 
-		return Constants.Nil;
+		return Nil;
 	}
 
 	public static VncVal peek(final VncKeyword key) {
@@ -139,7 +141,7 @@ public class ThreadLocalMap {
 			}
 		}
 
-		return Constants.Nil;
+		return Nil;
 	}
 
 	public static void clearCallStack() {
