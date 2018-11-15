@@ -154,7 +154,7 @@ Venice generates user friendly stack traces
    (fn1 0))
    
 =>
-Exception in thread "http-nio-8080-exec-5" VncException: / by zero
+Exception in thread "main" VncException: / by zero
     at: / (script: line 4, col 19)
     at: fn3 (script: line 3, col 19)
     at: fn2 (script: line 2, col 19)
