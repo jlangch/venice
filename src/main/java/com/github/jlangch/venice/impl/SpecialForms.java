@@ -152,7 +152,7 @@ public class SpecialForms {
 			setArgLists("(def-dynamic name expr)");
 			setDoc(
 					"Creates a dynamic variable that starts off as a global variable " +
-					"and can be bound with 'binding' to the local thread.");
+					"and can be bound with 'binding' to a new value on the local thread.");
 			setExamples(
 					"(do                      \n" +
 					"   (def-dynamic x 100)   \n" +
