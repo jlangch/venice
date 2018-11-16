@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added special form _defonce_. e.g: `(defonce x 100)`
 - added dynamic (thread-local) binding. e.g: `(binding [x 100] (print x))`
-- added _with-out-str_ macro that captures stdout.
+- added _with-out-str_ macro that returns the captured text from stdout.
 - added _io/file-parent_, _io/file-name_, _io/file-path_
 
 ### fixed
