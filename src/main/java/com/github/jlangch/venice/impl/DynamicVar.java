@@ -52,17 +52,12 @@ public class DynamicVar extends Var {
 
 	@Override 
 	public String toString() {
-		return String.format(
-				"{%s %s}", 
-				super.getName().toString(), 
-				super.getVal().toString());
+		return super.toString();
 	}
 	
+	@Override 
 	public String toString(final boolean print_readably) {
-		return String.format(
-				"{%s %s}", 
-				super.getName().toString(print_readably), 
-				super.getVal().toString(print_readably));
+		return super.toString(print_readably);
 	}
 
 

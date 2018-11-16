@@ -92,6 +92,14 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobal(final Var val) {
+		final Var v = globalSymbols.get(val.getName());
+		if (v != null && !v.isOverwritable()) {
+			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(val.getName()));
+			throw new VncException(String.format(
+					"The existing var %s must not overwritten!",
+					val.getName()));
+		}
+		
 		globalSymbols.set(val);
 		return this;
 	}

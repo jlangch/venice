@@ -22,8 +22,8 @@
 package com.github.jlangch.venice.impl;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.types.VncSymbol;
 
@@ -55,5 +55,5 @@ public class Symbols implements Serializable {
 	
 	private static final long serialVersionUID = 3492619735176761007L;
 
-	private final Map<String,Var> symbols = new HashMap<>();
+	private final Map<String,Var> symbols = new ConcurrentHashMap<>();
 }

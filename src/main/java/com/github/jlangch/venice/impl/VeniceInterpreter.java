@@ -210,7 +210,17 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta)));
+					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
+					return res;
+				}
+				
+				case "defonce": { // (defonce meta-data? name value)
+					final boolean hasMeta = ast.size() > 3;
+					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.nth(1), env) : new VncHashMap();
+					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
+					final VncVal res = EVAL(defVal, env);
+					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
 					return res;
 				}
 				

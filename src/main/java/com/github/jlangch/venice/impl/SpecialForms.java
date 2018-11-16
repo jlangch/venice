@@ -147,6 +147,16 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction defonce = new SpecialFormsDocFunction("defonce") {
+		{
+			setArgLists("(defonce name expr)");
+			setDoc("Creates a global variable that can not be overwritten");
+			setExamples("(defonce val 5)");
+		}
+		
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction def_dynamic = new SpecialFormsDocFunction("def-dynamic") {
 		{
 			setArgLists("(def-dynamic name expr)");
@@ -385,6 +395,7 @@ public class SpecialForms {
 					.put("fn", 			fn)
 					.put("eval",		eval)
 					.put("def",			def)
+					.put("defonce",		defonce)
 					.put("def-dynamic",	def_dynamic)
 					.put("binding",		binding)
 					.put("do",			do_)

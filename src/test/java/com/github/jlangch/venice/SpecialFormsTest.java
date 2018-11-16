@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -267,6 +268,33 @@ public class SpecialFormsTest {
 		assertEquals(Long.valueOf(4), venice.eval("(do (def x 1) (def y 3) (+ x y))"));
 		assertEquals(Long.valueOf(30), venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)))"));
 		assertEquals(Long.valueOf(4), venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
+	}
+
+	@Test
+	public void test_defonce() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Long.valueOf(4), venice.eval("(do (defonce x 1) (defonce y 3) (+ x y))"));
+		assertEquals(Long.valueOf(30), venice.eval("(do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))"));
+		assertEquals(Long.valueOf(4), venice.eval("(do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
+
+		assertThrows(VncException.class, () -> {
+			venice.eval("(do (defonce x 1) (def x 3) x)");
+		});
+		
+		assertThrows(VncException.class, () -> {
+			venice.eval("(do (defonce x 1) (def-dynamic x 3) x)");
+		});
+
+		assertThrows(VncException.class, () -> {
+			venice.eval("(do (defonce x 1) (defonce x 3) x)");
+		});
+
+		venice.eval("(do (def x 1) (defonce x 3) x)");
+
+		assertThrows(VncException.class, () -> {
+			venice.eval("(do (def x 1) (defonce x 3) (defonce x 5) x)");
+		});
 	}
 
 	@Test
