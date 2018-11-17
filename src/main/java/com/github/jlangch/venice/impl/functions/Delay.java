@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.functions;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -36,21 +35,12 @@ public class Delay {
 	}
 	
 	public VncVal deref() {
-		if (result.get() == null) {
-			synchronized(this) {
-				if (result.get() == null) {
-					result.set(calculate());
-				}				
-			}			
-		}
-		
-		return result.get().result();
+		return results.computeIfAbsent("result", k -> calculate()).deref();
 	}
 	
 	private Result calculate() {
 		try {
-			final VncVal res = fn.apply(new VncList());
-			return new Result(res, null);
+			return new Result(fn.apply(new VncList()), null);
 		}
 		catch(RuntimeException ex) {
 			return new Result(null, ex);
@@ -63,7 +53,7 @@ public class Delay {
 			this.ex = ex;
 		}
 		
-		public VncVal result() {
+		public VncVal deref() {
 			if (val != null) {
 				return val;
 			}
@@ -77,6 +67,5 @@ public class Delay {
 	}
 	
 	private final VncFunction fn;
-	private final AtomicReference<Result> result = new AtomicReference<>();
 	private final ConcurrentHashMap<String,Result> results = new ConcurrentHashMap<>();
 }
