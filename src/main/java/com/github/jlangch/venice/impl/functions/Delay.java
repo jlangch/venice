@@ -40,10 +40,10 @@ public class Delay {
 				if (result.get() == null) {
 					try {
 						final VncVal res = fn.apply(new VncList());
-						result.set(new Result(res));
+						result.set(new Result(res, null));
 					}
 					catch(RuntimeException ex) {
-						result.set(new Result(ex));
+						result.set(new Result(null, ex));
 					}
 				}				
 			}			
@@ -54,12 +54,8 @@ public class Delay {
 	
 	
 	private static class Result {
-		public Result(final VncVal val) {
+		public Result(final VncVal val, final RuntimeException ex) {
 			this.val = val;
-			this.ex = null;
-		}
-		public Result(final RuntimeException ex) {
-			this.val = null;
 			this.ex = ex;
 		}
 		
