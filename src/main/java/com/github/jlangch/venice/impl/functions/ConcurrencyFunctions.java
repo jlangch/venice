@@ -66,7 +66,6 @@ public class ConcurrencyFunctions {
 	// DEREF
 	///////////////////////////////////////////////////////////////////////////
 
-
 	public static VncFunction deref = new VncFunction("deref") {
 		{
 			setArgLists("(deref ref)", "(deref ref timeout-ms timeout-val)");
@@ -102,7 +101,12 @@ public class ConcurrencyFunctions {
 					"(do                             \n" +
 					"   (def task (fn [] 100))       \n" +
 					"   (let [f (future task)]       \n" +
-					"        (deref f 300 :timeout)))  ");
+					"        (deref f 300 :timeout)))  ",
+
+					"(do                                            \n" +
+					"   (def my-delay                               \n" +
+					"        (delay (println \"working...\") 100))  \n" +
+					"   @my-delay)                                    ");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -139,6 +143,9 @@ public class ConcurrencyFunctions {
 					catch(Exception ex) {
 						throw new VncException("Failed to deref future", ex);
 					}
+				}
+				else if (delegate instanceof Delay) {
+					return ((Delay)delegate).deref();
 				}
 			}
 
@@ -437,8 +444,7 @@ public class ConcurrencyFunctions {
 			
 			setDoc( "Returns true if f is a Future otherwise false");
 			
-			setExamples(
-					"(future? (future (fn [] 100)))");
+			setExamples("(future? (future (fn [] 100)))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -460,8 +466,7 @@ public class ConcurrencyFunctions {
 			
 			setDoc( "Returns true if f is a Future is done otherwise false");
 			
-			setExamples(
-					"(future-done? (future (fn [] 100)))");
+			setExamples("(future-done? (future (fn [] 100)))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -495,10 +500,9 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(future-cancel f)");
 			
-			setDoc( "Cancels the future");
+			setDoc("Cancels the future");
 			
-			setExamples(
-					"(future-cancel (future (fn [] 100)))");
+			setExamples("(future-cancel (future (fn [] 100)))");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -567,8 +571,66 @@ public class ConcurrencyFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	
+
+	///////////////////////////////////////////////////////////////////////////
+	// Delay
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction delay_Q = new VncFunction("delay?") {
+		{
+			setArgLists("(delay? x)");
+			
+			setDoc( "Returns true if x is a Delay created with delay");
+			
+			setExamples(
+					"(do                                              \n" +
+					"   (def x (delay (println \"working...\") 100))  \n" +
+					"   (delay? x))                                     ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("delay?", args, 1);
+
+			return Types.isVncJavaObject(args.first())
+					&& (((VncJavaObject)args.first()).getDelegate() instanceof Delay)
+						? True : False;
+		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction force = new VncFunction("force") {
+		{
+			setArgLists("(force x)");
+			
+			setDoc( "If x is a Delay, returns its value, else returns x");
+			
+			setExamples(
+					"(do                                              \n" +
+					"   (def x (delay (println \"working...\") 100))  \n" +
+					"   (force x))                                      ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("force", args, 1);
+
+			if (Types.isVncJavaObject(args.first())
+					&& (((VncJavaObject)args.first()).getDelegate() instanceof Delay)
+			) {
+				final Delay delay = (Delay)((VncJavaObject)args.first()).getDelegate();
+				return delay.deref();
+			}
+			else {
+				return args.first();
+			}
+		}
+		
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
 
 
+	
 	///////////////////////////////////////////////////////////////////////////
 	// Thread local
 	///////////////////////////////////////////////////////////////////////////
@@ -715,10 +777,13 @@ public class ConcurrencyFunctions {
 					.put("future-done?",		future_done_Q)
 					.put("future-cancel",		future_cancel)
 					.put("future-cancelled?",	future_cancelled_Q)
+
+					.put("delay?",				delay_Q)
+					.put("force",				force)
 					
 					.put("thread-id",			thread_id)
 					.put("thread-name",			thread_name)
-					
+
 					.put("thread-local",		new_thread_local)
 					.put("thread-local?",		thread_local_Q)
 					.put("thread-local-clear",	thread_local_clear)

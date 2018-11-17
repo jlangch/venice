@@ -15,6 +15,7 @@
      :doc "Evaluates expr and throws an exception if it does not evaluate to logical true." }
 
    assert [expr message]
+   
    `(if ~message
        (when-not ~expr
            (throw (. :com.github.jlangch.venice.AssertionException 
@@ -33,7 +34,8 @@
      :examples '("(defn sum [x y] (+ x y))") }
      
    defn [name args body]
-        `(def ~name (fn ~name ~args ~body)))
+   
+   `(def ~name (fn ~name ~args ~body)))
     
 
 (defmacro 
@@ -55,7 +57,8 @@
      :examples '("(or true false)", "(or false false)") }
 
    or [x & next]
-    (let [arity_ (inc (count next))]
+   
+   (let [arity_ (inc (count next))]
         `(if (== 1 ~arity_)
             ~x 
             (let [cond_ ~x]
@@ -72,7 +75,8 @@
                  |        :else \"zero\"))" ) }
  
    cond [& clauses]
-    (when clauses 
+   
+   (when clauses 
         (list 'if (first clauses) 
             (if (rest clauses) 
                 (second clauses) 
@@ -97,7 +101,8 @@
       ;;                  :else :dont-know))
 
    case [expr & clauses]
-    (let [expr-sym (gensym "expr_")
+   
+   (let [expr-sym (gensym "expr_")
           default_ (if (odd? (count clauses)) (last clauses) nil)
           pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]        
       `(let [~expr-sym ~expr]
@@ -114,7 +119,8 @@
      :examples '("(when (== 1 1) true)") }
 
    when [test & body]
-    (list 'if test (cons 'do body)))
+   
+   (list 'if test (cons 'do body)))
 
 
 (defmacro 
@@ -123,7 +129,8 @@
      :examples '("(when-not (== 1 2) true)") }
 
    when-not [test & body]
-    (list 'if test nil (cons 'do body)))
+   
+   (list 'if test nil (cons 'do body)))
 
 
 (defmacro 
@@ -134,6 +141,7 @@
                  |    (str \"The expression is false value=\" value))" ) }
 
    if-let [bindings then else]
+   
    (let [form (first bindings) tst (second bindings)]
      `(let [temp_ ~tst]
         (if temp_
@@ -148,7 +156,8 @@
      :examples '("(dotimes [n 3] (println (str \"n is \" n)))" ) }
 
    dotimes [bindings & body]
-    (let [i (first bindings) 
+   
+   (let [i (first bindings) 
           n (second bindings)] 
        `(let [k (long ~n)] 
            (loop [~i 0] 
@@ -166,7 +175,8 @@
                  |          (do (println (deref a)) (swap! a dec))))" ) } 
 
    while [test & body]
-    `(loop [] 
+   
+   `(loop [] 
         (when ~test 
             ~@body 
             (recur))))
@@ -180,7 +190,8 @@
                  |      (. :put :b 2))" ) }
 
    doto [x & forms]
-    (let [gx (gensym)] 
+   
+   (let [gx (gensym)] 
        `(let [~gx ~x] 
           ~@(map (fn [f] `(~(first f) ~gx ~@(rest f))) forms) 
           ~gx)))
@@ -201,7 +212,8 @@
                  |   (-> person :address :street)) " ) }
 
    -> [x & forms]
-    (loop [x x, forms forms]
+   
+   (loop [x x, forms forms]
         (if forms
             (let [form (first forms)
                   threaded (if (list? form)
@@ -222,7 +234,8 @@
                  |     (map inc)))) " ) }
 
    ->> [x & forms]
-    (loop [x x, forms forms]
+   
+   (loop [x x, forms forms]
         (if forms
             (let [form (first forms)
                   threaded (if (list? form)
@@ -241,11 +254,12 @@
                  |      (str/subs v 1)) ")}
 
    as-> [expr name & forms]
-        `(let [~name ~expr
-               ~@(interleave (repeat (count forms) name) (butlast forms))]
-              ~(if (empty? forms)
-                   name
-                   (last forms))))
+   
+   `(let [~name ~expr
+          ~@(interleave (repeat (count forms) name) (butlast forms))]
+       ~(if (empty? forms)
+            name
+            (last forms))))
 
 
 (defmacro 
@@ -258,15 +272,16 @@
                  "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
 
    list-comp [[binding coll-expr & bindings] body-expr]
-    (cond (not binding)
-        `(list ~body-expr)
+   
+   (cond (not binding)
+         `(list ~body-expr)
 
-        (== :when binding)
-        `(when ~coll-expr (list-comp ~bindings ~body-expr))
+         (== :when binding)
+         `(when ~coll-expr (list-comp ~bindings ~body-expr))
 
-        :else
-        `(mapcat (fn [~binding] (list-comp ~bindings ~body-expr))
-                 ~coll-expr)))
+         :else
+         `(mapcat (fn [~binding] (list-comp ~bindings ~body-expr))
+                  ~coll-expr)))
 
 
 (defmacro 
@@ -275,10 +290,11 @@
      :examples '("(time (println [100 200]))") }
 
    time [expr]
-    `(let [start_ (nano-time)
-           ret_ ~expr]
-         (println (str "Elapsed time: " (/ (- (nano-time) start_) 1000000) " msecs"))
-         ret_))
+   
+   `(let [start_ (nano-time)
+          ret_ ~expr]
+       (println (str "Elapsed time: " (/ (- (nano-time) start_) 1000000) " msecs"))
+       ret_))
          
          
 (defmacro
@@ -330,9 +346,9 @@
      :doc "Sets the directory for use with sh, see sh for details." 
      :examples '("(with-sh-dir \"/tmp\" (sh \"ls\" \"-l\"))") }
 
-  with-sh-dir [dir & forms]
+   with-sh-dir [dir & forms]
   
-  `(do
+   `(do
       (when-not (io/exists-dir? (io/file ~dir))
          (throw (. :com.github.jlangch.venice.ShellException 
                    :new 
@@ -347,9 +363,9 @@
      :doc "Sets the environment for use with sh, see sh for details."
      :examples '("(with-sh-env {\"NAME\" \"foo\"} (sh \"ls\" \"-l\"))") }
 
-  with-sh-env [env & forms]
+   with-sh-env [env & forms]
   
-  `(do
+   `(do
       (thread-local :*sh-env* ~env)
       (try
          (do ~@forms)
@@ -360,9 +376,9 @@
      :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
      :examples '("(with-sh-throw (sh \"ls\" \"-l\"))") }
 
-  with-sh-throw [& forms]
+   with-sh-throw [& forms]
   
-  `(do
+   `(do
       (thread-local :*sh-throw-ex* true)
       (try
          (do ~@forms)
@@ -373,12 +389,23 @@
      :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
      :examples '("(with-out-str (println \"a string\"))") }
 
-  with-out-str [& forms]
+   with-out-str [& forms]
   
-  `(do
+   `(do
       (binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
          (do ~@forms)
          (. *out* :getOutput))))
+
+
+(defmacro 
+   { :arglists '("(delay & body)")
+     :doc "Takes a body of expressions and yields a Delay object that will invoke the body only the first time it is forced (with force or deref/@), and will cache the result and return it on all subsequent force calls"
+     :examples '("(do\n   (def x (delay (println \"working...\") 100))\n   (deref x))") }
+
+   delay [& body]
+
+   `(. :com.github.jlangch.venice.impl.functions.Delay :new (fn [] (do ~@body))))
+
 
 (def
    { :arglists '("(print & xs)")

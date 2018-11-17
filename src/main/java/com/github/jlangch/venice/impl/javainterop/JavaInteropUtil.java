@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -67,7 +68,9 @@ public class JavaInteropUtil {
 			
 			final Object[] methodArgs = new Object[params.size()];
 			for(int ii=0; ii<params.size(); ii++) {
-				methodArgs[ii] = JavaInteropUtil.convertToJavaObject(params.nth(ii));
+				methodArgs[ii] = params.nth(ii) instanceof VncFunction
+									? params.nth(ii) 
+									: JavaInteropUtil.convertToJavaObject(params.nth(ii));
 			}
 			
 			if ("new".equals(methodName)) {			

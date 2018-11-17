@@ -30,13 +30,37 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class ConcurrencyFunctionsTest {
+
+	@Test
+	public void test_delay() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                \n" +
+				"   (def x (delay (println \"working...\") 100))    \n" +
+				"   (println \"start\")                             \n" +
+				"   (deref x)                                       \n" +
+				"   (deref x)                                       \n" +
+				"   (deref x)                                       \n" +
+				"   (println \"end\")                               \n" +
+				"   (deref x))                                     ";
+
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+
+		final Object result = venice.eval(script, Parameters.of("*out*", ps));
+		
+		assertEquals(Long.valueOf(100), result);
+		assertEquals("start\nworking...\nend\n", ps.getOutput());
+	}
 
 	@Test
 	public void test_promise() {

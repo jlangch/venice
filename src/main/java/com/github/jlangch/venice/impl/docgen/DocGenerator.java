@@ -672,6 +672,13 @@ public class DocGenerator {
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
 
+		final DocSection delay = new DocSection("Delay");
+		all.addSection(delay);
+		delay.addItem(getDocItem("delay"));
+		delay.addItem(getDocItem("delay?"));
+		delay.addItem(getDocItem("deref"));
+		delay.addItem(getDocItem("force"));
+
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);
 		thlocal.addItem(getDocItem("thread-local"));
