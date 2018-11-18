@@ -32,11 +32,13 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 public class TypesTest {
 
 	@Test
-	public void test_isVncJavaObject() {	
-		assertTrue(Types.isVncJavaObject(new VncJavaObject(Long.valueOf(100))));
-		assertTrue(Types.isVncJavaObject(new VncJavaObject(Long.valueOf(100)), Long.class));
-		assertTrue(Types.isVncJavaObject(new VncJavaObject(Long.valueOf(100)), Number.class));
-		assertTrue(Types.isVncJavaObject(new VncJavaObject(Long.valueOf(100)), Object.class));
-		assertFalse(Types.isVncJavaObject(new VncJavaObject(Long.valueOf(100)), Integer.class));
+	public void test_isVncJavaObject() {
+		final VncJavaObject javaObj = new VncJavaObject(Long.valueOf(100));
+		
+		assertTrue(Types.isVncJavaObject(javaObj));
+		assertTrue(Types.isVncJavaObject(javaObj, Long.class));
+		assertTrue(Types.isVncJavaObject(javaObj, Number.class));
+		assertTrue(Types.isVncJavaObject(javaObj, Object.class));
+		assertFalse(Types.isVncJavaObject(javaObj, Integer.class));
 	}
 }

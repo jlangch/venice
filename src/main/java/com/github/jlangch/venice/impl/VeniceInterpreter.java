@@ -273,38 +273,8 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 				}
 				
-				case "binding":  { // (binding [bindings*] exprs*)
-					env = new Env(env);
-	
-					final VncList bindings = Coerce.toVncList(ast.nth(1));
-					final VncList expressions = ast.slice(2);
-				
-					final List<Var> vars = new ArrayList<>();
-					for(int i=0; i<bindings.size(); i+=2) {
-						final VncVal sym = bindings.nth(i);
-						final VncVal val = EVAL(bindings.nth(i+1), env);
-	
-						Destructuring
-							.destructure(sym, val)
-							.forEach(b -> vars.add(new DynamicVar(b.sym, b.val)));
-					}
-						
-					final Env _env = env;
-					try {
-						vars.forEach(v -> _env.pushGlobalDynamic(v));
-						
-						if (expressions.isEmpty()) {
-							return Constants.Nil;
-						}
-						else {
-							eval_ast(expressions.slice(0, expressions.size()-1), env);
-							return ((VncList)eval_ast(new VncList(expressions.last()), env)).first();
-						}
-					}
-					finally {
-						vars.forEach(v -> _env.popGlobalDynamic(v.getName()));
-					}
-				}
+				case "binding":  // (binding [bindings*] exprs*)
+					return binding_(ast, new Env(env));
 					
 				case "loop": { // (loop [bindings*] exprs*)
 					env = new Env(env);					
@@ -576,6 +546,36 @@ public class VeniceInterpreter implements Serializable  {
 		return macroFn;
 	}
 	
+	private VncVal binding_(final VncList ast, final Env env) {
+		final VncList bindings = Coerce.toVncList(ast.nth(1));
+		final VncList expressions = ast.slice(2);
+	
+		final List<Var> vars = new ArrayList<>();
+		for(int i=0; i<bindings.size(); i+=2) {
+			final VncVal sym = bindings.nth(i);
+			final VncVal val = EVAL(bindings.nth(i+1), env);
+	
+			Destructuring
+				.destructure(sym, val)
+				.forEach(b -> vars.add(new DynamicVar(b.sym, b.val)));
+		}
+			
+		try {
+			vars.forEach(v -> env.pushGlobalDynamic(v));
+			
+			if (expressions.isEmpty()) {
+				return Constants.Nil;
+			}
+			else {
+				eval_ast(expressions.slice(0, expressions.size()-1), env);
+				return ((VncList)eval_ast(new VncList(expressions.last()), env)).first();
+			}
+		}
+		finally {
+			vars.forEach(v -> env.popGlobalDynamic(v.getName()));
+		}
+	}
+
 	private VncVal try_(final VncList ast, final Env env) {
 		VncVal result = Nil;
 
