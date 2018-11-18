@@ -17,7 +17,7 @@ public class FunctionsUtil {
 	public static void assertArity(
 			final String fnName, 
 			final VncList args, 
-			final int...expectedArities
+			final int... expectedArities
 	) {
 		final int arity = args.size();
 		for (int a : expectedArities) {
