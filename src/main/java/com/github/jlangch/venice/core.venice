@@ -353,10 +353,7 @@
          (throw (. :com.github.jlangch.venice.ShellException 
                    :new 
                    (str/format "The dir '%s' does not exist" ~dir))))     
-      (thread-local :*sh-dir* ~dir)
-      (try
-         (do ~@forms)
-         (finally (dissoc (thread-local) :*sh-dir*)))))
+      (binding [*sh-dir* ~dir] (do ~@forms))))
 
 (defmacro 
    { :arglists '("(with-sh-env env & forms)")
@@ -365,11 +362,7 @@
 
    with-sh-env [env & forms]
   
-   `(do
-      (thread-local :*sh-env* ~env)
-      (try
-         (do ~@forms)
-         (finally (dissoc (thread-local) :*sh-env*)))))
+   `(do (binding [*sh-env* ~env] (do ~@forms))))
 
 (defmacro 
    { :arglists '("(with-sh-throw forms)")
@@ -378,11 +371,7 @@
 
    with-sh-throw [& forms]
   
-   `(do
-      (thread-local :*sh-throw-ex* true)
-      (try
-         (do ~@forms)
-         (finally (dissoc (thread-local) :*sh-throw-ex*)))))
+   `(do (binding [*sh-throw-ex* true] (do ~@forms))))
 
 (defmacro 
    { :arglists '("(with-out-str & forms)")
@@ -404,7 +393,7 @@
 
    delay [& body]
 
-   `(. :com.github.jlangch.venice.impl.functions.Delay :new (fn [] (do ~@body))))
+   `(. :com.github.jlangch.venice.impl.util.Delay :new (fn [] (do ~@body))))
 
 
 (def

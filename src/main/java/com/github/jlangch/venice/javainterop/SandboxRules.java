@@ -387,7 +387,10 @@ public class SandboxRules {
 				// ValueException
 				"com.github.jlangch.venice.impl.ValueException:*",
 				"com.github.jlangch.venice.impl.types.collections.VncVector",
-				
+
+				"com.github.jlangch.venice.impl.util.Delay:*",
+				"com.github.jlangch.venice.impl.util.Agent:*",
+
 				// Venice dynamic proxies
 				"com.sun.proxy.$Proxy*:*",
 				
