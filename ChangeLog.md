@@ -15,7 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added dynamic (thread-local) binding. e.g: `(binding [x 100] (print x))`
 - added _with-out-str_ macro that returns the captured text from stdout.
 - added _delay_ macro that defers function evaluation.
-- added _io/file-parent_, _io/file-name_, _io/file-path_
+- added function _realized?_ for delays, futures, and promises
+- added functions _io/file-parent_, _io/file-name_, _io/file-path_
 
 ### fixed
 

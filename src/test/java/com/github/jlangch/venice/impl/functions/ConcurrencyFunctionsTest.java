@@ -63,6 +63,31 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_delay_realized_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                       \n" +
+				"   (def x (delay 100))    \n" +
+				"   (realized? x))           ";
+		
+		assertFalse((Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_delay_realized_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                       \n" +
+				"   (def x (delay 100))    \n" +
+				"   @x                     \n" +
+				"   (realized? x))           ";
+		
+		assertTrue((Boolean)venice.eval(script));
+	}
+
+	@Test
 	public void test_promise() {
 		final Venice venice = new Venice();
 

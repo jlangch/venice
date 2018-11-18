@@ -69,7 +69,7 @@ public class ConcurrencyFunctions {
 
 	public static VncFunction deref = new VncFunction("deref") {
 		{
-			setArgLists("(deref ref)", "(deref ref timeout-ms timeout-val)");
+			setArgLists("(deref x)", "(deref x timeout-ms timeout-val)");
 			
 			setDoc("Dereferences an atom or a Future object. When applied to an " + 
 					"atom, returns its current state. When applied to a future, " +
@@ -82,11 +82,11 @@ public class ConcurrencyFunctions {
 			
 			setExamples(
 					"(do                             \n" +
-					"   (def counter (atom 0))       \n" +
+					"   (def counter (atom 10))      \n" +
 					"   (deref counter))               ",
 
 					"(do                             \n" +
-					"   (def counter (atom 0))       \n" +
+					"   (def counter (atom 10))      \n" +
 					"   @counter)                      ",
 
 					"(do                             \n" +
@@ -104,10 +104,9 @@ public class ConcurrencyFunctions {
 					"   (let [f (future task)]       \n" +
 					"        (deref f 300 :timeout)))  ",
 
-					"(do                                            \n" +
-					"   (def my-delay                               \n" +
-					"        (delay (println \"working...\") 100))  \n" +
-					"   @my-delay)                                    ");
+					"(do                                              \n" +
+					"   (def x (delay (println \"working...\") 100))  \n" +
+					"   @x)                                             ");
 		}
 
 		public VncVal apply(final VncList args) {
@@ -153,6 +152,57 @@ public class ConcurrencyFunctions {
 			throw new VncException(String.format(
 					"Function 'deref' does not allow type %s as parameter.",
 					Types.getClassName(args.first())));
+		}
+	
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction realized_Q = new VncFunction("realized?") {
+		{
+			setArgLists("(realized? x)");
+			
+			setDoc("Returns true if a value has been produced for a promise, delay, or future.");
+			
+			
+			setExamples(
+					"(do                                \n" +
+					"   (def task (fn [] 100))          \n" +
+					"   (let [f (future task)]          \n" +
+					"        (println (realized? f))    \n" +
+					"        (println @f)               \n" +
+					"        (println (realized? f))))    ",
+
+					"(do                                \n" +
+					"   (def p (promise))               \n" +
+					"   (println (realized? p))         \n" +
+					"   (deliver p 123)                 \n" +
+					"   (println @p)                    \n" +
+					"   (println (realized? p)))          ",
+
+					"(do                                \n" +
+					"   (def x (delay 100))             \n" +
+					"   (println (realized? x))         \n" +
+					"   (println @x)                    \n" +
+					"   (println (realized? x)))          ");
+		}
+
+		public VncVal apply(final VncList args) {
+			assertArity("realized?", args, 1);
+			
+			if (Types.isVncJavaObject(args.first())) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Future) {
+					return ((Future<?>)delegate).isDone() ? True : False;
+				}
+				else if (delegate instanceof CompletableFuture) {
+					return ((CompletableFuture<?>)delegate).isDone() ? True : False;
+				}
+				else if (delegate instanceof Delay) {
+					return ((Delay)delegate).isRealized() ? True : False;
+				}
+			}
+			
+			return True;
 		}
 	
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -745,6 +795,7 @@ public class ConcurrencyFunctions {
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()		
 					.put("deref",	 			deref)
+					.put("realized?",	 		realized_Q)
 
 					.put("atom",				new_atom)
 					.put("atom?",				atom_Q)

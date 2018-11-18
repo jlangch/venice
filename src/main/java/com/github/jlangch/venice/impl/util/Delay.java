@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -35,7 +36,11 @@ public class Delay {
 	}
 	
 	public VncVal deref() {
-		return results.computeIfAbsent("result", k -> compute()).deref();
+		return results.computeIfAbsent(KEY, k -> compute()).deref();
+	}
+	
+	public boolean isRealized() {
+		return results.containsKey(KEY);
 	}
 	
 	private Result compute() {
@@ -46,7 +51,27 @@ public class Delay {
 			return new Result(null, ex);
 		}
 	}
-	
+
+	@Override 
+	public String toString() {
+		return toString(true);
+	}
+
+	public String toString(final boolean print_readably) {
+		if (isRealized()) {
+			try {
+				final VncVal val = deref();
+				return "(delay :value " + Printer._pr_str(val, print_readably) + ")";
+			}
+			catch(Exception ex) {
+				return "(delay :exception :" + ex.getClass().getName() + ")";
+			}
+		}
+		else {
+			return "(delay :not-realized)";
+		}
+	}
+
 	private static class Result {
 		public Result(final VncVal val, final RuntimeException ex) {
 			this.val = val;
@@ -65,6 +90,9 @@ public class Delay {
 		private final VncVal val;
 		private final RuntimeException ex;
 	}
+	
+	
+	private static final String KEY = "result";
 	
 	private final VncFunction fn;
 	private final ConcurrentHashMap<String,Result> results = new ConcurrentHashMap<>();

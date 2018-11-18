@@ -665,12 +665,14 @@ public class DocGenerator {
 		futures.addItem(getDocItem("future-cancel"));
 		futures.addItem(getDocItem("future-cancelled?"));
 		futures.addItem(getDocItem("deref"));
+		futures.addItem(getDocItem("realized?"));
 
 		final DocSection promises = new DocSection("Promises");
 		all.addSection(promises);
 		promises.addItem(getDocItem("promise"));
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
+		promises.addItem(getDocItem("realized?"));
 
 		final DocSection delay = new DocSection("Delay");
 		all.addSection(delay);
@@ -678,6 +680,7 @@ public class DocGenerator {
 		delay.addItem(getDocItem("delay?"));
 		delay.addItem(getDocItem("deref"));
 		delay.addItem(getDocItem("force"));
+		delay.addItem(getDocItem("realized?"));
 
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);
