@@ -341,6 +341,7 @@
    
    `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
 
+
 (defmacro 
    { :arglists '("(with-sh-dir dir & forms)")
      :doc "Sets the directory for use with sh, see sh for details." 
@@ -355,6 +356,7 @@
                    (str/format "The dir '%s' does not exist" ~dir))))     
       (binding [*sh-dir* ~dir] (do ~@forms))))
 
+
 (defmacro 
    { :arglists '("(with-sh-env env & forms)")
      :doc "Sets the environment for use with sh, see sh for details."
@@ -364,6 +366,7 @@
   
    `(do (binding [*sh-env* ~env] (do ~@forms))))
 
+
 (defmacro 
    { :arglists '("(with-sh-throw forms)")
      :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
@@ -372,6 +375,7 @@
    with-sh-throw [& forms]
   
    `(do (binding [*sh-throw-ex* true] (do ~@forms))))
+
 
 (defmacro 
    { :arglists '("(with-out-str & forms)")
