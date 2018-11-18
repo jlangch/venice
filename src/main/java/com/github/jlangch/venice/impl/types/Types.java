@@ -139,6 +139,12 @@ public class Types {
 		return val != null && (val instanceof VncJavaObject);
 	}
 
+	public static boolean isVncJavaObject(final VncVal val, final Class<?> type) {
+		return val != null 
+				&& (val instanceof VncJavaObject) 
+				&& type.isAssignableFrom(((VncJavaObject)val).getDelegate().getClass());
+	}
+
 	public static boolean isVncJavaList(final VncVal val) {
 		return val != null && (val instanceof VncJavaList);
 	}

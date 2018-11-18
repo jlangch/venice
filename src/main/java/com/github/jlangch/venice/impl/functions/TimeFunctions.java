@@ -132,9 +132,7 @@ public class TimeFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("time/date?", args, 1);
 	
-			final VncVal val = args.first();
-			return Types.isVncJavaObject(val) 
-					&& ((VncJavaObject)val).getDelegate() instanceof Date ? True : False;
+			return Types.isVncJavaObject(args.first(), Date.class) ? True : False;
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -232,9 +230,7 @@ public class TimeFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("time/local-date?", args, 1);
 			
-			final VncVal val = args.first();
-			return Types.isVncJavaObject(val) 
-					&& ((VncJavaObject)val).getDelegate() instanceof LocalDate ? True : False;
+			return Types.isVncJavaObject(args.first(), LocalDate.class) ? True : False;
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -384,9 +380,7 @@ public class TimeFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("time/local-date-time?", args, 1);
 			
-			final VncVal val = args.first();
-			return Types.isVncJavaObject(val) 
-					&& ((VncJavaObject)val).getDelegate() instanceof LocalDateTime ? True : False;
+			return Types.isVncJavaObject(args.first(), LocalDateTime.class) ? True : False;
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -563,8 +557,7 @@ public class TimeFunctions {
 			assertArity("time/zoned-date-time?", args, 1);
 			
 			final VncVal val = args.first();
-			return Types.isVncJavaObject(val) 
-					&& ((VncJavaObject)val).getDelegate() instanceof ZonedDateTime ? True : False;
+			return Types.isVncJavaObject(val, ZonedDateTime.class) ? True : False;
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -1817,11 +1810,8 @@ public class TimeFunctions {
 				default: return new Locale(e[0], e[1], e[2]);
 			}
 		}
-		else if (Types.isVncJavaObject(locale)) {
-			final Object obj = ((VncJavaObject)locale).getDelegate();
-			if (obj instanceof Locale) {
-				return (Locale)obj;
-			}
+		else if (Types.isVncJavaObject(locale, Locale.class)) {
+			return (Locale)((VncJavaObject)locale).getDelegate();
 		}
 		
 		throw new VncException(String.format(
@@ -1837,17 +1827,8 @@ public class TimeFunctions {
 		else if (Types.isVncString(fmt)) {
 			return DateTimeFormatter.ofPattern(((VncString)fmt).getValue());
 		}
-		else if (Types.isVncJavaObject(fmt)) {
-			final Object fmtObj = ((VncJavaObject)fmt).getDelegate();
-			if (fmtObj instanceof DateTimeFormatter) {
-				return (DateTimeFormatter)fmtObj;
-			}
-			else {
-				throw new VncException(String.format(
-						"Function 'time/format' does not allow %s as format parameter. %s", 
-						Types.getClassName(fmt),
-						ErrorMessage.buildErrLocation(fmt)));
-			}				
+		else if (Types.isVncJavaObject(fmt, DateTimeFormatter.class)) {
+			return (DateTimeFormatter)((VncJavaObject)fmt).getDelegate();
 		}
 		else {
 			throw new VncException(String.format(

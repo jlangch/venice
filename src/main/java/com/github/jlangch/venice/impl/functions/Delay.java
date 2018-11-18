@@ -35,10 +35,10 @@ public class Delay {
 	}
 	
 	public VncVal deref() {
-		return results.computeIfAbsent("result", k -> calculate()).deref();
+		return results.computeIfAbsent("result", k -> compute()).deref();
 	}
 	
-	private Result calculate() {
+	private Result compute() {
 		try {
 			return new Result(fn.apply(new VncList()), null);
 		}

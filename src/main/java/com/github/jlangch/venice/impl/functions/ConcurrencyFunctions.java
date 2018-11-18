@@ -356,9 +356,7 @@ public class ConcurrencyFunctions {
 
 			assertArity("promise?", args, 1);
 
-			return Types.isVncJavaObject(args.first())
-					&& (((VncJavaObject)args.first()).getDelegate() instanceof CompletableFuture)
-						? True : False;
+			return Types.isVncJavaObject(args.first(), CompletableFuture.class) ? True : False;
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -452,9 +450,7 @@ public class ConcurrencyFunctions {
 
 			assertArity("future?", args, 1);
 
-			return Types.isVncJavaObject(args.first())
-					&& (((VncJavaObject)args.first()).getDelegate() instanceof Future)
-						? True : False;
+			return Types.isVncJavaObject(args.first(), Future.class) ? True : False;
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -474,17 +470,14 @@ public class ConcurrencyFunctions {
 
 			assertArity("future-done?", args, 1);
 
-			if (Types.isVncJavaObject(args.first())) {
-				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
-				if (delegate instanceof Future) {
-					try {
-						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
-						return future.isDone() ? True : False;
-					}
-					catch(Exception ex) {
-						throw new VncException("Failed to check if future is done", ex);
-					}
+			if (Types.isVncJavaObject(args.first(), Future.class)) {
+				try {
+					@SuppressWarnings("unchecked")
+					final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+					return future.isDone() ? True : False;
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed to check if future is done", ex);
 				}
 			}
 
@@ -511,18 +504,15 @@ public class ConcurrencyFunctions {
 			assertArity("future-cancel", args, 1);
 
 
-			if (Types.isVncJavaObject(args.first())) {
-				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
-				if (delegate instanceof Future) {
-					try {
-						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
-						future.cancel(true);
-						return args.first();
-					}
-					catch(Exception ex) {
-						throw new VncException("Failed to cancel future", ex);
-					}
+			if (Types.isVncJavaObject(args.first(), Future.class)) {
+				try {
+					@SuppressWarnings("unchecked")
+					final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+					future.cancel(true);
+					return args.first();
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed to cancel future", ex);
 				}
 			}
 
@@ -549,17 +539,14 @@ public class ConcurrencyFunctions {
 
 			assertArity("future-cancelled?", args, 1);
 
-			if (Types.isVncJavaObject(args.first())) {
-				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
-				if (delegate instanceof Future) {
-					try {
-						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
-						return future.isCancelled() ? True : False;
-					}
-					catch(Exception ex) {
-						throw new VncException("Failed to check if future is cancelled", ex);
-					}
+			if (Types.isVncJavaObject(args.first(), Future.class)) {
+				try {
+					@SuppressWarnings("unchecked")
+					final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+					return future.isCancelled() ? True : False;
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed to check if future is cancelled", ex);
 				}
 			}
 
@@ -592,9 +579,7 @@ public class ConcurrencyFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("delay?", args, 1);
 
-			return Types.isVncJavaObject(args.first())
-					&& (((VncJavaObject)args.first()).getDelegate() instanceof Delay)
-						? True : False;
+			return Types.isVncJavaObject(args.first(), Delay.class) ? True : False;
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -615,9 +600,7 @@ public class ConcurrencyFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("force", args, 1);
 
-			if (Types.isVncJavaObject(args.first())
-					&& (((VncJavaObject)args.first()).getDelegate() instanceof Delay)
-			) {
+			if (Types.isVncJavaObject(args.first(), Delay.class)) {
 				final Delay delay = (Delay)((VncJavaObject)args.first()).getDelegate();
 				return delay.deref();
 			}

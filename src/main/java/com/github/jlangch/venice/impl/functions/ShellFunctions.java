@@ -209,7 +209,7 @@ public class ShellFunctions {
 					future_stdin = executor.submit(
 									() -> copyAndClose((VncByteBuffer)in, stdin));
 				}
-				else if (Types.isVncJavaObject(in) && ((VncJavaObject)in).getDelegate() instanceof File) {
+				else if (Types.isVncJavaObject(in, File.class)) {
 					future_stdin = executor.submit(
 									() -> copyAndClose((File)((VncJavaObject)in).getDelegate(), stdin));
 				}
@@ -277,11 +277,8 @@ public class ShellFunctions {
 		else if (Types.isVncString(dir)) {
 			return new File(((VncString)dir).getValue());
 		}
-		else if (Types.isVncJavaObject(dir)) {
-			final Object delegate = ((VncJavaObject)dir).getDelegate();
-			if (delegate instanceof File) {
-				return (File)delegate;
-			}
+		else if (Types.isVncJavaObject(dir, File.class)) {
+			return (File)((VncJavaObject)dir).getDelegate();
 		}
 	
 		return null;

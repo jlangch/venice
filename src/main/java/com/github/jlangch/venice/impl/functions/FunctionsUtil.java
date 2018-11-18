@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
@@ -39,7 +38,7 @@ public class FunctionsUtil {
 	}
 
 	public static boolean isJavaIoFile(final VncVal val) {
-		return (Types.isVncJavaObject(val) && ((VncJavaObject)val).getDelegate() instanceof File);
+		return Types.isVncJavaObject(val, File.class);
 	}
 
 	public static VncList removeNilValues(final VncList list) {
