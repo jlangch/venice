@@ -78,8 +78,7 @@ public class ConcurrencyFunctions {
 					"if the timeout (in milliseconds) is reached before a value " + 
 					"is available. \n" +
 					"Also reader macro: @atom/@future/@promise.");
-			
-			
+						
 			setExamples(
 					"(do                             \n" +
 					"   (def counter (atom 10))      \n" +
@@ -162,7 +161,6 @@ public class ConcurrencyFunctions {
 			setArgLists("(realized? x)");
 			
 			setDoc("Returns true if a value has been produced for a promise, delay, or future.");
-			
 			
 			setExamples(
 					"(do                                \n" +
@@ -329,8 +327,7 @@ public class ConcurrencyFunctions {
 			
 			setDoc("Delivers the supplied value to the promise, releasing any pending " + 
 				   "derefs. A subsequent call to deliver on a promise will have no effect.");
-			
-			
+						
 			setExamples(
 					"(do                   \n" +
 					"   (def p (promise))  \n" +
