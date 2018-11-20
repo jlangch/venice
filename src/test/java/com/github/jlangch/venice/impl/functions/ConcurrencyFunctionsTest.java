@@ -23,11 +23,13 @@ package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -106,6 +108,42 @@ public class ConcurrencyFunctionsTest {
 		final Object result = venice.eval(script);
 		
 		assertEquals(Long.valueOf(105), result);
+	}
+
+	@Test
+	@Disabled
+	public void test_agent_relay() {
+		final Venice venice = new Venice();
+
+		// Agents as message relay
+		
+		final String script = 
+				"(do                                                                 \n" +
+				"   (def logger (agent (list)))                                      \n" +
+				"                                                                    \n" +
+				"   (defn log [msg]                                                  \n" +
+				"      (send logger #(cons %2 %1) msg))                              \n" +
+				"                                                                    \n" +
+				"   (defn create-relay [n]                                           \n" +
+				"      (let [next-agent (fn [prev _] (agent prev))]                  \n" +
+				"         (reduce next-agent nil (range 0 n))))                      \n" +
+				"                                                                    \n" +
+				"   (defn relay [relay msg]                                          \n" +
+				"      (let [relay-msg (fn [next-actor hop msg]                      \n" +
+				"         (cond                                                      \n" +
+				"            (nil? next-actor) (log \"finished relay\")              \n" +
+				"                                                                    \n" +
+				"            :else (do                                               \n" +
+				"                     (log (list hop msg))                           \n" +
+				"                     (send next-actor relay-msg (+ hop 1) msg))))]  \n" +
+				"         (send relay relay-msg 0 msg)))                             \n" +
+				"                                                                    \n" +
+				"                                                                    \n" +
+				"   (relay (create-relay 10) \"hello\")                              \n" +
+				"   (sleep 5000)                                                     \n" +
+				"   (print @logger))                                                   ";
+
+		venice.eval(script);
 	}
 
 	@Test

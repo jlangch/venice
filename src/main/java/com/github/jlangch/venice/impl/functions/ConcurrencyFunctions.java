@@ -453,7 +453,7 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("send", args, 3);
+			assertMinArity("send", args, 2);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
 				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
