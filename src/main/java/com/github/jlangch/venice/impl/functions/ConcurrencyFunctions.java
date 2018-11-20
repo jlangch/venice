@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.Agent;
 import com.github.jlangch.venice.impl.util.Delay;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
@@ -146,6 +147,9 @@ public class ConcurrencyFunctions {
 				else if (delegate instanceof Delay) {
 					return ((Delay)delegate).deref();
 				}
+				else if (delegate instanceof Agent) {
+					return ((Agent)delegate).deref();
+				}
 			}
 
 			throw new VncException(String.format(
@@ -206,7 +210,96 @@ public class ConcurrencyFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+
+
+	///////////////////////////////////////////////////////////////////////////
+	// Watches
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction add_watch = new VncFunction("add-watch") {
+		{
+			setArgLists("(add-watch ref key fn)");
+			
+			setDoc( "Adds a watch function to an agent/atom reference. The watch fn must " + 
+					"be a fn of 4 args: a key, the reference, its old-state, its" + 
+					" new-state.");
+						
+			setExamples(
+					"(do                                      \n" +
+					"   (def x (agent 10))                    \n" +
+					"   (defn watcher [key ref old new]       \n" +
+					"         (println \"watcher: \" key))    \n" +
+					"   (add-watch x :test watcher))            ");
+		}
+
+		public VncVal apply(final VncList args) {
+			assertArity("add-watch", args, 3);
+			
+			final VncVal ref = args.nth(0);
+			final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
+			final VncFunction fn = Coerce.toVncFunction(args.nth(2));
+					
+			if (Types.isVncJavaObject(ref)) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Agent) {
+					((Agent)delegate).addWatch(key, fn);
+					return Nil;
+				}
+			}
+			else if (Types.isVncAtom(ref)) {
+				((VncAtom)ref).addWatch(key, fn);
+				return Nil;
+			}
+
+			throw new VncException(String.format(
+					"Function 'add-watch' does not allow type %s as ref.",
+					Types.getClassName(ref)));
+		}
 	
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction remove_watch = new VncFunction("remove-watch") {
+		{
+			setArgLists("(remove-watch ref key)");
+			
+			setDoc( "Removes a watch function from an agent/atom reference.");
+						
+			setExamples(
+					"(do                                      \n" +
+					"   (def x (agent 10))                    \n" +
+					"   (defn watcher [key ref old new]       \n" +
+					"         (println \"watcher: \" key))    \n" +
+					"   (add-watch x :test watcher)           \n" +
+					"   (remove-watch x :test))                 ");
+		}
+
+		public VncVal apply(final VncList args) {
+			assertArity("remove-watch", args, 2);
+			
+			final VncVal ref = args.nth(0);
+			final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
+					
+			if (Types.isVncJavaObject(ref)) {
+				final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				if (delegate instanceof Agent) {
+					((Agent)delegate).removeWatch(key);
+					return Nil;
+				}
+			}
+			else if (Types.isVncAtom(ref)) {
+				((VncAtom)ref).removeWatch(key);
+				return Nil;
+			}
+
+			throw new VncException(String.format(
+					"Function 'remove-watch' does not allow type %s as ref.",
+					Types.getClassName(ref)));
+		}
+	
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Atom
@@ -793,6 +886,9 @@ public class ConcurrencyFunctions {
 			new VncHashMap.Builder()		
 					.put("deref",	 			deref)
 					.put("realized?",	 		realized_Q)
+					
+					.put("add-watch",	 		add_watch)
+					.put("remove-watch",	 	remove_watch)
 
 					.put("atom",				new_atom)
 					.put("atom?",				atom_Q)

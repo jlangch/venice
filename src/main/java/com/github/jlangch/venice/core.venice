@@ -523,3 +523,39 @@
                   (swap! mem assoc args ret)
                   ret))))))
 
+
+(def 
+
+   { :arglists '("(agent state & options)")
+     :doc "Creates and returns an agent with an initial value of state and zero or more options" 
+     :examples '("(def x (agent 0)") }
+  
+  agent
+  
+  (fn agent [state & options]
+     (. :com.github.jlangch.venice.impl.util.Agent :new state options)))
+
+
+(def 
+
+  send
+  
+  (fn send [agent f & args]
+     (. agent :send f args)))
+
+
+(def 
+
+  send-off
+  
+  (fn send-off [agent f & args]
+     (. agent :send_off f args)))
+
+
+(def 
+
+  restart-agent
+  
+  (fn restart-agent [agent state]
+     (. agent :restart state)))
+     

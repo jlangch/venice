@@ -41,6 +41,74 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class ConcurrencyFunctionsTest {
 
 	@Test
+	public void test_agent() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (agent 100))       \n" +
+				"   (deref x))                  ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(100), result);
+	}
+
+	@Test
+	public void test_agent_send() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 \n" +
+				"   (defn increment [c n] (+ c n))   \n" +
+				"   (def x (agent 100))              \n" +
+				"   (send x increment 5)             \n" +
+				"   (sleep 100)                      \n" +
+				"   (deref x))                         ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(105), result);
+	}
+
+	@Test
+	public void test_agent_send_off() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 \n" +
+				"   (defn increment [c n] (+ c n))   \n" +
+				"   (def x (agent 100))              \n" +
+				"   (send-off x increment 5)         \n" +
+				"   (sleep 100)                      \n" +
+				"   (deref x))                         ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(105), result);
+	}
+
+	@Test
+	public void test_agent_watch() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                                     \n" +
+				"   (defn increment [c n] (+ c n))                                       \n" +
+				"   (defn watcher [key ref old new]                                      \n" +
+				"         (println \"watcher: \" key \", old:\" old \", new:\" new ))    \n" +
+				"   (def x (agent 100))                                                  \n" +
+				"   (add-watch x :test watcher)                                          \n" +
+				"   (send x increment 5)                                                 \n" +
+				"   (sleep 100)                                                          \n" +
+				"   (deref x))                                                             ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(105), result);
+	}
+
+	@Test
 	public void test_delay() {
 		final Venice venice = new Venice();
 

@@ -24,18 +24,134 @@ package com.github.jlangch.venice.impl.util;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.Types;
+import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class Agent {
 
-	public Agent() {
+	public Agent(final VncVal state, final VncList options) {
+		value.set(new Value(state == null ? Constants.Nil : state, null));
+		continueOnError = true;
+		//continueOnError = getErrorMode(options).equals(ERROR_MODE_CONTINUE);
+	}
+
+	public VncVal deref() {
+		return value.get().deref();
 	}
 	
+	public RuntimeException getError() {
+		return value.get().getException();
+	}
+
+	public void send(final VncFunction fn, final VncList args) {
+		sendExecutor.execute(() -> update(fn, args));
+	}
+
+	public void send_off(final VncFunction fn, final VncList args) {
+		sendOffExecutor.execute(() -> update(fn, args));
+	}
+
+	public void restart(final VncVal state) {
+		value.getAndUpdate(v -> v.ex == null ? v : new Value(state, null));
+	}
+	
+	public void addWatch(final VncKeyword name, final VncFunction fn) {
+		watchable.addWatch(name, fn);
+	}
+	
+	public void removeWatch(final VncKeyword name) {
+		watchable.removeWatch(name);
+	}
+
 	public static void shutdown(){
 		sendExecutor.shutdown();
 		sendOffExecutor.shutdown();
 	}
 
+	private static VncKeyword getErrorMode(final VncMap options) {
+		if (options == null) {
+			return ERROR_MODE_CONTINUE;
+		}
+		
+		final VncVal errMode = options.get(ERROR_MODE);
+		if (errMode == Constants.Nil || !Types.isVncKeyword(errMode)) {
+			return ERROR_MODE_CONTINUE;
+		}
+		else if (!Types.isVncKeyword(errMode)) {
+			return ERROR_MODE_CONTINUE;
+		}
+		else if (((VncKeyword)errMode).equals(ERROR_MODE_CONTINUE)) {
+			return ERROR_MODE_CONTINUE;
+		}
+		else if (((VncKeyword)errMode).equals(ERROR_MODE_FAIL)) {
+			return ERROR_MODE_FAIL;
+		}
+		else {
+			return ERROR_MODE_CONTINUE;
+		}
+	}
+	
+	private void update(final VncFunction fn, final VncList args) {
+		if (getError() == null || continueOnError) {
+			try {
+				final VncVal oldVal = value.get().val;
+				final VncList fnArgs = args.copy().addAtStart(value.get().val);
+				final VncVal newVal = fn.apply(fnArgs);
+				
+				value.set(new Value(newVal, null));
+				watchable.notifyWatches(new VncJavaObject(this), oldVal, newVal);
+			}
+			catch(RuntimeException ex) {
+				if (!continueOnError) {
+					value.set(new Value(null, ex));
+				}
+			}
+		}
+	}
+		
+	private static class Value {
+		public Value(final VncVal val, final RuntimeException ex) {
+			this.val = val;
+			this.ex = ex;
+		}
+		
+		public VncVal deref() {
+			if (val != null) {
+				return val;
+			}
+			else {
+				throw ex;
+			}
+		}
+		
+		public RuntimeException getException() {
+			return ex;
+		}
+
+		
+		private final VncVal val;
+		private final RuntimeException ex;
+	}
+	
+	
+	private final static VncKeyword ERROR_MODE = new VncKeyword("error-mode");
+	private final static VncKeyword ERROR_MODE_CONTINUE = new VncKeyword("continue");
+	private final static VncKeyword ERROR_MODE_FAIL = new VncKeyword("fail");
+	
+	private final AtomicReference<Value> value = new AtomicReference<>(new Value(Constants.Nil, null)); 
+	private final Watchable watchable = new Watchable();
+	
+	private final boolean continueOnError;
+	
 	
 	private final static AtomicLong sendThreadPoolCounter = new AtomicLong(0);
 

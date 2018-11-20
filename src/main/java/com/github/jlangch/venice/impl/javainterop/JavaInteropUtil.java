@@ -37,7 +37,6 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
-import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -51,6 +50,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.Agent;
+import com.github.jlangch.venice.impl.util.Delay;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
@@ -66,18 +67,17 @@ public class JavaInteropUtil {
 			
 			final String methodName = method.getValue();
 			
-			final Object[] methodArgs = new Object[params.size()];
-			for(int ii=0; ii<params.size(); ii++) {
-				methodArgs[ii] = params.nth(ii) instanceof VncFunction
-									? params.nth(ii) 
-									: JavaInteropUtil.convertToJavaObject(params.nth(ii));
-			}
 			
 			if ("new".equals(methodName)) {			
 				// call constructor (. :java.util.String :new \"abc\")
 				final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 				final Class<?> targetClass = ReflectionAccessor.classForName(className);
 				
+				// Delay & Agents exceptionally get the original Venice data types passed!
+				final Object[] methodArgs = isDelayOrAgentClass(className) 
+												? copyToJavaMethodArgs(params)
+												: convertToJavaMethodArgs(params);
+												
 				return JavaInteropUtil.convertToVncVal(
 						JavaInterop
 							.getInterceptor()
@@ -107,6 +107,12 @@ public class JavaInteropUtil {
 					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					final Class<?> targetClass = ReflectionAccessor.classForName(className);
 
+					
+					// Delay & Agents exceptionally get the original Venice data types passed!
+					final Object[] methodArgs = isDelayOrAgentClass(className) 
+													? copyToJavaMethodArgs(params)
+													: convertToJavaMethodArgs(params);
+
 					if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
 						// static method
 						return JavaInteropUtil.convertToVncVal(
@@ -134,6 +140,11 @@ public class JavaInteropUtil {
 					final Object target = arg0 instanceof VncJavaObject
 											? ((VncJavaObject)arg0).getDelegate()
 											: JavaInteropUtil.convertToJavaObject(arg0);
+											
+					// Delay & Agents exceptionally get the original Venice data types passed!
+					final Object[] methodArgs = isDelayOrAgentClass(target) 
+													? copyToJavaMethodArgs(params)
+													: convertToJavaMethodArgs(params);
 	
 					if (methodArgs.length > 0 || ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs)) {
 						// instance method
@@ -187,6 +198,22 @@ public class JavaInteropUtil {
 		}
 	}
 	
+	private static Object[] convertToJavaMethodArgs(final VncList params) {
+		final Object[] methodArgs = new Object[params.size()];
+		for(int ii=0; ii<params.size(); ii++) {
+			methodArgs[ii] = JavaInteropUtil.convertToJavaObject(params.nth(ii));
+		}
+		return methodArgs;
+	}
+
+	private static Object[] copyToJavaMethodArgs(final VncList params) {
+		final Object[] methodArgs = new Object[params.size()];
+		for(int ii=0; ii<params.size(); ii++) {
+			methodArgs[ii] = params.nth(ii);
+		}
+		return methodArgs;
+	}
+
 	public static Object convertToJavaObject(final VncVal value) {
 		if (value instanceof VncConstant) {
 			if (((VncConstant)value) == Constants.Nil) {
@@ -331,5 +358,12 @@ public class JavaInteropUtil {
 			return new VncJavaObject(value);
 		}
 	}
+
+	private static boolean isDelayOrAgentClass(final String className) {
+		return (className.equals(Delay.class.getName()) || className.equals(Agent.class.getName()));
+	}
 	
+	private static boolean isDelayOrAgentClass(final Object target) {
+		return target instanceof Delay || target instanceof Agent;
+	}
 }

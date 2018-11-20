@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.Watchable;
 
 
 public class VncAtom extends VncVal {
@@ -53,29 +54,40 @@ public class VncAtom extends VncVal {
 	
 	public VncVal swap(final VncFunction fn, final VncList args) {
 		for(;;) {
-			final VncVal oldValue = deref();
+			final VncVal oldVal = deref();
 			
-			final VncList new_args = new VncList();
+			final VncList new_args = new VncList(oldVal);
 			new_args.getList().addAll(args.getList());
-			new_args.getList().add(0, oldValue);
-			final VncVal newValue = fn.apply(new_args);
+			final VncVal newVal = fn.apply(new_args);
 			
-			if (state.compareAndSet(oldValue, newValue)) {
+			if (state.compareAndSet(oldVal, newVal)) {
+				watchable.notifyWatches(this, oldVal, newVal);
 				return state.get();
 			}
 		}
 	}
 	
-	public VncVal compare_and_set(final VncVal expectValue, final VncVal newValue) {
-		final VncVal oldValue = deref();
-		if (oldValue.equals(expectValue)) {			
-			return state.compareAndSet(oldValue, newValue) ? True : False;
+	public VncVal compare_and_set(final VncVal expectValue, final VncVal newVal) {
+		final VncVal oldVal = deref();
+		if (oldVal.equals(expectValue)) {			
+			final boolean successful = state.compareAndSet(oldVal, newVal);			
+			if (successful) {
+				watchable.notifyWatches(this, oldVal, newVal);
+			}			
+			return successful ? True : False;
 		}
 		else {
 			return False;
 		}
 	}
 	
+	public void addWatch(final VncKeyword name, final VncFunction fn) {
+		watchable.addWatch(name, fn);
+	}
+	
+	public void removeWatch(final VncKeyword name) {
+		watchable.removeWatch(name);
+	}
 	
 	@Override 
 	public String toString() {
@@ -87,7 +99,9 @@ public class VncAtom extends VncVal {
 	}
 	
 	
+	
     private static final long serialVersionUID = -1848883965231344442L;
 	
 	private final AtomicReference<VncVal> state = new AtomicReference<>();
+	private final Watchable watchable = new Watchable();
 }

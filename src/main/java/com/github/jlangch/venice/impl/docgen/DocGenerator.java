@@ -656,6 +656,8 @@ public class DocGenerator {
 		atoms.addItem(getDocItem("reset!"));
 		atoms.addItem(getDocItem("swap!"));
 		atoms.addItem(getDocItem("compare-and-set!"));
+		atoms.addItem(getDocItem("add-watch"));
+		atoms.addItem(getDocItem("remove-watch"));
 
 		final DocSection futures = new DocSection("Futures");
 		all.addSection(futures);

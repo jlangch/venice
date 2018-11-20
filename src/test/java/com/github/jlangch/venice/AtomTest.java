@@ -155,4 +155,23 @@ public class AtomTest {
 	
 		assertEquals("0", venice.eval("(str " + s + ")"));
 	}
+
+	@Test
+	public void test_watch() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                                     \n" +
+				"   (def counter (atom 2))                                               \n" +
+				"   (defn watcher [key ref old new]                                      \n" +
+				"         (println \"watcher: \" key \", old:\" old \", new:\" new ))    \n" +
+				"   (add-watch counter :test watcher)                                    \n" +
+				"	(swap! counter (fn [n] (+ n 1)))                                     \n" +
+				"   (deref counter)                                                      \n" +
+				")                                                                         ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(3), result);
+	}
 }
