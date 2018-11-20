@@ -477,6 +477,29 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_fn_local() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (let [sum (fn [x y] (+ x y))]       \n" +
+				"      (sum 4 5)))                      ";
+
+		assertEquals(Long.valueOf(9), venice.eval(script));
+	}
+
+	@Test
+	public void test_fn_local_error() {
+		final String script = 
+				"(do                                    \n" +
+				"   (let [sum (fn [x y] (+ x y))]       \n" +
+				"      (sum 4 5))                       \n" +
+				"   (sum 1 2))                            ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
 	public void test_let() {
 		final Venice venice = new Venice();
 		

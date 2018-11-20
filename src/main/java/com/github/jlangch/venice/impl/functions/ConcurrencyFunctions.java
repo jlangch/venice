@@ -409,6 +409,139 @@ public class ConcurrencyFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	
+
+	///////////////////////////////////////////////////////////////////////////
+	// Agents
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction agent = new VncFunction("agent") {
+		{
+			setArgLists("(agent state options)");
+			
+			setDoc("Creates and returns an agent with an initial value of state and zero or more options");
+			
+			setExamples(
+					"(do                                 \n" +
+					"   (def x (agent 100))              \n" +
+					"   (send x increment 5)             \n" +
+					"   (sleep 100)                      \n" +
+					"   (deref x))                         ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("agent", args, 1);
+				
+			return new VncJavaObject(new Agent(args.nth(0), args.slice(1)));
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+			  
+	public static VncFunction send = new VncFunction("send") {
+		{
+			setArgLists("(send agent fn args)");
+			
+			setDoc( "TODO");
+			
+			setExamples(
+					"(do                                 \n" +
+					"   (def x (agent 100))              \n" +
+					"   (send x increment 5)             \n" +
+					"   (sleep 100)                      \n" +
+					"   (deref x))                         ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("send", args, 3);
+			
+			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
+				final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
+				final VncList fnArgs = args.slice(2);		
+				
+				agent.send(fn, fnArgs);
+				return Nil;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'send' does not allow type %s as agent parameter",
+						Types.getClassName(args.nth(0))));
+			}
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction send_off = new VncFunction("send-off") {
+		{
+			setArgLists("(send-off agent fn args)");
+			
+			setDoc( "TODO");
+			
+			setExamples(
+					"(do                                 \n" +
+					"   (def x (agent 100))              \n" +
+					"   (send-off x increment 5)         \n" +
+					"   (sleep 100)                      \n" +
+					"   (deref x))                         ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("send-off", args, 3);
+			
+			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
+				final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
+				final VncList fnArgs = args.slice(2);		
+				
+				agent.send_off(fn, fnArgs);
+				return Nil;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'send-off' does not allow type %s as agent parameter",
+						Types.getClassName(args.nth(0))));
+			}
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction restart_agent = new VncFunction("restart-agent") {
+		{
+			setArgLists("(restart-agent agent state)");
+			
+			setDoc( "TODO");
+			
+			setExamples(
+					"(do                                 \n" +
+					"   (def x (agent 100))              \n" +
+					"   (restart-agent x 200)            \n" +
+					"   (deref x))                         ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("restart-agent", args, 2);
+			
+			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
+				final VncVal state = args.nth(1);		
+				
+				agent.restart(state);
+				return Nil;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'restart-agent' does not allow type %s as agent parameter",
+						Types.getClassName(args.nth(0))));
+			}
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	
 
 	///////////////////////////////////////////////////////////////////////////
 	// Promises
@@ -895,7 +1028,12 @@ public class ConcurrencyFunctions {
 					.put("reset!",				reset_BANG)
 					.put("swap!",				swap_BANG)
 					.put("compare-and-set!", 	compare_and_set_BANG)
-
+					
+					.put("agent", 				agent)
+					.put("send",				send)
+					.put("send-off",			send_off)
+					.put("restart-agent",		restart_agent)
+					
 					.put("promise",				promise)
 					.put("promise?",			promise_Q)
 					.put("deliver",				deliver)
