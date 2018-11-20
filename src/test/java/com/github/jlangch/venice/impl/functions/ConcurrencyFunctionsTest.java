@@ -118,30 +118,30 @@ public class ConcurrencyFunctionsTest {
 		// Agents as message relay
 		
 		final String script = 
-				"(do                                                                 \n" +
-				"   (def logger (agent (list)))                                      \n" +
-				"                                                                    \n" +
-				"   (defn log [msg]                                                  \n" +
-				"      (send logger #(cons %2 %1) msg))                              \n" +
-				"                                                                    \n" +
-				"   (defn create-relay [n]                                           \n" +
-				"      (let [next-agent (fn [prev _] (agent prev))]                  \n" +
-				"         (reduce next-agent nil (range 0 n))))                      \n" +
-				"                                                                    \n" +
-				"   (defn relay [relay msg]                                          \n" +
-				"      (let [relay-msg (fn [next-actor hop msg]                      \n" +
-				"         (cond                                                      \n" +
-				"            (nil? next-actor) (log \"finished relay\")              \n" +
-				"                                                                    \n" +
-				"            :else (do                                               \n" +
-				"                     (log (list hop msg))                           \n" +
-				"                     (send next-actor relay-msg (+ hop 1) msg))))]  \n" +
-				"         (send relay relay-msg 0 msg)))                             \n" +
-				"                                                                    \n" +
-				"                                                                    \n" +
-				"   (relay (create-relay 10) \"hello\")                              \n" +
-				"   (sleep 5000)                                                     \n" +
-				"   (print @logger))                                                   ";
+				"(do                                                                                  \n" +
+				"   (def logger (agent (list)))                                                       \n" +
+				"                                                                                     \n" +
+				"   (defn log [msg]                                                                   \n" +
+				"      (send logger #(cons %2 %1) msg))                                               \n" +
+				"                                                                                     \n" +
+				"   (defn create-relay [n]                                                            \n" +
+				"      (let [next-agent (fn [prev _] (agent prev))]                                   \n" +
+				"         (reduce next-agent nil (range 0 n))))                                       \n" +
+				"                                                                                     \n" +
+				"   (defn relay [relay msg]                                                           \n" +
+				"      (let [relay-msg (fn [next-actor hop msg]                                       \n" +
+				"                          (cond                                                      \n" +
+				"                             (nil? next-actor) (log \"finished relay\")              \n" +
+				"                                                                                     \n" +
+				"                             :else (do                                               \n" +
+				"                                      (log (list hop msg))                           \n" +
+				"                                      (send next-actor relay-msg (+ hop 1) msg))))]  \n" +
+				"         (send relay relay-msg 0 msg)))                                              \n" +
+				"                                                                                     \n" +
+				"                                                                                     \n" +
+				"   (relay (create-relay 10) \"hello\")                                               \n" +
+				"   (sleep 5000)                                                                      \n" +
+				"   (print @logger))                                                                    ";
 
 		venice.eval(script);
 	}
