@@ -111,7 +111,7 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
-	//@Disabled
+	@Disabled
 	public void test_agent_relay() {
 		final Venice venice = new Venice();
 
@@ -133,7 +133,7 @@ public class ConcurrencyFunctionsTest {
 				"                            (do                                             \n" +
 				"                               (log (list hop msg))                         \n" +
 				"                               (send next-actor relay-fn (inc hop) msg)     \n" +
-				"                               @actor)                                      \n" +
+				"                               @next-actor)                                 \n" +
 				"                            (log \"finished relay\") ))]                    \n" +
 				"         (send relay relay-fn 0 msg)))                                      \n" +
 				"                                                                            \n" +
