@@ -384,7 +384,7 @@ public class ConcurrencyFunctions {
 			return atm.swap(fn, swapArgs);
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction compare_and_set_BANG = new VncFunction("compare-and-set!") {
@@ -406,7 +406,7 @@ public class ConcurrencyFunctions {
 			return atm.compare_and_set(args.nth(1), args.nth(2));
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -435,7 +435,7 @@ public class ConcurrencyFunctions {
 			return new VncJavaObject(new Agent(args.nth(0), args.slice(1)));
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 			  
 	public static VncFunction send = new VncFunction("send") {
@@ -456,7 +456,7 @@ public class ConcurrencyFunctions {
 			assertMinArity("send", args, 2);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
 				final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
 				final VncList fnArgs = args.slice(2);		
 				
@@ -470,7 +470,7 @@ public class ConcurrencyFunctions {
 			}
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction send_off = new VncFunction("send-off") {
@@ -491,7 +491,7 @@ public class ConcurrencyFunctions {
 			assertArity("send-off", args, 3);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
 				final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
 				final VncList fnArgs = args.slice(2);		
 				
@@ -505,7 +505,7 @@ public class ConcurrencyFunctions {
 			}
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction restart_agent = new VncFunction("restart-agent") {
@@ -525,7 +525,7 @@ public class ConcurrencyFunctions {
 			assertArity("restart-agent", args, 2);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();		
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
 				final VncVal state = args.nth(1);		
 				
 				agent.restart(state);
@@ -539,6 +539,74 @@ public class ConcurrencyFunctions {
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction set_error_handler = new VncFunction("set-error-handler!") {
+		{
+			setArgLists("(set-error-handler! agent)");
+			
+			setDoc( "TODO");
+			
+			setExamples(
+					"(do                                          \n" +
+					"   (def x (agent 100))                       \n" +
+					"   (defn err-handler-fn [ag ex]              \n" +
+					"      (println \"error occured: \"           \n" +
+					"               (:message ex)                 \n" +
+					"               \" and we still have value\"  \n" +
+					"               @ag))                         \n" +
+					"   (set-error-handler! x err-handler-fn)     \n" +
+					"   (send x (fn [n] (/ n 0))))                  ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("set-error-handler!", args, 2);
+			
+			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				agent.setErrorHandler(Coerce.toVncFunction(args.nth(1)));
+				return Nil;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'set-error-handler!' does not allow type %s as agent parameter",
+						Types.getClassName(args.nth(0))));
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction agent_error = new VncFunction("agent-error") {
+		{
+			setArgLists("(agent-error agent)");
+			
+			setDoc( "TODO");
+			
+			setExamples(
+					"(do                                              \n" +
+					"   (def x (agent 100 :error-mode :fail))         \n" +
+					"   (send x (fn [n] (/ n 0)))                     \n" +
+					"   (sleep 500)                                   \n" +
+					"   (agent-error x))                                ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("agent-error", args, 1);
+			
+			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				final RuntimeException ex = agent.getError();
+				return ex == null ? Nil : new VncJavaObject(ex);
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'agent-error' does not allow type %s as agent parameter",
+						Types.getClassName(args.nth(0))));
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -580,7 +648,7 @@ public class ConcurrencyFunctions {
 			}
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction promise = new VncFunction("promise") {
@@ -633,7 +701,7 @@ public class ConcurrencyFunctions {
 			return Types.isVncJavaObject(args.first(), CompletableFuture.class) ? True : False;
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -707,7 +775,7 @@ public class ConcurrencyFunctions {
 			return new VncJavaObject(future);
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_Q = new VncFunction("future?") {
@@ -727,7 +795,7 @@ public class ConcurrencyFunctions {
 			return Types.isVncJavaObject(args.first(), Future.class) ? True : False;
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_done_Q = new VncFunction("future-done?") {
@@ -760,7 +828,7 @@ public class ConcurrencyFunctions {
 					Types.getClassName(args.first())));
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_cancel = new VncFunction("future-cancel") {
@@ -795,7 +863,7 @@ public class ConcurrencyFunctions {
 					Types.getClassName(args.first())));
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction future_cancelled_Q = new VncFunction("future-cancelled?") {
@@ -829,7 +897,7 @@ public class ConcurrencyFunctions {
 					Types.getClassName(args.first())));
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -856,7 +924,7 @@ public class ConcurrencyFunctions {
 			return Types.isVncJavaObject(args.first(), Delay.class) ? True : False;
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction force = new VncFunction("force") {
@@ -883,7 +951,7 @@ public class ConcurrencyFunctions {
 			}
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -918,7 +986,7 @@ public class ConcurrencyFunctions {
 			}
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction thread_local_Q = new VncFunction("thread-local?") {
@@ -936,7 +1004,7 @@ public class ConcurrencyFunctions {
 			return Types.isVncThreadLocal(args.nth(0)) ? True : False;
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction thread_local_clear = new VncFunction("thread-local-clear") {
@@ -954,7 +1022,7 @@ public class ConcurrencyFunctions {
 			return this;
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 
@@ -982,7 +1050,7 @@ public class ConcurrencyFunctions {
 			return new VncLong(Thread.currentThread().getId());
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	public static VncFunction thread_name = new VncFunction("thread-name") {
@@ -999,7 +1067,7 @@ public class ConcurrencyFunctions {
 			return new VncString(Thread.currentThread().getName());
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
 	
@@ -1033,6 +1101,9 @@ public class ConcurrencyFunctions {
 					.put("send",				send)
 					.put("send-off",			send_off)
 					.put("restart-agent",		restart_agent)
+					.put("set-error-handler!",	set_error_handler)
+					.put("agent-error",			agent_error)
+					
 					
 					.put("promise",				promise)
 					.put("promise?",			promise_Q)

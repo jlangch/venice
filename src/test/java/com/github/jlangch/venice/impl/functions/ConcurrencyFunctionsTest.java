@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -111,7 +110,6 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_agent_relay() {
 		final Venice venice = new Venice();
 
@@ -137,11 +135,61 @@ public class ConcurrencyFunctionsTest {
 				"                            (log \"finished relay\") ))]                    \n" +
 				"         (send relay relay-fn 0 msg)))                                      \n" +
 				"                                                                            \n" +
-				"   (process (create-relay 10) \"hello\")                                    \n" +
+				"   (process (create-relay 5) \"hello\")                                     \n" +
 				"   (sleep 500)                                                              \n" +
-				"   (println @logger))                                                         ";
+				"   (with-out-str (print @logger)))                                            ";
 
-		venice.eval(script);
+		assertEquals(
+				"(finished relay (3 hello) (2 hello) (1 hello) (0 hello))", 
+				venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_error_1() {
+		final Venice venice = new Venice();
+
+		// Agents as message relay
+		
+		final String script = 
+				"(do                                              \n" +
+				"   (def logger (agent (list)))                   \n" +
+				"                                                 \n" +
+				"   (defn log [msg]                               \n" +
+				"      (send logger #(cons %2 %1) msg))           \n" +
+				"                                                 \n" +
+				"   (def x (agent 100))                           \n" +
+				"                                                 \n" +
+				"   (defn err-handler-fn [ag ex]                  \n" +
+				"      (log (str \"error occured: \"              \n" +
+				"                (:message ex)                    \n" +
+				"                \" and we still have value \"    \n" +
+				"                @ag)))                           \n" +
+				"                                                 \n" +
+				"   (set-error-handler! x err-handler-fn)         \n" +
+				"   (send x (fn [x] (/ x 0)))                     \n" +
+				"   (sleep 500)                                   \n" +
+				"   (with-out-str (print @logger)))                 ";
+
+		assertEquals(
+				"(error occured: / by zero and we still have value 100)", 
+				venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_error_2() {
+		final Venice venice = new Venice();
+
+		// Agents as message relay
+		
+		final String script = 
+				"(do                                              \n" +
+				"   (def x (agent 100 :error-mode :fail))         \n" +
+				"                                                 \n" +
+				"   (send x (fn [x] (/ x 0)))                     \n" +
+				"   (sleep 500)                                   \n" +
+				"   (:message (agent-error x)))                     ";
+
+		assertEquals("/ by zero", venice.eval(script));
 	}
 
 	@Test
