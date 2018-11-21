@@ -89,6 +89,25 @@ public class SystemFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+
+	public static VncFunction objid = new VncFunction("oobjid") {
+		{
+			setArgLists("(objid)");
+			
+			setDoc("Returns the original unique hash code for the given object.");
+			
+			setExamples("(objid x)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("objid", args, 1);
+			return new VncLong(System.identityHashCode(args.first()));
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	
 	public static VncFunction current_time_millis = new VncFunction("current-time-millis") {
 		{
 			setArgLists("(current-time-millis)");
@@ -303,6 +322,7 @@ public class SystemFunctions {
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
 					.put("uuid",				uuid)
+					.put("objid",				objid)
 					.put("current-time-millis",	current_time_millis)
 					.put("nano-time",			nano_time)
 					.put("sandboxed?",			sandboxed_Q)

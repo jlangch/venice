@@ -26,12 +26,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncJavaObject;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
@@ -70,6 +71,21 @@ public class Agent {
 	
 	public void removeWatch(final VncKeyword name) {
 		watchable.removeWatch(name);
+	}
+
+	@Override 
+	public String toString() {
+		return toString(true);
+	}
+
+	public String toString(final boolean print_readably) {
+		final Value v = value.get();
+		if (v.val != null) {
+			return "(agent :value " + Printer._pr_str(v.val, print_readably) + ")";
+		}
+		else {
+			return "(agent :error " + v.ex.getClass().getName() + ")";
+		}
 	}
 
 	public static void shutdown(){
@@ -128,9 +144,8 @@ public class Agent {
 			if (val != null) {
 				return val;
 			}
-			else {
-				throw ex;
-			}
+			
+			throw ex;
 		}
 		
 		public RuntimeException getException() {
