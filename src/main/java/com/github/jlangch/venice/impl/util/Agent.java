@@ -70,7 +70,7 @@ public class Agent {
 	}
 
 	public void restart(final VncVal state) {
-		value.getAndUpdate(v -> v.ex == null ? v : new Value(state, null));
+		value.set(new Value(state, null));
 	}
 	
 	public void addWatch(final VncKeyword name, final VncFunction fn) {

@@ -426,6 +426,7 @@ public class ConcurrencyFunctions {
 			
 			setExamples(
 					"(do                                 \n" +
+					"   (defn increment [c n] (+ c n))   \n" +
 					"   (def x (agent 100))              \n" +
 					"   (send x increment 5)             \n" +
 					"   (sleep 100)                      \n" +
@@ -449,6 +450,7 @@ public class ConcurrencyFunctions {
 			
 			setExamples(
 					"(do                                 \n" +
+					"   (defn increment [c n] (+ c n))   \n" +
 					"   (def x (agent 100))              \n" +
 					"   (send x increment 5)             \n" +
 					"   (sleep 100)                      \n" +
@@ -484,6 +486,7 @@ public class ConcurrencyFunctions {
 			
 			setExamples(
 					"(do                                 \n" +
+					"   (defn increment [c n] (+ c n))   \n" +
 					"   (def x (agent 100))              \n" +
 					"   (send-off x increment 5)         \n" +
 					"   (sleep 100)                      \n" +
@@ -619,9 +622,10 @@ public class ConcurrencyFunctions {
 			setDoc( "TODO");
 			
 			setExamples(
-					"(do                                              \n" +
-					"   (def x (list (agent 100) (agent 100)))        \n" +
-					"   (await-for 500 x))                              ");
+					"(do                           \n" +
+					"   (def x1 (agent 100))       \n" +
+					"   (def x2 (agent 100))       \n" +
+					"   (await-for 500 x1 x2))       ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -1157,8 +1161,7 @@ public class ConcurrencyFunctions {
 					.put("set-error-handler!",	set_error_handler)
 					.put("agent-error",			agent_error)
 					.put("await-for",			await_for)
-					
-					
+										
 					.put("promise",				promise)
 					.put("promise?",			promise_Q)
 					.put("deliver",				deliver)

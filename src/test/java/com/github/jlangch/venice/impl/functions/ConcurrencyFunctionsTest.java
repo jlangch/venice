@@ -56,6 +56,21 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_agent_restart() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 \n" +
+				"   (def x (agent 100))              \n" +
+				"   (restart-agent x 200)            \n" +
+				"   (deref x))                         ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(200), result);
+	}
+
+	@Test
 	public void test_agent_send() {
 		final Venice venice = new Venice();
 

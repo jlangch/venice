@@ -684,6 +684,16 @@ public class DocGenerator {
 		delay.addItem(getDocItem("force"));
 		delay.addItem(getDocItem("realized?"));
 
+		final DocSection agents = new DocSection("Agents");
+		all.addSection(agents);
+		agents.addItem(getDocItem("agent"));
+		agents.addItem(getDocItem("send"));
+		agents.addItem(getDocItem("send-off"));
+		agents.addItem(getDocItem("restart-agent"));
+		agents.addItem(getDocItem("set-error-handler!"));
+		agents.addItem(getDocItem("agent-error"));
+		agents.addItem(getDocItem("await-for"));
+		
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);
 		thlocal.addItem(getDocItem("thread-local"));
