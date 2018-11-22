@@ -422,7 +422,14 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(agent state options)");
 			
-			setDoc("Creates and returns an agent with an initial value of state and zero or more options");
+			setDoc(
+					"Creates and returns an agent with an initial value of state and " +
+					"zero or more options. \n" +
+					"  :error-handler handler-fn \n" +
+					"  :error-mode mode-keyword \n" +
+					"The handler-fn is called if an action throws an exception. It's a" +
+					"function taking two args the agent and the exception. The " +
+					"mode-keyword may be either :continue (the default) or :fail");
 			
 			setExamples(
 					"(do                                 \n" +
@@ -444,9 +451,11 @@ public class ConcurrencyFunctions {
 			  
 	public static VncFunction send = new VncFunction("send") {
 		{
-			setArgLists("(send agent fn args)");
+			setArgLists("(send agent action-fn args)");
 			
-			setDoc( "TODO");
+			setDoc( "Dispatch an action to an agent. Returns the agent immediately." +
+					"The state of the agent will be set to the value of:\n" + 
+					" (apply action-fn state-of-agent args)");
 			
 			setExamples(
 					"(do                                 \n" +
@@ -466,7 +475,7 @@ public class ConcurrencyFunctions {
 				final VncList fnArgs = args.slice(2);		
 				
 				agent.send(fn, fnArgs);
-				return Nil;
+				return args.nth(0);
 			}
 			else {
 				throw new VncException(String.format(
@@ -482,7 +491,10 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(send-off agent fn args)");
 			
-			setDoc( "TODO");
+			setDoc( "Dispatch a potentially blocking action to an agent. Returns " +
+					"the agent immediately. The state of the agent will be set to " +
+					"the value of:\n" + 
+					" (apply action-fn state-of-agent args)");
 			
 			setExamples(
 					"(do                                 \n" +
@@ -502,7 +514,7 @@ public class ConcurrencyFunctions {
 				final VncList fnArgs = args.slice(2);		
 				
 				agent.send_off(fn, fnArgs);
-				return Nil;
+				return args.nth(0);
 			}
 			else {
 				throw new VncException(String.format(
@@ -535,7 +547,7 @@ public class ConcurrencyFunctions {
 				final VncVal state = args.nth(1);		
 				
 				agent.restart(state);
-				return Nil;
+				return args.nth(0);
 			}
 			else {
 				throw new VncException(String.format(
@@ -571,7 +583,7 @@ public class ConcurrencyFunctions {
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
 				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
 				agent.setErrorHandler(Coerce.toVncFunction(args.nth(1)));
-				return Nil;
+				return args.nth(0);
 			}
 			else {
 				throw new VncException(String.format(
