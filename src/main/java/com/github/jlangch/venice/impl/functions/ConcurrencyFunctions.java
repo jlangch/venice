@@ -530,7 +530,8 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(restart-agent agent state)");
 			
-			setDoc( "TODO");
+			setDoc( "When an agent is failed, changes the agent state to new-state and " + 
+					"then un-fails the agent so that sends are allowed again.");
 			
 			setExamples(
 					"(do                                 \n" +
@@ -561,9 +562,11 @@ public class ConcurrencyFunctions {
 
 	public static VncFunction set_error_handler = new VncFunction("set-error-handler!") {
 		{
-			setArgLists("(set-error-handler! agent)");
+			setArgLists("(set-error-handler! agent handler-fn)");
 			
-			setDoc( "TODO");
+			setDoc( "Sets the error-handler of an agent to handler-fn. If an action " + 
+					"being run by the agent throws an exception handler-fn will be " +
+					"called with two arguments: the agent and the exception.");
 			
 			setExamples(
 					"(do                                          \n" +
@@ -599,7 +602,9 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(agent-error agent)");
 			
-			setDoc( "TODO");
+			setDoc( "Returns the exception thrown during an asynchronous action of the " + 
+					"agent if the agent is failed. Returns nil if the agent is not " + 
+					"failed.");
 			
 			setExamples(
 					"(do                                              \n" +
@@ -631,7 +636,10 @@ public class ConcurrencyFunctions {
 		{
 			setArgLists("(await-for timeout-ms agents)");
 			
-			setDoc( "TODO");
+			setDoc( "Blocks the current thread until all actions dispatched thus " + 
+					"far (from this thread or agent) to the agents have occurred, or the " + 
+					"timeout (in milliseconds) has elapsed. Returns logical false if " + 
+					"returning due to timeout, logical true otherwise.");
 			
 			setExamples(
 					"(do                           \n" +
@@ -683,7 +691,7 @@ public class ConcurrencyFunctions {
 			setArgLists("(shutdown-agents )");
 			
 			setDoc( "Initiates a shutdown of the thread pools that back the agent " + 
-					"system. Running actions will complete, but no new actions will been" + 
+					"system. Running actions will complete, but no new actions will been " + 
 					"accepted");
 			
 			setExamples(
