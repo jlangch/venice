@@ -27,9 +27,11 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +39,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
@@ -609,6 +612,56 @@ public class ConcurrencyFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	public static VncFunction await_for = new VncFunction("await-for") {
+		{
+			setArgLists("(await-for timeout-ms agents)");
+			
+			setDoc( "TODO");
+			
+			setExamples(
+					"(do                                              \n" +
+					"   (def x (list (agent 100) (agent 100)))        \n" +
+					"   (await-for 500 x))                              ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("await-for", args, 2);
+	
+			final long timeout = Coerce.toVncLong(args.nth(0)).getValue();
+			final List<Agent> agents = args.slice(1)
+										   .getList()
+										   .stream()
+										   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())
+										   .collect(Collectors.toList());
+			
+			if (agents.isEmpty()) {
+				return True;
+			}
+			else {
+				final CountDownLatch latch = new CountDownLatch(agents.size());
+				
+				final VncFunction fn = new VncFunction() {
+					public VncVal apply(final VncList args) {
+						latch.countDown();
+						return Nil;
+					}
+					private static final long serialVersionUID = 1L;
+				};
+				
+				agents.forEach(a -> a.send(fn, new VncList()));
+				
+				try {
+					return latch.await(timeout, TimeUnit.MILLISECONDS) ? True : False;
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed awaiting for agents", ex);
+				}
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	
 
 	///////////////////////////////////////////////////////////////////////////
@@ -1103,6 +1156,7 @@ public class ConcurrencyFunctions {
 					.put("restart-agent",		restart_agent)
 					.put("set-error-handler!",	set_error_handler)
 					.put("agent-error",			agent_error)
+					.put("await-for",			await_for)
 					
 					
 					.put("promise",				promise)

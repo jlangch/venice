@@ -179,8 +179,6 @@ public class ConcurrencyFunctionsTest {
 	public void test_agent_error_2() {
 		final Venice venice = new Venice();
 
-		// Agents as message relay
-		
 		final String script = 
 				"(do                                              \n" +
 				"   (def x (agent 100 :error-mode :fail))         \n" +
@@ -190,6 +188,19 @@ public class ConcurrencyFunctionsTest {
 				"   (:message (agent-error x)))                     ";
 
 		assertEquals("/ by zero", venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_await_for() {
+		final Venice venice = new Venice();
+		
+		final String script = 
+				"(do                            \n" +
+				"   (def x1 (agent 100))        \n" +
+				"   (def x2 (agent 100))        \n" +
+				"   (await-for 500 x1 x2))        ";
+
+		assertTrue((Boolean)venice.eval(script));
 	}
 
 	@Test
