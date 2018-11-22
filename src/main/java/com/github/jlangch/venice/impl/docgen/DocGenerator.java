@@ -693,6 +693,10 @@ public class DocGenerator {
 		agents.addItem(getDocItem("set-error-handler!"));
 		agents.addItem(getDocItem("agent-error"));
 		agents.addItem(getDocItem("await-for"));
+		agents.addItem(getDocItem("shutdown-agents", false, false));
+		agents.addItem(getDocItem("shutdown-agents?", false, false));
+		agents.addItem(getDocItem("await-termination-agents", false, false));
+		agents.addItem(getDocItem("await-termination-agents?", false, false));
 		
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);

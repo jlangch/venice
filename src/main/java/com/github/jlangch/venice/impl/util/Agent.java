@@ -23,9 +23,11 @@ package com.github.jlangch.venice.impl.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -107,6 +109,24 @@ public class Agent {
 	public static void shutdown(){
 		sendExecutor.shutdown();
 		sendOffExecutor.shutdown();
+	}
+
+	public static boolean isShutdown(){
+		return sendExecutor.isShutdown() && sendOffExecutor.isShutdown();
+	}
+
+	public static void awaitTermination(final long timeoutMillis) {
+		try {
+			sendExecutor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
+			sendOffExecutor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
+		}
+		catch(Exception ex) {
+			throw new VncException("Failed awaiting for executor termination", ex);
+		}
+	}
+
+	public static boolean isTerminated(){
+		return sendExecutor.isTerminated() && sendOffExecutor.isTerminated();
 	}
 
 	private static VncFunction getErrorHandler(final VncMap options) {

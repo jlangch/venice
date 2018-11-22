@@ -643,7 +643,7 @@ public class ConcurrencyFunctions {
 		public VncVal apply(final VncList args) {
 			assertMinArity("await-for", args, 2);
 	
-			final long timeout = Coerce.toVncLong(args.nth(0)).getValue();
+			final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();
 			final List<Agent> agents = args.slice(1)
 										   .getList()
 										   .stream()
@@ -667,12 +667,116 @@ public class ConcurrencyFunctions {
 				agents.forEach(a -> a.send(fn, new VncList()));
 				
 				try {
-					return latch.await(timeout, TimeUnit.MILLISECONDS) ? True : False;
+					return latch.await(timeoutMillis, TimeUnit.MILLISECONDS) ? True : False;
 				}
 				catch(Exception ex) {
 					throw new VncException("Failed awaiting for agents", ex);
 				}
 			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction shutdown_agents = new VncFunction("shutdown-agents") {
+		{
+			setArgLists("(shutdown-agents )");
+			
+			setDoc( "Initiates a shutdown of the thread pools that back the agent " + 
+					"system. Running actions will complete, but no new actions will been" + 
+					"accepted");
+			
+			setExamples(
+					"(do                           \n" +
+					"   (def x1 (agent 100))       \n" +
+					"   (def x2 (agent 100))       \n" +
+					"   (shutdown-agents ))          ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("shutdown-agents", args, 0);
+	
+			Agent.shutdown();
+			
+			return Nil;
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction shutdown_agents_Q = new VncFunction("shutdown-agents?") {
+		{
+			setArgLists("(shutdown-agents?)");
+			
+			setDoc( "Returns true if the thread-pool that backs the agents is shut down");
+			
+			setExamples(
+					"(do                           \n" +
+					"   (def x1 (agent 100))       \n" +
+					"   (def x2 (agent 100))       \n" +
+					"   (shutdown-agents )         \n" +
+					"   (sleep 300)                \n" +
+					"   (shutdown-agents? ))         ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("shutdown-agents?", args, 0);
+	
+			return Agent.isShutdown() ? True : False;
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction await_termination_agents = new VncFunction("await-termination-agents") {
+		{
+			setArgLists("(shutdown-agents )");
+			
+			setDoc(	"Blocks until all actions have completed execution after a shutdown " +
+					"request, or the timeout occurs, or the current thread is " +
+					"interrupted, whichever happens first.");
+			
+			setExamples(
+					"(do                                   \n" +
+					"   (def x1 (agent 100))               \n" +
+					"   (def x2 (agent 100))               \n" +
+					"   (shutdown-agents )                 \n" +
+					"   (await-termination-agents 1000))     ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("await-termination-agents", args, 1);
+
+			final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();
+
+			Agent.awaitTermination(timeoutMillis);
+			
+			return Nil;
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
+	public static VncFunction await_termination_agents_Q = new VncFunction("await-termination-agents?") {
+		{
+			setArgLists("(await-termination-agents?)");
+			
+			setDoc( "Returns true if all tasks have been completed following agent shut down");
+			
+			setExamples(
+					"(do                                  \n" +
+					"   (def x1 (agent 100))              \n" +
+					"   (def x2 (agent 100))              \n" +
+					"   (shutdown-agents )                \n" +
+					"   (await-termination-agents 1000))  \n" +
+					"   (sleep 300)                       \n" +
+					"   (await-termination-agents? ))      ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("await-termination-agents", args, 0);
+	
+			return Agent.isShutdown() ? True : False;
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -1173,6 +1277,10 @@ public class ConcurrencyFunctions {
 					.put("set-error-handler!",	set_error_handler)
 					.put("agent-error",			agent_error)
 					.put("await-for",			await_for)
+					.put("shutdown-agents",		shutdown_agents)
+					.put("shutdown-agents?",		shutdown_agents_Q)
+					.put("await-termination-agents",	await_termination_agents)
+					.put("await-termination-agents?",	await_termination_agents_Q)
 										
 					.put("promise",				promise)
 					.put("promise?",			promise_Q)
