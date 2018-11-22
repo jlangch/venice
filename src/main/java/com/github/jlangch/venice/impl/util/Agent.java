@@ -27,9 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -44,13 +43,12 @@ public class Agent {
 	public Agent(final VncVal state, final VncList options) {
 		value.set(new Value(state == null ? Constants.Nil : state, null));
 		
-		final VncMap defaultOptions = new VncHashMap(
-				new VncKeyword("error-mode"), new VncKeyword("continue"));
+		final VncMap opts = new VncHashMap(options);
 
-		final VncMap opts = (VncMap)CoreFunctions.merge.apply(
-								new VncList(defaultOptions, new VncHashMap(options)));
-
-		continueOnError = getErrorMode(opts).equals(ERROR_MODE_CONTINUE);
+		errorHandler.set(getErrorHandler(opts));
+		
+		final VncKeyword errMode = getErrorMode(opts);
+		continueOnError =  errMode == null ? true : errMode.equals(ERROR_MODE_CONTINUE);
 	}
 
 	public VncVal deref() {
@@ -111,26 +109,32 @@ public class Agent {
 		sendOffExecutor.shutdown();
 	}
 
+	private static VncFunction getErrorHandler(final VncMap options) {
+		if (options != null) {
+			final VncVal errHandler = options.get(ERROR_HANDLER);
+			if (errHandler != Constants.Nil) {
+				return Coerce.toVncFunction(errHandler);
+			}
+		}
+				
+		return null;
+	}
+	
 	private static VncKeyword getErrorMode(final VncMap options) {
-		if (options == null) {
-			return ERROR_MODE_CONTINUE;
+		final VncVal mode = options == null ? Constants.Nil : options.get(ERROR_MODE);		
+		if (mode == Constants.Nil) {
+			return null;
 		}
 		
-		final VncVal errMode = options.get(ERROR_MODE);
-		if (errMode == Constants.Nil || !Types.isVncKeyword(errMode)) {
-			return ERROR_MODE_CONTINUE;
-		}
-		else if (!Types.isVncKeyword(errMode)) {
-			return ERROR_MODE_CONTINUE;
-		}
-		else if (((VncKeyword)errMode).equals(ERROR_MODE_CONTINUE)) {
+		final VncKeyword errMode = Coerce.toVncKeyword(mode);
+		if (((VncKeyword)errMode).equals(ERROR_MODE_CONTINUE)) {
 			return ERROR_MODE_CONTINUE;
 		}
 		else if (((VncKeyword)errMode).equals(ERROR_MODE_FAIL)) {
 			return ERROR_MODE_FAIL;
 		}
 		else {
-			return ERROR_MODE_CONTINUE;
+			return null;
 		}
 	}
 	
@@ -184,6 +188,7 @@ public class Agent {
 	}
 	
 	
+	private final static VncKeyword ERROR_HANDLER = new VncKeyword("error-handler");
 	private final static VncKeyword ERROR_MODE = new VncKeyword("error-mode");
 	private final static VncKeyword ERROR_MODE_CONTINUE = new VncKeyword("continue");
 	private final static VncKeyword ERROR_MODE_FAIL = new VncKeyword("fail");
