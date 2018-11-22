@@ -20,6 +20,9 @@ configurable sandbox that can prevent all sorts of dangerous JVM interactions
 like reading/writing files, invoking _System.exit(0)_ or any other malicious 
 action.
 
+Venice simplifies writing concurrent code through atoms, futures, promises, 
+and agents.
+
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
 
@@ -314,27 +317,6 @@ Mixing Venice functions with Java streams:
 ```
 
 
-Java Futures & Promises:
-
-```clojure
-(do
-   (def counter (atom 0))   
-   (defn task [] (do (sleep 500) (swap! counter inc) nil))
-
-   (deref (future task))        
-   (deref counter))
-```
-
-```clojure
-(do
-   (def p (promise))
-   (defn task [] (do (sleep 500) (deliver p 123)))
-
-   (future task)
-   (deref p))
-```
-
-
 Another example:
 
 ```clojure
@@ -417,6 +399,48 @@ Alternative to UNIX shell scripts:
             (zip-tomcat-logs "catalina" dir year month)
             (println "Done."))
          (printf "Error: The tomcat log dir '%s' does not exist" dir))))
+```
+
+## Concurrency
+
+
+### Atoms
+
+```clojure
+(do
+   (def counter (atom 2))
+   (swap! counter (fn [n] (+ n 1)))
+   (deref counter))
+```
+
+### Futures & Promises
+
+```clojure
+(do
+   (def counter (atom 0))   
+   (defn task [] (do (sleep 500) (swap! counter inc) nil))
+
+   (deref (future task))        
+   (deref counter))
+```
+
+```clojure
+(do
+   (def p (promise))
+   (defn task [] (do (sleep 500) (deliver p 123)))
+
+   (future task)
+   (deref p))
+```
+
+### Agents
+```clojure
+(do
+   (defn increment [c n] (+ c n))
+   (def x (agent 100))
+   (send x increment 5)
+   (sleep 100)
+   (deref x))
 ```
 
 
