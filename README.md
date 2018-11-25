@@ -433,10 +433,9 @@ Alternative to UNIX shell scripts:
 ### Agents
 ```clojure
 (do
-   (defn increment [curr n] (+ curr n))
    (def x (agent 100))
-   (send x increment 5)
-   (sleep 100)
+   (send x + 5)
+   (await-for 100 x)
    (deref x))
 ```
 
