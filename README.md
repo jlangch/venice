@@ -417,11 +417,8 @@ Alternative to UNIX shell scripts:
 
 ```clojure
 (do
-   (def counter (atom 0))   
-   (defn task [] (do (sleep 500) (swap! counter inc) nil))
-
+   (defn task [] (do (sleep 1000) 200))
    (deref (future task))        
-   (deref counter))
 ```
 
 ```clojure
