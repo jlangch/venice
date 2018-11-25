@@ -114,6 +114,26 @@ public class Agent {
 		return sb.toString();
 	}
 	
+	public static void await(final List<Agent> agents) {		
+		final CountDownLatch latch = new CountDownLatch(agents.size());
+		
+		final VncFunction fn = new VncFunction() {
+			public VncVal apply(final VncList args) {
+				latch.countDown();
+				return args.first(); // return old value
+			}
+			private static final long serialVersionUID = 1L;
+		};
+		
+		try {
+			agents.forEach(a -> a.send(fn, new VncList()));			
+			latch.await();
+		}
+		catch(Exception ex) {
+			throw new VncException("Failed awaiting for agents", ex);
+		}
+	}
+	
 	public static boolean await(final List<Agent> agents, final long timeoutMillis) {		
 		final CountDownLatch latch = new CountDownLatch(agents.size());
 		

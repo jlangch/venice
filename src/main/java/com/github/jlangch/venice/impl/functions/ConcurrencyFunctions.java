@@ -628,6 +628,35 @@ public class ConcurrencyFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	public static VncFunction await = new VncFunction("await") {
+		{
+			setArgLists("(await agents)");
+			
+			setDoc( "Blocks the current thread (indefinitely) until all actions dispatched " + 
+					"thus far (from this thread or agent) to the agents have occurred. ");
+			
+			setExamples(
+					"(do                           \n" +
+					"   (def x1 (agent 100))       \n" +
+					"   (def x2 (agent 100))       \n" +
+					"   (await x1 x2))               ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertMinArity("await", args, 1);
+	
+			final List<Agent> agents = args.getList()
+										   .stream()
+										   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())
+										   .collect(Collectors.toList());
+			
+			Agent.await(agents);
+			return Nil;
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	public static VncFunction await_for = new VncFunction("await-for") {
 		{
 			setArgLists("(await-for timeout-ms agents)");
@@ -1260,6 +1289,7 @@ public class ConcurrencyFunctions {
 					.put("restart-agent",		restart_agent)
 					.put("set-error-handler!",	set_error_handler)
 					.put("agent-error",			agent_error)
+					.put("await",				await)
 					.put("await-for",			await_for)
 					.put("shutdown-agents",		shutdown_agents)
 					.put("shutdown-agents?",		shutdown_agents_Q)

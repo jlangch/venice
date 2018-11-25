@@ -40,7 +40,7 @@ Venice requires Java 8 or newer.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-1.0.0.jar`
+Start the REPL with `java -jar venice-1.1.0.jar`
 
 ```text
 venice> (+ 1 1)
@@ -51,13 +51,13 @@ venice>
 ## Executing scripts
 
 ```text
-foo> java -jar venice-1.0.0.jar -script "(+ 1 1)"
+foo> java -jar venice-1.1.0.jar -script "(+ 1 1)"
 => 2
 ```
 
 ```text
 foo> echo "(+ 1 1)" > script.venice
-foo> java -jar venice-1.0.0.jar -file script.venice
+foo> java -jar venice-1.1.0.jar -file script.venice
 => 2
 ```
 
@@ -345,7 +345,7 @@ Alternative to UNIX shell scripts:
 ;; ----------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
-;; > java -jar venice-1.0.0.jar -file zip-tomcat-logs.venice ./logs
+;; > java -jar venice-1.1.0.jar -file zip-tomcat-logs.venice ./logs
 ;; ----------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
@@ -783,7 +783,7 @@ transitive dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:1.0.0'
+    compile 'com.github.jlangch:venice:1.1.0'
 }
 ```
 
@@ -795,7 +795,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 </dependencies>
 ```
