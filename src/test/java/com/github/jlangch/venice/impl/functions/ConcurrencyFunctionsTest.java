@@ -75,12 +75,11 @@ public class ConcurrencyFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                 \n" +
-				"   (defn increment [c n] (+ c n))   \n" +
-				"   (def x (agent 100))              \n" +
-				"   (send x increment 5)             \n" +
-				"   (sleep 100)                      \n" +
-				"   (deref x))                         ";
+				"(do                         \n" +
+				"   (def x (agent 100))      \n" +
+				"   (send x + 5)             \n" +
+				"   (sleep 200)              \n" +
+				"   (deref x))                 ";
 
 		final Object result = venice.eval(script);
 		
@@ -88,16 +87,51 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_agent_send_order_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                               \n" +
+				"   (def a1 (agent 2))                             \n" +
+				"   (def a2 (agent 3))                             \n" +
+				"   (send a1 (fn [x] (do (sleep 500) (+ x 10))))   \n" +
+				"   (send a2 (fn [x] (do (sleep 400) (+ x 10))))   \n" +
+				"   (send a1 (fn [x] (do (sleep 100) (* x 2))))    \n" +
+				"   (send a2 (fn [x] (do (sleep 100) (* x 2))))    \n" +
+				"   (sleep 800)                                    \n" +
+				"   (str [@a1 @a2]))                                 ";
+
+		assertEquals("[24 26]", venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_send_order_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                               \n" +
+				"   (def a1 (agent 2))                             \n" +
+				"   (def a2 (agent 3))                             \n" +
+				"   (send a1 (fn [x] (do (sleep 500) (+ x 10))))   \n" +
+				"   (send a2 (fn [x] (do (sleep 400) (+ x 10))))   \n" +
+				"   (send a1 (fn [x] (do (sleep 100) (* x 2))))    \n" +
+				"   (send a2 (fn [x] (do (sleep 100) (* x 2))))    \n" +
+				"   (await-for 1000 a1 a2)                         \n" +
+				"   (str [@a1 @a2]))                                 ";
+
+		assertEquals("[24 26]", venice.eval(script));
+	}
+
+	@Test
 	public void test_agent_send_off() {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                 \n" +
-				"   (defn increment [c n] (+ c n))   \n" +
-				"   (def x (agent 100))              \n" +
-				"   (send-off x increment 5)         \n" +
-				"   (sleep 100)                      \n" +
-				"   (deref x))                         ";
+				"(do                         \n" +
+				"   (def x (agent 100))      \n" +
+				"   (send-off x + 5)         \n" +
+				"   (sleep 100)              \n" +
+				"   (deref x))                 ";
 
 		final Object result = venice.eval(script);
 		
@@ -110,53 +144,17 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                                                     \n" +
-				"   (defn increment [c n] (+ c n))                                       \n" +
 				"   (defn watcher [key ref old new]                                      \n" +
 				"         (println \"watcher: \" key \", old:\" old \", new:\" new ))    \n" +
 				"   (def x (agent 100))                                                  \n" +
 				"   (add-watch x :test watcher)                                          \n" +
-				"   (send x increment 5)                                                 \n" +
+				"   (send x + 5)                                                         \n" +
 				"   (sleep 100)                                                          \n" +
 				"   (deref x))                                                             ";
 
 		final Object result = venice.eval(script);
 		
 		assertEquals(Long.valueOf(105), result);
-	}
-
-	@Test
-	public void test_agent_relay() {
-		final Venice venice = new Venice();
-
-		// Agents as message relay
-		
-		final String script = 
-				"(do                                                                         \n" +
-				"   (def logger (agent (list)))                                              \n" +
-				"                                                                            \n" +
-				"   (defn log [msg]                                                          \n" +
-				"      (send logger #(cons %2 %1) msg))                                      \n" +
-				"                                                                            \n" +
-				"   (defn create-relay [n]                                                   \n" +
-				"      (reduce (fn [prev _] (agent prev)) nil (range 0 n)))                  \n" +
-				"                                                                            \n" +
-				"   (defn process [relay msg]                                                \n" +
-				"      (let [relay-fn (fn [next-actor hop msg]                               \n" +
-				"                         (if next-actor                                     \n" +
-				"                            (do                                             \n" +
-				"                               (log (list hop msg))                         \n" +
-				"                               (send next-actor relay-fn (inc hop) msg)     \n" +
-				"                               @next-actor)                                 \n" +
-				"                            (log \"finished relay\") ))]                    \n" +
-				"         (send relay relay-fn 0 msg)))                                      \n" +
-				"                                                                            \n" +
-				"   (process (create-relay 5) \"hello\")                                     \n" +
-				"   (sleep 500)                                                              \n" +
-				"   (with-out-str (print @logger)))                                            ";
-
-		assertEquals(
-				"(finished relay (3 hello) (2 hello) (1 hello) (0 hello))", 
-				venice.eval(script));
 	}
 
 	@Test
@@ -216,6 +214,68 @@ public class ConcurrencyFunctionsTest {
 				"   (await-for 500 x1 x2))        ";
 
 		assertTrue((Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_relay() {
+		final Venice venice = new Venice();
+
+		// Agents as message relay
+		
+		final String script = 
+				"(do                                                                         \n" +
+				"   (def logger (agent (list)))                                              \n" +
+				"                                                                            \n" +
+				"   (defn log [msg]                                                          \n" +
+				"      (send logger #(cons %2 %1) msg))                                      \n" +
+				"                                                                            \n" +
+				"   (defn create-relay [n]                                                   \n" +
+				"      (reduce (fn [prev _] (agent prev)) nil (range 0 n)))                  \n" +
+				"                                                                            \n" +
+				"   (defn process [relay msg]                                                \n" +
+				"      (let [relay-fn (fn [next-actor hop msg]                               \n" +
+				"                         (if next-actor                                     \n" +
+				"                            (do                                             \n" +
+				"                               (log (list hop msg))                         \n" +
+				"                               (send next-actor relay-fn (inc hop) msg)     \n" +
+				"                               @next-actor)                                 \n" +
+				"                            (log \"finished relay\") ))]                    \n" +
+				"         (send relay relay-fn 0 msg)))                                      \n" +
+				"                                                                            \n" +
+				"   (process (create-relay 5) \"hello\")                                     \n" +
+				"   (sleep 500)                                                              \n" +
+				"   (with-out-str (print @logger)))                                            ";
+
+		assertEquals(
+				"(finished relay (3 hello) (2 hello) (1 hello) (0 hello))", 
+				venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_logger() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                                         \n" +
+				"   (import :java.io.PrintWriter)                                            \n" +
+				"   (import :java.io.BufferedWriter)                                         \n" +
+				"                                                                            \n" +
+				"   (let [pwtr (. :PrintWriter :new *out* true)                              \n" +
+				"         wtr (agent (. :BufferedWriter :new pwtr))]                         \n" +
+				"      (defn log [msg]                                                       \n" +
+				"	      (let [write (fn [out msg] (do (. out :write msg) out))]            \n" +
+				"	         (send wtr write msg)))                                          \n" +
+				"	   (defn log-close []                                                    \n" +
+				"	         (do                                                             \n" +
+				"	            (send wtr (fn [out] (do (. out :flush) (. out :close) out))) \n" +
+				"	            (await-for 2000 wtr))))                                      \n" +
+				"                                                                            \n" +
+				"	(log \"test\n\")                                                         \n" +
+				"	(log \"another line\n\")                                                 \n" +
+				"	(log-close)                                                              \n" +
+				"	(println \"DONE.\"))                                                 ";
+
+		venice.eval(script);
 	}
 
 	@Test
@@ -395,7 +455,6 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertThrows(SecurityException.class, () -> venice.eval(script));
-
 	}
 	
 	@Test

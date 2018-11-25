@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -432,12 +431,11 @@ public class ConcurrencyFunctions {
 					"mode-keyword may be either :continue (the default) or :fail");
 			
 			setExamples(
-					"(do                                 \n" +
-					"   (defn increment [c n] (+ c n))   \n" +
-					"   (def x (agent 100))              \n" +
-					"   (send x increment 5)             \n" +
-					"   (sleep 100)                      \n" +
-					"   (deref x))                         ");
+					"(do                         \n" +
+					"   (def x (agent 100))      \n" +
+					"   (send x + 5)             \n" +
+					"   (sleep 100)              \n" +
+					"   (deref x))                 ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -458,12 +456,11 @@ public class ConcurrencyFunctions {
 					" (apply action-fn state-of-agent args)");
 			
 			setExamples(
-					"(do                                 \n" +
-					"   (defn increment [c n] (+ c n))   \n" +
-					"   (def x (agent 100))              \n" +
-					"   (send x increment 5)             \n" +
-					"   (sleep 100)                      \n" +
-					"   (deref x))                         ");
+					"(do                         \n" +
+					"   (def x (agent 100))      \n" +
+					"   (send x + 5)             \n" +
+					"   (sleep 100)              \n" +
+					"   (deref x))                 ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -497,12 +494,11 @@ public class ConcurrencyFunctions {
 					" (apply action-fn state-of-agent args)");
 			
 			setExamples(
-					"(do                                 \n" +
-					"   (defn increment [c n] (+ c n))   \n" +
-					"   (def x (agent 100))              \n" +
-					"   (send-off x increment 5)         \n" +
-					"   (sleep 100)                      \n" +
-					"   (deref x))                         ");
+					"(do                         \n" +
+					"   (def x (agent 100))      \n" +
+					"   (send-off x + 5)         \n" +
+					"   (sleep 100)              \n" +
+					"   (deref x))                 ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -534,10 +530,10 @@ public class ConcurrencyFunctions {
 					"then un-fails the agent so that sends are allowed again.");
 			
 			setExamples(
-					"(do                                 \n" +
-					"   (def x (agent 100))              \n" +
-					"   (restart-agent x 200)            \n" +
-					"   (deref x))                         ");
+					"(do                          \n" +
+					"   (def x (agent 100))       \n" +
+					"   (restart-agent x 200)     \n" +
+					"   (deref x))                  ");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -658,29 +654,9 @@ public class ConcurrencyFunctions {
 										   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())
 										   .collect(Collectors.toList());
 			
-			if (agents.isEmpty()) {
-				return True;
-			}
-			else {
-				final CountDownLatch latch = new CountDownLatch(agents.size());
-				
-				final VncFunction fn = new VncFunction() {
-					public VncVal apply(final VncList args) {
-						latch.countDown();
-						return Nil;
-					}
-					private static final long serialVersionUID = 1L;
-				};
-				
-				agents.forEach(a -> a.send(fn, new VncList()));
-				
-				try {
-					return latch.await(timeoutMillis, TimeUnit.MILLISECONDS) ? True : False;
-				}
-				catch(Exception ex) {
-					throw new VncException("Failed awaiting for agents", ex);
-				}
-			}
+			return agents.isEmpty() 
+					? True
+					: Agent.await(agents, timeoutMillis) ? True : False;
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;

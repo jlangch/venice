@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +40,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.concurrency.StripedExecutorService;
+import com.github.jlangch.venice.impl.util.concurrency.StripedRunnable;
 
 
 public class Agent {
@@ -53,6 +57,10 @@ public class Agent {
 		continueOnError =  errMode == null ? true : errMode.equals(ERROR_MODE_CONTINUE);
 	}
 
+	public long getID() {
+		return id;
+	}
+	
 	public VncVal deref() {
 		return value.get().deref();
 	}
@@ -62,11 +70,11 @@ public class Agent {
 	}
 
 	public void send(final VncFunction fn, final VncList args) {
-		sendExecutor.execute(() -> update(fn, args));
+		sendExecutor.execute(new Action(this, fn, args));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
-		sendOffExecutor.execute(() -> update(fn, args));
+		sendOffExecutor.execute(new Action(this, fn, args));
 	}
 
 	public void restart(final VncVal state) {
@@ -105,13 +113,33 @@ public class Agent {
 		
 		return sb.toString();
 	}
+	
+	public static boolean await(final List<Agent> agents, final long timeoutMillis) {		
+		final CountDownLatch latch = new CountDownLatch(agents.size());
+		
+		final VncFunction fn = new VncFunction() {
+			public VncVal apply(final VncList args) {
+				latch.countDown();
+				return args.first(); // return old value
+			}
+			private static final long serialVersionUID = 1L;
+		};
+		
+		try {
+			agents.forEach(a -> a.send(fn, new VncList()));			
+			return latch.await(timeoutMillis, TimeUnit.MILLISECONDS);
+		}
+		catch(Exception ex) {
+			throw new VncException("Failed awaiting for agents", ex);
+		}
+	}
 
-	public static void shutdown(){
+	public static void shutdown() {
 		sendExecutor.shutdown();
 		sendOffExecutor.shutdown();
 	}
 
-	public static boolean isShutdown(){
+	public static boolean isShutdown() {
 		return sendExecutor.isShutdown() && sendOffExecutor.isShutdown();
 	}
 
@@ -125,7 +153,7 @@ public class Agent {
 		}
 	}
 
-	public static boolean isTerminated(){
+	public static boolean isTerminated() {
 		return sendExecutor.isTerminated() && sendOffExecutor.isTerminated();
 	}
 
@@ -158,31 +186,58 @@ public class Agent {
 		}
 	}
 	
-	private void update(final VncFunction fn, final VncList args) {
-		if (getError() == null || continueOnError) {
-			final VncVal oldVal = value.get().val;
+			
+	private static class Action implements StripedRunnable {
+
+		public Action(final Agent agent, final VncFunction fn, final VncList fnArgs) {
+			this.agent = agent;
+			this.fn = fn;
+			this.fnArgs = fnArgs;
+		}
+		
+		@Override
+		public Object getStripe() {
+			return agent.getID();
+		}
+	
+		@Override
+		public void run() {
 			try {
-				final VncList fnArgs = args.copy().addAtStart(value.get().val);
-				final VncVal newVal = fn.apply(fnArgs);
+				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				
-				value.set(new Value(newVal, null));
-				watchable.notifyWatches(new VncJavaObject(this), oldVal, newVal);
+				if (agent.getError() == null || agent.continueOnError) {
+					final VncVal oldVal = agent.value.get().val;
+					try {
+						final VncList fnArgs_ = fnArgs.copy().addAtStart(oldVal);
+						final VncVal newVal = fn.apply(fnArgs_);
+						
+						agent.value.set(new Value(newVal, null));
+						agent.watchable.notifyWatches(new VncJavaObject(agent), oldVal, newVal);
+					}
+					catch(RuntimeException ex) {
+						if (!agent.continueOnError) {
+							agent.value.set(new Value(oldVal, ex));
+						}
+						
+						final VncFunction handler = agent.errorHandler.get();
+						if (handler != null) {
+							handler.apply(
+									new VncList(
+											new VncJavaObject(agent), new VncJavaObject(ex)));
+						}
+					}
+				}
 			}
-			catch(RuntimeException ex) {
-				if (!continueOnError) {
-					value.set(new Value(oldVal, ex));
-				}
-				
-				final VncFunction handler = errorHandler.get();
-				if (handler != null) {
-					handler.apply(
-							new VncList(
-									new VncJavaObject(this), new VncJavaObject(ex)));
-				}
+			finally {
+				ThreadLocalMap.pop(new VncKeyword("*agent*"));
 			}
 		}
-	}
 		
+		private final Agent agent;
+		private final VncFunction fn; 
+		private final VncList fnArgs;
+	}
+	
 	private static class Value {
 		public Value(final VncVal val, final RuntimeException ex) {
 			this.val = val;
@@ -208,6 +263,7 @@ public class Agent {
 	}
 	
 	
+	
 	private final static VncKeyword ERROR_HANDLER = new VncKeyword("error-handler");
 	private final static VncKeyword ERROR_MODE = new VncKeyword("error-mode");
 	private final static VncKeyword ERROR_MODE_CONTINUE = new VncKeyword("continue");
@@ -216,26 +272,31 @@ public class Agent {
 	private final AtomicReference<VncFunction> errorHandler = new AtomicReference<>();
 	private final AtomicReference<Value> value = new AtomicReference<>(new Value(Constants.Nil, null)); 
 	private final Watchable watchable = new Watchable();
+	private final long id = agentCounter.getAndIncrement();
 	
 	private final boolean continueOnError;
 	
+	
+	private final static AtomicLong agentCounter = new AtomicLong(0);
 	
 	private final static AtomicLong sendThreadPoolCounter = new AtomicLong(0);
 
 	private final static AtomicLong sendOffThreadPoolCounter = new AtomicLong(0);
 
 	private final static ExecutorService sendExecutor = 
-			Executors.newFixedThreadPool(
-					2 + Runtime.getRuntime().availableProcessors(),
-					ThreadPoolUtil.createThreadFactory(
-							"venice-agent-send-pool-%d", 
-							sendThreadPoolCounter,
-							true /* daemon threads */));
+			new StripedExecutorService(
+				Executors.newFixedThreadPool(
+						2 + Runtime.getRuntime().availableProcessors(),
+						ThreadPoolUtil.createThreadFactory(
+								"venice-agent-send-pool-%d", 
+								sendThreadPoolCounter,
+								true /* daemon threads */)));
 
 	private final static ExecutorService sendOffExecutor = 
-			Executors.newCachedThreadPool(
-					ThreadPoolUtil.createThreadFactory(
-							"venice-agent-send-off-pool-%d", 
-							sendOffThreadPoolCounter,
-							true /* daemon threads */));
+			new StripedExecutorService(
+				Executors.newCachedThreadPool(
+						ThreadPoolUtil.createThreadFactory(
+								"venice-agent-send-off-pool-%d", 
+								sendOffThreadPoolCounter,
+								true /* daemon threads */)));
 }
