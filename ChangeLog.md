@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added ... 
 
+### fixed
+
+- fixed default sandbox rules to allow invoking `(delay 100)` under a sandbox
+
 
 
 ## [1.1.0] - 2018-11-25
