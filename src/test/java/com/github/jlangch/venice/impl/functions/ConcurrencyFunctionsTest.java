@@ -158,6 +158,42 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_agent_error_mode_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                              \n" +
+				"   (def x (agent 100))           \n" +
+				"   (str (agent-error-mode x)))     ";
+
+		assertEquals(":continue", venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_error_mode_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                              \n" +
+				"   (def x (agent 100 :error-mode :continue))     \n" +
+				"   (str (agent-error-mode x)))                     ";
+
+		assertEquals(":continue", venice.eval(script));
+	}
+
+	@Test
+	public void test_agent_error_mode_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                              \n" +
+				"   (def x (agent 100 :error-mode :fail))         \n" +
+				"   (str (agent-error-mode x)))                     ";
+
+		assertEquals(":fail", venice.eval(script));
+	}
+
+	@Test
 	public void test_agent_error_1() {
 		final Venice venice = new Venice();
 

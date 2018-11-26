@@ -628,6 +628,36 @@ public class ConcurrencyFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+
+	public static VncFunction agent_error_mode = new VncFunction("agent-error-mode") {
+		{
+			setArgLists("(agent-error-mode agent)");
+			
+			setDoc( "Returns the agent's error mode");
+			
+			setExamples(
+					"(do                                              \n" +
+					"   (def x (agent 100 :error-mode :fail))         \n" +
+					"   (agent-mode x))                                 ");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("agent-error-mode", args, 1);
+			
+			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
+				final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				return agent.getErrorMode();
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'agent-error-mode' does not allow type %s as agent parameter",
+						Types.getClassName(args.nth(0))));
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	public static VncFunction await = new VncFunction("await") {
 		{
 			setArgLists("(await agents)");
@@ -650,8 +680,9 @@ public class ConcurrencyFunctions {
 										   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())
 										   .collect(Collectors.toList());
 			
-			Agent.await(agents);
-			return Nil;
+			return agents.isEmpty() 
+					? True
+					: Agent.await(agents, -1) ? True : False;
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -1289,6 +1320,7 @@ public class ConcurrencyFunctions {
 					.put("restart-agent",		restart_agent)
 					.put("set-error-handler!",	set_error_handler)
 					.put("agent-error",			agent_error)
+					.put("agent-error-mode",	agent_error_mode)
 					.put("await",				await)
 					.put("await-for",			await_for)
 					.put("shutdown-agents",		shutdown_agents)
