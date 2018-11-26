@@ -384,7 +384,7 @@ public class SandboxRules {
 				
 				"com.github.jlangch.venice.util.CapturingPrintStream:*",
 				
-				// ValueException
+				"com.github.jlangch.venice.impl.VeniceInterpreter$1",
 				"com.github.jlangch.venice.impl.ValueException:*",
 				"com.github.jlangch.venice.impl.types.collections.VncVector",
 
