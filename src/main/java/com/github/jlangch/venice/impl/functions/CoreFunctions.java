@@ -94,14 +94,18 @@ public class CoreFunctions {
 			setExamples(
 					"(do                                                     \n" +
 					"   (try                                                 \n" +
+					"     (+ 100 200)                                        \n" +
+					"     (catch :Exception ex (:message ex))))                ",
+					
+					"(do                                                     \n" +
+					"   (try                                                 \n" +
 					"     (throw 100)                                        \n" +
 					"     (catch :ValueException ex (:value ex))))             ",
 					
 					"(do                                                     \n" +
-					"   (import :java.lang.Exception)                        \n" +
 					"   (try                                                 \n" +
 					"      (throw [100 {:a 3}])                              \n" +
-					"      (catch :Exception ex (:value ex))                 \n" +
+					"      (catch :ValueException ex (:value ex))            \n" +
 					"      (finally (println \"#finally\"))))                  ",
 					
 					"(do                                                     \n" +
