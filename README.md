@@ -368,6 +368,17 @@ Another example:
    (deref p))
 ```
 
+
+### Delays
+
+```clojure
+(do  
+   (def x (delay (println \"realizing...\") 100))
+   (sleep 1000)
+   (deref x))
+```
+
+
 ### Agents
 
 while agents accept functions to process the agent's state...
