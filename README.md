@@ -431,6 +431,9 @@ Alternative to UNIX shell scripts:
 ```
 
 ### Agents
+
+while agents accept functions to process the agent's state...
+
 ```clojure
 (do
    (def x (agent 100))
@@ -439,6 +442,32 @@ Alternative to UNIX shell scripts:
    (deref x))
 ```
 
+actors accept data to be processed by the actor's function
+
+```clojure
+(do
+   (def actors (atom {}))
+
+   (defn make! [name state handler]
+         (let [actor (agent {:state state :handler handler})]
+            (swap! actors assoc name actor)))
+
+   (defn invoke-handler [body msg]
+         (let [{:keys [state handler]} body
+               new-state (handler state msg)]
+            (assoc body :state new-state)))
+
+   (defn send! [name & xs]
+         (let [actor (get @actors name)]
+            (send-off actor invoke-handler (vector xs))
+            nil))
+
+   (make! :printer nil (fn [_ msg] (apply println msg)))
+       
+   (send! :printer "hello world")
+   
+   (sleep 200))
+```
 
 ## Sandbox
 
