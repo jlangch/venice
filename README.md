@@ -213,20 +213,6 @@ Java VarArgs:
 ```
 
 
-Recursion:
-
-```clojure
-(do
-   (defn sum [n]
-      (loop [cnt n, acc 0]
-         (if (zero? cnt)
-            acc
-            (recur (dec cnt) (+ acc cnt)))))
-
-   (sum 100000))
-```
-
-
 Exception handling
 
 ```clojure
@@ -336,6 +322,20 @@ Another example:
         (. :User :new "pete" 48 (. :LocalDate :of 1970 1 12))) ])
 
    (str (filter #(> (:age %) 30) users)))
+```
+
+
+## Recursion:
+
+```clojure
+(do
+   (defn sum [n]
+      (loop [cnt n, acc 0]
+         (if (zero? cnt)
+            acc
+            (recur (dec cnt) (+ acc cnt)))))
+
+   (sum 100000))
 ```
 
 
