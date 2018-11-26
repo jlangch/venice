@@ -144,8 +144,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * stripe object in a thread local, since the actual runnable
      * will be wrapped with a FutureTask.
      */
-    protected <T> RunnableFuture<T> newTaskFor(
-            Runnable runnable, T value) {
+    protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
         saveStripedObject(runnable);
         return super.newTaskFor(runnable, value);
     }
@@ -155,8 +154,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * stripe object in a thread local, since the actual callable
      * will be wrapped with a FutureTask.
      */
-    protected <T> RunnableFuture<T> newTaskFor(
-            Callable<T> callable) {
+    protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
         saveStripedObject(callable);
         return super.newTaskFor(callable);
     }
@@ -385,8 +383,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * more quickly than necessary, but at least we can avoid a
      * memory leak.
      */
-    private void removeEmptySerialExecutor(Object stripe,
-                                           SerialExecutor ser_ex) {
+    private void removeEmptySerialExecutor(Object stripe, SerialExecutor ser_ex) {
         assert ser_ex == executors.get(stripe);
         assert lock.isHeldByCurrentThread();
         assert ser_ex.isEmpty();

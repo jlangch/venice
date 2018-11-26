@@ -77,6 +77,19 @@ public class SpecialFormsTest {
 
 		final String lisp = 
 				"(try                                 " +
+				"  (+ 100 200)                        " +
+				"  (catch :java.lang.Exception ex     " +
+				"          -1))                       ";
+
+		assertEquals(Long.valueOf(300), venice.eval(lisp));
+	}
+	
+	@Test
+	public void test_try_catch_2() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(try                                 " +
 				"  (throw 100)                        " +
 				"  (catch :java.lang.Exception ex     " +
 				"         (do                         " +
@@ -88,7 +101,7 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
-	public void test_try_catch_2() {
+	public void test_try_catch_3() {
 		final Venice venice = new Venice();
 
 		final String lisp = 
@@ -105,7 +118,7 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
-	public void test_try_catch_3() {
+	public void test_try_catch_4() {
 		final Venice venice = new Venice();
 
 		final String lisp = 
@@ -119,7 +132,7 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
-	public void test_try_catch_4() {
+	public void test_try_catch_5() {
 		final Venice venice = new Venice();
 
 		final String lisp = 
@@ -136,7 +149,7 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
-	public void test_try_catch_4b() {
+	public void test_try_catch_5b() {
 		final Venice venice = new Venice();
 
 		final String lisp = 
@@ -153,7 +166,7 @@ public class SpecialFormsTest {
 	}
 	
 	@Test
-	public void test_try_catch_5() {
+	public void test_try_catch_6() {
 		final Venice venice = new Venice();
 
 		final String lisp = 
@@ -169,7 +182,7 @@ public class SpecialFormsTest {
 	}
 
 	@Test
-	public void test_try_catch_5b() {
+	public void test_try_catch_6b() {
 		final Venice venice = new Venice();
 
 		final String lisp = 
