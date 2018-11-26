@@ -373,7 +373,7 @@ Another example:
 
 ```clojure
 (do  
-   (def x (delay (println \"realizing...\") 100))
+   (def x (delay (println "realizing...") 100))
    (sleep 1000)
    (deref x))
 ```
