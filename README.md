@@ -339,68 +339,6 @@ Another example:
 ```
 
 
-Alternative to UNIX shell scripts:
-
-```clojure
-;; ----------------------------------------------------------------------------------
-;; Zips the last month's Tomcat log files
-;;
-;; > java -jar venice-1.1.0.jar -file zip-tomcat-logs.venice ./logs
-;; ----------------------------------------------------------------------------------
-(do
-   (defn tomcat-log-file-filter [prefix year month]
-         (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]
-            (fn [dir name] (match name regex))))
-
-   (defn tomcat-log-file-zip [prefix dir year month]
-         (io/file dir (str/format "%s.%d-%02d.zip" prefix year month)))
-
-   (defn find-log-files [dir filter]
-         (map #(io/file dir %)
-              (. dir :list (proxify :java.io.FilenameFilter {:accept filter}))))
-
-   (defn zip-files [dir zip files]
-         (with-sh-throw
-            (with-sh-dir dir
-               (apply sh (list* "zip" (:name zip) (map #(:name %) files))))))
-
-   (defn zip-tomcat-logs [prefix dir year month]
-         (try
-            (let [zip (tomcat-log-file-zip prefix dir year month)
-                  filter (tomcat-log-file-filter prefix year month)]
-               (when-not (io/exists-file? zip)
-                  (let [logs (find-log-files dir filter)]
-                     (printf "Compacting %s ...\n" prefix)
-                     (printf "   Found %d log files\n" (count logs))
-                     (when-not (empty? logs)
-                        (zip-files dir zip logs)
-                        (printf "   Zipped to %s\n" (:name zip))
-                        (apply io/delete-file logs)
-                        (printf "   Removed %d files\n" (count logs))))))
-            (catch :com.github.jlangch.venice.ShellException ex
-                (printf "Error compacting %s: %s" prefix (:message ex)))))
-
-   (defn first-day-last-month []
-         (-> (time/local-date) 
-             (time/first-day-of-month) 
-             (time/minus :month 1)))
-
-   (let [dir (io/file (nth *ARGV* 2))
-         date (first-day-last-month)
-         year  (time/year date)
-         month (time/month date)]
-      (if (io/exists-dir? dir)
-         (do
-            (printf "Compacting %d-%02d logs from '%s' ...\n" year month dir)
-            (zip-tomcat-logs "localhost_access_log" dir year month)
-            (zip-tomcat-logs "host-manager" dir year month)
-            (zip-tomcat-logs "manager" dir year month)
-            (zip-tomcat-logs "localhost" dir year month)
-            (zip-tomcat-logs "catalina" dir year month)
-            (println "Done."))
-         (printf "Error: The tomcat log dir '%s' does not exist" dir))))
-```
-
 ## Concurrency
 
 
@@ -409,7 +347,7 @@ Alternative to UNIX shell scripts:
 ```clojure
 (do
    (def counter (atom 2))
-   (swap! counter (fn [n] (+ n 1)))
+   (swap! counter + 2))
    (deref counter))
 ```
 
@@ -439,14 +377,17 @@ while agents accept functions to process the agent's state...
    (def x (agent 100))
    (send x + 5)
    (await-for 100 x)
-   (deref x))
+   @x)
 ```
 
 actors accept data to be processed by the actor's function
 
 ```clojure
+;; simple actors implemented on top of agents
 (do
    (def actors (atom {}))
+
+   (defn wait [timeout] (apply await-for timeout (vals @actors)))
 
    (defn make! [name state handler]
          (let [actor (agent {:state state :handler handler})]
@@ -459,15 +400,18 @@ actors accept data to be processed by the actor's function
 
    (defn send! [name & xs]
          (let [actor (get @actors name)]
-            (send-off actor invoke-handler (vector xs))
+            (send actor invoke-handler (vector xs))
             nil))
 
    (make! :printer nil (fn [_ msg] (apply println msg)))
        
    (send! :printer "hello world")
+ 
+   (wait 200)
    
-   (sleep 200))
+   nil)
 ```
+
 
 ## Sandbox
 
@@ -560,6 +504,71 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 ...
 
+```
+
+
+## A larger sample
+
+Alternative to UNIX shell scripts:
+
+```clojure
+;; ----------------------------------------------------------------------------------
+;; Zips the last month's Tomcat log files
+;;
+;; > java -jar venice-1.1.0.jar -file zip-tomcat-logs.venice ./logs
+;; ----------------------------------------------------------------------------------
+(do
+   (defn tomcat-log-file-filter [prefix year month]
+         (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]
+            (fn [dir name] (match name regex))))
+
+   (defn tomcat-log-file-zip [prefix dir year month]
+         (io/file dir (str/format "%s.%d-%02d.zip" prefix year month)))
+
+   (defn find-log-files [dir filter]
+         (map #(io/file dir %)
+              (. dir :list (proxify :java.io.FilenameFilter {:accept filter}))))
+
+   (defn zip-files [dir zip files]
+         (with-sh-throw
+            (with-sh-dir dir
+               (apply sh (list* "zip" (:name zip) (map #(:name %) files))))))
+
+   (defn zip-tomcat-logs [prefix dir year month]
+         (try
+            (let [zip (tomcat-log-file-zip prefix dir year month)
+                  filter (tomcat-log-file-filter prefix year month)]
+               (when-not (io/exists-file? zip)
+                  (let [logs (find-log-files dir filter)]
+                     (printf "Compacting %s ...\n" prefix)
+                     (printf "   Found %d log files\n" (count logs))
+                     (when-not (empty? logs)
+                        (zip-files dir zip logs)
+                        (printf "   Zipped to %s\n" (:name zip))
+                        (apply io/delete-file logs)
+                        (printf "   Removed %d files\n" (count logs))))))
+            (catch :com.github.jlangch.venice.ShellException ex
+                (printf "Error compacting %s: %s" prefix (:message ex)))))
+
+   (defn first-day-last-month []
+         (-> (time/local-date) 
+             (time/first-day-of-month) 
+             (time/minus :month 1)))
+
+   (let [dir (io/file (nth *ARGV* 2))
+         date (first-day-last-month)
+         year  (time/year date)
+         month (time/month date)]
+      (if (io/exists-dir? dir)
+         (do
+            (printf "Compacting %d-%02d logs from '%s' ...\n" year month dir)
+            (zip-tomcat-logs "localhost_access_log" dir year month)
+            (zip-tomcat-logs "host-manager" dir year month)
+            (zip-tomcat-logs "manager" dir year month)
+            (zip-tomcat-logs "localhost" dir year month)
+            (zip-tomcat-logs "catalina" dir year month)
+            (println "Done."))
+         (printf "Error: The tomcat log dir '%s' does not exist" dir))))
 ```
 
 
