@@ -404,14 +404,14 @@ actors accept data to be processed by the actor's function
          (let [actor (agent {:state state :handler handler})]
             (swap! actors assoc name actor)))
 
-   (defn invoke-handler [body msg]
-         (let [{:keys [state handler]} body
+   (defn invoke-handler [context msg]
+         (let [{:keys [state handler]} context
                new-state (handler state msg)]
-            (assoc body :state new-state)))
+            (assoc context :state new-state)))
 
-   (defn send! [name & xs]
+   (defn send! [name & args]
          (let [actor (get @actors name)]
-            (send actor invoke-handler (vector xs))
+            (send actor invoke-handler args)
             nil))
 
    (make! :printer nil (fn [_ msg] (apply println msg)))
