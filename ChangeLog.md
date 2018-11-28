@@ -11,7 +11,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ... 
+- added more implicit type conversions to convert Java lists to Venice 
+        lists. In most cases it's not required anymore to explicitly 
+        convert Java lists with `(into '() java-list)`
 
 ### fixed
 

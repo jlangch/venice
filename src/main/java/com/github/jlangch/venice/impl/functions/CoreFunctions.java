@@ -2833,6 +2833,9 @@ public class CoreFunctions {
 			else if (coll instanceof VncList) {
 				return ((VncList)coll).empty();
 			} 
+			else if (coll instanceof VncJavaList) {
+				return ((VncJavaList)coll).empty();
+			} 
 			else if (coll instanceof VncMap) {
 				return ((VncMap)coll).empty();
 			} 
@@ -3109,6 +3112,9 @@ public class CoreFunctions {
 			if (Types.isVncList(val)) {
 				return ((VncList)val).first();
 			}
+			else if (Types.isVncJavaList(val)) {
+				return ((VncJavaList)val).first();
+			}
 			else if (Types.isVncString(val)) {
 				return ((VncString)val).first();
 			}
@@ -3148,6 +3154,9 @@ public class CoreFunctions {
 			if (Types.isVncList(val)) {
 				return ((VncList)val).second();
 			}
+			else if (Types.isVncJavaList(val)) {
+				return ((VncJavaList)val).second();
+			}
 			else if (Types.isVncString(val)) {
 				return ((VncString)val).second();
 			}
@@ -3185,6 +3194,9 @@ public class CoreFunctions {
 			
 			if (Types.isVncList(val)) {
 				return ((VncList)val).nth(idx);
+			}
+			else if (Types.isVncJavaList(val)) {
+				return ((VncJavaList)val).nth(idx);
 			}
 			else if (Types.isVncString(val)) {
 				return ((VncString)val).nth(idx);
@@ -3224,6 +3236,9 @@ public class CoreFunctions {
 			if (Types.isVncList(val)) {
 				return ((VncList)val).last();
 			}
+			else if (Types.isVncJavaList(val)) {
+				return ((VncJavaList)val).last();
+			}
 			else if (Types.isVncString(val)) {
 				return ((VncString)val).last();
 			}
@@ -3262,6 +3277,9 @@ public class CoreFunctions {
 			}
 			else if (Types.isVncVector(coll)) {
 				return ((VncVector)coll).rest();
+			}
+			else if (Types.isVncJavaList(coll)) {
+				return ((VncJavaList)coll).rest();
 			}
 			else if (Types.isVncList(coll)) {
 				return ((VncList)coll).rest();
@@ -3307,6 +3325,10 @@ public class CoreFunctions {
 				final VncList list = (VncList)coll;
 				return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList(); 
 			}
+			else if (Types.isVncJavaList(coll)) {
+				final VncList list = ((VncJavaList)coll).toVncList();
+				return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList(); 
+			}
 			else {
 				throw new VncException(String.format(
 						"Invalid argument type %s while calling function 'butlast'",
@@ -3346,7 +3368,7 @@ public class CoreFunctions {
 						? new VncVector() 
 						: new VncVector(vec.getList().subList(0, n));
 			}
-			else if (Types.isVncList(args.nth(0))) {
+			else if (Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0))) {
 				final VncList list = Coerce.toVncList(args.nth(0));		
 				final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
 				return list.isEmpty() 
@@ -3392,7 +3414,7 @@ public class CoreFunctions {
 						? new VncVector() 
 						: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 			}
-			else if (Types.isVncList(args.nth(0))) {
+			else if (Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0))) {
 				final VncList list = Coerce.toVncList(args.nth(0));		
 				final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
 				return list.isEmpty() 
@@ -4920,8 +4942,8 @@ public class CoreFunctions {
 	};
 	
 	private static void flatten(final VncVal value, final List<VncVal> result) {
-		if (Types.isVncList(value)) {
-			((VncList)value).getList().forEach(v -> flatten(v, result));
+		if (Types.isVncList(value) || Types.isVncJavaList(value)) {
+			Coerce.toVncList(value).getList().forEach(v -> flatten(v, result));
 		}
 		else if (Types.isVncHashMap(value)) {
 			((VncHashMap)value).entries().forEach(e -> {
@@ -4951,6 +4973,14 @@ public class CoreFunctions {
 		else if (Types.isVncList(coll)) {
 			return new VncList(
 					((VncList)coll)
+						.getList()
+						.stream()
+						.sorted(c)
+						.collect(Collectors.toList()));
+		}
+		else if (Types.isVncJavaList(coll)) {
+			return new VncList(
+					((VncJavaList)coll)
 						.getList()
 						.stream()
 						.sorted(c)

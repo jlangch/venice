@@ -309,13 +309,11 @@ Another example:
 (do
    (import :org.test.User :java.time.LocalDate)
 
-   ;; convert a Java list to a Venice list and return the 
-   ;; first item
+   ;; get the first item of a Java list
    (first
-      (into '() 
-         (doto (. :java.util.ArrayList :new)
-               (. :add 1)
-               (. :add 2))))
+      (doto (. :java.util.ArrayList :new)
+            (. :add 1)
+            (. :add 2))))
 
    (def users [
         (. :User :new "john" 24 (. :LocalDate :of 1994 7 21)))
