@@ -288,6 +288,9 @@ public class Coerce {
 		else if (val instanceof VncHashMap) {
 			return (VncHashMap)val;
 		}
+		else if (val instanceof VncMap) {
+			return new VncHashMap(((VncMap)val).getMap());
+		}
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to hash-map. %s", 
