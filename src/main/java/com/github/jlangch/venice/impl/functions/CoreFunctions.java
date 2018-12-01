@@ -2644,7 +2644,7 @@ public class CoreFunctions {
 					"(every? number? nil)",
 					"(every? number? [])",
 					"(every? number? [1 2 3 4])",
-					"(every? number?) [1 2 3 :a])",
+					"(every? number? [1 2 3 :a])",
 					"(every? #(>= % 10) [10 11 12])");
 		}
 		
@@ -3999,6 +3999,8 @@ public class CoreFunctions {
 			setDoc("Applies f to all arguments composed of args and coll");
 			
 			setExamples(
+					"(apply + [1 2 3])",
+					"(apply + 1 2 [3 4 5])",
 					"(apply str [1 2 3 4 5])");
 		}
 		
