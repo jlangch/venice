@@ -172,8 +172,6 @@ public class DocGenerator {
 
 		final DocSection test = new DocSection("Test");
 		numbers.addSection(test);
-		test.addItem(getDocItem("nil?"));
-		test.addItem(getDocItem("some?"));
 		test.addItem(getDocItem("zero?"));
 		test.addItem(getDocItem("pos?"));
 		test.addItem(getDocItem("neg?"));
@@ -533,13 +531,15 @@ public class DocGenerator {
 
 		final DocSection misc = new DocSection("Misc");
 		all.addSection(misc);
+		misc.addItem(getDocItem("nil?"));
+		misc.addItem(getDocItem("some?"));
 		misc.addItem(getDocItem("doc"));
 		misc.addItem(getDocItem("class"));
 		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
 		misc.addItem(getDocItem("callstack"));
-		
+
 
 		final DocSection meta = new DocSection("Meta");
 		all.addSection(meta);

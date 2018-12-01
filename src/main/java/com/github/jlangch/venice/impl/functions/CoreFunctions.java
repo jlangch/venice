@@ -2641,11 +2641,11 @@ public class CoreFunctions {
 					"false otherwise");
 			
 			setExamples(
-					"(every? (fn [x] (number? x)) nil)",
-					"(every? (fn [x] (number? x)) [])",
-					"(every? (fn [x] (number? x)) [1 2 3 4])",
-					"(every? (fn [x] (number? x)) [1 2 3 :a])",
-					"(every? (fn [x] (>= x 10)) [10 11 12])");
+					"(every? number? nil)",
+					"(every? number? [])",
+					"(every? number? [1 2 3 4])",
+					"(every? number?) [1 2 3 :a])",
+					"(every? #(>= % 10) [10 11 12])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2680,11 +2680,11 @@ public class CoreFunctions {
 					"true otherwise");
 			
 			setExamples(
-					"(not-every? (fn [x] (number? x)) nil)",
-					"(not-every? (fn [x] (number? x)) [])",
-					"(not-every? (fn [x] (number? x)) [1 2 3 4])",
-					"(not-every? (fn [x] (number? x)) [1 2 3 :a])",
-					"(not-every? (fn [x] (>= x 10)) [10 11 12])");
+					"(not-every? number? nil)",
+					"(not-every? number? [])",
+					"(not-every? number? [1 2 3 4])",
+					"(not-every? number? [1 2 3 :a])",
+					"(not-every? #(>= % 10) [10 11 12])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2704,11 +2704,11 @@ public class CoreFunctions {
 					"false otherwise");
 			
 			setExamples(
-					"(any? (fn [x] (number? x)) nil)",
-					"(any? (fn [x] (number? x)) [])",
-					"(any? (fn [x] (number? x)) [1 :a :b])",
-					"(any? (fn [x] (number? x)) [1 2 3])",
-					"(any? (fn [x] (>= x 10)) [1 5 10])");
+					"(any? number? nil)",
+					"(any? number? [])",
+					"(any? number? [1 :a :b])",
+					"(any? number? [1 2 3])",
+					"(any? #(>= % 10) [1 5 10])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -2743,11 +2743,11 @@ public class CoreFunctions {
 					"true otherwise");
 			
 			setExamples(
-					"(not-any? (fn [x] (number? x)) nil)",
-					"(not-any? (fn [x] (number? x)) [])",
-					"(not-any? (fn [x] (number? x)) [1 :a :b])",
-					"(not-any? (fn [x] (number? x)) [1 2 3])",
-					"(not-any? (fn [x] (>= x 10)) [1 5 10])");
+					"(not-any? number? nil)",
+					"(not-any? number? [])",
+					"(not-any? number? [1 :a :b])",
+					"(not-any? number? [1 2 3])",
+					"(not-any? #(>= % 10) [1 5 10])");
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -4263,9 +4263,7 @@ public class CoreFunctions {
 					"Returns nil. ");
 			
 			setExamples(
-					"(docoll \n" +
-					"   (fn [x] (println x)) \n" +
-					"   [1 2 3 4])",
+					"(docoll #(println %) [1 2 3 4])",
 					"(docoll \n" +
 					"    (fn [[k v]] (println (pr-str k v)))  \n" +
 					"    {:a 1 :b 2 :c 3 :d 4})");
