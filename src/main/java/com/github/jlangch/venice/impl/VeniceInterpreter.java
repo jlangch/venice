@@ -65,10 +65,7 @@ import com.github.jlangch.venice.util.CallFrame;
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		final Integer maxExecTimeSeconds = JavaInterop.getInterceptor().getMaxExecutionTimeSeconds();
-		this.sandboxDeadlineTime = maxExecTimeSeconds == null 
-									? -1
-									: System.currentTimeMillis() + 1000 * maxExecTimeSeconds.longValue();
+		this.sandboxDeadlineTime = getSandboxDeadlineTime();
 	}
 	
 	
@@ -814,12 +811,20 @@ public class VeniceInterpreter implements Serializable  {
 	private void checkSandboxMaxExecutionTime() {
 		if (sandboxDeadlineTime > 0) {
 			if (System.currentTimeMillis() > sandboxDeadlineTime) {
-				throw new SecurityException(String.format(
-						"Venice Sandbox: The sandbox execeeded the max execution time"));
+				throw new SecurityException(
+						"Venice Sandbox: The sandbox execeeded the max execution time");
 			}
 		}
 	}
 
+	private static long getSandboxDeadlineTime() {
+		final Integer maxExecTimeSeconds = JavaInterop.getInterceptor().getMaxExecutionTimeSeconds();
+		return maxExecTimeSeconds == null 
+					? -1
+					: System.currentTimeMillis() + 1000 * maxExecTimeSeconds.longValue();
+	}
+	
+	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 
