@@ -157,8 +157,16 @@ public class SystemFunctions {
 
 			assertArity("sleep", args, 1);
 			
-			try { 
-				Thread.sleep(Coerce.toVncLong(args.first()).getValue());
+			try {
+				long sleep = Coerce.toVncLong(args.first()).getValue();
+				final long sleepTo = System.currentTimeMillis() + sleep;
+				
+				// sleep in intervals of 1s so that the sandbox max execution time check
+				// kicks in early. We do not interrupt the waiting thread yet.
+				while (sleep > 0) {
+					Thread.sleep(Math.min(1000, sleep));
+					sleep = sleepTo - System.currentTimeMillis();
+				}
 			} 
 			catch(InterruptedException ex) {
 				Thread.interrupted(); // resets the thread's "interrupted" status
