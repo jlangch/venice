@@ -784,6 +784,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("shutdown-agents?");
+
 			assertArity("shutdown-agents?", args, 0);
 	
 			return Agent.isShutdown() ? True : False;
@@ -840,7 +842,9 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			assertArity("await-termination-agents", args, 0);
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("await-termination-agents?");
+
+			assertArity("await-termination-agents?", args, 0);
 	
 			return Agent.isShutdown() ? True : False;
 		}
