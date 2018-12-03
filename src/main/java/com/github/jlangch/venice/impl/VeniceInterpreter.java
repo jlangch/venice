@@ -39,6 +39,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
 import com.github.jlangch.venice.impl.types.Coerce;
@@ -64,7 +65,10 @@ import com.github.jlangch.venice.util.CallFrame;
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		
+		final Integer maxExecTimeSeconds = JavaInterop.getInterceptor().getMaxExecutionTimeSeconds();
+		this.sandboxDeadlineTime = maxExecTimeSeconds == null 
+									? -1
+									: System.currentTimeMillis() + 1000 * maxExecTimeSeconds.longValue();
 	}
 	
 	
@@ -422,6 +426,8 @@ public class VeniceInterpreter implements Serializable  {
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					if (Types.isVncFunction(el.nth(0))) {
+						checkSandboxMaxExecutionTime();
+						
 						// invoke function
 						final VncFunction f = (VncFunction)el.nth(0);
 						final VncList fnArgs = el.rest();
@@ -434,6 +440,7 @@ public class VeniceInterpreter implements Serializable  {
 						}
 						finally {
 							ThreadLocalMap.getCallStack().pop();
+							checkSandboxMaxExecutionTime();
 						}
 					}
 					else if (Types.isVncKeyword(el.nth(0))) {
@@ -803,6 +810,15 @@ public class VeniceInterpreter implements Serializable  {
 			ThreadLocalMap.getCallStack().pop();
 		}
 	}
+	
+	private void checkSandboxMaxExecutionTime() {
+		if (sandboxDeadlineTime > 0) {
+			if (System.currentTimeMillis() > sandboxDeadlineTime) {
+				throw new SecurityException(String.format(
+						"Venice Sandbox: The sandbox execeeded the max execution time"));
+			}
+		}
+	}
 
 	
 	private static final long serialVersionUID = -8130740279914790685L;
@@ -810,4 +826,6 @@ public class VeniceInterpreter implements Serializable  {
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 
 	private final JavaImports javaImports = new JavaImports();
+	
+	private final long sandboxDeadlineTime;
 }

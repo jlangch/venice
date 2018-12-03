@@ -275,7 +275,18 @@ public class SandboxRules {
 		}
 		return this;
 	}
-
+	
+	/**
+	 * Sets the max execution time in seconds a Venice script under this 
+	 * <code>SandboxRules</code> is allowed to run.
+	 * 
+	 * @param maxExecTimeSeconds the max exec time in seconds
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withMaxExecTimeSeconds(final int maxExecTimeSeconds) {
+		this.maxExecTimeSeconds = maxExecTimeSeconds <= 0 ? null : maxExecTimeSeconds;
+		return this;
+	}
 	
 	/**
 	 * Reject access to all Venice I/O related functions
@@ -346,6 +357,15 @@ public class SandboxRules {
 	public Set<String> getRules() {
 		return Collections.unmodifiableSet(rules);
 	}
+	
+	/**
+	 * @return the max execution time in seconds a Venice script under this 
+	 * <code>SandboxRules</code> is allowed to run.
+	 */
+	public Integer getMaxExecTimeSeconds() {
+		return maxExecTimeSeconds;
+	}
+	
 	
 	/**
 	 * Returns the default rules used for Venice sandboxes.
@@ -455,4 +475,5 @@ public class SandboxRules {
 
 
 	private final Set<String> rules = new HashSet<>();
+	private Integer maxExecTimeSeconds = null;
 }

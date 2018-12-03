@@ -41,8 +41,8 @@ public class JavaInterop {
 		return !(getInterceptor() instanceof AcceptAllInterceptor);
 	}
 	
-	public static void checkSandboxMaxExecutionTime() {
-		getInterceptor().checkMaxExecutionTime();
+	public static Integer getMaxExecutionTimeSeconds() {
+		return getInterceptor().getMaxExecutionTimeSeconds();
 	}
 	
 	

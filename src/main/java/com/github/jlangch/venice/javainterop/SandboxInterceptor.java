@@ -140,11 +140,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	}
 
 	@Override
-	public void checkMaxExecutionTime() {
-		if (sandboxRules.hasSandboxExpired()) {
-			throw new SecurityException(String.format(
-					"Venice Sandbox: Max execution time exceeded"));
-		}
+	public Integer getMaxExecutionTimeSeconds() {
+		return sandboxRules.getMaxExecTimeSeconds();
 	}
 
 	

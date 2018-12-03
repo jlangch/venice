@@ -119,7 +119,8 @@ public abstract class Interceptor implements IInterceptor {
 	}
 
 	@Override
-	public void checkMaxExecutionTime() {
+	public Integer getMaxExecutionTimeSeconds() {
+		return null;
 	}
 
 }

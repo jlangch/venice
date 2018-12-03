@@ -164,9 +164,8 @@ public interface IInterceptor {
 	void validateBlackListedVeniceFunction(String funcName) throws SecurityException;
 
 	/**
-	 * Checks if the max execution time has been exceeded.
-	 * 
-	 * @throws SecurityException if the max execution time has been exceeded.
+	 * @return the max execution time in seconds a Venice script under this 
+	 * <code>Sandbox</code> is allowed to run.
 	 */
-	void checkMaxExecutionTime() throws SecurityException;
+	Integer getMaxExecutionTimeSeconds();
 }

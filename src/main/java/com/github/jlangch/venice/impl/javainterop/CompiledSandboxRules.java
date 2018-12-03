@@ -42,7 +42,8 @@ public class CompiledSandboxRules {
 			final List<Pattern> whiteListMethodPatterns,
 			final List<Pattern> whiteListClasspathPatterns,
 			final Set<String> blackListVeniceFunctions,
-			final Set<String> whiteListSystemProps
+			final Set<String> whiteListSystemProps,
+			final Integer maxExecTimeSeconds
 	) {
 		this.whiteListClassPatterns = whiteListClassPatterns == null 
 											? Collections.emptyList() 
@@ -62,12 +63,12 @@ public class CompiledSandboxRules {
 											
 		this.whiteListSystemProps = whiteListSystemProps;
 		
-		this.expiryTime = -1;
+		this.maxExecTimeSeconds = maxExecTimeSeconds;
 	}
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null, null, null);
+			return new CompiledSandboxRules(null, null, null, null, null, null);
 		}
 		
 		final List<String> filtered = whiteList
@@ -121,7 +122,9 @@ public class CompiledSandboxRules {
 						.stream()
 						.filter(s -> s.startsWith("system.property:"))
 						.map(s -> s.substring("system.property:".length()))
-						.collect(Collectors.toSet()));
+						.collect(Collectors.toSet()),
+						
+				whiteList.getMaxExecTimeSeconds());
 	}
 	
 	/**
@@ -237,8 +240,8 @@ public class CompiledSandboxRules {
 					|| (property != null && whiteListSystemProps.contains(property));
 	}
 	
-	public boolean hasSandboxExpired() {
-		return expiryTime > 0 && expiryTime < System.currentTimeMillis();
+	public Integer getMaxExecTimeSeconds() {
+		return maxExecTimeSeconds;
 	}
 	
 	
@@ -261,5 +264,5 @@ public class CompiledSandboxRules {
 	private final List<Pattern> whiteListClasspathPatterns;
 	private final Set<String> blackListVeniceFunctions;
 	private final Set<String> whiteListSystemProps;
-	private final long expiryTime;
+	private final Integer maxExecTimeSeconds;
 }
