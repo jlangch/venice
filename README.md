@@ -504,32 +504,6 @@ venice.eval("(system-prop \"db.password\")");
 ```
 
 
-Limit execution time. The execution time is checked entering and leaving Venice
-functions. Blocking calls like sleep or wait are not interrupted but execution time 
-is checked right after returning.
-
-```java
-import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.*;
-
-final IInterceptor interceptor =
-    new SandboxInterceptor(
-        new SandboxRules()
-              .withMaxExecTimeSeconds(2));
-
-final Venice venice = new Venice(interceptor);
-
-// => FAIL with a security exception
-venice.eval("(do (dotimes [n 3] (sleep 800)) (+ 1 1))");
-
-// => FAIL with a security exception from the future call
-venice.eval(
-   "(do                                                          " +
-   "  (def wait (fn [] (do (dotimes [n 100] (sleep 800)) 100)))  " +
-   "  (let [f (future wait)] (deref f)))                         ");
-```
-
-
 Prohibit Venice I/O functions and Java Interop for completely safe 
 scripting:
 
