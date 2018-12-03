@@ -812,7 +812,7 @@ public class VeniceInterpreter implements Serializable  {
 		if (sandboxDeadlineTime > 0) {
 			if (System.currentTimeMillis() > sandboxDeadlineTime) {
 				throw new SecurityException(
-						"Venice Sandbox: The sandbox execeeded the max execution time");
+						"Venice Sandbox: The sandbox exceeded the max execution time");
 			}
 		}
 	}
