@@ -39,9 +39,9 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
+import com.github.jlangch.venice.impl.javainterop.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
@@ -65,7 +65,7 @@ import com.github.jlangch.venice.util.CallFrame;
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		this.sandboxDeadlineTime = getSandboxDeadlineTime();
+		this.sandboxMaxExecutionTimeChecker = new SandboxMaxExecutionTimeChecker();
 	}
 	
 	
@@ -423,7 +423,7 @@ public class VeniceInterpreter implements Serializable  {
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					if (Types.isVncFunction(el.nth(0))) {
-						checkSandboxMaxExecutionTime();
+						sandboxMaxExecutionTimeChecker.check();
 						
 						// invoke function
 						final VncFunction f = (VncFunction)el.nth(0);
@@ -437,7 +437,7 @@ public class VeniceInterpreter implements Serializable  {
 						}
 						finally {
 							ThreadLocalMap.getCallStack().pop();
-							checkSandboxMaxExecutionTime();
+							sandboxMaxExecutionTimeChecker.check();
 						}
 					}
 					else if (Types.isVncKeyword(el.nth(0))) {
@@ -808,22 +808,6 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private void checkSandboxMaxExecutionTime() {
-		if (sandboxDeadlineTime > 0) {
-			if (System.currentTimeMillis() > sandboxDeadlineTime) {
-				throw new SecurityException(
-						"Venice Sandbox: The sandbox exceeded the max execution time");
-			}
-		}
-	}
-
-	private static long getSandboxDeadlineTime() {
-		final Integer maxExecTimeSeconds = JavaInterop.getInterceptor().getMaxExecutionTimeSeconds();
-		return maxExecTimeSeconds == null 
-					? -1
-					: System.currentTimeMillis() + 1000 * maxExecTimeSeconds.longValue();
-	}
-	
 	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
@@ -832,5 +816,5 @@ public class VeniceInterpreter implements Serializable  {
 
 	private final JavaImports javaImports = new JavaImports();
 	
-	private final long sandboxDeadlineTime;
+	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;
 }
