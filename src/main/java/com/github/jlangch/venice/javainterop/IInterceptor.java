@@ -163,4 +163,10 @@ public interface IInterceptor {
 	 */
 	void validateBlackListedVeniceFunction(String funcName) throws SecurityException;
 
+	/**
+	 * Checks if the max execution time has been exceeded.
+	 * 
+	 * @throws SecurityException if the max execution time has been exceeded.
+	 */
+	void checkMaxExecutionTime() throws SecurityException;
 }

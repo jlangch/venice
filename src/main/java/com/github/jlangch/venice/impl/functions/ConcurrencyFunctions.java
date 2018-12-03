@@ -439,6 +439,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("agent");
+
 			assertMinArity("agent", args, 1);
 				
 			return new VncJavaObject(new Agent(args.nth(0), args.slice(1)));
@@ -464,6 +466,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("send");
+
 			assertMinArity("send", args, 2);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
@@ -502,6 +506,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("send-off");
+
 			assertArity("send-off", args, 3);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
@@ -537,6 +543,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("restart-agent");
+
 			assertArity("restart-agent", args, 2);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
@@ -577,6 +585,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("set-error-handler!");
+
 			assertArity("set-error-handler!", args, 2);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
@@ -611,6 +621,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("agent-error");
+
 			assertArity("agent-error", args, 1);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
@@ -642,6 +654,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("agent-error-mode");
+
 			assertArity("agent-error-mode", args, 1);
 			
 			if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
@@ -673,6 +687,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("await");
+
 			assertMinArity("await", args, 1);
 	
 			final List<Agent> agents = args.getList()
@@ -705,6 +721,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("await-for");
+
 			assertMinArity("await-for", args, 2);
 	
 			final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();
@@ -738,6 +756,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("shutdown-agents");
+
 			assertArity("shutdown-agents", args, 0);
 	
 			Agent.shutdown();
@@ -789,6 +809,8 @@ public class ConcurrencyFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("await-termination-agents");
+
 			assertArity("await-termination-agents", args, 1);
 
 			final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();

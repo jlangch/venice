@@ -61,6 +61,8 @@ public class CompiledSandboxRules {
 											: blackListVeniceFunctions;
 											
 		this.whiteListSystemProps = whiteListSystemProps;
+		
+		this.expiryTime = -1;
 	}
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
@@ -235,6 +237,10 @@ public class CompiledSandboxRules {
 					|| (property != null && whiteListSystemProps.contains(property));
 	}
 	
+	public boolean hasSandboxExpired() {
+		return expiryTime > 0 && expiryTime < System.currentTimeMillis();
+	}
+	
 	
 	private static boolean allowAccessToAllSystemProperties(final List<String> rules) {
 		return rules.stream().anyMatch(s -> s.equals("system.property:*"));
@@ -255,4 +261,5 @@ public class CompiledSandboxRules {
 	private final List<Pattern> whiteListClasspathPatterns;
 	private final Set<String> blackListVeniceFunctions;
 	private final Set<String> whiteListSystemProps;
+	private final long expiryTime;
 }

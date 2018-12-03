@@ -37,7 +37,7 @@ public class IOFnBlacklisted {
 								"sh",
 								"system-prop",
 								
-								// multi-threading
+								// concurrency
 								"deliver",
 								"future",
 								"future?",
@@ -46,6 +46,19 @@ public class IOFnBlacklisted {
 								"future-done?",
 								"promise",
 								"promise?",
+								"agent",
+								"send",
+								"send-off",
+								"restart-agent",
+								"set-error-handler!",
+								"agent-error",
+								"agent-error-mode",
+								"await",
+								"await-for",
+								"shutdown-agents",
+								"shutdown-agents?",
+								"await-termination-agents",
+								"await-termination-agents?",
 
 								// I/O
 								"io/file-size",

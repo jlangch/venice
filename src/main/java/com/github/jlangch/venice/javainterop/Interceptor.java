@@ -118,4 +118,8 @@ public abstract class Interceptor implements IInterceptor {
 		// ok,  no black listed Venice functions
 	}
 
+	@Override
+	public void checkMaxExecutionTime() {
+	}
+
 }
