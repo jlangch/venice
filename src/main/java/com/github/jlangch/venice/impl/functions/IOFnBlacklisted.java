@@ -34,6 +34,7 @@ public class IOFnBlacklisted {
 								"load-file",
 
 								// System
+								"sleep",
 								"sh",
 								"system-prop",
 								

@@ -37,29 +37,29 @@ public class Sandbox_MaxExecTime_Test {
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 	
+		// Returns after ~3000ms with a SecurityException
 		assertThrows(SecurityException.class, () -> {
 			new Venice(interceptor).eval("(do (+ 1 1) (sleep 3000) (+ 1 2))");
 		});
 	}
 
 	@Test
-	public void test_future_too_long_1() {
+	public void test_future_too_long() {
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 
 		final Venice venice = new Venice(interceptor);
 
 		final String script = 
-				"(do                                              " +
-				"   (def wait (fn [] (do (sleep 3000) {:a 100}))) " +
-				"                                                 " +
-				"   (let [f (future wait)]                        " +
-				"        (deref f))                               " +
+				"(do                                                         " +
+				"   (def wait (fn [] (do (dotimes [n 20] (sleep 800)) 100))) " +
+				"                                                            " +
+				"   (let [f (future wait)]                                   " +
+				"        (deref f))                                          " +
 				") ";
 
-		assertThrows(SecurityException.class, () -> {
-			venice.eval(script);
-		});
+		// Returns after ~2400s with a SecurityException
+		assertThrows(SecurityException.class, () -> venice.eval(script));
 	}
 
 	@Test

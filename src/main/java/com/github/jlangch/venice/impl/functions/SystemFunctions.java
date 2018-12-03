@@ -153,11 +153,17 @@ public class SystemFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("sleep");
+
 			assertArity("sleep", args, 1);
 			
 			try { 
 				Thread.sleep(Coerce.toVncLong(args.first()).getValue());
-			} catch(Exception ex) {
+			} 
+			catch(InterruptedException ex) {
+				Thread.interrupted(); // resets the thread's "interrupted" status
+			} 
+			catch(Exception ex) {
 			}
 			
 			return Nil;
