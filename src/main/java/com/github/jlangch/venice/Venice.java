@@ -254,6 +254,7 @@ public class Venice {
 	
 	private Object runWithSandbox(final Callable<Object> callable) {
 		try {
+			ThreadLocalMap.remove(); // clean thread locals			
 			JavaInterop.register(interceptor);
 			
 			return callable.call();
@@ -271,8 +272,8 @@ public class Venice {
 		}
 		finally {
 			// clean up
-			ThreadLocalMap.remove();
 			JavaInterop.unregister();
+			ThreadLocalMap.remove();
 		}
 	}
 

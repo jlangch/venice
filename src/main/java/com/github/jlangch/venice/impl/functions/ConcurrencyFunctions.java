@@ -1008,8 +1008,8 @@ public class ConcurrencyFunctions {
 				}
 				finally {
 					// clean up
-					ThreadLocalMap.remove();
 					JavaInterop.unregister();
+					ThreadLocalMap.remove();
 				}
 			};
 			

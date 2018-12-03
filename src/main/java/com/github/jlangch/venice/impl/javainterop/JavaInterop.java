@@ -28,11 +28,11 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 
 public class JavaInterop {
 
-	public static void enableReflectionCache(final boolean enable) {
+	public static void enableJavaReflectionCache(final boolean enable) {
 		ReflectionAccessor.enableCache(enable);
 	}
 
-	public static boolean isReflectionCacheEnabled() {
+	public static boolean isJavaReflectionCacheEnabled() {
 		return ReflectionAccessor.isCacheEnabled();
 	}
 	
