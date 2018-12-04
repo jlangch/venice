@@ -29,13 +29,13 @@
 
 
 (defmacro 
-   { :arglists '("(defn name args body)")
+   { :arglists '("(defn name args & body)")
      :doc "Same as (def name (fn name [args*] body))" 
      :examples '("(defn sum [x y] (+ x y))") }
      
-   defn [name args body]
+   defn [name args & body]
    
-   `(def ~name (fn ~name ~args ~body)))
+   `(def ~name (fn ~name ~args ~@body)))
     
 
 (defmacro 

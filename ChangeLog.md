@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added an execution time limit for Venice scripts running within a sandbox
+- added multi expression body for functions
 
 ### fixed
 

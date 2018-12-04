@@ -401,7 +401,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncList fnParams = Coerce.toVncList(ast.nth(argPos++));
 					final VncList preConditions = getFnPreconditions(ast.nth(argPos));
 					if (preConditions != null) argPos++;
-					final VncVal fnBody = ast.nth(argPos);
+					final VncList fnBody = ast.slice(argPos);
 					final Env fn_env = env;
 					return new VncFunction(fnName, fnBody, env, fnParams) {
 									public VncVal apply(final VncList args) {
@@ -414,8 +414,17 @@ public class VeniceInterpreter implements Serializable  {
 										
 										validateFnPreconditions(fnName, preConditions, localEnv);
 										
-										return EVAL(fnBody, localEnv);
-									}
+										if (fnBody.isEmpty()) {
+											return Constants.Nil;
+										}
+										if (fnBody.size() == 1) {
+											return EVAL(fnBody.first(), localEnv);
+										}
+										else {
+											eval_ast(fnBody.slice(0, fnBody.size()-1), localEnv);
+											return EVAL(fnBody.last(), localEnv);
+										}
+								}
 									
 								    private static final long serialVersionUID = -1L;
 								};
