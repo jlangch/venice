@@ -56,12 +56,7 @@ public class Reader {
 	}
 
 	private Token peek() {
-		if (position >= tokens.size()) {
-			return null;
-		} 
-		else {
-			return tokens.get(position);
-		}
+		return position >= tokens.size() ? null : tokens.get(position);
 	}
    
 	private Token next() {
