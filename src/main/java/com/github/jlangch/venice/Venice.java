@@ -25,6 +25,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
@@ -253,6 +258,15 @@ public class Venice {
 	}
 	
 	private Object runWithSandbox(final Callable<Object> callable) {
+		if (interceptor.getMaxExecutionTimeSeconds() == null) {
+			return doRun(callable);
+		}
+		else {
+			return doRunWithTimeout(callable, interceptor.getMaxExecutionTimeSeconds());
+		}
+	}
+
+	private Object doRun(final Callable<Object> callable) {
 		try {
 			ThreadLocalMap.remove(); // clean thread locals			
 			JavaInterop.register(interceptor);
@@ -274,6 +288,30 @@ public class Venice {
 			// clean up
 			JavaInterop.unregister();
 			ThreadLocalMap.remove();
+		}
+	}
+
+	private Object doRunWithTimeout(final Callable<Object> callable, int timeoutSeconds) {
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		try {
+			final Future<Object> future = executor.submit(callable);
+		    return future.get(interceptor.getMaxExecutionTimeSeconds(), TimeUnit.SECONDS);
+		} 
+		catch (TimeoutException ex) {
+			throw new SecurityException(
+					"Venice Sandbox: The sandbox exceeded the max execution time");
+		}
+		catch(RuntimeException ex) {
+			throw ex;
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+		finally {
+			try {
+				executor.shutdownNow();
+			}
+			catch(RuntimeException ex) { /* do not hide exception */ }
 		}
 	}
 
