@@ -22,10 +22,12 @@
 package com.github.jlangch.venice.sandbox;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -37,10 +39,15 @@ public class Sandbox_MaxExecTime_Test {
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 	
+		final StopWatch sw = new StopWatch();
+		
 		// Returns after ~2s with a SecurityException
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))");
-		});
+		assertThrows(
+				SecurityException.class, 
+				() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))"));
+		
+		final long elapsed = sw.stop().elapsedMillis();
+		assertTrue(2000 < elapsed && elapsed < 2500);
 	}
 
 	@Test
@@ -58,8 +65,13 @@ public class Sandbox_MaxExecTime_Test {
 				"        (deref f))                           " +
 				") ";
 
+		final StopWatch sw = new StopWatch();
+		
 		// Returns after ~2s with a SecurityException
 		assertThrows(SecurityException.class, () -> venice.eval(script));
+		
+		final long elapsed = sw.stop().elapsedMillis();
+		assertTrue(2000 < elapsed && elapsed < 2500);
 	}
 
 	@Test

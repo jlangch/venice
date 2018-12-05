@@ -18,5 +18,6 @@
 
 [Dali SVG](https://github.com/stathissideris/dali)
 
-[repl] (http://app.klipse.tech/)
-[repl] (https://repl.it/repls/RepentantAngelicBrackets)
+[REPL](http://app.klipse.tech/)
+
+[REPL](https://repl.it/repls/RepentantAngelicBrackets)
