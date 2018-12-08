@@ -168,7 +168,7 @@ Caused by: java.lang.ArithmeticException: / by zero
 
 ## Java Interop
 
-Venice supports calling constructors, static and instance methods as well as 
+Venice supports calling Java constructors, static and instance methods as well as 
 accessing static class and instance fields.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
