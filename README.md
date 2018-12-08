@@ -15,7 +15,7 @@ having a safe, powerful scripting and expression language that can be used
 to implement scriptable extension points and rules for applications.
 
 Venice supports macros, tail-recursion, dynamic code loading, dynamic 
-(thread-local) binding. Comes with excellent Java interoperability, and a 
+(thread-local) binding. It comes with excellent Java interoperability, and a 
 configurable sandbox that can prevent all sorts of dangerous JVM interactions 
 like reading/writing files, invoking _System.exit(0)_ or any other malicious 
 action.
@@ -128,7 +128,7 @@ System.out.println(ps.getOutput());
 
 ### Precompiling Venice
 
-Pre-compiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
+Precompiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
 
 ```java
 import com.github.jlangch.venice.Venice;
