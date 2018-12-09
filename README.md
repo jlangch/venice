@@ -265,7 +265,7 @@ Java Callbacks:
 
 
 ```clojure
-;; Swing GUI (demonstrates passing parameters across callbacks)
+;; Swing GUI
 (do
    (import :java.lang.Runnable)
    (import :javax.swing.JPanel)
