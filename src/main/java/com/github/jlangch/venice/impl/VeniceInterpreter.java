@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.CallFrame;
+import com.github.jlangch.venice.util.ElapsedTime;
 
 
 public class VeniceInterpreter implements Serializable  {
@@ -471,9 +472,19 @@ public class VeniceInterpreter implements Serializable  {
 		return Printer._pr_str(exp, true);
 	}
 	
-	public VncVal RE(final String script, final String filename, final Env env) {
-		final VncVal ast = READ(script, filename);
-		return EVAL(ast, env);
+	public VncVal RE(
+			final String script, 
+			final String filename, 
+			final Env env,
+			final ElapsedTime elapsedTime
+	) {
+		final VncVal ast = READ(script, filename);	
+		if (elapsedTime != null) elapsedTime.readDone();	
+		
+		final VncVal result = EVAL(ast, env);
+		if (elapsedTime != null) elapsedTime.evalDone();	
+		
+		return result;
 	}
 	
 	public Env createEnv() {
@@ -502,16 +513,17 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
 
 		// core module: core.venice 
-		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
+		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env, null);
 
 		if (preloadedExtensionModules != null) {
 			preloadedExtensionModules.forEach(
-				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env));
+				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env, null));
 		}
 		
 		return env;
 	}
-	
+
+
 	/**
 	 * Resolves a class name.
 	 * 
@@ -822,7 +834,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
-
+	
 	private final JavaImports javaImports = new JavaImports();
 	
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;

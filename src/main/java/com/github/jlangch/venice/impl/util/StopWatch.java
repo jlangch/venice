@@ -153,7 +153,7 @@ public class StopWatch {
 	 *   <li>245ns - for elapsed times &lt; 1us</li>
 	 *   <li>45.245us - for elapsed times &lt; 1ms</li>
 	 *   <li>45.245ms- for elapsed times &lt; 1s</li>
-	 *   <li>45s 245ms - for elapsed times &gt; 1s</li>
+	 *   <li>45.245s - for elapsed times &gt; 1s</li>
 	 * </ul>      
 	 * 
 	 * @param nanos a duration in nanoseconds
@@ -165,15 +165,15 @@ public class StopWatch {
 			return String.format("%dns", nanos);
 		}
 		else if (nanos < 1_000_000L){
-			return String.format("%d.%dus", nanos / 1000L, nanos % 1000L);
+			return String.format("%.3fus", (float)nanos / 1000F);
 		}
 		else if (nanos < 1_000_000_000L){
 			final long usecs = nanos / 1_000L;
-			return String.format("%d.%dms", usecs / 1000L, usecs % 1000L);
+			return String.format("%.3fms", (float)usecs / 1000F);
 		}
 		else {
 			final long millis = nanos / 1_000_000L;
-			return String.format("%ds %dms", millis / 1000L, millis % 1000L);
+			return String.format("%.3fs", (float)millis / 1000F);
 		}
 	}
 

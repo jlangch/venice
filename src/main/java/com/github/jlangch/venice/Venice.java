@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.util.ElapsedTime;
 import com.github.jlangch.venice.util.NullOutputStream;
 
 
@@ -121,17 +122,24 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
+		lastElapsedTime = new ElapsedTime();
+
 		// The stdout PrintStream is not serializable, so re-add it as default stream
 		final Env root = precompiled.getEnv().getRootEnv();
-		root.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
+		root.setGlobal(
+				new DynamicVar(
+						new VncSymbol("*out*"), 
+						new VncJavaObject(new PrintStream(System.out, true))));
 		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 
 			final Env env = addParams(new Env(precompiled.getEnv()), params);
+			lastElapsedTime.loadDone();
+			lastElapsedTime.readDone();
 				 
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
-				
+
 			return JavaInteropUtil.convertToJavaObject(result);
 		});
 	}
@@ -180,14 +188,18 @@ public class Venice {
 		if (StringUtil.isBlank(script)) {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
+		
+		lastElapsedTime = new ElapsedTime();
 
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 
 			final Env env = createEnv(venice, params);
 			
-			final VncVal result = venice.RE(script, scriptName, env);
+			lastElapsedTime.loadDone();
 			
+			final VncVal result = venice.RE(script, scriptName, env, lastElapsedTime);
+						
 			return JavaInteropUtil.convertToJavaObject(result);
 		});
 	}
@@ -205,6 +217,10 @@ public class Venice {
 
 	public boolean isJavaInteropReflectionCacheEnabled() {
 		return ReflectionAccessor.isCacheEnabled();
+	}
+
+	public ElapsedTime getLastElapsedTime() {
+		return lastElapsedTime;
 	}
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
@@ -317,4 +333,5 @@ public class Venice {
 
 	
 	private final IInterceptor interceptor;
+	private ElapsedTime lastElapsedTime = null;
 }
