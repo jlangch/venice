@@ -441,7 +441,6 @@ work with threads and respecting the sandbox is by using Venice' built-in future
 and agents.
 
 
-
 #### No blacklisting
 
 Unlike a sandbox provided by _Java SecurityManager_, this sandboxing is only a 
