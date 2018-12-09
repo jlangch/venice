@@ -91,7 +91,7 @@ public class StopWatch {
 	 * @return the elapsed time or 0 if the watch has not been stopped. 
 	 */
 	public long elapsedMillis() {
-		return resolution == Resolution.NANOS ? elapsedTime / 1000L : elapsedTime;
+		return resolution == Resolution.NANOS ? elapsedTime / 1_000_000L : elapsedTime;
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class StopWatch {
 	 * @return the elapsed time or 0 if the watch has not been stopped. 
 	 */
 	public long elapsedNanos() {
-		return resolution == Resolution.NANOS ? elapsedTime : elapsedTime * 10000L;
+		return resolution == Resolution.NANOS ? elapsedTime : elapsedTime * 1_000_000L;
 	}
 
 	/**
