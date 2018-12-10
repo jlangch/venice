@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -351,13 +352,56 @@ public class MacroTest {
 	public void test_defn() {
 		final Venice venice = new Venice();
 
-		final String lisp =
-				"(do                                      " +
-				"    (defn sum [x y] (+ x y))             " + 
-				"    (sum 2 5)                            " + 
+		final String script1 =
+				"(do                            \n" +
+				"   (defn sum [x y] (+ x y))    \n" + 
+				"   (sum 2 5)                   \n" + 
 				") ";
 
-		assertEquals(Long.valueOf(7), venice.eval(lisp));
+		assertEquals(Long.valueOf(7), venice.eval(script1));
+		
+		// this is legal (not a pre-condition)
+		final String script2 = 
+				"(do                           \n" +
+				"   (def datagen               \n" +
+				"        (fn [] { :a 100 } ))  \n" +
+				"                              \n" +
+				"   (str (datagen ))           \n" +
+				") ";
+
+		assertEquals("{:a 100}", venice.eval(script2));
+	}
+	
+	@Test
+	public void test_defn_precondition() {
+		final Venice venice = new Venice();
+
+		final String script1 = 
+				"(do                           \n" +
+				"   (defn sum [x y]            \n" +
+				"         { :pre [(> x 0)] }   \n" +
+				"         (+ x y))             \n" +
+				"                              \n" +
+				"   (sum 1 3)                  \n" +
+				") ";
+
+		assertEquals(Long.valueOf(4), venice.eval(script1));
+	}
+
+	@Test
+	public void test_defn_precondition_failed() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                           \n" +
+				"   (defn sum [x y]            \n" +
+				"         { :pre [(> x 0)] }   \n" +
+				"         (+ x y))             \n" +
+				"                              \n" +
+				"   (sum 0 3)                  \n" +
+				") ";
+
+		assertThrows(AssertionException.class, () -> venice.eval(script));
 	}
 
 	@Test

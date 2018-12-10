@@ -437,7 +437,7 @@ public class SpecialFormsTest {
 	public void test_fn_precondition() {
 		final Venice venice = new Venice();
 
-		final String script = 
+		final String script1 = 
 				"(do                                    \n" +
 				"   (def sum                            \n" +
 				"        (fn [x y]                      \n" +
@@ -447,10 +447,10 @@ public class SpecialFormsTest {
 				"   (sum 1 3)                           \n" +
 				") ";
 
-		assertEquals(Long.valueOf(4), venice.eval(script));
+		assertEquals(Long.valueOf(4), venice.eval(script1));
 
 		// this is legal (not a pre-condition)
-		final String script1 = 
+		final String script2 = 
 				"(do                                        \n" +
 				"   (def datagen                            \n" +
 				"        (fn [] { :a 100 :b 200 c: 300 } )) \n" +
@@ -458,7 +458,24 @@ public class SpecialFormsTest {
 				"   (datagen )                              \n" +
 				") ";
 
-		venice.eval(script1);
+		venice.eval(script2);
+	}
+
+	@Test
+	public void test_fn_precondition_fail() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def sum                            \n" +
+				"        (fn [x y]                      \n" +
+				"            { :pre [(> x 0)] }         \n" +
+				"            (+ x y)))                  \n" +
+				"                                       \n" +
+				"   (sum 0 3)                           \n" +
+				") ";
+
+		assertThrows(AssertionException.class, () -> venice.eval(script));
 	}
 
 	@Test
