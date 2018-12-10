@@ -24,8 +24,7 @@
        (when-not ~expr
            (throw (. :com.github.jlangch.venice.AssertionException 
                      :new 
-                     (str "Assert failed: " (pr-str '~expr)))))
-    ))
+                     (str "Assert failed: " (pr-str '~expr)))))))
 
 
 (defmacro 
@@ -103,8 +102,8 @@
    case [expr & clauses]
    
    (let [expr-sym (gensym "expr_")
-          default_ (if (odd? (count clauses)) (last clauses) nil)
-          pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]        
+         default_ (if (odd? (count clauses)) (last clauses) nil)
+         pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]        
       `(let [~expr-sym ~expr]
          (cond
             ~@(mapcat (fn [[test-const_ result-expr_]]
