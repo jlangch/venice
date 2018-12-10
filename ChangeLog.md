@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [1.1.3] - 2018-12-xx
+
+### added
+
+- added ...
+
+
+
 ## [1.1.2] - 2018-12-10
 
 ### added
@@ -14,19 +22,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added a configurable execution time limit for Venice scripts running
         within a sandbox
 - added multi expression body for functions
-- added _defn_ macro supports now pre conditions as well
+- added _defn_ macro support for pre conditions
 
 ### fixed
 
 - fixed agent _shutdown-agents?_ arity error message
-
-
-
-## [1.1.3] - 2018-12-xx
-
-### added
-
-- added ...
 
 
 
