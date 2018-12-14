@@ -274,20 +274,15 @@ public class Venice {
 	}
 	
 	private Object runWithSandbox(final Callable<Object> callable) {
-		if (interceptor.getMaxExecutionTimeSeconds() == null) {
-			return doRun(callable);
-		}
-		else {
-			return doRunWithTimeout(callable, interceptor.getMaxExecutionTimeSeconds());
-		}
-	}
-
-	private Object doRun(final Callable<Object> callable) {
 		try {
-			ThreadLocalMap.remove(); // clean thread locals			
-			JavaInterop.register(interceptor);
-			
-			return callable.call();
+			if (interceptor.getMaxExecutionTimeSeconds() == null) {
+				return new SandboxedCallable(interceptor, callable).call();
+			}
+			else {
+				return runWithTimeout(
+						new SandboxedCallable(interceptor, callable), 
+						interceptor.getMaxExecutionTimeSeconds());
+			}
 		}
 		catch(ValueException ex) {
 			// convert the Venice value to a Java value
@@ -300,14 +295,12 @@ public class Venice {
 		catch(Exception ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
-		finally {
-			// clean up
-			JavaInterop.unregister();
-			ThreadLocalMap.remove();
-		}
 	}
 
-	private Object doRunWithTimeout(final Callable<Object> callable, int timeoutSeconds) {
+	private Object runWithTimeout(
+			final Callable<Object> callable, 
+			final int timeoutSeconds
+	) throws Exception {
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		try {
 			final Future<Object> future = executor.submit(callable);
@@ -317,18 +310,40 @@ public class Venice {
 			throw new SecurityException(
 					"Venice Sandbox: The sandbox exceeded the max execution time");
 		}
-		catch(RuntimeException ex) {
-			throw ex;
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex.getMessage(), ex);
-		}
 		finally {
 			try {
 				executor.shutdownNow();
 			}
 			catch(RuntimeException ex) { /* do not hide exception */ }
 		}
+	}
+	
+	private static class SandboxedCallable implements Callable<Object> {
+		public SandboxedCallable(
+				final IInterceptor interceptor,
+				final Callable<Object> callable
+		) {
+			this.interceptor = interceptor;
+			this.callable = callable;
+		}
+
+		@Override
+		public Object call() throws Exception {
+			try {
+				ThreadLocalMap.remove(); // clean thread locals			
+				JavaInterop.register(interceptor);
+				
+				return callable.call();
+			}
+			finally {
+				// clean up
+				JavaInterop.unregister();
+				ThreadLocalMap.remove();
+			}
+		}
+		
+		private final IInterceptor interceptor;
+		private final Callable<Object> callable;
 	}
 
 	
