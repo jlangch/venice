@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
@@ -44,6 +45,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -301,7 +303,6 @@ public class Venice {
 			final Callable<Object> callable, 
 			final int timeoutSeconds
 	) throws Exception {
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		try {
 			final Future<Object> future = executor.submit(callable);
 		    return future.get(interceptor.getMaxExecutionTimeSeconds(), TimeUnit.SECONDS);
@@ -309,12 +310,6 @@ public class Venice {
 		catch (TimeoutException ex) {
 			throw new SecurityException(
 					"Venice Sandbox: The sandbox exceeded the max execution time");
-		}
-		finally {
-			try {
-				executor.shutdownNow();
-			}
-			catch(RuntimeException ex) { /* do not hide exception */ }
 		}
 	}
 	
@@ -345,7 +340,16 @@ public class Venice {
 		private final IInterceptor interceptor;
 		private final Callable<Object> callable;
 	}
+	
 
+	private final static AtomicLong timeoutThreadPoolCounter = new AtomicLong(0);
+
+	private final static ExecutorService executor = 
+			Executors.newCachedThreadPool(
+					ThreadPoolUtil.createThreadFactory(
+							"venice-timeout-pool-%d", 
+							timeoutThreadPoolCounter,
+							true /* daemon threads */));
 	
 	private final IInterceptor interceptor;
 	private ElapsedTime lastElapsedTime = null;
