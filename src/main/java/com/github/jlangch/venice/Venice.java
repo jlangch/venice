@@ -48,7 +48,7 @@ import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.util.ElapsedTime;
+import com.github.jlangch.venice.util.ScriptElapsedTime;
 import com.github.jlangch.venice.util.NullOutputStream;
 
 
@@ -123,7 +123,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
-		lastElapsedTime = new ElapsedTime();
+		lastElapsedTime = new ScriptElapsedTime();
 
 		// The stdout PrintStream is not serializable, so re-add it as default stream
 		final Env root = precompiled.getEnv().getRootEnv();
@@ -190,7 +190,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
 		
-		lastElapsedTime = new ElapsedTime();
+		lastElapsedTime = new ScriptElapsedTime();
 
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter();
@@ -220,7 +220,7 @@ public class Venice {
 		return ReflectionAccessor.isCacheEnabled();
 	}
 
-	public ElapsedTime getLastElapsedTime() {
+	public ScriptElapsedTime getLastElapsedTime() {
 		return lastElapsedTime;
 	}
 	
@@ -323,5 +323,5 @@ public class Venice {
 							true /* daemon threads */));
 	
 	private final IInterceptor interceptor;
-	private ElapsedTime lastElapsedTime = null;
+	private ScriptElapsedTime lastElapsedTime = null;
 }

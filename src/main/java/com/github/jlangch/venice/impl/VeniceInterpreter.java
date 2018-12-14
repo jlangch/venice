@@ -60,7 +60,7 @@ import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.CallFrame;
-import com.github.jlangch.venice.util.ElapsedTime;
+import com.github.jlangch.venice.util.ScriptElapsedTime;
 
 
 public class VeniceInterpreter implements Serializable  {
@@ -476,7 +476,7 @@ public class VeniceInterpreter implements Serializable  {
 			final String script, 
 			final String filename, 
 			final Env env,
-			final ElapsedTime elapsedTime
+			final ScriptElapsedTime elapsedTime
 	) {
 		final VncVal ast = READ(script, filename);	
 		if (elapsedTime != null) elapsedTime.readDone();	

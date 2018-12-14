@@ -24,7 +24,7 @@ package com.github.jlangch.venice.util;
 import com.github.jlangch.venice.impl.util.StopWatch;
 
 
-public class ElapsedTime {
+public class ScriptElapsedTime {
 
 	public void loadDone() {
 		loadElapsedNanos = sw.splitTime();
