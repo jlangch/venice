@@ -34,17 +34,16 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -278,11 +277,11 @@ public class Venice {
 	private Object runWithSandbox(final Callable<Object> callable) {
 		try {
 			if (interceptor.getMaxExecutionTimeSeconds() == null) {
-				return new SandboxedCallable(interceptor, callable).call();
+				return new SandboxedCallable<Object>(interceptor, callable).call();
 			}
 			else {
 				return runWithTimeout(
-						new SandboxedCallable(interceptor, callable), 
+						new SandboxedCallable<Object>(interceptor, callable), 
 						interceptor.getMaxExecutionTimeSeconds());
 			}
 		}
@@ -313,35 +312,7 @@ public class Venice {
 		}
 	}
 	
-	private static class SandboxedCallable implements Callable<Object> {
-		public SandboxedCallable(
-				final IInterceptor interceptor,
-				final Callable<Object> callable
-		) {
-			this.interceptor = interceptor;
-			this.callable = callable;
-		}
-
-		@Override
-		public Object call() throws Exception {
-			try {
-				ThreadLocalMap.remove(); // clean thread locals			
-				JavaInterop.register(interceptor);
-				
-				return callable.call();
-			}
-			finally {
-				// clean up
-				JavaInterop.unregister();
-				ThreadLocalMap.remove();
-			}
-		}
-		
-		private final IInterceptor interceptor;
-		private final Callable<Object> callable;
-	}
 	
-
 	private final static AtomicLong timeoutThreadPoolCounter = new AtomicLong(0);
 
 	private final static ExecutorService executor = 
