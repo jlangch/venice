@@ -459,7 +459,7 @@ that are available to the script in the JVM!
  - whitelist Java system property access down to individual properties
  - blacklist all or individual Venice I/O functions like spit, slurp, ...
  - prohibit calls to all Venice I/O functions and Java fully
- - limiting the elapsed execution time of a script
+ - limiting the execution time of a script
  
 
 #### Example
