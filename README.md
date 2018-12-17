@@ -560,10 +560,10 @@ Alternative to UNIX shell scripts:
             (catch :com.github.jlangch.venice.ShellException ex
                (printf "Error compacting %s: %s" prefix (:message ex)))))
 
-   (defn first-day-of-month [n]
+   (defn first-day-of-month [offset]
          (-> (time/local-date) 
              (time/first-day-of-month) 
-             (time/plus :month n)))
+             (time/plus :month offset)))
 
    (let [dir (io/file (nth *ARGV* 2))
          date (first-day-of-month -1)

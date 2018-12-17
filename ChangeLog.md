@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ...
+- added a cached thread pool to run the futures for scripts with execution 
+        time limit
 
 ### fixed
 
