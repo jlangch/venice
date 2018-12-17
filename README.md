@@ -543,31 +543,30 @@ Alternative to UNIX shell scripts:
    (defn zip-files [dir zip files]
          (with-sh-throw
             (with-sh-dir dir
-               (apply sh (list* "zip" (:name zip) (map #(:name %) files))))))
+               (apply sh (concat ["zip" (:name zip)] (map #(:name %) files))))))
 
    (defn zip-tomcat-logs [prefix dir year month]
          (try
             (let [zip (tomcat-log-file-zip prefix dir year month)
-                  filter (tomcat-log-file-filter prefix year month)]
-               (when-not (io/exists-file? zip)
-                  (let [logs (find-log-files dir filter)]
-                     (printf "Compacting %s ...\n" prefix)
-                     (printf "   Found %d log files\n" (count logs))
-                     (when-not (empty? logs)
-                        (zip-files dir zip logs)
-                        (printf "   Zipped to %s\n" (:name zip))
-                        (apply io/delete-file logs)
-                        (printf "   Removed %d files\n" (count logs))))))
+                  filter (tomcat-log-file-filter prefix year month)
+                  logs (find-log-files dir filter)]
+               (printf "Compacting %s ...\n" prefix)
+               (printf "   Found %d log files\n" (count logs))
+               (when-not (empty? logs)
+                  (zip-files dir zip logs)
+                  (printf "   Zipped to %s\n" (:name zip))
+                  (apply io/delete-file logs)
+                  (printf "   Removed %d files\n" (count logs))))
             (catch :com.github.jlangch.venice.ShellException ex
-                (printf "Error compacting %s: %s" prefix (:message ex)))))
+               (printf "Error compacting %s: %s" prefix (:message ex)))))
 
-   (defn first-day-last-month []
+   (defn first-day-of-month [n]
          (-> (time/local-date) 
              (time/first-day-of-month) 
-             (time/minus :month 1)))
+             (time/plus :month n)))
 
    (let [dir (io/file (nth *ARGV* 2))
-         date (first-day-last-month)
+         date (first-day-of-month -1)
          year  (time/year date)
          month (time/month date)]
       (if (io/exists-dir? dir)
