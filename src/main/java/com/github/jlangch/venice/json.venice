@@ -1,58 +1,58 @@
 ;; JSON utils (requires the Jackson JSON libs on the classpath)
 
-(def 
+(def
    { :arglists '("(json/avail?)")
      :doc "Returns true if JSON is available (Jackson libs on classpath) otherwise false"
      :examples '("(json/avail?)") }
 
-   json/avail? 
-   
+   json/avail?
+
    (fn json/avail? [] (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class))))
 
-(def 
+(def
    { :arglists '("(json/avail-jdk8-module?)")
      :doc "Returns true if JSON jdk8 is available otherwise false"
      :examples '("(json/avail-jdk8-module?)") }
 
-   json/avail-jdk8-module? 
-   
-   (fn json/avail-jdk8-module? [] 
+   json/avail-jdk8-module?
+
+   (fn json/avail-jdk8-module? []
        (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class))))
 
-(def 
+(def
    { :arglists '("(json/pretty-print json)")
      :doc "Pretty prints JSON"
      :examples '("(json/pretty-print (json/to-json {:a 100 :b 100}))") }
 
-   json/pretty-print 
-   
-   (fn json/pretty-prin [json] (json/to-pretty-json (json/parse json))))
-   
-(def 
+   json/pretty-print
+
+   (fn json/pretty-print [json] (json/to-pretty-json (json/parse json))))
+
+(def
    { :arglists '("(json/to-json val)")
      :doc "Converts the val to JSON"
      :examples '("(json/to-json {:a 100 :b 100})") }
 
    json/to-json 
-   
+
    (fn json/to-json [val]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (json/avail-jdk8-module?) 
+            (when (json/avail-jdk8-module?)
                   (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
                 (. :writeValueAsString val)))))
-   
-(def 
+
+(def
    { :arglists '("to-pretty-json  val")
      :doc "Converts the val to pretty printed JSON"
      :examples '("(json/to-pretty-json {:a 100 :b 100})") }
 
-   json/to-pretty-json 
-   
+   json/to-pretty-json
+
    (fn json/to-pretty-json [val]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (json/avail-jdk8-module?) 
+            (when (json/avail-jdk8-module?)
                   (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -60,16 +60,16 @@
                 (. :writerWithDefaultPrettyPrinter)
                 (. :writeValueAsString val)))))
 
-(def 
+(def
    { :arglists '("(json/parse s)")
      :doc "Parses a JSON string"
      :examples '("(json/parse (json/to-json [{:a 100 :b 100}]))") }
 
-   json/parse 
-   
+   json/parse
+
    (fn json/parse [text]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (json/avail-jdk8-module?) 
+            (when (json/avail-jdk8-module?)
                   (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
