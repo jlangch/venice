@@ -353,14 +353,14 @@ Another example:
 
 ```clojure
 (do
-   (defn task [] (do (sleep 1000) 200))
+   (defn task [] (sleep 1000) 200)
    (deref (future task))        
 ```
 
 ```clojure
 (do
    (def p (promise))
-   (defn task [] (do (sleep 500) (deliver p 123)))
+   (defn task [] (sleep 500) (deliver p 123))
 
    (future task)
    (deref p))
