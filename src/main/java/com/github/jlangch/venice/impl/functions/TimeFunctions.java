@@ -1484,7 +1484,7 @@ public class TimeFunctions {
 			setArgLists("(time/within? date start end)");
 			
 			setDoc( "Returns true if the date is after or equal to the start and is before or equal to the end. " +
-					"All three dates can be of different types. The start and end date may each be nil meaning " +
+					"All three dates must be of the same type. The start and end date may each be nil meaning " +
 					"start is -infinity and end is +infinity.");
 			
 			setExamples(
@@ -1495,21 +1495,21 @@ public class TimeFunctions {
 			assertArity("time/within?", args, 3);
 			
 			final VncVal date = args.first();
-			final VncVal lower = args.second();
-			final VncVal upper = args.third();
+			final VncVal start = args.second();
+			final VncVal end = args.third();
 				
-			if (lower == Nil && upper == Nil) {
+			if (start == Nil && end == Nil) {
 				return True;
 			}
-			else if (lower != Nil && upper != Nil) {
-				return ((not_before_Q.apply(new VncList(date, lower)) == True)
-						 && (not_after_Q.apply(new VncList(date, upper)) == True)) ? True : False;
+			else if (start != Nil && end != Nil) {
+				return ((not_before_Q.apply(new VncList(date, start)) == True)
+						 && (not_after_Q.apply(new VncList(date, end)) == True)) ? True : False;
 			}
-			else if (lower != Nil) {
-				return not_before_Q.apply(new VncList(date, lower));
+			else if (start != Nil) {
+				return not_before_Q.apply(new VncList(date, start));
 			}
 			else {
-				return not_after_Q.apply(new VncList(date, upper));
+				return not_after_Q.apply(new VncList(date, end));
 			}
 		}
 
