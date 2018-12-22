@@ -874,47 +874,6 @@ public class TimeFunctions {
 	
 	
 	///////////////////////////////////////////////////////////////////////////
-	// Date Range
-	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction in_range_Q = new VncFunction("time/in-range?") {
-		{
-			setArgLists("(time/in-range? date lower upper)");
-			
-			setDoc("Returns true if the date is within the range given by lower date (inclusive) "
-					+ "and upper (inclusive) date. The lower and upper dates may be nil to define "
-					+ "an unbounded range.");
-			
-			setExamples(
-					"(time/in-range? (time/local-date \"2018-01-10\") (time/local-date \"2018-01-01\") (time/local-date \"2018-01-31\"))");
-		}
-		public VncVal apply(final VncList args) {
-			assertArity("time/in-range?", args, 3);
-			
-			final VncVal date = args.first();
-			final VncVal lower = args.second();
-			final VncVal upper = args.third();
-				
-			if (lower == Nil && upper == Nil) {
-				return True;
-			}
-			else if (lower != Nil && upper != Nil) {
-				return ((not_before_Q.apply(new VncList(date, lower)) == True)
-						 && (not_after_Q.apply(new VncList(date, upper)) == True)) ? True : False;
-			}
-			else if (lower != Nil) {
-				return not_before_Q.apply(new VncList(date, lower));
-			}
-			else {
-				return not_after_Q.apply(new VncList(date, upper));
-			}
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	
-	///////////////////////////////////////////////////////////////////////////
 	// Fields
 	///////////////////////////////////////////////////////////////////////////
 
@@ -1525,7 +1484,8 @@ public class TimeFunctions {
 			setArgLists("(time/within? date start end)");
 			
 			setDoc( "Returns true if the date is after or equal to the start and is before or equal to the end. " +
-					"All three dates must be of the same type.");
+					"All three dates can be of different types. The start and end date may each be nil meaning " +
+					"start is -infinity and end is +infinity.");
 			
 			setExamples(
 					"(time/within? (time/local-date 2018 8 4) (time/local-date 2018 8 1) (time/local-date 2018 8 31))",
@@ -1534,26 +1494,22 @@ public class TimeFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("time/within?", args, 3);
 			
-			final Object dt = Coerce.toVncJavaObject(args.nth(0)).getDelegate();
-			final Object start = Coerce.toVncJavaObject(args.nth(1)).getDelegate();
-			final Object end = Coerce.toVncJavaObject(args.nth(2)).getDelegate();
-			
-			if (dt instanceof ZonedDateTime) {
-				final ZonedDateTime date = (ZonedDateTime)dt;
-				return date.isBefore((ZonedDateTime)start) || date.isAfter((ZonedDateTime)end) ? False : True;
+			final VncVal date = args.first();
+			final VncVal lower = args.second();
+			final VncVal upper = args.third();
+				
+			if (lower == Nil && upper == Nil) {
+				return True;
 			}
-			else if (dt instanceof LocalDateTime) {
-				final LocalDateTime date = (LocalDateTime)dt;
-				return date.isBefore((LocalDateTime)start) || date.isAfter((LocalDateTime)end) ? False : True;
+			else if (lower != Nil && upper != Nil) {
+				return ((not_before_Q.apply(new VncList(date, lower)) == True)
+						 && (not_after_Q.apply(new VncList(date, upper)) == True)) ? True : False;
 			}
-			else if (dt instanceof LocalDate) {
-				final LocalDate date = (LocalDate)dt;
-				return date.isBefore((LocalDate)start) || date.isAfter((LocalDate)end) ? False : True;
-			}	
+			else if (lower != Nil) {
+				return not_before_Q.apply(new VncList(date, lower));
+			}
 			else {
-				throw new VncException(String.format(
-						"Function 'time/within?' does not allow %s as parameter", 
-						Types.getClassName(args.first())));
+				return not_after_Q.apply(new VncList(date, upper));
 			}
 		}
 
@@ -1974,7 +1930,6 @@ public class TimeFunctions {
 				.put("time/plus",						plus)
 				.put("time/minus",						minus)
 				.put("time/period",						period)
-				.put("time/in-range?",					in_range_Q)
 				.put("time/year",						year)
 				.put("time/month",						month)
 				.put("time/day-of-week",				day_of_week)
@@ -1997,6 +1952,7 @@ public class TimeFunctions {
 				.put("time/earliest",					earliest)
 				.put("time/latest",						latest)
 				.put("time/within?",					within_Q)
+				.put("time/in-range?",					within_Q)
 						
 				.toMap();	
 }

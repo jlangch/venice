@@ -863,7 +863,6 @@ public class DocGenerator {
 		compare.addItem(getDocItem("time/not-before?"));
 		compare.addItem(getDocItem("time/within?"));
 		compare.addItem(getDocItem("time/leap-year?"));
-		compare.addItem(getDocItem("time/in-range?"));
 		
 		final DocSection misc = new DocSection("Miscellaneous");
 		all.addSection(misc);
