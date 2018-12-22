@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -145,6 +146,78 @@ public class TimeFunctionsTest {
 		assertTrue((Boolean)venice.eval(
 				"(== (time/zoned-date-time \"2018-08-01T10:15:30.980+01:00\")" +
 				"    (time/zoned-date-time \"2018-08-01T10:15:30.980+01:00\"))"));		
+	}
+
+	@Test
+	public void test_in_range() {
+		final Venice venice = new Venice();
+		
+		assertFalse((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-09\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-10\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-15\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-20\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+		
+		assertFalse((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-21\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                (time/local-date \"2018-08-20\"))"));	
+
+		
+		// lower bound nil
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-10\")" +
+				"                nil" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-20\")" +
+				"                nil" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+		
+		assertFalse((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-21\")" +
+				"                nil" +	
+				"                (time/local-date \"2018-08-20\"))"));		
+
+		
+		// upper bound nil
+		
+		assertFalse((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-01\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                nil)"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-10\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                nil)"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-20\")" +
+				"                (time/local-date \"2018-08-10\")" +	
+				"                nil)"));		
+
+		
+		// lower & upper bound nil
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/in-range? (time/local-date \"2018-08-01\") nil nil)"));		
 	}
 
 }

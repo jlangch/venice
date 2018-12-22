@@ -96,6 +96,10 @@ public class VncList extends VncSequence {
 		return size() < 2 ? Constants.Nil : nth(1);
 	}
 
+	public VncVal third() {
+		return size() < 3 ? Constants.Nil : nth(2);
+	}
+
 	public VncVal last() {
 		return isEmpty() ? Constants.Nil : nth(value.size()-1);
 	}

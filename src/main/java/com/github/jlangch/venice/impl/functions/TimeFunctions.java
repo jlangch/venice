@@ -871,6 +871,47 @@ public class TimeFunctions {
 
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
+	
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Date Range
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction in_range_Q = new VncFunction("time/in-range?") {
+		{
+			setArgLists("(time/in-range? date lower upper)");
+			
+			setDoc("Returns true if the date is within the range given by lower date (inclusive) "
+					+ "and upper (inclusive) date. The lower and upper dates may be nil to define "
+					+ "an unbounded range.");
+			
+			setExamples(
+					"(time/in-range? (time/local-date \"2018-01-10\") (time/local-date \"2018-01-01\") (time/local-date \"2018-01-31\"))");
+		}
+		public VncVal apply(final VncList args) {
+			assertArity("time/in-range?", args, 3);
+			
+			final VncVal date = args.first();
+			final VncVal lower = args.second();
+			final VncVal upper = args.third();
+				
+			if (lower == Nil && upper == Nil) {
+				return True;
+			}
+			else if (lower != Nil && upper != Nil) {
+				return ((not_before_Q.apply(new VncList(date, lower)) == True)
+						 && (not_after_Q.apply(new VncList(date, upper)) == True)) ? True : False;
+			}
+			else if (lower != Nil) {
+				return not_before_Q.apply(new VncList(date, lower));
+			}
+			else {
+				return not_after_Q.apply(new VncList(date, upper));
+			}
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
 
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1933,6 +1974,7 @@ public class TimeFunctions {
 				.put("time/plus",						plus)
 				.put("time/minus",						minus)
 				.put("time/period",						period)
+				.put("time/in-range?",					in_range_Q)
 				.put("time/year",						year)
 				.put("time/month",						month)
 				.put("time/day-of-week",				day_of_week)
