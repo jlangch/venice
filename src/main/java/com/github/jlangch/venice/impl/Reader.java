@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
@@ -55,6 +56,14 @@ public class Reader {
 		return read_form(new Reader(tokenize(str, filename)));
 	}
 
+	@Override
+	public String toString() {
+		return tokens
+				.stream()
+				.map(t -> String.format("%-8s %s",  String.format("%d,%d:", t.getLine(), t.getColumn()), t.getToken()))
+				.collect(Collectors.joining("\n"));
+	}
+
 	private Token peek() {
 		return position >= tokens.size() ? null : tokens.get(position);
 	}
@@ -63,7 +72,7 @@ public class Reader {
 		return tokens.get(position++);
 	}
 	
-	private static ArrayList<Token> tokenize(final String str, final String filename) {
+	public static ArrayList<Token> tokenize(final String str, final String filename) {
 		final char[] strArr = str.toCharArray();
 		final Matcher matcher = tokenize_pattern.matcher(str);
 
@@ -321,18 +330,44 @@ public class Reader {
 		return new int[] {row,col};
 	}
 
-	// group 1: long => (^-?[0-9]+$)
-	// group 2: double => (^-?[0-9]+[.][0-9]*$)
-	// group 3: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
-	// group 4: nil => (^nil$)
-	// group 5: true => (^true$)
-	// group 6: false => (^false$)
-	// group 7: string => ^"(.*)"$
-	// group 8: keyword => :(.*)
-	// group 9: symbol => (^[^"]*$)
-	private static final Pattern atom_pattern = Pattern.compile("(?s)(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^-?[0-9][0-9.]*M$)|(^nil$)|(^true$)|(^false$)|^\"(.*)\"$|:(.*)|(^[^\"]*$)");
+	// (?s) makes the dot match all characters, including line breaks.
+	// groups:
+	//    1: long => (^-?[0-9]+$)
+	//    2: double => (^-?[0-9]+[.][0-9]*$)
+	//    3: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
+	//    4: nil => (^nil$)
+	//    5: true => (^true$)
+	//    6: false => (^false$)
+	//    7: string => ^"(.*)"$
+	//    8: keyword => :(.*)
+	//    9: symbol => (^[^"]*$)
+	private static final Pattern atom_pattern = Pattern.compile(
+													"(?s)"  
+													+ "(^-?[0-9]+$)"
+													+ "|(^-?[0-9][0-9.]*$)"
+													+ "|(^-?[0-9][0-9.]*M$)"
+													+ "|(^nil$)"
+													+ "|(^true$)"
+													+ "|(^false$)"
+													+ "|^\"(.*)\"$"
+													+ "|:(.*)"
+													+ "|(^[^\"]*$)");
 	
-	private static final Pattern tokenize_pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
+	// (?:X) non capturing group
+	// tokens:
+	//    unquote splicing => ~@
+	//    chars            => [\\[\\]{}()'`~@]
+	//    string           => \"(?:[\\\\].|[^\\\\\"])*\"
+	//    comment          => ;.*
+	//    else             => [^\\s \\[\\]{}()'\"`~@,;]
+	private static final Pattern tokenize_pattern = Pattern.compile(
+														"[\\s ,]*("
+														+ "~@"
+														+ "|[\\[\\]{}()'`~@]"
+														+ "|\"(?:[\\\\].|[^\\\\\"])*\""
+														+ "|;.*"
+														+ "|[^\\s \\[\\]{}()'\"`~@,;]*"
+														+ ")");
 
 	private ArrayList<Token> tokens;
 	private int position;
