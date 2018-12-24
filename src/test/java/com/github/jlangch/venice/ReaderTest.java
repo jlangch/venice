@@ -86,6 +86,8 @@ public class ReaderTest {
 				"   100                    \n" +
 				"   ;comment               \n" +
 				"   \"abcdef\"             \n" +
+				"   \"abc\\\"def\"         \n" +
+				"   \"abc\ndef\"           \n" +
 				"   (+ 2 3)                \n" +
 				")                           ";
 		
@@ -96,6 +98,8 @@ public class ReaderTest {
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
 		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("+", tokens.get(pos++).getToken());
 		assertEquals("2", tokens.get(pos++).getToken());
