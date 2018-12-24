@@ -5,7 +5,7 @@
  *      \/ \___|_| |_|_|\___\___|
  *
  *
- * Copyright 2017-2018 Venice
+ * Copyright 2017-2019 Venice
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -364,6 +364,7 @@ public class Reader {
 														"[\\s ,]*("
 														+ "~@"
 														+ "|[\\[\\]{}()'`~@]"
+//														+ "|\"{3}.*\"{3}"
 														+ "|\"(?:[\\\\].|[^\\\\\"])*\""
 														+ "|;.*"
 														+ "|[^\\s \\[\\]{}()'\"`~@,;]*"
