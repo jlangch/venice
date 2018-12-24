@@ -3,9 +3,10 @@
 (defmacro
    { :arglists '("(comment & body)")
      :doc "Ignores body, yields nil" 
-     :examples '("(comment 
-                 |   (println 1)
-                 |   (println 5))" ) }
+     :examples (list (str/strip-margin
+                        "(comment 
+                        |   (println 1)
+                        |   (println 5))" )) }
     
    comment [& body] nil)
 
@@ -67,11 +68,12 @@
 (defmacro 
    { :arglists '("(cond & clauses)")
      :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil." 
-     :examples '("(let [n 5]
-                 |     (cond
-                 |        (< n 0) \"negative\"
-                 |        (> n 0) \"positive\"
-                 |        :else \"zero\"))" ) }
+     :examples (list (str/strip-margin
+                        "(let [n 5]
+                        |     (cond
+                        |        (< n 0) \"negative\"
+                        |        (> n 0) \"positive\"
+                        |        :else \"zero\"))" )) }
  
    cond [& clauses]
    
@@ -86,11 +88,12 @@
 (defmacro 
    { :arglists '("(case expr & clauses)")
      :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr" 
-     :examples '("(case (+ 1 9)
-                 |   10  :ten
-                 |   20  :twenty
-                 |   30  :thirty
-                 |   :dont-know)" ) }
+     :examples (list (str/strip-margin
+                        "(case (+ 1 9)
+                        |   10  :ten
+                        |   20  :twenty
+                        |   30  :thirty
+                        |   :dont-know)" )) }
  
       ;; rewrites to (let [e (+ 1 9)]
       ;;                (cond
@@ -135,9 +138,10 @@
 (defmacro 
    { :arglists '("(if-let bindings then)")
      :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else" 
-     :examples '("(if-let [value (* 100 2)]
-                 |    (str \"The expression is true. value=\" value)
-                 |    (str \"The expression is false value=\" value))" ) }
+     :examples (list (str/strip-margin
+                        "(if-let [value (* 100 2)]
+                        |    (str \"The expression is true. value=\" value)
+                        |    (str \"The expression is false value=\" value))" )) }
 
    if-let [bindings then else]
    
@@ -168,10 +172,11 @@
 (defmacro 
    { :arglists '("(while test & body)")
      :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
-     :examples '("(do 
-                 |   (def a (atom 5))
-                 |   (while (pos? (deref a))
-                 |          (do (println (deref a)) (swap! a dec))))" ) } 
+     :examples (list (str/strip-margin
+                        "(do 
+                        |   (def a (atom 5))
+                        |   (while (pos? (deref a))
+                        |          (do (println (deref a)) (swap! a dec))))" )) } 
 
    while [test & body]
    
@@ -184,9 +189,10 @@
 (defmacro 
    { :arglists '("(doto x & forms)")
      :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x." 
-     :examples '("(doto (. :java.util.HashMap :new)
-                 |      (. :put :a 1)
-                 |      (. :put :b 2))" ) }
+     :examples (list (str/strip-margin
+                        "(doto (. :java.util.HashMap :new)
+                        |      (. :put :a 1)
+                        |      (. :put :b 2))" )) }
 
    doto [x & forms]
    
@@ -199,16 +205,17 @@
 (defmacro 
    { :arglists '("(-> x & forms)")
      :doc "Threads the expr through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
-     :examples '("(-> 5 (+ 3) (/ 2) (- 1))"
+     :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
      
-                 "(do
-                 |   (def person 
-                 |        {:name \"Peter Meier\"
-                 |         :address {:street \"Lindenstrasse 45\"
-                 |                   :city \"Bern\"
-                 |                   :zip 3000}})
-                 |
-                 |   (-> person :address :street)) " ) }
+                     (str/strip-margin
+                        "(do
+                        |   (def person 
+                        |        {:name \"Peter Meier\"
+                        |         :address {:street \"Lindenstrasse 45\"
+                        |                   :city \"Bern\"
+                        |                   :zip 3000}})
+                        |
+                        |   (-> person :address :street)) " )) }
 
    -> [x & forms]
    
@@ -225,12 +232,14 @@
 (defmacro 
    { :arglists '("(->> x & forms)")
      :doc "Threads the expr through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
-     :examples '("(->> 5 (+ 3) (/ 32) (- 1))"
+     :examples (list
+                 "(->> 5 (+ 3) (/ 32) (- 1))"
 
-                 "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
-                 |     (map (fn [x] (get x :b)))
-                 |     (filter (fn [x] (> x 4)))
-                 |     (map inc)))) " ) }
+                 (str/strip-margin
+                    "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
+                    |     (map (fn [x] (get x :b)))
+                    |     (filter (fn [x] (> x 4)))
+                    |     (map inc)))) " )) }
 
    ->> [x & forms]
    
@@ -247,10 +256,11 @@
 (defmacro 
    { :arglists '("(as-> expr name & forms)")
      :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position." 
-     :examples '("(as-> [:foo :bar] v
-                 |      (map name v)
-                 |      (first v)
-                 |      (str/subs v 1)) ")}
+     :examples (list (str/strip-margin
+                        "(as-> [:foo :bar] v
+                        |      (map name v)
+                        |      (first v)
+                        |      (str/subs v 1)) " )) }
 
    as-> [expr name & forms]
    
@@ -299,9 +309,10 @@
 (defmacro
    { :arglists '("(load-string s)")
      :doc "Sequentially read and evaluate the set of forms contained in the string." 
-     :examples '("(do 
-                 |   (load-string \"(def x 1)\")
-                 |   (+ x 2))") }
+     :examples (list (str/strip-margin
+                        "(do 
+                        |   (load-string \"(def x 1)\")
+                        |   (+ x 2))" )) }
    
    load-string [s]
    
@@ -321,9 +332,10 @@
 (defmacro
    { :arglists '("(load-classpath-file name)")
      :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'." 
-     :examples '("(do 
-                 |   (load-classpath-file \"com/github/jlangch/venice/test.venice\")
-                 |   (test/println \"hello\"))") }
+     :examples (list (str/strip-margin
+                        "(do 
+                        |   (load-classpath-file \"com/github/jlangch/venice/test.venice\")
+                        |   (test/println \"hello\"))" )) }
 
    load-classpath-file [f]
    
@@ -333,8 +345,9 @@
 (defmacro 
    { :arglists '("(load-module s)")
      :doc "Loads a Venice predefined extension module." 
-     :examples '("(do 
-                 |   (load-module :logger))") }
+     :examples (list (str/strip-margin
+                        "(do 
+                        |   (load-module :logger))" )) }
    
    load-module [s]
    
@@ -500,16 +513,17 @@
 (def 
    { :arglists '("(memoize f)")
      :doc "Returns a memoized version of a referentially transparent function." 
-     :examples '( "(do
-                  |   (def fibonacci
-                  |      (memoize
-                  |         (fn [n]
-                  |             (cond
-                  |                (<= n 0) 0
-                  |                (< n 2) 1
-                  |                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
-                  |          
-                  |   (time (fibonacci 25)))" ) }
+     :examples (list (str/strip-margin
+                        "(do
+                        |   (def fibonacci
+                        |      (memoize
+                        |         (fn [n]
+                        |             (cond
+                        |                (<= n 0) 0
+                        |                (< n 2) 1
+                        |                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
+                        |          
+                        |   (time (fibonacci 25)))" )) }
      
    memoize
    

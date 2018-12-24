@@ -57,7 +57,7 @@ public class Doc {
 							.getList()
 							.stream()
 							.map(s -> toString(s))
-							.map(e -> indent(StringUtil.stripMargin(e, '|'), "    "))
+							.map(e -> indent(e, "    "))
 							.collect(Collectors.joining("\n\n")));
 			}
 

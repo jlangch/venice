@@ -1016,7 +1016,6 @@ public class DocGenerator {
 			examples
 				.stream()
 				.filter(e -> !StringUtil.isEmpty(e))
-				.map(e -> StringUtil.stripMargin(e, '|'))
 				.forEach(e -> {
 					if (run) {
 						final CapturingPrintStream ps = CapturingPrintStream.create();
