@@ -21,8 +21,9 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -34,30 +35,73 @@ import com.github.jlangch.venice.impl.Token;
 public class ReaderTest {
 
 	@Test
+	public void testAtomLong() {
+		assertEquals(Long.valueOf(100), new Venice().eval("(do 100)"));
+	}
+
+	@Test
+	public void testAtomDouble() {
+		assertEquals(Double.valueOf(100.2), new Venice().eval("(do 100.2)"));
+	}
+
+	@Test
+	public void testAtomDecimal() {
+		assertEquals(new BigDecimal("100.123"), new Venice().eval("(do 100.123M)"));
+	}
+
+	@Test
+	public void testAtomNil() {
+		assertEquals(null, new Venice().eval("(do nil)"));
+	}
+
+	@Test
+	public void testAtomTrue() {
+		assertEquals(Boolean.TRUE, new Venice().eval("(do true)"));
+	}
+
+	@Test
+	public void testAtomFalse() {
+		assertEquals(Boolean.FALSE, new Venice().eval("(do false)"));
+	}
+
+	@Test
+	public void testAtomString() {
+		assertEquals("abc", new Venice().eval("(do \"abc\")"));
+	}
+
+	@Test
+	public void testAtomKeyword() {
+		assertEquals(":abc", new Venice().eval("(do (str :abc))"));
+	}
+
+	@Test
+	public void testAtomSymbol() {
+		assertEquals(Long.valueOf(100), new Venice().eval("(do (let [abc 100] abc))"));
+	}
+
+	@Test
 	public void testTokenize() {	
 		final String s = 
 				"(do                       \n" +
 				"   100                    \n" +
 				"   ;comment               \n" +
 				"   \"abcdef\"             \n" +
-				"   \"\"\"uvwxyz\"\"\"     \n" +
-				"   \"\"\"uvw\"xyz\"\"\"   \n" +
 				"   (+ 2 3)                \n" +
 				")                           ";
 		
+		int pos = 0;
+		
 		final ArrayList<Token> tokens = Reader.tokenize(s,"test");
-		assertEquals("(", tokens.get(0).getToken());
-		assertEquals("do", tokens.get(1).getToken());
-		assertEquals("100", tokens.get(2).getToken());
-		assertEquals("\"abcdef\"", tokens.get(3).getToken());
-		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(4).getToken());
-		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(5).getToken());
-		assertEquals("(", tokens.get(6).getToken());
-		assertEquals("+", tokens.get(7).getToken());
-		assertEquals("2", tokens.get(8).getToken());
-		assertEquals("3", tokens.get(9).getToken());
-		assertEquals(")", tokens.get(10).getToken());
-		assertEquals(")", tokens.get(11).getToken());
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("do", tokens.get(pos++).getToken());
+		assertEquals("100", tokens.get(pos++).getToken());
+		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("+", tokens.get(pos++).getToken());
+		assertEquals("2", tokens.get(pos++).getToken());
+		assertEquals("3", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
 	}
 
 }
