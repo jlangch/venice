@@ -67,6 +67,14 @@ public class ReaderTest {
 	@Test
 	public void testAtomString() {
 		assertEquals("abc", new Venice().eval("(do \"abc\")"));
+		assertEquals("a\nb\nc", new Venice().eval("(do \"a\nb\nc\")"));
+	}
+
+	@Test
+	public void testAtomString_TripleQuotes() {
+		assertEquals("abc", new Venice().eval("(do \"\"\"abc\"\"\")"));
+		assertEquals("a\"b\"c", new Venice().eval("(do \"\"\"a\"b\"c\"\"\")"));
+		assertEquals("a\nb\nc", new Venice().eval("(do \"\"\"a\nb\nc\"\"\")"));
 	}
 
 	@Test
@@ -82,14 +90,18 @@ public class ReaderTest {
 	@Test
 	public void testTokenize() {	
 		final String s = 
-				"(do                       \n" +
-				"   100                    \n" +
-				"   ;comment               \n" +
-				"   \"abcdef\"             \n" +
-				"   \"abc\\\"def\"         \n" +
-				"   \"abc\ndef\"           \n" +
-				"   (+ 2 3)                \n" +
-				")                           ";
+				"(do                                  \n" +
+				"   100                               \n" +
+				"   ;comment                          \n" +
+				"   \"abcdef\"                        \n" +
+				"   \"abc\\\"def\"                    \n" +
+				"   \"abc\ndef\"                      \n" +
+				"   \"\"\"uvwxyz\"\"\"                \n" +
+				"   \"\"\"uvw\"xyz\"\"\"              \n" +
+				"   \"\"\"uvw\nxyz\"\"\"              \n" +
+				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \n" +
+				"   (+ 2 3)                           \n" +
+				")                                      ";
 		
 		int pos = 0;
 		
@@ -100,6 +112,11 @@ public class ReaderTest {
 		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
 		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
 		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\nxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"xyz\"\"\"", tokens.get(pos++).getToken());
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("+", tokens.get(pos++).getToken());
 		assertEquals("2", tokens.get(pos++).getToken());

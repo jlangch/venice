@@ -144,11 +144,19 @@ public class Reader {
 		} 
 		else if (matcher.group(8) != null) {
 			return MetaUtil.withTokenPos(
-					new VncKeyword(matcher.group(8)), 
+					new VncString(
+							StringUtil.unescape(
+									StringUtil.decodeUnicode(
+											matcher.group(8)))), 
 					token);
 		} 
 		else if (matcher.group(9) != null) {
-			final VncSymbol sym = new VncSymbol(matcher.group(9));
+			return MetaUtil.withTokenPos(
+					new VncKeyword(matcher.group(9)), 
+					token);
+		} 
+		else if (matcher.group(10) != null) {
+			final VncSymbol sym = new VncSymbol(matcher.group(10));
 			rdr.anonymousFnArgs.addSymbol(sym);
 			return MetaUtil.withTokenPos(sym, token);
 		} 
@@ -331,6 +339,7 @@ public class Reader {
 	}
 
 	// (?s) makes the dot match all characters, including line breaks.
+	//
 	// groups:
 	//    1: long => (^-?[0-9]+$)
 	//    2: double => (^-?[0-9]+[.][0-9]*$)
@@ -338,9 +347,10 @@ public class Reader {
 	//    4: nil => (^nil$)
 	//    5: true => (^true$)
 	//    6: false => (^false$)
-	//    7: string => ^"(.*)"$
-	//    8: keyword => :(.*)
-	//    9: symbol => (^[^"]*$)
+	//    7: string => ^"""(.*)"""$
+	//    8: string => ^"(.*)"$
+	//    9: keyword => :(.*)
+	//    10: symbol => (^[^"]*$)
 	private static final Pattern atom_pattern = Pattern.compile(
 													"(?s)"  
 													+ "(^-?[0-9]+$)"
@@ -349,14 +359,18 @@ public class Reader {
 													+ "|(^nil$)"
 													+ "|(^true$)"
 													+ "|(^false$)"
+													+ "|^\"{3}(.*)\"{3}$"
 													+ "|^\"(.*)\"$"
 													+ "|:(.*)"
 													+ "|(^[^\"]*$)");
 	
-	// (?:X) non capturing group
+	// (?:X)      non capturing group
+	// [\\s\\S]*? zero or more characters, linefeed included, reluctant not greedy
+	//
 	// tokens:
 	//    unquote splicing => ~@
 	//    chars            => [\\[\\]{}()'`~@]
+	//    string           => \"{3}(?:[\\s\\S]*?)\"{3}
 	//    string           => \"(?:[\\\\].|[^\\\\\"])*\"
 	//    comment          => ;.*
 	//    else             => [^\\s \\[\\]{}()'\"`~@,;]
@@ -364,6 +378,7 @@ public class Reader {
 														"[\\s ,]*("
 														+ "~@"
 														+ "|[\\[\\]{}()'`~@]"
+														+ "|\"{3}(?:[\\s\\S]*?)\"{3}"
 														+ "|\"(?:[\\\\].|[^\\\\\"])*\""
 														+ "|;.*"
 														+ "|[^\\s \\[\\]{}()'\"`~@,;]*"

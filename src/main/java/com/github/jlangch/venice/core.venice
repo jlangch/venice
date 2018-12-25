@@ -69,11 +69,11 @@
    { :arglists '("(cond & clauses)")
      :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil." 
      :examples (list (str/strip-margin
-                        "(let [n 5]
-                        |     (cond
-                        |        (< n 0) \"negative\"
-                        |        (> n 0) \"positive\"
-                        |        :else \"zero\"))" )) }
+                        """(let [n 5]
+                          |     (cond
+                          |        (< n 0) "negative"
+                          |        (> n 0) "positive"
+                          |        :else "zero"))""" )) }
  
    cond [& clauses]
    
@@ -139,9 +139,9 @@
    { :arglists '("(if-let bindings then)")
      :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else" 
      :examples (list (str/strip-margin
-                        "(if-let [value (* 100 2)]
-                        |    (str \"The expression is true. value=\" value)
-                        |    (str \"The expression is false value=\" value))" )) }
+                        """(if-let [value (* 100 2)]
+                          |    (str "The expression is true. value=" value)
+                          |    (str "The expression is false value=" value))""" )) }
 
    if-let [bindings then else]
    
@@ -156,7 +156,7 @@
 (defmacro 
    { :arglists '("(dotimes bindings & body)")
      :doc "Repeatedly executes body with name bound to integers from 0 through n-1." 
-     :examples '("(dotimes [n 3] (println (str \"n is \" n)))" ) }
+     :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
 
    dotimes [bindings & body]
    
@@ -208,14 +208,14 @@
      :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
      
                      (str/strip-margin
-                        "(do
-                        |   (def person 
-                        |        {:name \"Peter Meier\"
-                        |         :address {:street \"Lindenstrasse 45\"
-                        |                   :city \"Bern\"
-                        |                   :zip 3000}})
-                        |
-                        |   (-> person :address :street)) " )) }
+                        """(do
+                          |   (def person 
+                          |        {:name "Peter Meier"
+                          |         :address {:street "Lindenstrasse 45"
+                          |                   :city "Bern"
+                          |                   :zip 3000}})
+                          |
+                          |   (-> person :address :street)) """ )) }
 
    -> [x & forms]
    
@@ -310,9 +310,9 @@
    { :arglists '("(load-string s)")
      :doc "Sequentially read and evaluate the set of forms contained in the string." 
      :examples (list (str/strip-margin
-                        "(do 
-                        |   (load-string \"(def x 1)\")
-                        |   (+ x 2))" )) }
+                        """(do 
+                          |   (load-string "(def x 1)")
+                          |   (+ x 2))""" )) }
    
    load-string [s]
    
@@ -333,9 +333,9 @@
    { :arglists '("(load-classpath-file name)")
      :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'." 
      :examples (list (str/strip-margin
-                        "(do 
-                        |   (load-classpath-file \"com/github/jlangch/venice/test.venice\")
-                        |   (test/println \"hello\"))" )) }
+                        """(do 
+                          |   (load-classpath-file "com/github/jlangch/venice/test.venice")
+                          |   (test/println "hello"))""" )) }
 
    load-classpath-file [f]
    
@@ -357,7 +357,7 @@
 (defmacro 
    { :arglists '("(with-sh-dir dir & forms)")
      :doc "Sets the directory for use with sh, see sh for details." 
-     :examples '("(with-sh-dir \"/tmp\" (sh \"ls\" \"-l\"))") }
+     :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""") }
 
    with-sh-dir [dir & forms]
   
@@ -372,7 +372,7 @@
 (defmacro 
    { :arglists '("(with-sh-env env & forms)")
      :doc "Sets the environment for use with sh, see sh for details."
-     :examples '("(with-sh-env {\"NAME\" \"foo\"} (sh \"ls\" \"-l\"))") }
+     :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""") }
 
    with-sh-env [env & forms]
   
@@ -382,7 +382,7 @@
 (defmacro 
    { :arglists '("(with-sh-throw forms)")
      :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
-     :examples '("(with-sh-throw (sh \"ls\" \"-l\"))") }
+     :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
 
    with-sh-throw [& forms]
   
@@ -392,7 +392,7 @@
 (defmacro 
    { :arglists '("(with-out-str & forms)")
      :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
-     :examples '("(with-out-str (println \"a string\"))") }
+     :examples '("""(with-out-str (println "a string"))""") }
 
    with-out-str [& forms]
   
@@ -405,7 +405,7 @@
 (defmacro 
    { :arglists '("(delay & body)")
      :doc "Takes a body of expressions and yields a Delay object that will invoke the body only the first time it is forced (with force or deref/@), and will cache the result and return it on all subsequent force calls"
-     :examples '("(do\n   (def x (delay (println \"working...\") 100))\n   (deref x))") }
+     :examples '("""(do\n   (def x (delay (println "working...") 100))\n   (deref x))""") }
 
    delay [& body]
 
@@ -432,7 +432,7 @@
 (def
    { :arglists '("(printf fmt & args)")
      :doc "Prints formatted output, as per format"
-     :examples '("(printf \"%s: %d\" \"abc\" 100)") }
+     :examples '("""(printf "%s: %d" "abc" 100)""") }
 
    printf
    
