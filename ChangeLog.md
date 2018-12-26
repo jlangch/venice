@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added support for triple quoted, multi-line string literals: `"""{ "name": "john" }"""`
-- added string interpolation: `(do (def x 100) """~{x} ~(inc x)""")`
+- added string interpolation: `(do (let [x 100] """~{x} ~(inc x)"""))`
 
 
 
