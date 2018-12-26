@@ -125,4 +125,20 @@ public class ReaderTest {
 		assertEquals(")", tokens.get(pos++).getToken());
 	}
 
+	@Test
+	public void testStringInterpolation_simple_value() {	
+		assertEquals("100", new Venice().eval("(do (def x 100) \"\"\"~{x}\"\"\" )"));
+		assertEquals(" 100", new Venice().eval("(do (def x 100) \"\"\" ~{x}\"\"\" )"));
+		assertEquals("100 ", new Venice().eval("(do (def x 100) \"\"\"~{x} \"\"\" )"));
+		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} \"\"\" )"));
+	}
+
+	@Test
+	public void testStringInterpolation_expression() {	
+		assertEquals("101", new Venice().eval("(do (def x 100) \"\"\"~(inc x)\"\"\" )"));
+		assertEquals(" 101", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)\"\"\" )"));
+		assertEquals("101 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x) \"\"\" )"));
+		assertEquals(" 101 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) \"\"\" )"));
+	}
+
 }

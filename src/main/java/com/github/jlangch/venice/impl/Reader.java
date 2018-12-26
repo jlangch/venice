@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -47,15 +48,29 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class Reader {
 	
-	public Reader(final ArrayList<Token> tokens) {
-		this.tokens = tokens;
+	private Reader(final String filename, final String form, final ArrayList<Token> formTokens) {
+		this.filename = filename;
+		this.form = form;
+		this.tokens = formTokens;
 		this.position = 0;
+	}
+	
+	public static Reader reader(final String str, final String filename) {
+		return new Reader(filename, str, tokenize(str, filename));
 	}
 
 	public static VncVal read_str(final String str, final String filename) {
-		return read_form(new Reader(tokenize(str, filename)));
+		return read_form(reader(str, filename));
 	}
 
+	public String unprocessedRest() {
+		return lastReadPos() < 0 ? form : form.substring(lastReadPos());
+	}
+
+	public int lastReadPos() {
+		return position == 0 ? -1 : tokens.get(position-1).getFileEndPos();
+	}
+	
 	@Override
 	public String toString() {
 		return tokens
@@ -88,7 +103,7 @@ public class Reader {
 				
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);
 				
-				tokens.add(new Token(token, filename, pos[0], pos[1]));
+				tokens.add(new Token(token, filename, tokenStartPos, pos[0], pos[1]));
 				
 				lastStartPos = tokenStartPos;
 				lastPos = pos;
@@ -136,18 +151,12 @@ public class Reader {
 		} 
 		else if (matcher.group(7) != null) {
 			return MetaUtil.withTokenPos(
-					new VncString(
-							StringUtil.unescape(
-									StringUtil.decodeUnicode(
-											matcher.group(7)))), 
+					interpolate(matcher.group(7), rdr.filename), 
 					token);
 		} 
 		else if (matcher.group(8) != null) {
 			return MetaUtil.withTokenPos(
-					new VncString(
-							StringUtil.unescape(
-									StringUtil.decodeUnicode(
-											matcher.group(8)))), 
+					new VncString(unescapeAndDecodeUnicode(matcher.group(8))), 
 					token);
 		} 
 		else if (matcher.group(9) != null) {
@@ -316,6 +325,34 @@ public class Reader {
 		return form;
 	}
 	
+	private static VncVal interpolate(final String s, final String filename) {
+		final int pos = Math.max(s.indexOf("~{"), s.indexOf("~("));
+		if (pos < 0) {
+			return new VncString(unescapeAndDecodeUnicode(s));
+		}
+		else {
+			final String head = (pos == 0) ? "" : s.substring(0, pos);
+			
+			final String rest = s.substring(pos);
+			final int offset = rest.startsWith("~{") ? 2 : 1;
+			
+			final Reader rdr = reader(rest.substring(offset), filename);
+			final VncVal form = read_form(rdr);
+			
+			final String tail = rdr.unprocessedRest().substring(offset);
+			
+			return new VncList(
+						CoreFunctions.str,
+						new VncString(unescapeAndDecodeUnicode(head)),
+						form,
+						new VncString(unescapeAndDecodeUnicode(tail)));
+		}
+	}
+
+	private static String unescapeAndDecodeUnicode(final String s) {
+		return StringUtil.unescape(StringUtil.decodeUnicode(s));	
+	}
+
 	private static int[] getTextPosition(
 			final char[] text, 
 			final int pos, 
@@ -384,6 +421,8 @@ public class Reader {
 														+ "|[^\\s \\[\\]{}()'\"`~@,;]*"
 														+ ")");
 
+	private final String filename;
+	private final String form;
 	private ArrayList<Token> tokens;
 	private int position;
 	private final AnonymousFnArgs anonymousFnArgs = new AnonymousFnArgs();
