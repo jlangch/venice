@@ -328,6 +328,8 @@ public class Reader {
 	}
 	
 	private static VncVal interpolate(final String s, final String filename) {
+		// this is a reader macro implemented in Java
+		
 		int pos = Stream.of(s.indexOf("~{"), s.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
 		if (pos < 0) {
 			return new VncString(unescapeAndDecodeUnicode(s));
