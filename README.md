@@ -617,15 +617,15 @@ The Jackson _jdk8_ module is loaded automatically if it is available
    (load-module :json)
    
    ;; build json from a map (returns a json string)
-   (json/to-json {:a 100 :b 100 c: [10 20 30]})
+   (json/to-json {:a 100 :b 100 :c [10 20 30]})
    (json/to-pretty-json [{:a 100 :b 100}, {:a 200 :b 200}])
 
    ;; pretty print json (returns a json string)
    (json/pretty-print (json/to-json {:a 100 :b 100}))
 
    ;; parse json from a string (returns a map/list)
-   (json/parse (json/to-json {:a 100 :b 100 c: [10 20 30]}))
-   (json/parse (json/to-json [{:a 100 :b 100}, {:a 200 :b 200}])))
+   (json/parse """{"a": 100, "b": 100, "c": [10,20,30]}""")
+   (json/parse """[{"a": 100,"b": 100}, {"a": 200, "b": 200}]"""))
 ```
 
 
