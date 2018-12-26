@@ -323,6 +323,37 @@ Another example:
 ```
 
 
+## String interpolation
+
+### Triple quoted, multi-line strings
+
+```clojure
+(do
+   (def data """{
+                  "fruit": "apple",
+                  "size": "large",
+                  "color": "red"
+                }""")
+   (println (str/strip-indent data)))
+```
+
+### Interpolation 
+
+Interpolation is controlled using `~{}` and `~()` forms. The former is 
+used for simple value replacement while the latter can be used to
+embed the results of arbitrary function invocation into the produced 
+string.
+
+_Interpolation is implemented as a reader macro. It's parsed at read time and turned into a_ `(str args)` _function._
+
+```clojure
+(do
+   (let [x 100] 
+      """~{x}"""
+      """~(inc x)"""))
+```
+
+
 ## Recursion:
 
 ```clojure
