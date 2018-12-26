@@ -127,18 +127,61 @@ public class ReaderTest {
 
 	@Test
 	public void testStringInterpolation_simple_value() {	
-		assertEquals("100", new Venice().eval("(do (def x 100) \"\"\"~{x}\"\"\" )"));
-		assertEquals(" 100", new Venice().eval("(do (def x 100) \"\"\" ~{x}\"\"\" )"));
-		assertEquals("100 ", new Venice().eval("(do (def x 100) \"\"\"~{x} \"\"\" )"));
-		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} \"\"\" )"));
+		assertEquals("100", new Venice().eval("(do (def x 100) \"\"\"~{x}\"\"\")"));
+		assertEquals(" 100", new Venice().eval("(do (def x 100) \"\"\" ~{x}\"\"\")"));
+		assertEquals("100 ", new Venice().eval("(do (def x 100) \"\"\"~{x} \"\"\")"));
+		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} \"\"\")"));
+
+		assertEquals("100 200", new Venice().eval("(do (def x 100) (def y 200) \"\"\"~{x} ~{y}\"\"\")"));
+		assertEquals(" 100 200", new Venice().eval("(do (def x 100) (def y 200) \"\"\" ~{x} ~{y}\"\"\")"));
+		assertEquals("100 200 ", new Venice().eval("(do (def x 100) (def y 200) \"\"\"~{x} ~{y} \"\"\")"));
+		assertEquals(" 100 200 ", new Venice().eval("(do (def x 100) (def y 200) \"\"\" ~{x} ~{y} \"\"\")"));
+
+		assertEquals("100200", new Venice().eval("(do (def x 100) (def y 200) \"\"\"~{x}~{y}\"\"\")"));
+		assertEquals(" 100200", new Venice().eval("(do (def x 100) (def y 200) \"\"\" ~{x}~{y}\"\"\")"));
+		assertEquals("100200 ", new Venice().eval("(do (def x 100) (def y 200) \"\"\"~{x}~{y} \"\"\")"));
+		assertEquals(" 100200 ", new Venice().eval("(do (def x 100) (def y 200) \"\"\" ~{x}~{y} \"\"\")"));
 	}
 
 	@Test
 	public void testStringInterpolation_expression() {	
-		assertEquals("101", new Venice().eval("(do (def x 100) \"\"\"~(inc x)\"\"\" )"));
-		assertEquals(" 101", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)\"\"\" )"));
-		assertEquals("101 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x) \"\"\" )"));
-		assertEquals(" 101 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) \"\"\" )"));
+		assertEquals("101", new Venice().eval("(do (def x 100) \"\"\"~(inc x)\"\"\")"));
+		assertEquals(" 101", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)\"\"\")"));
+		assertEquals("101 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x) \"\"\")"));
+		assertEquals(" 101 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) \"\"\")"));
+
+		assertEquals("101 99", new Venice().eval("(do (def x 100) \"\"\"~(inc x) ~(dec x)\"\"\")"));
+		assertEquals(" 101 99", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) ~(dec x)\"\"\")"));
+		assertEquals("101 99 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x) ~(dec x) \"\"\")"));
+		assertEquals(" 101 99 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) ~(dec x) \"\"\")"));
+
+		assertEquals("10199", new Venice().eval("(do (def x 100) \"\"\"~(inc x)~(dec x)\"\"\")"));
+		assertEquals(" 10199", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)~(dec x)\"\"\")"));
+		assertEquals("10199 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x)~(dec x) \"\"\")"));
+		assertEquals(" 10199 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)~(dec x) \"\"\")"));
+	}
+
+	@Test
+	public void testStringInterpolation_mixed() {	
+		assertEquals("100 101", new Venice().eval("(do (def x 100) \"\"\"~{x} ~(inc x)\"\"\")"));
+		assertEquals(" 100 101", new Venice().eval("(do (def x 100) \"\"\" ~{x} ~(inc x)\"\"\")"));
+		assertEquals("100 101 ", new Venice().eval("(do (def x 100) \"\"\"~{x} ~(inc x) \"\"\")"));
+		assertEquals(" 100 101 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} ~(inc x) \"\"\")"));
+
+		assertEquals("100101", new Venice().eval("(do (def x 100) \"\"\"~{x}~(inc x)\"\"\")"));
+		assertEquals(" 100101", new Venice().eval("(do (def x 100) \"\"\" ~{x}~(inc x)\"\"\")"));
+		assertEquals("100101 ", new Venice().eval("(do (def x 100) \"\"\"~{x}~(inc x) \"\"\")"));
+		assertEquals(" 100101 ", new Venice().eval("(do (def x 100) \"\"\" ~{x}~(inc x) \"\"\")"));
+
+		assertEquals("101 100", new Venice().eval("(do (def x 100) \"\"\"~(inc x) ~{x}\"\"\")"));
+		assertEquals(" 101 100", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) ~{x}\"\"\")"));
+		assertEquals("101 100 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x) ~{x} \"\"\")"));
+		assertEquals(" 101 100 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x) ~{x} \"\"\")"));
+
+		assertEquals("101100", new Venice().eval("(do (def x 100) \"\"\"~(inc x)~{x}\"\"\")"));
+		assertEquals(" 101100", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)~{x}\"\"\")"));
+		assertEquals("101100 ", new Venice().eval("(do (def x 100) \"\"\"~(inc x)~{x} \"\"\")"));
+		assertEquals(" 101100 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)~{x} \"\"\")"));
 	}
 
 }

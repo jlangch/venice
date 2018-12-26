@@ -23,9 +23,11 @@ package com.github.jlangch.venice.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
@@ -326,29 +328,39 @@ public class Reader {
 	}
 	
 	private static VncVal interpolate(final String s, final String filename) {
-		final int pos = Math.max(s.indexOf("~{"), s.indexOf("~("));
+		int pos = Stream.of(s.indexOf("~{"), s.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
 		if (pos < 0) {
 			return new VncString(unescapeAndDecodeUnicode(s));
 		}
 		else {
-			final String head = (pos == 0) ? "" : s.substring(0, pos);
+			final List<VncVal> list = new ArrayList<>();
+			list.add(CoreFunctions.str);
 			
-			final String rest = s.substring(pos);
-			final int offset = rest.startsWith("~{") ? 2 : 1;
-			
-			final Reader rdr = reader(rest.substring(offset), filename);
-			final VncVal form = read_form(rdr);
-			
-			final String tail = rdr.unprocessedRest().substring(offset);
-			
-			return new VncList(
-						CoreFunctions.str,
-						new VncString(unescapeAndDecodeUnicode(head)),
-						form,
-						new VncString(unescapeAndDecodeUnicode(tail)));
+			String str = s;
+			while (true) {
+				final String head = (pos == 0) ? "" : str.substring(0, pos);
+				list.add(new VncString(unescapeAndDecodeUnicode(head)));
+				
+				final String rest = str.substring(pos);
+				final int offset = rest.startsWith("~{") ? 2 : 1;
+				
+				final Reader rdr = reader(rest.substring(offset), filename);
+				final VncVal form = read_form(rdr);
+				list.add(form);
+				
+				final String tail = rdr.unprocessedRest().substring(offset);
+				
+				pos = Stream.of(tail.indexOf("~{"), tail.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
+				if (pos < 0) {
+					list.add(new VncString(unescapeAndDecodeUnicode(tail)));
+					return new VncList(list);
+				}
+				
+				str = tail;
+			}						
 		}
 	}
-
+	
 	private static String unescapeAndDecodeUnicode(final String s) {
 		return StringUtil.unescape(StringUtil.decodeUnicode(s));	
 	}
