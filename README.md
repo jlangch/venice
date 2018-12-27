@@ -349,8 +349,8 @@ _Interpolation is implemented as a reader macro. It's parsed at read time and tu
 ```clojure
 (do
    (let [x 100] 
-      """~{x}"""
-      """~(inc x)"""))
+      (println """x: ~{x}""")
+      (println """f(x): ~(inc x)""")))
 ```
 
 
