@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.1.4] - 2018-12-xx
+## [1.2.0] - 2018-12-xx
 
 ### added
 
