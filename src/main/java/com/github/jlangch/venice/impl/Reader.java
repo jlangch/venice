@@ -152,14 +152,12 @@ public class Reader {
 			return Constants.False;
 		} 
 		else if (matcher.group(7) != null) {
-			return MetaUtil.withTokenPos(
-					interpolate(matcher.group(7), rdr.filename), 
-					token);
+			final String s = unescapeAndDecodeUnicode(matcher.group(7));			
+			return MetaUtil.withTokenPos(interpolate(s, rdr.filename), token);
 		} 
 		else if (matcher.group(8) != null) {
-			return MetaUtil.withTokenPos(
-					new VncString(unescapeAndDecodeUnicode(matcher.group(8))), 
-					token);
+			final String s = unescapeAndDecodeUnicode(matcher.group(8));			
+			return MetaUtil.withTokenPos(new VncString(s), token);
 		} 
 		else if (matcher.group(9) != null) {
 			return MetaUtil.withTokenPos(
@@ -332,7 +330,7 @@ public class Reader {
 		
 		int pos = Stream.of(s.indexOf("~{"), s.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
 		if (pos < 0) {
-			return new VncString(unescapeAndDecodeUnicode(s));
+			return new VncString(s);
 		}
 		else {
 			final List<VncVal> list = new ArrayList<>();
@@ -341,7 +339,7 @@ public class Reader {
 			String str = s;
 			while (true) {
 				final String head = (pos == 0) ? "" : str.substring(0, pos);
-				list.add(new VncString(unescapeAndDecodeUnicode(head)));
+				list.add(new VncString(head));
 				
 				final String rest = str.substring(pos);
 				final int offset = rest.startsWith("~{") ? 2 : 1;
@@ -354,7 +352,7 @@ public class Reader {
 				
 				pos = Stream.of(tail.indexOf("~{"), tail.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
 				if (pos < 0) {
-					list.add(new VncString(unescapeAndDecodeUnicode(tail)));
+					list.add(new VncString(tail));
 					return new VncList(list);
 				}
 				
@@ -364,7 +362,43 @@ public class Reader {
 	}
 	
 	private static String unescapeAndDecodeUnicode(final String s) {
-		return StringUtil.unescape(StringUtil.decodeUnicode(s));	
+		return unescape(StringUtil.decodeUnicode(s));	
+	}
+
+	private static String unescape(final String text) {
+		if (text == null) {
+			return text;
+		}
+				
+		final StringBuilder sb = new StringBuilder();
+		
+		final char[] chars = text.toCharArray();
+		final int len = chars.length;
+		int ii = 0;
+		while(ii<len) {
+			final char c = chars[ii++];
+			if (c == '\\' && ii<len) {
+				switch(chars[ii++]) {
+					case 'n': sb.append('\n'); break;
+					case 'r': sb.append('\r'); break;
+					case 't': sb.append('\t'); break;
+					case '"': sb.append('"'); break;
+					case '\'': sb.append('\''); break;
+					case '\\': sb.append('\\'); break;
+					
+					// line escape
+					case '\r': if (ii<len && chars[ii] == '\n') ii++; else sb.append("\\\r"); break;
+					case '\n': break;
+					
+					default: break;
+				}
+			}
+			else {
+				sb.append(c);
+			}
+		}
+		
+		return sb.toString();
 	}
 
 	private static int[] getTextPosition(

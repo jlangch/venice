@@ -88,45 +88,7 @@ public class StringUtil {
 		
 		return sb.toString();
 	}
-	
-	/**
-	 * Unescapes a text
-	 *
-	 * @param text the text to unescape
-	 * @return the unescaped text
-	 */
-	public static String unescape(final String text) {
-		if (text == null) {
-			return text;
-		}
 		
-		
-		final StringBuilder sb = new StringBuilder();
-		
-		final char[] chars = text.toCharArray();
-		final int len = chars.length;
-		int ii = 0;
-		while(ii<len) {
-			final char c = chars[ii++];
-			if (c == '\\') {
-				switch(chars[ii++]) {
-					case 'n': sb.append('\n'); break;
-					case 'r': sb.append('\r'); break;
-					case 't': sb.append('\t'); break;
-					case '"':  sb.append('"'); break;
-					case '\'':  sb.append('\''); break;
-					case '\\': sb.append('\\'); break;
-					default:  break;
-				}
-			}
-			else {
-				sb.append(c);
-			}
-		}
-		
-		return sb.toString();
-	}
-	
 	public static int indexNotOf(final String text, final String searchChars, final int startPos) {
 		if (text == null) {
 			throw new IllegalArgumentException("A text must not be null");

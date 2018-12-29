@@ -31,19 +31,11 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class StringUtilTest {
 
 	@Test
-	public void escapeTest() {
+	public void testEscape() {
 		assertEquals("", StringUtil.escape(""));
 		assertEquals("a", StringUtil.escape("a"));
 		assertEquals("abc-123", StringUtil.escape("abc-123"));
 		
 		assertEquals(" \\n \\r \\t \\\" \\\\ ", StringUtil.escape(" \n \r \t \" \\ "));				
-	}
-	
-	public void unescapeTest() {
-		assertEquals("", StringUtil.unescape(""));
-		assertEquals("a", StringUtil.unescape("a"));
-		assertEquals("abc-123", StringUtil.unescape("abc-123"));
-
-		assertEquals(" \n \r \t \" \\ ", StringUtil.unescape(" \\n \\r \\t \\\" \\\\ "));				
 	}
 }

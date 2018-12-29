@@ -329,12 +329,17 @@ Another example:
 
 ```clojure
 (do
-   (def data """{
+   ; strip-indent removes the indentation on multi-line strings. The indentation
+   ; will be determined from the first line's indentation. Escaping the first 
+   ; line of the multi-line string makes strip-indent work as expected.  
+   (def data (str/strip-indent """\
+                {
                   "fruit": "apple",
                   "size": "large",
                   "color": "red"
-                }""")
-   (println (str/strip-indent data)))
+                }"""))
+               
+   (println data))
 ```
 
 ### Interpolation 
