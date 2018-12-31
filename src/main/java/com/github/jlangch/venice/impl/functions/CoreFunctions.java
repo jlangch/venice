@@ -575,14 +575,13 @@ public class CoreFunctions {
 		}
 		
 		public VncVal apply(final VncList args) {
-			return args.isEmpty()
-					? new VncString("")
-					: new VncString(
-							args.getList()
-								.stream()
-								.filter(v -> v != Nil)
-								.map(v -> Printer._pr_str(v, false))
-								.collect(Collectors.joining("")));
+			final StringBuilder sb = new StringBuilder();
+			for(VncVal v : args.getList()) {
+				if (v != Nil) {
+					sb.append(Printer._pr_str(v, false));
+				}
+			}		
+			return new VncString(sb.toString());
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
