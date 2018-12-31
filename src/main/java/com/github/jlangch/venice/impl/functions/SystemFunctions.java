@@ -172,6 +172,29 @@ public class SystemFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	public static VncFunction gc = new VncFunction("gc") {
+		{
+			setArgLists("(gc)");
+			
+			setDoc("Run the Java garbage collector. Runs the finalization methods of any objects pending finalization prior to the GC.");
+			
+			setExamples("(gc)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("gc");
+
+			assertArity("gc", args, 0);
+			
+			Runtime.getRuntime().runFinalization();
+			Runtime.getRuntime().gc();
+			
+			return Nil;
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	public static VncFunction callstack = new VncFunction("callstack") {
 		{
 			setArgLists("(callstack )");
@@ -185,7 +208,6 @@ public class SystemFunctions {
 					"   (defn f3 [x] (f4 x))         \n" +
 					"   (defn f4 [x] (callstack))    \n" +
 					"   (f1 100))                      ");
-
 		}
 		
 		public VncVal apply(final VncList args) {
@@ -257,15 +279,10 @@ public class SystemFunctions {
 			final String type = Coerce.toVncKeyword(args.first()).getValue();
 			final String osName = System.getProperty("os.name");
 			switch(type) {
-				case "windows":
-					return  osName.startsWith("Windows") ? True : False;
-				case "mac-osx": 
-					return  osName.startsWith("Mac OS X") ? True : False;
-				case "linux":
-					return  osName.startsWith("LINUX") ? True : False;
-				default:
-					return False;
-					
+				case "windows": return  osName.startsWith("Windows") ? True : False;
+				case "mac-osx": return  osName.startsWith("Mac OS X") ? True : False;
+				case "linux":   return  osName.startsWith("LINUX") ? True : False;
+				default:        return False;
 			}
 		}
 
@@ -331,6 +348,7 @@ public class SystemFunctions {
 					.put("objid",				objid)
 					.put("current-time-millis",	current_time_millis)
 					.put("nano-time",			nano_time)
+					.put("gc",					gc)
 					.put("sandboxed?",			sandboxed_Q)
 					.put("sleep",				sleep)
 					.put("callstack",			callstack)

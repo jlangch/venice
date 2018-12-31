@@ -160,6 +160,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("max"));
 		arithmetic.addItem(getDocItem("abs"));
 		arithmetic.addItem(getDocItem("negate"));
+		arithmetic.addItem(getDocItem("sqrt"));
 
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
@@ -570,6 +571,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("system-prop"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
+		util.addItem(getDocItem("gc"));
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
 		util.addItem(getDocItem("coalesce"));

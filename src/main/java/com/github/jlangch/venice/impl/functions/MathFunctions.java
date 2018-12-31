@@ -412,6 +412,42 @@ public class MathFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	public static VncFunction sqrt = new VncFunction("sqrt") {
+		{
+			setArgLists("(sqrt x)");
+			
+			setDoc("Square root of x");
+			
+			setExamples("(sqrt 10)", "(sqrt 10.23)", "(sqrt 10.23M)");
+		}
+		
+		public VncVal apply(final VncList args) {
+			assertArity("sqrt", args, 1);
+			
+			final VncVal arg = args.nth(0);
+			
+			if (Types.isVncLong(arg)) {
+				return new VncDouble(Math.sqrt(((VncLong)arg).getValue().doubleValue()));
+			}
+			else if (Types.isVncDouble(arg)) {
+				return new VncDouble(Math.sqrt(((VncDouble)arg).getValue()));
+			}
+			else if (Types.isVncBigDecimal(arg)) {
+				return new VncBigDecimal(
+							new BigDecimal(
+									Math.sqrt(
+										Coerce.toVncBigDecimal(args.first()).getValue().doubleValue())));
+			}
+			else {
+				throw new VncException(String.format(
+						"Invalid argument type %s while calling function 'sqrt'",
+						Types.getClassName(arg)));
+			}
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	public static VncFunction rand_long = new VncFunction("rand-long") {
 		{
 			setArgLists("(rand-long)", "(rand-long max)");
@@ -884,6 +920,7 @@ public class MathFunctions {
 					.put("min",					min)
 					.put("max",					max)
 					.put("negate",				negate)
+					.put("sqrt",				sqrt)
 
 					.put("dec/add",				dec_add)
 					.put("dec/sub",				dec_sub)
