@@ -296,13 +296,14 @@
 (defmacro 
    { :arglists '("(time expr)")
      :doc "Evaluates expr and prints the time it took.  Returns the value of expr." 
-     :examples '("(time (println [100 200]))") }
+     :examples '("(time (+ 100 200))") }
 
    time [expr]
    
    `(let [start_ (nano-time)
-          ret_ ~expr]
-       (println (str "Elapsed time: " (/ (- (nano-time) start_) 1000000) " msecs"))
+          ret_ ~expr
+          end_ (nano-time)]
+       (println (str "Elapsed time: " (/ (- end_ start_) 1000) " us"))
        ret_))
          
          
