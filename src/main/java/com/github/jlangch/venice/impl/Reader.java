@@ -157,7 +157,7 @@ public class Reader {
 		} 
 		else if (matcher.group(8) != null) {
 			final String s = unescapeAndDecodeUnicode(matcher.group(8));			
-			return MetaUtil.withTokenPos(new VncString(s), token);
+			return MetaUtil.withTokenPos(interpolate(s, rdr.filename), token);
 		} 
 		else if (matcher.group(9) != null) {
 			return MetaUtil.withTokenPos(
@@ -328,7 +328,7 @@ public class Reader {
 	private static VncVal interpolate(final String s, final String filename) {
 		// this is a reader macro implemented in Java
 		
-		int pos = Stream.of(s.indexOf("~{"), s.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
+		int pos = getFirsInterpolationFormStartPos(s);
 		if (pos < 0) {
 			return new VncString(s);
 		}
@@ -338,27 +338,37 @@ public class Reader {
 			
 			String str = s;
 			while (true) {
-				final String head = (pos == 0) ? "" : str.substring(0, pos);
-				list.add(new VncString(head));
+				if (pos > 0) {
+					list.add(new VncString(str.substring(0, pos)));
+				}
 				
 				final String rest = str.substring(pos);
 				final int offset = rest.startsWith("~{") ? 2 : 1;
 				
 				final Reader rdr = reader(rest.substring(offset), filename);
-				final VncVal form = read_form(rdr);
-				list.add(form);
+				list.add(read_form(rdr));
 				
 				final String tail = rdr.unprocessedRest().substring(offset);
 				
-				pos = Stream.of(tail.indexOf("~{"), tail.indexOf("~(")).filter(p -> p >= 0).sorted().findFirst().orElse(-1);
+				pos = getFirsInterpolationFormStartPos(tail);
 				if (pos < 0) {
-					list.add(new VncString(tail));
+					if (!tail.isEmpty()) {
+						list.add(new VncString(tail));
+					}
 					return new VncList(list);
 				}
 				
 				str = tail;
 			}						
 		}
+	}
+	
+	private static int getFirsInterpolationFormStartPos(final String s) {
+		return Stream.of(s.indexOf("~{"), s.indexOf("~("))
+					 .filter(p -> p >= 0)
+					 .sorted()
+					 .findFirst()
+					 .orElse(-1);
 	}
 	
 	private static String unescapeAndDecodeUnicode(final String s) {
