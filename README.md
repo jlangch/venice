@@ -611,7 +611,7 @@ Alternative to UNIX shell scripts:
 
    (let [dir (io/file (nth *ARGV* 2))
          date (first-day-of-month -1)
-         year  (time/year date)
+         year (time/year date)
          month (time/month date)]
       (if (io/exists-dir? dir)
          (do
@@ -622,7 +622,7 @@ Alternative to UNIX shell scripts:
             (zip-tomcat-logs "localhost" dir year month)
             (zip-tomcat-logs "catalina" dir year month)
             (println "Done."))
-         (printf "Error: The tomcat log dir '%s' does not exist" dir))))
+         (printf "Error: The Tomcat log dir '%s' does not exist" dir))))
 ```
 
 
