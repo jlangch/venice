@@ -117,11 +117,17 @@ venice.eval(
     "(println [1 2])", 
     Parameters.of("*out*", null));
 
-// capturing data written to stdout
+// capture stdout within Venice script and return as result
+System.out.println(
+    venice.eval(
+        "(do (with-out-str (println 1) (println [4 5])))"));
+
+// capturing stdout preserving script result
 final CapturingPrintStream ps = CapturingPrintStream.create();
-venice.eval(
-    "(do (println 1) (println [4 5]))", 
-    Parameters.of("*out*", ps));
+System.out.println(
+    venice.eval(
+        "(do (println 1) (println [4 5]) 100)", 
+        Parameters.of("*out*", ps)));
 System.out.println(ps.getOutput());
 ```
 
