@@ -425,8 +425,8 @@
        (do 
           (cond
              (empty? xs)  nil
-             (== 1 (count xs))  (. *out* :append (str (first xs)))
-             :default (. *out* :append (str/join " " (map #(str %) xs))))
+             (== 1 (count xs))  (. *out* :append (str (coalesce (first xs) "nil")))
+             :default (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))))
                  
           nil)))
 

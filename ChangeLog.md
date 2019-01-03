@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added line escapes to make `str/strip-indent` work (see README)
 - added function `sqrt`
 
+### fixed
+
+- fixed functions `print` and `println` to print `nil` values correctly
+
 
 
 ## [1.2.0] - 2018-12-28
