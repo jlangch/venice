@@ -166,6 +166,102 @@ Caused by: java.lang.ArithmeticException: / by zero
 ```
 
 
+## Destructuring
+
+### Sequential Destructuring
+
+Sequential destructuring breaks up a sequential data structure as a Venice 
+list or vector within a let binding.
+
+```clojure
+(do
+   (def data-vector [1 2 3])
+   (def data-list '(1 2 3))
+   (def data-string "abc")
+
+   (let [[x y z] data-vector]
+      (println x y z))
+      ;=> 1 2 3
+
+   (let [[x y z] data-list]
+      (println x y z))
+      ;=> 1 2 3
+
+   ;; for strings, the elements are destructured by character.
+   (let [[x y z] data-string]
+     (println x y z))
+     ;=> a b c
+)
+```
+
+### Associative Destructuring
+
+Associative destructuring breaks up a associative (key/value) data structure 
+as a Venice map or vector within a let binding.
+
+...
+
+
+
+## String interpolation
+
+### Triple quoted, multi-line strings
+
+```clojure
+(do
+   ; strip-indent removes the indentation on multi-line strings. The indentation
+   ; will be determined from the first line's indentation. Escaping the first 
+   ; line of the multi-line string with '\' makes strip-indent work as expected.  
+   (def data (str/strip-indent """\
+                {
+                  "fruit": "apple",
+                  "size": "large",
+                  "color": "red"
+                }"""))
+               
+   (println data))
+```
+
+### Interpolation 
+
+Interpolation is controlled using `~{}` and `~()` forms. The former is 
+used for simple value replacement while the latter can be used to
+embed the results of arbitrary function invocation into the produced 
+string.
+
+_Interpolation is implemented as a reader macro. It's parsed at read time and turned into a_ 
+`(str args)` _function._
+
+```clojure
+(do
+   (let [x 100] 
+      (println "x: ~{x}")
+      (println "f(x): ~(inc x)")))
+```
+
+```clojure
+(do
+   (let [x 100] 
+      (println """x: ~{x}""")
+      (println """f(x): ~(inc x)""")))
+```
+
+
+## Recursion:
+
+```clojure
+(do
+   (defn sum [n]
+      (loop [cnt n, acc 0]
+         (if (zero? cnt)
+            acc
+            (recur (dec cnt) (+ acc cnt)))))
+
+   (sum 100000))
+```
+
+
+
 ## Java Interop
 
 Venice supports calling Java constructors, static and instance methods as well as 
@@ -320,64 +416,6 @@ Another example:
         (. :User :new "pete" 48 (. :LocalDate :of 1970 1 12))) ])
 
    (str (filter #(> (:age %) 30) users)))
-```
-
-
-## String interpolation
-
-### Triple quoted, multi-line strings
-
-```clojure
-(do
-   ; strip-indent removes the indentation on multi-line strings. The indentation
-   ; will be determined from the first line's indentation. Escaping the first 
-   ; line of the multi-line string with '\' makes strip-indent work as expected.  
-   (def data (str/strip-indent """\
-                {
-                  "fruit": "apple",
-                  "size": "large",
-                  "color": "red"
-                }"""))
-               
-   (println data))
-```
-
-### Interpolation 
-
-Interpolation is controlled using `~{}` and `~()` forms. The former is 
-used for simple value replacement while the latter can be used to
-embed the results of arbitrary function invocation into the produced 
-string.
-
-_Interpolation is implemented as a reader macro. It's parsed at read time and turned into a_ 
-`(str args)` _function._
-
-```clojure
-(do
-   (let [x 100] 
-      (println "x: ~{x}")
-      (println "f(x): ~(inc x)")))
-```
-
-```clojure
-(do
-   (let [x 100] 
-      (println """x: ~{x}""")
-      (println """f(x): ~(inc x)""")))
-```
-
-
-## Recursion:
-
-```clojure
-(do
-   (defn sum [n]
-      (loop [cnt n, acc 0]
-         (if (zero? cnt)
-            acc
-            (recur (dec cnt) (+ acc cnt)))))
-
-   (sum 100000))
 ```
 
 
