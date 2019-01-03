@@ -139,9 +139,11 @@ final Venice venice = new Venice();
 
 final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 
-for(long ii=0; ii<100; ii++) {
-    System.out.println(venice.eval(precompiled, Parameters.of("x", ii)));
-}
+IntStream.range(0, 100).forEach(
+  ii -> System.out.println(
+          venice.eval(
+             precompiled, 
+             Parameters.of("x", ii))));
 ```
 
 
