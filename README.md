@@ -4,7 +4,7 @@
 
 # Venice
 
-Venice, a Clojure indpired sandboxed Lisp dialect with Java interoperability serving as 
+Venice, a Clojure inspired sandboxed Lisp dialect with Java interoperability serving as 
 a safe scripting language.
 
 
