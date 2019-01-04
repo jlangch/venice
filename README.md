@@ -183,28 +183,86 @@ list or vector within a let binding.
 
 ```clojure
 (do
-   (def data-vector [1 2 3])
-   (def data-list '(1 2 3))
-   (def data-string "abc")
-
-   (let [[x y z] data-vector]
+   (let [[x y z] [1 2 3]]
       (println x y z))
       ;=> 1 2 3
 
-   (let [[x y z] data-list]
+   (let [[x y z] '(1 2 3]
       (println x y z))
       ;=> 1 2 3
 
    ;; for strings, the elements are destructured by character.
-   (let [[x y z] data-string]
+   (let [[x y z] "abc"]
      (println x y z))
      ;=> a b c
 )
 ```
 
+The destructured collection must not be of same size as the number of binding names
+
+```clojure
+(do
+   (let [[a b c d e f] '(1 2 3)]
+      (println a b c d e f))
+      ;=> 1 2 3 nil nil nil
+      
+   (let [[a b c] '(1 2 3 4 5 6 7 8 9)]
+      (println a b c))
+      ;=> 1 2 3
+)
+```
+
+Working with tail elements `&` and ignoring bindings `_`
+
+```clojure
+(do
+   (let [[a b c & z] '(1 2 3 4 5 6 7 8 9)]
+      (println a b c z))
+      ;=> 1 2 3 (4 5 6 7 8 9)
+
+   (let [[a _ b _ c & z] '(1 2 3 4 5 6 7 8 9)]
+      (println a b c z))
+      ;=> 1 3 5 (6 7 8 9)
+)
+```
+
+Binding the entire collection with `:as`
+
+```clojure
+(do
+   (let [[a b c & z :as all] '(1 2 3 4 5 6 7 8 9)]
+      (println a b c z all))
+      ;=> 1 2 3 (4 5 6 7 8 9) (1 2 3 4 5 6 7 8 9)
+)
+```
+
+Nested bindings
+
+```clojure
+(do
+   (def line [[5 10] [10 20]])
+   (let [[[x1 y1][x2 y2]] line]
+      (printf "Line from (%d,%d) to (%d,%d)" x1 y1 x2 y2))
+      ;=> "Line from (5,10) to (10,20)"
+)
+```
+
+`:as` or `&` can be used at any level
+
+```clojure
+(do
+   (def line [[5 10] [10 20]])
+   (let [[[a b :as group1] [c d :as group2]] line]
+     (println a b group1)
+     (println c d group2))
+     ;=> 5 10 [5 10]
+     ;=> 10 20 [10 20])
+```
+
+
 ### Associative Destructuring
 
-Associative destructuring breaks up a associative (key/value) data structure 
+Associative destructuring breaks up an associative (key/value) data structure 
 as a Venice map or vector within a let binding.
 
 ...
