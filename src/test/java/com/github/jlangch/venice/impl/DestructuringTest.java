@@ -345,6 +345,36 @@ public class DestructuringTest {
 	}
 
 	@Test
+	public void test_sequential_string_fill_up() {
+		// [[x y & z] "abcdef"]
+
+		final VncVal symVal = new VncList(
+									new VncSymbol("x"), 
+									new VncSymbol("y"), 
+									new VncSymbol("&"), 
+									new VncSymbol("z"));
+		
+		final VncVal bindVal = new VncString("abcdef");
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(3, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals("b", ((VncString)bindings.get(1).val).getValue());
+		
+		assertEquals("z", bindings.get(2).sym.getName());
+		assertEquals(4, ((VncList)bindings.get(2).val).size());
+		assertEquals("c", ((VncString)((VncList)bindings.get(2).val).nth(0)).getValue());
+		assertEquals("d", ((VncString)((VncList)bindings.get(2).val).nth(1)).getValue());
+		assertEquals("e", ((VncString)((VncList)bindings.get(2).val).nth(2)).getValue());
+		assertEquals("f", ((VncString)((VncList)bindings.get(2).val).nth(3)).getValue());
+	}
+
+	@Test
 	public void test_sequential_string_as() {
 		// [[x y z :as all] "abcdef"]
 
