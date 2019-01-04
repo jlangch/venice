@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class DestructuringTest {
 		assertEquals(Constants.Nil, bindings.get(0).val);
 		
 		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(1).val);
+		assertTrue(((VncList)bindings.get(1).val).isEmpty());
 	}
 	
 	@Test
