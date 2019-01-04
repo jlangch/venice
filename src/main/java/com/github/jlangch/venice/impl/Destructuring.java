@@ -64,8 +64,20 @@ public class Destructuring {
 			bindings.add(new Binding((VncSymbol)symVal, bindVal));
 		}
 		else if (Types.isVncList(symVal)) {
-			// sequential destructuring
-			sequential_destructure((VncList)symVal, bindVal, bindings);
+			// sequential destructuring		
+			if (bindVal == Nil || Types.isVncList(bindVal)) {
+				sequential_list_destructure((VncList)symVal, bindVal, bindings);
+			}
+			else if (Types.isVncString(bindVal)) {
+				sequential_string_destructure((VncList)symVal, bindVal, bindings);
+			}
+			else {
+				throw new VncException(
+						String.format(
+								"Invalid sequential destructuring bind value type %s. Expected list, vector, or string. %s",
+								Types.getClassName(bindVal),
+								ErrorMessage.buildErrLocation(bindVal)));
+			}
 		}
 		else if (Types.isVncMap(symVal)) {			
 			// associative destructuring
@@ -83,95 +95,104 @@ public class Destructuring {
 		return bindings;
 	}
 	
-	private static void sequential_destructure(
+	private static void sequential_list_destructure(
 			final VncList symVal, 
 			final VncVal bindVal,
 			final List<Binding> bindings
 	) {
-		if (bindVal == Nil || Types.isVncList(bindVal)) {
-			// [[x y] [10 20]]
-			// [[x _ y _ z] [10 20 30 40 50]]
-			// [[x y & z] [10 20 30 40 50]]
-			// [[x y :as all] [10 20 30 40 50]]
-			// [[x y & z :as all] [10 20 30 40 50]]
-			int symIdx = 0;
-			int valIdx = 0;
-			
-			final List<VncVal> symbols = symVal.getList();
-			final List<VncVal> values = bindVal == Nil ? new ArrayList<>() : ((VncList)bindVal).getList();
-			while(symIdx<symbols.size()) {
-				if (isIgnoreBindingSymbol(symbols.get(symIdx))) {
-					symIdx++; 
-					valIdx++;
-					continue;
-				}
-				else if (isElisionSymbol(symbols.get(symIdx))) {
-					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
-					final VncVal val = valIdx < values.size() ? ((VncList)bindVal).slice(valIdx) : new VncList();
-					bindings.add(new Binding(sym, val));
-					symIdx += 2; 
-					valIdx = values.size(); // all values read
-				}
-				else if (isAsKeyword(symbols.get(symIdx))) {
-					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
-					bindings.add(new Binding(sym, bindVal));
-					symIdx += 2; 
-				}
-				else if (Types.isVncSymbol(symbols.get(symIdx))) {
-					final VncSymbol sym = (VncSymbol)symbols.get(symIdx);
-					final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;
-					bindings.add(new Binding(sym, val));
-					symIdx++; 
-					valIdx++;
-				}
-				else if (Types.isVncList(symbols.get(symIdx))) {
-					final VncVal syms = symbols.get(symIdx);
-					final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
-					bindings.addAll(destructure(syms, val));
-					symIdx++; 
-					valIdx++;
-				}
-				else if (Types.isVncMap(symbols.get(symIdx))) {
-					final VncMap syms = (VncMap)symbols.get(symIdx);
-					final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
-					associative_destructure(syms, val, bindings);
-					symIdx++; 
-					valIdx++;
-				}
+		// [[x y] [10 20]]
+		// [[x _ y _ z] [10 20 30 40 50]]
+		// [[x y & z] [10 20 30 40 50]]
+		// [[x y :as all] [10 20 30 40 50]]
+		// [[x y & z :as all] [10 20 30 40 50]]
+		
+		final List<VncVal> symbols = symVal.getList();
+		final List<VncVal> values = bindVal == Nil ? new ArrayList<>() : ((VncList)bindVal).getList();
+		int symIdx = 0;
+		int valIdx = 0;
+		
+		while(symIdx<symbols.size()) {
+			if (isIgnoreBindingSymbol(symbols.get(symIdx))) {
+				symIdx++; 
+				valIdx++;
 			}
-		}
-		else if (Types.isVncString(bindVal)) {
-			// [[x y] "abcde"]
-			// [[x _ y _ z] "abcde"]
-			// [[x y & z] "abcde"]
-			final List<VncVal> symbols = symVal.getList();
-			final List<VncVal> values = ((VncString)bindVal).toVncList().getList();
-			for(int ii=0; ii<symbols.size(); ii++) {
-				if (isIgnoreBindingSymbol(symbols.get(ii))) {
-					continue;
-				}
-				else if (isElisionSymbol(symbols.get(ii))) {
-					final VncSymbol sym = (VncSymbol)symbols.get(ii+1);
-					final VncVal val = (((VncString)bindVal).toVncList()).slice(ii);
-					bindings.add(new Binding(sym, val));
-					break;
-				}
-				else {
-					final VncSymbol sym = (VncSymbol)symbols.get(ii);
-					final VncVal val = ii < values.size() ? values.get(ii) : Nil;
-					bindings.add(new Binding(sym, val));
-				}
+			else if (isElisionSymbol(symbols.get(symIdx))) {
+				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
+				final VncVal val = valIdx < values.size() ? ((VncList)bindVal).slice(valIdx) : new VncList();
+				bindings.add(new Binding(sym, val));
+				symIdx += 2; 
+				valIdx = values.size(); // all values read
 			}
-		}
-		else {
-			throw new VncException(
-					String.format(
-							"Invalid destructuring bind value type %s. Expected list, vector, or string. %s",
-							Types.getClassName(bindVal),
-							ErrorMessage.buildErrLocation(bindVal)));
+			else if (isAsKeyword(symbols.get(symIdx))) {
+				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
+				bindings.add(new Binding(sym, bindVal));
+				symIdx += 2; 
+			}
+			else if (Types.isVncSymbol(symbols.get(symIdx))) {
+				final VncSymbol sym = (VncSymbol)symbols.get(symIdx);
+				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;
+				bindings.add(new Binding(sym, val));
+				symIdx++; 
+				valIdx++;
+			}
+			else if (Types.isVncList(symbols.get(symIdx))) {
+				final VncVal syms = symbols.get(symIdx);
+				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
+				bindings.addAll(destructure(syms, val));
+				symIdx++; 
+				valIdx++;
+			}
+			else if (Types.isVncMap(symbols.get(symIdx))) {
+				final VncMap syms = (VncMap)symbols.get(symIdx);
+				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
+				associative_destructure(syms, val, bindings);
+				symIdx++; 
+				valIdx++;
+			}
 		}
 	}
 
+	private static void sequential_string_destructure(
+			final VncList symVal, 
+			final VncVal bindVal,
+			final List<Binding> bindings
+	) {
+		// [[x y] "abcde"]
+		// [[x _ y _ z] "abcde"]
+		// [[x y & z] "abcde"]
+		// [[x y :as all] "abcde"]
+		// [[x y & z :as all] "abcde"]
+		final List<VncVal> symbols = symVal.getList();
+		final List<VncVal> values = bindVal == Nil ? new ArrayList<>() : ((VncString)bindVal).toVncList().getList();
+		int symIdx = 0;
+		int valIdx = 0;
+
+		while(symIdx<symbols.size()) {
+			if (isIgnoreBindingSymbol(symbols.get(symIdx))) {
+				symIdx++; 
+				valIdx++;
+			}
+			else if (isElisionSymbol(symbols.get(symIdx))) {
+				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
+				final VncVal val = valIdx < values.size() ? (((VncString)bindVal).toVncList()).slice(valIdx) : new VncList();
+				bindings.add(new Binding(sym, val));
+				symIdx += 2; 
+				valIdx = values.size(); // all values read
+			}
+			else if (isAsKeyword(symbols.get(symIdx))) {
+				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
+				bindings.add(new Binding(sym, bindVal));
+				symIdx += 2; 
+			}
+			else {
+				final VncSymbol sym = (VncSymbol)symbols.get(symIdx);
+				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;
+				bindings.add(new Binding(sym, val));
+				symIdx++; 
+				valIdx++;
+			}
+		}
+	}
 	
 	private static void associative_destructure(
 			final VncMap symVal, 
