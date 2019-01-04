@@ -121,6 +121,38 @@ public class DestructuringTest {
 	}
 
 	@Test
+	public void test_sequential_multiple_elision() {
+		// [[x _ y _ z] [10 20 30 40 50]]
+
+		final VncVal symVal = new VncList(
+									new VncSymbol("x"), 
+									new VncSymbol("_"), 
+									new VncSymbol("y"), 
+									new VncSymbol("_"), 
+									new VncSymbol("z"));
+		final VncVal bindVal = new VncList(
+									new VncLong(10), 
+									new VncLong(20), 
+									new VncLong(30), 
+									new VncLong(40), 
+									new VncLong(50));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(3, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(30L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("z", bindings.get(2).sym.getName());
+		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(2).val).getValue());
+	}
+
+
+	@Test
 	public void test_sequential_multiple_fill_up_1() {
 		// [[x y & z] [10 20 30 40 50]]
 
@@ -151,6 +183,49 @@ public class DestructuringTest {
 		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).val).nth(0)).getValue());
 		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).val).nth(1)).getValue());
 		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(2).val).nth(2)).getValue());
+	}
+
+	@Test
+	public void test_sequential_multiple_fill_up_1_as() {
+		// [[x y & z :as all] [10 20 30 40 50]]
+
+		final VncVal symVal = new VncList(
+									new VncSymbol("x"), 
+									new VncSymbol("y"), 
+									new VncSymbol("&"), 
+									new VncSymbol("z"), 
+									new VncKeyword(":as"), 
+									new VncSymbol("all"));
+		final VncVal bindVal = new VncList(
+									new VncLong(10), 
+									new VncLong(20), 
+									new VncLong(30), 
+									new VncLong(40), 
+									new VncLong(50));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(4, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("z", bindings.get(2).sym.getName());
+		assertEquals(3, ((VncList)bindings.get(2).val).size());
+		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).val).nth(0)).getValue());
+		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).val).nth(1)).getValue());
+		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(2).val).nth(2)).getValue());
+		
+		assertEquals("all", bindings.get(3).sym.getName());
+		assertEquals(5, ((VncList)bindings.get(3).val).size());
+		assertEquals(Long.valueOf(10L), ((VncLong)((VncList)bindings.get(3).val).nth(0)).getValue());
+		assertEquals(Long.valueOf(20L), ((VncLong)((VncList)bindings.get(3).val).nth(1)).getValue());
+		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(3).val).nth(2)).getValue());
+		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(3).val).nth(3)).getValue());
+		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(3).val).nth(4)).getValue());
 	}
 
 	@Test
