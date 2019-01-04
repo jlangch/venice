@@ -152,7 +152,6 @@ public class DestructuringTest {
 		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(2).val).getValue());
 	}
 
-
 	@Test
 	public void test_sequential_multiple_fill_up_1() {
 		// [[x y & z] [10 20 30 40 50]]
@@ -294,7 +293,87 @@ public class DestructuringTest {
 		assertEquals("z", bindings.get(3).sym.getName());
 		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(3).val).getValue());
 	}
-	
+
+	@Test
+	public void test_sequential_string() {
+		// [[x y z] "abcdef"]
+
+		final VncVal symVal = new VncList(
+									new VncSymbol("x"), 
+									new VncSymbol("y"), 
+									new VncSymbol("z"));
+		final VncVal bindVal = new VncString("abcdef");
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(3, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals("b", ((VncString)bindings.get(1).val).getValue());
+		
+		assertEquals("z", bindings.get(2).sym.getName());
+		assertEquals("c", ((VncString)bindings.get(2).val).getValue());
+	}
+
+	@Test
+	public void test_sequential_string_multiple_elsision() {
+		// [[x _ y _ z] "abcdef"]
+
+		final VncVal symVal = new VncList(
+									new VncSymbol("x"), 
+									new VncSymbol("_"), 
+									new VncSymbol("y"), 
+									new VncSymbol("_"), 
+									new VncSymbol("z"));
+		final VncVal bindVal = new VncString("abcdef");
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(3, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals("c", ((VncString)bindings.get(1).val).getValue());
+		
+		assertEquals("z", bindings.get(2).sym.getName());
+		assertEquals("e", ((VncString)bindings.get(2).val).getValue());
+	}
+
+	@Test
+	public void test_sequential_string_as() {
+		// [[x y z :as all] "abcdef"]
+
+		final VncVal symVal = new VncList(
+									new VncSymbol("x"), 
+									new VncSymbol("y"), 
+									new VncSymbol("z"), 
+									new VncKeyword(":as"), 
+									new VncSymbol("all"));
+		
+		final VncVal bindVal = new VncString("abcdef");
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(4, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals("b", ((VncString)bindings.get(1).val).getValue());
+		
+		assertEquals("z", bindings.get(2).sym.getName());
+		assertEquals("c", ((VncString)bindings.get(2).val).getValue());
+		
+		assertEquals("all", bindings.get(3).sym.getName());
+		assertEquals("abcdef", ((VncString)bindings.get(3).val).getValue());
+	}
+
 	@Test
 	public void test_associative_keys() {
 		// [{:keys [a b c]} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
