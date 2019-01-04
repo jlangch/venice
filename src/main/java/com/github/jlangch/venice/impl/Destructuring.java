@@ -42,15 +42,20 @@ public class Destructuring {
 	
 	// x 10                                     -> x: 10
 	
+	// sequential destructuring on vector
 	// [x y] [10 20]                            -> x: 10, y: 20
 	// [x _ y] [10 20 30]                       -> x: 10, y: 30
 	// [x y & z] [10 20 30 40 50]               -> x: 10, y: 20, z: [30 40 50]
+	// [x y :as all] [10 20 30 40 50]           -> x: 10, y: 20, all: [10 20 30 40 50]
+	// [x y & z :as all] [10 20 30 40 50]       -> x: 10, y: 20, z: [30 40 50] all: [10 20 30 40 50]
 	// [[v x & y] z] [[10 20 30 40] 50]         -> v: 10, x: 20, y: [30 40], z: 50
 
+	// associative destructuring on map
 	// {:keys [a b]} {:a 1 :b 2 :c 3}           -> a: 1, b: 2
 	// {:syms [a b]} {'a 1 'b 2 'c 3}           -> a: 1, b: 2
 	// {:strs [a b]} {"a" 1 "b" 2 "c" 3}        -> a: 1, b: 2
 	
+	// associative destructuring on vector
 	// [x {:keys [a b]}] [10 {:a 1 :b 2 :c 3}]  -> a: 1, b: 2
 
 	public static List<Binding> destructure(
