@@ -257,6 +257,7 @@ Nested bindings
      (println c d group2))
      ;=> 5 10 [5 10]
      ;=> 10 20 [10 20])
+)
 ```
 
 
@@ -265,8 +266,45 @@ Nested bindings
 Associative destructuring breaks up an associative (key/value) data structure 
 as a Venice map or vector within a let binding.
 
-...
+```clojure
+(do
+   (def map_keyword {:a "A" :b "B" :c 3 :d 4})
+   (def map_strings {"a" "A" "b" "B" "c" 3 "d" 4})
+   
+   (let [{:keys [a b c]} map_keyword]
+      (println a b c))
+      ; => A B 3
+      
+   (let [{:strs [a b c]} map_strings]
+      (println a b c))
+      ; => A B 3
+)
+```
 
+Binding the entire collection with `:as`
+
+```clojure
+(do
+   (def map_keyword {:a "A" :b "B" :c 3 :d 4})
+
+   (let [{:keys [a b c] :as all} map_keyword]
+      (println a b c all))
+      ; => A B 3 {:a A :b B :c 3 :d 4}
+)
+```
+
+Binding with defaults `:or`
+
+```clojure
+(do
+  (defn configure [options]
+     (let [{:keys [port debug verbose] :or {port 8000, debug false, verbose false}} options]
+     (println "port =" port " debug =" debug " verbose =" verbose)))
+     ;=> port 8000, debug false, verbose false
+
+  (configure {:debug true})
+)
+```
 
 
 ## String interpolation
