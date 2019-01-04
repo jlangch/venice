@@ -86,6 +86,16 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
+	public VncList keys() {
+		return new VncList(
+					value
+						.keySet()
+						.stream()
+						.map(k -> JavaInteropUtil.convertToVncVal(k))
+						.collect(Collectors.toList()));
+	}
+
+	@Override
 	public Set<Map.Entry<VncVal, VncVal>> entries() {
 		return getMap().entrySet();
 	}

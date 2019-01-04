@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -91,8 +91,13 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
+	public VncList keys() {
+		return new VncList(new ArrayList<>(getMap().keySet()));
+	}
+
+	@Override
 	public Set<Entry<VncVal, VncVal>> entries() {
-		return new HashSet<>();
+		return getMap().entrySet();
 	}
 
 	@Override

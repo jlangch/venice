@@ -2263,13 +2263,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("keys", args, 1);
 			
-			final VncMap mhm = Coerce.toVncMap(args.nth(0));
-			final Map<VncVal,VncVal> hm = mhm.getMap();
-			final VncList key_lst = new VncList();
-			for (VncVal key : hm.keySet()) {
-				key_lst.addAtEnd(key);
-			}
-			return key_lst;
+			return Coerce.toVncMap(args.nth(0)).keys();
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;

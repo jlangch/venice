@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,6 +88,11 @@ public class VncSortedMap extends VncMap {
 		final VncSortedMap v = new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone());
 		v.setMeta(getMeta());
 		return v;
+	}
+
+	@Override
+	public VncList keys() {
+		return new VncList(new ArrayList<>(value.keySet()));
 	}
 
 	@Override

@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,11 @@ public class VncHashMap extends VncMap {
 		final VncHashMap v = new VncHashMap((HashMap<VncVal,VncVal>)value.clone());
 		v.setMeta(getMeta());
 		return v;
+	}
+
+	@Override
+	public VncList keys() {
+		return new VncList(new ArrayList<>(value.keySet()));
 	}
 
 	@Override
