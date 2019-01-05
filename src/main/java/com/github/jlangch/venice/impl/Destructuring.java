@@ -244,11 +244,10 @@ public class Destructuring {
 
 		final List<Binding> local_bindings = new ArrayList<>();
 
-		final List<VncVal> symbols = symVal.keys().getList();
-//
-//		int symIdx = 0;
-//		while(symIdx<symbols.size()) {
 		
+		// --------------------------------
+		// handle :keys, :syms, :strs first
+		// --------------------------------
 		if (symVal.get(new VncKeyword(":keys")) != Nil) {
 			final VncVal symbol = symVal.get(new VncKeyword(":keys"));
 			if (Types.isVncVector(symbol)) {
@@ -303,33 +302,45 @@ public class Destructuring {
 								ErrorMessage.buildErrLocation(symbol)));
 			}					
 		}
-		else {
-			throw new VncException(
-					String.format(
-							"Invalid associative destructuring. Expected :keys, :syms, or :strs symbol definition. %s",
-							Types.getClassName(symVal),
-							ErrorMessage.buildErrLocation(symVal)));
+		
+		final List<VncVal> symbols = symVal.keys().getList();
+
+		for(int symIdx = 0; symIdx<symbols.size(); symIdx++) {
+		
+
 		}
 		
+		// --------------------------------
 		// handle :or
+		// --------------------------------
 		final VncVal orVal = symVal.get(new VncKeyword(":or"));
 		if (orVal != Nil && Types.isVncMap(orVal)) {
 			((VncMap)orVal).entries().forEach(e -> {
-				for(int ii=0; ii<local_bindings.size(); ii++) {
-					final Binding b = local_bindings.get(ii);
-					if (b.sym.equals((VncSymbol)e.getKey()) && b.val == Nil) {
-						local_bindings.set(ii, new Binding(b.sym, e.getValue()));
+				final int bIdx = getBindingIndex((VncSymbol)e.getKey(), local_bindings);
+				if (bIdx == -1) {
+					local_bindings.add(new Binding((VncSymbol)e.getKey(), e.getValue()));
+					
+				}
+				else {
+					final Binding b = local_bindings.get(bIdx);
+					if (b.val == Nil) {
+						local_bindings.set(bIdx, new Binding((VncSymbol)e.getKey(), e.getValue()));
 					}
 				}
-			});	
+				
+			});
 		}
 
+	
+		// --------------------------------
 		// handle :as
+		// --------------------------------
 		final VncVal as = symVal.get(new VncKeyword(":as"));
 		if (as != Nil && Types.isVncSymbol(as)) {
 			local_bindings.add(new Binding((VncSymbol)as, bindVal));
 		}
 
+	
 		bindings.addAll(local_bindings);
 	}
 
@@ -344,4 +355,15 @@ public class Destructuring {
 	private static boolean isIgnoreBindingSymbol(final VncVal val) {
 		return Types.isVncSymbol(val) && ((VncSymbol)val).getName().equals("_");
 	}
+	
+	private static int getBindingIndex(final VncSymbol sym, final List<Binding> bindings) {
+		for(int ii=0; ii<bindings.size(); ii++) {
+			final Binding b = bindings.get(ii);
+			if (b.sym.equals(sym)) {
+				return ii;
+			}
+		}
+		return -1;
+	}
+
 }
