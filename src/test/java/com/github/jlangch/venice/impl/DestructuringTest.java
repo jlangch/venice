@@ -405,6 +405,33 @@ public class DestructuringTest {
 	}
 
 	@Test
+	public void test_associative_simple() {
+		// [{a :a, b :b, c :c} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
+
+		final VncVal symVal = new VncHashMap(
+									new VncSymbol("a"), new VncKeyword(":a"),
+									new VncSymbol("b"), new VncKeyword(":b"),
+									new VncSymbol("c"), new VncKeyword(":c"));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":d"), new VncLong(4));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+		
+		assertEquals("a", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("b", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		
+		assertEquals("c", bindings.get(2).sym.getName());
+		assertEquals(Constants.Nil, bindings.get(2).val);
+	}
+
+	@Test
 	public void test_associative_keys() {
 		// [{:keys [a b c]} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
 
