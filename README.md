@@ -319,21 +319,21 @@ Associative destructuring can be nested and combined with sequential destructuri
 ```clojure
 (do
    (def users
-      {:peter {:role "Engineer"
+      {:peter {:role "clerk"
                :branch "Zurich"
                :age 40}
                
-       :magda {:role "Head of HR"
+       :magda {:role "head of HR"
                :branch "Bern"
                :age 45}
                
-       :kurt  {:role "Assistant"
+       :kurt  {:role "assistant"
                :branch "Lucerne"
                :age 32}})
 
    (let [{{:keys [role branch]} :peter} users]
       (println "Peter is a" role "located at" branch))
-      ;=> Peter is a Engineer located a Zurich
+      ;=> Peter is a clerk located a Zurich
 )
 ```
 
