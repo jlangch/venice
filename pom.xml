@@ -6,7 +6,7 @@
 
     <groupId>com.github.jlangch</groupId>
     <artifactId>venice</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-snapshot</version>
     <packaging>jar</packaging>
 
     <name>Venice</name>
