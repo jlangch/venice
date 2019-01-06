@@ -7,12 +7,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.2.1] - 2019-01-xx
+## [1.2.1] - 2019-01-06
 
 ### added
 
 - added line escapes to make `str/strip-indent` work (see README)
 - added function `sqrt`
+- added nested associative destructuring
 
 ### fixed
 
