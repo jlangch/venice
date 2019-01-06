@@ -319,11 +319,9 @@ public class Destructuring {
 							if (b.val == Nil) {
 								local_bindings.set(bIdx, new Binding((VncSymbol)e.getKey(), e.getValue()));
 							}
-						}
-						
+						}						
 					});
-				}
-				
+				}			
 			}
 			else if (symValName.equals(KW_AS)) {
 				final VncVal symbol = symVal.get(KW_AS);
@@ -338,7 +336,6 @@ public class Destructuring {
 			}
 		}
 
-	
 		bindings.addAll(local_bindings);
 	}
 
