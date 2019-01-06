@@ -64,6 +64,9 @@ public class Destructuring {
 	// {:syms [a b] :or {'b 2}} {'a 1 'c 3}       -> a: 1, b: 2
 	// {:strs [a b] :or {"b" 2}} {"a" 1 "c" 3}    -> a: 1, b: 2
 	
+	// associative destructuring on map nested
+	// {a :a, {x :x, y :y} :c} {:a 1, :b 2, :c {:x 10, :y 11}}   -> a: 1, b: 2, x: 10, y: 11
+	
 	// associative destructuring on vector
 	// [x {:keys [a b]}] [10 {:a 1 :b 2 :c 3}]  -> a: 1, b: 2
 
@@ -329,10 +332,31 @@ public class Destructuring {
 					local_bindings.add(new Binding((VncSymbol)symbol, bindVal));
 				}
 			}
+			else if (Types.isVncMap(symValName)) {
+				// nested associative destructuring
+				associative_map_destructure(
+						(VncMap)symValName, 
+						((VncMap)bindVal).get(symVal.get(symValName)),
+						local_bindings);
+			}
+			else if (Types.isVncList(symValName)) {
+				// nested sequential destructuring
+				sequential_list_destructure(
+						(VncList)symValName, 
+						((VncMap)bindVal).get(symVal.get(symValName)),
+						local_bindings);
+			}
 			else if (Types.isVncSymbol(symValName)) {
 				final VncVal s = symVal.get(symValName);
 				final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(s);
 				local_bindings.add(new Binding((VncSymbol)symValName, v));								
+			}
+			else {
+				throw new VncException(
+						String.format(
+								"Invalid associative destructuring name type %s. %s",
+								Types.getClassName(symValName),
+								ErrorMessage.buildErrLocation(symValName)));
 			}
 		}
 

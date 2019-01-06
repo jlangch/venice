@@ -595,6 +595,58 @@ public class DestructuringTest {
 	}
 
 	@Test
+	public void test_associative_nested_associated() {
+		// {a :a, {x :x, y :y} :c} {:a 1, :b 2, :c {:x 10, :y 11}}   -> a: 1, b: 2, x: 10, y: 11
+
+		final VncVal symVal = new VncHashMap(
+									new VncSymbol("a"), 
+									new VncKeyword(":a"),
+									new VncHashMap(
+											new VncSymbol("x"), new VncKeyword(":x"),
+											new VncSymbol("y"), new VncKeyword(":y")), 
+									new VncKeyword(":c"));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":c"), 
+										new VncHashMap(
+												new VncKeyword(":x"), new VncLong(10),
+												new VncKeyword(":y"), new VncLong(11)));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+
+		assertEquals(Long.valueOf(1L),  ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(10L), ((VncLong)Binding.findBinding(new VncSymbol("x"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(11L), ((VncLong)Binding.findBinding(new VncSymbol("y"), bindings).val).getValue());
+	}
+
+	@Test
+	public void test_associative_nested_sequential() {
+		// {a :a, [x y] :c} {:a 1, :b 2, :c [10 11]}   -> a: 1, b: 2, x: 10, y: 11
+
+		final VncVal symVal = new VncHashMap(
+									new VncSymbol("a"), 
+									new VncKeyword(":a"),
+									new VncList(new VncSymbol("x"), new VncSymbol("y")), 
+									new VncKeyword(":c"));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":c"), 
+										new VncList(new VncLong(10), new VncLong(11)));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+
+		assertEquals(Long.valueOf(1L),  ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(10L), ((VncLong)Binding.findBinding(new VncSymbol("x"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(11L), ((VncLong)Binding.findBinding(new VncSymbol("y"), bindings).val).getValue());
+	}
+
+	@Test
 	public void test_let() {
 		final Venice venice = new Venice();
 		
