@@ -264,7 +264,15 @@ Nested bindings
 ### Associative Destructuring
 
 Associative destructuring breaks up an associative (key/value) data structure 
-as a Venice map or vector within a let binding.
+as a Venice map within a let binding.
+
+```clojure
+(do
+   (let [{a :a, b :b, c :c} {:a "A" :b "B" :d "D"}]
+      (println a b c))
+      ; => A B nil
+)
+```
 
 ```clojure
 (do

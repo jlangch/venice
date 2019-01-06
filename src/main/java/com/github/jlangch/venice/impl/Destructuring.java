@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Types;
@@ -244,100 +245,97 @@ public class Destructuring {
 
 		final List<Binding> local_bindings = new ArrayList<>();
 
-		
-		// --------------------------------
-		// handle :keys, :syms, :strs first
-		// --------------------------------
-		if (symVal.get(new VncKeyword(":keys")) != Nil) {
-			final VncVal symbol = symVal.get(new VncKeyword(":keys"));
-			if (Types.isVncVector(symbol)) {
-				((VncVector)symbol).forEach(
-						sym -> {
-							final VncSymbol s = (VncSymbol)sym;
-							final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncKeyword(s.getName()));
-							local_bindings.add(new Binding(s, v));								
-						});
-			}
-			else {
-				throw new VncException(
-						String.format(
-								"Invalid associative destructuring with :keys symbol type %s. Expected vector. %s",
-								Types.getClassName(symbol),
-								ErrorMessage.buildErrLocation(symbol)));
-			}					
-		}
-		else if (symVal.get(new VncKeyword(":syms")) != Nil) {
-			final VncVal symbol = symVal.get(new VncKeyword(":syms"));
-			if (Types.isVncVector(symbol)) {
-				((VncVector)symbol).forEach(
-						sym -> {
-							final VncSymbol s = (VncSymbol)sym;
-							final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(s);
-							local_bindings.add(new Binding(s, v));								
-						});
-			}
-			else {
-				throw new VncException(
-						String.format(
-								"Invalid associative destructuring with :syms symbol type %s. Expected vector. %s",
-								Types.getClassName(symbol),
-								ErrorMessage.buildErrLocation(symbol)));
-			}					
-		}
-		else if (symVal.get(new VncKeyword(":strs")) != Nil) {
-			final VncVal symbol = symVal.get(new VncKeyword(":strs"));
-			if (Types.isVncVector(symbol)) {
-				((VncVector)symbol).forEach(
-						sym -> {
-							final VncSymbol s = (VncSymbol)sym;
-							final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncString(s.getName()));
-							local_bindings.add(new Binding(s, v));								
-						});
-			}
-			else {
-				throw new VncException(
-						String.format(
-								"Invalid associative destructuring with :strs symbol type %s. Expected vector. %s",
-								Types.getClassName(symbol),
-								ErrorMessage.buildErrLocation(symbol)));
-			}					
-		}
-		
-		final List<VncVal> symbols = symVal.keys().getList();
 
-		for(int symIdx = 0; symIdx<symbols.size(); symIdx++) {
-		
+		final List<VncVal> symbols = sortAssociativeNames(symVal.keys().getList());
 
-		}
-		
-		// --------------------------------
-		// handle :or
-		// --------------------------------
-		final VncVal orVal = symVal.get(new VncKeyword(":or"));
-		if (orVal != Nil && Types.isVncMap(orVal)) {
-			((VncMap)orVal).entries().forEach(e -> {
-				final int bIdx = getBindingIndex((VncSymbol)e.getKey(), local_bindings);
-				if (bIdx == -1) {
-					local_bindings.add(new Binding((VncSymbol)e.getKey(), e.getValue()));
-					
+		for(int ii = 0; ii<symbols.size(); ii++) {
+			final VncVal symValName = symbols.get(ii);
+			
+			if (symValName.equals(KW_KEYS)) {
+				final VncVal symbol = symVal.get(KW_KEYS);
+				if (Types.isVncVector(symbol)) {
+					((VncVector)symbol).forEach(
+							sym -> {
+								final VncSymbol s = (VncSymbol)sym;
+								final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncKeyword(s.getName()));
+								local_bindings.add(new Binding(s, v));								
+							});
 				}
 				else {
-					final Binding b = local_bindings.get(bIdx);
-					if (b.val == Nil) {
-						local_bindings.set(bIdx, new Binding((VncSymbol)e.getKey(), e.getValue()));
-					}
+					throw new VncException(
+							String.format(
+									"Invalid associative destructuring with :keys symbol type %s. Expected vector. %s",
+									Types.getClassName(symbol),
+									ErrorMessage.buildErrLocation(symbol)));
+				}					
+			}
+			else if (symValName.equals(KW_SYMS)) {
+				final VncVal symbol = symVal.get(KW_SYMS);
+				if (Types.isVncVector(symbol)) {
+					((VncVector)symbol).forEach(
+							sym -> {
+								final VncSymbol s = (VncSymbol)sym;
+								final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(s);
+								local_bindings.add(new Binding(s, v));								
+							});
+				}
+				else {
+					throw new VncException(
+							String.format(
+									"Invalid associative destructuring with :syms symbol type %s. Expected vector. %s",
+									Types.getClassName(symbol),
+									ErrorMessage.buildErrLocation(symbol)));
+				}					
+			}
+			else if (symValName.equals(KW_STRS)) {
+				final VncVal symbol = symVal.get(KW_STRS);
+				if (Types.isVncVector(symbol)) {
+					((VncVector)symbol).forEach(
+							sym -> {
+								final VncSymbol s = (VncSymbol)sym;
+								final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncString(s.getName()));
+								local_bindings.add(new Binding(s, v));								
+							});
+				}
+				else {
+					throw new VncException(
+							String.format(
+									"Invalid associative destructuring with :strs symbol type %s. Expected vector. %s",
+									Types.getClassName(symbol),
+									ErrorMessage.buildErrLocation(symbol)));
+				}					
+			}
+			else if (symValName.equals(KW_OR)) {
+				final VncVal symbol = symVal.get(KW_OR);
+				if (symbol != Nil && Types.isVncMap(symbol)) {
+					((VncMap)symbol).entries().forEach(e -> {
+						final int bIdx = Binding.getBindingIndex((VncSymbol)e.getKey(), local_bindings);
+						if (bIdx == -1) {
+							local_bindings.add(new Binding((VncSymbol)e.getKey(), e.getValue()));
+							
+						}
+						else {
+							final Binding b = local_bindings.get(bIdx);
+							if (b.val == Nil) {
+								local_bindings.set(bIdx, new Binding((VncSymbol)e.getKey(), e.getValue()));
+							}
+						}
+						
+					});
 				}
 				
-			});
-		}
-
-	
-		// --------------------------------
-		// handle :as
-		// --------------------------------
-		final VncVal as = symVal.get(new VncKeyword(":as"));
-		if (as != Nil && Types.isVncSymbol(as)) {
-			local_bindings.add(new Binding((VncSymbol)as, bindVal));
+			}
+			else if (symValName.equals(KW_AS)) {
+				final VncVal symbol = symVal.get(KW_AS);
+				if (symbol != Nil && Types.isVncSymbol(symbol)) {
+					local_bindings.add(new Binding((VncSymbol)symbol, bindVal));
+				}
+			}
+			else if (Types.isVncSymbol(symValName)) {
+				final VncVal s = symVal.get(symValName);
+				final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(s);
+				local_bindings.add(new Binding((VncSymbol)symValName, v));								
+			}
 		}
 
 	
@@ -345,7 +343,7 @@ public class Destructuring {
 	}
 
 	private static boolean isAsKeyword(final VncVal val) {
-		return Types.isVncKeyword(val) && ((VncKeyword)val).getValue().equals("as");
+		return Types.isVncKeyword(val) && ((VncKeyword)val).equals(KW_AS);
 	}
 
 	private static boolean isElisionSymbol(final VncVal val) {
@@ -356,14 +354,37 @@ public class Destructuring {
 		return Types.isVncSymbol(val) && ((VncSymbol)val).getName().equals("_");
 	}
 	
-	private static int getBindingIndex(final VncSymbol sym, final List<Binding> bindings) {
-		for(int ii=0; ii<bindings.size(); ii++) {
-			final Binding b = bindings.get(ii);
-			if (b.sym.equals(sym)) {
-				return ii;
-			}
-		}
-		return -1;
-	}
 
+	private static List<VncVal> sortAssociativeNames(final List<VncVal> names) {
+		final List<VncVal> sorted = new ArrayList<>();
+		
+		sorted.addAll(
+				names
+					.stream()
+					.filter(n -> n.equals(KW_KEYS) || n.equals(KW_SYMS) || n.equals(KW_STRS))
+					.collect(Collectors.toList()));
+		
+		sorted.addAll(
+				names
+					.stream()
+					.filter(n -> n != Nil)
+					.filter(n -> !(n.equals(KW_KEYS) || n.equals(KW_SYMS) || n.equals(KW_STRS) 
+									|| n.equals(KW_AS) || n.equals(KW_OR)))
+					.collect(Collectors.toList()));
+
+		sorted.addAll(
+				names
+					.stream()
+					.filter(n -> n.equals(KW_AS) || n.equals(KW_OR))
+					.collect(Collectors.toList()));
+
+		return sorted;
+	}
+	
+	
+	private static final VncKeyword KW_AS = new VncKeyword(":as");
+	private static final VncKeyword KW_OR = new VncKeyword(":or");
+	private static final VncKeyword KW_KEYS = new VncKeyword(":keys");
+	private static final VncKeyword KW_SYMS = new VncKeyword(":syms");
+	private static final VncKeyword KW_STRS = new VncKeyword(":strs");
 }

@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.List;
+
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -31,7 +33,29 @@ public class Binding {
 		this.sym = sym;
 		this.val = val;
 	}
+
 	
+	public static Binding findBinding(final VncSymbol sym, final List<Binding> bindings) {
+		final int idx = getBindingIndex(sym, bindings);
+		return idx < 0 ? null : bindings.get(idx);
+	}
+	
+	public static int getBindingIndex(final VncSymbol sym, final List<Binding> bindings) {
+		for(int ii=0; ii<bindings.size(); ii++) {
+			final Binding b = bindings.get(ii);
+			if (b.sym.equals(sym)) {
+				return ii;
+			}
+		}
+		return -1;
+	}
+	
+	@Override
+	public String toString() {
+		return sym.toString(true) + " -> " + val.toString(true);
+	}
+
+
 	public final VncSymbol sym;
 	public final VncVal val;
 }

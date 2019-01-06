@@ -405,6 +405,28 @@ public class DestructuringTest {
 	}
 
 	@Test
+	public void test_associative_simple() {
+		// [{a :a, b :b, c :c} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
+
+		final VncVal symVal = new VncHashMap(
+									new VncSymbol("a"), new VncKeyword(":a"),
+									new VncSymbol("b"), new VncKeyword(":b"),
+									new VncSymbol("c"), new VncKeyword(":c"));
+		
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":d"), new VncLong(4));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(3, bindings.size());
+
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
+	}
+
+	@Test
 	public void test_associative_keys() {
 		// [{:keys [a b c]} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
 
@@ -419,15 +441,10 @@ public class DestructuringTest {
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
-		
-		assertEquals("a", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
-		
-		assertEquals("b", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
-		
-		assertEquals("c", bindings.get(2).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(2).val);
+
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
 	}
 
 	@Test
@@ -448,14 +465,9 @@ public class DestructuringTest {
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 		
-		assertEquals("a", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
-		
-		assertEquals("b", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
-		
-		assertEquals("c", bindings.get(2).sym.getName());
-		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
 	}
 
 	@Test
@@ -473,15 +485,10 @@ public class DestructuringTest {
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
-		
-		assertEquals("a", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
-		
-		assertEquals("b", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
-		
-		assertEquals("c", bindings.get(2).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(2).val);
+
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
 	}
 
 	@Test
@@ -502,14 +509,9 @@ public class DestructuringTest {
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 		
-		assertEquals("a", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
-		
-		assertEquals("b", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
-		
-		assertEquals("c", bindings.get(2).sym.getName());
-		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
 	}
 	
 	@Test
@@ -527,15 +529,10 @@ public class DestructuringTest {
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
-		
-		assertEquals("a", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
-		
-		assertEquals("b", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
-		
-		assertEquals("c", bindings.get(2).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(2).val);
+
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
 	}
 	
 	@Test
@@ -556,14 +553,45 @@ public class DestructuringTest {
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 		
-		assertEquals("a", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(1L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
+	}
+
+	@Test
+	public void test_associative_mixed() {
+		// [{:keys [a b c], e :e, f :f, g :g, h :h, :or {c 3, f 6}} {:a 1 :b 2 :d 4 :e 5 :g 7}]  
+		// ->  a: 1, b: 2, c: 3, e: 4, f: 5, g: 6, h: nil
+
+		final VncVal symVal = new VncHashMap(
+									new VncKeyword(":keys"), 
+									new VncVector(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									new VncSymbol("e"), new VncKeyword(":e"),
+									new VncSymbol("f"), new VncKeyword(":f"),
+									new VncSymbol("g"), new VncKeyword(":g"),
+									new VncSymbol("h"), new VncKeyword(":h"),
+									new VncKeyword(":or"),
+									new VncHashMap(
+											new VncSymbol("c"), new VncLong(3),
+											new VncSymbol("f"), new VncLong(6)));
 		
-		assertEquals("b", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(2L), ((VncLong)bindings.get(1).val).getValue());
+		final VncVal bindVal = new VncHashMap(
+										new VncKeyword(":a"), new VncLong(1),
+										new VncKeyword(":b"), new VncLong(2),
+										new VncKeyword(":d"), new VncLong(4),
+										new VncKeyword(":e"), new VncLong(5),
+										new VncKeyword(":g"), new VncLong(7));
+
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		assertEquals(7, bindings.size());
 		
-		assertEquals("c", bindings.get(2).sym.getName());
-		assertEquals(Long.valueOf(3L), ((VncLong)bindings.get(2).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
+		assertEquals(Long.valueOf(5L), ((VncLong)Binding.findBinding(new VncSymbol("e"), bindings).val).getValue());
+		assertEquals(Long.valueOf(6L), ((VncLong)Binding.findBinding(new VncSymbol("f"), bindings).val).getValue());
+		assertEquals(Long.valueOf(7L), ((VncLong)Binding.findBinding(new VncSymbol("g"), bindings).val).getValue());
+		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("h"), bindings).val);
 	}
 
 	@Test
