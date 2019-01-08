@@ -33,15 +33,20 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class VncSet extends VncCollection {
 
+	public VncSet() {
+		value = new HashSet<>();
+	}
+
 	public VncSet(final Set<VncVal> val) {
-		value = (val instanceof HashSet) 
-					? (HashSet<VncVal>)val
-					: new HashSet<>(val);
+		value = new HashSet<>(val);
 	}
 	
 	public VncSet(final VncList lst) {
-		value = new HashSet<>();
-		value.addAll(lst.getList());
+		value = new HashSet<>(lst.getList());
+	}
+	
+	public VncSet(final VncSet set) {
+		value = new HashSet<>(set.getSet());
 	}
 	
 	public VncSet(final VncVal... mvs) {
@@ -67,6 +72,17 @@ public class VncSet extends VncCollection {
 		return this;
 	}
 	
+	public VncSet addAll(final VncList val) {
+		value.addAll(val.getList());
+		return this;
+	}
+
+	public VncSet remove(final VncVal val) {
+		final HashSet<VncVal> seq = new HashSet<VncVal>(value);
+		seq.remove(val);
+		return new VncSet(seq);
+	}
+
 	public VncSet removeAll(final VncList val) {
 		final HashSet<VncVal> seq = new HashSet<VncVal>(value);
 		seq.removeAll(val.getList());

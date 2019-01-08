@@ -145,7 +145,7 @@ public class VncList extends VncSequence {
 	
 	public VncList addAllAtStart(final VncList list) {
 		final List<VncVal> items = list.getList();
-		for(int ii=items.size()-1; ii>=0; ii++) {
+		for(int ii=0; ii<items.size(); ii++) {
 			value.add(0, items.get(ii));
 		}
 		return this;

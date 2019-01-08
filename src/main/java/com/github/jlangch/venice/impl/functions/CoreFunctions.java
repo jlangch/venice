@@ -2512,51 +2512,47 @@ public class CoreFunctions {
 				final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
 			
 				if (Types.isVncVector(to)) {
-					byteList.forEach(v -> ((VncVector)to).addAtEnd(v));
+					return ((VncVector)to).addAllAtEnd(byteList);
 				}
 				else if (Types.isVncList(to)) {
-					byteList.forEach(v -> ((VncList)to).addAtEnd(v));
+					return ((VncList)to).addAllAtEnd(byteList);
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'into' does only allow list and vector as to-coll if from-coll " +
 							"is a bytebuf"));
 				}
-				return to;
 			}
 			else if (Types.isVncString(args.second())) {
 				final VncList charList = ((VncString)args.second()).toVncList();
-				
-				
+							
 				if (Types.isVncVector(to)) {
-					charList.forEach(v -> ((VncVector)to).addAtEnd(v));
+					return ((VncVector)to).addAllAtEnd(charList);
 				}
 				else if (Types.isVncList(to)) {
-					charList.forEach(v -> ((VncList)to).addAtEnd(v));
+					return ((VncList)to).addAllAtEnd(charList);
 				}
 				else if (Types.isVncSet(to)) {
-					charList.forEach(v -> ((VncSet)to).add(v));
+					return ((VncSet)to).addAll(charList);
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'into' does only allow list, vector, and set as to-coll if from-coll " +
 							"is a string"));
 				}
-				
-				return to;
 			}
 
 
 			final VncCollection from = Coerce.toVncCollection(args.second());
 			
 			if (Types.isVncVector(to)) {
-				from.toVncList().getList().forEach(v -> ((VncVector)to).addAtEnd(v));
+				return ((VncVector)to).addAllAtEnd(from.toVncList());
 			}
 			else if (Types.isVncList(to)) {
-				from.toVncList().getList().forEach(v -> ((VncList)to).addAtStart(v));
+				return ((VncList)to).addAllAtStart(from.toVncList());
 			}
 			else if (Types.isVncSet(to)) {
-				from.toVncList().getList().forEach(v -> ((VncSet)to).add(v));
+				return ((VncSet)to).addAll(from.toVncList());
 			}
 			else if (Types.isVncMap(to)) {
 				if (Types.isVncSequence(from)) {
@@ -2568,18 +2564,23 @@ public class CoreFunctions {
 							((VncMap)to).putAll((VncMap)it);
 						}
 					});
+					
+					return to;
 				}
 				else if (Types.isVncMap(from)) {
-					 ((VncMap)to).putAll((VncMap)from);
-				}				
+					return ((VncMap)to).putAll((VncMap)from);
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'into' does not allow %s as from-coll into a map", 
+							Types.getClassName(from)));
+				}
 			}
 			else {
 				throw new VncException(String.format(
 						"Function 'into' does not allow %s as to-coll", 
 						Types.getClassName(args.first())));
 			}
-			
-			return to;
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -2931,14 +2932,11 @@ public class CoreFunctions {
 			}
 			else if (Types.isVncSet(args.nth(1))) {
 				final VncSet src_seq = (VncSet)args.nth(1);
-				final VncSet new_seq = new VncSet(src_seq.toVncList());
-				new_seq.add(args.nth(0));
-				return (VncVal)new_seq;
+				return new VncSet(src_seq.toVncList()).add(args.nth(0));
 			}
 			else if (Types.isVncMap(args.nth(1)) && Types.isVncMap(args.nth(0))) {
 				final VncMap map = ((VncMap)args.nth(1)).copy();
-				map.putAll((VncMap)args.nth(0));
-				return map;
+				return map.putAll((VncMap)args.nth(0));
 			}
 			else {
 				throw new VncException(String.format(
@@ -4572,13 +4570,7 @@ public class CoreFunctions {
 				return (VncVal)new_seq;
 			}
 			else if (Types.isVncSet(args.nth(0))) {
-				final VncSet src_seq = (VncSet)args.nth(0);
-				final VncSet new_seq = new VncSet(src_seq.toVncList());
-				new_seq.addAll(src_seq);
-				for(int i=1; i<args.size(); i++) {
-					new_seq.add(args.nth(i));
-				}
-				return (VncVal)new_seq;
+				return new VncSet(((VncSet)args.nth(0)).getSet()).addAll(args.slice(1));
 			}
 			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap src_map = (VncMap)args.nth(0);
