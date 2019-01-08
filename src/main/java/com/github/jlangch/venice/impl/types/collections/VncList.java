@@ -105,12 +105,7 @@ public class VncList extends VncSequence {
 	}
 	
 	public VncList rest() {
-		if (isEmpty()) {
-			return new VncList();
-		} 
-		else {
-			return new VncList(value.subList(1, value.size()));
-		}
+		return isEmpty() ? new VncList() : new VncList(value.subList(1, value.size()));
 	}
 
 	public VncList slice(final int start, final int end) {

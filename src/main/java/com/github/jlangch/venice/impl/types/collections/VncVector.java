@@ -56,12 +56,7 @@ public class VncVector extends VncList {
 	
 	@Override
 	public VncVector rest() {
-		if (isEmpty()) {
-			return new VncVector();
-		} 
-		else {
-			return new VncVector(getList().subList(1, getList().size()));
-		}
+		return isEmpty() ? new VncVector() : new VncVector(getList().subList(1, getList().size()));
 	}
 
 	@Override
@@ -77,6 +72,16 @@ public class VncVector extends VncList {
 	@Override
 	public VncVector empty() {
 		return new VncVector();
+	}
+	
+	@Override
+	public VncList toVncList() {
+		return new VncList(getList());
+	}
+
+	@Override
+	public VncVector toVncVector() {
+		return this;
 	}
 
 	@Override
