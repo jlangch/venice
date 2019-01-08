@@ -57,16 +57,20 @@ public class VncSet extends VncCollection {
 		return new VncSet();
 	}
 	
-	public void add(final VncVal val) {
+	public VncSet add(final VncVal val) {
 		value.add(val);
+		return this;
 	}
 	
-	public void addAll(final VncSet val) {
+	public VncSet addAll(final VncSet val) {
 		value.addAll(val.getSet());
+		return this;
 	}
 	
-	public void remove(final VncVal val) {
-		value.remove(val);
+	public VncSet removeAll(final VncList val) {
+		final HashSet<VncVal> seq = new HashSet<VncVal>(value);
+		seq.removeAll(val.getList());
+		return new VncSet(seq);
 	}
 	
 	public boolean contains(final VncVal val) {

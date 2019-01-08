@@ -2547,7 +2547,6 @@ public class CoreFunctions {
 			}
 
 
-
 			final VncCollection from = Coerce.toVncCollection(args.second());
 			
 			if (Types.isVncVector(to)) {
@@ -4625,12 +4624,7 @@ public class CoreFunctions {
 			assertMinArity("disj", args, 2);
 			
 			if (args.nth(0) instanceof VncSet) {
-				final VncSet src_seq = (VncSet)args.nth(0);
-				final VncSet new_seq = new VncSet(src_seq.toVncList());
-				for(int i=1; i<args.size(); i++) {
-					new_seq.remove(args.nth(i));
-				}
-				return (VncVal)new_seq;
+				return ((VncSet)args.nth(0)).removeAll(args.slice(1));
 			}
 			else {
 				throw new VncException(String.format(
