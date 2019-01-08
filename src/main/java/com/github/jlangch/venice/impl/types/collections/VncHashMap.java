@@ -39,9 +39,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncHashMap extends VncMap {
 
 	public VncHashMap(final Map<VncVal,VncVal> val) {
-		value = (val instanceof HashMap) 
-					? (HashMap<VncVal,VncVal>)val
-					: new HashMap<>(val);
+		value = new HashMap<>(val);
 	}
 	
 	public VncHashMap(final VncList lst) {
@@ -101,7 +99,7 @@ public class VncHashMap extends VncMap {
 	}
 
 	@Override
-	public VncMap putAll(final VncMap map) {
+	public VncHashMap putAll(final VncMap map) {
 		value.putAll(map.getMap());
 		return this;
 	}
@@ -123,7 +121,7 @@ public class VncHashMap extends VncMap {
 	}
 
 	@Override
-	public VncMap dissoc(final VncVal... keys) {
+	public VncHashMap dissoc(final VncVal... keys) {
 		for (VncVal key : keys) {
 			value.remove(key);
 		}
