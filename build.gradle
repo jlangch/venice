@@ -1,5 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.3'
 }
 
 compileJava {
@@ -33,7 +37,21 @@ jar {
     from('src/main/java') {
         include 'com/github/jlangch/venice/**/*.venice'
     }
+
+    manifest {
+        attributes 'Main-Class': 'com.github.jlangch.venice.REPL'
+    }
     
+    archiveName = "venice-${version}.jar"
+}
+
+shadowJar {
+    relocate 'io.vavr', 'org.repackage.io.vavr'
+
+    from('src/main/java') {
+        include 'com/github/jlangch/venice/**/*.venice'
+    }
+
     manifest {
         attributes 'Main-Class': 'com.github.jlangch.venice.REPL'
     }
@@ -63,4 +81,6 @@ artifacts {
 dependencies {
     //compile 'org.foo:foo:1.0'
     testCompile 'junit:junit:4.12'
+
+    compile 'io.vavr:vavr:0.9.3'
 }
