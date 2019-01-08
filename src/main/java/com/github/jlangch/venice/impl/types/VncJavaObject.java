@@ -101,6 +101,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
+	public VncMap putAll(final VncMap map) {
+		throw new VncException("not supported");
+	}
+
+	@Override
 	public VncMap assoc(final VncVal... mvs) {
 		throw new VncException("not supported");
 	}

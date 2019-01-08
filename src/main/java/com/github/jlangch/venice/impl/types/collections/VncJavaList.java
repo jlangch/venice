@@ -163,7 +163,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 	
 	public VncJavaList addAtEnd(final VncList list) {
-		list.getList().forEach(v -> value.add(JavaInteropUtil.convertToJavaObject(v)));
+		list.forEach(v -> value.add(JavaInteropUtil.convertToJavaObject(v)));
 		return this;
 	}
 

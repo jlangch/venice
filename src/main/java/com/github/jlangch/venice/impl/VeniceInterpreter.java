@@ -172,7 +172,7 @@ public class VeniceInterpreter implements Serializable  {
 			new_map.setMeta(old_map.getMeta().copy());
 
 			((VncMap)ast).getMap().entrySet().forEach(entry ->
-				new_map.getMap().put(
+				new_map.assoc(
 						entry.getKey(), 
 						EVAL((VncVal)entry.getValue(), env)));
 			return new_map;

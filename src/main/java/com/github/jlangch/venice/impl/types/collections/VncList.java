@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -56,7 +57,7 @@ public class VncList extends VncSequence {
 	}
 
 	public List<VncVal> getList() { 
-		return value; 
+		return Collections.unmodifiableList(value); 
 	}
 	
 	public boolean isList() { 
@@ -132,6 +133,11 @@ public class VncList extends VncSequence {
 		return new VncSet(this);
 	}
 	
+	public VncList setAt(final int idx, final VncVal val) {
+		value.set(idx, val);
+		return this;
+	}
+	
 	public VncList addAtStart(final VncVal val) {
 		value.add(0, val);
 		return this;
@@ -152,6 +158,11 @@ public class VncList extends VncSequence {
 	
 	public VncList addAllAtEnd(final VncList list) {
 		value.addAll(list.getList());
+		return this;
+	}
+	
+	public VncList removeAt(final int idx) {
+		value.remove(idx);
 		return this;
 	}
 

@@ -99,6 +99,15 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public Set<Map.Entry<VncVal, VncVal>> entries() {
 		return getMap().entrySet();
 	}
+
+	@Override
+	public VncMap putAll(final VncMap map) {
+		getMap().entrySet().forEach(
+				e -> value.put(
+					JavaInteropUtil.convertToJavaObject(e.getKey()), 
+					JavaInteropUtil.convertToJavaObject(e.getValue())));
+		return this;
+	}
 	
 	@Override
 	public VncJavaMap assoc(final VncVal... mvs) {

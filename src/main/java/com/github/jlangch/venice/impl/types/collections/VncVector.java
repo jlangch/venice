@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.Printer;
@@ -41,10 +40,9 @@ public class VncVector extends VncList {
 	}
 
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncVector copy() {
-		final VncVector v = new VncVector((ArrayList<VncVal>)((ArrayList<VncVal>)getList()).clone());
+		final VncVector v = new VncVector(toVncList().copy().getList());
 		v.setMeta(getMeta());
 		return v;
 	}

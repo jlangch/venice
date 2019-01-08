@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,7 +74,7 @@ public class VncSortedMap extends VncMap {
 	
 	@Override
 	public Map<VncVal,VncVal> getMap() {
-		return value;
+		return Collections.unmodifiableMap(value);
 	}
 	
 	@Override
@@ -97,7 +98,13 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public Set<Map.Entry<VncVal, VncVal>> entries() {
-		return value.entrySet();
+		return Collections.unmodifiableSet(value.entrySet());
+	}
+
+	@Override
+	public VncMap putAll(final VncMap map) {
+		value.putAll(map.getMap());
+		return this;
 	}
 	
 	@Override

@@ -58,10 +58,10 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	public void setMetaVal(final VncString key, final VncVal val) {
 		if (meta == Constants.Nil) {
 			meta = new VncHashMap();
-			((VncHashMap)meta).getMap().put(key, val);	
+			((VncHashMap)meta).assoc(key, val);	
 		}
 		else if (meta instanceof VncHashMap) {
-			((VncHashMap)meta).getMap().put(key, val);	
+			((VncHashMap)meta).assoc(key, val);	
 		}
 		else {
 			// not a map

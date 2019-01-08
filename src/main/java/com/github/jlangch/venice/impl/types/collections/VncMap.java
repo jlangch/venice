@@ -39,6 +39,8 @@ public abstract class VncMap extends VncCollection {
 	
 	public abstract Set<Map.Entry<VncVal, VncVal>> entries();
 
+	public abstract VncMap putAll(VncMap map);
+
 	public abstract VncMap assoc(VncVal... mvs);
 
 	public abstract VncMap assoc(VncList mvs);

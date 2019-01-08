@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,10 @@ public class VncSet extends VncCollection {
 		value.add(val);
 	}
 	
+	public void addAll(final VncSet val) {
+		value.addAll(val.getSet());
+	}
+	
 	public void remove(final VncVal val) {
 		value.remove(val);
 	}
@@ -75,11 +80,11 @@ public class VncSet extends VncCollection {
 	}
 
 	public Set<VncVal> getSet() { 
-		return value; 
+		return Collections.unmodifiableSet(value); 
 	}
 
 	public List<VncVal> getList() { 
-		return new ArrayList<VncVal>(value); 
+		return Collections.unmodifiableList(new ArrayList<VncVal>(value)); 
 	}
 		
 	public VncVector toVncVector() {
