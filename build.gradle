@@ -79,18 +79,18 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
     commandLine "/bin/sh", 
                 "-c", 
                 "cp ../../pom.xml ." + 
-                  "; echo 'Signing...'" +
+                  "; echo 'Signing artefacts...'" +
                   "; gpg2 -ab pom.xml" +
                   "; gpg2 -ab venice-${version}-javadoc.jar" +
                   "; gpg2 -ab venice-${version}-sources.jar" +
                   "; gpg2 -ab venice-${version}.jar" +
-                  "; echo 'Creating bundle...'" +
+                  "; echo 'Bundling artefacts...'" +
                   "; jar -cvf bundle.jar" +
                          " pom.xml pom.xml.asc" +
                          " venice-${version}-javadoc.jar venice-${version}-javadoc.jar.asc" +
                          " venice-${version}-sources.jar venice-${version}-sources.jar.asc" +
                          " venice-${version}.jar venice-${version}.jar.asc" +
-                 "; echo 'Bundle done.'"
+                 "; echo 'Bundling done.'"
                          
     standardOutput new ByteArrayOutputStream()
     
