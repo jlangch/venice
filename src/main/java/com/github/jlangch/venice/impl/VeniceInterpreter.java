@@ -494,27 +494,40 @@ public class VeniceInterpreter implements Serializable  {
 
 	
 	private VncFunction defmacro_(final VncList ast, final Env env) {
-		final boolean hasMeta = ast.size() > 4;
-		final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(1), env) : new VncHashMap();
-		final VncVal macroName = ast.nth(hasMeta ? 2 : 1);
-		final VncList macroParams = Coerce.toVncList(ast.nth(hasMeta ? 3 : 2));
-		final VncVal macroFnAst = ast.nth(hasMeta ? 4 : 3);
+		int argPos = 1;
+
+		final boolean hasMeta = Types.isVncMap(ast.nth(argPos));
+		
+		final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(argPos++), env) : new VncHashMap();
+		final VncVal macroName = ast.nth(argPos++);
+		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos));
 
 		final String sMacroName = Types.isVncSymbol(macroName) 
-									? ((VncSymbol)macroName).getName() 
-									: ((VncString)macroName).getValue();
+				? ((VncSymbol)macroName).getName() 
+				: ((VncString)macroName).getValue();
 
-		final VncFunction macroFn = buildFunction(
-										sMacroName, 
-										macroParams, 
-										new VncList(macroFnAst), 
-										null, 
-										env);
+		if (Types.isVncVector(paramsOrSig)) {
+			argPos++;
+			final VncList macroParams = paramsOrSig;
 
-		macroFn.setMacro();
-		env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
-		
-		return macroFn;
+			final VncVal macroFnAst = ast.nth(argPos++);
+	
+	
+			final VncFunction macroFn = buildFunction(
+											sMacroName, 
+											macroParams, 
+											new VncList(macroFnAst), 
+											null, 
+											env);
+	
+			macroFn.setMacro();
+			env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
+			
+			return macroFn;
+		}
+		else {
+			throw new VncException("Multi-arity macros are not yet supported");
+		}
 	}
 	
 	private VncFunction fn_(final VncList ast, final Env env) {
