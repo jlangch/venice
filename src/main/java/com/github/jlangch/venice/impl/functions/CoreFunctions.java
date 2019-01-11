@@ -2924,6 +2924,12 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("cons", args, 2);
 
+			if (Types.isVncVector(args.nth(1))) {
+				final VncVector list = new VncVector();
+				list.addAtStart(args.nth(0));
+				list.addAllAtEnd((VncList)args.nth(1));
+				return list;
+			}
 			if (Types.isVncList(args.nth(1))) {
 				final VncList list = new VncList();
 				list.addAtStart(args.nth(0));

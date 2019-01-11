@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -739,8 +740,9 @@ public class VeniceInterpreter implements Serializable  {
 		if (name != null) argPos++;
 
 		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos++));
-//		if (Types.isVncVector(paramsOrSig)) {
+		if (Types.isVncVector(paramsOrSig)) {
 			// single arity:
+			
 			final VncList params = paramsOrSig;
 			
 			final VncList preConditions = getFnPreconditions(ast.nth(argPos));
@@ -749,11 +751,29 @@ public class VeniceInterpreter implements Serializable  {
 			final VncList body = ast.slice(argPos);
 			
 			return buildFunction(name, params, body, preConditions, env);
-//		}
-//		else {
-//			// multi arity:
-//			throw new VncException("Multi-arity functions are not yet implemented");
-//		}
+		}
+		else {
+			// multi arity:
+
+			final List<VncFunction> fns = new ArrayList<>();
+			
+			paramsOrSig.forEach(s -> {
+				int pos = 0;
+				
+				final VncList sig = Coerce.toVncList(s);
+				
+				final VncList params = Coerce.toVncList(sig.nth(pos++));
+				
+				final VncList preConditions = getFnPreconditions(ast.nth(pos));
+				if (preConditions != null) pos++;
+				
+				final VncList body = ast.slice(pos);
+				
+				fns.add(buildFunction(name, params, body, preConditions, env));
+			});
+			
+			return new VncMultiArityFunction(name, fns);
+		}
 	}
 	
 	private VncFunction buildFunction(

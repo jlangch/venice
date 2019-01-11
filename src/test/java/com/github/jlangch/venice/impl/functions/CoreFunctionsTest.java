@@ -418,12 +418,12 @@ public class CoreFunctionsTest {
 		assertEquals("((1 2) 3 4)", venice.eval("(str (cons '(1 2) '(3 4)))"));
 
 		// Vector
-		assertEquals("(1)", venice.eval("(str (cons 1 []))"));
-		assertEquals("(1 2)", venice.eval("(str (cons 1 [2]))"));
-		assertEquals("(1 2 3)", venice.eval("(str (cons 1 [2 3]))"));
-		assertEquals("([1 2])", venice.eval("(str (cons [1 2] []))"));
-		assertEquals("([1 2] 3)", venice.eval("(str (cons [1 2] [3]))"));
-		assertEquals("([1 2] 3 4)", venice.eval("(str (cons [1 2] [3 4]))"));
+		assertEquals("[1]", venice.eval("(str (cons 1 []))"));
+		assertEquals("[1 2]", venice.eval("(str (cons 1 [2]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (cons 1 [2 3]))"));
+		assertEquals("[[1 2]]", venice.eval("(str (cons [1 2] []))"));
+		assertEquals("[[1 2] 3]", venice.eval("(str (cons [1 2] [3]))"));
+		assertEquals("[[1 2] 3 4]", venice.eval("(str (cons [1 2] [3 4]))"));
 		
 		// Map
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (cons {:c 3} (ordered-map :a 1 :b 2)))"));
