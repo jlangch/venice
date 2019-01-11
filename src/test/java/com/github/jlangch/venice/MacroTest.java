@@ -508,13 +508,13 @@ public class MacroTest {
 		
 		final String s = 
 					"(do                                             \n" +
-					"   (defmacro and_                               \n" +
+					"   (defmacro and*                               \n" +
 					"     ([] true)                                  \n" +
 					"     ([x] x)                                    \n" +
 					"     ([x & next]                                \n" +
-					"       `(let [and# ~x]                          \n" +
-					"          (if and# (and ~@next) and#))))        \n" +
-					"   (str (and_) (and_ true) (and_ true false)))  \n" +
+					"       `(let [and_ ~x]                          \n" +
+					"          (if and_ (and ~@next) and_))))        \n" +
+					"   (str (and*) (and* true) (and* true false)))  \n" +
 					")                                                 ";
 
 		assertEquals("truetruefalse", venice.eval(s));
