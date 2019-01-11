@@ -904,6 +904,8 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("(2 4 6 8)", venice.eval("(str (filter even? (range 1 10 1)))"));
+		assertEquals("(2 4 6 8)", venice.eval("(str (filter (fn [x] (even? x)) (range 1 10 1)))"));
+		assertEquals("(2 4 6 8)", venice.eval("(str (filter #(even? %) (range 1 10 1)))"));
 	}
 	
 	@Test

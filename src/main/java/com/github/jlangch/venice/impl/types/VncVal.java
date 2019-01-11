@@ -92,6 +92,11 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return true;
 	}
 
+	public <T extends VncVal> T copyMetaTo(final T toVal) {
+		toVal.setMeta(meta);
+		return toVal;
+	}
+	
 	
     private static final long serialVersionUID = -1848883965231344442L;
 

@@ -515,29 +515,19 @@ public class VeniceInterpreter implements Serializable  {
 									? ((VncSymbol)macroName).getName() 
 									: ((VncString)macroName).getValue();
 
-		final Env _env = env;
-		final VncFunction macroFn = 
-				new VncFunction(sMacroName, macroFnAst, env, macroParams) {
-					public VncVal apply(final VncList args) {
-						final Env localEnv = new Env(_env);
-
-						// destructuring macro params -> args
-						Destructuring
-							.destructure(macroParams, args)
-							.forEach(b -> localEnv.set(b.sym, b.val));
-						
-						// run the macro
-						final VncVal result = EVAL(macroFnAst, localEnv);
-						return result;
-					}
-					
-				    private static final long serialVersionUID = -1L;
-				};
+		final VncFunction macroFn = buildFunction(
+										sMacroName, 
+										macroParams, 
+										new VncList(macroFnAst), 
+										null, 
+										env);
 
 		macroFn.setMacro();
 		env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
+		
 		return macroFn;
 	}
+
 	
 	private VncVal binding_(final VncList ast, final Env env) {
 		final VncList bindings = Coerce.toVncList(ast.nth(1));
@@ -740,21 +730,36 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncFunction parseFunction(final VncList ast, final Env env) {
+		// single arity:  (fn name? [params*] condition-map? expr*)
+		// multi arity:   (fn name? ([params*] condition-map? expr*)* )
+
 		int argPos = 1;
+		
 		final String name = getFnName(ast.nth(argPos));
 		if (name != null) argPos++;
-		final VncList params = Coerce.toVncList(ast.nth(argPos++));
-		final VncList preConditions = getFnPreconditions(ast.nth(argPos));
-		if (preConditions != null) argPos++;
-		final VncList body = ast.slice(argPos);
-		
-		return buildFunction(name, body, params, preConditions, env);
+
+		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos++));
+//		if (Types.isVncVector(paramsOrSig)) {
+			// single arity:
+			final VncList params = paramsOrSig;
+			
+			final VncList preConditions = getFnPreconditions(ast.nth(argPos));
+			if (preConditions != null) argPos++;
+			
+			final VncList body = ast.slice(argPos);
+			
+			return buildFunction(name, params, body, preConditions, env);
+//		}
+//		else {
+//			// multi arity:
+//			throw new VncException("Multi-arity functions are not yet implemented");
+//		}
 	}
 	
 	private VncFunction buildFunction(
 			final String name, 
-			final VncList body, 
 			final VncList params, 
+			final VncList body, 
 			final VncList preConditions, 
 			final Env env
 	) {

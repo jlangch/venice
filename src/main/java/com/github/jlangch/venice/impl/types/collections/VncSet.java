@@ -84,7 +84,9 @@ public class VncSet extends VncCollection {
 	}
 	
 	public VncSet copy() {
-		return new VncSet(value);
+		final VncSet s = new VncSet(value);
+		s.setMeta(getMeta());
+		return s;
 	}
 
 	public Set<VncVal> getSet() { 
