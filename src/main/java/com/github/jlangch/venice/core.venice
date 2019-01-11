@@ -29,8 +29,8 @@
 
 
 (defmacro 
-   { :arglists '("(defn name [args*] condition-map? expr*)")
-     :doc "Same as (def name (fn name [args*] condition-map? expr*))" 
+   { :arglists '("(defn name [args*] condition-map? expr*)" "(defn name ([args*] condition-map? expr*)+)")
+     :doc "Same as (def name (fn name [args*] condition-map? expr*)) or (def name (fn name ([args*] condition-map? expr*)+))" 
      :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
      
    defn [name args & body]

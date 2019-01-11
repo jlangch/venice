@@ -732,17 +732,18 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private VncFunction parseFunction(final VncList ast, final Env env) {
 		// single arity:  (fn name? [params*] condition-map? expr*)
-		// multi arity:   (fn name? ([params*] condition-map? expr*)* )
+		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
 
 		int argPos = 1;
 		
 		final String name = getFnName(ast.nth(argPos));
 		if (name != null) argPos++;
 
-		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos++));
+		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos));
 		if (Types.isVncVector(paramsOrSig)) {
 			// single arity:
 			
+			argPos++;
 			final VncList params = paramsOrSig;
 			
 			final VncList preConditions = getFnPreconditions(ast.nth(argPos));
@@ -757,17 +758,17 @@ public class VeniceInterpreter implements Serializable  {
 
 			final List<VncFunction> fns = new ArrayList<>();
 			
-			paramsOrSig.forEach(s -> {
+			ast.slice(argPos).forEach(s -> {
 				int pos = 0;
 				
 				final VncList sig = Coerce.toVncList(s);
 				
 				final VncList params = Coerce.toVncList(sig.nth(pos++));
 				
-				final VncList preConditions = getFnPreconditions(ast.nth(pos));
+				final VncList preConditions = getFnPreconditions(sig.nth(pos));
 				if (preConditions != null) pos++;
 				
-				final VncList body = ast.slice(pos);
+				final VncList body = sig.slice(pos);
 				
 				fns.add(buildFunction(name, params, body, preConditions, env));
 			});
