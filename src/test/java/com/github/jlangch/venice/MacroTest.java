@@ -500,7 +500,25 @@ public class MacroTest {
 						"        (map (fn [x] (get x :b)))                         " +
 						"        (filter (fn [x] (> x 4)))                         " +
 						"        (map inc))))                                      "));
-}
+	}
+
+	@Test
+	public void test_macro_multi_arity() {
+		final Venice venice = new Venice();
+		
+		final String s = 
+					"(do                                             \n" +
+					"   (defmacro and_                               \n" +
+					"     ([] true)                                  \n" +
+					"     ([x] x)                                    \n" +
+					"     ([x & next]                                \n" +
+					"       `(let [and# ~x]                          \n" +
+					"          (if and# (and ~@next) and#))))        \n" +
+					"   (str (and_) (and_ true) (and_ true false)))  \n" +
+					")                                                 ";
+
+		assertEquals("truetruefalse", venice.eval(s));
+	}
 
 	@Test
 	public void test_macroexpand() {

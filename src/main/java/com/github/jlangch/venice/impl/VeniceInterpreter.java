@@ -507,16 +507,18 @@ public class VeniceInterpreter implements Serializable  {
 				: ((VncString)macroName).getValue();
 
 		if (Types.isVncVector(paramsOrSig)) {
+			// single arity:
+			
 			argPos++;
 			final VncList macroParams = paramsOrSig;
 
-			final VncVal macroFnAst = ast.nth(argPos++);
+			final VncVal body = ast.nth(argPos++);
 	
 	
 			final VncFunction macroFn = buildFunction(
 											sMacroName, 
 											macroParams, 
-											new VncList(macroFnAst), 
+											new VncList(body), 
 											null, 
 											env);
 	
@@ -526,7 +528,28 @@ public class VeniceInterpreter implements Serializable  {
 			return macroFn;
 		}
 		else {
-			throw new VncException("Multi-arity macros are not yet supported");
+			// multi arity:
+
+			final List<VncFunction> fns = new ArrayList<>();
+			
+			ast.slice(argPos).forEach(s -> {
+				int pos = 0;
+				
+				final VncList sig = Coerce.toVncList(s);
+				
+				final VncList params = Coerce.toVncList(sig.nth(pos++));
+				
+				final VncList body = sig.slice(pos);
+				
+				fns.add(buildFunction(sMacroName, params, body, null, env));
+			});
+
+			final VncFunction macro = new VncMultiArityFunction(sMacroName, fns);
+			
+			macro.setMacro();
+			env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macro, defMeta));
+
+			return macro;
 		}
 	}
 	

@@ -174,6 +174,19 @@ Caused by: java.lang.ArithmeticException: / by zero
 ```
 
 
+### Functions
+
+https://clojure.org/guides/learn/functions
+
+### Creating functions
+
+### Variadic functions
+
+### Multi-Arity functions
+
+### Anonymous functions
+
+
 ## Destructuring
 
 ### Sequential Destructuring
