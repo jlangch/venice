@@ -396,39 +396,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "fn":
 					// (fn name? [params*] condition-map? expr*)
-					int argPos = 1;
-					final String fnName = getFnName(ast.nth(argPos));
-					if (fnName != null) argPos++;
-					final VncList fnParams = Coerce.toVncList(ast.nth(argPos++));
-					final VncList preConditions = getFnPreconditions(ast.nth(argPos));
-					if (preConditions != null) argPos++;
-					final VncList fnBody = ast.slice(argPos);
-					final Env fn_env = env;
-					return new VncFunction(fnName, fnBody, env, fnParams) {
-									public VncVal apply(final VncList args) {
-										final Env localEnv = new Env(fn_env);
-										
-										// destructuring fn params -> args
-										Destructuring
-											.destructure(fnParams, args)
-											.forEach(b -> localEnv.set(b.sym, b.val));
-										
-										validateFnPreconditions(fnName, preConditions, localEnv);
-										
-										if (fnBody.isEmpty()) {
-											return Constants.Nil;
-										}
-										if (fnBody.size() == 1) {
-											return EVAL(fnBody.first(), localEnv);
-										}
-										else {
-											eval_ast(fnBody.slice(0, fnBody.size()-1), localEnv);
-											return EVAL(fnBody.last(), localEnv);
-										}
-									}
-									
-								    private static final long serialVersionUID = -1L;
-								};
+					return parseFunction(ast, env);
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
@@ -769,6 +737,52 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 		return null;
+	}
+	
+	private VncFunction parseFunction(final VncList ast, final Env env) {
+		int argPos = 1;
+		final String name = getFnName(ast.nth(argPos));
+		if (name != null) argPos++;
+		final VncList params = Coerce.toVncList(ast.nth(argPos++));
+		final VncList preConditions = getFnPreconditions(ast.nth(argPos));
+		if (preConditions != null) argPos++;
+		final VncList body = ast.slice(argPos);
+		
+		return buildFunction(name, body, params, preConditions, env);
+	}
+	
+	private VncFunction buildFunction(
+			final String name, 
+			final VncList body, 
+			final VncList params, 
+			final VncList preConditions, 
+			final Env env
+	) {
+		return new VncFunction(name, body, env, params) {
+			public VncVal apply(final VncList args) {
+				final Env localEnv = new Env(env);
+				
+				// destructuring fn params -> args
+				Destructuring
+					.destructure(params, args)
+					.forEach(b -> localEnv.set(b.sym, b.val));
+				
+				validateFnPreconditions(name, preConditions, localEnv);
+				
+				if (body.isEmpty()) {
+					return Constants.Nil;
+				}
+				if (body.size() == 1) {
+					return EVAL(body.first(), localEnv);
+				}
+				else {
+					eval_ast(body.slice(0, body.size()-1), localEnv);
+					return EVAL(body.last(), localEnv);
+				}
+			}
+			
+		    private static final long serialVersionUID = -1L;
+		};
 	}
 
 	private String getFnName(final VncVal name) {
