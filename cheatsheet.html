@@ -174,7 +174,7 @@
     <body>
         <div class="main">
             <div class="header">    
-                 <h1>Venice 1.2.2-snapshot Cheat Sheet</h1>
+                 <h1>Venice 1.2.2 Cheat Sheet</h1>
             </div>
 
             <div class="column">
@@ -813,7 +813,7 @@
                                         <code>Java interop. Calls a constructor or an class/object method or accesses a class/instance field. The function is sandboxed.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2019-01-11T20:03:11.481+01:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2019-01-11T20:17:19.080+01:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -1499,7 +1499,7 @@
                                         <code>Returns the current time in milliseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(current-time-millis)<br/>=&gt; 1547233391469</code>
+                                        <code>(current-time-millis)<br/>=&gt; 1547234239068</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1006">
@@ -1625,7 +1625,7 @@
                                         <code>Creates a global variable.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(def val 5)<br/>=&gt; 5<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-6233db4a-01b7-43f9-bd3f-5524f7b4c47c</code>
+                                        <code>(def val 5)<br/>=&gt; 5<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; anonymous-c6438fac-ff66-499c-932f-675e5ee1c6f7</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1172">
@@ -2171,7 +2171,7 @@
                                         <code>Returns true if f is a Future is done otherwise false</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(future-done? (future (fn [] 100)))<br/>=&gt; true</code>
+                                        <code>(future-done? (future (fn [] 100)))<br/>=&gt; false</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1277">
@@ -3025,7 +3025,7 @@
                                         <code>Loads a Venice predefined extension module.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do <br/>   (load-module :logger))<br/>=&gt; anonymous-c6bdcf4b-45c8-4fd3-9419-660919cbb4db</code>
+                                        <code>(do <br/>   (load-module :logger))<br/>=&gt; anonymous-975e0884-71a2-48da-baae-f4015b8a3407</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1159">
@@ -3207,7 +3207,7 @@
                                         <code>Returns a memoized version of a referentially transparent function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do<br/>   (def fibonacci<br/>      (memoize<br/>         (fn [n]<br/>             (cond<br/>                (&lt;= n 0) 0<br/>                (&lt; n 2) 1<br/>                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))<br/>          <br/>   (time (fibonacci 25)))<br/>Elapsed time: 11551 us<br/>=&gt; 75025</code>
+                                        <code>(do<br/>   (def fibonacci<br/>      (memoize<br/>         (fn [n]<br/>             (cond<br/>                (&lt;= n 0) 0<br/>                (&lt; n 2) 1<br/>                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))<br/>          <br/>   (time (fibonacci 25)))<br/>Elapsed time: 9972 us<br/>=&gt; 75025</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1267">
@@ -3291,7 +3291,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(nano-time)<br/>=&gt; 643352665105366</code>
+                                        <code>(nano-time)<br/>=&gt; 644200238655379</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1021">
@@ -3725,7 +3725,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. Without argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.4472170000866582<br/><br/>(rand-double 100.0)<br/>=&gt; 26.09466370363921</code>
+                                        <code>(rand-double)<br/>=&gt; 0.15783788974412383<br/><br/>(rand-double 100.0)<br/>=&gt; 15.461729779721844</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1030">
@@ -3739,7 +3739,7 @@
                                         <code>Without argument returns a Gaussion distributed double value with mean 0.0 and standard deviation 1.0. With argument mean and stddev returns a Gaussion distributed double value with the given mean and standard deviation.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-gaussian)<br/>=&gt; 0.9325663616044818<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; -1.9217849401667393</code>
+                                        <code>(rand-gaussian)<br/>=&gt; 0.43380286436042537<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; -6.07778952924646</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1028">
@@ -3753,7 +3753,7 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. Without argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 1504948415509908596<br/><br/>(rand-long 100)<br/>=&gt; 30</code>
+                                        <code>(rand-long)<br/>=&gt; 2989775341282980595<br/><br/>(rand-long 100)<br/>=&gt; 35</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1187">
@@ -3809,7 +3809,7 @@
                                         <code>Returns true if a value has been produced for a promise, delay, or future.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do                                <br/>   (def task (fn [] 100))          <br/>   (let [f (future task)]          <br/>        (println (realized? f))    <br/>        (println @f)               <br/>        (println (realized? f))))    <br/>false<br/>100<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def p (promise))               <br/>   (println (realized? p))         <br/>   (deliver p 123)                 <br/>   (println @p)                    <br/>   (println (realized? p)))          <br/>false<br/>123<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def x (delay 100))             <br/>   (println (realized? x))         <br/>   (println @x)                    <br/>   (println (realized? x)))          <br/>false<br/>100<br/>true<br/>=&gt; nil</code>
+                                        <code>(do                                <br/>   (def task (fn [] 100))          <br/>   (let [f (future task)]          <br/>        (println (realized? f))    <br/>        (println @f)               <br/>        (println (realized? f))))    <br/>true<br/>100<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def p (promise))               <br/>   (println (realized? p))         <br/>   (deliver p 123)                 <br/>   (println @p)                    <br/>   (println (realized? p)))          <br/>false<br/>123<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def x (delay 100))             <br/>   (println (realized? x))         <br/>   (println @x)                    <br/>   (println (realized? x)))          <br/>false<br/>100<br/>true<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1178">
@@ -3907,7 +3907,7 @@
                                         <code>Takes a function of no args, presumably with side effects, and returns a collection of n calls to it</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(repeatedly 5 #(rand-long 11))<br/>=&gt; (10 4 7 0 6)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (5 5 5 5 5)</code>
+                                        <code>(repeatedly 5 #(rand-long 11))<br/>=&gt; (3 0 7 8 1)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (0 0 0 0 0)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1271">
@@ -4831,7 +4831,7 @@
                                         <code>Evaluates expr and prints the time it took.  Returns the value of expr.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time (+ 100 200))<br/>Elapsed time: 18 us<br/>=&gt; 300</code>
+                                        <code>(time (+ 100 200))<br/>Elapsed time: 14 us<br/>=&gt; 300</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1109">
@@ -4873,7 +4873,7 @@
                                         <code>Creates a new date. A date is represented by &apos;java.util.Date&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/date)<br/>=&gt; Fri Jan 11 20:03:07 CET 2019</code>
+                                        <code>(time/date)<br/>=&gt; Fri Jan 11 20:17:15 CET 2019</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1085">
@@ -4971,7 +4971,7 @@
                                         <code>Formats a date with a format</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;11-01-2019&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2019-01-11T20:03:07.904CET&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2019-01-11T20:03:07.908+01:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2019-01-11T20:03:07.911CET&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2019-01-11T20:03:07.915+01:00&quot;</code>
+                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;11-01-2019&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2019-01-11T20:17:15.635CET&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2019-01-11T20:17:15.639+01:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2019-01-11T20:17:15.642CET&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2019-01-11T20:17:15.645+01:00&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1107">
@@ -5111,7 +5111,7 @@
                                         <code>Creates a new local-date-time. A local-date-time is represented by &apos;java.time.LocalDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/local-date-time)<br/>=&gt; 2019-01-11T20:03:07.690<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2019-01-11T20:03:07.704</code>
+                                        <code>(time/local-date-time)<br/>=&gt; 2019-01-11T20:17:15.447<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2019-01-11T20:17:15.460</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1091">
@@ -5167,7 +5167,7 @@
                                         <code>Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2019-01-09<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2019-01-09T20:03:07.979<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-01-09T20:03:07.982+01:00[Europe/Zurich]</code>
+                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2019-01-09<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2019-01-09T20:17:15.706<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-01-09T20:17:15.708+01:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1098">
@@ -5181,7 +5181,7 @@
                                         <code>Returns the minute of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 3<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 3</code>
+                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 17<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 17</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1096">
@@ -5251,7 +5251,7 @@
                                         <code>Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2019-01-13<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2019-01-13T20:03:07.969<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-01-13T20:03:07.972+01:00[Europe/Zurich]</code>
+                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2019-01-13<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2019-01-13T20:17:15.694<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-01-13T20:17:15.698+01:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1099">
@@ -5265,7 +5265,7 @@
                                         <code>Returns the second of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 7<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 7</code>
+                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 15<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 15</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1124">
@@ -5377,7 +5377,7 @@
                                         <code>Creates a new zoned-date-time. A zoned-date-time is represented by &apos;java.time.ZonedDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/zoned-date-time)<br/>=&gt; 2019-01-11T20:03:07.714+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2019-01-11T20:03:07.731+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2019-01-11T19:03:07.735Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2019-01-11T19:03:07.756Z[UTC]</code>
+                                        <code>(time/zoned-date-time)<br/>=&gt; 2019-01-11T20:17:15.468+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2019-01-11T20:17:15.480+01:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2019-01-11T19:17:15.482Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2019-01-11T19:17:15.494Z[UTC]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1094">
@@ -5517,7 +5517,7 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; &quot;49aa4d71-3676-478e-b01b-3136a42d54e1&quot;</code>
+                                        <code>(uuid )<br/>=&gt; &quot;4f0dcaf7-bdc9-438e-b151-d74561db05b8&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1263">
@@ -5601,7 +5601,7 @@
                                         <code>Returns the version.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(version )<br/>=&gt; &quot;1.2.2-snapshot&quot;</code>
+                                        <code>(version )<br/>=&gt; &quot;1.2.2&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1151">
