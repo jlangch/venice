@@ -174,17 +174,58 @@ Caused by: java.lang.ArithmeticException: / by zero
 ```
 
 
-### Functions
+## Functions
 
-https://clojure.org/guides/learn/functions
 
 ### Creating functions
 
+```clojure
+(do
+   (defn add [x y] (+ x y))
+   
+   (def mul (fn [x y] (* x y)))
+   
+   (add 1 2)
+   (mul 3 4)
+   (let [f (fn [x y] (- x y))] (f 5 3)))
+```
+
 ### Variadic functions
+
+```clojure
+(do
+   (defn log
+      [message & args]
+      (apply println (cons message (cons ": " args))))
+
+   (log "message from" "192.0.0.76" "12:00:00"))
+```
 
 ### Multi-Arity functions
 
+```clojure
+(do
+   (defn arity
+      ([] (println "arity 0"))
+      ([a] (println "arity 1"))
+      ([a b] (println "arity 2"))
+      ([a b c] (println "arity 3")))
+      
+   (arity 1 2))
+```
+
 ### Anonymous functions
+
+```clojure
+(do
+   (map (fn [x] (* 2 x)) (range 0 10))
+   
+   (map #(* 2 %) (range 0 10))
+   
+   (map #(* 2 %1) (range 0 10))
+   
+   (let [f #(+ %1 %2 %3)] (f 1 2 3)))
+```
 
 
 ## Destructuring
