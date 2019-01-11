@@ -397,7 +397,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "fn":
 					// (fn name? [params*] condition-map? expr*)
-					return parseFunction(ast, env);
+					return fn_(ast, env);
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
@@ -492,20 +492,8 @@ public class VeniceInterpreter implements Serializable  {
 		return env;
 	}
 
-
-	/**
-	 * Resolves a class name.
-	 * 
-	 * @param className A simple class name like 'Math' or a class name
-	 *                  'java.lang.Math'
-	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
-	 *         value if a mapping does nor exist 
-	 */
-	private String resolveClassName(final String className) {
-		return javaImports.resolveClassName(className);
-	}
 	
-	private VncVal defmacro_(final VncList ast, final Env env) {
+	private VncFunction defmacro_(final VncList ast, final Env env) {
 		final boolean hasMeta = ast.size() > 4;
 		final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(1), env) : new VncHashMap();
 		final VncVal macroName = ast.nth(hasMeta ? 2 : 1);
@@ -528,8 +516,54 @@ public class VeniceInterpreter implements Serializable  {
 		
 		return macroFn;
 	}
-
 	
+	private VncFunction fn_(final VncList ast, final Env env) {
+		// single arity:  (fn name? [params*] condition-map? expr*)
+		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
+
+		int argPos = 1;
+		
+		final String name = getFnName(ast.nth(argPos));
+		if (name != null) argPos++;
+
+		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos));
+		if (Types.isVncVector(paramsOrSig)) {
+			// single arity:
+			
+			argPos++;
+			final VncList params = paramsOrSig;
+			
+			final VncList preConditions = getFnPreconditions(ast.nth(argPos));
+			if (preConditions != null) argPos++;
+			
+			final VncList body = ast.slice(argPos);
+			
+			return buildFunction(name, params, body, preConditions, env);
+		}
+		else {
+			// multi arity:
+
+			final List<VncFunction> fns = new ArrayList<>();
+			
+			ast.slice(argPos).forEach(s -> {
+				int pos = 0;
+				
+				final VncList sig = Coerce.toVncList(s);
+				
+				final VncList params = Coerce.toVncList(sig.nth(pos++));
+				
+				final VncList preConditions = getFnPreconditions(sig.nth(pos));
+				if (preConditions != null) pos++;
+				
+				final VncList body = sig.slice(pos);
+				
+				fns.add(buildFunction(name, params, body, preConditions, env));
+			});
+			
+			return new VncMultiArityFunction(name, fns);
+		}
+	}
+
 	private VncVal binding_(final VncList ast, final Env env) {
 		final VncList bindings = Coerce.toVncList(ast.nth(1));
 		final VncList expressions = ast.slice(2);
@@ -729,54 +763,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		return null;
 	}
-	
-	private VncFunction parseFunction(final VncList ast, final Env env) {
-		// single arity:  (fn name? [params*] condition-map? expr*)
-		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
-
-		int argPos = 1;
 		
-		final String name = getFnName(ast.nth(argPos));
-		if (name != null) argPos++;
-
-		final VncList paramsOrSig = Coerce.toVncList(ast.nth(argPos));
-		if (Types.isVncVector(paramsOrSig)) {
-			// single arity:
-			
-			argPos++;
-			final VncList params = paramsOrSig;
-			
-			final VncList preConditions = getFnPreconditions(ast.nth(argPos));
-			if (preConditions != null) argPos++;
-			
-			final VncList body = ast.slice(argPos);
-			
-			return buildFunction(name, params, body, preConditions, env);
-		}
-		else {
-			// multi arity:
-
-			final List<VncFunction> fns = new ArrayList<>();
-			
-			ast.slice(argPos).forEach(s -> {
-				int pos = 0;
-				
-				final VncList sig = Coerce.toVncList(s);
-				
-				final VncList params = Coerce.toVncList(sig.nth(pos++));
-				
-				final VncList preConditions = getFnPreconditions(sig.nth(pos));
-				if (preConditions != null) pos++;
-				
-				final VncList body = sig.slice(pos);
-				
-				fns.add(buildFunction(name, params, body, preConditions, env));
-			});
-			
-			return new VncMultiArityFunction(name, fns);
-		}
-	}
-	
 	private VncFunction buildFunction(
 			final String name, 
 			final VncList params, 
@@ -867,6 +854,18 @@ public class VeniceInterpreter implements Serializable  {
 		finally {
 			ThreadLocalMap.getCallStack().pop();
 		}
+	}
+
+	/**
+	 * Resolves a class name.
+	 * 
+	 * @param className A simple class name like 'Math' or a class name
+	 *                  'java.lang.Math'
+	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
+	 *         value if a mapping does nor exist 
+	 */
+	private String resolveClassName(final String className) {
+		return javaImports.resolveClassName(className);
 	}
 	
 	

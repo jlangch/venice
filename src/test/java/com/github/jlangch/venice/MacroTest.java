@@ -371,7 +371,37 @@ public class MacroTest {
 
 		assertEquals("{:a 100}", venice.eval(script2));
 	}
-	
+
+	@Test
+	public void test_defn_multi_arity() {
+		final Venice venice = new Venice();
+		
+		final String s = 
+				"(do                                                   \n" +
+				"   (defn arity ([] 0)                                 \n" +
+				"               ([a] 1)                                \n" +
+				"               ([a b] 2)                              \n" +
+				"               ([a b c] 3))                           \n" +
+				"   (str (arity ) (arity 1) (arity 1 2) (arity 1 2 3)))  ";
+		
+		assertEquals("0123", venice.eval(s));
+	}
+
+	@Test
+	public void test_defn_multi_arity_precondition() {
+		final Venice venice = new Venice();
+		
+		final String s = 
+				"(do                                                   \n" +
+				"   (defn arity ([] 0)                                 \n" +
+				"               ([a] { :pre [(> a 0)] } 1)             \n" +
+				"               ([a b] { :pre [(> a 0)] } 2)           \n" +
+				"               ([a b c] { :pre [(> a 0)] } 3))        \n" +
+				"   (str (arity ) (arity 1) (arity 1 2) (arity 1 2 3)))  ";
+		
+		assertEquals("0123", venice.eval(s));
+	}
+
 	@Test
 	public void test_defn_precondition() {
 		final Venice venice = new Venice();

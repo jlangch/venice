@@ -28,15 +28,27 @@
                      (str "Assert failed: " (pr-str '~expr)))))))
 
 
+;; (defmacro 
+;;    { :arglists '("(defn name [args*] condition-map? expr*)")
+;;      :doc "Same as (def name (fn name [args*] condition-map? expr*))" 
+;;      :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
+;;      
+;;    defn [name args & body]
+;;    
+;;    `(def ~name (fn ~name ~args ~@body)))
+
+
 (defmacro 
    { :arglists '("(defn name [args*] condition-map? expr*)" "(defn name ([args*] condition-map? expr*)+)")
      :doc "Same as (def name (fn name [args*] condition-map? expr*)) or (def name (fn name ([args*] condition-map? expr*)+))" 
      :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
      
-   defn [name args & body]
+   defn [name & forms]
    
-   `(def ~name (fn ~name ~args ~@body)))
-    
+   (if (vector? (first forms))
+      `(def ~name (fn ~name ~(first forms) ~@(rest forms)))
+      `(def ~name (fn ~name ~@forms))))
+
 
 (defmacro 
    { :arglists '("(and x)" "(and x & next)")
