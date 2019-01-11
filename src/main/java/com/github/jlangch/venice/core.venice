@@ -172,7 +172,7 @@
    dotimes [bindings & body]
    
    (let [i (first bindings) 
-          n (second bindings)] 
+         n (second bindings)] 
        `(let [k (long ~n)] 
            (loop [~i 0] 
               (when (< ~i k) 
@@ -431,14 +431,10 @@
 
    print
    
-   (fn print [& xs] 
-       (do 
-          (cond
-             (empty? xs)  nil
-             (== 1 (count xs))  (. *out* :append (str (coalesce (first xs) "nil")))
-             :default (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))))
-                 
-          nil)))
+   (fn print 
+       ([] nil)
+       ([x] (. *out* :append (str (coalesce x "nil"))) nil)
+       ([& xs] (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))) nil)))
 
 
 (def
