@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -35,9 +36,19 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class VncJavaList extends VncSequence implements IVncJavaObject {
-	
+
+	public VncJavaList() {
+	}
+
 	public VncJavaList(final List<Object> val) {
-		value = val;
+		val.forEach(v -> {
+			if (v instanceof VncVal) {
+				addAtEnd((VncVal)v);
+			}
+			else {
+				value.add(v);
+			}
+		});
 	}
 	
 	
@@ -101,7 +112,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	
-	public VncList rest () {
+	public VncList rest() {
 		if (isEmpty()) {
 			return new VncList();
 		} 
@@ -221,5 +232,5 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final List<Object> value;
+	private final List<Object> value = new ArrayList<>();
 }

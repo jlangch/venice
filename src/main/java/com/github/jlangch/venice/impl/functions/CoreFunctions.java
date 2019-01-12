@@ -4589,8 +4589,7 @@ public class CoreFunctions {
 									((VncVector)args.nth(1)).nth(1)));
 				}
 				else if (Types.isVncMap(args.nth(1))) {
-					new_map.putAll((VncMap)args.nth(1));
-					return new_map;
+					return new_map.putAll((VncMap)args.nth(1));
 				}
 				else {
 					throw new VncException(String.format(
