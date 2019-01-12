@@ -37,11 +37,17 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	public VncJavaSet() {
-		this.value = new HashSet<>();
 	}
 
-	public VncJavaSet(final Set<Object> value) {
-		this.value = value;
+	public VncJavaSet(final Set<Object> val) {
+		val.forEach(v -> {
+			if (v instanceof VncVal) {
+				add((VncVal)v);
+			}
+			else {
+				value.add(v);
+			}
+		});
 	}
 	
 	
@@ -110,8 +116,9 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return value.contains(JavaInteropUtil.convertToVncVal(val));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public VncJavaSet copy() {
-		final VncJavaSet s = new VncJavaSet(value);
+		final VncJavaSet s = new VncJavaSet((Set<Object>)value.clone());
 		s.setMeta(getMeta());
 		return s;
 	}
@@ -201,5 +208,5 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Set<Object> value;	
+	private final HashSet<Object> value = new HashSet<>();	
 }

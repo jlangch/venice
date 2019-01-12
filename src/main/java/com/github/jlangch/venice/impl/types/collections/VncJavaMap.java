@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,15 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class VncJavaMap extends VncMap implements IVncJavaObject {
 
+	public VncJavaMap() {
+	}
+
 	public VncJavaMap(final Map<Object,Object> map) {
-		value = map;
+		map.entrySet().forEach(e -> {
+			value.put(
+				e.getKey() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getKey()) : e.getKey(), 
+				e.getValue() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getValue()) : e.getValue()); 
+		});
 	}
 	
 	
@@ -46,8 +54,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncHashMap empty() {
-		return new VncHashMap();
+	public VncJavaMap empty() {
+		return new VncJavaMap();
 	}
 
 	@Override
@@ -221,5 +229,5 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Map<Object,Object> value;	
+	private final Map<Object,Object> value = new HashMap<Object,Object>();	
 }
