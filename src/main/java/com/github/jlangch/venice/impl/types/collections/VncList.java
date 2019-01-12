@@ -129,8 +129,8 @@ public class VncList extends VncSequence {
 		return new VncVector(value);
 	}
 	
-	public VncSet toVncSet() {
-		return new VncSet(this);
+	public VncHashSet toVncSet() {
+		return new VncHashSet(this);
 	}
 	
 	public VncList setAt(final int idx, final VncVal val) {

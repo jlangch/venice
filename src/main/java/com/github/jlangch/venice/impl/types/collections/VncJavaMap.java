@@ -101,7 +101,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncMap putAll(final VncMap map) {
+	public VncJavaMap putAll(final VncMap map) {
 		getMap().entrySet().forEach(
 				e -> value.put(
 					JavaInteropUtil.convertToJavaObject(e.getKey()), 
@@ -130,9 +130,9 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncMap dissoc(final VncVal... keys) {
+	public VncJavaMap dissoc(final VncVal... keys) {
 		for (VncVal key : keys) {
-			value.remove(key);
+			value.remove(JavaInteropUtil.convertToJavaObject(key));
 		}
 		return this;
 	}

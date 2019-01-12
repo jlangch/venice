@@ -48,7 +48,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.Agent;
 import com.github.jlangch.venice.impl.util.Delay;
@@ -266,8 +266,8 @@ public class JavaInteropUtil {
 						.filter(v -> v != null)
 						.collect(Collectors.toList());
 		}
-		else if (Types.isVncSet(value)) {
-			return ((VncSet)value)
+		else if (Types.isVncHashSet(value)) {
+			return ((VncHashSet)value)
 						.getList()
 						.stream()
 						.map(v -> convertToJavaObject(v))

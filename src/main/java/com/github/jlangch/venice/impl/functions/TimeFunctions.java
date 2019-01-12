@@ -54,7 +54,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
@@ -1890,8 +1890,8 @@ public class TimeFunctions {
 		if (Types.isVncSequence(args.first())) {
 			dates.addAll(((VncSequence)args.first()).getList());
 		}
-		else if (Types.isVncSet(args.first())) {
-			dates.addAll(((VncSet)args.first()).getList());
+		else if (Types.isVncHashSet(args.first())) {
+			dates.addAll(((VncHashSet)args.first()).getList());
 		}
 		else {
 			throw new VncException(String.format(

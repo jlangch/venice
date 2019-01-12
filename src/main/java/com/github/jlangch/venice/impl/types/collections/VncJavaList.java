@@ -140,8 +140,8 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		return new VncList(getList());
 	}
 	
-	public VncSet toVncSet() {
-		return new VncSet(toVncList());
+	public VncHashSet toVncSet() {
+		return new VncHashSet(toVncList());
 	}
 	
 	public VncJavaList addAtStart(final VncVal val) {

@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
@@ -94,8 +94,8 @@ public class Types {
 		return val != null && (val instanceof VncSequence);
 	}
 
-	public static boolean isVncSet(final VncVal val) {
-		return val != null && (val instanceof VncSet);
+	public static boolean isVncHashSet(final VncVal val) {
+		return val != null && (val instanceof VncHashSet);
 	}
 	
 	public static boolean isVncList(final VncVal val) {
@@ -190,7 +190,7 @@ public class Types {
 		else if (Types.isVncSymbol(val)) {
 			return new VncString("venice.Symbol");
 		}
-		else if (Types.isVncSet(val)) {
+		else if (Types.isVncHashSet(val)) {
 			return new VncString("venice.Set");
 		}
 		else if (Types.isVncVector(val)) {
@@ -267,11 +267,11 @@ public class Types {
 				}
 				return true;
 			} 
-			else if (a instanceof VncSet) {
-				if (((VncSet)a).size() != ((VncSet)b).size()) {
+			else if (a instanceof VncHashSet) {
+				if (((VncHashSet)a).size() != ((VncHashSet)b).size()) {
 					return false;
 				}
-				return ((VncSet)a).getList().stream().allMatch(v -> ((VncSet)b).contains(v));
+				return ((VncHashSet)a).getList().stream().allMatch(v -> ((VncHashSet)b).contains(v));
 			} 
 			else if (a instanceof VncMap) {
 				if (((VncMap)a).getMap().size() != ((VncMap)b).getMap().size()) {

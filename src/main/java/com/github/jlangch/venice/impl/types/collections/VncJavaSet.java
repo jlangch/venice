@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,11 +30,16 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class VncJavaSet extends VncCollection implements IVncJavaObject {
-	
+public class VncJavaSet extends VncSet implements IVncJavaObject {
+
+	public VncJavaSet() {
+		this.value = new HashSet<>();
+	}
+
 	public VncJavaSet(final Set<Object> value) {
 		this.value = value;
 	}
@@ -43,28 +50,87 @@ public class VncJavaSet extends VncCollection implements IVncJavaObject {
 		return value;
 	}
 
-	public VncSet empty() {
-		return new VncSet();
+	public VncJavaSet empty() {
+		return new VncJavaSet();
 	}
 	
-	public void add(final VncVal val) {
-		value.add(JavaInteropUtil.convertToVncVal(val));
+	public VncJavaSet add(final VncVal val) {
+		value.add(JavaInteropUtil.convertToJavaObject(val));
+		return this;
+	}
+
+	public VncJavaSet addAll(final VncSet val) {
+		if (Types.isVncJavaSet(val)) {
+			value.addAll(((VncJavaSet)val).value);
+		}
+		else {
+			val.getList().forEach(v -> add(v));
+		}
+		return this;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public VncJavaSet addAll(final VncSequence val) {
+		if (Types.isVncJavaList(val)) {
+			value.addAll((List<Object>)((VncJavaList)val).getDelegate());
+		}
+		else {
+			val.getList().forEach(v -> add(v));
+		}
+		return this;
+	}
+
+	public VncJavaSet remove(final VncVal val) {
+		value.remove(JavaInteropUtil.convertToJavaObject(val));
+		return this;
+	}
+
+	public VncJavaSet removeAll(final VncSet val) {
+		if (Types.isVncJavaSet(val)) {
+			value.removeAll(((VncJavaSet)val).value);
+		}
+		else {
+			val.getList().forEach(v -> remove(v));
+		}
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public VncJavaSet removeAll(final VncSequence val) {
+		if (Types.isVncJavaList(val)) {
+			value.removeAll((List<Object>)((VncJavaList)val).getDelegate());
+		}
+		else {
+			val.getList().forEach(v -> remove(v));
+		}
+		return this;
+	}
+
 	public boolean contains(final VncVal val) {
 		return value.contains(JavaInteropUtil.convertToVncVal(val));
 	}
 	
-	public VncSet copy() {
-		return new VncSet(toList());
+	public VncJavaSet copy() {
+		final VncJavaSet s = new VncJavaSet(value);
+		s.setMeta(getMeta());
+		return s;
 	}
-	
+
+
+	public Set<VncVal> getSet() { 
+		return Collections.unmodifiableSet(getVncValueSet()); 
+	}
+
+	public List<VncVal> getList() { 
+		return Collections.unmodifiableList(getVncValueList()); 
+	}
+
 	public VncList toList() {
 		return new VncList(getVncValueList());
 	}
 
-	public VncSet toVncSet() {
-		return new VncSet(toList());
+	public VncHashSet toVncSet() {
+		return new VncHashSet(toVncList());
 	}
 
 	public VncList toVncList() {
@@ -124,7 +190,14 @@ public class VncJavaSet extends VncCollection implements IVncJavaObject {
 				.map(v -> JavaInteropUtil.convertToVncVal(v))
 				.collect(Collectors.toList());
 	}
-	
+
+	private Set<VncVal> getVncValueSet() {
+		return value
+				.stream()
+				.map(v -> JavaInteropUtil.convertToVncVal(v))
+				.collect(Collectors.toSet());
+	}
+
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
