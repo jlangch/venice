@@ -209,7 +209,8 @@ Caused by: java.lang.ArithmeticException: / by zero
       ([] (println "arity 0"))
       ([a] (println "arity 1"))
       ([a b] (println "arity 2"))
-      ([a b c] (println "arity 3")))
+      ([a b c] (println "arity 3"))
+      ([a b c & z] (println "arity 3+")))
       
    (arity 1 2))
 ```
