@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
@@ -32,7 +33,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncHashSet;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
@@ -92,6 +93,10 @@ public class Types {
 
 	public static boolean isVncSequence(final VncVal val) {
 		return val != null && (val instanceof VncSequence);
+	}
+
+	public static boolean isVncSet(final VncVal val) {
+		return val != null && (val instanceof VncSet);
 	}
 
 	public static boolean isVncHashSet(final VncVal val) {

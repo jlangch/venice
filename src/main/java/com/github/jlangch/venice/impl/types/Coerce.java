@@ -24,11 +24,12 @@ package com.github.jlangch.venice.impl.types;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncHashSet;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
@@ -299,6 +300,21 @@ public class Coerce {
 		}
 	}
 	
+	public static VncSet toVncSet(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (val instanceof VncSet) {
+			return (VncSet)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to set. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
 	public static VncHashSet toVncHashSet(final VncVal val) {
 		if (val == null) {
 			return null;
