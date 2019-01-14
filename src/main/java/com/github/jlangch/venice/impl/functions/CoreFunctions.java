@@ -76,6 +76,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
@@ -1225,9 +1226,9 @@ public class CoreFunctions {
 						Types.getClassName(args.last())));
 			}
 			else {			
-				final VncList list = new VncList();
-				list.addAllAtEnd(args.slice(0, args.size()-1));
-				list.addAllAtEnd((VncList)args.last());
+				VncList list = new VncList();
+				list = list.addAllAtEnd(args.slice(0, args.size()-1));
+				list = list.addAllAtEnd((VncList)args.last());
 				return list;
 			}
 		}
@@ -1575,7 +1576,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertMinArity("difference", args, 1);
 			
-			final Set<VncVal> set = new HashSet<>(Coerce.toVncHashSet(args.first()).getSet());
+			Set<VncVal> set = new HashSet<>(Coerce.toVncHashSet(args.first()).getSet());
 			
 			for(int ii=1; ii<args.size(); ii++) {
 				set.removeAll(Coerce.toVncHashSet(args.nth(ii)).getSet());
@@ -1802,7 +1803,7 @@ public class CoreFunctions {
 
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
-
+	
 	public static VncFunction contains_Q = new VncFunction("contains?") {
 		{
 			setArgLists("(contains? coll key)");
@@ -1825,9 +1826,7 @@ public class CoreFunctions {
 			final VncVal key = args.nth(1);
 			
 			if (Types.isVncMap(coll)) {
-				final VncMap mhm = (VncMap)coll;
-				final Map<VncVal,VncVal> hm = mhm.getMap();
-				return hm.containsKey(key) ? True : False;
+				return ((VncMap)coll).containsKey(key);
 			}
 			else if (Types.isVncVector(coll)) {
 				final VncVector v = (VncVector)coll;
@@ -1871,28 +1870,25 @@ public class CoreFunctions {
 		
 		public VncVal apply(final VncList args) {
 			if (args.nth(0) == Nil) {
-				final VncMap new_hm = new VncHashMap();
-				new_hm.assoc((VncList)args.slice(1));
-				return new_hm;
+				return new VncHashMap().assoc((VncList)args.slice(1));
 			}
 			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap hm = (VncMap)args.nth(0);
 				
-				final VncMap new_hm = hm.copy();
-				new_hm.assoc((VncList)args.slice(1));
-				return new_hm;
+				return hm.copy().assoc((VncList)args.slice(1));
 			}
 			else if (Types.isVncVector(args.nth(0))) {
-				final VncVector vec = ((VncVector)args.nth(0)).copy();
+				VncVector vec = ((VncVector)args.nth(0)).copy();
+				
 				final VncList keyvals = args.slice(1);
 				for(int ii=0; ii<keyvals.size(); ii+=2) {
 					final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 					final VncVal val = keyvals.nth(ii+1);
 					if (vec.size() > key.getValue().intValue()) {
-						vec.setAt(key.getValue().intValue(), val);
+						vec = (VncVector)vec.setAt(key.getValue().intValue(), val);
 					}
 					else {
-						vec.addAtEnd(val);
+						vec = (VncVector)vec.addAtEnd(val);
 					}
 				}
 				return vec;
@@ -1924,8 +1920,7 @@ public class CoreFunctions {
 			else if (Types.isVncThreadLocal(args.nth(0))) {
 				final VncThreadLocal th = (VncThreadLocal)args.nth(0);
 				
-				th.assoc((VncList)args.slice(1));
-				return th;
+				return th.assoc((VncList)args.slice(1));
 			}
 			else {
 				throw new VncException(String.format(
@@ -1937,6 +1932,7 @@ public class CoreFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
+	// TODO: convert
 	public static VncFunction assoc_in = new VncFunction("assoc-in") {
 		{
 			setArgLists("(assoc-in m ks v)");
@@ -2041,17 +2037,15 @@ public class CoreFunctions {
 			if (Types.isVncMap(args.nth(0))) {
 				final VncMap hm = (VncMap)args.nth(0);
 				
-				final VncMap new_hm = (VncMap)hm.copy();
-				new_hm.dissoc((VncList)args.slice(1));
-				return new_hm;
+				return hm.copy().dissoc((VncList)args.slice(1));
 			}
 			else if (Types.isVncVector(args.nth(0))) {
-				final VncVector vec = ((VncVector)args.nth(0)).copy();
+				VncVector vec = ((VncVector)args.nth(0)).copy();
 				final VncList keyvals = (VncList)args.slice(1);
 				for(int ii=0; ii<keyvals.size(); ii++) {
 					final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 					if (vec.size() > key.getValue().intValue()) {
-						vec.removeAt(key.getValue().intValue());
+						vec = (VncVector)vec.removeAt(key.getValue().intValue());
 					}
 				}
 				return vec;
@@ -2079,8 +2073,7 @@ public class CoreFunctions {
 			else if (Types.isVncThreadLocal(args.nth(0))) {
 				final VncThreadLocal th = (VncThreadLocal)args.nth(0);
 				
-				th.dissoc((VncList)args.slice(1));
-				return th;
+				return th.dissoc((VncList)args.slice(1));
 			}
 			else {
 				throw new VncException(String.format(
@@ -2302,12 +2295,7 @@ public class CoreFunctions {
 			assertArity("vals", args, 1);
 			
 			final VncMap mhm = Coerce.toVncMap(args.nth(0));
-			final Map<VncVal,VncVal> hm = mhm.getMap();
-			VncList val_lst = new VncList();
-			for (VncVal val : hm.values()) {
-				val_lst.addAtEnd(val);
-			}
-			return val_lst;
+			return new VncList(mhm.getMap().values());
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -2344,19 +2332,17 @@ public class CoreFunctions {
 							idx));
 				}
 				else if (idx < list.size()) {
-					list.setAt(idx, fn.apply(new VncList(list.nth(idx))));
+					return list.setAt(idx, fn.apply(new VncList(list.nth(idx))));
 				}
 				else {
-					list.addAtEnd(fn.apply(new VncList(Nil)));
+					return list.addAtEnd(fn.apply(new VncList(Nil)));
 				}			
-				return list;
 			}
 			else if (Types.isVncMap(args.first())) {
 				final VncMap map = ((VncMap)args.first()).copy();
 				final VncVal key = args.second();
 				final VncFunction fn = Coerce.toVncFunction(args.nth(2));
-				map.assoc(key, fn.apply(new VncList(map.get(key))));
-				return map;
+				return map.assoc(key, fn.apply(new VncList(map.get(key))));
 			}
 			else {
 				throw new VncException(String.format(
@@ -2399,23 +2385,21 @@ public class CoreFunctions {
 							idx));
 				}
 				else if (idx < list.size()) {
-					list.setAt(idx, fn.apply(new VncList(list.nth(idx))));
+					return list.setAt(idx, fn.apply(new VncList(list.nth(idx))));
 				}
 				else {
-					list.addAtEnd(fn.apply(new VncList(Nil)));
+					return list.addAtEnd(fn.apply(new VncList(Nil)));
 				}			
-				return list;
 			}
 			else if (Types.isVncMap(args.first())) {
 				final VncMap map = (VncMap)args.first();
 				final VncVal key = args.second();
 				final VncFunction fn = Coerce.toVncFunction(args.nth(2));
-				map.assoc(key, fn.apply(new VncList(map.get(key))));
-				return map;
+				return map.assoc(key, fn.apply(new VncList(map.get(key))));
 			}
 			else {
 				throw new VncException(String.format(
-						"'update' does not allow %s as associative structure", 
+						"'update!' does not allow %s as associative structure", 
 						Types.getClassName(args.nth(0))));
 			}
 		}
@@ -2479,6 +2463,8 @@ public class CoreFunctions {
 
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
+
+	// TODO: check from here
 
 	public static VncFunction into = new VncFunction("into") {
 		{
@@ -4956,25 +4942,17 @@ public class CoreFunctions {
 						.sorted(c)
 						.collect(Collectors.toList()));
 		}
-		else if (Types.isVncList(coll)) {
+		else if (Types.isVncSequence(coll)) {
 			return new VncList(
-					((VncList)coll)
+					((VncSequence)coll)
 						.getList()
 						.stream()
 						.sorted(c)
 						.collect(Collectors.toList()));
 		}
-		else if (Types.isVncJavaList(coll)) {
+		else if (Types.isVncSet(coll)) {
 			return new VncList(
-					((VncJavaList)coll)
-						.getList()
-						.stream()
-						.sorted(c)
-						.collect(Collectors.toList()));
-		}
-		else if (Types.isVncHashSet(coll)) {
-			return new VncList(
-					((VncHashSet)coll)
+					((VncSet)coll)
 						.getList()
 						.stream()
 						.sorted(c)
@@ -4982,7 +4960,8 @@ public class CoreFunctions {
 		}
 		else if (Types.isVncMap(coll)) {
 			return new VncList(
-					 ((VncMap)coll).toVncList()
+					 ((VncMap)coll)
+					 	.toVncList()
 						.getList()
 						.stream()
 						.sorted(c)

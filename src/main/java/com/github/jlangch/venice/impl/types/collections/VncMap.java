@@ -34,6 +34,8 @@ public abstract class VncMap extends VncCollection {
 	public abstract Map<VncVal,VncVal> getMap();
 	
 	public abstract VncVal get(VncVal key);
+
+	public abstract VncVal containsKey(VncVal key);
 	
 	public abstract VncList keys();
 	

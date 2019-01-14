@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -31,8 +31,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class VncVector extends VncList {
 
-	public VncVector(final List<VncVal> val) {
-		super(val);
+	public VncVector(Collection<VncVal> vals) {
+		super(vals);
 	}
 	
 	public VncVector(final VncVal... mvs) {

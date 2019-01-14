@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,6 +75,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public VncVal get(final VncVal key) {
 		return JavaInteropUtil.convertToVncVal(
 					value.get(JavaInteropUtil.convertToJavaObject(key)));
+	}
+
+	@Override
+	public VncVal containsKey(final VncVal key) {
+		return value.containsKey(value.get(JavaInteropUtil.convertToJavaObject(key))) ? True : False;
 	}
 
 	public VncMap toVncHashMap() {

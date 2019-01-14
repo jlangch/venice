@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -37,8 +38,8 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncList extends VncSequence {
 	
-	public VncList(final List<VncVal> val) {
-		value = new ArrayList<VncVal>(val);
+	public VncList(final Collection<VncVal> vals) {
+		value = new ArrayList<VncVal>(vals);
 	}
 	
 	public VncList(final VncVal... mvs) {

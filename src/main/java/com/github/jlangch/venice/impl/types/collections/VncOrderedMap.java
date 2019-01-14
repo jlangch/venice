@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -79,6 +82,11 @@ public class VncOrderedMap extends VncMap {
 	public VncVal get(final VncVal key) {
 		final VncVal val = value.get(key);
 		return val == null ? Constants.Nil : val;
+	}
+
+	@Override
+	public VncVal containsKey(final VncVal key) {
+		return value.containsKey(key) ? True : False;
 	}
 
 	@SuppressWarnings("unchecked")
