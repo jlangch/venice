@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -68,7 +67,7 @@ public class VncOrderedMap extends VncMap {
 
 	@Override
 	public VncOrderedMap empty() {
-		return new VncOrderedMap();
+		return copyMetaTo(new VncOrderedMap());
 	}
 	
 	@Override
@@ -85,9 +84,7 @@ public class VncOrderedMap extends VncMap {
 	@SuppressWarnings("unchecked")
 	@Override
 	public VncOrderedMap copy() {
-		final VncOrderedMap v = new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone());
-		v.setMeta(getMeta());
-		return v;
+		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
 	}
 
 	@Override
@@ -96,8 +93,12 @@ public class VncOrderedMap extends VncMap {
 	}
 
 	@Override
-	public Set<Map.Entry<VncVal, VncVal>> entries() {
-		return Collections.unmodifiableSet(value.entrySet());
+	public List<VncMapEntry> entries() {
+		return Collections.unmodifiableList(
+					value
+						.entrySet()
+						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+						.collect(Collectors.toList()));
 	}
 
 	@Override

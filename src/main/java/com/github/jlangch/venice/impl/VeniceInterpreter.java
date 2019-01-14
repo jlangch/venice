@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
@@ -160,23 +161,27 @@ public class VeniceInterpreter implements Serializable  {
 			return env.get((VncSymbol)ast);
 		} 
 		else if (ast instanceof VncList) {
-			final VncList old_lst = (VncList)ast;
-			final VncList new_lst = old_lst.empty();
-			new_lst.setMeta(old_lst.getMeta().copy());
+			final VncList list = (VncList)ast;
 			
-			old_lst.forEach(mv -> new_lst.addAtEnd(EVAL(mv, env)));
-			return new_lst;
-		} 
+			// use reduce to take care of persistent list, addAtEnd() returns a new VncList
+			return list.getList()
+					   .stream()
+					   .reduce(
+							list.empty(),
+							(a,e) -> ((VncList)a).addAtEnd(EVAL(e, env)));
+		}
 		else if (ast instanceof VncMap) {
-			final VncMap old_map = (VncMap)ast;
-			final VncMap new_map = (VncMap)old_map.empty();
-			new_map.setMeta(old_map.getMeta().copy());
-
-			((VncMap)ast).getMap().entrySet().forEach(entry ->
-				new_map.assoc(
-						entry.getKey(), 
-						EVAL((VncVal)entry.getValue(), env)));
-			return new_map;
+			final VncMap map = (VncMap)ast;
+			
+			// use reduce to take care of persistent map, assoc() returns a new VncMap
+			return map.entries()
+					  .stream()
+					  .map(e -> (VncVal)e)
+					  .reduce(
+							map.empty(),
+							(a,e) -> ((VncMap)a).assoc(
+										((VncMapEntry)e).getKey(), 
+										EVAL(((VncMapEntry)e).getValue(), env)));
 		} 
 		else {
 			return ast;

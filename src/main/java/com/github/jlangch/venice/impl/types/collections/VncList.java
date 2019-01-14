@@ -51,9 +51,7 @@ public class VncList extends VncSequence {
 
 	@SuppressWarnings("unchecked")
 	public VncList copy() {
-		final VncList v = new VncList((ArrayList<VncVal>)value.clone());
-		v.setMeta(getMeta());
-		return v;
+		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
 	}
 
 	public List<VncVal> getList() { 
@@ -118,19 +116,19 @@ public class VncList extends VncSequence {
 	}
 	
 	public VncList empty() {
-		return new VncList();
+		return copyMetaTo(new VncList());
 	}
 	
 	public VncList toVncList() {
-		return new VncList(value);
+		return copyMetaTo(new VncList(value));
 	}
 
 	public VncVector toVncVector() {
-		return new VncVector(value);
+		return copyMetaTo(new VncVector(value));
 	}
 	
 	public VncHashSet toVncSet() {
-		return new VncHashSet(this);
+		return copyMetaTo(new VncHashSet(this));
 	}
 	
 	public VncList setAt(final int idx, final VncVal val) {

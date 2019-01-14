@@ -36,7 +36,7 @@ public class VncStack extends VncCollection {
 	
 	@Override
 	public VncCollection empty() {
-		return new VncStack();
+		return copyMetaTo(new VncStack());
 	}
 
 	@Override

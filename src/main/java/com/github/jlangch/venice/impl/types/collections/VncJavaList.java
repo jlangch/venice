@@ -63,9 +63,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	public VncList copy() {
-		final VncList v = new VncList(getList());
-		v.setMeta(getMeta());
-		return v;
+		return copyMetaTo(new VncList(getList()));
 	}
 
 	public List<VncVal> getList() { 
@@ -140,19 +138,19 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 	
 	public VncList empty() {
-		return new VncList();
+		return copyMetaTo(new VncList());
 	}
 	
 	public VncVector toVncVector() {
-		return new VncVector(getList());
+		return copyMetaTo(new VncVector(getList()));
 	}
 	
 	public VncList toVncList() {
-		return new VncList(getList());
+		return copyMetaTo(new VncList(getList()));
 	}
 	
 	public VncHashSet toVncSet() {
-		return new VncHashSet(toVncList());
+		return copyMetaTo(new VncHashSet(toVncList()));
 	}
 	
 	public VncJavaList addAtStart(final VncVal val) {

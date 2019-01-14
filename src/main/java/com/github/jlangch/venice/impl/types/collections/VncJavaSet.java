@@ -57,7 +57,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	}
 
 	public VncJavaSet empty() {
-		return new VncJavaSet();
+		return copyMetaTo(new VncJavaSet());
 	}
 	
 	public VncJavaSet add(final VncVal val) {
@@ -118,9 +118,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
 	@SuppressWarnings("unchecked")
 	public VncJavaSet copy() {
-		final VncJavaSet s = new VncJavaSet((Set<Object>)value.clone());
-		s.setMeta(getMeta());
-		return s;
+		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
 	}
 
 

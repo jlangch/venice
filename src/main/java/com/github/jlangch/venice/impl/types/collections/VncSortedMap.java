@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,7 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncSortedMap empty() {
-		return new VncSortedMap();
+		return copyMetaTo(new VncSortedMap());
 	}
 	
 	@Override
@@ -86,9 +85,7 @@ public class VncSortedMap extends VncMap {
 	@SuppressWarnings("unchecked")
 	@Override
 	public VncSortedMap copy() {
-		final VncSortedMap v = new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone());
-		v.setMeta(getMeta());
-		return v;
+		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
 	}
 
 	@Override
@@ -96,9 +93,12 @@ public class VncSortedMap extends VncMap {
 		return new VncList(new ArrayList<>(value.keySet()));
 	}
 
-	@Override
-	public Set<Map.Entry<VncVal, VncVal>> entries() {
-		return Collections.unmodifiableSet(value.entrySet());
+	public List<VncMapEntry> entries() {
+		return Collections.unmodifiableList(
+					value
+						.entrySet()
+						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+						.collect(Collectors.toList()));
 	}
 
 	@Override

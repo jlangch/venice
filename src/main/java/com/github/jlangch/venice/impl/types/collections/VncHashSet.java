@@ -52,7 +52,7 @@ public class VncHashSet extends VncSet {
 	}
 	
 	public VncHashSet empty() {
-		return new VncHashSet();
+		return copyMetaTo(new VncHashSet());
 	}
 	
 	public VncHashSet add(final VncVal val) {
@@ -84,9 +84,7 @@ public class VncHashSet extends VncSet {
 	}
 	
 	public VncHashSet copy() {
-		final VncHashSet s = new VncHashSet(value);
-		s.setMeta(getMeta());
-		return s;
+		return copyMetaTo(new VncHashSet(value));
 	}
 
 	public Set<VncVal> getSet() { 

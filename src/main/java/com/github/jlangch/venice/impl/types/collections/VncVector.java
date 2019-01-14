@@ -42,9 +42,7 @@ public class VncVector extends VncList {
 	
 	@Override
 	public VncVector copy() {
-		final VncVector v = new VncVector(toVncList().copy().getList());
-		v.setMeta(getMeta());
-		return v;
+		return copyMetaTo(new VncVector(toVncList().copy().getList()));
 	}
 
 	@Override
@@ -69,12 +67,12 @@ public class VncVector extends VncList {
 	
 	@Override
 	public VncVector empty() {
-		return new VncVector();
+		return copyMetaTo(new VncVector());
 	}
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList());
+		return copyMetaTo(new VncList(getList()));
 	}
 
 	@Override

@@ -22,10 +22,10 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Printer;
@@ -55,7 +55,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncJavaMap empty() {
-		return new VncJavaMap();
+		return copyMetaTo(new VncJavaMap());
 	}
 
 	@Override
@@ -88,9 +88,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncHashMap copy() {
-		final VncHashMap v = new VncHashMap(getMap());
-		v.setMeta(getMeta());
-		return v;
+		return copyMetaTo(new VncHashMap(getMap()));
 	}
 
 	@Override
@@ -104,8 +102,12 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public Set<Map.Entry<VncVal, VncVal>> entries() {
-		return getMap().entrySet();
+	public List<VncMapEntry> entries() {
+		return Collections.unmodifiableList(
+					getMap()
+						.entrySet()
+						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+						.collect(Collectors.toList()));
 	}
 
 	@Override

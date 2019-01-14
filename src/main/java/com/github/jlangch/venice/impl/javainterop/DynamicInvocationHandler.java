@@ -30,9 +30,9 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
-import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -117,7 +117,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final VncMap handlers
 	) {
 		final Map<String, VncFunction> handlerMap = new HashMap<>();
-		for(Map.Entry<VncVal,VncVal> entry : handlers.entries()) {
+		for(VncMapEntry entry : handlers.entries()) {
 			handlerMap.put(
 					Types.isVncKeyword(entry.getKey())
 						? Coerce.toVncKeyword(entry.getKey()).getValue()

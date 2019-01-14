@@ -22,9 +22,10 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.Invoker;
@@ -33,6 +34,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -96,8 +98,12 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public Set<Entry<VncVal, VncVal>> entries() {
-		return getMap().entrySet();
+	public List<VncMapEntry> entries() {
+		return Collections.unmodifiableList(
+					getMap()
+						.entrySet()
+						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+						.collect(Collectors.toList()));
 	}
 
 	@Override

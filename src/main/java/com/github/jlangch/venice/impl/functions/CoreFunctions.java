@@ -67,14 +67,15 @@ import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
@@ -4482,7 +4483,7 @@ public class CoreFunctions {
 			assertArity("reduce-kv", args, 3);
 			
 			final VncFunction reduceFn = Coerce.toVncFunction(args.nth(0));		
-			final Set<Map.Entry<VncVal,VncVal>> values = Coerce.toVncHashMap(args.nth(2)).entries();
+			final List<VncMapEntry> values = Coerce.toVncHashMap(args.nth(2)).entries();
 			
 			VncMap value = (VncMap)args.nth(1);
 			
@@ -4490,7 +4491,7 @@ public class CoreFunctions {
 				return value;
 			}
 			else {
-				for(Map.Entry<VncVal,VncVal> entry : values) {
+				for(VncMapEntry entry : values) {
 					final VncVal key = entry.getKey();
 					final VncVal val = entry.getValue();
 					

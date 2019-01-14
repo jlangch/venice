@@ -21,38 +21,39 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public abstract class VncMap extends VncCollection {
+public class VncMapEntry extends VncVal {
 
-	public abstract VncMap copy();
-
-	public abstract Map<VncVal,VncVal> getMap();
+	public VncMapEntry(final VncVal key, final VncVal val) {
+		this.key = key;
+		this.val = val;
+	}
 	
-	public abstract VncVal get(VncVal key);
+	public VncMapEntry(final Map.Entry<VncVal, VncVal> entry) {
+		this.key = entry.getKey();
+		this.val = entry.getValue();
+	}
 	
-	public abstract VncList keys();
+	public VncVal getKey() {
+		return key;
+	}
+
+	public VncVal getValue() {
+		return val;
+	}
+
+	@Override
+	public VncVal copy() {
+		return this;
+	}
+
 	
-	public abstract List<VncMapEntry> entries();
-
-	public abstract VncMap putAll(VncMap map);
-
-	public abstract VncMap assoc(VncVal... mvs);
-
-	public abstract VncMap assoc(VncList mvs);
-
-	public abstract VncMap dissoc(VncVal... keys);
-
-	public abstract VncMap dissoc(VncList keys);
+	private static final long serialVersionUID = 7943559441888855596L;
 	
-	public abstract VncList toVncList();
-	
-	public abstract VncVector toVncVector();
-
-
-    private static final long serialVersionUID = -1848883965231344442L;
+	private final VncVal key;
+	private final VncVal val;
 }
