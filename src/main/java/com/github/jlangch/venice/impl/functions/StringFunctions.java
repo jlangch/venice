@@ -49,743 +49,766 @@ public class StringFunctions {
 	// String
 	///////////////////////////////////////////////////////////////////////////
 	
-	public static VncFunction str_blank = new VncFunction("str/blank?") {
-		{
-			setArgLists("(str/blank? s)");
-			
-			setDoc("True if s is blank.");
-			
-			setExamples(
-					"(str/blank? nil)", 
-					"(str/blank? \"\")", 
-					"(str/blank? \"  \")", 
-					"(str/blank? \"abc\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/blank?", args, 1);
-
-			if (args.nth(0) == Nil) {
-				return True;
-			}
-			
-			final String s = Coerce.toVncString(args.nth(0)).getValue();		
-
-			return StringUtil.isBlank(s) ? True : False;
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_char = new VncFunction("str/char") {
-		{
-			setArgLists("(str/char n)");
-			
-			setDoc("Converts a number to a single char string.");
-			
-			setExamples("(str/char 65)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/char", args, 1);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-			
-			final long n = Coerce.toVncLong(args.nth(0)).getValue();		
-
-			return new VncString(String.valueOf((char)n));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_starts_with = new VncFunction("str/starts-with?") {
-		{
-			setArgLists("(str/starts-with? s substr)");
-			
-			setDoc("True if s starts with substr.");
-			
-			setExamples(
-					"(str/starts-with? \"abc\"  \"ab\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/starts-with?", args, 2);
-
-			if (args.nth(0) == Nil || args.nth(1) == Nil) {
-				return False;
-			}
-			
-			final VncString string = Coerce.toVncString(args.nth(0));		
-			final VncString prefix = Coerce.toVncString(args.nth(1));		
-			
-			return string.getValue().startsWith(prefix.getValue()) ? True : False;
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction str_blank = 
+		new VncFunction(
+				"str/blank?", 
+				VncFunction
+					.meta()
+					.arglists("(str/blank? s)")		
+					.doc("True if s is blank.")
+					.examples(
+						"(str/blank? nil)", 
+						"(str/blank? \"\")", 
+						"(str/blank? \"  \")", 
+						"(str/blank? \"abc\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/blank?", args, 1);
 	
-	public static VncFunction str_ends_with = new VncFunction("str/ends-with?") {
-		{
-			setArgLists("(str/ends-with? s substr)");
-			
-			setDoc("True if s ends with substr.");
-			
-			setExamples(
-					"(str/starts-with? \"abc\"  \"bc\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/ends-with?", args, 2);
-
-			if (args.nth(0) == Nil || args.nth(1) == Nil) {
-				return False;
-			}
-
-			final VncString string = Coerce.toVncString(args.nth(0));
-			final VncString suffix = Coerce.toVncString(args.nth(1));
-			
-			return string.getValue().endsWith(suffix.getValue()) ? True : False;
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+				if (args.nth(0) == Nil) {
+					return True;
+				}
+				
+				final String s = Coerce.toVncString(args.nth(0)).getValue();		
 	
-	public static VncFunction str_contains = new VncFunction("str/contains?") {
-		{
-			setArgLists("(str/contains? s substr)");
-			
-			setDoc("True if s contains with substr.");
-			
-			setExamples(
-					"(str/contains? \"abc\"  \"ab\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/contains?", args, 2);
-
-			if (args.nth(0) == Nil || args.nth(1) == Nil) {
-				return False;
+				return StringUtil.isBlank(s) ? True : False;
 			}
-
-			final VncString string = Coerce.toVncString(args.nth(0));
-			final VncString text = Coerce.toVncString(args.nth(1));
-			
-			return string.getValue().contains(text.getValue()) ? True : False;
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
 	
-	public static VncFunction str_trim = new VncFunction("str/trim") {
-		{
-			setArgLists("(str/trim s substr)");
-			
-			setDoc("Trims leading and trailing spaces from s.");
-			
-			setExamples("(str/trim \" abc  \")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/trim", args, 1);
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-
-			return new VncString(Coerce.toVncString(args.nth(0)).getValue().trim());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction str_char = 
+		new VncFunction(
+				"str/char", 
+				VncFunction
+					.meta()
+					.arglists("(str/char n)")		
+					.doc("Converts a number to a single char string.")
+					.examples("(str/char 65)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/char", args, 1);
 	
-	public static VncFunction str_trim_to_nil = new VncFunction("str/trim-to-nil") {
-		{
-			setArgLists("(str/trim-to-nil s substr)");
-			
-			setDoc( "Trims leading and trailing spaces from s. " +
-					"Returns nil if the rewsulting string is empry");
-			
-			setExamples(
-					"(str/trim \"\")",
-					"(str/trim \"    \")",
-					"(str/trim nil)",
-					"(str/trim \" abc   \")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/trim-to-nil", args, 1);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-
-			final String str = Coerce.toVncString(args.nth(0)).getValue().trim();
-			return str.isEmpty() ? Nil : new VncString(str);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				final long n = Coerce.toVncLong(args.nth(0)).getValue();		
 	
-	public static VncFunction str_index_of = new VncFunction("str/index-of") {
-		{
-			setArgLists("(str/index-of s value)", "(str/index-of s value from-index)");
-			
-			setDoc( "Return index of value (string or char) in s, optionally searching " + 
-					"forward from from-index. Return nil if value not found.");
-			
-			setExamples(
-					"(str/index-of \"abcdefabc\" \"ab\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/index-of", args, 2, 3);
-
-			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
-			
-			if (args.size() == 3) {
-				final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
-				final int pos = text.indexOf(searchString, startPos);
-				return pos < 0 ? Nil : new VncLong(pos);
+				return new VncString(String.valueOf((char)n));
 			}
-			else {
-				final int pos = text.indexOf(searchString);
-				return pos < 0 ? Nil : new VncLong(pos);
-			}
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
 	
-	public static VncFunction str_last_index_of = new VncFunction("str/last-index-of") {
-		{
-			setArgLists("(str/last-index-of s value)", "(str/last-index-of s value from-index)");
-			
-			setDoc( "Return last index of value (string or char) in s, optionally\n" + 
-					"searching backward from from-index. Return nil if value not found.");
-			
-			setExamples(
-					"(str/last-index-of \"abcdefabc\" \"ab\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/last-index-of", args, 2, 3);
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-
-			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
-			
-			if (args.size() > 2) {
-				final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
-				final int pos = text.lastIndexOf(searchString, startPos);
-				return pos < 0 ? Nil : new VncLong(pos);
-			}
-			else {
-				final int pos = text.lastIndexOf(searchString);
-				return pos < 0 ? Nil : new VncLong(pos);
-			}
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction str_starts_with = 
+		new VncFunction(
+				"str/starts-with?", 
+				VncFunction
+					.meta()
+					.arglists("(str/starts-with? s substr)")		
+					.doc("True if s starts with substr.")
+					.examples("(str/starts-with? \"abc\"  \"ab\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/starts-with?", args, 2);
 	
-	public static VncFunction str_replace_first = new VncFunction("str/replace-first") {
-		{
-			setArgLists("(str/replace-first s search replacement)");
-			
-			setDoc("Replaces the first occurrance of search in s");
-			
-			setExamples(
-					"(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/replace-first", args, 3);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
+				if (args.nth(0) == Nil || args.nth(1) == Nil) {
+					return False;
+				}
+				
+				final VncString string = Coerce.toVncString(args.nth(0));		
+				final VncString prefix = Coerce.toVncString(args.nth(1));		
+				
+				return string.getValue().startsWith(prefix.getValue()) ? True : False;
 			}
-
-			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();
-			final String replacement = Coerce.toVncString(args.nth(2)).getValue();
-
-			if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-				return args.nth(0);
-			}
-
-			int pos = text.indexOf(searchString);
-			return pos >= 0
-				? new VncString(
-						text.substring(0, pos) + 
-						replacement + 
-						text.substring(pos + replacement.length()))
-			 	: args.nth(0);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
 	
-	public static VncFunction str_replace_last = new VncFunction("str/replace-last") {
-		{
-			setArgLists("(str/replace-last s search replacement)");
-			
-			setDoc("Replaces the last occurrance of search in s");
-			
-			setExamples(
-					"(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/replace-last", args, 3);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-
-			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();
-			final String replacement = Coerce.toVncString(args.nth(2)).getValue();
-
-			if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-				return args.nth(0);
-			}
-
-			int pos = text.lastIndexOf(searchString);
-			return pos >= 0
-				? new VncString(
-						text.substring(0, pos) + 
-						replacement + 
-						text.substring(pos + replacement.length()))
-			 	: args.nth(0);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
-	public static VncFunction str_replace_all = new VncFunction("str/replace-all") {
-		{
-			setArgLists("(str/replace-all s search replacement)");
-			
-			setDoc("Replaces the all occurrances of search in s");
-			
-			setExamples(
-					"(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/replace-all", args, 3);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-
-			final String text = Coerce.toVncString(args.nth(0)).getValue();	
-			final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
-			final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
-			
-			if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-				return args.nth(0);
-			}
-
-			int start = 0;
-			int end = text.indexOf(searchString, start);
-			if (end == -1) {
-				return args.nth(0);
-			}
-			final int replLength = searchString.length();
-			final StringBuilder buf = new StringBuilder();
-			while (end != -1) {
-				buf.append(text, start, end).append(replacement);
-				start = end + replLength;
-				end = text.indexOf(searchString, start);
-			}
-			buf.append(text, start, text.length());
-			return new VncString(buf.toString());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction str_ends_with = 
+		new VncFunction(
+				"str/ends-with?", 
+				VncFunction
+					.meta()
+					.arglists("(str/ends-with? s substr)")		
+					.doc("True if s ends with substr.")
+					.examples("(str/starts-with? \"abc\"  \"bc\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/ends-with?", args, 2);
 	
-	public static VncFunction str_lower_case = new VncFunction("str/lower-case") {
-		{
-			setArgLists("(str/lower-case s)");
-			
-			setDoc("Converts s to lowercase");
-			
-			setExamples(
-					"(str/lower-case \"aBcDeF\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/lower-case", args, 1);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
-			}
-
-			final VncString string = Coerce.toVncString(args.nth(0));
-			
-			return new VncString(string.getValue().toLowerCase());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+				if (args.nth(0) == Nil || args.nth(1) == Nil) {
+					return False;
+				}
 	
-	public static VncFunction str_upper_case = new VncFunction("str/upper-case") {
-		{
-			setArgLists("(str/upper-case s)");
-			
-			setDoc("Converts s to uppercase");
-			
-			setExamples(
-					"(str/upper-case \"aBcDeF\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/upper-case", args, 1);
-
-			if (args.nth(0) == Nil) {
-				return Nil;
+				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString suffix = Coerce.toVncString(args.nth(1));
+				
+				return string.getValue().endsWith(suffix.getValue()) ? True : False;
 			}
-
-			final VncString string = Coerce.toVncString(args.nth(0));
-			
-			return new VncString(string.getValue().toUpperCase());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
 	
-	public static VncFunction str_join = new VncFunction("str/join") {
-		{
-			setArgLists("(str/join coll)", "(str/join separator coll)");
-			
-			setDoc("Joins all elements in coll separated by an optional separator.");
-			
-			setExamples(
-					"(str/join [1 2 3])",
-					"(str/join \"-\" [1 2 3])");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/join", args, 1, 2);
-
-			final VncList coll = Coerce.toVncList(args.last());		
-			final VncString delim = args.size() == 2 ? Coerce.toVncString(args.nth(0)) : new VncString("");
-			
-			return new VncString(
-						coll.size() > 0
-							? coll
-								.getList()
-								.stream()
-								.map(v -> Types.isVncString(v) ? ((VncString)v).getValue() : v.toString())
-								.collect(Collectors.joining(delim.getValue()))
-							: "");
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
-	public static VncFunction str_subs = new VncFunction("str/subs") {
-		{
-			setArgLists("(str/subs s start)", "(str/subs s start end)");
-			
-			setDoc( "Returns the substring of s beginning at start inclusive, and ending " + 
-					"at end (defaults to length of string), exclusive.");
-			
-			setExamples(
-					"(str/subs \"abcdef\" 2)",
-					"(str/subs \"abcdef\" 2 5)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/subs", args, 2, 3);
-
-			final VncString string = Coerce.toVncString(args.nth(0));		
-			final VncLong from = Coerce.toVncLong(args.nth(1));
-			final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
-			
-			return new VncString(
-							to == null
-								? string.getValue().substring(from.getValue().intValue())
-								: string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction str_contains = 
+		new VncFunction(
+				"str/contains?", 
+				VncFunction
+					.meta()
+					.arglists("(str/contains? s substr)")		
+					.doc("True if s contains with substr.")
+					.examples("(str/contains? \"abc\"  \"ab\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/contains?", args, 2);
 	
-	public static VncFunction str_split = new VncFunction("str/split") {
-		{
-			setArgLists("(str/split s regex)");
-			
-			setDoc("Splits string on a regular expression.");
-			
-			setExamples("(str/split \"abc , def , ghi\" \"[ *],[ *]\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/split", args, 2);
-
-			final VncString string = Coerce.toVncString(args.nth(0));
-			final VncString regex = Coerce.toVncString(args.nth(1));
-			
-			return new VncList(
-					Arrays
-						.asList(string.getValue().split(regex.getValue()))
-						.stream()
-						.map(s -> new VncString(s))
-						.collect(Collectors.toList()));			
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+				if (args.nth(0) == Nil || args.nth(1) == Nil) {
+					return False;
+				}
 	
-	public static VncFunction str_split_lines = new VncFunction("str/split-lines") {
-		{
-			setArgLists("(str/split-lines s)");
-			
-			setDoc("Splits s into lines.");
-			
-			setExamples("(str/split-lines \"line1\nline2\nline3\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/split-lines", args, 1);
-
-			return args.nth(0) == Nil
-					? new VncList()
-					: new VncList(
-							StringUtil
-								.splitIntoLines(Coerce.toVncString(args.nth(0)).getValue())
-								.stream()
-								.map(s -> new VncString(s))
-								.collect(Collectors.toList()));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-	
-	public static VncFunction str_format = new VncFunction("str/format") {
-		{
-			setArgLists("(str/format format args*)");
-			
-			setDoc("Returns a formatted string using the specified format string and arguments.");
-			
-			setExamples("(str/format \"%s: %d\" \"abc\" 100)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			final VncString fmt = (VncString)args.nth(0);
-			final List<Object> fmtArgs = args
-										.slice(1)
-										.getList()
-										.stream()
-										.map(v -> JavaInteropUtil.convertToJavaObject(v))
-										.collect(Collectors.toList());
-			
-			return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-	
-	public static VncFunction str_quote = new VncFunction("str/quote") {
-		{
-			setArgLists("(str/quote str q)", "(str/quote str start end)");
-			
-			setDoc("Quotes a string.");
-			
-			setExamples(
-					"(str/quote \"abc\" \"-\")",
-					"(str/quote \"abc\" \"<\" \">\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/quote", args, 2, 3);
-
-			final String s = Coerce.toVncString(args.nth(0)).getValue();
-			final String start = Coerce.toVncString(args.nth(1)).getValue();
-			final String end = (args.size() == 2) 
-									? start 
-									: Coerce.toVncString(args.nth(2)).getValue();
-
-			return new VncString(start + s + end);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-	
-	public static VncFunction str_truncate = new VncFunction("str/truncate") {
-		{
-			setArgLists("(str/truncate s maxlen marker)");
-			
-			setDoc( "Truncates a string to the max lenght maxlen and adds the " +
-					"marker to the end if the string needs to be truncated");
-			
-			setExamples(
-					"(str/truncate \"abcdefghij\" 20 \"...\")",
-					"(str/truncate \"abcdefghij\" 9 \"...\")",
-					"(str/truncate \"abcdefghij\" 4 \"...\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/truncate", args, 3);
-			
-			if (args.nth(0) == Nil) {
-				return Nil;
+				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString text = Coerce.toVncString(args.nth(1));
+				
+				return string.getValue().contains(text.getValue()) ? True : False;
 			}
-			
-			return new VncString(
-						StringUtil.truncate(
-							Coerce.toVncString(args.nth(0)).getValue(), 
-							Coerce.toVncLong(args.nth(1)).getValue().intValue(),
-							Coerce.toVncString(args.nth(2)).getValue()));		
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_strip_start = new VncFunction("str/strip-start") {
-		{
-			setArgLists("(str/strip-start s substr)");
-			
-			setDoc("Removes a substr only if it is at the beginning of a s, otherwise returns s.");
-			
-			setExamples(
-					"(str/strip-start \"abcdef\" \"abc\")",
-					"(str/strip-start \"abcdef\" \"def\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/strip-start", args, 2);
-			
-			if (args.nth(0) == Nil) {
-				return Nil;
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_trim = 
+		new VncFunction(
+				"str/trim", 
+				VncFunction
+					.meta()
+					.arglists("(str/trim s substr)")		
+					.doc("Trims leading and trailing spaces from s.")
+					.examples("(str/trim \" abc  \")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/trim", args, 1);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				return new VncString(Coerce.toVncString(args.nth(0)).getValue().trim());
 			}
-			
-			final String s = Coerce.toVncString(args.nth(0)).getValue();
-			final String substr = Coerce.toVncString(args.nth(1)).getValue();
-			
-			return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_strip_end = new VncFunction("str/strip-end") {
-		{
-			setArgLists("(str/strip-end s substr)");
-			
-			setDoc("Removes a substr only if it is at the end of a s, otherwise returns s.");
-			
-			setExamples(
-					"(str/strip-end \"abcdef\" \"def\")",
-					"(str/strip-end \"abcdef\" \"abc\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/strip-end", args, 2);
-			
-			if (args.nth(0) == Nil) {
-				return Nil;
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_trim_to_nil = 
+		new VncFunction(
+				"str/trim-to-nil", 
+				VncFunction
+					.meta()
+					.arglists("(str/trim-to-nil s substr)")		
+					.doc(
+						"Trims leading and trailing spaces from s. " +
+						"Returns nil if the rewsulting string is empry")
+					.examples(
+						"(str/trim \"\")",
+						"(str/trim \"    \")",
+						"(str/trim nil)",
+						"(str/trim \" abc   \")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/trim-to-nil", args, 1);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final String str = Coerce.toVncString(args.nth(0)).getValue().trim();
+				return str.isEmpty() ? Nil : new VncString(str);
 			}
-			
-			final String s = Coerce.toVncString(args.nth(0)).getValue();
-			final String substr = Coerce.toVncString(args.nth(1)).getValue();
-			
-			return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_strip_indent = new VncFunction("str/strip-indent") {
-		{
-			setArgLists("(str/strip-indent s)");
-			
-			setDoc("Strip the indent of a multi-line string. The first line's leading whitespaces define the indent.");
-			
-			setExamples(
-					"(str/strip-indent \"  line1\n    line2\n    line3\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/strip-indent", args, 1);
-			
-			if (args.nth(0) == Nil) {
-				return Nil;
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_index_of = 
+		new VncFunction(
+				"str/index-of", 
+				VncFunction
+					.meta()
+					.arglists("(str/index-of s value)", "(str/index-of s value from-index)")		
+					.doc(
+						"Return index of value (string or char) in s, optionally searching " + 
+						"forward from from-index. Return nil if value not found.")
+					.examples(
+						"(str/index-of \"abcdefabc\" \"ab\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/index-of", args, 2, 3);
+	
+				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
+				
+				if (args.size() == 3) {
+					final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
+					final int pos = text.indexOf(searchString, startPos);
+					return pos < 0 ? Nil : new VncLong(pos);
+				}
+				else {
+					final int pos = text.indexOf(searchString);
+					return pos < 0 ? Nil : new VncLong(pos);
+				}
 			}
-			
-			return new VncString(StringUtil.stripIndent(Coerce.toVncString(args.first()).getValue()));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_strip_margin = new VncFunction("str/strip-margin") {
-		{
-			setArgLists("(str/strip-margin s)");
-			
-			setDoc("Strips leading whitespaces upto and including the margin '|' " +
-					"from each line in a multi-line string.");
-			
-			setExamples(
-					"(str/strip-margin \"line1\n  |  line2\n  |  line3\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/strip-margin", args, 1);
-			
-			if (args.nth(0) == Nil) {
-				return Nil;
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_last_index_of = 
+		new VncFunction(
+				"str/last-index-of", 
+				VncFunction
+					.meta()
+					.arglists("(str/last-index-of s value)", "(str/last-index-of s value from-index)")		
+					.doc(
+						"Return last index of value (string or char) in s, optionally\n" + 
+						"searching backward from from-index. Return nil if value not found.")
+					.examples(
+						"(str/last-index-of \"abcdefabc\" \"ab\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/last-index-of", args, 2, 3);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
+				
+				if (args.size() > 2) {
+					final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
+					final int pos = text.lastIndexOf(searchString, startPos);
+					return pos < 0 ? Nil : new VncLong(pos);
+				}
+				else {
+					final int pos = text.lastIndexOf(searchString);
+					return pos < 0 ? Nil : new VncLong(pos);
+				}
 			}
-			
-			return new VncString(StringUtil.stripMargin(Coerce.toVncString(args.first()).getValue(), '|'));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction str_repeat = new VncFunction("str/repeat") {
-		{
-			setArgLists("(str/repeat s n)", "(str/repeat s n sep)");
-			
-			setDoc("Repeats s n times with an optional separator.");
-			
-			setExamples(
-					"(str/repeat \"abc\" 0)",
-					"(str/repeat \"abc\" 3)",
-					"(str/repeat \"abc\" 3 \"-\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("str/repeat", args, 2, 3);
-			
-			if (args.nth(0) == Nil) {
-				return Nil;
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_replace_first = 
+		new VncFunction(
+				"str/replace-first", 
+				VncFunction
+					.meta()
+					.arglists("(str/replace-first s search replacement)")		
+					.doc("Replaces the first occurrance of search in s")
+					.examples("(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/replace-first", args, 3);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String searchString = Coerce.toVncString(args.nth(1)).getValue();
+				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
+	
+				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
+					return args.nth(0);
+				}
+	
+				int pos = text.indexOf(searchString);
+				return pos >= 0
+					? new VncString(
+							text.substring(0, pos) + 
+							replacement + 
+							text.substring(pos + replacement.length()))
+				 	: args.nth(0);
 			}
-			
-			final String s = Coerce.toVncString(args.nth(0)).getValue();
-			final int times = Coerce.toVncLong(args.nth(1)).getValue().intValue();
-			final String sep = args.size() == 3 ? Coerce.toVncString(args.nth(2)).getValue() : "";
-			
-			final StringBuilder sb = new StringBuilder();
-			for(int ii=0; ii<times; ii++) {
-				if (ii>0)sb.append(sep);
-				sb.append(s);
-			}			
-			return new VncString(sb.toString());
-		}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_replace_last = 
+		new VncFunction(
+				"str/replace-last", 
+				VncFunction
+					.meta()
+					.arglists("(str/replace-last s search replacement)")		
+					.doc("Replaces the last occurrance of search in s")
+					.examples("(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("str/replace-last", args, 3);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String searchString = Coerce.toVncString(args.nth(1)).getValue();
+				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
+	
+				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
+					return args.nth(0);
+				}
+	
+				int pos = text.lastIndexOf(searchString);
+				return pos >= 0
+					? new VncString(
+							text.substring(0, pos) + 
+							replacement + 
+							text.substring(pos + replacement.length()))
+				 	: args.nth(0);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_replace_all = 
+		new VncFunction(
+				"str/replace-all", 
+				VncFunction
+					.meta()
+					.arglists("(str/replace-all s search replacement)")		
+					.doc("Replaces the all occurrances of search in s")
+					.examples("(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("str/replace-all", args, 3);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
+				final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
+				
+				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
+					return args.nth(0);
+				}
+	
+				int start = 0;
+				int end = text.indexOf(searchString, start);
+				if (end == -1) {
+					return args.nth(0);
+				}
+				final int replLength = searchString.length();
+				final StringBuilder buf = new StringBuilder();
+				while (end != -1) {
+					buf.append(text, start, end).append(replacement);
+					start = end + replLength;
+					end = text.indexOf(searchString, start);
+				}
+				buf.append(text, start, text.length());
+				return new VncString(buf.toString());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_lower_case = 
+		new VncFunction(
+				"str/lower-case", 
+				VncFunction
+					.meta()
+					.arglists("(str/lower-case s)")		
+					.doc("Converts s to lowercase")
+					.examples("(str/lower-case \"aBcDeF\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/lower-case", args, 1);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final VncString string = Coerce.toVncString(args.nth(0));
+				
+				return new VncString(string.getValue().toLowerCase());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_upper_case = 
+		new VncFunction(
+				"str/upper-case", 
+				VncFunction
+					.meta()
+					.arglists("(str/upper-case s)")		
+					.doc("Converts s to uppercase")
+					.examples("(str/upper-case \"aBcDeF\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/upper-case", args, 1);
+	
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+	
+				final VncString string = Coerce.toVncString(args.nth(0));
+				
+				return new VncString(string.getValue().toUpperCase());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_join = 
+		new VncFunction(
+				"str/join", 
+				VncFunction
+					.meta()
+					.arglists("(str/join coll)", "(str/join separator coll)")		
+					.doc("Joins all elements in coll separated by an optional separator.")
+					.examples(
+						"(str/join [1 2 3])",
+						"(str/join \"-\" [1 2 3])")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("str/join", args, 1, 2);
+	
+				final VncList coll = Coerce.toVncList(args.last());		
+				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.nth(0)) : new VncString("");
+				
+				return new VncString(
+							coll.size() > 0
+								? coll
+									.getList()
+									.stream()
+									.map(v -> Types.isVncString(v) ? ((VncString)v).getValue() : v.toString())
+									.collect(Collectors.joining(delim.getValue()))
+								: "");
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_subs = 
+		new VncFunction(
+				"str/subs", 
+				VncFunction
+					.meta()
+					.arglists("(str/subs s start)", "(str/subs s start end)")		
+					.doc(
+						"Returns the substring of s beginning at start inclusive, and ending " + 
+						"at end (defaults to length of string), exclusive.")
+					.examples(
+						"(str/subs \"abcdef\" 2)",
+						"(str/subs \"abcdef\" 2 5)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/subs", args, 2, 3);
+	
+				final VncString string = Coerce.toVncString(args.nth(0));		
+				final VncLong from = Coerce.toVncLong(args.nth(1));
+				final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
+				
+				return new VncString(
+								to == null
+									? string.getValue().substring(from.getValue().intValue())
+									: string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_split = 
+		new VncFunction(
+				"str/split", 
+				VncFunction
+					.meta()
+					.arglists("(str/split s regex)")		
+					.doc("Splits string on a regular expression.")
+					.examples("(str/split \"abc , def , ghi\" \"[ *],[ *]\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/split", args, 2);
+	
+				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString regex = Coerce.toVncString(args.nth(1));
+				
+				return new VncList(
+						Arrays
+							.asList(string.getValue().split(regex.getValue()))
+							.stream()
+							.map(s -> new VncString(s))
+							.collect(Collectors.toList()));			
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_split_lines = 
+		new VncFunction(
+				"str/split-lines", 
+				VncFunction
+					.meta()
+					.arglists("(str/split-lines s)")		
+					.doc("Splits s into lines.")
+					.examples("(str/split-lines \"line1\nline2\nline3\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/split-lines", args, 1);
+	
+				return args.nth(0) == Nil
+						? new VncList()
+						: new VncList(
+								StringUtil
+									.splitIntoLines(Coerce.toVncString(args.nth(0)).getValue())
+									.stream()
+									.map(s -> new VncString(s))
+									.collect(Collectors.toList()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_format = 
+		new VncFunction(
+				"str/format", 
+				VncFunction
+					.meta()
+					.arglists("(str/format format args*)")		
+					.doc("Returns a formatted string using the specified format string and arguments.")
+					.examples("(str/format \"%s: %d\" \"abc\" 100)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				final VncString fmt = (VncString)args.nth(0);
+				final List<Object> fmtArgs = args
+											.slice(1)
+											.getList()
+											.stream()
+											.map(v -> JavaInteropUtil.convertToJavaObject(v))
+											.collect(Collectors.toList());
+				
+				return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_quote = 
+		new VncFunction(
+				"str/quote", 
+				VncFunction
+					.meta()
+					.arglists("(str/quote str q)", "(str/quote str start end)")		
+					.doc("Quotes a string.")
+					.examples(
+						"(str/quote \"abc\" \"-\")",
+						"(str/quote \"abc\" \"<\" \">\")")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("str/quote", args, 2, 3);
+	
+				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String start = Coerce.toVncString(args.nth(1)).getValue();
+				final String end = (args.size() == 2) 
+										? start 
+										: Coerce.toVncString(args.nth(2)).getValue();
+	
+				return new VncString(start + s + end);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_truncate = 
+		new VncFunction(
+				"str/truncate", 
+				VncFunction
+					.meta()
+					.arglists("(str/truncate s maxlen marker)")		
+					.doc(
+						"Truncates a string to the max lenght maxlen and adds the " +
+						"marker to the end if the string needs to be truncated")
+					.examples(
+						"(str/truncate \"abcdefghij\" 20 \"...\")",
+						"(str/truncate \"abcdefghij\" 9 \"...\")",
+						"(str/truncate \"abcdefghij\" 4 \"...\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/truncate", args, 3);
+				
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				return new VncString(
+							StringUtil.truncate(
+								Coerce.toVncString(args.nth(0)).getValue(), 
+								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncString(args.nth(2)).getValue()));		
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction str_strip_start = 
+		new VncFunction(
+				"str/strip-start", 
+				VncFunction
+					.meta()
+					.arglists("(str/strip-start s substr)")		
+					.doc("Removes a substr only if it is at the beginning of a s, otherwise returns s.")
+					.examples(
+						"(str/strip-start \"abcdef\" \"abc\")",
+						"(str/strip-start \"abcdef\" \"def\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/strip-start", args, 2);
+				
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String substr = Coerce.toVncString(args.nth(1)).getValue();
+				
+				return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_strip_end = 
+		new VncFunction(
+				"str/strip-end", 
+				VncFunction
+					.meta()
+					.arglists("(str/strip-end s substr)")		
+					.doc("Removes a substr only if it is at the end of a s, otherwise returns s.")
+					.examples(
+						"(str/strip-end \"abcdef\" \"def\")",
+						"(str/strip-end \"abcdef\" \"abc\")")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("str/strip-end", args, 2);
+				
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String substr = Coerce.toVncString(args.nth(1)).getValue();
+				
+				return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_strip_indent = 
+		new VncFunction(
+				"str/strip-indent", 
+				VncFunction
+					.meta()
+					.arglists("(str/strip-indent s)")		
+					.doc("Strip the indent of a multi-line string. The first line's leading whitespaces define the indent.")
+					.examples("(str/strip-indent \"  line1\n    line2\n    line3\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/strip-indent", args, 1);
+				
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				return new VncString(StringUtil.stripIndent(Coerce.toVncString(args.first()).getValue()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_strip_margin = 
+		new VncFunction(
+				"str/strip-margin", 
+				VncFunction
+					.meta()
+					.arglists("(str/strip-margin s)")		
+					.doc(
+						"Strips leading whitespaces upto and including the margin '|' " +
+						"from each line in a multi-line string.")
+					.examples(
+						"(str/strip-margin \"line1\n  |  line2\n  |  line3\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/strip-margin", args, 1);
+				
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				return new VncString(StringUtil.stripMargin(Coerce.toVncString(args.first()).getValue(), '|'));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_repeat = 
+		new VncFunction(
+				"str/repeat", 
+				VncFunction
+					.meta()
+					.arglists("(str/repeat s n)", "(str/repeat s n sep)")		
+					.doc("Repeats s n times with an optional separator.")
+					.examples(
+						"(str/repeat \"abc\" 0)",
+						"(str/repeat \"abc\" 3)",
+						"(str/repeat \"abc\" 3 \"-\")")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("str/repeat", args, 2, 3);
+				
+				if (args.nth(0) == Nil) {
+					return Nil;
+				}
+				
+				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final int times = Coerce.toVncLong(args.nth(1)).getValue().intValue();
+				final String sep = args.size() == 3 ? Coerce.toVncString(args.nth(2)).getValue() : "";
+				
+				final StringBuilder sb = new StringBuilder();
+				for(int ii=0; ii<times; ii++) {
+					if (ii>0)sb.append(sep);
+					sb.append(s);
+				}			
+				return new VncString(sb.toString());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	
 	

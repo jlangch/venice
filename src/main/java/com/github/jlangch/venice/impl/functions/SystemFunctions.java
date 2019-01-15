@@ -53,288 +53,304 @@ public class SystemFunctions {
 	// System
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction version = new VncFunction("version") {
-		{
-			setArgLists("(version)");
-			
-			setDoc("Returns the version.");
-			
-			setExamples("(version )");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("version", args, 0);
-			
-			return new VncString(Version.VERSION);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-
-	public static VncFunction uuid = new VncFunction("uuid") {
-		{
-			setArgLists("(uuid)");
-			
-			setDoc("Generates a UUID.");
-			
-			setExamples("(uuid )");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("uuid", args, 0);
-			return new VncString(UUID.randomUUID().toString());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction version = 
+		new VncFunction(
+				"version", 
+				VncFunction
+					.meta()
+					.arglists("(version)")		
+					.doc("Returns the version.")
+					.examples("(version )")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("version", args, 0);
+				
+				return new VncString(Version.VERSION);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 
-	public static VncFunction objid = new VncFunction("oobjid") {
-		{
-			setArgLists("(objid)");
-			
-			setDoc("Returns the original unique hash code for the given object.");
-			
-			setExamples("(objid x)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("objid", args, 1);
-			return new VncLong(System.identityHashCode(args.first()));
-		}
+	public static VncFunction uuid = 
+		new VncFunction(
+				"uuid", 
+				VncFunction
+					.meta()
+					.arglists("(uuid)")		
+					.doc("Generates a UUID.")
+					.examples("(uuid )")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("uuid", args, 0);
+				return new VncString(UUID.randomUUID().toString());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+
+	public static VncFunction objid = 
+		new VncFunction(
+				"oobjid", 
+				VncFunction
+					.meta()
+					.arglists("(objid)")		
+					.doc("Returns the original unique hash code for the given object.")
+					.examples("(objid x)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("objid", args, 1);
+				return new VncLong(System.identityHashCode(args.first()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	
-	public static VncFunction current_time_millis = new VncFunction("current-time-millis") {
-		{
-			setArgLists("(current-time-millis)");
-			
-			setDoc("Returns the current time in milliseconds.");
-			
-			setExamples("(current-time-millis)");
-		}
-		public VncVal apply(final VncList args) {
-			assertArity("current-time-millis", args, 0);
-			
-			return new VncLong(System.currentTimeMillis());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction nano_time = new VncFunction("nano-time") {
-		{
-			setArgLists("(nano-time)");
-			
-			setDoc( "Returns the current value of the running Java Virtual Machine's " +
-					"high-resolution time source, in nanoseconds.");
-			
-			setExamples("(nano-time)");
-		}
-		public VncVal apply(final VncList args) {
-			assertArity("nano-time", args, 0);
-			
-			return new VncLong(System.nanoTime());
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction sleep = new VncFunction("sleep") {
-		{
-			setArgLists("(sleep n)");
-			
-			setDoc("Sleep for n milliseconds.");
-			
-			setExamples("(sleep 30)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("sleep");
-
-			assertArity("sleep", args, 1);
-			
-			try {
-				Thread.sleep(Coerce.toVncLong(args.first()).getValue());
-			} 
-			catch(InterruptedException ex) {
-				Thread.interrupted(); // resets the thread's "interrupted" status
-			} 
-			catch(Exception ex) {
+	public static VncFunction current_time_millis = 
+		new VncFunction(
+				"current-time-millis", 
+				VncFunction
+					.meta()
+					.arglists("(current-time-millis)")		
+					.doc("Returns the current time in milliseconds.")
+					.examples("(current-time-millis)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("current-time-millis", args, 0);
+				
+				return new VncLong(System.currentTimeMillis());
 			}
-			
-			return Nil;
-		}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction gc = new VncFunction("gc") {
-		{
-			setArgLists("(gc)");
-			
-			setDoc("Run the Java garbage collector. Runs the finalization methods of any objects pending finalization prior to the GC.");
-			
-			setExamples("(gc)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("gc");
-
-			assertArity("gc", args, 0);
-			
-			Runtime.getRuntime().runFinalization();
-			Runtime.getRuntime().gc();
-			
-			return Nil;
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction callstack = new VncFunction("callstack") {
-		{
-			setArgLists("(callstack )");
-			
-			setDoc("Returns the current callstack.");
-			
-			setExamples(
-					"(do                             \n" +
-					"   (defn f1 [x] (f2 x))         \n" +
-					"   (defn f2 [x] (f3 x))         \n" +
-					"   (defn f3 [x] (f4 x))         \n" +
-					"   (defn f4 [x] (callstack))    \n" +
-					"   (f1 100))                      ");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("callstack", args, 0);
-			
-			final CallStack stack = ThreadLocalMap.getCallStack();
-			
-			return new VncVector(
-					stack
-						.callstack()
-						.stream()
-						.map(f -> new VncOrderedMap(
-										CALLSTACK_KEY_FN_NAME, f.getFnName() == null 
-														? Constants.Nil 
-														: new VncString(f.getFnName()),
-										CALLSTACK_KEY_FILE, new VncString(f.getFile()),
-										CALLSTACK_KEY_LINE, new VncLong(f.getLine()),
-										CALLSTACK_KEY_COL, new VncLong(f.getCol())))
-						.collect(Collectors.toList()));
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction os = new VncFunction("os") {
-		{
-			setArgLists("(os)");
-			
-			setDoc("Returns the OS type");
-			
-			setExamples("(os)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("os", args, 0);
-			
-			final String osName = System.getProperty("os.name");
-			if (osName.startsWith("Windows")) {
-				return new VncKeyword("windows");
+	public static VncFunction nano_time = 
+		new VncFunction(
+				"nano-time", 
+				VncFunction
+					.meta()
+					.arglists("(nano-time)")		
+					.doc(
+						"Returns the current value of the running Java Virtual Machine's " +
+						"high-resolution time source, in nanoseconds.")
+					.examples("(nano-time)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("nano-time", args, 0);
+				
+				return new VncLong(System.nanoTime());
 			}
-			else if (osName.startsWith("Mac OS X")) {
-				return new VncKeyword("mac-osx");
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction sleep = 
+		new VncFunction(
+				"sleep", 
+				VncFunction
+					.meta()
+					.arglists("(sleep n)")		
+					.doc("Sleep for n milliseconds.")
+					.examples("(sleep 30)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("sleep");
+	
+				assertArity("sleep", args, 1);
+				
+				try {
+					Thread.sleep(Coerce.toVncLong(args.first()).getValue());
+				} 
+				catch(InterruptedException ex) {
+					Thread.interrupted(); // resets the thread's "interrupted" status
+				} 
+				catch(Exception ex) {
+				}
+				
+				return Nil;
 			}
-			else if (osName.startsWith("LINUX")) {
-				return new VncKeyword("linux");
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction gc = 
+		new VncFunction(
+				"gc", 
+				VncFunction
+					.meta()
+					.arglists("(gc)")		
+					.doc("Run the Java garbage collector. Runs the finalization methods of any objects pending finalization prior to the GC.")
+					.examples("(gc)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("gc");
+	
+				assertArity("gc", args, 0);
+				
+				Runtime.getRuntime().runFinalization();
+				Runtime.getRuntime().gc();
+				
+				return Nil;
 			}
-			else {
-				return new VncKeyword("unknown");
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction callstack = 
+		new VncFunction(
+				"callstack", 
+				VncFunction
+					.meta()
+					.arglists("(callstack )")		
+					.doc("Returns the current callstack.")
+					.examples(
+						"(do                             \n" +
+						"   (defn f1 [x] (f2 x))         \n" +
+						"   (defn f2 [x] (f3 x))         \n" +
+						"   (defn f3 [x] (f4 x))         \n" +
+						"   (defn f4 [x] (callstack))    \n" +
+						"   (f1 100))                      ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("callstack", args, 0);
+				
+				final CallStack stack = ThreadLocalMap.getCallStack();
+				
+				return new VncVector(
+						stack
+							.callstack()
+							.stream()
+							.map(f -> new VncOrderedMap(
+											CALLSTACK_KEY_FN_NAME, f.getFnName() == null 
+															? Constants.Nil 
+															: new VncString(f.getFnName()),
+											CALLSTACK_KEY_FILE, new VncString(f.getFile()),
+											CALLSTACK_KEY_LINE, new VncLong(f.getLine()),
+											CALLSTACK_KEY_COL, new VncLong(f.getCol())))
+							.collect(Collectors.toList()));
 			}
-		}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction os_Q = new VncFunction("os?") {
-		{
-			setArgLists("(os? type)");
-			
-			setDoc(
-				"Returns true if the OS id of the type otherwise false. Type is one " +
-				"of :windows, :mac-osx, or :linux");
-			
-			setExamples("(os? :mac-osx)", "(os? :windows)");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("os?", args, 1);
-			
-			final String type = Coerce.toVncKeyword(args.first()).getValue();
-			final String osName = System.getProperty("os.name");
-			switch(type) {
-				case "windows": return  osName.startsWith("Windows") ? True : False;
-				case "mac-osx": return  osName.startsWith("Mac OS X") ? True : False;
-				case "linux":   return  osName.startsWith("LINUX") ? True : False;
-				default:        return False;
+	public static VncFunction os = 
+		new VncFunction(
+				"os", 
+				VncFunction
+					.meta()
+					.arglists("(os)")		
+					.doc("Returns the OS type")
+					.examples("(os)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("os", args, 0);
+				
+				final String osName = System.getProperty("os.name");
+				if (osName.startsWith("Windows")) {
+					return new VncKeyword("windows");
+				}
+				else if (osName.startsWith("Mac OS X")) {
+					return new VncKeyword("mac-osx");
+				}
+				else if (osName.startsWith("LINUX")) {
+					return new VncKeyword("linux");
+				}
+				else {
+					return new VncKeyword("unknown");
+				}
 			}
-		}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction os_Q = 
+		new VncFunction(
+				"os?", 
+				VncFunction
+					.meta()
+					.arglists("(os? type)")		
+					.doc(
+						"Returns true if the OS id of the type otherwise false. Type is one " +
+						"of :windows, :mac-osx, or :linux")
+					.examples("(os? :mac-osx)", "(os? :windows)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("os?", args, 1);
+				
+				final String type = Coerce.toVncKeyword(args.first()).getValue();
+				final String osName = System.getProperty("os.name");
+				switch(type) {
+					case "windows": return  osName.startsWith("Windows") ? True : False;
+					case "mac-osx": return  osName.startsWith("Mac OS X") ? True : False;
+					case "linux":   return  osName.startsWith("LINUX") ? True : False;
+					default:        return False;
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	public static VncFunction sandboxed_Q = new VncFunction("sandboxed?") {
-		{
-			setArgLists("(sandboxed? )");
-			
-			setDoc("Returns true if there is a sandbox otherwise false");
-			
-			setExamples("(sandboxed? )");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("sandboxed?", args, 0);
-			
-			return JavaInterop.isSandboxed() ? True : False;
-		}
+	public static VncFunction sandboxed_Q = 
+		new VncFunction(
+				"sandboxed?", 
+				VncFunction
+					.meta()
+					.arglists("(sandboxed? )")		
+					.doc("Returns true if there is a sandbox otherwise false")
+					.examples("(sandboxed? )")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("sandboxed?", args, 0);
+				
+				return JavaInterop.isSandboxed() ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
-
-	public static VncFunction system_prop = new VncFunction("system-prop") {
-		{
-			setArgLists("(system-prop name default-val)");
-			
-			setDoc("Returns the system property with the given name. Returns " +
-				   "the default-val if the property does not exist or it's value is nil");
-			
-			setExamples(
-					"(system-prop :os.name)", 
-					"(system-prop :foo.org \"abc\")", 
-					"(system-prop \"os.name\")");
-		}
-		
-		public VncVal apply(final VncList args) {
-			assertArity("system-prop", args, 1, 2);
-			
-			final VncString key = Coerce.toVncString(
-									CoreFunctions.name.apply(
-										new VncList(args.first())));
-			final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
-			
-			final String val = JavaInterop.getInterceptor().onReadSystemProperty(key.getValue());
-
-			return val == null ? defaultVal : new VncString(val);
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	public static VncFunction system_prop = 
+		new VncFunction(
+				"system-prop", 
+				VncFunction
+					.meta()
+					.arglists("(system-prop name default-val)")		
+					.doc(
+						"Returns the system property with the given name. Returns " +
+						"the default-val if the property does not exist or it's value is nil")
+					.examples(
+						"(system-prop :os.name)", 
+						"(system-prop :foo.org \"abc\")", 
+						"(system-prop \"os.name\")")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("system-prop", args, 1, 2);
+				
+				final VncString key = Coerce.toVncString(
+										CoreFunctions.name.apply(
+											new VncList(args.first())));
+				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
+				
+				final String val = JavaInterop.getInterceptor().onReadSystemProperty(key.getValue());
+	
+				return val == null ? defaultVal : new VncString(val);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	
 	
