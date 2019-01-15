@@ -4486,8 +4486,6 @@ public class CoreFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
-	// TODO: check from here
-
 	public static VncFunction conj = new VncFunction("conj") {
 		{
 			setArgLists("(conj coll x)", "(conj coll x & xs)");
@@ -4506,29 +4504,29 @@ public class CoreFunctions {
 			assertMinArity("conj", args, 2);
 
 			if (Types.isVncVector(args.nth(0))) {
-				final VncList new_seq = new VncVector();
-				final VncList src_seq = (VncList)args.nth(0);
-				new_seq.addAllAtEnd(src_seq);
+				final VncVector src_seq = (VncVector)args.nth(0);
+				VncVector new_seq = src_seq.copy();
+
 				for(int i=1; i<args.size(); i++) {
-					new_seq.addAtEnd(args.nth(i));
+					new_seq = (VncVector)new_seq.addAtEnd(args.nth(i));
 				}
-				return (VncVal)new_seq;
+				return new_seq;
 			} 
 			else if (Types.isVncList(args.nth(0))) {
-				final VncList new_seq = new VncList();
 				final VncList src_seq = (VncList)args.nth(0);
-				new_seq.addAllAtEnd(src_seq);
+				VncList new_seq = src_seq.copy();
+
 				for(int i=1; i<args.size(); i++) {
-					new_seq.addAtStart(args.nth(i));
+					new_seq = new_seq.addAtStart(args.nth(i));
 				}
-				return (VncVal)new_seq;
+				return new_seq;
 			}
 			else if (Types.isVncHashSet(args.nth(0))) {
 				return new VncHashSet(((VncHashSet)args.nth(0)).getSet()).addAll(args.slice(1));
 			}
 			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap src_map = (VncMap)args.nth(0);
-				final VncMap new_map = src_map.copy();
+				VncMap new_map = src_map.copy();
 			
 				if (Types.isVncVector(args.nth(1)) && ((VncVector)args.nth(1)).size() == 2) {
 					return new_map.assoc(
@@ -4619,10 +4617,7 @@ public class CoreFunctions {
 				return new VncList(((VncVector)val).getList());
 			} 
 			else if (Types.isVncList(val)) {
-				if (((VncList)val).isEmpty()) { 
-					return Nil; 
-				}
-				return val;
+				return ((VncList)val).isEmpty() ? Nil :  val;
 			} 
 			else if (Types.isVncString(val)) {
 				final String s = ((VncString)val).getValue();
@@ -4775,8 +4770,7 @@ public class CoreFunctions {
 
 			final VncVal meta = args.nth(0).getMeta();
 			final VncFunction fn = (VncFunction)args.nth(1);
-			final VncList fnArgs = args.slice(2);
-			fnArgs.addAtStart(meta == Nil ? new VncHashMap() : meta);
+			final VncList fnArgs = args.slice(2).addAtStart(meta == Nil ? new VncHashMap() : meta);
 			
 			final VncVal new_obj = args.nth(0).copy();
 			new_obj.setMeta(fn.apply(fnArgs));
