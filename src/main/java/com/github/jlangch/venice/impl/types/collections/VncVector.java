@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class VncVector extends VncList {
 
-	public VncVector(Collection<VncVal> vals) {
+	public VncVector(Collection<? extends VncVal> vals) {
 		super(vals);
 	}
 	

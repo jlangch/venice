@@ -105,11 +105,14 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		return size() < 2 ? Constants.Nil : nth(1);
 	}
 
+	public VncVal third() {
+		return size() < 3 ? Constants.Nil : nth(2);
+	}
+
 	public VncVal last() {
 		return isEmpty() ? Constants.Nil : nth(value.size()-1);
 	}
 
-	
 	public VncList rest() {
 		if (isEmpty()) {
 			return new VncList();
@@ -137,8 +140,39 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		return slice(start, value.size());
 	}
 	
+	@Override
 	public VncList empty() {
 		return copyMetaTo(new VncList());
+	}
+
+	@Override
+	public VncJavaList setAt(final int idx, final VncVal val) {
+		value.set(idx, JavaInteropUtil.convertToJavaObject(val));
+		return this;
+	}
+
+	@Override
+	public VncJavaList addAllAtStart(final VncSequence list) {
+		final List<VncVal> items = list.getList();
+		for(int ii=0; ii<items.size(); ii++) {
+			value.add(0, JavaInteropUtil.convertToJavaObject(items.get(ii)));
+		}
+		return this;
+	}
+
+	@Override
+	public VncJavaList addAllAtEnd(final VncSequence list) {
+		final List<VncVal> items = list.getList();
+		for(int ii=0; ii<items.size(); ii++) {
+			value.add(JavaInteropUtil.convertToJavaObject(items.get(ii)));
+		}
+		return this;
+	}
+
+	@Override
+	public VncJavaList removeAt(final int idx) {
+		value.remove(idx);
+		return this;
 	}
 	
 	public VncVector toVncVector() {

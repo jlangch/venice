@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncList extends VncSequence {
 	
-	public VncList(final Collection<VncVal> vals) {
+	public VncList(final Collection<? extends VncVal> vals) {
 		value = new ArrayList<VncVal>(vals);
 	}
 	
@@ -55,22 +55,27 @@ public class VncList extends VncSequence {
 		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
 	}
 
+	@Override
 	public List<VncVal> getList() { 
 		return Collections.unmodifiableList(value); 
 	}
 	
+	@Override
 	public boolean isList() { 
 		return true; 
 	}
 
+	@Override
 	public int size() {
 		return value.size();
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
 
+	@Override
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
@@ -84,6 +89,7 @@ public class VncList extends VncSequence {
 		return value.get((int)idx);
 	}
 
+	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
 		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
 	}
@@ -132,6 +138,7 @@ public class VncList extends VncSequence {
 		return copyMetaTo(new VncHashSet(this));
 	}
 	
+	@Override
 	public VncList setAt(final int idx, final VncVal val) {
 		value.set(idx, val);
 		return this;
@@ -142,7 +149,7 @@ public class VncList extends VncSequence {
 		return this;
 	}
 	
-	public VncList addAllAtStart(final VncList list) {
+	public VncList addAllAtStart(final VncSequence list) {
 		final List<VncVal> items = list.getList();
 		for(int ii=0; ii<items.size(); ii++) {
 			value.add(0, items.get(ii));
@@ -155,7 +162,7 @@ public class VncList extends VncSequence {
 		return this;
 	}
 	
-	public VncList addAllAtEnd(final VncList list) {
+	public VncList addAllAtEnd(final VncSequence list) {
 		value.addAll(list.getList());
 		return this;
 	}

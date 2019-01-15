@@ -31,7 +31,35 @@ public abstract class VncSequence extends VncCollection {
 
 	public abstract List<VncVal> getList();
 	
-	public abstract VncVal nth(final int idx);
+	public abstract VncVal nth(int idx);
+
+	public abstract VncVal nthOrDefault(int idx, VncVal defaultVal);
+
+	public abstract VncVal first();
+
+	public abstract VncVal second();
+
+	public abstract VncVal third();
+
+	public abstract VncVal last();
+
+	public abstract VncList rest();
+
+	public abstract VncList slice(int start, int end);
+	
+	public abstract VncList slice(int start);
+
+	public abstract VncSequence setAt(int idx, VncVal val);
+
+	public abstract VncSequence addAtStart(VncVal val) ;
+	
+	public abstract VncSequence addAllAtStart(VncSequence list);
+	
+	public abstract VncSequence addAtEnd(VncVal val);
+	
+	public abstract VncSequence addAllAtEnd(VncSequence list);
+	
+	public abstract VncSequence removeAt(int idx);
 
 	public  Stream<VncVal> stream() {
 		return getList().stream();
