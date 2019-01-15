@@ -21,17 +21,20 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public abstract class VncFunction extends VncVal implements Function<VncList, VncVal>, java.lang.Cloneable {
+public abstract class VncFunction extends VncVal implements Function<VncList, VncVal> {
 
 	public VncFunction() {
 		this(null, null, null, null);
@@ -40,31 +43,29 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	public VncFunction(final String name) {
 		this(name, null, null, null);
 	}
+	
+	public VncFunction(final String name, final VncVal meta) {
+		this(name, null, null, null, meta);
+	}
 
 	public VncFunction(final VncVal ast, final Env env, final VncList params) {
 		this(null, ast, env, params);
 	}
 
 	public VncFunction(final String name, final VncVal ast, final Env env, final VncList params) {
+		this(name, ast, env, params, Constants.Nil);
+	}
+
+	public VncFunction(final String name, final VncVal ast, final Env env, final VncList params, final VncVal meta) {
+		super(meta);
 		this.name = name == null ? createAnonymousFuncName() : name;
 		this.ast = ast;
 		this.env = env;
 		this.params = params;
 	}
-	
+
 	public VncFunction copy() {
-		try {
-			final VncFunction v = (VncFunction)this.clone();
-			v.ast = ast;
-			v.env = env;
-			v.params = params;
-			v.macro = macro;
-			v.setMeta(getMeta());
-			return v;
-		} 
-		catch (Exception ex) {
-			 throw new VncException("Could not copy VncFunction: " + this, ex);
-		}
+		return this;
 	}
 
 	public VncVal getAst() { 
@@ -132,6 +133,42 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	@Override 
 	public String toString() {
 		return name;
+	}
+
+	public static MetaBuilder meta() {
+		return new MetaBuilder();
+	}
+	
+	
+	public static class MetaBuilder  {
+
+		public MetaBuilder() {
+		}
+		
+		public MetaBuilder arglists(final String... arglists) {
+			meta.put(
+				MetaUtil.ARGLIST, 
+				new VncList(Arrays.stream(arglists).map(s -> new VncString(s)).collect(Collectors.toList())));
+			return this;
+		}
+		
+		public MetaBuilder doc(final String doc) { 
+			meta.put(MetaUtil.DOC, new VncString(doc));
+			return this;
+		}
+		
+		public MetaBuilder examples(final String... examples) { 
+			meta.put(
+				MetaUtil.EXAMPLES, 
+				new VncList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
+			return this;
+		}
+		
+		public VncHashMap build() {
+			return new VncHashMap(meta);
+		}
+
+		private final HashMap<VncVal,VncVal> meta = new HashMap<>();
 	}
 	
 

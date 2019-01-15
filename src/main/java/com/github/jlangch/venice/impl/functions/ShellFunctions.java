@@ -67,102 +67,104 @@ public class ShellFunctions {
 	// Shell
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction sh = new VncFunction("sh") {
-		{
-			setArgLists("(sh & args)");
-			
-			setDoc( "Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
-					"\n" +
-					" Options are\n" + 
-					"  :in        may be given followed by input source as InputStream,\n" + 
-					"             Reader, File, ByteBuf, or String, to be fed to the\n" + 
-					"             sub-process's stdin.\n" + 
-					"  :in-enc    option may be given followed by a String, used as a\n" + 
-					"             character encoding name (for example \"UTF-8\" or\n" + 
-					"             \"ISO-8859-1\") to convert the input string specified\n" + 
-					"             by the :in option to the sub-process's stdin. Defaults\n" + 
-					"             to UTF-8. If the :in option provides a byte array,\n" + 
-					"             then the bytes are passed unencoded, and this option\n" + 
-					"             is ignored.\n" + 
-					"  :out-enc   option may be given followed by :bytes or a String. If\n" + 
-					"             a String is given, it will be used as a character\n" + 
-					"             encoding name (for example \"UTF-8\" or \"ISO-8859-1\")\n" + 
-					"             to convert the sub-process's stdout to a String which is\n" + 
-					"             returned. If :bytes is given, the sub-process's stdout\n" + 
-					"             will be stored in a Bytebuf and returned. Defaults to\n" + 
-					"             UTF-8.\n" + 
-					"  :env       override the process env with a map.\n" + 
-					"  :dir       override the process dir with a String or java.io.File.\n" + 
-					"  :throw-ex  If true throw an exception if the exit code is not equal\n" + 
-					"             to zero, if false returns the exit code. Defaults to\n" + 
-					"             false. It's recommended to use (with-sh-throw (sh \"foo\"))\n" + 
-					"             instead.\n" + 
-					"\n" +
-					"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
-					"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
-					"\n" +
-					" sh returns a map of\n" + 
-					"  :exit => sub-process's exit code\n" + 
-					"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
-					"  :err  => sub-process's stderr (String via platform default encoding)");
-			
-			setExamples(
-					"(println (sh \"ls\" \"-l\"))",
-					"(println (sh \"ls\" \"-l\" \"/tmp\"))", 
-					"(println (sh \"sed\" \"s/[aeiou]/oo/g\" :in \"hello there\\n\"))",
-					"(println (sh \"cat\" :in \"x\\u25bax\\n\"))",
-					"(println (sh \"echo\" \"x\\u25bax\"))", 
-					"(println (sh \"/bin/sh\" \"-c\" \"ls -l\"))", 
-					
-					";; reads 4 single-byte chars\n" +
-					"(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
-					
-					";; reads binary file into bytes[]\n" +
-					"(println (sh \"cat\" \"birds.jpg\" :out-enc :bytes))", 
-					
-					";; working directory\n" +
-					"(println (with-sh-dir \"/tmp\" (sh \"ls\" \"-l\") (sh \"pwd\")))", 
-					"(println (sh \"pwd\" :dir \"/tmp\"))", 
-					
-					";; throw an exception if the shell's subprocess exit code is not equal to 0\n" +
-					"(println (with-sh-throw (sh \"ls\" \"-l\")))", 
-					"(println (sh \"ls\" \"-l\" :throw-ex true))", 
-					
-					";; windows\n" +
-					"(println (sh \"cmd\" \"/c dir 1>&2\"))");
-		}
-		
-		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateBlackListedVeniceFunction("sh");
-
-			assertMinArity("sh", args, 1);
-
-			validateArgs(args);
-			
-			final VncVector v = parseArgs(args);
-
-			final VncList cmd = Coerce.toVncList(v.first());
-			final VncMap opts = Coerce.toVncMap(v.second());
-
-			MetaUtil.copyTokenPos(args, cmd);
-			MetaUtil.copyTokenPos(args, opts);
-			
-			final ExecutorService executor = Executors.newFixedThreadPool(
-												3,
-												ThreadPoolUtil.createThreadFactory(
-														"venice-shell-pool-%d", 
-														threadPoolCounter,
-														true /* daemon threads */));
-			try {
-				return exec(cmd, opts, executor);
+	public static VncFunction sh = 
+		new VncFunction(
+				"sh",
+				VncFunction
+					.meta()
+					.arglists("(sh & args)")		
+					.doc(
+						"Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
+						"\n" +
+						" Options are\n" + 
+						"  :in        may be given followed by input source as InputStream,\n" + 
+						"             Reader, File, ByteBuf, or String, to be fed to the\n" + 
+						"             sub-process's stdin.\n" + 
+						"  :in-enc    option may be given followed by a String, used as a\n" + 
+						"             character encoding name (for example \"UTF-8\" or\n" + 
+						"             \"ISO-8859-1\") to convert the input string specified\n" + 
+						"             by the :in option to the sub-process's stdin. Defaults\n" + 
+						"             to UTF-8. If the :in option provides a byte array,\n" + 
+						"             then the bytes are passed unencoded, and this option\n" + 
+						"             is ignored.\n" + 
+						"  :out-enc   option may be given followed by :bytes or a String. If\n" + 
+						"             a String is given, it will be used as a character\n" + 
+						"             encoding name (for example \"UTF-8\" or \"ISO-8859-1\")\n" + 
+						"             to convert the sub-process's stdout to a String which is\n" + 
+						"             returned. If :bytes is given, the sub-process's stdout\n" + 
+						"             will be stored in a Bytebuf and returned. Defaults to\n" + 
+						"             UTF-8.\n" + 
+						"  :env       override the process env with a map.\n" + 
+						"  :dir       override the process dir with a String or java.io.File.\n" + 
+						"  :throw-ex  If true throw an exception if the exit code is not equal\n" + 
+						"             to zero, if false returns the exit code. Defaults to\n" + 
+						"             false. It's recommended to use (with-sh-throw (sh \"foo\"))\n" + 
+						"             instead.\n" + 
+						"\n" +
+						"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
+						"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
+						"\n" +
+						" sh returns a map of\n" + 
+						"  :exit => sub-process's exit code\n" + 
+						"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
+						"  :err  => sub-process's stderr (String via platform default encoding)")
+					.examples(
+						"(println (sh \"ls\" \"-l\"))",
+						"(println (sh \"ls\" \"-l\" \"/tmp\"))", 
+						"(println (sh \"sed\" \"s/[aeiou]/oo/g\" :in \"hello there\\n\"))",
+						"(println (sh \"cat\" :in \"x\\u25bax\\n\"))",
+						"(println (sh \"echo\" \"x\\u25bax\"))", 
+						"(println (sh \"/bin/sh\" \"-c\" \"ls -l\"))", 
+						
+						";; reads 4 single-byte chars\n" +
+						"(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
+						
+						";; reads binary file into bytes[]\n" +
+						"(println (sh \"cat\" \"birds.jpg\" :out-enc :bytes))", 
+						
+						";; working directory\n" +
+						"(println (with-sh-dir \"/tmp\" (sh \"ls\" \"-l\") (sh \"pwd\")))", 
+						"(println (sh \"pwd\" :dir \"/tmp\"))", 
+						
+						";; throw an exception if the shell's subprocess exit code is not equal to 0\n" +
+						"(println (with-sh-throw (sh \"ls\" \"-l\")))", 
+						"(println (sh \"ls\" \"-l\" :throw-ex true))", 
+						
+						";; windows\n" +
+						"(println (sh \"cmd\" \"/c dir 1>&2\"))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("sh");
+	
+				assertMinArity("sh", args, 1);
+	
+				validateArgs(args);
+				
+				final VncVector v = parseArgs(args);
+	
+				final VncList cmd = Coerce.toVncList(v.first());
+				final VncMap opts = Coerce.toVncMap(v.second());
+	
+				MetaUtil.copyTokenPos(args, cmd);
+				MetaUtil.copyTokenPos(args, opts);
+				
+				final ExecutorService executor = Executors.newFixedThreadPool(
+													3,
+													ThreadPoolUtil.createThreadFactory(
+															"venice-shell-pool-%d", 
+															threadPoolCounter,
+															true /* daemon threads */));
+				try {
+					return exec(cmd, opts, executor);
+				}
+				finally {
+					executor.shutdownNow();
+				}
 			}
-			finally {
-				executor.shutdownNow();
-			}
-		}
-
-	    private static final long serialVersionUID = -1848883965231344442L;
-	};
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 		
 	
 	///////////////////////////////////////////////////////////////////////////
