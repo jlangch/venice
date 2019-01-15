@@ -29,6 +29,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public abstract class VncSet extends VncCollection {
 
+	public abstract VncSet copy();
+
 	public abstract VncSet add(final VncVal val);
 	
 	public abstract VncSet addAll(final VncSet val);
@@ -46,8 +48,6 @@ public abstract class VncSet extends VncCollection {
 	public abstract Set<VncVal> getSet();
 	
 	public abstract List<VncVal> getList();
-		
-	public abstract VncVector toVncVector();
 
 
 	private static final long serialVersionUID = -5846849359948270462L;

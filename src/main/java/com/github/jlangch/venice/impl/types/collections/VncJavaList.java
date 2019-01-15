@@ -57,15 +57,17 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		return value;
 	}
 
-	
+	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
 	}
 
+	@Override
 	public VncList copy() {
 		return copyMetaTo(new VncList(getList()));
 	}
 
+	@Override
 	public List<VncVal> getList() { 
 		return value
 				.stream()
@@ -73,18 +75,22 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 				.collect(Collectors.toList());
 	}
 	
+	@Override
 	public boolean isList() { 
 		return true; 
 	}
 
+	@Override
 	public int size() {
 		return value.size();
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
 
+	@Override
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException("nth: index out of range");
@@ -93,26 +99,32 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		return JavaInteropUtil.convertToVncVal(value.get((int)idx));
 	}
 
+	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
 		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
 	}
 
+	@Override
 	public VncVal first() {
 		return isEmpty() ? Constants.Nil : nth(0);
 	}
 
+	@Override
 	public VncVal second() {
 		return size() < 2 ? Constants.Nil : nth(1);
 	}
 
+	@Override
 	public VncVal third() {
 		return size() < 3 ? Constants.Nil : nth(2);
 	}
 
+	@Override
 	public VncVal last() {
 		return isEmpty() ? Constants.Nil : nth(value.size()-1);
 	}
 
+	@Override
 	public VncList rest() {
 		if (isEmpty()) {
 			return new VncList();
@@ -127,6 +139,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		}
 	}
 
+	@Override
 	public VncList slice(final int start, final int end) {
 		return new VncList(
 					value
@@ -136,6 +149,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 						.collect(Collectors.toList()));
 	}
 	
+	@Override
 	public VncList slice(final int start) {
 		return slice(start, value.size());
 	}
@@ -152,11 +166,39 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
+	public VncJavaList removeAt(final int idx) {
+		value.remove(idx);
+		return this;
+	}
+	
+	@Override
+	public VncList toVncList() {
+		return copyMetaTo(new VncList(getList()));
+	}
+	
+	@Override
+	public VncVector toVncVector() {
+		return copyMetaTo(new VncVector(getList()));
+	}
+	
+	@Override
+	public VncJavaList addAtStart(final VncVal val) {
+		value.add(0, JavaInteropUtil.convertToJavaObject(val));
+		return this;
+	}
+
+	@Override
 	public VncJavaList addAllAtStart(final VncSequence list) {
 		final List<VncVal> items = list.getList();
 		for(int ii=0; ii<items.size(); ii++) {
 			value.add(0, JavaInteropUtil.convertToJavaObject(items.get(ii)));
 		}
+		return this;
+	}
+	
+	@Override
+	public VncJavaList addAtEnd(final VncVal val) {
+		value.add(JavaInteropUtil.convertToJavaObject(val));
 		return this;
 	}
 
@@ -166,47 +208,6 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		for(int ii=0; ii<items.size(); ii++) {
 			value.add(JavaInteropUtil.convertToJavaObject(items.get(ii)));
 		}
-		return this;
-	}
-
-	@Override
-	public VncJavaList removeAt(final int idx) {
-		value.remove(idx);
-		return this;
-	}
-	
-	public VncVector toVncVector() {
-		return copyMetaTo(new VncVector(getList()));
-	}
-	
-	public VncList toVncList() {
-		return copyMetaTo(new VncList(getList()));
-	}
-	
-	public VncHashSet toVncSet() {
-		return copyMetaTo(new VncHashSet(toVncList()));
-	}
-	
-	public VncJavaList addAtStart(final VncVal val) {
-		value.add(0, JavaInteropUtil.convertToJavaObject(val));
-		return this;
-	}
-	
-	public VncJavaList addAtStart(final VncJavaList list) {
-		final List<VncVal> items = list.getList();
-		for(int ii=items.size()-1; ii>=0; ii++) {
-			value.add(0, JavaInteropUtil.convertToJavaObject(items.get(ii)));
-		}
-		return this;
-	}
-	
-	public VncJavaList addAtEnd(final VncVal val) {
-		value.add(JavaInteropUtil.convertToJavaObject(val));
-		return this;
-	}
-	
-	public VncJavaList addAtEnd(final VncList list) {
-		list.forEach(v -> value.add(JavaInteropUtil.convertToJavaObject(v)));
 		return this;
 	}
 

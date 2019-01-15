@@ -82,18 +82,6 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		return value.containsKey(value.get(JavaInteropUtil.convertToJavaObject(key))) ? True : False;
 	}
 
-	public VncMap toVncHashMap() {
-		return new VncHashMap(getMap());
-	}
-
-	public VncMap toVncOrderedMap() {
-		return new VncOrderedMap(getMap());
-	}
-
-	public VncMap toVncSortedMap() {
-		return new VncSortedMap(getMap());
-	}
-
 	@Override
 	public VncHashMap copy() {
 		return copyMetaTo(new VncHashMap(getMap()));

@@ -46,10 +46,12 @@ public class VncList extends VncSequence {
 		value = new ArrayList<VncVal>(Arrays.asList(mvs));
 	}
 
+	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public VncList copy() {
 		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
@@ -94,48 +96,54 @@ public class VncList extends VncSequence {
 		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
 	}
 
+	@Override
 	public VncVal first() {
 		return isEmpty() ? Constants.Nil : nth(0);
 	}
 
+	@Override
 	public VncVal second() {
 		return size() < 2 ? Constants.Nil : nth(1);
 	}
 
+	@Override
 	public VncVal third() {
 		return size() < 3 ? Constants.Nil : nth(2);
 	}
 
+	@Override
 	public VncVal last() {
 		return isEmpty() ? Constants.Nil : nth(value.size()-1);
 	}
 	
+	@Override
 	public VncList rest() {
 		return isEmpty() ? new VncList() : new VncList(value.subList(1, value.size()));
 	}
 
+	@Override
 	public VncList slice(final int start, final int end) {
 		return new VncList(value.subList(start, end));
 	}
 	
+	@Override
 	public VncList slice(final int start) {
 		return slice(start, value.size());
 	}
 	
+	@Override
 	public VncList empty() {
 		return copyMetaTo(new VncList());
 	}
 	
+	@Override
 	public VncList toVncList() {
 		return copyMetaTo(new VncList(value));
 	}
 
+	@Override
 	public VncVector toVncVector() {
 		return copyMetaTo(new VncVector(value));
-	}
-	
-	public VncHashSet toVncSet() {
-		return copyMetaTo(new VncHashSet(this));
 	}
 	
 	@Override
@@ -144,11 +152,13 @@ public class VncList extends VncSequence {
 		return this;
 	}
 	
+	@Override
 	public VncList addAtStart(final VncVal val) {
 		value.add(0, val);
 		return this;
 	}
 	
+	@Override
 	public VncList addAllAtStart(final VncSequence list) {
 		final List<VncVal> items = list.getList();
 		for(int ii=0; ii<items.size(); ii++) {
@@ -157,16 +167,19 @@ public class VncList extends VncSequence {
 		return this;
 	}
 	
+	@Override
 	public VncList addAtEnd(final VncVal val) {
 		value.add(val);
 		return this;
 	}
 	
+	@Override
 	public VncList addAllAtEnd(final VncSequence list) {
 		value.addAll(list.getList());
 		return this;
 	}
 	
+	@Override
 	public VncList removeAt(final int idx) {
 		value.remove(idx);
 		return this;

@@ -3786,8 +3786,6 @@ public class CoreFunctions {
 
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
-
-	// TODO: check from here
 	
 	public static VncFunction sort = new VncFunction("sort") {
 		{
@@ -3913,18 +3911,18 @@ public class CoreFunctions {
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
 			final VncList coll = Coerce.toVncList(args.nth(1));
 
-			final VncMap map = new VncOrderedMap();
+			VncMap map = new VncOrderedMap();
 			
-			coll.getList().stream().forEach(v -> {
+			for(VncVal v : coll.getList()) {
 				final VncVal key = fn.apply(new VncList(v));
 				final VncList val = Coerce.toVncList(map.getMap().get(key));
 				if (val == null) {
-					map.assoc(key, new VncVector(v));
+					map = map.assoc(key, new VncVector(v));
 				}
 				else {
-					map.assoc(key, val.addAtEnd(v));
+					map = map.assoc(key, val.addAtEnd(v));
 				}
-			});
+			}
 			
 			return map;
 		}
@@ -3951,13 +3949,12 @@ public class CoreFunctions {
 			
 			final VncVal coll = args.last();
 			if (coll == Nil) {
-				fn_args.addAtEnd(Nil);
+				return fn.apply(fn_args.addAtEnd(Nil));
 			}
 			else {
 				final VncList tailArgs = Coerce.toVncList(args.last());
-				fn_args.addAllAtEnd(tailArgs);				
+				return fn.apply(fn_args.addAllAtEnd(tailArgs));				
 			}
-			return fn.apply(fn_args);
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -4087,7 +4084,7 @@ public class CoreFunctions {
 			
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
 			final VncList lists = removeNilValues((VncList)args.slice(1));
-			final VncList result = new VncList();
+			final List<VncVal> result = new ArrayList<>();
 						
 			if (lists.isEmpty()) {
 				return Nil;
@@ -4096,12 +4093,12 @@ public class CoreFunctions {
 			int index = 0;
 			boolean hasMore = true;
 			while(hasMore) {
-				final VncList fnArgs = new VncList();
+				final List<VncVal> fnArgs = new ArrayList<>();
 				
 				for(int ii=0; ii<lists.size(); ii++) {
 					final VncList nthList = Coerce.toVncList(lists.nth(ii));
 					if (nthList.size() > index) {
-						fnArgs.addAtEnd(nthList.nth(index));
+						fnArgs.add(nthList.nth(index));
 					}
 					else {
 						hasMore = false;
@@ -4110,13 +4107,13 @@ public class CoreFunctions {
 				}
 
 				if (hasMore) {
-					final VncVal val = fn.apply(fnArgs);
-					result.addAtEnd(val);			
+					final VncVal val = fn.apply(new VncList(fnArgs));
+					result.add(val);			
 					index += 1;
 				}
 			}
 	
-			return result;
+			return new VncList(result);
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -4138,7 +4135,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			final VncFunction fn = Coerce.toVncFunction(args.nth(0));
 			final VncList lists = removeNilValues((VncList)args.slice(1));
-			final VncVector result = new VncVector();
+			final List<VncVal> result = new ArrayList<>();
 
 			if (lists.isEmpty()) {
 				return Nil;
@@ -4147,12 +4144,12 @@ public class CoreFunctions {
 			int index = 0;
 			boolean hasMore = true;
 			while(hasMore) {
-				final VncList fnArgs = new VncList();
+				final List<VncVal> fnArgs = new ArrayList<>();
 				
 				for(int ii=0; ii<lists.size(); ii++) {
 					final VncList nthList = Coerce.toVncList(lists.nth(ii));
 					if (nthList.size() > index) {
-						fnArgs.addAtEnd(nthList.nth(index));
+						fnArgs.add(nthList.nth(index));
 					}
 					else {
 						hasMore = false;
@@ -4161,12 +4158,12 @@ public class CoreFunctions {
 				}
 
 				if (hasMore) {
-					result.addAtEnd(fn.apply(fnArgs));			
+					result.add(fn.apply(new VncList(fnArgs)));			
 					index += 1;
 				}
 			}
 	
-			return result;
+			return new VncVector(result);
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -4276,15 +4273,18 @@ public class CoreFunctions {
 			
 			final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
 			final VncList coll = Coerce.toVncList(args.nth(1));
-			final VncList result = coll.empty();
+
+			final List<VncVal> items = new ArrayList<>();
+			
 			for(int i=0; i<coll.size(); i++) {
 				final VncVal val = coll.nth(i);
 				final VncVal keep = predicate.apply(new VncList(val));
 				if (!(keep == False || keep == Nil)) {
-					result.addAtEnd(val);
+					items.add(val);
 				}
 			}
-			return result;
+			
+			return coll.empty().addAllAtEnd(new VncList(items));
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -4306,15 +4306,17 @@ public class CoreFunctions {
 			
 			final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
 			final VncList coll = Coerce.toVncList(args.nth(1));
-			final VncList result = coll.empty();
+
+			final List<VncVal> items = new ArrayList<>();
 			for(int i=0; i<coll.size(); i++) {
 				final VncVal val = coll.nth(i);
 				final VncVal keep = predicate.apply(new VncList(val));
 				if (keep == False) {
-					result.addAtEnd(val);
+					items.add(val);
 				}				
 			}
-			return result;
+			
+			return coll.empty().addAllAtEnd(new VncList(items));
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -4483,6 +4485,8 @@ public class CoreFunctions {
 
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
+
+	// TODO: check from here
 
 	public static VncFunction conj = new VncFunction("conj") {
 		{

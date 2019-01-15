@@ -51,62 +51,77 @@ public class VncHashSet extends VncSet {
 		value = io.vavr.collection.HashSet.of(mvs);
 	}
 	
+	@Override
 	public VncHashSet empty() {
 		return copyMetaTo(new VncHashSet());
 	}
 	
+	@Override
 	public VncHashSet add(final VncVal val) {
 		return new VncHashSet(value.add(val));
 	}
 	
+	@Override
 	public VncHashSet addAll(final VncSet val) {
 		return new VncHashSet(value.addAll(val.getSet()));
 	}
 	
+	@Override
 	public VncHashSet addAll(final VncSequence val) {
 		return new VncHashSet(value.addAll(val.getList()));
 	}
 
+	@Override
 	public VncHashSet remove(final VncVal val) {
 		return new VncHashSet(value.remove(val));
 	}
 
+	@Override
 	public VncHashSet removeAll(final VncSet val) {
 		return new VncHashSet(value.removeAll(val.getSet()));
 	}
 
+	@Override
 	public VncHashSet removeAll(final VncSequence val) {
 		return new VncHashSet(value.removeAll(val.getList()));
 	}
 	
+	@Override
 	public boolean contains(final VncVal val) {
 		return value.contains(val);
 	}
 	
+	@Override
 	public VncHashSet copy() {
 		return copyMetaTo(new VncHashSet(value));
 	}
 
+	@Override
 	public Set<VncVal> getSet() { 
 		return Collections.unmodifiableSet(value.toJavaSet()); 
 	}
 
+	@Override
 	public List<VncVal> getList() { 
 		return Collections.unmodifiableList(value.toJavaList()); 
 	}
-		
+	
+	@Override
+	public VncList toVncList() {
+		return new VncList(getList());
+	}
+
+	@Override
 	public VncVector toVncVector() {
 		return new VncVector(getList());
 	}
 	
-	public VncList toVncList() {
-		return new VncList(getList());
-	}
-	
+	@Override
 	public int size() {
 		return value.size();
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}

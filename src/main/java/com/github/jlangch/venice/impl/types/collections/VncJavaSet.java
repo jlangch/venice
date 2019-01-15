@@ -56,15 +56,18 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return value;
 	}
 
+	@Override
 	public VncJavaSet empty() {
 		return copyMetaTo(new VncJavaSet());
 	}
 	
+	@Override
 	public VncJavaSet add(final VncVal val) {
 		value.add(JavaInteropUtil.convertToJavaObject(val));
 		return this;
 	}
 
+	@Override
 	public VncJavaSet addAll(final VncSet val) {
 		if (Types.isVncJavaSet(val)) {
 			value.addAll(((VncJavaSet)val).value);
@@ -75,6 +78,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return this;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public VncJavaSet addAll(final VncSequence val) {
 		if (Types.isVncJavaList(val)) {
@@ -86,11 +90,13 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return this;
 	}
 
+	@Override
 	public VncJavaSet remove(final VncVal val) {
 		value.remove(JavaInteropUtil.convertToJavaObject(val));
 		return this;
 	}
 
+	@Override
 	public VncJavaSet removeAll(final VncSet val) {
 		if (Types.isVncJavaSet(val)) {
 			value.removeAll(((VncJavaSet)val).value);
@@ -101,6 +107,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public VncJavaSet removeAll(final VncSequence val) {
 		if (Types.isVncJavaList(val)) {
@@ -112,44 +119,43 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return this;
 	}
 
+	@Override
 	public boolean contains(final VncVal val) {
 		return value.contains(JavaInteropUtil.convertToVncVal(val));
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public VncJavaSet copy() {
 		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
 	}
 
-
+	@Override
 	public Set<VncVal> getSet() { 
 		return Collections.unmodifiableSet(getVncValueSet()); 
 	}
 
+	@Override
 	public List<VncVal> getList() { 
 		return Collections.unmodifiableList(getVncValueList()); 
 	}
 
-	public VncList toList() {
+	@Override
+	public VncList toVncList() {
 		return new VncList(getVncValueList());
 	}
 
-	public VncHashSet toVncSet() {
-		return new VncHashSet(toVncList());
-	}
-
-	public VncList toVncList() {
-		return new VncList(toList());
-	}
-
+	@Override
 	public VncVector toVncVector() {
-		return new VncVector(toList());
+		return new VncVector(getVncValueList());
 	}
 
+	@Override
 	public int size() {
 		return value.size();
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}

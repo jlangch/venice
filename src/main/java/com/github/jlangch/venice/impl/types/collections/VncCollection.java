@@ -26,11 +26,13 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public abstract class VncCollection extends VncVal {
 
-	public abstract VncCollection empty();
-	
 	public abstract VncCollection copy();
-	
+
+	public abstract VncCollection empty();
+		
 	public abstract VncList toVncList();
+	
+	public abstract VncVector toVncVector();
 
 	public abstract int size();
 	

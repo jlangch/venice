@@ -22,12 +22,15 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public abstract class VncSequence extends VncCollection {
+
+	public abstract VncSequence copy();
 
 	public abstract List<VncVal> getList();
 	
@@ -60,6 +63,8 @@ public abstract class VncSequence extends VncCollection {
 	public abstract VncSequence addAllAtEnd(VncSequence list);
 	
 	public abstract VncSequence removeAt(int idx);
+
+	public abstract void forEach(Consumer<? super VncVal> action);
 
 	public  Stream<VncVal> stream() {
 		return getList().stream();

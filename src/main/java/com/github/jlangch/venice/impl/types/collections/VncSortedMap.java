@@ -101,6 +101,7 @@ public class VncSortedMap extends VncMap {
 		return new VncList(new ArrayList<>(value.keySet()));
 	}
 
+	@Override
 	public List<VncMapEntry> entries() {
 		return Collections.unmodifiableList(
 					value

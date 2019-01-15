@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Stack;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -47,6 +48,11 @@ public class VncStack extends VncCollection {
 	@Override
 	public VncList toVncList() {
 		return new VncList(stack.toArray(new VncVal[0]));
+	}
+
+	@Override
+	public VncVector toVncVector() {
+		return new VncVector(stack.toArray(new VncVal[0]));
 	}
 
 	@Override
@@ -84,5 +90,5 @@ public class VncStack extends VncCollection {
 
 	private static final long serialVersionUID = -564531670922145260L;
 
-	private final Stack<VncVal> stack = new Stack<>();
+	private final Deque<VncVal> stack = new ConcurrentLinkedDeque<>();
 }

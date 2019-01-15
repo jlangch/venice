@@ -50,10 +50,6 @@ public abstract class VncMap extends VncCollection {
 	public abstract VncMap dissoc(VncVal... keys);
 
 	public abstract VncMap dissoc(VncList keys);
-	
-	public abstract VncList toVncList();
-	
-	public abstract VncVector toVncVector();
 
 
     private static final long serialVersionUID = -1848883965231344442L;
