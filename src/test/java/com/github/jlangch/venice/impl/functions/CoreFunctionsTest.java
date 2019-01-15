@@ -93,8 +93,10 @@ public class CoreFunctionsTest {
 
 		// map
 		assertEquals("{:a 100}", venice.eval("(str (assoc-in {} [:a] 100))"));
+		assertEquals("{:a 100 :b 200}", venice.eval("(str (assoc-in {:a 100} [:b] 200))"));
+		assertEquals("{:a 200}", venice.eval("(str (assoc-in {:a 100} [:a] 200))"));
 		assertEquals("{:a {:b {:c 100}}}", venice.eval("(str (assoc-in {} [:a :b :c] 100))"));
-		assertEquals("{:a {:b 1 :c 100}}", venice.eval("(str (assoc-in {:a {:b 1}} [:a :c] 100))"));
+		assertEquals("{:a {:c 100}}", venice.eval("(str (assoc-in {:a {}} [:a :c] 100))"));
 
 		// vector
 		assertEquals("[100]", venice.eval("(str (assoc-in [] [0] 100))"));
@@ -977,6 +979,10 @@ public class CoreFunctionsTest {
 		assertEquals(null, venice.eval("(get (sorted-map ) :z)"));
 		assertEquals(Long.valueOf(9L), venice.eval("(get (sorted-map :a 1 :b 2) :z 9)"));
 		assertEquals(Long.valueOf(9L), venice.eval("(get (sorted-map ) :z 9)"));
+
+		assertEquals(Long.valueOf(2L), venice.eval("(get [1 2 3] 1)"));
+		assertEquals(null, venice.eval("(get [1 2 3] 5)"));
+		assertEquals(Long.valueOf(9L), venice.eval("(get [1 2 3] 5 9)"));
 	}
 	
 	@Test

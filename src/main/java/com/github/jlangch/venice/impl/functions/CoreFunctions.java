@@ -1932,7 +1932,6 @@ public class CoreFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
-	// TODO: convert
 	public static VncFunction assoc_in = new VncFunction("assoc-in") {
 		{
 			setArgLists("(assoc-in m ks v)");
@@ -1949,73 +1948,28 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("assoc-in", args, 3);
 						
-			final VncCollection coll_copy = Coerce.toVncCollection(args.nth(0)).copy();
-			VncList keys = Coerce.toVncList(args.nth(1));
-			final VncVal new_val = args.nth(2);
+			final VncCollection coll = Coerce.toVncCollection(args.nth(0));
+			final VncList keys = Coerce.toVncList(args.nth(1));
+			final VncVal val = args.nth(2);
 			
-			VncCollection coll = coll_copy;
-			while(!keys.isEmpty()) {
-				final VncVal key = keys.first();
-				keys = keys.rest();
-					
-				if (Types.isVncMap(coll)) {
-					final VncVal val = ((VncMap)coll).get(key);
-					if (val == Nil) {
-						if (keys.isEmpty()) {
-							((VncMap)coll).assoc(key, new_val);
-						}
-						else {
-							final VncMap newMap = new VncHashMap();
-							((VncMap)coll).assoc(key, newMap);
-							coll = newMap;
-						}
-					}
-					else if (keys.isEmpty()) {
-						((VncMap)coll).assoc(key, new_val);
-					}
-					else if (Types.isVncCollection(val)) {
-						coll = (VncCollection)val;
-					}
-					else {
-						break;
-					}
-				}
-				else {
-					if (Types.isVncLong(key)) {
-						final int idx = ((VncLong)key).getValue().intValue();
-						final int len = ((VncList)coll).size();
-											
-						if (idx < 0 || idx > len) {
-							throw new VncException(String.format(
-									"Function 'assoc-in' index %d out of bounds.", idx));
-						}
-						else if (idx < len) {
-							if (keys.isEmpty()) {
-								((VncList)coll).setAt(idx, new_val);
-								break;
-							}
-							else {
-								final VncVal val = ((VncList)coll).nth(idx);
-								if (Types.isVncCollection(val)) {
-									coll = ((VncCollection)val);
-								}
-								else {
-									break;
-								}
-							}
-						}
-						else {
-							((VncList)coll).addAtEnd(new_val);
-							break;
-						}
-					}
-					else {
-						break;
-					}
-				}
+			final VncVal key = keys.first();
+			final VncList keyRest = keys.rest();
+			
+			if (keyRest.isEmpty()) {
+				return assoc.apply(new VncList(coll, key, val));
 			}
-			
-			return coll_copy;
+			else {
+				final VncVal childColl = get.apply(new VncList(coll, key));
+				return assoc.apply(
+						new VncList(
+								coll, 
+								key, 
+								assoc_in.apply(
+										new VncList(
+												childColl == Nil ? new VncHashMap() : childColl, 
+												keyRest, 
+												val))));
+			}
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -2109,6 +2063,13 @@ public class CoreFunctions {
 				
 				final VncVal value = mhm.get(key);
 				return value != Nil ? value : key_not_found;
+			}
+			else if (Types.isVncVector(args.nth(0))) {
+				final VncVector vec = Coerce.toVncVector(args.nth(0));
+				final int idx = Coerce.toVncLong(args.nth(1)).getIntValue();
+				final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+				
+				return vec.nthOrDefault(idx, key_not_found);
 			}
 			else if (Types.isVncThreadLocal(args.nth(0))) {
 				final VncThreadLocal th = Coerce.toVncThreadLocal(args.nth(0));
