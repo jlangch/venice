@@ -28,6 +28,14 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 
 abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
+	public VncVal() {
+		this(Constants.Nil);
+	}
+
+	public VncVal(final VncVal meta) {	
+		this.meta = meta;
+	}
+
 	abstract public VncVal copy();
 	
 	public VncVal getMeta() { 
@@ -100,5 +108,5 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private VncVal meta = Constants.Nil;
+	private VncVal meta;
 }

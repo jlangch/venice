@@ -32,7 +32,7 @@ public class PrecompiledTest {
 	public void test_simple() {
 		final Venice venice = new Venice();
 		
-		final PreCompiled precomp = venice.precompile("test", "(+ 1 3)");
+		final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ 1 3))");
 		
 		final byte[] data = precomp.serialize();
 		System.out.println("PreCompiled size: " + data.length);
