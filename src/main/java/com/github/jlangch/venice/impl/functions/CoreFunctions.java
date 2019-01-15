@@ -1948,7 +1948,7 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("assoc-in", args, 3);
 						
-			final VncCollection coll = Coerce.toVncCollection(args.nth(0));
+			final VncVal coll = args.nth(0); // may be Nil
 			final VncList keys = Coerce.toVncList(args.nth(1));
 			final VncVal val = args.nth(2);
 			
@@ -1964,11 +1964,7 @@ public class CoreFunctions {
 						new VncList(
 								coll, 
 								key, 
-								assoc_in.apply(
-										new VncList(
-												childColl == Nil ? new VncHashMap() : childColl, 
-												keyRest, 
-												val))));
+								assoc_in.apply(new VncList(childColl, keyRest, val))));
 			}
 		}
 
@@ -2054,7 +2050,8 @@ public class CoreFunctions {
 			assertArity("get", args, 2, 3);
 			
 			if (args.nth(0) == Nil) {
-				return Nil;
+				final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+				return key_not_found;
 			} 
 			else if (Types.isVncMap(args.nth(0))) {
 				final VncMap mhm = Coerce.toVncMap(args.nth(0));
