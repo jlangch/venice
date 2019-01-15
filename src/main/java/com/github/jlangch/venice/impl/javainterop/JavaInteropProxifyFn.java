@@ -34,29 +34,30 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 public class JavaInteropProxifyFn extends VncFunction {
 
 	public JavaInteropProxifyFn(final JavaImports javaImports) {
-		super("proxify");
+		super(
+			"proxify", 
+			VncFunction
+				.meta()
+				.arglists("(proxify classname method-map)")		
+				.doc(
+					"Proxifies a Java interface to be passed as a Callback object to " +
+					"Java functions. The interface's methods are implemented by Venice " +
+					"functions.")
+				.examples(
+					"(do \n" +
+					"   (import :java.io.File :java.io.FilenameFilter) \n" +
+					"\n" +
+					"   (def file-filter \n" +
+					"        (fn [dir name] (str/ends-with? name \".xxx\"))) \n" +
+					"\n" +
+					"   (let [dir (io/tmp-dir )] \n" +
+					"        ;; create a dynamic proxy for the interface FilenameFilter\n" +
+					"        ;; and implement its function 'accept' by 'file-filter'\n" +
+					"        (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +
+					")")
+				.build());
 		
 		this.javaImports = javaImports;
-		
-		setArgLists("(proxify classname method-map)");
-		
-		setDoc(
-				"Proxifies a Java interface to be passed as a Callback object to " +
-				"Java functions. The interface's methods are implemented by Venice " +
-				"functions.");
-		
-		setExamples(
-				"(do \n" +
-				"   (import :java.io.File :java.io.FilenameFilter) \n" +
-				"\n" +
-				"   (def file-filter \n" +
-				"        (fn [dir name] (str/ends-with? name \".xxx\"))) \n" +
-				"\n" +
-				"   (let [dir (io/tmp-dir )] \n" +
-				"        ;; create a dynamic proxy for the interface FilenameFilter\n" +
-				"        ;; and implement its function 'accept' by 'file-filter'\n" +
-				"        (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +
-				")");
 	}
 
 	public VncVal apply(final VncList args) {

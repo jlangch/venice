@@ -29,31 +29,32 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 public class JavaInteropFn extends VncFunction {
 
 	private JavaInteropFn(final JavaImports javaImports) {
-		super(".");
+		super(
+			".", 
+			VncFunction
+				.meta()
+				.arglists(
+					"(. classname :new args)", 
+					"(. classname method-name args)",
+					"(. classname field-name)",
+					"(. classname :class)",
+					"(. object method-name args)", 
+					"(. object field-name)",
+					"(. object :class)")		
+				.doc(
+					"Java interop. Calls a constructor or an class/object method or accesses a " +
+					"class/instance field. The function is sandboxed.")
+				.examples(
+					";; invoke constructor \n(. :java.lang.Long :new 10)", 
+					";; invoke static method \n(. :java.time.ZonedDateTime :now)",
+					";; invoke static method \n(. :java.lang.Math :min 10 20)", 
+					";; access static field \n(. :java.lang.Math :PI)",
+					";; invoke method \n(. (. :java.lang.Long :new 10) :toString)", 
+					";; get class name \n(. :java.lang.Math :class)", 
+					";; get class name \n(. (. :java.io.File :new \"/temp\") :class)")
+				.build());
 		
 		this.javaImports = javaImports;
-		
-		setArgLists(
-				"(. classname :new args)", 
-				"(. classname method-name args)",
-				"(. classname field-name)",
-				"(. classname :class)",
-				"(. object method-name args)", 
-				"(. object field-name)",
-				"(. object :class)");
-		
-		setDoc(
-				"Java interop. Calls a constructor or an class/object method or accesses a " +
-				"class/instance field. The function is sandboxed.");
-		
-		setExamples(
-				";; invoke constructor \n(. :java.lang.Long :new 10)", 
-				";; invoke static method \n(. :java.time.ZonedDateTime :now)",
-				";; invoke static method \n(. :java.lang.Math :min 10 20)", 
-				";; access static field \n(. :java.lang.Math :PI)",
-				";; invoke method \n(. (. :java.lang.Long :new 10) :toString)", 
-				";; get class name \n(. :java.lang.Math :class)", 
-				";; get class name \n(. (. :java.io.File :new \"/temp\") :class)");
 	}
 
 	
