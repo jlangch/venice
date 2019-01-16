@@ -411,8 +411,7 @@ public class VeniceInterpreter implements Serializable  {
 						
 						// invoke function
 						final VncFunction f = (VncFunction)el.nth(0);
-						final VncList fnArgs = el.rest();
-						MetaUtil.copyTokenPos(el, fnArgs);
+						final VncList fnArgs = el.rest().withMeta(el.getMeta());
 						final CallFrame frame = CallFrameBuilder.fromFunction(f, ast.nth(0));
 						
 						try {
@@ -427,8 +426,7 @@ public class VeniceInterpreter implements Serializable  {
 					else if (Types.isVncKeyword(el.nth(0))) {
 						// keyword as function to access map: (:a {:a 100})
 						final VncKeyword k = (VncKeyword)el.nth(0);
-						final VncList fnArgs = el.rest();
-						MetaUtil.copyTokenPos(el, fnArgs);
+						final VncList fnArgs = el.rest().withMeta(el.getMeta());
 						return k.apply(fnArgs);
 					}
 					else {

@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -34,12 +35,13 @@ public class ErrorMessageTest {
 
 	@Test
 	public void test_err_location() {
-		final VncVal val = new VncLong(0);
-		
-		val.setMetaVal(MetaUtil.FILE, new VncString("core.venice"));
-		val.setMetaVal(MetaUtil.LINE, new VncLong(10));
-		val.setMetaVal(MetaUtil.COLUMN, new VncLong(42));
+		VncVal meta = Constants.Nil;
+		meta = MetaUtil.addMetaVal(meta, MetaUtil.FILE, new VncString("core.venice"));
+		meta = MetaUtil.addMetaVal(meta, MetaUtil.LINE, new VncLong(10));
+		meta = MetaUtil.addMetaVal(meta, MetaUtil.COLUMN, new VncLong(42));
 
+		final VncVal val = new VncLong(0L, meta);
+		
 		assertEquals("core.venice", ((VncString)val.getMetaVal(MetaUtil.FILE)).getValue());
 		assertEquals(Long.valueOf(10L), ((VncLong)val.getMetaVal(MetaUtil.LINE)).getValue());
 		assertEquals(Long.valueOf(42L), ((VncLong)val.getMetaVal(MetaUtil.COLUMN)).getValue());

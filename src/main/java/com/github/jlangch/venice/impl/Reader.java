@@ -147,11 +147,11 @@ public class Reader {
 		} 
 		else if (matcher.group(7) != null) {
 			final String s = unescapeAndDecodeUnicode(matcher.group(7));			
-			return MetaUtil.withTokenPos(interpolate(s, rdr.filename), token);
+			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(8) != null) {
 			final String s = unescapeAndDecodeUnicode(matcher.group(8));			
-			return MetaUtil.withTokenPos(interpolate(s, rdr.filename), token);
+			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(9) != null) {
 			return new VncKeyword(matcher.group(9), MetaUtil.toMeta(token));
@@ -159,7 +159,7 @@ public class Reader {
 		else if (matcher.group(10) != null) {
 			final VncSymbol sym = new VncSymbol(matcher.group(10));
 			rdr.anonymousFnArgs.addSymbol(sym);
-			return MetaUtil.withTokenPos(sym, token);
+			return sym.withMeta(MetaUtil.toMeta(token));
 		} 
 		else {
 			throw new ParseError(String.format(
@@ -176,7 +176,8 @@ public class Reader {
 			final char end
 	) {
 		final Token lstToken = rdr.next();
-		MetaUtil.withTokenPos(lst, lstToken);
+
+		VncList items = lst.withMeta(MetaUtil.toMeta(lstToken));
 
 		if (lstToken.charAt(0) != start) {
 			throw new ParseError(String.format(
@@ -187,7 +188,7 @@ public class Reader {
 
 		Token token = lstToken;
 		while ((token = rdr.peek()) != null && token.charAt(0) != end) {
-			lst.addAtEnd(read_form(rdr));
+			items = items.addAtEnd(read_form(rdr));
 		}
 
 		if (token == null) {
@@ -197,14 +198,14 @@ public class Reader {
 		}
 		rdr.next();
 
-		return lst;
+		return items;
 	}
 
 	private static VncHashMap read_hash_map(final Reader rdr) {
 		final Token refToken = rdr.peek();
 		
 		final VncList lst = read_list(rdr, new VncList(), '{', '}');
-		return (VncHashMap)MetaUtil.withTokenPos(VncHashMap.ofAll(lst), refToken);
+		return VncHashMap.ofAll(lst).withMeta(MetaUtil.toMeta(refToken));
 	}
 
 	private static VncVal read_form(final Reader rdr) {
@@ -218,42 +219,36 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return MetaUtil.withTokenPos(
-						VncList.ofAll(new VncSymbol("quote"), read_form(rdr)), 
-						token);
+				return VncList.ofAll(new VncSymbol("quote"), read_form(rdr))
+							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '`': 
 				rdr.next();
-				return MetaUtil.withTokenPos(
-						VncList.ofAll(new VncSymbol("quasiquote"), read_form(rdr)), 
-						token);
+				return VncList.ofAll(new VncSymbol("quasiquote"), read_form(rdr))
+							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return MetaUtil.withTokenPos(
-							VncList.ofAll(new VncSymbol("unquote"), read_form(rdr)), 
-							token);
+					return VncList.ofAll(new VncSymbol("unquote"), read_form(rdr))
+								   .withMeta(MetaUtil.toMeta(token));
 				} 
 				else {
 					rdr.next();
-					return MetaUtil.withTokenPos(
-							VncList.ofAll(new VncSymbol("splice-unquote"), read_form(rdr)), 
-							token);
+					return VncList.ofAll(new VncSymbol("splice-unquote"), read_form(rdr))
+								  .withMeta(MetaUtil.toMeta(token));
 				}
 			
 			case '^': 
 				rdr.next();
 				final VncVal meta = read_form(rdr);
-				return MetaUtil.withTokenPos(
-						VncList.ofAll(new VncSymbol("with-meta"), read_form(rdr), meta), 
-						token);
+				return VncList.ofAll(new VncSymbol("with-meta"), read_form(rdr), meta)
+							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '@': 
 				rdr.next();
-				return MetaUtil.withTokenPos(
-						VncList.ofAll(new VncSymbol("deref"), read_form(rdr)), 
-						token);
+				return VncList.ofAll(new VncSymbol("deref"), read_form(rdr))
+							  .withMeta(MetaUtil.toMeta(token));
 				
 			case '#': 
 				rdr.next();

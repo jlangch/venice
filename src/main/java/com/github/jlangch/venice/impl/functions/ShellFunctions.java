@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -143,11 +142,8 @@ public class ShellFunctions {
 				
 				final VncVector v = parseArgs(args);
 	
-				final VncList cmd = Coerce.toVncList(v.first());
-				final VncMap opts = Coerce.toVncMap(v.second());
-	
-				MetaUtil.copyTokenPos(args, cmd);
-				MetaUtil.copyTokenPos(args, opts);
+				final VncList cmd = Coerce.toVncList(v.first()).withMeta(args.getMeta());
+				final VncMap opts = Coerce.toVncMap(v.second()).withMeta(args.getMeta());
 				
 				final ExecutorService executor = Executors.newFixedThreadPool(
 													3,

@@ -61,18 +61,6 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return val == Constants.Nil ? defaultValue : val;
 	}
 
-	public void setMetaVal(final VncString key, final VncVal val) {
-		if (meta == Constants.Nil) {
-			meta = new VncHashMap();
-			((VncHashMap)meta).assoc(key, val);	
-		}
-		else if (meta instanceof VncHashMap) {
-			((VncHashMap)meta).assoc(key, val);	
-		}
-		else {
-			// not a map
-		}
-	}
 	
 	public boolean isList() { 
 		return false; 

@@ -33,32 +33,24 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 public class MetaUtil {
 
 	public static VncVal addDefMeta(final VncVal val, final VncMap meta) {
+		VncVal valMeta = val.getMeta();
+		
 		final VncVal argslist = meta.get(ARGLIST);
 		if (argslist != Constants.Nil) {
-			val.setMetaVal(ARGLIST, argslist);
+			valMeta = addMetaVal(valMeta, ARGLIST, argslist);
 		}
+		
 		final VncVal doc = meta.get(DOC);
 		if (doc != Constants.Nil) {
-			val.setMetaVal(DOC, doc);
+			valMeta = addMetaVal(valMeta, DOC, doc);
 		}
+		
 		final VncVal examples = meta.get(EXAMPLES);
 		if (examples != Constants.Nil) {
-			val.setMetaVal(EXAMPLES, examples);
+			valMeta = addMetaVal(valMeta, EXAMPLES, examples);
 		}
+		
 		return val;
-	}
-	
-	public static VncVal withTokenPos(final VncVal val, final Token token) {
-		val.setMetaVal(FILE, new VncString(token.getFile()));
-		val.setMetaVal(LINE, new VncLong(token.getLine()));
-		val.setMetaVal(COLUMN, new VncLong(token.getColumn()));
-		return val;
-	}
-
-	public static void copyTokenPos(final VncVal from, final VncVal to) {
-		to.setMetaVal(FILE, from.getMetaVal(FILE));
-		to.setMetaVal(LINE, from.getMetaVal(LINE));
-		to.setMetaVal(COLUMN, from.getMetaVal(COLUMN));
 	}
 	
 	public static VncVal toMeta(final Token token) {
@@ -68,6 +60,18 @@ public class MetaUtil {
 					COLUMN, new VncLong(token.getColumn()));
 	}
 
+	public static VncVal addMetaVal(final VncVal meta, final VncString key, final VncVal val) {
+		if (meta == Constants.Nil) {
+			return new VncHashMap().assoc(key, val);	
+		}
+		else if (meta instanceof VncHashMap) {
+			return ((VncHashMap)meta).assoc(key, val);	
+		}
+		else {
+			// not a map
+			return meta;
+		}
+	}
 
 	
 	// Var definition
