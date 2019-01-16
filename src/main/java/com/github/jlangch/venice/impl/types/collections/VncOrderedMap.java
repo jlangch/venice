@@ -40,34 +40,38 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncOrderedMap extends VncMap {
 
+	public VncOrderedMap() {
+		value = new LinkedHashMap<>();
+	}
+
 	public VncOrderedMap(final Map<VncVal,VncVal> val) {
 		value = (val instanceof LinkedHashMap) 
 					? (LinkedHashMap<VncVal,VncVal>)val
 					: new LinkedHashMap<>(val);
 	}
 	
-	public VncOrderedMap(final VncList lst) {
+	
+	public static VncOrderedMap ofAll(final VncList lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
 					"ordered-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 
-		value = new LinkedHashMap<>();
-		assoc(lst);
+		return new VncOrderedMap().assoc(lst);
 	}
 	
-	public VncOrderedMap(final VncVal... mvs) {
+	public static VncOrderedMap ofAll(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
 					"ordered-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
-		value = new LinkedHashMap<>();
-		assoc(mvs);
+		return new VncOrderedMap().assoc(mvs);
 	}
 
+	
 	@Override
 	public VncOrderedMap empty() {
 		return copyMetaTo(new VncOrderedMap());

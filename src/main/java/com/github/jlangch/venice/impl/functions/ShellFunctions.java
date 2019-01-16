@@ -252,7 +252,7 @@ public class ShellFunctions {
 								exitCode);
 				}
 				else {				
-					return new VncHashMap(
+					return VncHashMap.ofAll(
 							new VncKeyword(":exit"), new VncLong(exitCode),
 							new VncKeyword(":out"),  future_stdout.get(),
 							new VncKeyword(":err"),  future_stderr.get());
@@ -329,7 +329,7 @@ public class ShellFunctions {
 	private static VncVector parseArgs(final VncList args) {
 		final VncThreadLocal th = new VncThreadLocal();
 		
-		final VncMap defaultOptions = new VncHashMap(
+		final VncMap defaultOptions = VncHashMap.ofAll(
 										new VncKeyword(":out-enc"), new VncString("UTF-8"),
 										new VncKeyword(":in-enc"), new VncString("UTF-8"),
 										new VncKeyword(":dir"), th.get(":*sh-dir*"),
@@ -343,7 +343,7 @@ public class ShellFunctions {
 
 		final VncList cmd = Coerce.toVncList(v.first());
 
-		final VncMap sh_opts = new VncHashMap((VncList)v.second());
+		final VncMap sh_opts = VncHashMap.ofAll((VncList)v.second());
 
 		// merge options
 		VncMap opts = (VncMap)CoreFunctions.merge.apply(

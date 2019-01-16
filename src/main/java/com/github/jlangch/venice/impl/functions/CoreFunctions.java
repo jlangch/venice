@@ -1745,7 +1745,7 @@ public class CoreFunctions {
 					return ((VncJavaObject)args.nth(0)).toVncMap();
 				}
 				else {
-					return new VncHashMap(args);
+					return VncHashMap.ofAll(args);
 				}
 			}
 	
@@ -1769,7 +1769,7 @@ public class CoreFunctions {
 					return new VncOrderedMap(((VncMap)args.nth(0)).getMap());
 				}
 				else {
-					return new VncOrderedMap(args);
+					return VncOrderedMap.ofAll(args);
 				}
 			}
 	
@@ -1793,7 +1793,7 @@ public class CoreFunctions {
 					return new VncSortedMap(((VncMap)args.nth(0)).getMap());
 				}
 				else {
-					return new VncSortedMap(args);
+					return VncSortedMap.ofAll(args);
 				}
 			}
 	

@@ -623,7 +623,7 @@ public class IOFunctions {
 					}
 	
 					
-					final VncHashMap options = new VncHashMap(args.slice(1));
+					final VncHashMap options = VncHashMap.ofAll(args.slice(1));
 	
 					final VncVal binary = options.get(new VncKeyword("binary")); 
 					
@@ -687,7 +687,7 @@ public class IOFunctions {
 			
 					final VncVal content = args.nth(1);
 	
-					final VncHashMap options = new VncHashMap(args.slice(2));
+					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 	
 					final VncVal append = options.get(new VncKeyword("append")); 
 					
@@ -762,7 +762,7 @@ public class IOFunctions {
 				try {	
 					final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
 									
-					final VncHashMap options = new VncHashMap(args.slice(1));
+					final VncHashMap options = VncHashMap.ofAll(args.slice(1));
 	
 					final VncVal binary = options.get(new VncKeyword("binary")); 
 	
@@ -822,7 +822,7 @@ public class IOFunctions {
 			
 					final VncVal content = args.nth(1);
 	
-					final VncHashMap options = new VncHashMap(args.slice(2));
+					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 	
 					final VncVal encVal = options.get(new VncKeyword("encoding")); 					
 					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
@@ -991,7 +991,7 @@ public class IOFunctions {
 								file.getPath()));
 					}
 					
-					final VncHashMap options = new VncHashMap(args.slice(1));
+					final VncHashMap options = VncHashMap.ofAll(args.slice(1));
 	
 					final VncVal binary = options.get(new VncKeyword("binary")); 
 		
@@ -1079,7 +1079,7 @@ public class IOFunctions {
 			
 					final VncVal content = args.nth(1);
 	
-					final VncHashMap options = new VncHashMap(args.slice(2));
+					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 	
 					final VncVal append = options.get(new VncKeyword("append")); 
 					

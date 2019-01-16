@@ -49,7 +49,7 @@ public class Agent {
 	public Agent(final VncVal state, final VncList options) {
 		value.set(new Value(state == null ? Constants.Nil : state, null));
 		
-		final VncMap opts = new VncHashMap(options);
+		final VncMap opts = VncHashMap.ofAll(options);
 
 		errorHandler.set(getErrorHandler(opts));
 		

@@ -38,34 +38,39 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
+
 public class VncHashMap extends VncMap {
+
+	public VncHashMap() {
+		value = new HashMap<>();
+	}
 
 	public VncHashMap(final Map<VncVal,VncVal> val) {
 		value = new HashMap<>(val);
 	}
 	
-	public VncHashMap(final VncList lst) {
+	
+	public static VncHashMap ofAll(final VncList lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
 					"hash-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 		
-		value = new HashMap<>();
-		assoc(lst);
+		return new VncHashMap().assoc(lst);
 	}
 	
-	public VncHashMap(final VncVal... mvs) {
+	public static VncHashMap ofAll(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
 					"hash-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
-		value = new HashMap<>();
-		assoc(mvs);
+		return new VncHashMap().assoc(mvs);
 	}
 
+	
 	@Override
 	public VncHashMap empty() {
 		return copyMetaTo(new VncHashMap());

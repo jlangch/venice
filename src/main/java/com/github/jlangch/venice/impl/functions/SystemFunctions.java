@@ -230,7 +230,7 @@ public class SystemFunctions {
 						stack
 							.callstack()
 							.stream()
-							.map(f -> new VncOrderedMap(
+							.map(f -> VncOrderedMap.ofAll(
 											CALLSTACK_KEY_FN_NAME, f.getFnName() == null 
 															? Constants.Nil 
 															: new VncString(f.getFnName()),

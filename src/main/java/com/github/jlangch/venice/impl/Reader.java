@@ -212,7 +212,7 @@ public class Reader {
 		final Token refToken = rdr.peek();
 		
 		final VncList lst = read_list(rdr, new VncList(), '{', '}');
-		return (VncHashMap)MetaUtil.withTokenPos(new VncHashMap(lst), refToken);
+		return (VncHashMap)MetaUtil.withTokenPos(VncHashMap.ofAll(lst), refToken);
 	}
 
 	private static VncVal read_form(final Reader rdr) {

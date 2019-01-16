@@ -41,33 +41,37 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncSortedMap extends VncMap {
 
+	public VncSortedMap() {
+		value = new TreeMap<>();
+	}
+
 	public VncSortedMap(final Map<VncVal,VncVal> val) {
 		value = (val instanceof TreeMap) 
 					? (TreeMap<VncVal,VncVal>)val
 					: new TreeMap<>(val);
 	}
 	
-	public VncSortedMap(final VncList lst) {
+	
+	public static VncSortedMap ofAll(final VncList lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
 					"sorted-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 
-		value = new TreeMap<>();
-		assoc(lst);
+		return new VncSortedMap().assoc(lst);
 	}
 	
-	public VncSortedMap(final VncVal... mvs) {
+	public static VncSortedMap ofAll(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
 					"sorted-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
-		value = new TreeMap<>();
-		assoc(mvs);
+		return new VncSortedMap().assoc(mvs);
 	}
+	
 
 	@Override
 	public VncSortedMap empty() {
