@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,7 +64,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		this.env = env;
 		this.params = params;
 		
-		this.fnMeta = meta;
+		this.fnMeta.set(meta);
 	}
 
 	
@@ -74,7 +75,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 
 	@Override
 	public VncFunction withMeta(final VncVal meta) {
-		this.fnMeta = meta;
+		this.fnMeta.set(meta);
 		return this;
 	}
 
@@ -135,7 +136,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	}
 
 	public VncVal getMeta() { 
-		return fnMeta; 
+		return fnMeta.get(); 
 	}
 
 	public static MetaBuilder meta() {
@@ -184,5 +185,5 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	public final String name;
 	
 	// Functions handle its meta data localy (functions cannot be copied)
-	private volatile VncVal fnMeta = Constants.Nil;
+	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
 }
