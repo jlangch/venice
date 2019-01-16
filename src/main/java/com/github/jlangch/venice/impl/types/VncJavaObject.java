@@ -54,6 +54,16 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	public Object getDelegate() {
 		return delegate;
 	}
+	
+	@Override
+	public VncMap empty() {
+		throw new VncException("not supported");
+	}
+
+	@Override
+	public VncMap copy() {
+		throw new VncException("not supported");
+	}
 
 	public VncVal getProperty(final VncString name) {
 		return JavaInteropUtil.convertToVncVal(
@@ -76,11 +86,6 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override
-	public VncMap empty() {
-		throw new VncException("not supported");
-	}
-	
-	@Override
 	public Map<VncVal,VncVal> getMap() {
 		return convertBean().getMap();
 	}
@@ -93,11 +98,6 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	@Override
 	public VncVal get(final VncVal key) {
 		return getProperty((VncString)key);
-	}
-
-	@Override
-	public VncMap copy() {
-		throw new VncException("not supported");
 	}
 
 	@Override

@@ -43,6 +43,7 @@ public class VncThreadLocal extends VncVal {
 		assoc(lst);
 	}
 
+	
 	@Override
 	public VncThreadLocal copy() { 
 		return this;
@@ -72,7 +73,6 @@ public class VncThreadLocal extends VncVal {
 		ThreadLocalMap.remove(key);
 	}
 
-	
 	public VncVal containsKey(final VncKeyword key) {
 		return key != null && ThreadLocalMap.containsKey(key) ? True : False;
 	}
