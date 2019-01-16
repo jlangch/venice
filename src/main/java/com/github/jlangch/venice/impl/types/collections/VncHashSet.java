@@ -33,12 +33,20 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncHashSet extends VncSet {
 
 	public VncHashSet() {
-		this(io.vavr.collection.HashSet.of());
+		this(null, null);
 	}
-	
+
+	public VncHashSet(final VncVal meta) {
+		this(null, meta);
+	}
+
 	public VncHashSet(final io.vavr.collection.HashSet<VncVal> val) {
-		super(Constants.Nil);
-		value = val;
+		this(val, null);
+	}
+
+	public VncHashSet(final io.vavr.collection.HashSet<VncVal> val, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		value = val == null ? io.vavr.collection.HashSet.of() : val;
 	}
 
 	
@@ -57,47 +65,47 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncHashSet empty() {
-		return copyMetaTo(new VncHashSet());
+		return new VncHashSet(getMeta());
 	}
 	
 	@Override
 	public VncHashSet copy() {
-		return copyMetaTo(new VncHashSet(value));
+		return new VncHashSet(value, getMeta());
 	}
 
 	@Override
 	public VncHashSet withMeta(final VncVal meta) {
-		return copyMetaTo(new VncHashSet(value));
+		return new VncHashSet(value, meta);
 	}
 	
 	@Override
 	public VncHashSet add(final VncVal val) {
-		return new VncHashSet(value.add(val));
+		return new VncHashSet(value.add(val), getMeta());
 	}
 	
 	@Override
 	public VncHashSet addAll(final VncSet val) {
-		return new VncHashSet(value.addAll(val.getSet()));
+		return new VncHashSet(value.addAll(val.getSet()), getMeta());
 	}
 	
 	@Override
 	public VncHashSet addAll(final VncSequence val) {
-		return new VncHashSet(value.addAll(val.getList()));
+		return new VncHashSet(value.addAll(val.getList()), getMeta());
 	}
 
 	@Override
 	public VncHashSet remove(final VncVal val) {
-		return new VncHashSet(value.remove(val));
+		return new VncHashSet(value.remove(val), getMeta());
 	}
 
 	@Override
 	public VncHashSet removeAll(final VncSet val) {
-		return new VncHashSet(value.removeAll(val.getSet()));
+		return new VncHashSet(value.removeAll(val.getSet()), getMeta());
 	}
 
 	@Override
 	public VncHashSet removeAll(final VncSequence val) {
-		return new VncHashSet(value.removeAll(val.getList()));
+		return new VncHashSet(value.removeAll(val.getList()), getMeta());
 	}
 	
 	@Override

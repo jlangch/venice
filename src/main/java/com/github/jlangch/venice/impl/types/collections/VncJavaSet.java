@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -38,19 +39,20 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	public VncJavaSet() {
-		super(Constants.Nil);
+		this(null, null);
+	}
+
+	public VncJavaSet(final VncVal meta) {
+		this(null, meta);
 	}
 
 	public VncJavaSet(final Set<Object> val) {
-		super(Constants.Nil);
-		val.forEach(v -> {
-			if (v instanceof VncVal) {
-				add((VncVal)v);
-			}
-			else {
-				value.add(v);
-			}
-		});
+		this(val, null);
+	}
+
+	public VncJavaSet(final Set<Object> val, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		addAll(val);
 	}
 	
 	
@@ -61,19 +63,19 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	@Override
 	public VncJavaSet empty() {
-		return copyMetaTo(new VncJavaSet());
+		return new VncJavaSet(getMeta());
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public VncJavaSet copy() {
-		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
+		// shallow copy
+		return new VncJavaSet(new HashSet<>(value), getMeta());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public VncJavaSet withMeta(final VncVal meta) {
-		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
+		// shallow copy
+		return new VncJavaSet(new HashSet<>(value), meta);
 	}
 	
 	@Override
@@ -202,6 +204,16 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	@Override
 	public String toString(final boolean print_readably) {
 		return "#{" + Printer.join(getVncValueList(), " ", print_readably) + "}";
+	}
+
+	private void addAll(final Collection<Object> val) {
+		if (val != null) {
+			val.forEach(v -> {
+				value.add(v instanceof VncVal
+							? JavaInteropUtil.convertToJavaObject((VncVal)val)
+							: v);
+			});
+		}
 	}
 
 	private List<VncVal> getVncValueList() {
