@@ -110,26 +110,14 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		return (VncList)getMetaVal(MetaUtil.ARGLIST, new VncList());
 	}
 	
-	public void setArgLists(final String... arglists) {
-		MetaUtil.setArgList(this, arglists);
-	}
-	
 	public VncVal getDoc() { 
 		return getMetaVal(MetaUtil.DOC); 
-	}
-	
-	public void setDoc(final String doc) { 
-		MetaUtil.setDoc(this, doc);
 	}
 	
 	public VncList getExamples() { 
 		return (VncList)getMetaVal(MetaUtil.EXAMPLES, new VncList());
 	}
 	
-	public void setExamples(final String... examples) { 
-		MetaUtil.setExamples(this, examples);
-	}
-
 	@Override 
 	public String toString() {
 		return name;
