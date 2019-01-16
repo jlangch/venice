@@ -51,6 +51,7 @@ public class VncMultiArityFunction extends VncFunction {
 							.collect(Collectors.toList());
 	}
 
+	@Override
 	public VncMultiArityFunction copy() {
 		throw new VncException("Copy multi-arity function is not supported");
 	}

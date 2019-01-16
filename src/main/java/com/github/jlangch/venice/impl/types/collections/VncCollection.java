@@ -26,6 +26,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public abstract class VncCollection extends VncVal {
 
+	@Override
 	public abstract VncCollection copy();
 
 	public abstract VncCollection empty();

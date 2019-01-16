@@ -34,6 +34,7 @@ public class VncBigDecimal extends VncVal {
 		value = v; 
 	}
 
+	@Override
 	public VncBigDecimal copy() { 
 		final VncBigDecimal v = new VncBigDecimal(value);
 		v.setMeta(getMeta());

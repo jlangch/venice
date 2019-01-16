@@ -62,6 +62,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
+	public VncHashMap copy() {
+		return copyMetaTo(new VncHashMap(getMap()));
+	}
+
+	@Override
 	public Map<VncVal,VncVal> getMap() {
 		return value
 				.entrySet()
@@ -80,11 +85,6 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	@Override
 	public VncVal containsKey(final VncVal key) {
 		return value.containsKey(value.get(JavaInteropUtil.convertToJavaObject(key))) ? True : False;
-	}
-
-	@Override
-	public VncHashMap copy() {
-		return copyMetaTo(new VncHashMap(getMap()));
 	}
 
 	@Override

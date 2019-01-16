@@ -76,6 +76,12 @@ public class VncHashMap extends VncMap {
 		return copyMetaTo(new VncHashMap());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public VncHashMap copy() {
+		return copyMetaTo(new VncHashMap((HashMap<VncVal,VncVal>)value.clone()));
+	}
+
 	@Override
 	public Map<VncVal,VncVal> getMap() {
 		return Collections.unmodifiableMap(value);
@@ -90,12 +96,6 @@ public class VncHashMap extends VncMap {
 	@Override
 	public VncVal containsKey(final VncVal key) {
 		return value.containsKey(key) ? True : False;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public VncHashMap copy() {
-		return copyMetaTo(new VncHashMap((HashMap<VncVal,VncVal>)value.clone()));
 	}
 
 	@Override

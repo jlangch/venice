@@ -62,6 +62,12 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
+	public VncJavaSet copy() {
+		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
+	}
+	
+	@Override
 	public VncJavaSet add(final VncVal val) {
 		value.add(JavaInteropUtil.convertToJavaObject(val));
 		return this;
@@ -122,12 +128,6 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	@Override
 	public boolean contains(final VncVal val) {
 		return value.contains(JavaInteropUtil.convertToVncVal(val));
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public VncJavaSet copy() {
-		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
 	}
 
 	@Override

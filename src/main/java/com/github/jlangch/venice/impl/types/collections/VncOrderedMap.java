@@ -76,6 +76,12 @@ public class VncOrderedMap extends VncMap {
 	public VncOrderedMap empty() {
 		return copyMetaTo(new VncOrderedMap());
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public VncOrderedMap copy() {
+		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
+	}
 	
 	@Override
 	public Map<VncVal,VncVal> getMap() {
@@ -91,12 +97,6 @@ public class VncOrderedMap extends VncMap {
 	@Override
 	public VncVal containsKey(final VncVal key) {
 		return value.containsKey(key) ? True : False;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public VncOrderedMap copy() {
-		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
 	}
 
 	@Override

@@ -36,6 +36,7 @@ public class VncByteBuffer extends VncVal {
 		value = v; 
 	}
 
+	@Override
 	public VncByteBuffer copy() { 
 		final VncByteBuffer v = new VncByteBuffer(value);
 		v.setMeta(getMeta());

@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public abstract class VncSequence extends VncCollection {
 
+	@Override
 	public abstract VncSequence copy();
 
 	public abstract List<VncVal> getList();

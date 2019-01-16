@@ -56,15 +56,20 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	public Object getDelegate() {
 		return value;
 	}
-
+	
 	@Override
-	public void forEach(Consumer<? super VncVal> action) {
-		value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
+	public VncList empty() {
+		return copyMetaTo(new VncList());
 	}
 
 	@Override
 	public VncList copy() {
 		return copyMetaTo(new VncList(getList()));
+	}
+
+	@Override
+	public void forEach(Consumer<? super VncVal> action) {
+		value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
 	}
 
 	@Override
@@ -152,11 +157,6 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	@Override
 	public VncList slice(final int start) {
 		return slice(start, value.size());
-	}
-	
-	@Override
-	public VncList empty() {
-		return copyMetaTo(new VncList());
 	}
 
 	@Override

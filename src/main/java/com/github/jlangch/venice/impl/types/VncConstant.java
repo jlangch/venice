@@ -46,6 +46,7 @@ public class VncConstant extends VncVal {
 		}
 	}
 
+	@Override
 	public VncConstant copy() { 
 		final VncConstant v = new VncConstant(value); 
 		v.setMeta(getMeta());

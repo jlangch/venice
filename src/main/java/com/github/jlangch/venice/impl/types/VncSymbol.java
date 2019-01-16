@@ -31,6 +31,7 @@ public class VncSymbol extends VncVal {
 		value = v.getValue(); 
 	}
 	
+	@Override
 	public VncSymbol copy() { 
 		final VncSymbol v = new VncSymbol(value); 
 		v.setMeta(getMeta());

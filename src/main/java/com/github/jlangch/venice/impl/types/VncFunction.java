@@ -64,6 +64,8 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		this.params = params;
 	}
 
+	
+	@Override
 	public VncFunction copy() {
 		return this;
 	}

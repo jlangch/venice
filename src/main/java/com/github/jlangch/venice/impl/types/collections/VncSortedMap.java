@@ -77,6 +77,12 @@ public class VncSortedMap extends VncMap {
 	public VncSortedMap empty() {
 		return copyMetaTo(new VncSortedMap());
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public VncSortedMap copy() {
+		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
+	}
 	
 	@Override
 	public Map<VncVal,VncVal> getMap() {
@@ -92,12 +98,6 @@ public class VncSortedMap extends VncMap {
 	@Override
 	public VncVal containsKey(final VncVal key) {
 		return value.containsKey(key) ? True : False;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public VncSortedMap copy() {
-		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
 	}
 
 	@Override

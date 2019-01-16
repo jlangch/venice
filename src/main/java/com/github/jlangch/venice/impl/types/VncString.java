@@ -36,6 +36,7 @@ public class VncString extends VncVal {
 		return value; 
 	}
 	
+	@Override
 	public VncString copy() { 
 		final VncString v = new VncString(value); 
 		v.setMeta(getMeta());

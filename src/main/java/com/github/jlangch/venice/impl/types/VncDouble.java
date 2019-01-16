@@ -34,6 +34,8 @@ public class VncDouble extends VncVal {
 		value = v.doubleValue(); 
 	}
 	
+
+	@Override
 	public VncDouble copy() { 
 		final VncDouble v = new VncDouble(value);
 		v.setMeta(getMeta());

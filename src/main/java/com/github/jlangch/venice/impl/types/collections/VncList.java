@@ -53,14 +53,19 @@ public class VncList extends VncSequence {
 
 	
 	@Override
-	public void forEach(Consumer<? super VncVal> action) {
-		value.forEach(v -> action.accept(v));
+	public VncList empty() {
+		return copyMetaTo(new VncList());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public VncList copy() {
 		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
+	}
+	
+	@Override
+	public void forEach(Consumer<? super VncVal> action) {
+		value.forEach(v -> action.accept(v));
 	}
 
 	@Override
@@ -135,11 +140,6 @@ public class VncList extends VncSequence {
 	@Override
 	public VncList slice(final int start) {
 		return slice(start, value.size());
-	}
-	
-	@Override
-	public VncList empty() {
-		return copyMetaTo(new VncList());
 	}
 	
 	@Override

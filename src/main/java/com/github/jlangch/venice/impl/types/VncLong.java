@@ -34,6 +34,7 @@ public class VncLong extends VncVal {
 		value = v.longValue(); 
 	}
 	
+	@Override
 	public VncLong copy() { 
 		final VncLong v = new VncLong(value);
 		v.setMeta(getMeta());

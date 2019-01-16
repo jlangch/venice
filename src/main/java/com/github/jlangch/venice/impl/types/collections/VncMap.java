@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public abstract class VncMap extends VncCollection {
 
+	@Override
 	public abstract VncMap copy();
 
 	public abstract Map<VncVal,VncVal> getMap();

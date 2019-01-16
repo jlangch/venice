@@ -59,6 +59,11 @@ public class VncHashSet extends VncSet {
 	}
 	
 	@Override
+	public VncHashSet copy() {
+		return copyMetaTo(new VncHashSet(value));
+	}
+	
+	@Override
 	public VncHashSet add(final VncVal val) {
 		return new VncHashSet(value.add(val));
 	}
@@ -91,11 +96,6 @@ public class VncHashSet extends VncSet {
 	@Override
 	public boolean contains(final VncVal val) {
 		return value.contains(val);
-	}
-	
-	@Override
-	public VncHashSet copy() {
-		return copyMetaTo(new VncHashSet(value));
 	}
 
 	@Override
