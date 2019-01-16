@@ -44,10 +44,6 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return meta; 
 	}
 	
-	public void setMeta(final VncVal m) { 
-		meta = m == null ? Constants.Nil : m; 
-	}
-
 	public VncVal getMetaVal(final VncString key) {
 		if (meta == Constants.Nil) {
 			return Constants.Nil;
@@ -100,11 +96,6 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		return true;
-	}
-
-	public <T extends VncVal> T copyMetaTo(final T toVal) {
-		toVal.setMeta(meta);
-		return toVal;
 	}
 	
 	

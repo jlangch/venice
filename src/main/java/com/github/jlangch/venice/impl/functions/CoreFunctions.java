@@ -4934,9 +4934,7 @@ public class CoreFunctions {
 					throw new VncException("with-meta: the meta data for the object must be a map");	
 				}
 	
-				final VncVal new_obj = args.nth(0).copy();
-				new_obj.setMeta(args.nth(1));
-				return new_obj;
+				return args.nth(0).withMeta(args.nth(1));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4962,9 +4960,7 @@ public class CoreFunctions {
 				final VncFunction fn = (VncFunction)args.nth(1);
 				final VncList fnArgs = args.slice(2).addAtStart(meta == Nil ? new VncHashMap() : meta);
 				
-				final VncVal new_obj = args.nth(0).copy();
-				new_obj.setMeta(fn.apply(fnArgs));
-				return new_obj;
+				return args.nth(0).withMeta(fn.apply(fnArgs));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
