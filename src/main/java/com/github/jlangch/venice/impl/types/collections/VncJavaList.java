@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -38,19 +39,20 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	public VncJavaList() {
-		super(Constants.Nil);
+		this(null, null);
 	}
 
-	public VncJavaList(final List<Object> val) {
-		super(Constants.Nil);
-		val.forEach(v -> {
-			if (v instanceof VncVal) {
-				addAtEnd((VncVal)v);
-			}
-			else {
-				value.add(v);
-			}
-		});
+	public VncJavaList(final VncVal meta) {
+		this(null, meta);
+	}
+
+	public VncJavaList(final Collection<Object> val) {
+		this(val, null);
+	}
+
+	public VncJavaList(final Collection<Object> val, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		addAll(val);
 	}
 	
 	
@@ -61,17 +63,17 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	@Override
 	public VncList empty() {
-		return copyMetaTo(new VncList());
+		return new VncList(getMeta());
 	}
 
 	@Override
 	public VncList copy() {
-		return copyMetaTo(new VncList(getList()));
+		return new VncList(getList(), getMeta());
 	}
 
 	@Override
 	public VncList withMeta(final VncVal meta) {
-		return copyMetaTo(new VncList(getList()));
+		return new VncList(getList(), meta);
 	}
 
 	@Override
@@ -180,12 +182,12 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	@Override
 	public VncList toVncList() {
-		return copyMetaTo(new VncList(getList()));
+		return new VncList(getList(), getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return copyMetaTo(new VncVector(getList()));
+		return new VncVector(getList(), getMeta());
 	}
 	
 	@Override
@@ -267,6 +269,16 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	public String toString(final boolean print_readably) {
 		return "(" + Printer.join(getList(), " ", print_readably) + ")";
+	}
+
+	private void addAll(final Collection<Object> val) {
+		if (val != null) {
+			val.forEach(v -> {
+				value.add(v instanceof VncVal
+							? JavaInteropUtil.convertToJavaObject((VncVal)val)
+							: v);
+			});
+		}
 	}
 
 

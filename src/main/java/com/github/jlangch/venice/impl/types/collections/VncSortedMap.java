@@ -42,15 +42,20 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncSortedMap extends VncMap {
 
 	public VncSortedMap() {
-		super(Constants.Nil);
-		value = new TreeMap<>();
+		this(null, null);
 	}
 
-	public VncSortedMap(final Map<VncVal,VncVal> val) {
-		super(Constants.Nil);
-		value = (val instanceof TreeMap) 
-					? (TreeMap<VncVal,VncVal>)val
-					: new TreeMap<>(val);
+	public VncSortedMap(final VncVal meta) {
+		this(null, meta);
+	}
+
+	public VncSortedMap(final Map<VncVal,VncVal> vals) {
+		this(vals, null);
+	}
+
+	public VncSortedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		value = vals == null ? new TreeMap<>() : new TreeMap<>(vals);
 	}
 	
 	
@@ -77,19 +82,19 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncSortedMap empty() {
-		return copyMetaTo(new VncSortedMap());
+		return new VncSortedMap(getMeta());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncSortedMap copy() {
-		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
+		// shallow copy
+		return new VncSortedMap(value, getMeta());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncSortedMap withMeta(final VncVal meta) {
-		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
+		// shallow copy
+		return new VncSortedMap(value, meta);
 	}
 	
 	@Override
@@ -162,20 +167,24 @@ public class VncSortedMap extends VncMap {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(value
+		return new VncList(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(value
+		return new VncVector(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override

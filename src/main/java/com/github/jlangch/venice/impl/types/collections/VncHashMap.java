@@ -42,13 +42,20 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncHashMap extends VncMap {
 
 	public VncHashMap() {
-		super(Constants.Nil);
-		value = new HashMap<>();
+		this(null, null);
 	}
 
-	public VncHashMap(final Map<VncVal,VncVal> val) {
-		super(Constants.Nil);
-		value = new HashMap<>(val);
+	public VncHashMap(final VncVal meta) {
+		this(null, meta);
+	}
+
+	public VncHashMap(final Map<VncVal,VncVal> vals) {
+		this(vals, null);
+	}
+
+	public VncHashMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		value = vals == null ? new HashMap<>() : new HashMap<>(vals);
 	}
 	
 	
@@ -75,19 +82,19 @@ public class VncHashMap extends VncMap {
 	
 	@Override
 	public VncHashMap empty() {
-		return copyMetaTo(new VncHashMap());
+		return new VncHashMap(getMeta());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncHashMap copy() {
-		return copyMetaTo(new VncHashMap((HashMap<VncVal,VncVal>)value.clone()));
+		// shallow copy
+		return new VncHashMap(value, getMeta());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncHashMap withMeta(final VncVal meta) {
-		return copyMetaTo(new VncHashMap((HashMap<VncVal,VncVal>)value.clone()));
+		// shallow copy
+		return new VncHashMap(value, meta);
 	}
 
 	@Override
@@ -160,20 +167,24 @@ public class VncHashMap extends VncMap {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(value
+		return new VncList(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(value
+		return new VncVector(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override

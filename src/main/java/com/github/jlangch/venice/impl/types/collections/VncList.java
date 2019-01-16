@@ -39,15 +39,22 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncList extends VncSequence {
 	
 	public VncList() {
-		super(Constants.Nil);
-		value = new ArrayList<>();
+		this(null, null);
+	}
+
+	public VncList(final VncVal meta) {
+		this(null, meta);
 	}
 
 	public VncList(final Collection<? extends VncVal> vals) {
-		super(Constants.Nil);
-		value = new ArrayList<>(vals);
+		this(vals, null);
 	}
-	
+
+	public VncList(final Collection<? extends VncVal> vals, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		value = vals == null ? new ArrayList<>() : new ArrayList<>(vals);
+	}
+
 	
 	public static VncList ofAll(final VncVal... mvs) {
 		return new VncList(Arrays.asList(mvs));
@@ -56,19 +63,19 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList empty() {
-		return copyMetaTo(new VncList());
+		return new VncList(getMeta());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public VncList copy() {
-		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
+		// shallow copy
+		return new VncList(value, getMeta());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public VncList withMeta(final VncVal meta) {
-		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
+		// shallow copy
+		return new VncList(value, meta);
 	}
 	
 	@Override
@@ -152,12 +159,12 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList toVncList() {
-		return copyMetaTo(new VncList(value));
+		return new VncList(value, getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return copyMetaTo(new VncVector(value));
+		return new VncVector(value, getMeta());
 	}
 	
 	@Override
@@ -253,5 +260,5 @@ public class VncList extends VncSequence {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final ArrayList<VncVal> value;
+	protected final ArrayList<VncVal> value;
 }

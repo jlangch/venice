@@ -33,10 +33,19 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncVector extends VncList {
 
 	public VncVector() {
+		this(null, null);
 	}
 
-	public VncVector(Collection<? extends VncVal> vals) {
-		super(vals);
+	public VncVector(final VncVal meta) {
+		this(null, meta);
+	}
+
+	public VncVector(final Collection<? extends VncVal> vals) {
+		this(vals, null);
+	}
+
+	public VncVector(final Collection<? extends VncVal> vals, final VncVal meta) {
+		super(vals, meta);
 	}
 	
 	
@@ -47,12 +56,19 @@ public class VncVector extends VncList {
 	
 	@Override
 	public VncVector empty() {
-		return copyMetaTo(new VncVector());
+		return new VncVector(getMeta());
 	}
 	
 	@Override
 	public VncVector copy() {
-		return copyMetaTo(new VncVector(toVncList().copy().getList()));
+		// shallow copy
+		return new VncVector(value, getMeta());
+	}
+
+	@Override
+	public VncVector withMeta(final VncVal meta) {
+		// shallow copy
+		return new VncVector(value, meta);
 	}
 
 	@Override
@@ -77,12 +93,12 @@ public class VncVector extends VncList {
 	
 	@Override
 	public VncList toVncList() {
-		return copyMetaTo(new VncList(getList()));
+		return new VncList(getList(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return this;
+		return new VncVector(getList(), getMeta());
 	}
 
 	@Override

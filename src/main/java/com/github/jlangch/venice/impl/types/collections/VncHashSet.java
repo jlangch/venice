@@ -125,12 +125,12 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList());
+		return new VncList(getList(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getList());
+		return new VncVector(getList(), getMeta());
 	}
 	
 	@Override

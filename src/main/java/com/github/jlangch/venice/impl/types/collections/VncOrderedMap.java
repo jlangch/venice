@@ -41,15 +41,20 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncOrderedMap extends VncMap {
 
 	public VncOrderedMap() {
-		super(Constants.Nil);
-		value = new LinkedHashMap<>();
+		this(null, null);
 	}
 
-	public VncOrderedMap(final Map<VncVal,VncVal> val) {
-		super(Constants.Nil);
-		value = (val instanceof LinkedHashMap) 
-					? (LinkedHashMap<VncVal,VncVal>)val
-					: new LinkedHashMap<>(val);
+	public VncOrderedMap(final VncVal meta) {
+		this(null, meta);
+	}
+
+	public VncOrderedMap(final Map<VncVal,VncVal> vals) {
+		this(vals, null);
+	}
+
+	public VncOrderedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		value = vals == null ? new LinkedHashMap<>() : new LinkedHashMap<>(vals);
 	}
 	
 	
@@ -76,19 +81,19 @@ public class VncOrderedMap extends VncMap {
 	
 	@Override
 	public VncOrderedMap empty() {
-		return copyMetaTo(new VncOrderedMap());
+		return new VncOrderedMap(getMeta());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncOrderedMap copy() {
-		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
+		// shallow copy
+		return new VncOrderedMap(value, getMeta());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public VncOrderedMap withMeta(final VncVal meta) {
-		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
+		// shallow copy
+		return new VncOrderedMap(value, meta);
 	}
 	
 	@Override
@@ -161,20 +166,24 @@ public class VncOrderedMap extends VncMap {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(value
+		return new VncList(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(value
+		return new VncVector(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override

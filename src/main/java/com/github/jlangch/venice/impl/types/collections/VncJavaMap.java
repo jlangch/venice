@@ -41,17 +41,22 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	public VncJavaMap() {
-		super(Constants.Nil);
+		this(null, null);
 	}
 
-	public VncJavaMap(final Map<Object,Object> map) {
-		super(Constants.Nil);
-		map.entrySet().forEach(e -> {
-			value.put(
-				e.getKey() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getKey()) : e.getKey(), 
-				e.getValue() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getValue()) : e.getValue()); 
-		});
+	public VncJavaMap(final VncVal meta) {
+		this(null, meta);
 	}
+
+	public VncJavaMap(final Map<Object,Object> val) {
+		this(val, null);
+	}
+
+	public VncJavaMap(final Map<Object,Object> val, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		addAll(val);
+	}
+
 	
 	
 	@Override
@@ -61,17 +66,19 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncJavaMap empty() {
-		return copyMetaTo(new VncJavaMap());
+		return new VncJavaMap(getMeta());
 	}
 
 	@Override
 	public VncHashMap copy() {
-		return copyMetaTo(new VncHashMap(getMap()));
+		// shallow copy
+		return new VncHashMap(getMap(), getMeta());
 	}
 
 	@Override
 	public VncHashMap withMeta(final VncVal meta) {
-		return copyMetaTo(new VncHashMap(getMap()));
+		// shallow copy
+		return new VncHashMap(getMap(), meta);
 	}
 
 	@Override
@@ -161,24 +168,28 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(value
+		return new VncList(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(
 										JavaInteropUtil.convertToVncVal(e.getKey()), 
 										JavaInteropUtil.convertToVncVal(e.getValue())))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(value
+		return new VncVector(
+						value
 							.entrySet()
 							.stream()
 							.map(e -> VncVector.ofAll(
 										JavaInteropUtil.convertToVncVal(e.getKey()), 
 										JavaInteropUtil.convertToVncVal(e.getValue())))
-							.collect(Collectors.toList()));
+							.collect(Collectors.toList()),
+						getMeta());
 	}
 	
 	@Override
@@ -230,6 +241,17 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		});
 	
 		return "{" + Printer.join(list, " ", print_readably) + "}";
+	}
+
+
+	private void addAll(final Map<Object,Object> map) {
+		if (map != null) {
+			map.entrySet().forEach(e -> {
+				value.put(
+					e.getKey() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getKey()) : e.getKey(), 
+					e.getValue() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getValue()) : e.getValue()); 
+			});
+		}
 	}
 	
 
