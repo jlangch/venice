@@ -22,20 +22,32 @@
 package com.github.jlangch.venice.impl.types;
 
 public class VncSymbol extends VncVal {
-	
-	public VncSymbol(final String v) { 
-		value = v; 
-	}
-	
+
 	public VncSymbol(final VncString v) { 
-		value = v.getValue(); 
+		this(v.getValue(), Constants.Nil); 
+	}
+
+	public VncSymbol(final VncString v, final VncVal meta) { 
+		this(v.getValue(), meta); 
+	}
+
+	public VncSymbol(final String v) { 
+		this(v, Constants.Nil); 
+	}
+
+	public VncSymbol(final String v, final VncVal meta) { 
+		super(meta);
+		value = v; 
 	}
 	
 	@Override
 	public VncSymbol copy() { 
-		final VncSymbol v = new VncSymbol(value); 
-		v.setMeta(getMeta());
-		return v;
+		return new VncSymbol(value, getMeta()); 
+	}
+	
+	@Override
+	public VncSymbol withMeta(final VncVal meta) {
+		return new VncSymbol(value, meta);
 	}
 
 	public String getName() { 

@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 public class VncConstant extends VncVal {
 
 	public VncConstant(final String name) { 
+		super(Constants.Nil);
 		value = name; 
 	}
 
@@ -47,10 +48,13 @@ public class VncConstant extends VncVal {
 	}
 
 	@Override
-	public VncConstant copy() { 
-		final VncConstant v = new VncConstant(value); 
-		v.setMeta(getMeta());
-		return v;
+	public VncConstant copy() {
+		return this;
+	}
+	
+	@Override
+	public VncConstant withMeta(final VncVal meta) {
+		return this;
 	}
 
 	public String getValue() { 

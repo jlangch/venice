@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -37,9 +38,11 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	public VncJavaSet() {
+		super(Constants.Nil);
 	}
 
 	public VncJavaSet(final Set<Object> val) {
+		super(Constants.Nil);
 		val.forEach(v -> {
 			if (v instanceof VncVal) {
 				add((VncVal)v);
@@ -64,6 +67,12 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	@Override
 	@SuppressWarnings("unchecked")
 	public VncJavaSet copy() {
+		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public VncJavaSet withMeta(final VncVal meta) {
 		return copyMetaTo(new VncJavaSet((Set<Object>)value.clone()));
 	}
 	

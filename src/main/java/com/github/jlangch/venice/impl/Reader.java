@@ -126,21 +126,15 @@ public class Reader {
 		}
 		
 		if (matcher.group(1) != null) {
-			return MetaUtil.withTokenPos(
-					new VncLong(Long.parseLong(matcher.group(1))), 
-					token);
+			return new VncLong(Long.parseLong(matcher.group(1)), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(2) != null) {
-			return MetaUtil.withTokenPos(
-					new VncDouble(Double.parseDouble(matcher.group(2))), 
-					token);
+			return new VncDouble(Double.parseDouble(matcher.group(2)), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(3) != null) {
 			String dec = matcher.group(3);
 			dec = dec.substring(0, dec.length()-1);
-			return MetaUtil.withTokenPos(
-					new VncBigDecimal(new BigDecimal(dec)), 
-					token);
+			return new VncBigDecimal(new BigDecimal(dec), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(4) != null) {
 			return Constants.Nil;
@@ -160,9 +154,7 @@ public class Reader {
 			return MetaUtil.withTokenPos(interpolate(s, rdr.filename), token);
 		} 
 		else if (matcher.group(9) != null) {
-			return MetaUtil.withTokenPos(
-					new VncKeyword(matcher.group(9)), 
-					token);
+			return new VncKeyword(matcher.group(9), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(10) != null) {
 			final VncSymbol sym = new VncSymbol(matcher.group(10));

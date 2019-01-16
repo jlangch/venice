@@ -33,17 +33,21 @@ import com.github.jlangch.venice.impl.util.Watchable;
 
 public class VncAtom extends VncVal {
 
-	public VncAtom(final VncVal value) { 
+	public VncAtom(final VncVal value, final VncVal meta) {
+		super(meta);
 		state.set(value); 
 	}
-	
+
 	@Override
 	public VncAtom copy() { 
-		final VncAtom v = new VncAtom(state.get()); 
-		v.setMeta(getMeta());
-		return v;
+		return new VncAtom(state.get(), getMeta()); 
 	}
-	
+
+	@Override
+	public VncAtom withMeta(final VncVal meta) {
+		return new VncAtom(state.get(), meta);
+	}
+
 	public VncVal reset(final VncVal newVal) {
 		state.set(newVal); 
 		return newVal;

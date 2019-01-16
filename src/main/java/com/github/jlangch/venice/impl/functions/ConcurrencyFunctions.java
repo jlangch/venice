@@ -327,7 +327,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("atom", args, 1);
 				
-				return new VncAtom(args.nth(0));
+				return new VncAtom(args.nth(0), args.getMeta());
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;

@@ -26,16 +26,18 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class VncHashSet extends VncSet {
 
 	public VncHashSet() {
-		value = io.vavr.collection.HashSet.of();
+		this(io.vavr.collection.HashSet.of());
 	}
 	
 	public VncHashSet(final io.vavr.collection.HashSet<VncVal> val) {
+		super(Constants.Nil);
 		value = val;
 	}
 
@@ -60,6 +62,11 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncHashSet copy() {
+		return copyMetaTo(new VncHashSet(value));
+	}
+
+	@Override
+	public VncHashSet withMeta(final VncVal meta) {
 		return copyMetaTo(new VncHashSet(value));
 	}
 	

@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
@@ -82,6 +83,14 @@ public class MetaUtil {
 		to.setMetaVal(LINE, from.getMetaVal(LINE));
 		to.setMetaVal(COLUMN, from.getMetaVal(COLUMN));
 	}
+	
+	public static VncVal toMeta(final Token token) {
+		return VncHashMap.ofAll(
+					FILE, new VncString(token.getFile()),
+					LINE, new VncLong(token.getLine()),
+					COLUMN, new VncLong(token.getColumn()));
+	}
+
 
 	
 	// Var definition

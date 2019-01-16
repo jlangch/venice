@@ -41,10 +41,12 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncOrderedMap extends VncMap {
 
 	public VncOrderedMap() {
+		super(Constants.Nil);
 		value = new LinkedHashMap<>();
 	}
 
 	public VncOrderedMap(final Map<VncVal,VncVal> val) {
+		super(Constants.Nil);
 		value = (val instanceof LinkedHashMap) 
 					? (LinkedHashMap<VncVal,VncVal>)val
 					: new LinkedHashMap<>(val);
@@ -80,6 +82,12 @@ public class VncOrderedMap extends VncMap {
 	@SuppressWarnings("unchecked")
 	@Override
 	public VncOrderedMap copy() {
+		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public VncOrderedMap withMeta(final VncVal meta) {
 		return copyMetaTo(new VncOrderedMap((LinkedHashMap<VncVal,VncVal>)value.clone()));
 	}
 	

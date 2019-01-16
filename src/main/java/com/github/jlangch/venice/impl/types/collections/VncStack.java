@@ -33,17 +33,23 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncStack extends VncCollection {
 
 	public VncStack() {
+		super(Constants.Nil);
 	}
 	
 	
 	@Override
 	public VncCollection empty() {
-		return copyMetaTo(new VncStack());
+		return new VncStack();
 	}
 
 	@Override
 	public VncCollection copy() {
 		throw new VncException("VncStack copy is not supported");
+	}
+
+	@Override
+	public VncSortedMap withMeta(final VncVal meta) {
+		throw new VncException("VncStack copy with meta is not supported");
 	}
 
 	@Override

@@ -29,8 +29,15 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public abstract class VncSet extends VncCollection {
 
+	public VncSet(VncVal meta) {
+		super(meta);
+	}
+	
 	@Override
 	public abstract VncSet copy();
+
+	@Override
+	public abstract VncSet withMeta(VncVal meta);
 
 	public abstract VncSet add(final VncVal val);
 	

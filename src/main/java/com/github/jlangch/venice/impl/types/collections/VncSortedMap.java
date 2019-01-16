@@ -42,10 +42,12 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncSortedMap extends VncMap {
 
 	public VncSortedMap() {
+		super(Constants.Nil);
 		value = new TreeMap<>();
 	}
 
 	public VncSortedMap(final Map<VncVal,VncVal> val) {
+		super(Constants.Nil);
 		value = (val instanceof TreeMap) 
 					? (TreeMap<VncVal,VncVal>)val
 					: new TreeMap<>(val);
@@ -81,6 +83,12 @@ public class VncSortedMap extends VncMap {
 	@SuppressWarnings("unchecked")
 	@Override
 	public VncSortedMap copy() {
+		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public VncSortedMap withMeta(final VncVal meta) {
 		return copyMetaTo(new VncSortedMap((TreeMap<VncVal,VncVal>)value.clone()));
 	}
 	

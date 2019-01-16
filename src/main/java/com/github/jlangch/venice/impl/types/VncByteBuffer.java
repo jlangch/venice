@@ -29,18 +29,26 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 public class VncByteBuffer extends VncVal {
 
 	public VncByteBuffer(final byte[] v) { 
-		this(ByteBuffer.wrap(v)); 
+		this(ByteBuffer.wrap(v), Constants.Nil); 
 	}
 	
 	public VncByteBuffer(final ByteBuffer v) { 
+		this(v, Constants.Nil); 
+	}
+	
+	public VncByteBuffer(final ByteBuffer v, final VncVal meta) {
+		super(meta);
 		value = v; 
 	}
 
 	@Override
 	public VncByteBuffer copy() { 
-		final VncByteBuffer v = new VncByteBuffer(value);
-		v.setMeta(getMeta());
-		return v;
+		return new VncByteBuffer(value, getMeta());
+	}
+	
+	@Override
+	public VncByteBuffer withMeta(final VncVal meta) {
+		return new VncByteBuffer(value, meta);
 	}
 
 	public ByteBuffer getValue() { 

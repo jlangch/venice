@@ -29,6 +29,11 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class VncString extends VncVal {
 	
 	public VncString(final String v) { 
+		this(v, Constants.Nil); 
+	}
+
+	public VncString(final String v, final VncVal meta) { 
+		super(meta);
 		value = v; 
 	}
 
@@ -38,9 +43,12 @@ public class VncString extends VncVal {
 	
 	@Override
 	public VncString copy() { 
-		final VncString v = new VncString(value); 
-		v.setMeta(getMeta());
-		return v;
+		return new VncString(value, getMeta()); 
+	}
+	
+	@Override
+	public VncString withMeta(final VncVal meta) {
+		return new VncString(value, meta); 
 	}
 
 	public int size() {

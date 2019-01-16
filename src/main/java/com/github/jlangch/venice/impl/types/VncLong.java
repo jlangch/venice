@@ -27,18 +27,26 @@ import com.github.jlangch.venice.impl.functions.Numeric;
 public class VncLong extends VncVal {
 
 	public VncLong(final Long v) { 
-		value = v; 
+		this(v, Constants.Nil); 
 	}
 	
 	public VncLong(final Integer v) { 
-		value = v.longValue(); 
+		this(v.longValue(), Constants.Nil); 
+	}
+
+	public VncLong(final Long v, final VncVal meta) { 
+		super(meta);
+		value = v; 
 	}
 	
 	@Override
 	public VncLong copy() { 
-		final VncLong v = new VncLong(value);
-		v.setMeta(getMeta());
-		return v;
+		return new VncLong(value, getMeta());
+	}
+	
+	@Override
+	public VncLong withMeta(final VncVal meta) {
+		return new VncLong(value, meta);
 	}
 
 	public Long getValue() { 

@@ -33,19 +33,27 @@ import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 public class VncThreadLocal extends VncVal {
 
 	public VncThreadLocal() { 
+		super(Constants.Nil);
 	}
 	
 	public VncThreadLocal(final Map<VncVal,VncVal> val) {
+		super(Constants.Nil);
 		val.entrySet().forEach(e -> set(Coerce.toVncKeyword(e.getKey()), e.getValue()));
 	}
 	
 	public VncThreadLocal(final VncList lst) {
+		super(Constants.Nil);
 		assoc(lst);
 	}
 
 	
 	@Override
 	public VncThreadLocal copy() { 
+		return this;
+	}
+	
+	@Override
+	public VncThreadLocal withMeta(final VncVal meta) {
 		return this;
 	}
 

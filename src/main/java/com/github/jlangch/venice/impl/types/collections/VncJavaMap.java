@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -40,9 +41,11 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	public VncJavaMap() {
+		super(Constants.Nil);
 	}
 
 	public VncJavaMap(final Map<Object,Object> map) {
+		super(Constants.Nil);
 		map.entrySet().forEach(e -> {
 			value.put(
 				e.getKey() instanceof VncVal ? JavaInteropUtil.convertToVncVal(e.getKey()) : e.getKey(), 
@@ -63,6 +66,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncHashMap copy() {
+		return copyMetaTo(new VncHashMap(getMap()));
+	}
+
+	@Override
+	public VncHashMap withMeta(final VncVal meta) {
 		return copyMetaTo(new VncHashMap(getMap()));
 	}
 

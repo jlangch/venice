@@ -39,10 +39,12 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncList extends VncSequence {
 	
 	public VncList() {
+		super(Constants.Nil);
 		value = new ArrayList<>();
 	}
 
 	public VncList(final Collection<? extends VncVal> vals) {
+		super(Constants.Nil);
 		value = new ArrayList<>(vals);
 	}
 	
@@ -60,6 +62,12 @@ public class VncList extends VncSequence {
 	@Override
 	@SuppressWarnings("unchecked")
 	public VncList copy() {
+		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public VncList withMeta(final VncVal meta) {
 		return copyMetaTo(new VncList((ArrayList<VncVal>)value.clone()));
 	}
 	

@@ -28,9 +28,16 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public abstract class VncMap extends VncCollection {
+	
+	public VncMap(VncVal meta) {
+		super(meta);
+	}
 
 	@Override
 	public abstract VncMap copy();
+
+	@Override
+	public abstract VncMap withMeta(VncVal meta);
 
 	public abstract Map<VncVal,VncVal> getMap();
 	

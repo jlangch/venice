@@ -31,9 +31,14 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	
 	public VncKeyword(final String v) { 
-		super(v.startsWith(":") ? v.substring(1): v); 
+		this(v, Constants.Nil); 
 	}
 
+	public VncKeyword(final String v, final VncVal meta) {
+		super(v.startsWith(":") ? v.substring(1): v, meta); 
+	}
+
+	
 	public VncVal apply(final VncList args) {
 		FunctionsUtil.assertArity("keyword", args, 1);
 		
@@ -48,9 +53,12 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	
 	@Override
 	public VncKeyword copy() { 
-		final VncKeyword v = new VncKeyword(getValue()); 
-		v.setMeta(getMeta());
-		return v;
+		return new VncKeyword(getValue(), getMeta()); 
+	}
+	
+	@Override
+	public VncKeyword withMeta(final VncVal meta) {
+		return new VncKeyword(getValue(), meta);
 	}
 
 	public VncSymbol toSymbol() {

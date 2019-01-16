@@ -31,14 +31,22 @@ import com.github.jlangch.venice.impl.functions.Numeric;
 public class VncBigDecimal extends VncVal {
 
 	public VncBigDecimal(final BigDecimal v) { 
+		this(v, Constants.Nil); 
+	}
+	
+	public VncBigDecimal(final BigDecimal v, final VncVal meta) {
+		super(meta);
 		value = v; 
 	}
 
 	@Override
 	public VncBigDecimal copy() { 
-		final VncBigDecimal v = new VncBigDecimal(value);
-		v.setMeta(getMeta());
-		return v;
+		return new VncBigDecimal(value, getMeta());
+	}
+	
+	@Override
+	public VncBigDecimal withMeta(final VncVal meta) {
+		return new VncBigDecimal(value, meta);
 	}
 
 	public BigDecimal getValue() { 

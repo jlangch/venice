@@ -70,6 +70,12 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		return this;
 	}
 
+	@Override
+	public VncFunction withMeta(final VncVal meta) {
+		return this;
+	}
+
+	
 	public VncVal getAst() { 
 		return ast; 
 	}

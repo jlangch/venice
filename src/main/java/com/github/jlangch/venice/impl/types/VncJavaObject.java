@@ -47,8 +47,14 @@ import com.github.jlangch.venice.javainterop.IInvoker;
 public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	public VncJavaObject(final Object obj) {
+		this(obj, Constants.Nil);
+	}
+	
+	public VncJavaObject(final Object obj, final VncVal meta) {
+		super(meta);
 		this.delegate = obj;
 	}
+	
 	
 	@Override
 	public Object getDelegate() {
@@ -62,6 +68,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncMap copy() {
+		throw new VncException("not supported");
+	}
+	
+	@Override
+	public VncMap withMeta(final VncVal meta) {
 		throw new VncException("not supported");
 	}
 

@@ -38,9 +38,11 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	public VncJavaList() {
+		super(Constants.Nil);
 	}
 
 	public VncJavaList(final List<Object> val) {
+		super(Constants.Nil);
 		val.forEach(v -> {
 			if (v instanceof VncVal) {
 				addAtEnd((VncVal)v);
@@ -64,6 +66,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncList copy() {
+		return copyMetaTo(new VncList(getList()));
+	}
+
+	@Override
+	public VncList withMeta(final VncVal meta) {
 		return copyMetaTo(new VncList(getList()));
 	}
 

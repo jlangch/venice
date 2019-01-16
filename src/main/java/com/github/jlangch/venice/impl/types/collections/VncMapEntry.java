@@ -23,17 +23,20 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class VncMapEntry extends VncVal {
 
 	public VncMapEntry(final VncVal key, final VncVal val) {
+		super(Constants.Nil);
 		this.key = key;
 		this.val = val;
 	}
 	
 	public VncMapEntry(final Map.Entry<VncVal, VncVal> entry) {
+		super(Constants.Nil);
 		this.key = entry.getKey();
 		this.val = entry.getValue();
 	}
@@ -47,7 +50,12 @@ public class VncMapEntry extends VncVal {
 	}
 
 	@Override
-	public VncVal copy() {
+	public VncMapEntry copy() {
+		return this;
+	}
+
+	@Override
+	public VncMapEntry withMeta(final VncVal meta) {
 		return this;
 	}
 

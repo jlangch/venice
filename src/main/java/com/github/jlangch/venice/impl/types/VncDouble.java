@@ -27,19 +27,27 @@ import com.github.jlangch.venice.impl.functions.Numeric;
 public class VncDouble extends VncVal {
 
 	public VncDouble(final Double v) { 
-		value = v; 
+		this(v, Constants.Nil); 
 	}
 	
 	public VncDouble(final Float v) { 
-		value = v.doubleValue(); 
+		this(v.doubleValue(), Constants.Nil); 
 	}
-	
+
+	public VncDouble(final Double v, final VncVal meta) { 
+		super(meta);
+		value = v; 
+	}
+
 
 	@Override
 	public VncDouble copy() { 
-		final VncDouble v = new VncDouble(value);
-		v.setMeta(getMeta());
-		return v;
+		return new VncDouble(value, getMeta());
+	}
+	
+	@Override
+	public VncDouble withMeta(final VncVal meta) {
+		return new VncDouble(value, meta);
 	}
 
 	public Double getValue() { 

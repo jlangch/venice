@@ -42,10 +42,12 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncHashMap extends VncMap {
 
 	public VncHashMap() {
+		super(Constants.Nil);
 		value = new HashMap<>();
 	}
 
 	public VncHashMap(final Map<VncVal,VncVal> val) {
+		super(Constants.Nil);
 		value = new HashMap<>(val);
 	}
 	
@@ -79,6 +81,12 @@ public class VncHashMap extends VncMap {
 	@SuppressWarnings("unchecked")
 	@Override
 	public VncHashMap copy() {
+		return copyMetaTo(new VncHashMap((HashMap<VncVal,VncVal>)value.clone()));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public VncHashMap withMeta(final VncVal meta) {
 		return copyMetaTo(new VncHashMap((HashMap<VncVal,VncVal>)value.clone()));
 	}
 
