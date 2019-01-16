@@ -39,17 +39,19 @@ public class VncHashSet extends VncSet {
 		value = val;
 	}
 
-	public VncHashSet(final Set<VncVal> val) {
-		value = io.vavr.collection.HashSet.ofAll(val);
+	
+	public static VncHashSet ofAll(final Set<VncVal> val) {
+		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val));
 	}
 	
-	public VncHashSet(final VncList val) {
-		value = io.vavr.collection.HashSet.ofAll(val.getList());
+	public static VncHashSet ofAll(final VncList val) {
+		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val.getList()));
 	}
 	
-	public VncHashSet(final VncVal... mvs) {
-		value = io.vavr.collection.HashSet.of(mvs);
+	public static VncHashSet ofAll(final VncVal... mvs) {
+		return new VncHashSet(io.vavr.collection.HashSet.of(mvs));
 	}
+	
 	
 	@Override
 	public VncHashSet empty() {

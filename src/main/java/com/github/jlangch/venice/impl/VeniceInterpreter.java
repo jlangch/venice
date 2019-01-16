@@ -83,7 +83,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private static VncVal quasiquote(final VncVal ast) {
 		if (!is_pair(ast)) {
-			return new VncList(new VncSymbol("quote"), ast);
+			return VncList.ofAll(new VncSymbol("quote"), ast);
 		} 
 		else {
 			final VncVal a0 = Coerce.toVncList(ast).nth(0);
@@ -93,13 +93,13 @@ public class VeniceInterpreter implements Serializable  {
 			else if (is_pair(a0)) {
 				final VncVal a00 = Coerce.toVncList(a0).nth(0);
 				if ((a00 instanceof VncSymbol) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
-					return new VncList(
+					return VncList.ofAll(
 								new VncSymbol("concat"),
 								Coerce.toVncList(a0).nth(1),
 								quasiquote(((VncList)ast).rest()));
 				}
 			}
-			return new VncList(
+			return VncList.ofAll(
 						new VncSymbol("cons"),
 						quasiquote(a0),
 						quasiquote(((VncList)ast).rest()));
@@ -248,7 +248,7 @@ public class VeniceInterpreter implements Serializable  {
 					if (docVal == null) {
 						docVal = env.get(new VncSymbol(name));
 					}
-					orig_ast = new VncList(new VncSymbol("println"), Doc.getDoc(docVal));
+					orig_ast = VncList.ofAll(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
 
 				case "eval":
@@ -523,7 +523,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncFunction macroFn = buildFunction(
 											sMacroName, 
 											macroParams, 
-											new VncList(body), 
+											VncList.ofAll(body), 
 											null, 
 											env);
 	
@@ -627,7 +627,7 @@ public class VeniceInterpreter implements Serializable  {
 			}
 			else {
 				eval_ast(expressions.slice(0, expressions.size()-1), env);
-				return ((VncList)eval_ast(new VncList(expressions.last()), env)).first();
+				return ((VncList)eval_ast(VncList.ofAll(expressions.last()), env)).first();
 			}
 		}
 		finally {
@@ -876,7 +876,7 @@ public class VeniceInterpreter implements Serializable  {
 					throw new AssertionException(
 							String.format(
 									"pre-condition assert failed: %s",
-									((VncString)CoreFunctions.str.apply(new VncList(v))).getValue()));		
+									((VncString)CoreFunctions.str.apply(VncList.ofAll(v))).getValue()));		
 				}
  			});
 		}

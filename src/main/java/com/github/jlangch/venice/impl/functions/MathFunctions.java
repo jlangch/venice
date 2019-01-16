@@ -906,30 +906,30 @@ public class MathFunctions {
 	
 				final List<VncVal> values = new ArrayList<>();
 	
-				if (zero_Q.apply(new VncList(step)) == True) {
+				if (zero_Q.apply(VncList.ofAll(step)) == True) {
 					throw new VncException("range: a step value must not be 0");	
 				}
 				
-				if (MathFunctions.pos_Q.apply(new VncList(step)) == True) {
-					if (CoreFunctions.lt.apply(new VncList(end, start)) == True) {
+				if (MathFunctions.pos_Q.apply(VncList.ofAll(step)) == True) {
+					if (CoreFunctions.lt.apply(VncList.ofAll(end, start)) == True) {
 						throw new VncException("range positive step: end must not be lower than start");	
 					}
 					
 					VncVal val = start;
-					while(CoreFunctions.lt.apply(new VncList(val, end)) == True) {
+					while(CoreFunctions.lt.apply(VncList.ofAll(val, end)) == True) {
 						values.add(val);
-						val = add.apply(new VncList(val, step));
+						val = add.apply(VncList.ofAll(val, step));
 					}
 				}
 				else {
-					if (CoreFunctions.gt.apply(new VncList(end, start)) == True) {
+					if (CoreFunctions.gt.apply(VncList.ofAll(end, start)) == True) {
 						throw new VncException("range negative step: end must not be greater than start");	
 					}
 					
 					VncVal val = start;
-					while(CoreFunctions.gt.apply(new VncList(val, end)) == True) {
+					while(CoreFunctions.gt.apply(VncList.ofAll(val, end)) == True) {
 						values.add(val);
-						val = add.apply(new VncList(val, step));
+						val = add.apply(VncList.ofAll(val, step));
 					}
 				}
 				

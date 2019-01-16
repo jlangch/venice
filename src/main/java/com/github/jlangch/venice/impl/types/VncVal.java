@@ -38,6 +38,8 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	abstract public VncVal copy();
 	
+	//abstract public VncVal withMeta(VncVal meta);
+	
 	public VncVal getMeta() { 
 		return meta; 
 	}

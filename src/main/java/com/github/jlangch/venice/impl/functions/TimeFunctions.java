@@ -1497,7 +1497,7 @@ public class TimeFunctions {
 				else {
 					VncVal latest = dates.get(0);
 					for(VncVal date : dates.subList(0, dates.size())) {
-						if (after_Q.apply(new VncList(date, latest)) == True) {
+						if (after_Q.apply(VncList.ofAll(date, latest)) == True) {
 							latest = date;
 						}
 					}
@@ -1536,7 +1536,7 @@ public class TimeFunctions {
 				else {
 					VncVal latest = dates.get(0);
 					for(VncVal date : dates.subList(0, dates.size())) {
-						if (before_Q.apply(new VncList(date, latest)) == True) {
+						if (before_Q.apply(VncList.ofAll(date, latest)) == True) {
 							latest = date;
 						}
 					}
@@ -1574,14 +1574,14 @@ public class TimeFunctions {
 					return True;
 				}
 				else if (start != Nil && end != Nil) {
-					return ((not_before_Q.apply(new VncList(date, start)) == True)
-							 && (not_after_Q.apply(new VncList(date, end)) == True)) ? True : False;
+					return ((not_before_Q.apply(VncList.ofAll(date, start)) == True)
+							 && (not_after_Q.apply(VncList.ofAll(date, end)) == True)) ? True : False;
 				}
 				else if (start != Nil) {
-					return not_before_Q.apply(new VncList(date, start));
+					return not_before_Q.apply(VncList.ofAll(date, start));
 				}
 				else {
-					return not_after_Q.apply(new VncList(date, end));
+					return not_after_Q.apply(VncList.ofAll(date, end));
 				}
 			}
 	

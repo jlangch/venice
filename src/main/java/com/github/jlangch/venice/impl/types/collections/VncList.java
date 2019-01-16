@@ -38,14 +38,20 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncList extends VncSequence {
 	
-	public VncList(final Collection<? extends VncVal> vals) {
-		value = new ArrayList<VncVal>(vals);
-	}
-	
-	public VncList(final VncVal... mvs) {
-		value = new ArrayList<VncVal>(Arrays.asList(mvs));
+	public VncList() {
+		value = new ArrayList<>();
 	}
 
+	public VncList(final Collection<? extends VncVal> vals) {
+		value = new ArrayList<>(vals);
+	}
+	
+	
+	public static VncList ofAll(final VncVal... mvs) {
+		return new VncList(Arrays.asList(mvs));
+	}
+
+	
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));

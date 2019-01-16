@@ -56,7 +56,7 @@ public class VncAtom extends VncVal {
 		for(;;) {
 			final VncVal oldVal = deref();
 			
-			final VncList new_args = new VncList(oldVal);
+			final VncList new_args = VncList.ofAll(oldVal);
 			new_args.addAllAtEnd(args);
 			final VncVal newVal = fn.apply(new_args);
 			

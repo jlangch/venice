@@ -156,7 +156,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		return new VncList(value
 							.entrySet()
 							.stream()
-							.map(e -> new VncVector(
+							.map(e -> VncVector.ofAll(
 										JavaInteropUtil.convertToVncVal(e.getKey()), 
 										JavaInteropUtil.convertToVncVal(e.getValue())))
 							.collect(Collectors.toList()));
@@ -167,7 +167,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		return new VncVector(value
 							.entrySet()
 							.stream()
-							.map(e -> new VncVector(
+							.map(e -> VncVector.ofAll(
 										JavaInteropUtil.convertToVncVal(e.getKey()), 
 										JavaInteropUtil.convertToVncVal(e.getValue())))
 							.collect(Collectors.toList()));

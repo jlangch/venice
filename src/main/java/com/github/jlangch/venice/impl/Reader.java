@@ -227,26 +227,26 @@ public class Reader {
 			case '\'': 
 				rdr.next();
 				return MetaUtil.withTokenPos(
-						new VncList(new VncSymbol("quote"), read_form(rdr)), 
+						VncList.ofAll(new VncSymbol("quote"), read_form(rdr)), 
 						token);
 			
 			case '`': 
 				rdr.next();
 				return MetaUtil.withTokenPos(
-						new VncList(new VncSymbol("quasiquote"), read_form(rdr)), 
+						VncList.ofAll(new VncSymbol("quasiquote"), read_form(rdr)), 
 						token);
 			
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
 					return MetaUtil.withTokenPos(
-							new VncList(new VncSymbol("unquote"), read_form(rdr)), 
+							VncList.ofAll(new VncSymbol("unquote"), read_form(rdr)), 
 							token);
 				} 
 				else {
 					rdr.next();
 					return MetaUtil.withTokenPos(
-							new VncList(new VncSymbol("splice-unquote"), read_form(rdr)), 
+							VncList.ofAll(new VncSymbol("splice-unquote"), read_form(rdr)), 
 							token);
 				}
 			
@@ -254,13 +254,13 @@ public class Reader {
 				rdr.next();
 				final VncVal meta = read_form(rdr);
 				return MetaUtil.withTokenPos(
-						new VncList(new VncSymbol("with-meta"), read_form(rdr), meta), 
+						VncList.ofAll(new VncSymbol("with-meta"), read_form(rdr), meta), 
 						token);
 			
 			case '@': 
 				rdr.next();
 				return MetaUtil.withTokenPos(
-						new VncList(new VncSymbol("deref"), read_form(rdr)), 
+						VncList.ofAll(new VncSymbol("deref"), read_form(rdr)), 
 						token);
 				
 			case '#': 
@@ -268,7 +268,7 @@ public class Reader {
 				Token t = rdr.peek();
 				if (t.charAt(0) == '{') {
 					// set literal #{1 2}
-					form = new VncHashSet(read_list(rdr, new VncList(), '{' , '}')); 
+					form = VncHashSet.ofAll(read_list(rdr, new VncList(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
 					// anonymous function literal #(> % 2)
@@ -280,7 +280,7 @@ public class Reader {
 					rdr.anonymousFnArgs.startCapture();
 					final VncVal body = read_list(rdr, new VncList(), '(' , ')');
 					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef();
-					form = new VncList(new VncSymbol("fn"), argsDef, body);
+					form = VncList.ofAll(new VncSymbol("fn"), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
 				}
 				else {

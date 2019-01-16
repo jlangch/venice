@@ -153,7 +153,7 @@ public class VncSortedMap extends VncMap {
 		return new VncList(value
 							.entrySet()
 							.stream()
-							.map(e -> new VncVector(e.getKey(), e.getValue()))
+							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
 							.collect(Collectors.toList()));
 	}
 	
@@ -162,7 +162,7 @@ public class VncSortedMap extends VncMap {
 		return new VncVector(value
 							.entrySet()
 							.stream()
-							.map(e -> new VncVector(e.getKey(), e.getValue()))
+							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
 							.collect(Collectors.toList()));
 	}
 	
@@ -211,7 +211,7 @@ public class VncSortedMap extends VncMap {
 		final List<VncVal> list = value
 									.entrySet()
 									.stream()
-									.map(e -> new VncList(e.getKey(), e.getValue()).getList())
+									.map(e -> VncList.ofAll(e.getKey(), e.getValue()).getList())
 									.flatMap(l -> l.stream())
 									.collect(Collectors.toList());
 

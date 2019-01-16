@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import com.github.jlangch.venice.impl.Printer;
@@ -31,12 +32,16 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class VncVector extends VncList {
 
+	public VncVector() {
+	}
+
 	public VncVector(Collection<? extends VncVal> vals) {
 		super(vals);
 	}
 	
-	public VncVector(final VncVal... mvs) {
-		super(mvs);
+	
+	public static VncVector ofAll(final VncVal... mvs) {
+		return new VncVector(Arrays.asList(mvs));
 	}
 
 	

@@ -47,12 +47,12 @@ public class VncStack extends VncCollection {
 
 	@Override
 	public VncList toVncList() {
-		return new VncList(stack.toArray(new VncVal[0]));
+		return VncList.ofAll(stack.toArray(new VncVal[0]));
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(stack.toArray(new VncVal[0]));
+		return VncVector.ofAll(stack.toArray(new VncVal[0]));
 	}
 
 	@Override
