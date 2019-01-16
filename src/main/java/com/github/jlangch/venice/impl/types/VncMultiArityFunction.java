@@ -53,12 +53,13 @@ public class VncMultiArityFunction extends VncFunction {
 
 	@Override
 	public VncMultiArityFunction copy() {
-		throw new VncException("Copy multi-arity function is not supported");
+		return this;
 	}
 
 	@Override
 	public VncMultiArityFunction withMeta(final VncVal meta) {
-		throw new VncException("Copy multi-arity function wit meta data is not supported");
+		super.withMeta(meta);
+		return this;
 	}
 
 	@Override

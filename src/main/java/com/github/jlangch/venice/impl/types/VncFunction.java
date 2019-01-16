@@ -57,11 +57,13 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	}
 
 	public VncFunction(final String name, final VncVal ast, final Env env, final VncList params, final VncVal meta) {
-		super(meta);
+		super(Constants.Nil);
 		this.name = name == null ? createAnonymousFuncName() : name;
 		this.ast = ast;
 		this.env = env;
 		this.params = params;
+		
+		this.fnMeta = meta;
 	}
 
 	
@@ -72,6 +74,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 
 	@Override
 	public VncFunction withMeta(final VncVal meta) {
+		this.fnMeta = meta;
 		return this;
 	}
 
@@ -131,6 +134,10 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		return name;
 	}
 
+	public VncVal getMeta() { 
+		return fnMeta; 
+	}
+
 	public static MetaBuilder meta() {
 		return new MetaBuilder();
 	}
@@ -175,4 +182,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 	public VncList params;
 	public boolean macro = false;
 	public final String name;
+	
+	// Functions handle its meta data localy (functions cannot be copied)
+	private volatile VncVal fnMeta = Constants.Nil;
 }

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl;
 
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -35,22 +36,14 @@ public class MetaUtil {
 	public static VncVal addDefMeta(final VncVal val, final VncMap meta) {
 		VncVal valMeta = val.getMeta();
 		
-		final VncVal argslist = meta.get(ARGLIST);
-		if (argslist != Constants.Nil) {
-			valMeta = addMetaVal(valMeta, ARGLIST, argslist);
+		if (valMeta == Constants.Nil) {
+			valMeta = meta;
+		}
+		else if (Types.isVncHashMap(valMeta)) {
+			valMeta = ((VncHashMap)valMeta).assoc(meta.toVncList());
 		}
 		
-		final VncVal doc = meta.get(DOC);
-		if (doc != Constants.Nil) {
-			valMeta = addMetaVal(valMeta, DOC, doc);
-		}
-		
-		final VncVal examples = meta.get(EXAMPLES);
-		if (examples != Constants.Nil) {
-			valMeta = addMetaVal(valMeta, EXAMPLES, examples);
-		}
-		
-		return val;
+		return val.withMeta(valMeta);
 	}
 	
 	public static VncVal toMeta(final Token token) {

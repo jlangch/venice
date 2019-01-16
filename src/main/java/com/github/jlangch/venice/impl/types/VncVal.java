@@ -40,16 +40,18 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	
 	abstract public VncVal withMeta(VncVal meta);
 	
-	public VncVal getMeta() { 
+	public VncVal getMeta() {
+		// getMeta() can be redefined. Functions do that to manage meta data themselves.
 		return meta; 
 	}
 	
 	public VncVal getMetaVal(final VncString key) {
-		if (meta == Constants.Nil) {
+		final VncVal meta_ = getMeta();
+		if (meta_ == Constants.Nil) {
 			return Constants.Nil;
 		}
-		else if (meta instanceof VncHashMap) {
-			return ((VncHashMap)meta).get(key);
+		else if (meta_ instanceof VncHashMap) {
+			return ((VncHashMap)meta_).get(key);
 		}
 		else {
 			return Constants.Nil; // not a map

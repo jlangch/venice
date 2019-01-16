@@ -73,7 +73,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	@Override
 	public VncMap withMeta(final VncVal meta) {
-		throw new VncException("not supported");
+		return this;
 	}
 
 	public VncVal getProperty(final VncString name) {
