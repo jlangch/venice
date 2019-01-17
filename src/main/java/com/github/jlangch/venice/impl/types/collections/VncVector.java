@@ -106,9 +106,9 @@ public class VncVector extends VncList {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (Types.isVncList(o)) {
-			for(int ii=0; ii<Math.min(size(), ((VncList)o).size()); ii++) {
-				int c = nth(ii).compareTo(((VncList)o).nth(ii));
+		else if (Types.isVncVector(o)) {
+			for(int ii=0; ii<Math.min(size(), ((VncVector)o).size()); ii++) {
+				int c = nth(ii).compareTo(((VncVector)o).nth(ii));
 				if (c != 0) {
 					return c;
 				}

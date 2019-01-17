@@ -78,7 +78,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private static boolean is_pair(final VncVal x) {
-		return x instanceof VncList && !((VncList)x).isEmpty();
+		return Types.isVncList(x) && !((VncList)x).isEmpty();
 	}
 
 	private static VncVal quasiquote(final VncVal ast) {
@@ -157,10 +157,10 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal eval_ast(final VncVal ast, final Env env) {
-		if (ast instanceof VncSymbol) {
+		if (Types.isVncSymbol(ast)) {
 			return env.get((VncSymbol)ast);
 		} 
-		else if (ast instanceof VncList) {
+		else if (Types.isVncList(ast)) {
 			final VncList list = (VncList)ast;
 			
 			// use reduce to take care of persistent list, addAtEnd() returns a new VncList
@@ -170,7 +170,7 @@ public class VeniceInterpreter implements Serializable  {
 							list.empty(),
 							(a,e) -> ((VncList)a).addAtEnd(EVAL(e, env)));
 		}
-		else if (ast instanceof VncMap) {
+		else if (Types.isVncMap(ast)) {
 			final VncMap map = (VncMap)ast;
 			
 			// use reduce to take care of persistent map, assoc() returns a new VncMap

@@ -225,7 +225,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (Types.isVncList(o)) {
+		else if (Types.isVncJavaList(o)) {
 			for(int ii=0; ii<Math.min(size(), ((VncJavaList)o).size()); ii++) {
 				int c = nth(ii).compareTo(((VncJavaList)o).nth(ii));
 				if (c != 0) {

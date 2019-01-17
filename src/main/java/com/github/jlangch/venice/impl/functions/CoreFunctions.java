@@ -1259,7 +1259,7 @@ public class CoreFunctions {
 				else if (args.last() == Nil) {
 					return new VncList(args.slice(0, args.size()-1).getList());
 				}
-				else if (!Types.isVncList(args.last())) {
+				else if (!Types.isVncSequence(args.last())) {
 					throw new VncException(String.format(
 							"Function 'list*' does not allow %s as last argument", 
 							Types.getClassName(args.last())));
@@ -1267,7 +1267,7 @@ public class CoreFunctions {
 				else {			
 					VncList list = new VncList();
 					list = list.addAllAtEnd(args.slice(0, args.size()-1));
-					list = list.addAllAtEnd((VncList)args.last());
+					list = list.addAllAtEnd((VncSequence)args.last());
 					return list;
 				}
 			}
@@ -2367,8 +2367,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("update", args, 3);
 				
-				if (Types.isVncList(args.first())) {
-					final VncList list = ((VncList)args.first()).copy();
+				if (Types.isVncSequence(args.first())) {
+					final VncSequence list = ((VncSequence)args.first()).copy();
 					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 							
@@ -2422,8 +2422,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("update!", args, 3);
 				
-				if (Types.isVncList(args.first())) {
-					final VncList list = (VncList)args.first();
+				if (Types.isVncSequence(args.first())) {
+					final VncSequence list = (VncSequence)args.first();
 					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 							
@@ -2580,6 +2580,9 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncList(to)) {
 					return ((VncList)to).addAllAtStart(from.toVncList());
+				}
+				else if (Types.isVncJavaList(to)) {
+					return ((VncJavaList)to).addAllAtStart(from.toVncList());
 				}
 				else if (Types.isVncHashSet(to)) {
 					return ((VncHashSet)to).addAll(from.toVncList());
@@ -2858,16 +2861,10 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					return Nil;
 				} 
-				else if (coll instanceof VncVector) {
-					return ((VncVector)coll).empty();
+				else if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).empty();
 				} 
-				else if (coll instanceof VncList) {
-					return ((VncList)coll).empty();
-				} 
-				else if (coll instanceof VncJavaList) {
-					return ((VncJavaList)coll).empty();
-				} 
-				else if (coll instanceof VncMap) {
+				else if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).empty();
 				} 
 				else {
@@ -3178,11 +3175,8 @@ public class CoreFunctions {
 					return Nil;
 				}
 				
-				if (Types.isVncList(val)) {
-					return ((VncList)val).second();
-				}
-				else if (Types.isVncJavaList(val)) {
-					return ((VncJavaList)val).second();
+				if (Types.isVncSequence(val)) {
+					return ((VncSequence)val).second();
 				}
 				else if (Types.isVncString(val)) {
 					return ((VncString)val).second();
@@ -3220,11 +3214,8 @@ public class CoreFunctions {
 					return Nil;
 				}
 				
-				if (Types.isVncList(val)) {
-					return ((VncList)val).nth(idx);
-				}
-				else if (Types.isVncJavaList(val)) {
-					return ((VncJavaList)val).nth(idx);
+				if (Types.isVncSequence(val)) {
+					return ((VncSequence)val).nth(idx);
 				}
 				else if (Types.isVncString(val)) {
 					return ((VncString)val).nth(idx);
@@ -3262,11 +3253,8 @@ public class CoreFunctions {
 					return Nil;
 				}
 				
-				if (Types.isVncList(val)) {
-					return ((VncList)val).last();
-				}
-				else if (Types.isVncJavaList(val)) {
-					return ((VncJavaList)val).last();
+				if (Types.isVncSequence(val)) {
+					return ((VncSequence)val).last();
 				}
 				else if (Types.isVncString(val)) {
 					return ((VncString)val).last();
@@ -3308,11 +3296,11 @@ public class CoreFunctions {
 				else if (Types.isVncVector(coll)) {
 					return ((VncVector)coll).rest();
 				}
-				else if (Types.isVncJavaList(coll)) {
-					return ((VncJavaList)coll).rest();
-				}
 				else if (Types.isVncList(coll)) {
 					return ((VncList)coll).rest();
+				}
+				else if (Types.isVncJavaList(coll)) {
+					return ((VncJavaList)coll).rest();
 				}
 				else {
 					throw new VncException(String.format(
@@ -4494,8 +4482,8 @@ public class CoreFunctions {
 				if (twoArguments) {
 					List<VncVal> coll;
 					
-					if (Types.isVncList(args.nth(1))) {
-						coll = Coerce.toVncList(args.nth(1)).getList();
+					if (Types.isVncSequence(args.nth(1))) {
+						coll = Coerce.toVncSequence(args.nth(1)).getList();
 					}
 					else if (Types.isVncMap(args.nth(1))) {
 						coll = Coerce.toVncMap(args.nth(1)).toVncList().getList();
@@ -4520,8 +4508,8 @@ public class CoreFunctions {
 				else {
 					List<VncVal> coll;
 					
-					if (Types.isVncList(args.nth(2))) {
-						coll = Coerce.toVncList(args.nth(2)).getList();
+					if (Types.isVncSequence(args.nth(2))) {
+						coll = Coerce.toVncSequence(args.nth(2)).getList();
 					}
 					else if (Types.isVncMap(args.nth(2))) {
 						coll = Coerce.toVncMap(args.nth(2)).toVncList().getList();
@@ -5027,8 +5015,8 @@ public class CoreFunctions {
 		
 		
 	private static void flatten(final VncVal value, final List<VncVal> result) {
-		if (Types.isVncList(value) || Types.isVncJavaList(value)) {
-			Coerce.toVncList(value).forEach(v -> flatten(v, result));
+		if (Types.isVncSequence(value)) {
+			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
 		}
 		else if (Types.isVncHashMap(value)) {
 			((VncHashMap)value).entries().forEach(e -> {

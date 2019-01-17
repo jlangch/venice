@@ -40,7 +40,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncAtom) {
+		else if (Types.isVncAtom(val)) {
 			return (VncAtom)val;
 		}
 		else {
@@ -55,7 +55,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncThreadLocal) {
+		else if (Types.isVncThreadLocal(val)) {
 			return (VncThreadLocal)val;
 		}
 		else {
@@ -70,7 +70,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncKeyword) {
+		else if (Types.isVncKeyword(val)) {
 			return (VncKeyword)val;
 		}
 		else {
@@ -85,7 +85,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncSymbol) {
+		else if (Types.isVncSymbol(val)) {
 			return (VncSymbol)val;
 		}
 		else {
@@ -100,7 +100,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncFunction) {
+		else if (Types.isVncFunction(val)) {
 			return (VncFunction)val;
 		}
 		else {
@@ -115,7 +115,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncString) {
+		else if (Types.isVncString(val)) {
 			return (VncString)val;
 		}
 		else {
@@ -145,7 +145,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncLong) {
+		else if (Types.isVncLong(val)) {
 			return (VncLong)val;
 		}
 		else {
@@ -160,7 +160,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncDouble) {
+		else if (Types.isVncDouble(val)) {
 			return (VncDouble)val;
 		}
 		else {
@@ -175,7 +175,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncBigDecimal) {
+		else if (Types.isVncBigDecimal(val)) {
 			return (VncBigDecimal)val;
 		}
 		else {
@@ -190,7 +190,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncByteBuffer) {
+		else if (Types.isVncByteBuffer(val)) {
 			return (VncByteBuffer)val;
 		}
 		else {
@@ -205,7 +205,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncCollection) {
+		else if (Types.isVncCollection(val)) {
 			return (VncCollection)val;
 		}
 		else {
@@ -220,7 +220,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncSequence) {
+		else if (Types.isVncSequence(val)) {
 			return (VncSequence)val;
 		}
 		else {
@@ -235,7 +235,10 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncList) {
+		else if (Types.isVncVector(val)) {
+			return (VncVector)val;
+		}
+		else if (Types.isVncList(val)) {
 			return (VncList)val;
 		}
 		else if (val instanceof VncJavaList) {
@@ -253,7 +256,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncVector) {
+		else if (Types.isVncVector(val)) {
 			return (VncVector)val;
 		}
 		else if (val instanceof VncJavaList) {
@@ -271,7 +274,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncMap) {
+		else if (Types.isVncMap(val)) {
 			return (VncMap)val;
 		}
 		else {
@@ -289,7 +292,7 @@ public class Coerce {
 		else if (val instanceof VncHashMap) {
 			return (VncHashMap)val;
 		}
-		else if (val instanceof VncMap) {
+		else if (Types.isVncMap(val)) {
 			return new VncHashMap(((VncMap)val).getMap());
 		}
 		else {
@@ -304,7 +307,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncSet) {
+		else if (Types.isVncSet(val)) {
 			return (VncSet)val;
 		}
 		else {
@@ -319,7 +322,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncHashSet) {
+		else if (Types.isVncHashSet(val)) {
 			return (VncHashSet)val;
 		}
 		else {
@@ -334,7 +337,7 @@ public class Coerce {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncJavaObject) {
+		else if (Types.isVncJavaObject(val)) {
 			return (VncJavaObject)val;
 		}
 		else {
