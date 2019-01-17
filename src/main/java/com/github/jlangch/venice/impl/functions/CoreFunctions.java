@@ -2590,7 +2590,7 @@ public class CoreFunctions {
 				else if (Types.isVncMap(to)) {
 					if (Types.isVncSequence(from)) {
 						VncMap toMap = (VncMap)to;					
-						for(VncVal it : ((VncList)from).getList()) {
+						for(VncVal it : ((VncSequence)from).getList()) {
 							if (Types.isVncSequence(it)) {
 								toMap = ((VncMap)toMap).assoc(((VncSequence)it).toVncList());
 							}
@@ -2966,7 +2966,7 @@ public class CoreFunctions {
 				if (Types.isVncVector(args.nth(1))) {
 					return new VncVector()
 								.addAtStart(args.nth(0))
-								.addAllAtEnd((VncList)args.nth(1));
+								.addAllAtEnd((VncVector)args.nth(1));
 				}
 				if (Types.isVncList(args.nth(1))) {
 					return new VncList()

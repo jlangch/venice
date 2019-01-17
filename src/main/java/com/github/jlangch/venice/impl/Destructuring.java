@@ -82,20 +82,17 @@ public class Destructuring {
 			
 			bindings.add(new Binding((VncSymbol)symVal, bindVal));
 		}
-		else if (Types.isVncList(symVal) || Types.isVncVector(symVal)) {
+		else if (Types.isVncSequence(symVal)) {
 			// sequential destructuring	
 			
 			if (bindVal == Nil) {
-				sequential_list_destructure((VncList)symVal, new VncList(), bindings);
+				sequential_list_destructure((VncSequence)symVal, new VncList(), bindings);
 			}
-			if (Types.isVncVector(bindVal)) {
-				sequential_list_destructure((VncVector)symVal, bindVal, bindings);
-			}
-			if (Types.isVncList(bindVal)) {
-				sequential_list_destructure((VncList)symVal, bindVal, bindings);
+			if (Types.isVncSequence(bindVal)) {
+				sequential_list_destructure((VncSequence)symVal, bindVal, bindings);
 			}
 			else if (Types.isVncString(bindVal)) {
-				sequential_string_destructure((VncList)symVal, bindVal, bindings);
+				sequential_string_destructure((VncSequence)symVal, bindVal, bindings);
 			}
 			else {
 				throw new VncException(

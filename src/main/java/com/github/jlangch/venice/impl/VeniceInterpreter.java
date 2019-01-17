@@ -170,7 +170,7 @@ public class VeniceInterpreter implements Serializable  {
 					   .stream()
 					   .reduce(
 							list.empty(),
-							(a,e) -> ((VncList)a).addAtEnd(EVAL(e, env)));
+							(a,e) -> ((VncSequence)a).addAtEnd(EVAL(e, env)));
 		}
 		else if (Types.isVncMap(ast)) {
 			final VncMap map = (VncMap)ast;
