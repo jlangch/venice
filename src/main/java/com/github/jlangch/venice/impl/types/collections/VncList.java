@@ -78,6 +78,7 @@ public class VncList extends VncSequence {
 		return new VncList(value, meta);
 	}
 	
+	
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
@@ -107,9 +108,8 @@ public class VncList extends VncSequence {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a %s of size %d. %s", 
+						"nth: index %d out of range for a list of size %d. %s", 
 						idx, 
-						Types.isVncVector(this) ? "vector" : "list",
 						size(),
 						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
 		}
@@ -260,5 +260,5 @@ public class VncList extends VncSequence {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	protected final ArrayList<VncVal> value;
+	private final ArrayList<VncVal> value;
 }

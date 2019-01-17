@@ -51,11 +51,11 @@ public abstract class VncSequence extends VncCollection {
 
 	public abstract VncVal last();
 
-	public abstract VncList rest();
+	public abstract VncSequence rest();
 
-	public abstract VncList slice(int start, int end);
+	public abstract VncSequence slice(int start, int end);
 	
-	public abstract VncList slice(int start);
+	public abstract VncSequence slice(int start);
 
 	public abstract VncSequence setAt(int idx, VncVal val);
 

@@ -21,13 +21,19 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncVector extends VncList {
@@ -45,7 +51,8 @@ public class VncVector extends VncList {
 	}
 
 	public VncVector(final Collection<? extends VncVal> vals, final VncVal meta) {
-		super(vals, meta);
+		super(meta == null ? Constants.Nil : meta);
+		value = vals == null ? new ArrayList<>() : new ArrayList<>(vals);
 	}
 	
 	
@@ -70,10 +77,69 @@ public class VncVector extends VncList {
 		// shallow copy
 		return new VncVector(value, meta);
 	}
+	
+	
+	@Override
+	public void forEach(Consumer<? super VncVal> action) {
+		value.forEach(v -> action.accept(v));
+	}
 
+	@Override
+	public List<VncVal> getList() { 
+		return Collections.unmodifiableList(value); 
+	}
+	
 	@Override
 	public boolean isList() { 
 		return false; 
+	}
+
+	@Override
+	public int size() {
+		return value.size();
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return value.isEmpty();
+	}
+	
+	@Override
+	public VncVal nth(final int idx) {
+		if (idx < 0 || idx >= value.size()) {
+			throw new VncException(String.format(
+						"nth: index %d out of range for a vector of size %d. %s", 
+						idx, 
+						size(),
+						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
+		}
+
+		return value.get((int)idx);
+	}
+
+	@Override
+	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
+		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
+	}
+
+	@Override
+	public VncVal first() {
+		return isEmpty() ? Constants.Nil : nth(0);
+	}
+
+	@Override
+	public VncVal second() {
+		return size() < 2 ? Constants.Nil : nth(1);
+	}
+
+	@Override
+	public VncVal third() {
+		return size() < 3 ? Constants.Nil : nth(2);
+	}
+
+	@Override
+	public VncVal last() {
+		return isEmpty() ? Constants.Nil : nth(value.size()-1);
 	}
 	
 	@Override
@@ -101,6 +167,45 @@ public class VncVector extends VncList {
 		return new VncVector(getList(), getMeta());
 	}
 
+	@Override
+	public VncVector setAt(final int idx, final VncVal val) {
+		value.set(idx, val);
+		return this;
+	}
+	
+	@Override
+	public VncVector addAtStart(final VncVal val) {
+		value.add(0, val);
+		return this;
+	}
+	
+	@Override
+	public VncVector addAllAtStart(final VncSequence list) {
+		final List<VncVal> items = list.getList();
+		for(int ii=0; ii<items.size(); ii++) {
+			value.add(0, items.get(ii));
+		}
+		return this;
+	}
+	
+	@Override
+	public VncVector addAtEnd(final VncVal val) {
+		value.add(val);
+		return this;
+	}
+	
+	@Override
+	public VncVector addAllAtEnd(final VncSequence list) {
+		value.addAll(list.getList());
+		return this;
+	}
+	
+	@Override
+	public VncVector removeAt(final int idx) {
+		value.remove(idx);
+		return this;
+	}
+	
 	@Override
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
@@ -130,4 +235,6 @@ public class VncVector extends VncList {
 
 
 	private static final long serialVersionUID = -1848883965231344442L;
+	
+	private final ArrayList<VncVal> value;
 }
