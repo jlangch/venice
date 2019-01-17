@@ -88,11 +88,6 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 				.map(v -> JavaInteropUtil.convertToVncVal(v))
 				.collect(Collectors.toList());
 	}
-	
-	@Override
-	public boolean isList() { 
-		return true; 
-	}
 
 	@Override
 	public int size() {

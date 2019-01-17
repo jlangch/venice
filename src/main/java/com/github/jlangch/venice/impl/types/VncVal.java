@@ -63,11 +63,6 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return val == Constants.Nil ? defaultValue : val;
 	}
 
-	
-	public boolean isList() { 
-		return false; 
-	}
-
 	@Override
 	public int compareTo(final VncVal o) {
 		return 0;

@@ -88,11 +88,6 @@ public class VncList extends VncSequence {
 	public List<VncVal> getList() { 
 		return Collections.unmodifiableList(value); 
 	}
-	
-	@Override
-	public boolean isList() { 
-		return true; 
-	}
 
 	@Override
 	public int size() {
