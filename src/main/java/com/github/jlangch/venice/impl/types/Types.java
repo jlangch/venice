@@ -274,12 +274,12 @@ public class Types {
 				// allow true: (== \"aa\" \"aa\" ), (== :aa :aa ), (== :aa \"aa\" )
 				return ((VncString)a).getValue().equals(((VncString)b).getValue());
 			} 
-			else if (a instanceof VncList) {
-				if (((VncList)a).size() != ((VncList)b).size()) {
+			else if (a instanceof VncSequence) {
+				if (((VncSequence)a).size() != ((VncSequence)b).size()) {
 					return false;
 				}
-				for (Integer i=0; i<((VncList)a).size(); i++) {
-					if (!_equal_Q(((VncList)a).nth(i), ((VncList)b).nth(i))) {
+				for (Integer i=0; i<((VncSequence)a).size(); i++) {
+					if (!_equal_Q(((VncSequence)a).nth(i), ((VncSequence)b).nth(i))) {
 						return false;
 					}
 				}

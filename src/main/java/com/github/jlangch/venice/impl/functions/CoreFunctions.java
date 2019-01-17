@@ -2025,11 +2025,11 @@ public class CoreFunctions {
 				assertArity("assoc-in", args, 3);
 							
 				final VncVal coll = args.nth(0); // may be Nil
-				final VncList keys = Coerce.toVncList(args.nth(1));
+				final VncSequence keys = Coerce.toVncSequence(args.nth(1));
 				final VncVal val = args.nth(2);
 				
 				final VncVal key = keys.first();
-				final VncList keyRest = keys.rest();
+				final VncSequence keyRest = keys.rest();
 				
 				if (keyRest.isEmpty()) {
 					return assoc.apply(VncList.of(coll, key, val));
@@ -2187,7 +2187,7 @@ public class CoreFunctions {
 				assertArity("get-in", args, 2, 3);
 				
 				VncCollection coll = Coerce.toVncCollection(args.nth(0));
-				VncList keys = Coerce.toVncList(args.nth(1));
+				VncSequence keys = Coerce.toVncSequence(args.nth(1));
 				VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 				
 				while(!keys.isEmpty()) {
@@ -2212,7 +2212,7 @@ public class CoreFunctions {
 					else {
 						if (Types.isVncLong(key)) {
 							final int index = ((VncLong)key).getValue().intValue();
-							final VncVal val = ((VncList)coll).nthOrDefault(index, Nil);
+							final VncVal val = ((VncSequence)coll).nthOrDefault(index, Nil);
 							if (val == Nil) {
 								return key_not_found;
 							}
@@ -2279,7 +2279,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("key", args, 1);
 				
-				final VncList entry = Coerce.toVncList(args.nth(0));
+				final VncSequence entry = Coerce.toVncSequence(args.nth(0));
 				return entry.first();
 			}
 	
@@ -2318,7 +2318,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("val", args, 1);
 				
-				final VncList entry = Coerce.toVncList(args.nth(0));
+				final VncSequence entry = Coerce.toVncSequence(args.nth(0));
 				return entry.second();
 			}
 	
@@ -3058,10 +3058,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("interleave", args, 2);
 	
-				int len = Coerce.toVncList(args.first()).size();
-				final List<VncList> lists = new ArrayList<>();
+				int len = Coerce.toVncSequence(args.first()).size();
+				final List<VncSequence> lists = new ArrayList<>();
 				for(int ii=0; ii<args.size(); ii++) {
-					final VncList l = Coerce.toVncList(args.nth(ii));
+					final VncSequence l = Coerce.toVncSequence(args.nth(ii));
 					lists.add(l);
 					len = Math.min(len, l.size());				
 				}
@@ -3094,7 +3094,7 @@ public class CoreFunctions {
 				assertArity("interpose", args, 2);
 	
 				final VncVal sep = args.first();
-				final VncList coll = Coerce.toVncList(args.second());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 				
 				final List<VncVal> result = new ArrayList<>();
 		
@@ -3389,7 +3389,7 @@ public class CoreFunctions {
 							: new VncVector(vec.getList().subList(0, n));
 				}
 				else if (Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0))) {
-					final VncList list = Coerce.toVncList(args.nth(0));		
+					final VncSequence list = Coerce.toVncSequence(args.nth(0));		
 					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
 					return list.isEmpty() 
 							? new VncList() 
@@ -3471,12 +3471,12 @@ public class CoreFunctions {
 					return new VncList();
 				}
 				
-				final VncList result = ((VncList)args.nth(0)).empty();
+				final VncSequence result = ((VncSequence)args.nth(0)).empty();
 				
 				return result.addAllAtEnd(
 								new VncList(
 									Coerce
-										.toVncList(args.nth(0))
+										.toVncSequence(args.nth(0))
 										.getList()
 										.stream()
 										.distinct()
@@ -3505,13 +3505,13 @@ public class CoreFunctions {
 					return new VncList();
 				}
 				
-				final VncList result = ((VncList)args.nth(0)).empty();
+				final VncSequence result = ((VncSequence)args.nth(0)).empty();
 				
 				VncVal seen = null;
 	
 				final List<VncVal> items = new ArrayList<>();
 	
-				for(VncVal val : Coerce.toVncList(args.nth(0)).getList()) {
+				for(VncVal val : Coerce.toVncSequence(args.nth(0)).getList()) {
 					if (seen == null || !val.equals(seen)) {
 						items.add(val);
 						seen = val;
@@ -3548,8 +3548,8 @@ public class CoreFunctions {
 	
 				final int n = Coerce.toVncLong(args.nth(0)).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.nth(1)).getValue().intValue() : n;
-				final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncList(args.nth(2)).getList() : new ArrayList<>();
-				final List<VncVal> coll = Coerce.toVncList(args.nth(args.size()-1)).getList();
+				final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)).getList() : new ArrayList<>();
+				final List<VncVal> coll = Coerce.toVncSequence(args.nth(args.size()-1)).getList();
 				
 				if (n <= 0) {
 					throw new VncException(String.format(
@@ -3748,7 +3748,7 @@ public class CoreFunctions {
 				assertArity("take-while", args, 2);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 				
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -3780,7 +3780,7 @@ public class CoreFunctions {
 				assertArity("take", args, 2);
 				
 				final VncLong n = Coerce.toVncLong(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 	
 				return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
 			}
@@ -3804,7 +3804,7 @@ public class CoreFunctions {
 				assertArity("drop-while", args, 2);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 				
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -3832,7 +3832,7 @@ public class CoreFunctions {
 				assertArity("drop", args, 2);
 				
 				final VncLong n = Coerce.toVncLong(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 	
 				return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
 			}
@@ -3856,7 +3856,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("flatten", args, 1);
 				
-				final VncList coll = Coerce.toVncList(args.nth(0));
+				final VncCollection coll = Coerce.toVncCollection(args.nth(0));
 				
 				final List<VncVal> result = new ArrayList<>();
 				flatten(coll, result);			
@@ -3879,14 +3879,14 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reverse", args, 1);
 				
-				final VncList coll = Coerce.toVncList(args.nth(0));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(0));
 				
 				final List<VncVal> reversed = new ArrayList<>();
 				for(int ii=coll.size()-1; ii>=0; ii--) {
 					reversed.add(coll.nth(ii));
 				}	
 				
-				final VncList result = coll.empty();
+				final VncSequence result = coll.empty();
 				return result.addAllAtEnd(new VncList(reversed));
 			}
 	
@@ -4021,13 +4021,13 @@ public class CoreFunctions {
 				assertArity("group-by", args, 2);
 	
 				final VncFunction fn = Coerce.toVncFunction(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 	
 				VncMap map = new VncOrderedMap();
 				
 				for(VncVal v : coll.getList()) {
 					final VncVal key = fn.apply(VncList.of(v));
-					final VncList val = Coerce.toVncList(map.getMap().get(key));
+					final VncSequence val = Coerce.toVncSequence(map.getMap().get(key));
 					if (val == null) {
 						map = map.assoc(key, VncVector.of(v));
 					}
@@ -4065,7 +4065,7 @@ public class CoreFunctions {
 					return fn.apply(fn_args.addAtEnd(Nil));
 				}
 				else {
-					final VncList tailArgs = Coerce.toVncList(args.last());
+					final VncSequence tailArgs = Coerce.toVncSequence(args.last());
 					return fn.apply(fn_args.addAllAtEnd(tailArgs));				
 				}
 			}
@@ -4216,7 +4216,7 @@ public class CoreFunctions {
 					final List<VncVal> fnArgs = new ArrayList<>();
 					
 					for(int ii=0; ii<lists.size(); ii++) {
-						final VncList nthList = Coerce.toVncList(lists.nth(ii));
+						final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
 						if (nthList.size() > index) {
 							fnArgs.add(nthList.nth(index));
 						}
@@ -4268,7 +4268,7 @@ public class CoreFunctions {
 					final List<VncVal> fnArgs = new ArrayList<>();
 					
 					for(int ii=0; ii<lists.size(); ii++) {
-						final VncList nthList = Coerce.toVncList(lists.nth(ii));
+						final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
 						if (nthList.size() > index) {
 							fnArgs.add(nthList.nth(index));
 						}
@@ -4398,7 +4398,7 @@ public class CoreFunctions {
 				assertArity("filter", args, 2);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 	
 				final List<VncVal> items = new ArrayList<>();
 				
@@ -4433,7 +4433,7 @@ public class CoreFunctions {
 				assertArity("remove", args, 2);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 	
 				final List<VncVal> items = new ArrayList<>();
 				for(int i=0; i<coll.size(); i++) {
