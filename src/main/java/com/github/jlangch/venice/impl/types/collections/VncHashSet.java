@@ -58,7 +58,7 @@ public class VncHashSet extends VncSet {
 		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val.getList()));
 	}
 	
-	public static VncHashSet ofAll(final VncVal... mvs) {
+	public static VncHashSet of(final VncVal... mvs) {
 		return new VncHashSet(io.vavr.collection.HashSet.of(mvs));
 	}
 	

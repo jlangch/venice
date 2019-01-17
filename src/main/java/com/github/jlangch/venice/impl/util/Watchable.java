@@ -42,7 +42,7 @@ public class Watchable {
 	public void notifyWatches(final VncVal ref, final VncVal oldVal, final VncVal newVal) {
 		watches.entrySet().forEach(e -> {
 			try {
-				e.getValue().apply(VncList.ofAll(e.getKey(), ref, oldVal, newVal));
+				e.getValue().apply(VncList.of(e.getKey(), ref, oldVal, newVal));
 			}
 			catch(RuntimeException ex) { 
 				/* just skip */ 

@@ -172,7 +172,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 						value
 							.entrySet()
 							.stream()
-							.map(e -> VncVector.ofAll(
+							.map(e -> VncVector.of(
 										JavaInteropUtil.convertToVncVal(e.getKey()), 
 										JavaInteropUtil.convertToVncVal(e.getValue())))
 							.collect(Collectors.toList()),
@@ -185,7 +185,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 						value
 							.entrySet()
 							.stream()
-							.map(e -> VncVector.ofAll(
+							.map(e -> VncVector.of(
 										JavaInteropUtil.convertToVncVal(e.getKey()), 
 										JavaInteropUtil.convertToVncVal(e.getValue())))
 							.collect(Collectors.toList()),

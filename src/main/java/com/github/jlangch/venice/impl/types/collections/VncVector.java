@@ -56,7 +56,7 @@ public class VncVector extends VncList {
 	}
 	
 	
-	public static VncVector ofAll(final VncVal... mvs) {
+	public static VncVector of(final VncVal... mvs) {
 		return new VncVector(Arrays.asList(mvs));
 	}
 

@@ -219,35 +219,35 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return VncList.ofAll(new VncSymbol("quote"), read_form(rdr))
+				return VncList.of(new VncSymbol("quote"), read_form(rdr))
 							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '`': 
 				rdr.next();
-				return VncList.ofAll(new VncSymbol("quasiquote"), read_form(rdr))
+				return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
 							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return VncList.ofAll(new VncSymbol("unquote"), read_form(rdr))
+					return VncList.of(new VncSymbol("unquote"), read_form(rdr))
 								   .withMeta(MetaUtil.toMeta(token));
 				} 
 				else {
 					rdr.next();
-					return VncList.ofAll(new VncSymbol("splice-unquote"), read_form(rdr))
+					return VncList.of(new VncSymbol("splice-unquote"), read_form(rdr))
 								  .withMeta(MetaUtil.toMeta(token));
 				}
 			
 			case '^': 
 				rdr.next();
 				final VncVal meta = read_form(rdr);
-				return VncList.ofAll(new VncSymbol("with-meta"), read_form(rdr), meta)
+				return VncList.of(new VncSymbol("with-meta"), read_form(rdr), meta)
 							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '@': 
 				rdr.next();
-				return VncList.ofAll(new VncSymbol("deref"), read_form(rdr))
+				return VncList.of(new VncSymbol("deref"), read_form(rdr))
 							  .withMeta(MetaUtil.toMeta(token));
 				
 			case '#': 
@@ -267,7 +267,7 @@ public class Reader {
 					rdr.anonymousFnArgs.startCapture();
 					final VncVal body = read_list(rdr, new VncList(), '(' , ')');
 					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef();
-					form = VncList.ofAll(new VncSymbol("fn"), argsDef, body);
+					form = VncList.of(new VncSymbol("fn"), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
 				}
 				else {

@@ -234,7 +234,7 @@ public class Agent {
 						final VncFunction handler = agent.errorHandler.get();
 						if (handler != null) {
 							handler.apply(
-									VncList.ofAll(
+									VncList.of(
 											new VncJavaObject(agent), 
 											new VncJavaObject(ex)));
 						}

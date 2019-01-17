@@ -2032,15 +2032,15 @@ public class CoreFunctions {
 				final VncList keyRest = keys.rest();
 				
 				if (keyRest.isEmpty()) {
-					return assoc.apply(VncList.ofAll(coll, key, val));
+					return assoc.apply(VncList.of(coll, key, val));
 				}
 				else {
-					final VncVal childColl = get.apply(VncList.ofAll(coll, key));
+					final VncVal childColl = get.apply(VncList.of(coll, key));
 					return assoc.apply(
-							VncList.ofAll(
+							VncList.of(
 									coll, 
 									key, 
-									assoc_in.apply(VncList.ofAll(childColl, keyRest, val))));
+									assoc_in.apply(VncList.of(childColl, keyRest, val))));
 				}
 			}
 	
@@ -2259,7 +2259,7 @@ public class CoreFunctions {
 					final VncVal key = args.nth(1);
 					
 					final VncVal value = mhm.get(key);
-					return value == Nil ? Nil : VncVector.ofAll(key, value);
+					return value == Nil ? Nil : VncVector.of(key, value);
 				}
 			}
 	
@@ -2378,17 +2378,17 @@ public class CoreFunctions {
 								idx));
 					}
 					else if (idx < list.size()) {
-						return list.setAt(idx, fn.apply(VncList.ofAll(list.nth(idx))));
+						return list.setAt(idx, fn.apply(VncList.of(list.nth(idx))));
 					}
 					else {
-						return list.addAtEnd(fn.apply(VncList.ofAll(Nil)));
+						return list.addAtEnd(fn.apply(VncList.of(Nil)));
 					}			
 				}
 				else if (Types.isVncMap(args.first())) {
 					final VncMap map = ((VncMap)args.first()).copy();
 					final VncVal key = args.second();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
-					return map.assoc(key, fn.apply(VncList.ofAll(map.get(key))));
+					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
 				}
 				else {
 					throw new VncException(String.format(
@@ -2433,17 +2433,17 @@ public class CoreFunctions {
 								idx));
 					}
 					else if (idx < list.size()) {
-						return list.setAt(idx, fn.apply(VncList.ofAll(list.nth(idx))));
+						return list.setAt(idx, fn.apply(VncList.of(list.nth(idx))));
 					}
 					else {
-						return list.addAtEnd(fn.apply(VncList.ofAll(Nil)));
+						return list.addAtEnd(fn.apply(VncList.of(Nil)));
 					}			
 				}
 				else if (Types.isVncMap(args.first())) {
 					final VncMap map = (VncMap)args.first();
 					final VncVal key = args.second();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
-					return map.assoc(key, fn.apply(VncList.ofAll(map.get(key))));
+					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
 				}
 				else {
 					throw new VncException(String.format(
@@ -2478,7 +2478,7 @@ public class CoreFunctions {
 				assertArity("split-with", args, 2);
 				
 				if (args.second() == Nil) {
-					return VncVector.ofAll(new VncList(), new VncList());
+					return VncVector.of(new VncList(), new VncList());
 				}
 				
 				final VncFunction pred = Coerce.toVncFunction(args.first());
@@ -2490,7 +2490,7 @@ public class CoreFunctions {
 				// find splitPos
 				for(int ii=0; ii<items.size(); ii++) {
 					final VncVal val = coll.nth(ii);
-					final VncVal match = pred.apply(VncList.ofAll(val));
+					final VncVal match = pred.apply(VncList.of(val));
 					if (match == False || match == Nil) {
 						splitPos = ii;
 						break;
@@ -2498,15 +2498,15 @@ public class CoreFunctions {
 				}
 				
 				if (splitPos == 0) {
-					return VncVector.ofAll(new VncList(), new VncList(items));
+					return VncVector.of(new VncList(), new VncList(items));
 				}
 				else if (splitPos < items.size()) {
-					return VncVector.ofAll(
+					return VncVector.of(
 								new VncList(items.subList(0, splitPos)), 
 								new VncList(items.subList(splitPos, items.size())));
 				}
 				else {
-					return VncVector.ofAll(new VncList(items), new VncList());
+					return VncVector.of(new VncList(items), new VncList());
 				}
 			}
 	
@@ -2696,7 +2696,7 @@ public class CoreFunctions {
 					return coll.toVncList()
 							   .getList()
 							   .stream()
-							   .allMatch(v -> pred.apply(VncList.ofAll(v)) == True) ? True : False;
+							   .allMatch(v -> pred.apply(VncList.of(v)) == True) ? True : False;
 				}
 			}
 	
@@ -2763,7 +2763,7 @@ public class CoreFunctions {
 					return coll.toVncList()
 							   .getList()
 							   .stream()
-							   .anyMatch(v -> pred.apply(VncList.ofAll(v)) == True) ? True : False;
+							   .anyMatch(v -> pred.apply(VncList.of(v)) == True) ? True : False;
 				}
 			}
 	
@@ -3751,7 +3751,7 @@ public class CoreFunctions {
 				final VncList coll = Coerce.toVncList(args.nth(1));
 				
 				for(int i=0; i<coll.size(); i++) {
-					final VncVal take = predicate.apply(VncList.ofAll(coll.nth(i)));
+					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
 					if (take == False) {
 						return coll.slice(0, i);
 					}
@@ -3807,7 +3807,7 @@ public class CoreFunctions {
 				final VncList coll = Coerce.toVncList(args.nth(1));
 				
 				for(int i=0; i<coll.size(); i++) {
-					final VncVal take = predicate.apply(VncList.ofAll(coll.nth(i)));
+					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
 					if (take == False) {
 						return coll.slice(i);
 					}
@@ -3920,7 +3920,7 @@ public class CoreFunctions {
 							"sort", 
 							args, 
 							args.nth(0), 
-							(x,y) -> Coerce.toVncLong(compare.apply(VncList.ofAll(x,y))).getIntValue());
+							(x,y) -> Coerce.toVncLong(compare.apply(VncList.of(x,y))).getIntValue());
 				}
 				else if (args.size() == 2) {
 					final VncFunction compfn = Coerce.toVncFunction(args.nth(0));
@@ -3929,7 +3929,7 @@ public class CoreFunctions {
 							"sort", 
 							args, 
 							args.nth(1), 
-							(x,y) -> Coerce.toVncLong(compfn.apply(VncList.ofAll(x,y))).getIntValue());
+							(x,y) -> Coerce.toVncLong(compfn.apply(VncList.of(x,y))).getIntValue());
 				}
 				else {
 					throw new VncException("sort: args not supported");
@@ -3973,9 +3973,9 @@ public class CoreFunctions {
 							args.nth(1), 
 							(x,y) -> Coerce.toVncLong(
 										compare.apply(
-												VncList.ofAll(
-													keyfn.apply(VncList.ofAll(x)),
-													keyfn.apply(VncList.ofAll(y))))
+												VncList.of(
+													keyfn.apply(VncList.of(x)),
+													keyfn.apply(VncList.of(y))))
 									 ).getIntValue());
 				}
 				else if (args.size() == 3) {
@@ -3988,9 +3988,9 @@ public class CoreFunctions {
 							args.nth(2), 
 							(x,y) -> Coerce.toVncLong(
 										compfn.apply(
-												VncList.ofAll(
-													keyfn.apply(VncList.ofAll(x)),
-													keyfn.apply(VncList.ofAll(y)))
+												VncList.of(
+													keyfn.apply(VncList.of(x)),
+													keyfn.apply(VncList.of(y)))
 												)
 									 ).getIntValue());
 				}
@@ -4026,10 +4026,10 @@ public class CoreFunctions {
 				VncMap map = new VncOrderedMap();
 				
 				for(VncVal v : coll.getList()) {
-					final VncVal key = fn.apply(VncList.ofAll(v));
+					final VncVal key = fn.apply(VncList.of(v));
 					final VncList val = Coerce.toVncList(map.getMap().get(key));
 					if (val == null) {
-						map = map.assoc(key, VncVector.ofAll(v));
+						map = map.assoc(key, VncVector.of(v));
 					}
 					else {
 						map = map.assoc(key, val.addAtEnd(v));
@@ -4110,7 +4110,7 @@ public class CoreFunctions {
 						for(int ii=fns.size()-1; ii>=0; ii--) {
 							final VncFunction fn = fns.get(ii);
 							result = fn.apply(args_);
-							args_ = VncList.ofAll(result);
+							args_ = VncList.of(result);
 						}
 						return result;
 					}
@@ -4344,10 +4344,10 @@ public class CoreFunctions {
 					// ok do nothing
 				}
 				else if (Types.isVncSequence(coll)) {
-					((VncSequence)coll).forEach(v -> fn.apply(VncList.ofAll(v)));
+					((VncSequence)coll).forEach(v -> fn.apply(VncList.of(v)));
 				}
 				else if (Types.isVncMap(coll)) {
-					((VncMap)coll).entries().forEach(v -> fn.apply(VncList.ofAll(VncVector.ofAll(v.getKey(), v.getValue()))));
+					((VncMap)coll).entries().forEach(v -> fn.apply(VncList.of(VncVector.of(v.getKey(), v.getValue()))));
 				}
 				else {
 					throw new VncException(String.format(
@@ -4404,7 +4404,7 @@ public class CoreFunctions {
 				
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal val = coll.nth(i);
-					final VncVal keep = predicate.apply(VncList.ofAll(val));
+					final VncVal keep = predicate.apply(VncList.of(val));
 					if (!(keep == False || keep == Nil)) {
 						items.add(val);
 					}
@@ -4438,7 +4438,7 @@ public class CoreFunctions {
 				final List<VncVal> items = new ArrayList<>();
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal val = coll.nth(i);
-					final VncVal keep = predicate.apply(VncList.ofAll(val));
+					final VncVal keep = predicate.apply(VncList.of(val));
 					if (keep == False) {
 						items.add(val);
 					}				
@@ -4500,7 +4500,7 @@ public class CoreFunctions {
 					else {
 						VncVal value = coll.get(0);
 						for(int ii=1; ii<coll.size(); ii++) {
-							value = reduceFn.apply(VncList.ofAll(value, coll.get(ii)));
+							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
 						}
 						return value;
 					}
@@ -4524,12 +4524,12 @@ public class CoreFunctions {
 						return args.nth(1);
 					}
 					else if (coll.size() == 1) {
-						return reduceFn.apply(VncList.ofAll(args.nth(1), coll.get(0)));
+						return reduceFn.apply(VncList.of(args.nth(1), coll.get(0)));
 					}
 					else {
 						VncVal value = args.nth(1);
 						for(int ii=0; ii<coll.size(); ii++) {
-							value = reduceFn.apply(VncList.ofAll(value, coll.get(ii)));
+							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
 						}
 						return value;
 					}
@@ -4572,7 +4572,7 @@ public class CoreFunctions {
 						final VncVal key = entry.getKey();
 						final VncVal val = entry.getValue();
 						
-						value = Coerce.toVncMap(reduceFn.apply(VncList.ofAll(value, key, val)));
+						value = Coerce.toVncMap(reduceFn.apply(VncList.of(value, key, val)));
 					}
 					
 					return value;
@@ -4666,7 +4666,7 @@ public class CoreFunctions {
 				
 					if (Types.isVncVector(args.nth(1)) && ((VncVector)args.nth(1)).size() == 2) {
 						return new_map.assoc(
-									VncList.ofAll(
+									VncList.of(
 										((VncVector)args.nth(1)).nth(0),
 										((VncVector)args.nth(1)).nth(1)));
 					}
@@ -4745,7 +4745,7 @@ public class CoreFunctions {
 							((VncMap)val)
 								.entries()
 								.stream()
-								.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
+								.map(e -> VncVector.of(e.getKey(), e.getValue()))
 								.collect(Collectors.toList()));
 				} 
 				if (Types.isVncVector(val)) {

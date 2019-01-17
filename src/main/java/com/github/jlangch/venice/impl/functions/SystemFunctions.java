@@ -341,7 +341,7 @@ public class SystemFunctions {
 				
 				final VncString key = Coerce.toVncString(
 										CoreFunctions.name.apply(
-											VncList.ofAll(args.first())));
+											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 				
 				final String val = JavaInterop.getInterceptor().onReadSystemProperty(key.getValue());

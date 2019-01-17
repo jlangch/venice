@@ -56,7 +56,7 @@ public class VncList extends VncSequence {
 	}
 
 	
-	public static VncList ofAll(final VncVal... mvs) {
+	public static VncList of(final VncVal... mvs) {
 		return new VncList(Arrays.asList(mvs));
 	}
 

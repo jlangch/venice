@@ -181,7 +181,7 @@ public class VncHashMap extends VncMap {
 						value
 							.entrySet()
 							.stream()
-							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
+							.map(e -> VncVector.of(e.getKey(), e.getValue()))
 							.collect(Collectors.toList()),
 						getMeta());
 	}
@@ -192,7 +192,7 @@ public class VncHashMap extends VncMap {
 						value
 							.entrySet()
 							.stream()
-							.map(e -> VncVector.ofAll(e.getKey(), e.getValue()))
+							.map(e -> VncVector.of(e.getKey(), e.getValue()))
 							.collect(Collectors.toList()),
 						getMeta());
 	}
@@ -242,7 +242,7 @@ public class VncHashMap extends VncMap {
 		final List<VncVal> list = value
 									.entrySet()
 									.stream()
-									.map(e -> VncList.ofAll(e.getKey(), e.getValue()).getList())
+									.map(e -> VncList.of(e.getKey(), e.getValue()).getList())
 									.flatMap(l -> l.stream())
 									.collect(Collectors.toList());
 

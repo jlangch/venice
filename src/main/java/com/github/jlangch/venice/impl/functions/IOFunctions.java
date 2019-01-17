@@ -433,7 +433,7 @@ public class IOFunctions {
 					for(File f : file.listFiles()) {
 						final VncVal result = (filterFn == null) 
 												? True 
-												: filterFn.apply(VncList.ofAll(new VncJavaObject(f)));
+												: filterFn.apply(VncList.of(new VncJavaObject(f)));
 						if (result == True) {
 							files.addAtEnd(new VncJavaObject(f));
 						}

@@ -286,7 +286,7 @@ public class ShellFunctions {
 		return list
 				.getList()
 				.stream()
-				.map(it -> CoreFunctions.name.apply(VncList.ofAll(it)))
+				.map(it -> CoreFunctions.name.apply(VncList.of(it)))
 				.map(it -> ((VncString)it).getValue())
 				.collect(Collectors.toList())
 				.toArray(new String[] {});
@@ -303,7 +303,7 @@ public class ShellFunctions {
 						.map(e -> 
 							String.format(
 									"%s=%s", 
-									CoreFunctions.name.apply(VncList.ofAll(e.getKey())),
+									CoreFunctions.name.apply(VncList.of(e.getKey())),
 									e.getValue().toString()))
 						.collect(Collectors.toList())
 						.toArray(new String[] {});
@@ -335,7 +335,7 @@ public class ShellFunctions {
 		
 		final VncVector v = Coerce.toVncVector(
 								CoreFunctions.split_with.apply(
-										VncList.ofAll(CoreFunctions.string_Q, args)));
+										VncList.of(CoreFunctions.string_Q, args)));
 
 		final VncList cmd = Coerce.toVncList(v.first());
 
@@ -343,23 +343,23 @@ public class ShellFunctions {
 
 		// merge options
 		VncMap opts = (VncMap)CoreFunctions.merge.apply(
-								VncList.ofAll(defaultOptions, sh_opts));
+								VncList.of(defaultOptions, sh_opts));
 		
 		// add merged :env map
 		opts = opts.assoc(
 					new VncKeyword(":env"),
 					CoreFunctions.merge.apply(
-							VncList.ofAll(
+							VncList.of(
 									defaultEnv, 
 									sh_opts.get(new VncKeyword(":env")))));
 		
-		return VncVector.ofAll(cmd, opts);
+		return VncVector.of(cmd, opts);
 	}
 	
 	private static String getEncoding(final VncVal enc) {
 		return enc == Nil
 				? Charset.defaultCharset().name()
-				: ((VncString)CoreFunctions.name.apply(VncList.ofAll(enc))).getValue();
+				: ((VncString)CoreFunctions.name.apply(VncList.of(enc))).getValue();
 	}
 	
 	private static Object copyAndClose(

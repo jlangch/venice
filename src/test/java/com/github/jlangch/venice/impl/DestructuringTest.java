@@ -59,8 +59,8 @@ public class DestructuringTest {
 	public void test_sequential_multiple() {
 		// [[x y] [10 20]]
 
-		final VncVal symVal = VncList.ofAll(new VncSymbol("x"), new VncSymbol("y"));
-		final VncVal bindVal = VncList.ofAll(new VncLong(10), new VncLong(20));
+		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
+		final VncVal bindVal = VncList.of(new VncLong(10), new VncLong(20));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 
@@ -77,7 +77,7 @@ public class DestructuringTest {
 	public void test_sequential_multiple_empty_1() {
 		// [[x y] []]
 
-		final VncVal symVal = VncList.ofAll(new VncSymbol("x"), new VncSymbol("y"));
+		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
 		final VncVal bindVal = new VncList();
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
@@ -95,7 +95,7 @@ public class DestructuringTest {
 	public void test_sequential_multiple_empty_2() {
 		// [[x & y] []]
 
-		final VncVal symVal = VncList.ofAll(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
+		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
 		final VncVal bindVal = new VncList();
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
@@ -125,13 +125,13 @@ public class DestructuringTest {
 	public void test_sequential_multiple_elision() {
 		// [[x _ y _ z] [10 20 30 40 50]]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("_"), 
 									new VncSymbol("y"), 
 									new VncSymbol("_"), 
 									new VncSymbol("z"));
-		final VncVal bindVal = VncList.ofAll(
+		final VncVal bindVal = VncList.of(
 									new VncLong(10), 
 									new VncLong(20), 
 									new VncLong(30), 
@@ -156,12 +156,12 @@ public class DestructuringTest {
 	public void test_sequential_multiple_fill_up_1() {
 		// [[x y & z] [10 20 30 40 50]]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("y"), 
 									new VncSymbol("&"), 
 									new VncSymbol("z"));
-		final VncVal bindVal = VncList.ofAll(
+		final VncVal bindVal = VncList.of(
 									new VncLong(10), 
 									new VncLong(20), 
 									new VncLong(30), 
@@ -189,14 +189,14 @@ public class DestructuringTest {
 	public void test_sequential_multiple_fill_up_1_as() {
 		// [[x y & z :as all] [10 20 30 40 50]]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("y"), 
 									new VncSymbol("&"), 
 									new VncSymbol("z"), 
 									new VncKeyword(":as"), 
 									new VncSymbol("all"));
-		final VncVal bindVal = VncList.ofAll(
+		final VncVal bindVal = VncList.of(
 									new VncLong(10), 
 									new VncLong(20), 
 									new VncLong(30), 
@@ -232,12 +232,12 @@ public class DestructuringTest {
 	public void test_sequential_multiple_fill_up_2() {
 		// [[x y & z] [10 20]]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("y"), 
 									new VncSymbol("&"), 
 									new VncSymbol("z"));
-		final VncVal bindVal = VncList.ofAll(
+		final VncVal bindVal = VncList.of(
 									new VncLong(10), 
 									new VncLong(20));
 		
@@ -259,21 +259,21 @@ public class DestructuringTest {
 	public void test_sequential_nested() {
 		// [[[v x & y] z] [[10 20 30 40] 50]]
 
-		final VncVal symNestedVal = VncList.ofAll(
+		final VncVal symNestedVal = VncList.of(
 											new VncSymbol("v"), 
 											new VncSymbol("x"), 
 											new VncSymbol("&"), 
 											new VncSymbol("y"));
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									symNestedVal, 
 									new VncSymbol("z"));
 		
-		final VncVal bindNestedVal = VncList.ofAll(
+		final VncVal bindNestedVal = VncList.of(
 											new VncLong(10), 
 											new VncLong(20), 
 											new VncLong(30), 
 											new VncLong(40));
-		final VncVal bindVal = VncList.ofAll(bindNestedVal, new VncLong(50));
+		final VncVal bindVal = VncList.of(bindNestedVal, new VncLong(50));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 
@@ -298,7 +298,7 @@ public class DestructuringTest {
 	public void test_sequential_string() {
 		// [[x y z] "abcdef"]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("y"), 
 									new VncSymbol("z"));
@@ -322,7 +322,7 @@ public class DestructuringTest {
 	public void test_sequential_string_multiple_elsision() {
 		// [[x _ y _ z] "abcdef"]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("_"), 
 									new VncSymbol("y"), 
@@ -348,7 +348,7 @@ public class DestructuringTest {
 	public void test_sequential_string_fill_up() {
 		// [[x y & z] "abcdef"]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("y"), 
 									new VncSymbol("&"), 
@@ -378,7 +378,7 @@ public class DestructuringTest {
 	public void test_sequential_string_as() {
 		// [[x y z :as all] "abcdef"]
 
-		final VncVal symVal = VncList.ofAll(
+		final VncVal symVal = VncList.of(
 									new VncSymbol("x"), 
 									new VncSymbol("y"), 
 									new VncSymbol("z"), 
@@ -432,7 +432,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":keys"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
 		final VncVal bindVal = VncHashMap.ofAll(
 										new VncKeyword(":a"), new VncLong(1),
@@ -453,7 +453,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":keys"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncKeyword(":or"),
 									VncHashMap.ofAll(new VncSymbol("c"), new VncLong(3)));
 		
@@ -476,7 +476,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":syms"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
 		final VncVal bindVal = VncHashMap.ofAll(
 										new VncSymbol("a"), new VncLong(1),
@@ -497,7 +497,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":syms"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncKeyword(":or"),
 									VncHashMap.ofAll(new VncSymbol("c"), new VncLong(3)));
 		
@@ -520,7 +520,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":strs"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
 		final VncVal bindVal = VncHashMap.ofAll(
 										new VncString("a"), new VncLong(1),
@@ -541,7 +541,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":strs"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncKeyword(":or"),
 									VncHashMap.ofAll(new VncSymbol("c"), new VncLong(3)));
 		
@@ -565,7 +565,7 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncKeyword(":keys"), 
-									VncVector.ofAll(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
+									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncSymbol("e"), new VncKeyword(":e"),
 									new VncSymbol("f"), new VncKeyword(":f"),
 									new VncSymbol("g"), new VncKeyword(":g"),
@@ -629,14 +629,14 @@ public class DestructuringTest {
 		final VncVal symVal = VncHashMap.ofAll(
 									new VncSymbol("a"), 
 									new VncKeyword(":a"),
-									VncList.ofAll(new VncSymbol("x"), new VncSymbol("y")), 
+									VncList.of(new VncSymbol("x"), new VncSymbol("y")), 
 									new VncKeyword(":c"));
 		
 		final VncVal bindVal = VncHashMap.ofAll(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":c"), 
-										VncList.ofAll(new VncLong(10), new VncLong(11)));
+										VncList.of(new VncLong(10), new VncLong(11)));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
