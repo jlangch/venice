@@ -88,16 +88,16 @@ public class VeniceInterpreter implements Serializable  {
 			return VncList.of(new VncSymbol("quote"), ast);
 		} 
 		else {
-			final VncVal a0 = Coerce.toVncList(ast).nth(0);
+			final VncVal a0 = Coerce.toVncSequence(ast).nth(0);
 			if (Types.isVncSymbol(a0) && (Coerce.toVncSymbol(a0).getName().equals("unquote"))) {
 				return ((VncList)ast).nth(1);
 			} 
 			else if (is_pair(a0)) {
-				final VncVal a00 = Coerce.toVncList(a0).nth(0);
+				final VncVal a00 = Coerce.toVncSequence(a0).nth(0);
 				if (Types.isVncSymbol(a00) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
 					return VncList.of(
 								new VncSymbol("concat"),
-								Coerce.toVncList(a0).nth(1),
+								Coerce.toVncSequence(a0).nth(1),
 								quasiquote(((VncList)ast).rest()));
 				}
 			}
@@ -120,7 +120,7 @@ public class VeniceInterpreter implements Serializable  {
 	 */
 	private boolean is_macro_call(final VncVal ast, final Env env) {
 		if (Types.isVncList(ast) && !((VncList)ast).isEmpty()) {
-			final VncVal a0 = Coerce.toVncList(ast).nth(0);
+			final VncVal a0 = Coerce.toVncSequence(ast).nth(0);
 			if (Types.isVncSymbol(a0)) {
 				final VncSymbol macroName = (VncSymbol)a0;
 				if (env.findEnv(macroName) != null) {
@@ -150,7 +150,7 @@ public class VeniceInterpreter implements Serializable  {
 	 */
 	private VncVal macroexpand(VncVal ast, final Env env) {
 		while (is_macro_call(ast, env)) {
-			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncList(ast).nth(0));
+			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).nth(0));
 			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
 			final VncList macroFnArgs = Coerce.toVncList(ast).rest();
 			ast = macroFn.apply(macroFnArgs);
@@ -254,13 +254,13 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 
 				case "eval":
-					orig_ast = Coerce.toVncList(eval_ast(ast.slice(1), env)).last();
+					orig_ast = Coerce.toVncSequence(eval_ast(ast.slice(1), env)).last();
 					break;
 					
 				case "let":  { // (let [bindings*] exprs*)
 					env = new Env(env);
 
-					final VncList bindings = Coerce.toVncList(ast.nth(1));
+					final VncVector bindings = Coerce.toVncVector(ast.nth(1));
 					final VncList expressions = ast.slice(2);
 				
 					for(int i=0; i<bindings.size(); i+=2) {
@@ -289,7 +289,7 @@ public class VeniceInterpreter implements Serializable  {
 				case "loop": { // (loop [bindings*] exprs*)
 					env = new Env(env);					
 
-					final VncList bindings = Coerce.toVncList(ast.nth(1));
+					final VncVector bindings = Coerce.toVncVector(ast.nth(1));
 					final VncVal expressions = ast.nth(2);
 					
 					final VncList bindingNames = new VncList();
@@ -606,7 +606,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal binding_(final VncList ast, final Env env) {
-		final VncList bindings = Coerce.toVncList(ast.nth(1));
+		final VncSequence bindings = Coerce.toVncSequence(ast.nth(1));
 		final VncList expressions = ast.slice(2);
 	
 		final List<Var> vars = new ArrayList<>();
@@ -649,7 +649,7 @@ public class VeniceInterpreter implements Serializable  {
 					env.set(catchBlock.getExSym(), new VncJavaObject(th));
 					
 					final VncVal blocks = eval_ast(catchBlock.getBody(), env);
-					result = Coerce.toVncList(blocks).first();
+					result = Coerce.toVncSequence(blocks).first();
 				}
 			}
 			
@@ -670,7 +670,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal try_with_(final VncList ast, final Env env) {
-		final VncList bindings = Coerce.toVncList(ast.nth(1));
+		final VncSequence bindings = Coerce.toVncSequence(ast.nth(1));
 		final List<Binding> boundResources = new ArrayList<>();
 		
 		for(int i=0; i<bindings.size(); i+=2) {
@@ -703,7 +703,7 @@ public class VeniceInterpreter implements Serializable  {
 						env.set(catchBlock.getExSym(), new VncJavaObject(th));
 
 						final VncVal blocks = eval_ast(catchBlock.getBody(), env);
-						result = Coerce.toVncList(blocks).first();
+						result = Coerce.toVncSequence(blocks).first();
 					}
 				}
 						

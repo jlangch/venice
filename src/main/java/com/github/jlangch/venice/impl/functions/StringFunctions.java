@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -487,7 +488,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/join", args, 1, 2);
 	
-				final VncList coll = Coerce.toVncList(args.last());		
+				final VncSequence coll = Coerce.toVncSequence(args.last());		
 				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.nth(0)) : new VncString("");
 				
 				return new VncString(
