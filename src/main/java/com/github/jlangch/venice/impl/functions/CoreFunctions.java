@@ -3687,10 +3687,10 @@ public class CoreFunctions {
 				if (exp == Nil) {
 					return new VncList();
 				}
-				final VncList ml = Coerce.toVncList(exp);
+				final VncSequence ml = Coerce.toVncSequence(exp);
 	
 				if (Types.isVncVector(ml)) {
-					return ml.size() < 2 ? new VncVector() : ((VncVector)ml).slice(0, ml.size()-1);
+					return ml.size() < 2 ? new VncVector() : ml.slice(0, ml.size()-1);
 				}
 				else {
 					return ml.isEmpty() ? new VncList() : ml.slice(1);
@@ -3719,10 +3719,10 @@ public class CoreFunctions {
 				if (exp == Nil) {
 					return Nil;
 				}
-				final VncList ml = Coerce.toVncList(exp);
+				final VncSequence ml = Coerce.toVncSequence(exp);
 	
 				if (Types.isVncVector(ml)) {
-					return ml.isEmpty() ? Nil : ((VncVector)ml).nth(ml.size()-1);
+					return ml.isEmpty() ? Nil : ml.nth(ml.size()-1);
 				}
 				else {
 					return ml.isEmpty() ? Nil : ml.nth(0);
