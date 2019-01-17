@@ -1038,7 +1038,7 @@ public class ConcurrencyFunctions {
 	
 				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
 													Callable.class, 
-													VncHashMap.ofAll(new VncKeyword("call"), wrapped));
+													VncHashMap.of(new VncKeyword("call"), wrapped));
 	
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				

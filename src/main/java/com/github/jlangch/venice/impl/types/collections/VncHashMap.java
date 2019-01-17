@@ -79,7 +79,7 @@ public class VncHashMap extends VncMap {
 		return new VncHashMap().assoc(vec);
 	}
 
-	public static VncHashMap ofAll(final VncVal... mvs) {
+	public static VncHashMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
 					"hash-map: create requires an even number of items. %s", 
@@ -145,6 +145,12 @@ public class VncHashMap extends VncMap {
 
 	@Override
 	public VncHashMap assoc(final VncVal... mvs) {
+		if (mvs.length %2 != 0) {
+			throw new VncException(String.format(
+					"assoc: create requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(mvs[0])));
+		}
+		
 		for (int i=0; i<mvs.length; i+=2) {
 			value.put(mvs[i], mvs[i+1]);
 		}
@@ -153,6 +159,12 @@ public class VncHashMap extends VncMap {
 
 	@Override
 	public VncHashMap assoc(final VncList mvs) {
+		if (mvs.size() %2 != 0) {
+			throw new VncException(String.format(
+					"assoc: create requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(mvs)));
+		}	
+
 		for (int i=0; i<mvs.getList().size(); i+=2) {
 			value.put(mvs.nth(i), mvs.nth(i+1));
 		}

@@ -47,7 +47,7 @@ public class MetaUtil {
 	}
 	
 	public static VncVal toMeta(final Token token) {
-		return VncHashMap.ofAll(
+		return VncHashMap.of(
 					FILE, new VncString(token.getFile()),
 					LINE, new VncLong(token.getLine()),
 					COLUMN, new VncLong(token.getColumn()));

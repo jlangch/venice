@@ -408,12 +408,12 @@ public class DestructuringTest {
 	public void test_associative_simple() {
 		// [{a :a, b :b, c :c} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncSymbol("a"), new VncKeyword(":a"),
 									new VncSymbol("b"), new VncKeyword(":b"),
 									new VncSymbol("c"), new VncKeyword(":c"));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4));
@@ -430,11 +430,11 @@ public class DestructuringTest {
 	public void test_associative_keys() {
 		// [{:keys [a b c]} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: nil
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":keys"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4));
@@ -451,13 +451,13 @@ public class DestructuringTest {
 	public void test_associative_keys_with_or() {
 		// [{:keys [a b c] :or {c 3}} {:a 1 :b 2 :d 4}]  ->  a: 1, b: 2, c: 3
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":keys"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncKeyword(":or"),
-									VncHashMap.ofAll(new VncSymbol("c"), new VncLong(3)));
+									VncHashMap.of(new VncSymbol("c"), new VncLong(3)));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4));
@@ -474,11 +474,11 @@ public class DestructuringTest {
 	public void test_associative_syms() {
 		// [{:syms [a b]} {'a 1 'b 2 'd 4}]  ->  'a 1, 'b 2, 'c nil
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":syms"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncSymbol("a"), new VncLong(1),
 										new VncSymbol("b"), new VncLong(2),
 										new VncSymbol("d"), new VncLong(4));
@@ -495,13 +495,13 @@ public class DestructuringTest {
 	public void test_associative_syms_with_or() {
 		// [{:syms [a b] :or {c 3}} {'a 1 'b 2 'd 4}]  ->  'a 1, 'b 2, 'c 3
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":syms"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncKeyword(":or"),
-									VncHashMap.ofAll(new VncSymbol("c"), new VncLong(3)));
+									VncHashMap.of(new VncSymbol("c"), new VncLong(3)));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncSymbol("a"), new VncLong(1),
 										new VncSymbol("b"), new VncLong(2),
 										new VncSymbol("d"), new VncLong(4));
@@ -518,11 +518,11 @@ public class DestructuringTest {
 	public void test_associative_strs() {
 		// [{:strs [a b c]} {"a" 1 "b" 2 "d" 4}]  ->  "a" 1, "b" 2, "c" nil
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":strs"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncString("a"), new VncLong(1),
 										new VncString("b"), new VncLong(2),
 										new VncString("d"), new VncLong(4));
@@ -539,13 +539,13 @@ public class DestructuringTest {
 	public void test_associative_strs_with_or() {
 		// [{:strs [a b c] :or {c 3}} {"a" 1 "b" 2 "d" 4}]  ->  "a" 1, "b" 2, "c" 3
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":strs"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncKeyword(":or"),
-									VncHashMap.ofAll(new VncSymbol("c"), new VncLong(3)));
+									VncHashMap.of(new VncSymbol("c"), new VncLong(3)));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncString("a"), new VncLong(1),
 										new VncString("b"), new VncLong(2),
 										new VncString("d"), new VncLong(4));
@@ -563,7 +563,7 @@ public class DestructuringTest {
 		// [{:keys [a b c], e :e, f :f, g :g, h :h, :or {c 3, f 6}} {:a 1 :b 2 :d 4 :e 5 :g 7}]  
 		// ->  a: 1, b: 2, c: 3, e: 4, f: 5, g: 6, h: nil
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncKeyword(":keys"), 
 									VncVector.of(new VncSymbol("a"), new VncSymbol("b"), new VncSymbol("c")),
 									new VncSymbol("e"), new VncKeyword(":e"),
@@ -571,11 +571,11 @@ public class DestructuringTest {
 									new VncSymbol("g"), new VncKeyword(":g"),
 									new VncSymbol("h"), new VncKeyword(":h"),
 									new VncKeyword(":or"),
-									VncHashMap.ofAll(
+									VncHashMap.of(
 											new VncSymbol("c"), new VncLong(3),
 											new VncSymbol("f"), new VncLong(6)));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4),
@@ -598,19 +598,19 @@ public class DestructuringTest {
 	public void test_associative_nested_associated() {
 		// {a :a, {x :x, y :y} :c} {:a 1, :b 2, :c {:x 10, :y 11}}   -> a: 1, b: 2, x: 10, y: 11
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncSymbol("a"), 
 									new VncKeyword(":a"),
-									VncHashMap.ofAll(
+									VncHashMap.of(
 											new VncSymbol("x"), new VncKeyword(":x"),
 											new VncSymbol("y"), new VncKeyword(":y")), 
 									new VncKeyword(":c"));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":c"), 
-										VncHashMap.ofAll(
+										VncHashMap.of(
 												new VncKeyword(":x"), new VncLong(10),
 												new VncKeyword(":y"), new VncLong(11)));
 		
@@ -626,13 +626,13 @@ public class DestructuringTest {
 	public void test_associative_nested_sequential() {
 		// {a :a, [x y] :c} {:a 1, :b 2, :c [10 11]}   -> a: 1, b: 2, x: 10, y: 11
 
-		final VncVal symVal = VncHashMap.ofAll(
+		final VncVal symVal = VncHashMap.of(
 									new VncSymbol("a"), 
 									new VncKeyword(":a"),
 									VncList.of(new VncSymbol("x"), new VncSymbol("y")), 
 									new VncKeyword(":c"));
 		
-		final VncVal bindVal = VncHashMap.ofAll(
+		final VncVal bindVal = VncHashMap.of(
 										new VncKeyword(":a"), new VncLong(1),
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":c"), 
