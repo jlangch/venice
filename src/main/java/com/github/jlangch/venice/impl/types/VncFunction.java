@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 public abstract class VncFunction extends VncVal implements Function<VncList, VncVal> {
@@ -49,15 +50,15 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		this(name, null, null, null, meta);
 	}
 
-	public VncFunction(final VncVal ast, final Env env, final VncList params) {
+	public VncFunction(final VncVal ast, final Env env, final VncVector params) {
 		this(null, ast, env, params);
 	}
 
-	public VncFunction(final String name, final VncVal ast, final Env env, final VncList params) {
+	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params) {
 		this(name, ast, env, params, Constants.Nil);
 	}
 
-	public VncFunction(final String name, final VncVal ast, final Env env, final VncList params, final VncVal meta) {
+	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
 		this.name = name == null ? createAnonymousFuncName() : name;
 		this.ast = ast;
@@ -180,7 +181,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 
 	public VncVal ast;
 	public Env env;
-	public VncList params;
+	public VncVector params;
 	public boolean macro = false;
 	public final String name;
 	
