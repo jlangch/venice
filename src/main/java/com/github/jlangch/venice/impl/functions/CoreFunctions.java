@@ -69,8 +69,6 @@ import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
-import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
-import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -1450,13 +1448,13 @@ public class CoreFunctions {
 				else if (Types.isVncByteBuffer(arg)) {
 					return ((VncByteBuffer)arg).copy();
 				}
-				else if (Types.isVncList(arg)) {
-					if (!((VncList)arg).getList().stream().allMatch(v -> Types.isVncLong(v))) {
+				else if (Types.isVncSequence(arg)) {
+					if (!((VncSequence)arg).getList().stream().allMatch(v -> Types.isVncLong(v))) {
 						throw new VncException(String.format(
 								"Function 'bytebuf' a list as argument must contains long values"));
 					}
 					
-					final List<VncVal> list = ((VncList)arg).getList();
+					final List<VncVal> list = ((VncSequence)arg).getList();
 					
 					final byte[] buf = new byte[list.size()];
 					for(int ii=0; ii<list.size(); ii++) {
@@ -2549,11 +2547,8 @@ public class CoreFunctions {
 				if (Types.isVncByteBuffer(args.second())) {
 					final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
 				
-					if (Types.isVncVector(to)) {
-						return ((VncVector)to).addAllAtEnd(byteList);
-					}
-					else if (Types.isVncList(to)) {
-						return ((VncList)to).addAllAtEnd(byteList);
+					if (Types.isVncSequence(to)) {
+						return ((VncSequence)to).addAllAtEnd(byteList);
 					}
 					else {
 						throw new VncException(String.format(
@@ -2564,14 +2559,11 @@ public class CoreFunctions {
 				else if (Types.isVncString(args.second())) {
 					final VncList charList = ((VncString)args.second()).toVncList();
 								
-					if (Types.isVncVector(to)) {
-						return ((VncVector)to).addAllAtEnd(charList);
+					if (Types.isVncSequence(to)) {
+						return ((VncSequence)to).addAllAtEnd(charList);
 					}
-					else if (Types.isVncList(to)) {
-						return ((VncList)to).addAllAtEnd(charList);
-					}
-					else if (Types.isVncHashSet(to)) {
-						return ((VncHashSet)to).addAll(charList);
+					else if (Types.isVncSet(to)) {
+						return ((VncSet)to).addAll(charList);
 					}
 					else {
 						throw new VncException(String.format(
@@ -2830,23 +2822,14 @@ public class CoreFunctions {
 				else if (Types.isVncByteBuffer(arg)) {
 					return new VncLong(((VncByteBuffer)arg).size());
 				}
-				else if (Types.isVncList(arg)) {
-					return new VncLong(((VncList)arg).size());
+				else if (Types.isVncSequence(arg)) {
+					return new VncLong(((VncSequence)arg).size());
 				}
-				else if (Types.isVncHashSet(arg)) {
-					return new VncLong(((VncHashSet)arg).size());
+				else if (Types.isVncSet(arg)) {
+					return new VncLong(((VncSet)arg).size());
 				}
 				else if (Types.isVncMap(arg)) {
 					return new VncLong(((VncMap)arg).size());
-				}
-				else if (Types.isVncJavaList(arg)) {
-					return new VncLong(((VncJavaList)arg).size());
-				}
-				else if (Types.isVncJavaSet(arg)) {
-					return new VncLong(((VncJavaSet)arg).size());
-				}
-				else if (Types.isVncJavaMap(arg)) {
-					return new VncLong(((VncJavaMap)arg).size());
 				}
 				else {
 					throw new VncException(String.format(
@@ -3043,23 +3026,14 @@ public class CoreFunctions {
 							result.add(new VncString(String.valueOf(ch)));
 						}
 					}
-					else if (Types.isVncList(val)) {
-						result.addAll(((VncList)val).getList());
+					else if (Types.isVncSequence(val)) {
+						result.addAll(((VncSequence)val).getList());
 					}
-					else if (Types.isVncHashSet(val)) {
-						result.addAll(((VncHashSet)val).getList());
+					else if (Types.isVncSet(val)) {
+						result.addAll(((VncSet)val).getList());
 					}
 					else if (Types.isVncMap(val)) {
 						result.addAll(((VncMap)val).toVncList().getList());
-					}
-					else if (Types.isVncJavaList(val)) {
-						result.addAll(((VncJavaList)val).toVncList().getList());
-					}
-					else if (Types.isVncJavaSet(val)) {
-						result.addAll(((VncJavaSet)val).toVncList().getList());
-					}
-					else if (Types.isVncJavaMap(val)) {
-						result.addAll(((VncJavaMap)val).toVncList().getList());
 					}
 					else {
 						throw new VncException(String.format(
@@ -3164,11 +3138,8 @@ public class CoreFunctions {
 					return Nil;
 				}
 				
-				if (Types.isVncList(val)) {
-					return ((VncList)val).first();
-				}
-				else if (Types.isVncJavaList(val)) {
-					return ((VncJavaList)val).first();
+				if (Types.isVncSequence(val)) {
+					return ((VncSequence)val).first();
 				}
 				else if (Types.isVncString(val)) {
 					return ((VncString)val).first();
@@ -4384,11 +4355,8 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					// ok do nothing
 				}
-				else if (Types.isVncList(coll)) {
-					((VncList)coll).forEach(v -> fn.apply(VncList.ofAll(v)));
-				}
-				else if (Types.isVncJavaList(coll)) {
-					((VncJavaList)coll).forEach(v -> fn.apply(VncList.ofAll(v)));
+				else if (Types.isVncSequence(coll)) {
+					((VncSequence)coll).forEach(v -> fn.apply(VncList.ofAll(v)));
 				}
 				else if (Types.isVncMap(coll)) {
 					((VncMap)coll).entries().forEach(v -> fn.apply(VncList.ofAll(VncVector.ofAll(v.getKey(), v.getValue()))));

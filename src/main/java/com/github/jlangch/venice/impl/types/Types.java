@@ -91,16 +91,16 @@ public class Types {
 		return val != null && (val instanceof VncCollection);
 	}
 
-	public static boolean isVncSequence(final VncVal val) {
-		return val != null && (val instanceof VncSequence);
-	}
-
 	public static boolean isVncSet(final VncVal val) {
 		return val != null && (val instanceof VncSet);
 	}
 
 	public static boolean isVncHashSet(final VncVal val) {
 		return val != null && (val instanceof VncHashSet);
+	}
+
+	public static boolean isVncSequence(final VncVal val) {
+		return val != null && (val instanceof VncSequence);
 	}
 	
 	public static boolean isVncList(final VncVal val) {
