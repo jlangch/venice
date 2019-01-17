@@ -39,7 +39,8 @@ public abstract class VncSequence extends VncCollection {
 	
 	@Override
 	public abstract VncSequence withMeta(VncVal meta);
-
+	
+	public abstract VncSequence empty();
 	
 	public abstract List<VncVal> getList();
 	

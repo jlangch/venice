@@ -2212,7 +2212,7 @@ public class CoreFunctions {
 					else {
 						if (Types.isVncLong(key)) {
 							final int index = ((VncLong)key).getValue().intValue();
-							final VncVal val = ((VncList)coll).nthOrDefault(index, Nil);
+							final VncVal val = ((VncSequence)coll).nthOrDefault(index, Nil);
 							if (val == Nil) {
 								return key_not_found;
 							}
@@ -3471,12 +3471,12 @@ public class CoreFunctions {
 					return new VncList();
 				}
 				
-				final VncList result = ((VncList)args.nth(0)).empty();
+				final VncSequence result = ((VncSequence)args.nth(0)).empty();
 				
 				return result.addAllAtEnd(
 								new VncList(
 									Coerce
-										.toVncList(args.nth(0))
+										.toVncSequence(args.nth(0))
 										.getList()
 										.stream()
 										.distinct()
@@ -3505,13 +3505,13 @@ public class CoreFunctions {
 					return new VncList();
 				}
 				
-				final VncList result = ((VncList)args.nth(0)).empty();
+				final VncSequence result = ((VncSequence)args.nth(0)).empty();
 				
 				VncVal seen = null;
 	
 				final List<VncVal> items = new ArrayList<>();
 	
-				for(VncVal val : Coerce.toVncList(args.nth(0)).getList()) {
+				for(VncVal val : Coerce.toVncSequence(args.nth(0)).getList()) {
 					if (seen == null || !val.equals(seen)) {
 						items.add(val);
 						seen = val;
@@ -3748,7 +3748,7 @@ public class CoreFunctions {
 				assertArity("take-while", args, 2);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncList coll = Coerce.toVncList(args.nth(1));
+				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
 				
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -3856,7 +3856,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("flatten", args, 1);
 				
-				final VncList coll = Coerce.toVncList(args.nth(0));
+				final VncCollection coll = Coerce.toVncCollection(args.nth(0));
 				
 				final List<VncVal> result = new ArrayList<>();
 				flatten(coll, result);			
