@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -136,7 +137,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncMap assoc(final VncList mvs) {
+	public VncMap assoc(final VncSequence mvs) {
 		throw new VncException("not supported");
 	}
 
@@ -146,7 +147,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncMap dissoc(final VncList keys) {
+	public VncMap dissoc(final VncSequence keys) {
 		throw new VncException("not supported");
 	}
 

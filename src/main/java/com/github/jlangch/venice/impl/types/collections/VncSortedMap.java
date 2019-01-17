@@ -59,7 +59,7 @@ public class VncSortedMap extends VncMap {
 	}
 	
 	
-	public static VncSortedMap ofAll(final VncList lst) {
+	public static VncSortedMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
 					"sorted-map: create requires an even number of list items. %s", 
@@ -158,7 +158,7 @@ public class VncSortedMap extends VncMap {
 	}
 
 	@Override
-	public VncSortedMap assoc(final VncList mvs) {
+	public VncSortedMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
 					"sorted-map: assoc requires an even number of items. %s", 
@@ -180,7 +180,7 @@ public class VncSortedMap extends VncMap {
 	}
 
 	@Override
-	public VncSortedMap dissoc(final VncList keys) {
+	public VncSortedMap dissoc(final VncSequence keys) {
 		for (int i=0; i<keys.getList().size(); i++) {
 			value.remove(keys.nth(i));
 		}

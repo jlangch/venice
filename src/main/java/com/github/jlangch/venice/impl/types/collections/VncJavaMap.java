@@ -141,7 +141,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncJavaMap assoc(final VncList mvs) {
+	public VncJavaMap assoc(final VncSequence mvs) {
 		for (int i=0; i<mvs.getList().size(); i+=2) {
 			value.put(
 				JavaInteropUtil.convertToJavaObject(mvs.nth(i)), 
@@ -159,7 +159,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncJavaMap dissoc(final VncList keys) {
+	public VncJavaMap dissoc(final VncSequence keys) {
 		for (int i=0; i<keys.getList().size(); i++) {
 			value.remove(JavaInteropUtil.convertToJavaObject(keys.nth(i)));
 		}

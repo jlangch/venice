@@ -41,8 +41,9 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -169,15 +170,15 @@ public class Reader {
 		}
 	}
 
-	private static VncList read_list(
+	private static VncSequence read_list(
 			final Reader rdr, 
-			final VncList lst, 
+			final VncSequence lst, 
 			final char start, 
 			final char end
 	) {
 		final Token lstToken = rdr.next();
 
-		VncList items = lst.withMeta(MetaUtil.toMeta(lstToken));
+		VncSequence items = lst.withMeta(MetaUtil.toMeta(lstToken));
 
 		if (lstToken.charAt(0) != start) {
 			throw new ParseError(String.format(
@@ -204,7 +205,7 @@ public class Reader {
 	private static VncHashMap read_hash_map(final Reader rdr) {
 		final Token refToken = rdr.peek();
 		
-		final VncList lst = read_list(rdr, new VncList(), '{', '}');
+		final VncSequence lst = read_list(rdr, new VncList(), '{', '}');
 		return VncHashMap.ofAll(lst).withMeta(MetaUtil.toMeta(refToken));
 	}
 

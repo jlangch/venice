@@ -58,7 +58,7 @@ public class VncOrderedMap extends VncMap {
 	}
 	
 	
-	public static VncOrderedMap ofAll(final VncList lst) {
+	public static VncOrderedMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
 					"ordered-map: create requires an even number of list items. %s", 
@@ -157,7 +157,7 @@ public class VncOrderedMap extends VncMap {
 	}
 
 	@Override
-	public VncOrderedMap assoc(final VncList mvs) {
+	public VncOrderedMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
 					"ordered-map: assoc requires an even number of items. %s", 
@@ -179,7 +179,7 @@ public class VncOrderedMap extends VncMap {
 	}
 
 	@Override
-	public VncOrderedMap dissoc(final VncList keys) {
+	public VncOrderedMap dissoc(final VncSequence keys) {
 		for (int i=0; i<keys.getList().size(); i++) {
 			value.remove(keys.nth(i));
 		}

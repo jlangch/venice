@@ -59,7 +59,7 @@ public class VncHashMap extends VncMap {
 	}
 	
 	
-	public static VncHashMap ofAll(final VncList lst) {
+	public static VncHashMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
 					"hash-map: create requires an even number of list items. %s", 
@@ -67,16 +67,6 @@ public class VncHashMap extends VncMap {
 		}
 		
 		return new VncHashMap().assoc(lst);
-	}
-
-	public static VncHashMap ofAll(final VncVector vec) {
-		if (vec != null && (vec.size() %2 != 0)) {
-			throw new VncException(String.format(
-					"hash-map: create requires an even number of vector items. %s", 
-					ErrorMessage.buildErrLocation(vec)));
-		}
-		
-		return new VncHashMap().assoc(vec);
 	}
 
 	public static VncHashMap of(final VncVal... mvs) {
@@ -158,7 +148,7 @@ public class VncHashMap extends VncMap {
 	}
 
 	@Override
-	public VncHashMap assoc(final VncList mvs) {
+	public VncHashMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
 					"hash-map: assoc requires an even number of items. %s", 
@@ -180,7 +170,7 @@ public class VncHashMap extends VncMap {
 	}
 
 	@Override
-	public VncHashMap dissoc(final VncList keys) {
+	public VncHashMap dissoc(final VncSequence keys) {
 		for (int i=0; i<keys.getList().size(); i++) {
 			value.remove(keys.nth(i));
 		}
