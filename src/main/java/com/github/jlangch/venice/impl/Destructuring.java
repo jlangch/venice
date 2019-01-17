@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
@@ -81,11 +82,14 @@ public class Destructuring {
 			
 			bindings.add(new Binding((VncSymbol)symVal, bindVal));
 		}
-		else if (Types.isVncList(symVal)) {
+		else if (Types.isVncList(symVal) || Types.isVncVector(symVal)) {
 			// sequential destructuring	
 			
 			if (bindVal == Nil) {
 				sequential_list_destructure((VncList)symVal, new VncList(), bindings);
+			}
+			if (Types.isVncVector(bindVal)) {
+				sequential_list_destructure((VncVector)symVal, bindVal, bindings);
 			}
 			if (Types.isVncList(bindVal)) {
 				sequential_list_destructure((VncList)symVal, bindVal, bindings);
@@ -137,7 +141,7 @@ public class Destructuring {
 	}
 	
 	private static void sequential_list_destructure(
-			final VncList symVal, 
+			final VncSequence symVal, 
 			final VncVal bindVal,
 			final List<Binding> bindings
 	) {
@@ -176,6 +180,13 @@ public class Destructuring {
 				symIdx++; 
 				valIdx++;
 			}
+			else if (Types.isVncVector(symbols.get(symIdx))) {
+				final VncVal syms = symbols.get(symIdx);
+				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
+				bindings.addAll(destructure(syms, val));
+				symIdx++; 
+				valIdx++;
+			}
 			else if (Types.isVncList(symbols.get(symIdx))) {
 				final VncVal syms = symbols.get(symIdx);
 				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
@@ -194,7 +205,7 @@ public class Destructuring {
 	}
 
 	private static void sequential_string_destructure(
-			final VncList symVal, 
+			final VncSequence symVal, 
 			final VncVal bindVal,
 			final List<Binding> bindings
 	) {
@@ -336,6 +347,13 @@ public class Destructuring {
 				// nested associative destructuring
 				associative_map_destructure(
 						(VncMap)symValName, 
+						((VncMap)bindVal).get(symVal.get(symValName)),
+						local_bindings);
+			}
+			else if (Types.isVncVector(symValName)) {
+				// nested sequential destructuring
+				sequential_list_destructure(
+						(VncVector)symValName, 
 						((VncMap)bindVal).get(symVal.get(symValName)),
 						local_bindings);
 			}
