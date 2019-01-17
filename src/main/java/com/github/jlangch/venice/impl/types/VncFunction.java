@@ -89,7 +89,7 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		return env; 
 	}
 	
-	public VncList getParams() { 
+	public VncVector getParams() { 
 		return params; 
 	}
 	

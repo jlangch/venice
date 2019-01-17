@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.Tuple3;
 
 
@@ -101,7 +102,7 @@ public class VncMultiArityFunction extends VncFunction {
 		return fn;
 	}
 	
-	private static int countFixedArgs(final VncList params) {
+	private static int countFixedArgs(final VncVector params) {
 		int fixedArgs = 0;
 		
 		for(VncVal p : params.getList()) {
@@ -112,7 +113,7 @@ public class VncMultiArityFunction extends VncFunction {
 		return fixedArgs;
 	}
 
-	private static boolean hasRemaingsArgs(final VncList params) {
+	private static boolean hasRemaingsArgs(final VncVector params) {
 		for(VncVal p : params.getList()) {
 			if (isElisionSymbol(p)) return true;
 		}
