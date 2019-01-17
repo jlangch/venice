@@ -147,7 +147,7 @@ public class VncHashMap extends VncMap {
 	public VncHashMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					"assoc: create requires an even number of items. %s", 
+					"hash-map: assoc requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
@@ -161,7 +161,7 @@ public class VncHashMap extends VncMap {
 	public VncHashMap assoc(final VncList mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
-					"assoc: create requires an even number of items. %s", 
+					"hash-map: assoc requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
