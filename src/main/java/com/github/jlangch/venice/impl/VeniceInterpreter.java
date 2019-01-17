@@ -87,12 +87,12 @@ public class VeniceInterpreter implements Serializable  {
 		} 
 		else {
 			final VncVal a0 = Coerce.toVncList(ast).nth(0);
-			if ((a0 instanceof VncSymbol) && (Coerce.toVncSymbol(a0).getName().equals("unquote"))) {
+			if (Types.isVncSymbol(a0) && (Coerce.toVncSymbol(a0).getName().equals("unquote"))) {
 				return ((VncList)ast).nth(1);
 			} 
 			else if (is_pair(a0)) {
 				final VncVal a00 = Coerce.toVncList(a0).nth(0);
-				if ((a00 instanceof VncSymbol) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
+				if (Types.isVncSymbol(a00) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
 					return VncList.ofAll(
 								new VncSymbol("concat"),
 								Coerce.toVncList(a0).nth(1),
@@ -209,7 +209,7 @@ public class VeniceInterpreter implements Serializable  {
 			}
 			
 			final VncVal a0 = ast.nth(0);		
-			final String a0sym = a0 instanceof VncSymbol ? ((VncSymbol)a0).getName() : "__<*fn*>__";
+			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
 			switch (a0sym) {			
 				case "def": { // (def meta-data? name value)

@@ -85,7 +85,7 @@ public class JavaInteropUtil {
 			}
 			else if ("class".equals(methodName)) {			
 				// get class (. :java.util.String :class)
-				if (arg0 instanceof VncString) {
+				if (Types.isVncString(arg0)) {
 					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					try {
 						return new VncJavaObject(ReflectionAccessor.classForName(className));
@@ -94,7 +94,7 @@ public class JavaInteropUtil {
 						return Constants.Nil;
 					}
 				}
-				else if (arg0 instanceof VncJavaObject) {
+				else if (Types.isVncJavaObject(arg0)) {
 					return new VncJavaObject(((VncJavaObject)arg0).getDelegate().getClass());
 				}
 				else {
@@ -102,7 +102,7 @@ public class JavaInteropUtil {
 				}
 			}
 			else {
-				if (arg0 instanceof VncString) {
+				if (Types.isVncString(arg0)) {
 					// static method / field:   (. :org.foo.Foo :getLastName)
 					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					final Class<?> targetClass = ReflectionAccessor.classForName(className);
@@ -137,7 +137,7 @@ public class JavaInteropUtil {
 				else {
 					// instance method/field:   (. person :getLastName)
 					//	                        (. person :setLastName \"john\")
-					final Object target = arg0 instanceof VncJavaObject
+					final Object target = Types.isVncJavaObject(arg0)
 											? ((VncJavaObject)arg0).getDelegate()
 											: JavaInteropUtil.convertToJavaObject(arg0);
 											
@@ -215,7 +215,7 @@ public class JavaInteropUtil {
 	}
 
 	public static Object convertToJavaObject(final VncVal value) {
-		if (value instanceof VncConstant) {
+		if (Types.isVncConstant(value)) {
 			if (((VncConstant)value) == Constants.Nil) {
 				return null;
 			}

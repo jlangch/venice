@@ -274,7 +274,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	private void addAll(final Collection<Object> val) {
 		if (val != null) {
 			val.forEach(v -> {
-				value.add(v instanceof VncVal
+				value.add(Types.isVncVal(val)
 							? JavaInteropUtil.convertToJavaObject((VncVal)val)
 							: v);
 			});

@@ -38,7 +38,15 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 public class Types {
+
+	public static boolean isVncVal(final Object val) {
+		return val != null && (val instanceof VncVal);
+	}
 	
+	public static boolean isVncConstant(final VncVal val) {
+		return val != null && (val instanceof VncConstant);
+	}
+
 	public static boolean isVncAtom(final VncVal val) {
 		return val != null && (val instanceof VncAtom);
 	}
