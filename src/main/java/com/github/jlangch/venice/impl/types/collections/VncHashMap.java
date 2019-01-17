@@ -62,13 +62,23 @@ public class VncHashMap extends VncMap {
 	public static VncHashMap ofAll(final VncList lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"hash-map: create requires an even number of items. %s", 
+					"hash-map: create requires an even number of list items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 		
 		return new VncHashMap().assoc(lst);
 	}
-	
+
+	public static VncHashMap ofAll(final VncVector vec) {
+		if (vec != null && (vec.size() %2 != 0)) {
+			throw new VncException(String.format(
+					"hash-map: create requires an even number of vector items. %s", 
+					ErrorMessage.buildErrLocation(vec)));
+		}
+		
+		return new VncHashMap().assoc(vec);
+	}
+
 	public static VncHashMap ofAll(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(

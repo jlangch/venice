@@ -61,13 +61,23 @@ public class VncOrderedMap extends VncMap {
 	public static VncOrderedMap ofAll(final VncList lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"ordered-map: create requires an even number of items. %s", 
+					"ordered-map: create requires an even number of list items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 
 		return new VncOrderedMap().assoc(lst);
 	}
 	
+	public static VncOrderedMap ofAll(final VncVector vec) {
+		if (vec != null && (vec.size() %2 != 0)) {
+			throw new VncException(String.format(
+					"ordered-map: create requires an even number of vector items. %s", 
+					ErrorMessage.buildErrLocation(vec)));
+		}
+
+		return new VncOrderedMap().assoc(vec);
+	}
+
 	public static VncOrderedMap ofAll(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
