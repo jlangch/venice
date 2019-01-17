@@ -56,6 +56,8 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
@@ -160,8 +162,8 @@ public class VeniceInterpreter implements Serializable  {
 		if (Types.isVncSymbol(ast)) {
 			return env.get((VncSymbol)ast);
 		} 
-		else if (Types.isVncList(ast)) {
-			final VncList list = (VncList)ast;
+		else if (Types.isVncSequence(ast)) {
+			final VncSequence list = (VncSequence)ast;
 			
 			// use reduce to take care of persistent list, addAtEnd() returns a new VncList
 			return list.getList()
@@ -572,7 +574,7 @@ public class VeniceInterpreter implements Serializable  {
 			argPos++;
 			final VncList params = paramsOrSig;
 			
-			final VncList preConditions = getFnPreconditions(ast.nth(argPos));
+			final VncVector preConditions = getFnPreconditions(ast.nth(argPos));
 			if (preConditions != null) argPos++;
 			
 			final VncList body = ast.slice(argPos);
@@ -591,7 +593,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				final VncList params = Coerce.toVncList(sig.nth(pos++));
 				
-				final VncList preConditions = getFnPreconditions(sig.nth(pos));
+				final VncVector preConditions = getFnPreconditions(sig.nth(pos));
 				if (preConditions != null) pos++;
 				
 				final VncList body = sig.slice(pos);
@@ -807,7 +809,7 @@ public class VeniceInterpreter implements Serializable  {
 			final String name, 
 			final VncList params, 
 			final VncList body, 
-			final VncList preConditions, 
+			final VncVector preConditions, 
 			final Env env
 	) {
 		return new VncFunction(name, body, env, params) {
@@ -846,11 +848,11 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncList getFnPreconditions(final VncVal prePostConditions) {
+	private VncVector getFnPreconditions(final VncVal prePostConditions) {
 		if (Types.isVncMap(prePostConditions)) {
 			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
-			if (Types.isVncList(val)) {
-				return (VncList)val;
+			if (Types.isVncVector(val)) {
+				return (VncVector)val;
 			}
 		}
 		
@@ -858,12 +860,14 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private boolean isFnConditionTrue(final VncVal result) {
-		return (Types.isVncList(result)) ? ((VncList)result).first() == True : result == True;
+		return Types.isVncSequence(result) 
+				? ((VncSequence)result).first() == True 
+				: result == True;
 	}
 
 	private void validateFnPreconditions(
 			final String fnName, 
-			final VncList preConditions, 
+			final VncVector preConditions, 
 			final Env env
 	) {
 		if (preConditions != null) {
