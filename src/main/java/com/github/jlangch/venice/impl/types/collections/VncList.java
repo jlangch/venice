@@ -124,22 +124,22 @@ public class VncList extends VncSequence {
 
 	@Override
 	public VncVal first() {
-		return isEmpty() ? Constants.Nil : nth(0);
+		return nthOrDefault(0, Constants.Nil);
 	}
 
 	@Override
 	public VncVal second() {
-		return size() < 2 ? Constants.Nil : nth(1);
+		return nthOrDefault(1, Constants.Nil);
 	}
 
 	@Override
 	public VncVal third() {
-		return size() < 3 ? Constants.Nil : nth(2);
+		return nthOrDefault(2, Constants.Nil);
 	}
 
 	@Override
 	public VncVal last() {
-		return isEmpty() ? Constants.Nil : nth(value.size()-1);
+		return nthOrDefault(value.size()-1, Constants.Nil);
 	}
 	
 	@Override
@@ -159,7 +159,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(value, getMeta());
+		return this;
 	}
 
 	@Override
