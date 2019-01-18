@@ -228,6 +228,13 @@ Caused by: java.lang.ArithmeticException: / by zero
    (let [f #(+ %1 %2 %3)] (f 1 2 3)))
 ```
 
+### Functions with preconditions
+
+```clojure
+(do
+   (defn sum [x y] { :pre [(> x 0) (> y 0] } (+ x y)))
+```
+
 
 ## Destructuring
 
