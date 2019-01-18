@@ -428,18 +428,18 @@ public class IOFunctions {
 				try {
 					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.nth(1)) : null;
 	
-					final VncList files = new VncList();
+					final List<VncVal> files = new ArrayList<>();
 	
 					for(File f : file.listFiles()) {
 						final VncVal result = (filterFn == null) 
 												? True 
 												: filterFn.apply(VncList.of(new VncJavaObject(f)));
 						if (result == True) {
-							files.addAtEnd(new VncJavaObject(f));
+							files.add(new VncJavaObject(f));
 						}
 					}
 					
-					return files;
+					return new VncList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(

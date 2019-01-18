@@ -292,7 +292,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncVector bindings = Coerce.toVncVector(ast.nth(1));
 					final VncVal expressions = ast.nth(2);
 					
-					final VncList bindingNames = new VncList();
+					final List<VncVal> bindingNames = new ArrayList<>();
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = EVAL(bindings.nth(i+1), env);
@@ -302,11 +302,11 @@ public class VeniceInterpreter implements Serializable  {
 							.destructure(sym, val)
 							.forEach(b -> { 
 								_env.set(b.sym, b.val); 
-								bindingNames.addAtEnd(b.sym);
+								bindingNames.add(b.sym);
 							 });
 					}
 					
-					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
+					recursionPoint = new RecursionPoint(new VncList(bindingNames), expressions, env);
 					orig_ast = expressions;
 					break;
 				}
