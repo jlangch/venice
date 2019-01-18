@@ -116,26 +116,6 @@ public class VncList extends VncSequence {
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
 		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
 	}
-
-	@Override
-	public VncVal first() {
-		return nthOrDefault(0, Constants.Nil);
-	}
-
-	@Override
-	public VncVal second() {
-		return nthOrDefault(1, Constants.Nil);
-	}
-
-	@Override
-	public VncVal third() {
-		return nthOrDefault(2, Constants.Nil);
-	}
-
-	@Override
-	public VncVal last() {
-		return nthOrDefault(value.size()-1, Constants.Nil);
-	}
 	
 	@Override
 	public VncList rest() {

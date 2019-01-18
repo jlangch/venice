@@ -236,7 +236,7 @@ public class Coerce {
 			return null;
 		}
 		else if (Types.isVncVector(val)) {
-			return (VncVector)val;
+			return ((VncVector)val).toVncList();
 		}
 		else if (Types.isVncList(val)) {
 			return (VncList)val;

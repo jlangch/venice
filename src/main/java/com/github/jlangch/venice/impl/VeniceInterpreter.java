@@ -195,13 +195,13 @@ public class VeniceInterpreter implements Serializable  {
 		
 		while (true) {
 			//System.out.println("EVAL: " + printer._pr_str(orig_ast, true));
-			if (!Types.isVncListButNotVector(orig_ast)) {
+			if (!Types.isVncList(orig_ast)) {
 				return eval_ast(orig_ast, env);
 			}
 	
 			// apply list
 			final VncVal expanded = macroexpand(orig_ast, env);
-			if (!Types.isVncListButNotVector(expanded)) {
+			if (!Types.isVncList(expanded)) {
 				return eval_ast(expanded, env);
 			}
 			

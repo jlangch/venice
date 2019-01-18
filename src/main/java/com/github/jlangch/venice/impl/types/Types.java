@@ -119,11 +119,6 @@ public class Types {
 		return val != null && (val instanceof VncVector);
 	}
 
-	// TODO: remove if Vector is nor derived from List anymore
-	public static boolean isVncListButNotVector(final VncVal val) {
-		return val != null && (Types.isVncList(val) && !Types.isVncVector(val));
-	}
-
 	public static boolean isVncMap(final VncVal val) {
 		return val != null && (val instanceof VncMap);
 	}

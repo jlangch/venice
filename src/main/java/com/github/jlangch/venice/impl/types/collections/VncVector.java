@@ -36,7 +36,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
-public class VncVector extends VncList {
+public class VncVector extends VncSequence {
 
 	public VncVector() {
 		this(null, null);
@@ -117,25 +117,6 @@ public class VncVector extends VncList {
 		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
 	}
 
-	@Override
-	public VncVal first() {
-		return nthOrDefault(0, Constants.Nil);
-	}
-
-	@Override
-	public VncVal second() {
-		return nthOrDefault(1, Constants.Nil);
-	}
-
-	@Override
-	public VncVal third() {
-		return nthOrDefault(2, Constants.Nil);
-	}
-
-	@Override
-	public VncVal last() {
-		return nthOrDefault(value.size()-1, Constants.Nil);
-	}
 	
 	@Override
 	public VncVector rest() {
