@@ -120,7 +120,7 @@ public class VncVector extends VncSequence {
 	
 	@Override
 	public VncVector rest() {
-		return isEmpty() ? new VncVector() : new VncVector(value.subList(1, value.size()));
+		return isEmpty() ? new VncVector() : slice(1);
 	}
 
 	@Override

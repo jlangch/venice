@@ -119,7 +119,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList rest() {
-		return isEmpty() ? new VncList() : new VncList(value.subList(1, value.size()));
+		return isEmpty() ? new VncList() : slice(1);
 	}
 
 	@Override
