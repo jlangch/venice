@@ -47,8 +47,8 @@ public class VncMultiArityFunction extends VncFunction {
 							.stream()
 							.map(fn -> new Tuple3<VncFunction, Integer, Boolean>(
 												fn, 
-												countFixedArgs(fn.params),
-												hasRemaingsArgs(fn.params)))
+												countFixedArgs(fn.getParams()),
+												hasRemaingsArgs(fn.getParams())))
 							.collect(Collectors.toList());
 	}
 
@@ -76,7 +76,7 @@ public class VncMultiArityFunction extends VncFunction {
 
 	@Override 
 	public String toString() {
-		return name;
+		return getName();
 	}
 	
 	private VncFunction findFunction(final int arity) {

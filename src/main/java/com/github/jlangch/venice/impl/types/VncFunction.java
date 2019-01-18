@@ -179,11 +179,11 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	public VncVal ast;
-	public Env env;
-	public VncVector params;
-	public boolean macro = false;
-	public final String name;
+	private final VncVal ast;
+	private final Env env;
+	private final VncVector params;
+	private volatile boolean macro = false;
+	private final String name;
 	
 	// Functions handle its meta data localy (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
