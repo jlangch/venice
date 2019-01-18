@@ -4752,10 +4752,7 @@ public class CoreFunctions {
 								.collect(Collectors.toList()));
 				} 
 				if (Types.isVncVector(val)) {
-					if (((VncVector)val).isEmpty()) { 
-						return Nil; 
-					}
-					return new VncList(((VncVector)val).getList());
+					return ((VncVector)val).isEmpty() ? Nil : ((VncVector)val).toVncList();
 				} 
 				else if (Types.isVncList(val)) {
 					return ((VncList)val).isEmpty() ? Nil :  val;
