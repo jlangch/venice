@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [1.2.3] - 2019-01-xx
+
+### added
+
+- added multi-arity functions and macros
+- added set to be a persistent set (based on VAVR)
+- added list to be a persistent list (based on VAVR)
+- added vector to be a persistent vector (based on VAVR)
+
+
+
 ## [1.2.2] - 2019-01-10
 
 ### added
