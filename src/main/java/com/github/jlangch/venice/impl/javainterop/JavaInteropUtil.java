@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.javainterop;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -347,11 +348,11 @@ public class JavaInteropUtil {
 				return new VncByteBuffer(ByteBuffer.wrap((byte[])value));
 			}
 			else {
-				final VncVector vec = new VncVector();
+				final List<VncVal> vec = new ArrayList<>();
 				for(int ii=0; ii<Array.getLength(value); ii++) {
-					vec.addAtEnd(convertToVncVal(Array.get(value, ii)));
+					vec.add(convertToVncVal(Array.get(value, ii)));
 				}
-				return vec;
+				return new VncVector(vec);
 			}
 		}
 		else { 

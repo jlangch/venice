@@ -21,11 +21,14 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
@@ -56,23 +59,23 @@ public class AnonymousFnArgs {
 	}
 	
 	public VncVector buildArgDef() {
-		final VncVector argDef = new VncVector();
+		final List<VncVal> argDef = new ArrayList<>();
 		
 		if (fnArgs.size() == 1 && fnArgs.contains("%")) {
-			argDef.addAtEnd(new VncSymbol("%"));
+			argDef.add(new VncSymbol("%"));
 		}
 		else {
 			for(int ii=1; ii<=getMaArgxPos(); ii++) {
-				argDef.addAtEnd(new VncSymbol("%" + ii));
+				argDef.add(new VncSymbol("%" + ii));
 			}
 			
 			if (fnArgs.contains("%&")) {
-				argDef.addAtEnd(new VncSymbol("&"));
-				argDef.addAtEnd(new VncSymbol("%&"));
+				argDef.add(new VncSymbol("&"));
+				argDef.add(new VncSymbol("%&"));
 			}
 		}
 
-		return argDef;
+		return new VncVector(argDef);
 	}
 	
 	
