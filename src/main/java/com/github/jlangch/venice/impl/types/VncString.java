@@ -92,7 +92,7 @@ public class VncString extends VncVal {
 	public VncList toVncList() {
 		final List<VncVal> list = new ArrayList<>();
 		for(char c : value.toCharArray()) {
-			list.add(new VncString(String.valueOf((char)c)));
+			list.add(new VncString(String.valueOf(c)));
 		}
 		return new VncList(list);
 	}
