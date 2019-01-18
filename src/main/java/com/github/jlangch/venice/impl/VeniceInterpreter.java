@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -163,14 +164,12 @@ public class VeniceInterpreter implements Serializable  {
 			return env.get((VncSymbol)ast);
 		} 
 		else if (Types.isVncSequence(ast)) {
-			final VncSequence seq = (VncSequence)ast;
-			
-			// use reduce to take care of persistent list, addAtEnd() returns a new VncList
-			return seq.getList()
-					   .stream()
-					   .reduce(
-							seq.empty(),
-							(a,e) -> ((VncSequence)a).addAtEnd(EVAL(e, env)));
+			final VncSequence seq = (VncSequence)ast;		
+			return seq.withValues(				
+						seq.getList()
+						   .stream()
+						   .map(v -> EVAL(v, env))
+						   .collect(Collectors.toList()));
 		}
 		else if (Types.isVncMap(ast)) {
 			final VncMap map = (VncMap)ast;
@@ -508,8 +507,8 @@ public class VeniceInterpreter implements Serializable  {
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 
 		final String sMacroName = Types.isVncSymbol(macroName) 
-				? ((VncSymbol)macroName).getName() 
-				: ((VncString)macroName).getValue();
+									? ((VncSymbol)macroName).getName() 
+									: ((VncString)macroName).getValue();
 
 		if (Types.isVncVector(paramsOrSig)) {
 			// single arity:

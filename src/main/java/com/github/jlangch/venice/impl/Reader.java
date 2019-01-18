@@ -178,8 +178,6 @@ public class Reader {
 	) {
 		final Token lstToken = rdr.next();
 
-		VncSequence items = lst.withMeta(MetaUtil.toMeta(lstToken));
-
 		if (lstToken.charAt(0) != start) {
 			throw new ParseError(String.format(
 					"Expected '%s'. %s",
@@ -187,9 +185,11 @@ public class Reader {
 					ErrorMessage.buildErrLocation(lstToken)));
 		}
 
+		final ArrayList<VncVal> items = new ArrayList<>();
+		
 		Token token = lstToken;
 		while ((token = rdr.peek()) != null && token.charAt(0) != end) {
-			items = items.addAtEnd(read_form(rdr));
+			items.add(read_form(rdr));
 		}
 
 		if (token == null) {
@@ -199,7 +199,7 @@ public class Reader {
 		}
 		rdr.next();
 
-		return items;
+		return lst.withValues(items, MetaUtil.toMeta(lstToken));
 	}
 
 	private static VncHashMap read_hash_map(final Reader rdr) {
