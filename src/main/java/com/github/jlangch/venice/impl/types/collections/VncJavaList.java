@@ -67,6 +67,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
+	public VncList withValues(final Collection<? extends VncVal> vals) {
+		return new VncList(vals, getMeta());
+	}
+
+	@Override
 	public VncList copy() {
 		return new VncList(getList(), getMeta());
 	}

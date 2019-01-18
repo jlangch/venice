@@ -163,13 +163,13 @@ public class VeniceInterpreter implements Serializable  {
 			return env.get((VncSymbol)ast);
 		} 
 		else if (Types.isVncSequence(ast)) {
-			final VncSequence list = (VncSequence)ast;
+			final VncSequence seq = (VncSequence)ast;
 			
 			// use reduce to take care of persistent list, addAtEnd() returns a new VncList
-			return list.getList()
+			return seq.getList()
 					   .stream()
 					   .reduce(
-							list.empty(),
+							seq.empty(),
 							(a,e) -> ((VncSequence)a).addAtEnd(EVAL(e, env)));
 		}
 		else if (Types.isVncMap(ast)) {

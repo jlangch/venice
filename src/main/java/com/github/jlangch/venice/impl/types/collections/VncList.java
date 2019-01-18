@@ -65,6 +65,11 @@ public class VncList extends VncSequence {
 	public VncList empty() {
 		return new VncList(getMeta());
 	}
+	
+	@Override
+	public VncList withValues(final Collection<? extends VncVal> replaceVals) {
+		return new VncList(replaceVals, getMeta());
+	}
 
 	@Override
 	public VncList copy() {

@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -43,6 +44,8 @@ public abstract class VncSequence extends VncCollection {
 	
 	public abstract VncSequence empty();
 	
+	public abstract VncSequence withValues(final Collection<? extends VncVal> replaceVals);
+
 	public abstract List<VncVal> getList();
 	
 	public abstract VncVal nth(int idx);

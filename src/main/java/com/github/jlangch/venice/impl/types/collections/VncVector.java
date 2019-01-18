@@ -67,6 +67,11 @@ public class VncVector extends VncSequence {
 	}
 	
 	@Override
+	public VncVector withValues(final Collection<? extends VncVal> replaceVals) {
+		return new VncVector(replaceVals, getMeta());
+	}
+	
+	@Override
 	public VncVector copy() {
 		// shallow copy
 		return new VncVector(value, getMeta());

@@ -35,6 +35,9 @@ public abstract class VncSet extends VncCollection {
 	
 	@Override
 	public abstract VncSet copy();
+	
+	@Override
+	public abstract VncSet empty();
 
 	@Override
 	public abstract VncSet withMeta(VncVal meta);

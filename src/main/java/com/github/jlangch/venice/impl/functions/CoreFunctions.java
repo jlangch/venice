@@ -3470,16 +3470,13 @@ public class CoreFunctions {
 					return new VncList();
 				}
 				
-				final VncSequence result = ((VncSequence)args.nth(0)).empty();
-				
-				return result.addAllAtEnd(
-								new VncList(
-									Coerce
-										.toVncSequence(args.nth(0))
-										.getList()
-										.stream()
-										.distinct()
-										.collect(Collectors.toList())));
+				return ((VncSequence)args.nth(0)).withValues(
+													Coerce
+														.toVncSequence(args.nth(0))
+														.getList()
+														.stream()
+														.distinct()
+														.collect(Collectors.toList()));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -3504,8 +3501,6 @@ public class CoreFunctions {
 					return new VncList();
 				}
 				
-				final VncSequence result = ((VncSequence)args.nth(0)).empty();
-				
 				VncVal seen = null;
 	
 				final List<VncVal> items = new ArrayList<>();
@@ -3517,7 +3512,7 @@ public class CoreFunctions {
 					}
 				}
 				
-				return result.addAllAtEnd(new VncList(items));
+				return ((VncSequence)args.nth(0)).withValues(items);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -3888,8 +3883,7 @@ public class CoreFunctions {
 					reversed.add(coll.nth(ii));
 				}	
 				
-				final VncSequence result = coll.empty();
-				return result.addAllAtEnd(new VncList(reversed));
+				return coll.withValues(reversed);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4412,7 +4406,7 @@ public class CoreFunctions {
 					}
 				}
 				
-				return coll.empty().addAllAtEnd(new VncList(items));
+				return coll.withValues(items);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4446,7 +4440,7 @@ public class CoreFunctions {
 					}				
 				}
 				
-				return coll.empty().addAllAtEnd(new VncList(items));
+				return coll.withValues(items);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
