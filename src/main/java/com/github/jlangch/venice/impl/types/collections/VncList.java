@@ -37,13 +37,13 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncList extends VncSequence {
-	
+
 	public VncList() {
-		this(null, null);
+		this((io.vavr.collection.Vector<VncVal>)null, null);
 	}
 
 	public VncList(final VncVal meta) {
-		this(null, meta);
+		this((io.vavr.collection.Vector<VncVal>)null, meta);
 	}
 
 	public VncList(final Collection<? extends VncVal> vals) {
@@ -52,14 +52,21 @@ public class VncList extends VncSequence {
 
 	public VncList(final Collection<? extends VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		value = vals == null ? new ArrayList<>() : new ArrayList<>(vals);
+		value = vals == null 
+					? io.vavr.collection.Vector.of() 
+					: io.vavr.collection.Vector.ofAll(vals);
 	}
 
+	public VncList(final io.vavr.collection.Vector<VncVal> vals, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		value = vals == null ? io.vavr.collection.Vector.of() : vals;
+	}
+	
 	
 	public static VncList of(final VncVal... mvs) {
 		return new VncList(Arrays.asList(mvs));
 	}
-
+	
 	
 	@Override
 	public VncList empty() {
@@ -75,20 +82,17 @@ public class VncList extends VncSequence {
 	public VncList withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
 		return new VncList(replaceVals, meta);
 	}
-
+	
 	@Override
 	public VncList copy() {
-		// shallow copy
-		return new VncList(value, getMeta());
+		return this;
 	}
 
 	@Override
 	public VncList withMeta(final VncVal meta) {
-		// shallow copy
 		return new VncList(value, meta);
 	}
-	
-	
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
@@ -96,7 +100,7 @@ public class VncList extends VncSequence {
 
 	@Override
 	public List<VncVal> getList() { 
-		return Collections.unmodifiableList(value); 
+		return Collections.unmodifiableList(value.toJavaList()); 
 	}
 
 	@Override
@@ -119,12 +123,12 @@ public class VncList extends VncSequence {
 						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
 		}
 
-		return value.get((int)idx);
+		return value.get(idx);
 	}
 
 	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		return idx >= 0 && idx < value.size() ? nth(idx) : defaultVal;
+		return idx >= 0 && idx < value.size() ? value.get(idx) : defaultVal;
 	}
 	
 	@Override
@@ -134,12 +138,12 @@ public class VncList extends VncSequence {
 
 	@Override
 	public VncList slice(final int start, final int end) {
-		return new VncList(value.subList(start, end));
+		return new VncList(value.subSequence(start, end), getMeta());
 	}
 	
 	@Override
 	public VncList slice(final int start) {
-		return slice(start, value.size());
+		return new VncList(value.subSequence(start), getMeta());
 	}
 	
 	@Override
@@ -151,56 +155,58 @@ public class VncList extends VncSequence {
 	public VncVector toVncVector() {
 		return new VncVector(value, getMeta());
 	}
-	
-	@Override
-	public VncList setAt(final int idx, final VncVal val) {
-		value.set(idx, val);
-		return this;
-	}
+
 	
 	@Override
 	public VncList addAtStart(final VncVal val) {
-		value.add(0, val);
-		return this;
+		return new VncList(value.prepend(val), getMeta());
 	}
 	
 	@Override
 	public VncList addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = list.getList();
-		for(int ii=0; ii<items.size(); ii++) {
-			value.add(0, items.get(ii));
-		}
-		return this;
+		final List<VncVal> items = new ArrayList<>(list.getList());
+		Collections.reverse(items);
+		return new VncList(value.prependAll(items), getMeta());
 	}
 	
 	@Override
 	public VncList addAtEnd(final VncVal val) {
-		value.add(val);
-		return this;
+		return new VncList(value.append(val), getMeta());
 	}
 	
 	@Override
 	public VncList addAllAtEnd(final VncSequence list) {
-		value.addAll(list.getList());
-		return this;
+		return new VncList(value.appendAll(list.getList()), getMeta());
+	}
+	
+	@Override
+	public VncList setAt(final int idx, final VncVal val) {
+		return new VncList(value.update(idx, val), getMeta());
 	}
 	
 	@Override
 	public VncList removeAt(final int idx) {
-		value.remove(idx);
-		return this;
+		return new VncList(value.removeAt(idx), getMeta());
 	}
-
+	
 	@Override
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
 			return 1;
 		}
 		else if (Types.isVncList(o)) {
-			for(int ii=0; ii<Math.min(size(), ((VncList)o).size()); ii++) {
-				int c = nth(ii).compareTo(((VncList)o).nth(ii));
-				if (c != 0) {
-					return c;
+			final Integer sizeThis = size();
+			final Integer sizeOther = size();
+			int c = sizeThis.compareTo(sizeOther);
+			if (c != 0) {
+				return c;
+			}
+			else {
+				for(int ii=0; ii<size(); ii++) {
+					c = nth(ii).compareTo(((VncList)o).nth(ii));
+					if (c != 0) {
+						return c;
+					}
 				}
 			}
 		}
@@ -235,15 +241,15 @@ public class VncList extends VncSequence {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(value, " ", true) + ")";
+		return "(" + Printer.join(value.toJavaList(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(value, " ", print_readably) + ")";
+		return "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")";
 	}
 
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final ArrayList<VncVal> value;
+	private final io.vavr.collection.Vector<VncVal> value;
 }
