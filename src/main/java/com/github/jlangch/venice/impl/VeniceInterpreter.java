@@ -769,13 +769,11 @@ public class VeniceInterpreter implements Serializable  {
 								.findFirst()
 								.orElse(null);
 		
-		if (block != null) {
-			final VncSymbol sym = Coerce.toVncSymbol(block.nth(2));
-			return new CatchBlock(sym, block.slice(3));
-		}
-		else {
-			return null;
-		}
+		return block == null
+				? null
+				: new CatchBlock(
+						Coerce.toVncSymbol(block.nth(2)), 
+						block.slice(3));
 	}
 	
 	private boolean isCatchBlockMatchingThrowable(
@@ -785,12 +783,7 @@ public class VeniceInterpreter implements Serializable  {
 		final String className = resolveClassName(((VncString)block.nth(1)).getValue());
 		final Class<?> targetClass = ReflectionAccessor.classForName(className);
 		
-		if (targetClass.isAssignableFrom(th.getClass())) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return targetClass.isAssignableFrom(th.getClass());
 	}
 	
 	private VncList findFirstFinallyBlock(final VncList blocks) {
@@ -826,7 +819,7 @@ public class VeniceInterpreter implements Serializable  {
 				if (body.isEmpty()) {
 					return Constants.Nil;
 				}
-				if (body.size() == 1) {
+				else if (body.size() == 1) {
 					return EVAL(body.first(), localEnv);
 				}
 				else {
@@ -840,12 +833,9 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private String getFnName(final VncVal name) {
-		if (name == Nil) {
-			return null;
-		}
-		else {
-			return Types.isVncSymbol(name) ? ((VncSymbol)name).getName() : null;
-		}
+		return name == Nil
+				? null
+				: Types.isVncSymbol(name) ? ((VncSymbol)name).getName() : null;
 	}
 
 	private VncVector getFnPreconditions(final VncVal prePostConditions) {
