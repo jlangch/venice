@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
@@ -60,12 +62,12 @@ public class VncByteBuffer extends VncVal {
 	}
 	
 	public VncList toVncList() { 
-		final VncList list = new VncList();
+		final List<VncVal> list = new ArrayList<>();
 		final byte[] buf = value.array();
 		for(int ii=0; ii<buf.length; ii++) {
-			list.addAtEnd(new VncLong(buf[ii] & 0x0FF));
+			list.add(new VncLong(buf[ii] & 0x0FF));
 		}
-		return list; 
+		return new VncList(list);
 	}
 	
 	@Override 

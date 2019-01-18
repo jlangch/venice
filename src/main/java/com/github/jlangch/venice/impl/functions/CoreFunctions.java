@@ -1265,10 +1265,9 @@ public class CoreFunctions {
 							Types.getClassName(args.last())));
 				}
 				else {			
-					VncList list = new VncList();
-					list = list.addAllAtEnd(args.slice(0, args.size()-1));
-					list = list.addAllAtEnd((VncSequence)args.last());
-					return list;
+					return new VncList()
+								.addAllAtEnd(args.slice(0, args.size()-1))
+								.addAllAtEnd((VncSequence)args.last());
 				}
 			}
 	

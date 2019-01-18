@@ -24,12 +24,15 @@ package com.github.jlangch.venice.impl.javainterop;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -64,10 +67,10 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	) throws Throwable { 
 		final VncFunction fn = methods.get(method.getName());
 		if (fn != null) {
-			final VncList vncArgs = new VncList();
+			final List<VncVal> vncArgs = new ArrayList<>();
 			if (args != null) {
 				for(Object arg : args) {
-					vncArgs.addAtEnd(JavaInteropUtil.convertToVncVal(arg));
+					vncArgs.add(JavaInteropUtil.convertToVncVal(arg));
 				}
 			}
 				
@@ -80,7 +83,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
 			if (proxyInterceptor == parentInterceptor) {
 				// we run in the same thread
-				return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
+				return JavaInteropUtil.convertToJavaObject(fn.apply(new VncList(vncArgs)));
 			}
 			else {
 				// the callback function run's in another thread
@@ -89,7 +92,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				try {
 					JavaInterop.register(parentInterceptor);
 					
-					return JavaInteropUtil.convertToJavaObject(fn.apply(vncArgs));
+					return JavaInteropUtil.convertToJavaObject(fn.apply(new VncList(vncArgs)));
 				}
 				finally {
 					JavaInterop.unregister();

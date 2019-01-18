@@ -327,16 +327,16 @@ public class VeniceInterpreter implements Serializable  {
 					// +----------------+-------------------------------------------+---------------+
 
 					// [1] calculate new values
-					final VncList recur_values = new VncList();
+					final List<VncVal> recur_values = new ArrayList<>();
 					for(int i=1; i<ast.size(); i++) {
-						recur_values.addAtEnd(EVAL(ast.nth(i), env));
+						recur_values.add(EVAL(ast.nth(i), env));
 					}
 					// [2] bind the values
 					final VncList recur_bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
 					for(int i=0; i<recur_bindingNames.size(); i++) {
 						final VncSymbol key = Coerce.toVncSymbol(recur_bindingNames.nth(i));
-						recur_env.set(key, recur_values.nth(i));
+						recur_env.set(key, recur_values.get(i));
 					}
 					// [3] continue on the loop with the new parameters
 					orig_ast = recursionPoint.getLoopExpressions();

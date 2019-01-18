@@ -61,8 +61,7 @@ public class VncAtom extends VncVal {
 		for(;;) {
 			final VncVal oldVal = deref();
 			
-			final VncList new_args = VncList.of(oldVal);
-			new_args.addAllAtEnd(args);
+			final VncList new_args = VncList.of(oldVal).addAllAtEnd(args);
 			final VncVal newVal = fn.apply(new_args);
 			
 			if (state.compareAndSet(oldVal, newVal)) {

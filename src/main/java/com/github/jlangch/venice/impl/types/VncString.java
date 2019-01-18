@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -87,11 +90,11 @@ public class VncString extends VncVal {
 	}
 	
 	public VncList toVncList() {
-		final VncList list = new VncList();
+		final List<VncVal> list = new ArrayList<>();
 		for(char c : value.toCharArray()) {
-			list.addAtEnd(new VncString(String.valueOf((char)c)));
+			list.add(new VncString(String.valueOf((char)c)));
 		}
-		return list;
+		return new VncList(list);
 	}
 
 	public VncSymbol toSymbol() {
