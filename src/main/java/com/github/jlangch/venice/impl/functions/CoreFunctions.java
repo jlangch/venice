@@ -3603,7 +3603,10 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				return args.stream().filter(v -> v != Nil).findFirst().orElse(Nil);
+				return args.stream()
+						   .filter(v -> v != Nil)
+						   .findFirst()
+						   .orElse(Nil);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
