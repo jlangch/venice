@@ -139,12 +139,12 @@ public class VncVector extends VncList {
 	
 	@Override
 	public VncVector rest() {
-		return isEmpty() ? new VncVector() : new VncVector(getList().subList(1, getList().size()));
+		return isEmpty() ? new VncVector() : new VncVector(value.subList(1, value.size()));
 	}
 
 	@Override
 	public VncVector slice(final int start) {
-		return slice(start, getList().size());
+		return slice(start, value.size());
 	}
 
 	@Override

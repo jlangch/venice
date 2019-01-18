@@ -80,7 +80,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private static boolean is_pair(final VncVal x) {
-		return Types.isVncList(x) && !((VncList)x).isEmpty();
+		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
 	}
 
 	private static VncVal quasiquote(final VncVal ast) {
@@ -89,22 +89,22 @@ public class VeniceInterpreter implements Serializable  {
 		} 
 		else {
 			final VncVal a0 = Coerce.toVncSequence(ast).nth(0);
-			if (Types.isVncSymbol(a0) && (Coerce.toVncSymbol(a0).getName().equals("unquote"))) {
-				return ((VncList)ast).nth(1);
+			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
+				return ((VncSequence)ast).nth(1);
 			} 
 			else if (is_pair(a0)) {
 				final VncVal a00 = Coerce.toVncSequence(a0).nth(0);
-				if (Types.isVncSymbol(a00) && (((VncSymbol)a00).getName().equals("splice-unquote"))) {
+				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
 					return VncList.of(
 								new VncSymbol("concat"),
 								Coerce.toVncSequence(a0).nth(1),
-								quasiquote(((VncList)ast).rest()));
+								quasiquote(((VncSequence)ast).rest()));
 				}
 			}
 			return VncList.of(
 						new VncSymbol("cons"),
 						quasiquote(a0),
-						quasiquote(((VncList)ast).rest()));
+						quasiquote(((VncSequence)ast).rest()));
 		}
 	}
 

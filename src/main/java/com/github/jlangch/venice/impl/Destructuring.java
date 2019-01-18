@@ -160,7 +160,7 @@ public class Destructuring {
 			}
 			else if (isElisionSymbol(symbols.get(symIdx))) {
 				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
-				final VncVal val = valIdx < values.size() ? ((VncList)bindVal).slice(valIdx) : new VncList();
+				final VncVal val = valIdx < values.size() ? ((VncSequence)bindVal).slice(valIdx) : new VncList();
 				bindings.add(new Binding(sym, val));
 				symIdx += 2; 
 				valIdx = values.size(); // all values read
