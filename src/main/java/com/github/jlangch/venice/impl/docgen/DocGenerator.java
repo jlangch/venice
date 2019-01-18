@@ -307,6 +307,7 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("list?"));
 		coll_test.addItem(getDocItem("vector?"));
 		coll_test.addItem(getDocItem("set?"));
+		coll_test.addItem(getDocItem("sorted-set?"));
 		coll_test.addItem(getDocItem("map?"));
 		coll_test.addItem(getDocItem("sequential?"));
 		coll_test.addItem(getDocItem("hash-map?"));
@@ -439,6 +440,7 @@ public class DocGenerator {
 		sets.addSection(set_create);
 		set_create.addItem(getDocItem("#{}"));
 		set_create.addItem(getDocItem("set"));
+		set_create.addItem(getDocItem("sorted-set"));
 
 		final DocSection set_modify = new DocSection("Modify");
 		sets.addSection(set_modify);

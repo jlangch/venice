@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +39,10 @@ public abstract class VncSet extends VncCollection {
 	
 	@Override
 	public abstract VncSet empty();
+
+	public abstract VncSet withValues(final Collection<? extends VncVal> replaceVals);
+	
+	public abstract VncSet withValues(final Collection<? extends VncVal> replaceVals, VncVal meta);
 
 	@Override
 	public abstract VncSet withMeta(VncVal meta);

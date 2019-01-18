@@ -31,100 +31,100 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class VncHashSet extends VncSet {
+public class VncSortedSet extends VncSet {
 
-	public VncHashSet() {
+	public VncSortedSet() {
 		this(null, null);
 	}
 
-	public VncHashSet(final VncVal meta) {
+	public VncSortedSet(final VncVal meta) {
 		this(null, meta);
 	}
 
-	public VncHashSet(final io.vavr.collection.HashSet<VncVal> val) {
+	public VncSortedSet(final io.vavr.collection.SortedSet<VncVal> val) {
 		this(val, null);
 	}
 
-	public VncHashSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
+	public VncSortedSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (val == null) {
-			value = io.vavr.collection.HashSet.of();
+			value = io.vavr.collection.TreeSet.of();
 		}
-		else if (val instanceof io.vavr.collection.HashSet) {
-			value = (io.vavr.collection.HashSet<VncVal>)val;
+		else if (val instanceof io.vavr.collection.TreeSet) {
+			value = (io.vavr.collection.TreeSet<VncVal>)val;
 		}
 		else {
-			value = io.vavr.collection.HashSet.ofAll(val);
+			value = io.vavr.collection.TreeSet.ofAll(val);
 		}
 	}
 
 	
-	public static VncHashSet ofAll(final Collection<? extends VncVal> val) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val));
+	public static VncSortedSet ofAll(final Collection<? extends VncVal> val) {
+		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
 	}
 	
-	public static VncHashSet ofAll(final VncSequence val) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val.getList()));
+	public static VncSortedSet ofAll(final VncSequence val) {
+		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val.getList()));
 	}
 	
-	public static VncHashSet of(final VncVal... mvs) {
-		return new VncHashSet(io.vavr.collection.HashSet.of(mvs));
+	public static VncSortedSet of(final VncVal... mvs) {
+		return new VncSortedSet(io.vavr.collection.TreeSet.of(mvs));
 	}
 	
 	
 	@Override
-	public VncHashSet empty() {
-		return new VncHashSet(getMeta());
+	public VncSortedSet empty() {
+		return new VncSortedSet(getMeta());
 	}
 	
 	@Override
-	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), getMeta());
+	public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals) {
+		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), getMeta());
 	}
 
 	@Override
-	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), meta);
+	public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
+		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), meta);
 	}
 	
 	@Override
-	public VncHashSet copy() {
-		return new VncHashSet(value, getMeta());
+	public VncSortedSet copy() {
+		return new VncSortedSet(value, getMeta());
 	}
 
 	@Override
-	public VncHashSet withMeta(final VncVal meta) {
-		return new VncHashSet(value, meta);
+	public VncSortedSet withMeta(final VncVal meta) {
+		return new VncSortedSet(value, meta);
 	}
 	
 	@Override
-	public VncHashSet add(final VncVal val) {
-		return new VncHashSet(value.add(val), getMeta());
+	public VncSortedSet add(final VncVal val) {
+		return new VncSortedSet(value.add(val), getMeta());
 	}
 	
 	@Override
-	public VncHashSet addAll(final VncSet val) {
-		return new VncHashSet(value.addAll(val.getSet()), getMeta());
+	public VncSortedSet addAll(final VncSet val) {
+		return new VncSortedSet(value.addAll(val.getSet()), getMeta());
 	}
 	
 	@Override
-	public VncHashSet addAll(final VncSequence val) {
-		return new VncHashSet(value.addAll(val.getList()), getMeta());
+	public VncSortedSet addAll(final VncSequence val) {
+		return new VncSortedSet(value.addAll(val.getList()), getMeta());
 	}
 
 	@Override
-	public VncHashSet remove(final VncVal val) {
-		return new VncHashSet(value.remove(val), getMeta());
+	public VncSortedSet remove(final VncVal val) {
+		return new VncSortedSet(value.remove(val), getMeta());
 	}
 
 	@Override
-	public VncHashSet removeAll(final VncSet val) {
-		return new VncHashSet(value.removeAll(val.getSet()), getMeta());
+	public VncSortedSet removeAll(final VncSet val) {
+		return new VncSortedSet(value.removeAll(val.getSet()), getMeta());
 	}
 
 	@Override
-	public VncHashSet removeAll(final VncSequence val) {
-		return new VncHashSet(value.removeAll(val.getList()), getMeta());
+	public VncSortedSet removeAll(final VncSequence val) {
+		return new VncSortedSet(value.removeAll(val.getList()), getMeta());
 	}
 	
 	@Override
@@ -178,7 +178,7 @@ public class VncHashSet extends VncSet {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		VncHashSet other = (VncHashSet) obj;
+		VncSortedSet other = (VncSortedSet) obj;
 		if (value == null) {
 			if (other.value != null)
 				return false;
@@ -200,5 +200,5 @@ public class VncHashSet extends VncSet {
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final io.vavr.collection.HashSet<VncVal> value;	
+	private final io.vavr.collection.TreeSet<VncVal> value;	
 }

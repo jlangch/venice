@@ -611,6 +611,13 @@ public class CoreFunctionsTest {
 		assertEquals("#{1 2 3}", venice.eval("(str (difference (set 1 2 3)))"));
 		assertEquals("#{1}", venice.eval("(str (difference (set 1 2) (set 2 3)))"));
 		assertEquals("#{2}", venice.eval("(str (difference (set 1 2 3) (set 1) (set 1 4) (set 3)))"));
+
+		assertEquals("#{1 2 3}", venice.eval("(str (difference (sorted-set 1 2 3)))"));
+		assertEquals("#{1}", venice.eval("(str (difference (sorted-set 1 2) (sorted-set 2 3)))"));
+		assertEquals("#{2}", venice.eval("(str (difference (sorted-set 1 2 3) (sorted-set 1) (sorted-set 1 4) (sorted-set 3)))"));
+
+		assertEquals("#{1}", venice.eval("(str (difference (set 1 2) (sorted-set 2 3)))"));
+		assertEquals("#{2}", venice.eval("(str (difference (set 1 2 3) (set 1) (set 1 4) (sorted-set 3)))"));
 	}
 
 	@Test
@@ -1221,6 +1228,15 @@ public class CoreFunctionsTest {
 		assertEquals("#{2}", venice.eval("(str (intersection (set 1 2) (set 2 3)))"));
 		assertEquals("#{2}", venice.eval("(str (intersection (set 1 2) (set 2 3) (set 2 4)))"));
 		assertEquals("#{}", venice.eval("(str (intersection (set 1 2) (set 3 4)))"));
+
+		assertEquals("#{1}", venice.eval("(str (intersection (sorted-set 1)))"));
+		assertEquals("#{2}", venice.eval("(str (intersection (sorted-set 1 2) (sorted-set 2 3)))"));
+		assertEquals("#{2}", venice.eval("(str (intersection (sorted-set 1 2) (sorted-set 2 3) (sorted-set 2 4)))"));
+		assertEquals("#{}", venice.eval("(str (intersection (sorted-set 1 2) (sorted-set 3 4)))"));
+
+		assertEquals("#{2}", venice.eval("(str (intersection (set 1 2) (sorted-set 2 3)))"));
+		assertEquals("#{2}", venice.eval("(str (intersection (set 1 2) (set 2 3) (sorted-set 2 4)))"));
+		assertEquals("#{}", venice.eval("(str (intersection (set 1 2) (sorted-set 3 4)))"));
 	}
 		
 	@Test
@@ -2242,7 +2258,44 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(set? (hash-map :a 1 :b 2))"));	
 		assertFalse((Boolean)venice.eval("(set? (ordered-map :a 1 :b 2))"));	
 		assertFalse((Boolean)venice.eval("(set? (sorted-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(set? (sorted-set 1 2))"));	
 		assertTrue((Boolean)venice.eval("(set? (set 1 2))"));	
+	}
+	
+	@Test
+	public void test_sorted_set() {
+		final Venice venice = new Venice();
+
+		assertEquals("#{}", venice.eval("(str (sorted-set ))"));
+		assertEquals("#{2 4 6}", venice.eval("(str (sorted-set 6 2 4))"));
+		assertEquals("#{[1 2] [2 3]}", venice.eval("(str (sorted-set [2 3] [1 2]))"));
+		assertEquals("3", venice.eval("(str (count (sorted-set 0 1 2)))"));
+	}
+	
+	@Test
+	public void test_sorted_set_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(sorted-set? nil)"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? 1)"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? '(1 2))"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? [1 2])"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? {:a 1 :b 2})"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? (hash-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? (ordered-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? (sorted-map :a 1 :b 2))"));	
+		assertFalse((Boolean)venice.eval("(sorted-set? (set 1 2))"));	
+		assertTrue((Boolean)venice.eval("(sorted-set? (sorted-set 1 2))"));	
+	}
+	
+	@Test
+	public void test_some_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(some? nil)"));	
+		assertTrue((Boolean)venice.eval("(some? true)"));	
+		assertTrue((Boolean)venice.eval("(some? false)"));	
+		assertTrue((Boolean)venice.eval("(some? 1)"));	
 	}
 	
 	@Test
@@ -2258,16 +2311,6 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(sorted-map? (ordered-map :a 1 :b 2))"));	
 		assertTrue((Boolean)venice.eval("(sorted-map? (sorted-map :a 1 :b 2))"));	
 		assertFalse((Boolean)venice.eval("(sorted-map? (set 1 2))"));	
-	}
-	
-	@Test
-	public void test_some_Q() {
-		final Venice venice = new Venice();
-
-		assertFalse((Boolean)venice.eval("(some? nil)"));	
-		assertTrue((Boolean)venice.eval("(some? true)"));	
-		assertTrue((Boolean)venice.eval("(some? false)"));	
-		assertTrue((Boolean)venice.eval("(some? 1)"));	
 	}
 	
 	@Test
@@ -2409,7 +2452,8 @@ public class CoreFunctionsTest {
 
 		assertEquals("{}", venice.eval("(str (sorted-map))"));
 		assertEquals("{:a 1}", venice.eval("(str (sorted-map :a 1))"));
-		assertEquals("{:a 1 :b 2}", venice.eval("(str (sorted-map :a 1 :b 2))"));
+		assertEquals("{:a 1 :b 2}", venice.eval("(str (sorted-map :b 2 :a 1))"));
+		assertEquals("{:a 1 :b [2 3] :c #{3 4}}", venice.eval("(str (sorted-map :a 1 :c #{3 4}  :b [2 3]))"));
 	}
 	
 	@Test
@@ -2605,6 +2649,13 @@ public class CoreFunctionsTest {
 		assertEquals("#{1 2 3}", venice.eval("(str (union (set 1 2 3)))"));
 		assertEquals("#{1 2 3}", venice.eval("(str (union (set 1 2) (set 2 3)))"));
 		assertEquals("#{1 2 3 4}", venice.eval("(str (union (set 1 2 3) (set 1 2) (set 1 4) (set 3)))"));
+
+		assertEquals("#{1 2 3}", venice.eval("(str (union (sorted-set 1 2 3)))"));
+		assertEquals("#{1 2 3}", venice.eval("(str (union (sorted-set 1 2) (sorted-set 2 3)))"));
+		assertEquals("#{1 2 3 4}", venice.eval("(str (union (sorted-set 1 2 3) (sorted-set 1 2) (sorted-set 1 4) (sorted-set 3)))"));
+
+		assertEquals("#{1 2 3}", venice.eval("(str (union (set 1 2) (sorted-set 2 3)))"));
+		assertEquals("#{1 2 3 4}", venice.eval("(str (union (set 1 2 3) (set 1 2) (sorted-set 1 4) (sorted-set 3)))"));
 	}
 	
 	@Test

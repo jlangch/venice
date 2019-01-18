@@ -46,11 +46,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		this(null, meta);
 	}
 
-	public VncJavaSet(final Set<Object> val) {
+	public VncJavaSet(final Collection<Object> val) {
 		this(val, null);
 	}
 
-	public VncJavaSet(final Set<Object> val, final VncVal meta) {
+	public VncJavaSet(final Collection<Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		addAll(val);
 	}
@@ -64,6 +64,16 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	@Override
 	public VncJavaSet empty() {
 		return new VncJavaSet(getMeta());
+	}
+	
+	@Override
+	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals) {
+		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), getMeta());
+	}
+
+	@Override
+	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
+		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), meta);
 	}
 	
 	@Override

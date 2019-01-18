@@ -56,9 +56,17 @@ public class VncVector extends VncSequence {
 					: io.vavr.collection.Vector.ofAll(vals);
 	}
 
-	public VncVector(final io.vavr.collection.Vector<VncVal> vals, final VncVal meta) {
+	public VncVector(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		value = vals == null ? io.vavr.collection.Vector.of() : vals;
+		if (vals == null) {
+			value = io.vavr.collection.Vector.of();
+		}
+		else if (vals instanceof io.vavr.collection.Vector) {
+			value = (io.vavr.collection.Vector<VncVal>)vals;
+		}
+		else {
+			value = io.vavr.collection.Vector.ofAll(vals);
+		}
 	}
 	
 	

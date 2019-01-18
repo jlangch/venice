@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
@@ -331,6 +332,21 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to set. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
+	public static VncSortedSet toVncSortedSet(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (Types.isVncSortedSet(val)) {
+			return (VncSortedSet)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to sorted set. %s", 
 					Types.getClassName(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

@@ -76,6 +76,7 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
@@ -1601,6 +1602,23 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction new_sorted_set = 
+		new VncFunction(
+				"sorted-set", 
+				VncFunction
+					.meta()
+					.arglists("(sorted-set & items)")		
+					.doc("Creates a new sorted-set containing the items.")
+					.examples("(sorted-set )", "(sorted-set nil)", "(sorted-set 1)", "(sorted-set 6 2 4)", "(str (sorted-set [2 3] [1 2]))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				return VncSortedSet.ofAll(args);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction set_Q = 
 		new VncFunction(
 				"set?", 
@@ -1615,6 +1633,25 @@ public class CoreFunctions {
 				assertArity("set?", args, 1);
 				
 				return Types.isVncHashSet(args.nth(0)) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction sorted_set_Q = 
+		new VncFunction(
+				"sorted-set?", 
+				VncFunction
+					.meta()
+					.arglists("(sorted-set? obj)")		
+					.doc("Returns true if obj is a sorted-set")
+					.examples("(sorted-set? (set 1))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("sorted-set?", args, 1);
+				
+				return Types.isVncSortedSet(args.nth(0)) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1636,10 +1673,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("difference", args, 1);
 				
-				Set<VncVal> set = new HashSet<>(Coerce.toVncHashSet(args.first()).getSet());
+				Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
 				
 				for(int ii=1; ii<args.size(); ii++) {
-					set.removeAll(Coerce.toVncHashSet(args.nth(ii)).getSet());
+					set.removeAll(Coerce.toVncSet(args.nth(ii)).getSet());
 				}
 				
 				return VncHashSet.ofAll(set);
@@ -1664,10 +1701,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("union", args, 1);
 				
-				final Set<VncVal> set = new HashSet<>(Coerce.toVncHashSet(args.first()).getSet());
+				final Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
 				
 				for(int ii=1; ii<args.size(); ii++) {
-					set.addAll(Coerce.toVncHashSet(args.nth(ii)).getSet());
+					set.addAll(Coerce.toVncSet(args.nth(ii)).getSet());
 				}
 				
 				return VncHashSet.ofAll(set);
@@ -1694,13 +1731,13 @@ public class CoreFunctions {
 				
 				final Set<VncVal> intersection = new HashSet<>();
 			
-				final Set<VncVal> first = Coerce.toVncHashSet(args.first()).getSet();
+				final Set<VncVal> first = Coerce.toVncSet(args.first()).getSet();
 				
 				first.forEach(v -> {
 					boolean intersect = true;
 					
 					for(int ii=1; ii<args.size(); ii++) {
-						if (!Coerce.toVncHashSet(args.nth(ii)).getSet().contains(v)) {
+						if (!Coerce.toVncSet(args.nth(ii)).getSet().contains(v)) {
 							intersect = false;
 							break;
 						}
@@ -5148,7 +5185,9 @@ public class CoreFunctions {
 				.put("empty",				empty)
 
 				.put("set?",				set_Q)
+				.put("sorted-set?",			sorted_set_Q)
 				.put("set",					new_set)
+				.put("sorted-set",			new_sorted_set)
 				.put("difference",			difference)
 				.put("union",				union)
 				.put("intersection",		intersection)
