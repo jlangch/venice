@@ -20,8 +20,8 @@ configurable sandbox that can prevent all sorts of dangerous JVM interactions
 like reading/writing files, invoking _System.exit(0)_ or any other malicious 
 action.
 
-Venice simplifies writing concurrent code through Clojure style atoms, 
-futures, promises, and agents.
+Venice's immutable persistent data structures together with Clojure style atoms, 
+futures, promises, and agents greatly simplify writing concurrent code.
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
