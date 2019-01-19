@@ -83,7 +83,7 @@ public class VncOrderedMap extends VncMap {
 	public static VncOrderedMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"sorted-map: create requires an even number of list items. %s", 
+					"ordered-map: create requires an even number of list items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 
@@ -93,7 +93,7 @@ public class VncOrderedMap extends VncMap {
 	public static VncOrderedMap ofAll(final VncVector vec) {
 		if (vec != null && (vec.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"sorted-map: create requires an even number of vector items. %s", 
+					"ordered-map: create requires an even number of vector items. %s", 
 					ErrorMessage.buildErrLocation(vec)));
 		}
 
@@ -103,7 +103,7 @@ public class VncOrderedMap extends VncMap {
 	public static VncOrderedMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
-					"sorted-map: create requires an even number of items. %s", 
+					"ordered-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
@@ -180,7 +180,7 @@ public class VncOrderedMap extends VncMap {
 	public VncOrderedMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					"sorted-map: assoc requires an even number of items. %s", 
+					"ordered-map: assoc requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
@@ -195,7 +195,7 @@ public class VncOrderedMap extends VncMap {
 	public VncOrderedMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
-					"sorted-map: assoc requires an even number of items. %s", 
+					"ordered-map: assoc requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 

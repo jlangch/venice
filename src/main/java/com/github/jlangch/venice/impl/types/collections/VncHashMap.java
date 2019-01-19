@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,14 +40,19 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
+
 public class VncHashMap extends VncMap {
 
 	public VncHashMap() {
-		this(null, null);
+		this((io.vavr.collection.LinkedHashMap<VncVal,VncVal>)null, null);
 	}
 
 	public VncHashMap(final VncVal meta) {
-		this(null, meta);
+		this((io.vavr.collection.LinkedHashMap<VncVal,VncVal>)null, meta);
+	}
+
+	public VncHashMap(final io.vavr.collection.Map<VncVal,VncVal> val) {
+		this(val, null);
 	}
 
 	public VncHashMap(final Map<VncVal,VncVal> vals) {
@@ -55,7 +61,22 @@ public class VncHashMap extends VncMap {
 
 	public VncHashMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		value = vals == null ? new HashMap<>() : new HashMap<>(vals);
+		value = vals == null 
+					? io.vavr.collection.HashMap.empty() 
+					: io.vavr.collection.HashMap.ofAll(vals);
+	}
+
+	public VncHashMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		if (val == null) {
+			value = io.vavr.collection.HashMap.empty();
+		}
+		else if (val instanceof io.vavr.collection.TreeMap) {
+			value = (io.vavr.collection.HashMap<VncVal,VncVal>)val;
+		}
+		else {
+			value = io.vavr.collection.HashMap.ofEntries(val);
+		}
 	}
 	
 	
@@ -65,10 +86,20 @@ public class VncHashMap extends VncMap {
 					"hash-map: create requires an even number of list items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
-		
+
 		return new VncHashMap().assoc(lst);
 	}
+	
+	public static VncHashMap ofAll(final VncVector vec) {
+		if (vec != null && (vec.size() %2 != 0)) {
+			throw new VncException(String.format(
+					"hash-map: create requires an even number of vector items. %s", 
+					ErrorMessage.buildErrLocation(vec)));
+		}
 
+		return new VncHashMap().assoc(vec);
+	}
+	
 	public static VncHashMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
@@ -78,8 +109,8 @@ public class VncHashMap extends VncMap {
 		
 		return new VncHashMap().assoc(mvs);
 	}
-
 	
+
 	@Override
 	public VncHashMap empty() {
 		return new VncHashMap(getMeta());
@@ -109,16 +140,15 @@ public class VncHashMap extends VncMap {
 		// shallow copy
 		return new VncHashMap(value, meta);
 	}
-
+	
 	@Override
 	public Map<VncVal,VncVal> getMap() {
-		return Collections.unmodifiableMap(value);
+		return Collections.unmodifiableMap(value.toJavaMap());
 	}
 	
 	@Override
 	public VncVal get(final VncVal key) {
-		final VncVal val = value.get(key);
-		return val == null ? Constants.Nil : val;
+		return value.get(key).getOrElse(Constants.Nil);
 	}
 
 	@Override
@@ -128,24 +158,24 @@ public class VncHashMap extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return new VncList(new ArrayList<>(value.keySet()));
+		return new VncList(new ArrayList<>(value.keySet().toJavaList()));
 	}
 
 	@Override
 	public List<VncMapEntry> entries() {
 		return Collections.unmodifiableList(
 					value
-						.entrySet()
-						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+						.map(e -> new VncMapEntry(e._1, e._2))
 						.collect(Collectors.toList()));
 	}
 
 	@Override
 	public VncHashMap putAll(final VncMap map) {
-		value.putAll(map.getMap());
-		return this;
+		return new VncHashMap(
+						value.merge(io.vavr.collection.HashMap.ofAll(map.getMap())),
+						getMeta());
 	}
-
+	
 	@Override
 	public VncHashMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
@@ -154,10 +184,11 @@ public class VncHashMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
+		io.vavr.collection.HashMap<VncVal,VncVal> tmp = value;
 		for (int i=0; i<mvs.length; i+=2) {
-			value.put(mvs[i], mvs[i+1]);
+			tmp = tmp.put(mvs[i], mvs[i+1]);
 		}
-		return this;
+		return new VncHashMap(tmp, getMeta());
 	}
 
 	@Override
@@ -168,47 +199,40 @@ public class VncHashMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
+		io.vavr.collection.HashMap<VncVal,VncVal> tmp = value;
 		for (int i=0; i<mvs.getList().size(); i+=2) {
-			value.put(mvs.nth(i), mvs.nth(i+1));
+			tmp = tmp.put(mvs.nth(i), mvs.nth(i+1));
 		}
-		return this;
+		return new VncHashMap(tmp, getMeta());
 	}
 
 	@Override
 	public VncHashMap dissoc(final VncVal... keys) {
-		for (VncVal key : keys) {
-			value.remove(key);
-		}
-		return this;
+		return new VncHashMap(
+					value.removeAll(Arrays.asList(keys)),
+					getMeta());
 	}
 
 	@Override
 	public VncHashMap dissoc(final VncSequence keys) {
-		for (int i=0; i<keys.getList().size(); i++) {
-			value.remove(keys.nth(i));
-		}
-		return this;
+		return new VncHashMap(
+					value.removeAll(keys.getList()),
+					getMeta());
 	}
 	
 	@Override
 	public VncList toVncList() {
 		return new VncList(
-						value
-							.entrySet()
-							.stream()
-							.map(e -> VncVector.of(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()),
+						value.map(e -> VncVector.of(e._1, e._2))
+							 .collect(Collectors.toList()),
 						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
 		return new VncVector(
-						value
-							.entrySet()
-							.stream()
-							.map(e -> VncVector.of(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()),
+						value.map(e -> VncVector.of(e._1, e._2))
+							 .collect(Collectors.toList()),
 						getMeta());
 	}
 	
@@ -255,9 +279,9 @@ public class VncHashMap extends VncMap {
 	@Override
 	public String toString(final boolean print_readably) {
 		final List<VncVal> list = value
-									.entrySet()
+									.map(e -> VncList.of(e._1, e._2).getList())
+									.collect(Collectors.toList())
 									.stream()
-									.map(e -> VncList.of(e.getKey(), e.getValue()).getList())
 									.flatMap(l -> l.stream())
 									.collect(Collectors.toList());
 
@@ -286,11 +310,11 @@ public class VncHashMap extends VncMap {
 			return map;
 		}
 		
-		private final HashMap<VncVal,VncVal> map = new HashMap<>();
+		private HashMap<VncVal,VncVal> map = new HashMap<>();
 	}
 	
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final HashMap<VncVal,VncVal> value;	
+	private final io.vavr.collection.HashMap<VncVal,VncVal> value;	
 }
