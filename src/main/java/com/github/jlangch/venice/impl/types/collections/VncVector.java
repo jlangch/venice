@@ -52,14 +52,14 @@ public class VncVector extends VncSequence {
 	public VncVector(final Collection<? extends VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		value = vals == null 
-					? io.vavr.collection.Vector.of() 
+					? io.vavr.collection.Vector.empty() 
 					: io.vavr.collection.Vector.ofAll(vals);
 	}
 
 	public VncVector(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (vals == null) {
-			value = io.vavr.collection.Vector.of();
+			value = io.vavr.collection.Vector.empty();
 		}
 		else if (vals instanceof io.vavr.collection.Vector) {
 			value = (io.vavr.collection.Vector<VncVal>)vals;

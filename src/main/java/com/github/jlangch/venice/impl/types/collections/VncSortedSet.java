@@ -48,7 +48,7 @@ public class VncSortedSet extends VncSet {
 	public VncSortedSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (val == null) {
-			value = io.vavr.collection.TreeSet.of();
+			value = io.vavr.collection.TreeSet.empty();
 		}
 		else if (val instanceof io.vavr.collection.TreeSet) {
 			value = (io.vavr.collection.TreeSet<VncVal>)val;

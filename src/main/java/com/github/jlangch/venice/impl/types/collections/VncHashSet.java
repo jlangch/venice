@@ -48,7 +48,7 @@ public class VncHashSet extends VncSet {
 	public VncHashSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (val == null) {
-			value = io.vavr.collection.HashSet.of();
+			value = io.vavr.collection.HashSet.empty();
 		}
 		else if (val instanceof io.vavr.collection.HashSet) {
 			value = (io.vavr.collection.HashSet<VncVal>)val;
