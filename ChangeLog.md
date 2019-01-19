@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added multi-arity functions and macros
-- migrated all collections to be immutable persistent datastructures.
+- migrated all collections to be immutable persistent datastructures
         based on VAVR.
 
 
