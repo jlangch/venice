@@ -39,11 +39,11 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncList extends VncSequence {
 
 	public VncList() {
-		this((io.vavr.collection.Vector<VncVal>)null, null);
+		this((io.vavr.collection.Seq<VncVal>)null, null);
 	}
 
 	public VncList(final VncVal meta) {
-		this((io.vavr.collection.Vector<VncVal>)null, meta);
+		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
 
 	public VncList(final Collection<? extends VncVal> vals) {
