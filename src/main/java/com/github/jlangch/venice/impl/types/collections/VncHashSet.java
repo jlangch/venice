@@ -41,7 +41,7 @@ public class VncHashSet extends VncSet {
 		this(null, meta);
 	}
 
-	public VncHashSet(final io.vavr.collection.HashSet<VncVal> val) {
+	public VncHashSet(final io.vavr.collection.Set<VncVal> val) {
 		this(val, null);
 	}
 

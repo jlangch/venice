@@ -41,7 +41,7 @@ public class VncSortedSet extends VncSet {
 		this(null, meta);
 	}
 
-	public VncSortedSet(final io.vavr.collection.SortedSet<VncVal> val) {
+	public VncSortedSet(final io.vavr.collection.Set<VncVal> val) {
 		this(val, null);
 	}
 
