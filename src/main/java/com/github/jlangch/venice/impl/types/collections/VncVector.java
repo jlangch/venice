@@ -139,8 +139,28 @@ public class VncVector extends VncSequence {
 	}
 	
 	@Override
+	public VncVal first() {
+		return isEmpty() ? Constants.Nil : value.head();
+	}
+
+	@Override
+	public VncVal second() {
+		return nthOrDefault(1, Constants.Nil);
+	}
+
+	@Override
+	public VncVal third() {
+		return nthOrDefault(2, Constants.Nil);
+	}
+
+	@Override
+	public VncVal last() {
+		return isEmpty() ? Constants.Nil : value.last();
+	}
+	
+	@Override
 	public VncVector rest() {
-		return isEmpty() ? new VncVector() : slice(1);
+		return isEmpty() ? new VncVector(getMeta()) : new VncVector(value.tail(), getMeta());
 	}
 
 	@Override

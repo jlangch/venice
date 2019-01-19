@@ -138,10 +138,30 @@ public class VncList extends VncSequence {
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
 		return idx >= 0 && idx < value.size() ? value.get(idx) : defaultVal;
 	}
+
+	@Override
+	public VncVal first() {
+		return isEmpty() ? Constants.Nil : value.head();
+	}
+
+	@Override
+	public VncVal second() {
+		return nthOrDefault(1, Constants.Nil);
+	}
+
+	@Override
+	public VncVal third() {
+		return nthOrDefault(2, Constants.Nil);
+	}
+
+	@Override
+	public VncVal last() {
+		return isEmpty() ? Constants.Nil : value.last();
+	}
 	
 	@Override
 	public VncList rest() {
-		return isEmpty() ? new VncList() : slice(1);
+		return isEmpty() ? new VncList(getMeta()) : new VncList(value.tail(), getMeta());
 	}
 
 	@Override

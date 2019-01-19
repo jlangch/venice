@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -54,21 +53,13 @@ public abstract class VncSequence extends VncCollection {
 
 	public abstract VncVal nthOrDefault(int idx, VncVal defaultVal);
 
-	public VncVal first() {
-		return nthOrDefault(0, Constants.Nil);
-	}
+	public abstract VncVal first();
 
-	public VncVal second() {
-		return nthOrDefault(1, Constants.Nil);
-	}
+	public abstract VncVal second();
 
-	public VncVal third() {
-		return nthOrDefault(2, Constants.Nil);
-	}
+	public abstract VncVal third();
 
-	public VncVal last() {
-		return nthOrDefault(size()-1, Constants.Nil);
-	}
+	public abstract VncVal last();
 
 	public abstract VncSequence rest();
 
