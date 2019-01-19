@@ -333,9 +333,7 @@ public class Reader {
 		final int p1 = s.indexOf("~{");
 		final int p2 = s.indexOf("~(");
 		
-		return (p1 < 0 || p2 < 0) 
-					? Math.max(p1, p2)
-					: Math.min(p1, p2);
+		return (p1 < 0 || p2 < 0) ? Math.max(p1, p2) : Math.min(p1, p2);
 	}
 	
 	private static String unescapeAndDecodeUnicode(final String s) {
