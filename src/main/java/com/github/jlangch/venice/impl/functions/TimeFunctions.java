@@ -37,6 +37,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,10 +52,10 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
@@ -1767,35 +1768,24 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/zone-ids", args, 0);
 				
-				final VncOrderedMap map = new VncOrderedMap();
 	
 				final List<String> zoneList = new ArrayList<>(ZoneId.getAvailableZoneIds());
 	
 				//Get all ZoneIds
 				final Map<String, String> allZoneIds = getAllZoneIds(zoneList);
 	
+				
 				//sort map by key
+				final LinkedHashMap<VncVal,VncVal> map = new LinkedHashMap<>();
 				allZoneIds
 					.entrySet()
 					.stream()
 					.sorted(Map.Entry.comparingByKey())
-					.forEachOrdered(e -> map.assoc(
+					.forEachOrdered(e -> map.put(
 											new VncKeyword(e.getKey()), 
 											new VncString(e.getValue())));
-	
-				//sort by value, descending order
-				/*
-				allZoneIds
-					.entrySet()
-					.stream()
-					.sorted(Map.Entry.<String,String>comparingByValue()
-					.reversed())
-					.forEachOrdered(e -> map.assoc(
-											new VncKeyword(e.getKey()), 
-											new VncString(e.getValue())));
-				*/
-	
-				return map;
+				
+				return new VncOrderedMap(map);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
