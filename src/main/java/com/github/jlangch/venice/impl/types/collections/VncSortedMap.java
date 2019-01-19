@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +43,15 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class VncSortedMap extends VncMap {
 
 	public VncSortedMap() {
-		this(null, null);
+		this((io.vavr.collection.TreeMap<VncVal,VncVal>)null, null);
 	}
 
 	public VncSortedMap(final VncVal meta) {
-		this(null, meta);
+		this((io.vavr.collection.TreeMap<VncVal,VncVal>)null, meta);
+	}
+
+	public VncSortedMap(final io.vavr.collection.Map<VncVal,VncVal> val) {
+		this(val, null);
 	}
 
 	public VncSortedMap(final Map<VncVal,VncVal> vals) {
@@ -55,7 +60,22 @@ public class VncSortedMap extends VncMap {
 
 	public VncSortedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		value = vals == null ? new TreeMap<>() : new TreeMap<>(vals);
+		value = vals == null 
+					? io.vavr.collection.TreeMap.empty() 
+					: io.vavr.collection.TreeMap.ofAll(vals);
+	}
+
+	public VncSortedMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		if (val == null) {
+			value = io.vavr.collection.TreeMap.empty();
+		}
+		else if (val instanceof io.vavr.collection.TreeMap) {
+			value = (io.vavr.collection.TreeMap<VncVal,VncVal>)val;
+		}
+		else {
+			value = io.vavr.collection.TreeMap.ofEntries(val);
+		}
 	}
 	
 	
@@ -122,13 +142,12 @@ public class VncSortedMap extends VncMap {
 	
 	@Override
 	public Map<VncVal,VncVal> getMap() {
-		return Collections.unmodifiableMap(value);
+		return Collections.unmodifiableMap(value.toJavaMap());
 	}
 	
 	@Override
 	public VncVal get(final VncVal key) {
-		final VncVal val = value.get(key);
-		return val == null ? Constants.Nil : val;
+		return value.get(key).getOrElse(Constants.Nil);
 	}
 
 	@Override
@@ -138,22 +157,22 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return new VncList(new ArrayList<>(value.keySet()));
+		return new VncList(new ArrayList<>(value.keySet().toJavaList()));
 	}
 
 	@Override
 	public List<VncMapEntry> entries() {
 		return Collections.unmodifiableList(
 					value
-						.entrySet()
-						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+						.map(e -> new VncMapEntry(e._1, e._2))
 						.collect(Collectors.toList()));
 	}
 
 	@Override
-	public VncMap putAll(final VncMap map) {
-		value.putAll(map.getMap());
-		return this;
+	public VncSortedMap putAll(final VncMap map) {
+		return new VncSortedMap(
+						value.merge(io.vavr.collection.HashMap.ofAll(map.getMap())),
+						getMeta());
 	}
 	
 	@Override
@@ -164,10 +183,11 @@ public class VncSortedMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
+		io.vavr.collection.TreeMap<VncVal,VncVal> tmp = value;
 		for (int i=0; i<mvs.length; i+=2) {
-			value.put(mvs[i], mvs[i+1]);
+			tmp = tmp.put(mvs[i], mvs[i+1]);
 		}
-		return this;
+		return new VncSortedMap(tmp, getMeta());
 	}
 
 	@Override
@@ -178,47 +198,40 @@ public class VncSortedMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
+		io.vavr.collection.TreeMap<VncVal,VncVal> tmp = value;
 		for (int i=0; i<mvs.getList().size(); i+=2) {
-			value.put(mvs.nth(i), mvs.nth(i+1));
+			tmp = tmp.put(mvs.nth(i), mvs.nth(i+1));
 		}
-		return this;
+		return new VncSortedMap(tmp, getMeta());
 	}
 
 	@Override
-	public VncMap dissoc(final VncVal... keys) {
-		for (VncVal key : keys) {
-			value.remove(key);
-		}
-		return this;
+	public VncSortedMap dissoc(final VncVal... keys) {
+		return new VncSortedMap(
+					value.removeAll(Arrays.asList(keys)),
+					getMeta());
 	}
 
 	@Override
 	public VncSortedMap dissoc(final VncSequence keys) {
-		for (int i=0; i<keys.getList().size(); i++) {
-			value.remove(keys.nth(i));
-		}
-		return this;
+		return new VncSortedMap(
+					value.removeAll(keys.getList()),
+					getMeta());
 	}
 	
 	@Override
 	public VncList toVncList() {
 		return new VncList(
-						value
-							.entrySet()
-							.stream()
-							.map(e -> VncVector.of(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()),
+						value.map(e -> VncVector.of(e._1, e._2))
+							 .collect(Collectors.toList()),
 						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
 		return new VncVector(
-						value
-							.entrySet()
-							.stream()
-							.map(e -> VncVector.of(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()),
+						value.map(e -> VncVector.of(e._1, e._2))
+							 .collect(Collectors.toList()),
 						getMeta());
 	}
 	
@@ -265,9 +278,9 @@ public class VncSortedMap extends VncMap {
 	@Override
 	public String toString(final boolean print_readably) {
 		final List<VncVal> list = value
-									.entrySet()
+									.map(e -> VncList.of(e._1, e._2).getList())
+									.collect(Collectors.toList())
 									.stream()
-									.map(e -> VncList.of(e.getKey(), e.getValue()).getList())
 									.flatMap(l -> l.stream())
 									.collect(Collectors.toList());
 
@@ -296,11 +309,11 @@ public class VncSortedMap extends VncMap {
 			return map;
 		}
 		
-		private final TreeMap<VncVal,VncVal> map = new TreeMap<>();
+		private TreeMap<VncVal,VncVal> map = new TreeMap<>();
 	}
 	
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final TreeMap<VncVal,VncVal> value;	
+	private final io.vavr.collection.TreeMap<VncVal,VncVal> value;	
 }
