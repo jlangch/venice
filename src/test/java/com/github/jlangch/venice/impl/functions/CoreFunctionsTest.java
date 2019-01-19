@@ -1268,7 +1268,7 @@ public class CoreFunctionsTest {
 		assertEquals("(1 0)", venice.eval("(str (into '(0) [1]))"));
 		assertEquals("(2 1 0)", venice.eval("(str (into '(0) [1 2]))"));
 		assertEquals("(3 2 1)", venice.eval("(str (into '() '(1 2 3)))"));
-		assertEquals("([3 4] [1 2])", venice.eval("(str (into '() {1 2, 3 4}))"));
+		assertEquals("([1 2] [3 4])", venice.eval("(str (sort (into '() {1 2 3 4})))"));
 		assertEquals("(6 5 4 1 2 3)", venice.eval("(str (into '(1 2 3) '(4 5 6)))"));
 		assertEquals("(6 5 4 1 2 3)", venice.eval("(str (into '(1 2 3) [4 5 6]))"));
 
@@ -1282,7 +1282,7 @@ public class CoreFunctionsTest {
 		assertEquals("[0]", venice.eval("(str (into [0] []))"));
 		assertEquals("[0 1]", venice.eval("(str (into [0] [1]))"));
 		assertEquals("[0 1 2]", venice.eval("(str (into [0] [1 2]))"));
-		assertEquals("[[1 2] [3 4]]", venice.eval("(str (into [] {1 2, 3 4}))"));
+		assertEquals("[[1 2] [3 4]]", venice.eval("(str (sort (into [] {1 2, 3 4})))"));
 		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (into [1 2 3] '(4 5 6)))"));
 		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (into [1 2 3] [4 5 6]))"));
 		assertEquals("[a b c]", venice.eval("(str (into [] \"abc\"))"));

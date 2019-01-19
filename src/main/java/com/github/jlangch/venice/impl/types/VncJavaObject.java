@@ -66,6 +66,18 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	public VncMap empty() {
 		throw new VncException("not supported");
 	}
+	@Override
+	public VncHashMap withValues(final Map<VncVal,VncVal> replaceVals) {
+		throw new VncException("not supported");
+	}
+	
+	@Override
+	public VncHashMap withValues(
+			final Map<VncVal,VncVal> replaceVals, 
+			final VncVal meta
+	) {
+		throw new VncException("not supported");
+	}
 
 	@Override
 	public VncMap copy() {

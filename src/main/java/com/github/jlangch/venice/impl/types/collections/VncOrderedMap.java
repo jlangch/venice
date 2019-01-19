@@ -88,10 +88,22 @@ public class VncOrderedMap extends VncMap {
 		return new VncOrderedMap().assoc(mvs);
 	}
 
-	
 	@Override
 	public VncOrderedMap empty() {
 		return new VncOrderedMap(getMeta());
+	}
+
+	@Override
+	public VncOrderedMap withValues(final Map<VncVal,VncVal> replaceVals) {
+		return new VncOrderedMap(replaceVals, getMeta());
+	}
+	
+	@Override
+	public VncOrderedMap withValues(
+			final Map<VncVal,VncVal> replaceVals, 
+			final VncVal meta
+	) {
+		return new VncOrderedMap(replaceVals, meta);
 	}
 
 	@Override

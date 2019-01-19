@@ -96,6 +96,19 @@ public class VncSortedMap extends VncMap {
 	}
 
 	@Override
+	public VncSortedMap withValues(final Map<VncVal,VncVal> replaceVals) {
+		return new VncSortedMap(replaceVals, getMeta());
+	}
+	
+	@Override
+	public VncSortedMap withValues(
+			final Map<VncVal,VncVal> replaceVals, 
+			final VncVal meta
+	) {
+		return new VncSortedMap(replaceVals, meta);
+	}
+
+	@Override
 	public VncSortedMap copy() {
 		// shallow copy
 		return new VncSortedMap(value, getMeta());

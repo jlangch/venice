@@ -70,6 +70,19 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
+	public VncHashMap withValues(final Map<VncVal,VncVal> replaceVals) {
+		return new VncHashMap(replaceVals, getMeta());
+	}
+	
+	@Override
+	public VncHashMap withValues(
+			final Map<VncVal,VncVal> replaceVals, 
+			final VncVal meta
+	) {
+		return new VncHashMap(replaceVals, meta);
+	}
+
+	@Override
 	public VncHashMap copy() {
 		// shallow copy
 		return new VncHashMap(getMap(), getMeta());

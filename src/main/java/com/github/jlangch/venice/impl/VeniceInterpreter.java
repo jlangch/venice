@@ -56,7 +56,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
@@ -165,6 +164,7 @@ public class VeniceInterpreter implements Serializable  {
 		} 
 		else if (Types.isVncSequence(ast)) {
 			final VncSequence seq = (VncSequence)ast;		
+			
 			return seq.withValues(				
 						seq.getList()
 						   .stream()
@@ -174,15 +174,12 @@ public class VeniceInterpreter implements Serializable  {
 		else if (Types.isVncMap(ast)) {
 			final VncMap map = (VncMap)ast;
 			
-			// use reduce to take care of persistent map, assoc() returns a new VncMap
-			return map.entries()
-					  .stream()
-					  .map(e -> (VncVal)e)
-					  .reduce(
-							map.empty(),
-							(a,e) -> ((VncMap)a).assoc(
-										((VncMapEntry)e).getKey(), 
-										EVAL(((VncMapEntry)e).getValue(), env)));
+			return map.withValues(
+						map.entries()
+						   .stream()
+						   .collect(Collectors.toMap(
+						            	e -> e.getKey(),
+						            	e -> EVAL(e.getValue(), env))));
 		} 
 		else {
 			return ast;

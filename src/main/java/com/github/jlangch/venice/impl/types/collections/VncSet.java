@@ -40,32 +40,32 @@ public abstract class VncSet extends VncCollection {
 	@Override
 	public abstract VncSet empty();
 
-	public abstract VncSet withValues(final Collection<? extends VncVal> replaceVals);
+	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
 	
-	public abstract VncSet withValues(final Collection<? extends VncVal> replaceVals, VncVal meta);
+	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals, VncVal meta);
 
 	@Override
 	public abstract VncSet withMeta(VncVal meta);
 	
 
-	public abstract VncSet add(final VncVal val);
+	public abstract VncSet add(VncVal val);
 	
-	public abstract VncSet addAll(final VncSet val);
+	public abstract VncSet addAll(VncSet val);
 	
-	public abstract VncSet addAll(final VncSequence val);
+	public abstract VncSet addAll(VncSequence val);
 
-	public abstract VncSet remove(final VncVal val);
+	public abstract VncSet remove(VncVal val);
 
-	public abstract VncSet removeAll(final VncSet val);
+	public abstract VncSet removeAll(VncSet val);
 
-	public abstract VncSet removeAll(final VncSequence val);
+	public abstract VncSet removeAll(VncSequence val);
 	
-	public abstract boolean contains(final VncVal val);
+	public abstract boolean contains(VncVal val);
 	
 	public abstract Set<VncVal> getSet();
 	
 	public abstract List<VncVal> getList();
 
 
-	private static final long serialVersionUID = -5846849359948270462L;
+    private static final long serialVersionUID = -1848883965231344442L;
 }

@@ -41,9 +41,9 @@ public abstract class VncSequence extends VncCollection {
 	
 	public abstract VncSequence empty();
 	
-	public abstract VncSequence withValues(final Collection<? extends VncVal> replaceVals);
+	public abstract VncSequence withValues(Collection<? extends VncVal> replaceVals);
 	
-	public abstract VncSequence withValues(final Collection<? extends VncVal> replaceVals, VncVal meta);
+	public abstract VncSequence withValues(Collection<? extends VncVal> replaceVals, VncVal meta);
 	
 	@Override
 	public abstract VncSequence withMeta(VncVal meta);

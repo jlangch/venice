@@ -35,10 +35,18 @@ public abstract class VncMap extends VncCollection {
 
 	@Override
 	public abstract VncMap copy();
+	
+	@Override
+	public abstract VncMap empty();
+
+	public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals);
+	
+	public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals, VncVal meta);
 
 	@Override
 	public abstract VncMap withMeta(VncVal meta);
 
+	
 	public abstract Map<VncVal,VncVal> getMap();
 	
 	public abstract VncVal get(VncVal key);
