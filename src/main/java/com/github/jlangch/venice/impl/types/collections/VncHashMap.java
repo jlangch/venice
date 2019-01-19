@@ -61,10 +61,7 @@ public class VncHashMap extends VncMap {
 	}
 
 	public VncHashMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		value = vals == null 
-					? io.vavr.collection.HashMap.empty() 
-					: io.vavr.collection.HashMap.ofAll(vals);
+		this(vals == null ? null : io.vavr.collection.HashMap.ofAll(vals), meta);
 	}
 
 	public VncHashMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {

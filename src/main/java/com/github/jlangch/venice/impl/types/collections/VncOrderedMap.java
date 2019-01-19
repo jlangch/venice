@@ -61,10 +61,7 @@ public class VncOrderedMap extends VncMap {
 	}
 
 	public VncOrderedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		value = vals == null 
-					? io.vavr.collection.LinkedHashMap.empty() 
-					: io.vavr.collection.LinkedHashMap.ofAll(vals);
+		this(vals == null ? null : io.vavr.collection.LinkedHashMap.ofAll(vals), meta);
 	}
 
 	public VncOrderedMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {

@@ -51,10 +51,7 @@ public class VncList extends VncSequence {
 	}
 
 	public VncList(final Collection<? extends VncVal> vals, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		value = vals == null 
-					? io.vavr.collection.Vector.empty() 
-					: io.vavr.collection.Vector.ofAll(vals);
+		this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
 	}
 
 	public VncList(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {

@@ -60,10 +60,7 @@ public class VncSortedMap extends VncMap {
 	}
 
 	public VncSortedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		value = vals == null 
-					? io.vavr.collection.TreeMap.empty() 
-					: io.vavr.collection.TreeMap.ofAll(vals);
+		this(vals == null ? null : io.vavr.collection.TreeMap.ofAll(vals), meta);
 	}
 
 	public VncSortedMap(final io.vavr.collection.Map<VncVal,VncVal> val, final VncVal meta) {
