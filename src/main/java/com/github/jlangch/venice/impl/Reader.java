@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
@@ -120,10 +119,7 @@ public class Reader {
 		final Matcher matcher = atom_pattern.matcher(token.getToken());
 		
 		if (!matcher.find()) {
-			throw new ParseError(String.format(
-					"Unrecognized token '%s'. %s",
-					token.getToken(),
-					ErrorMessage.buildErrLocation(token)));
+			throw new ParseError(formatParseError(token, "Unrecognized token '%s'", token.getToken()));
 		}
 		
 		if (matcher.group(1) != null) {
@@ -163,10 +159,7 @@ public class Reader {
 			return sym.withMeta(MetaUtil.toMeta(token));
 		} 
 		else {
-			throw new ParseError(String.format(
-					"Unrecognized '%s'. %s",
-					matcher.group(0),
-					ErrorMessage.buildErrLocation(token)));
+			throw new ParseError(formatParseError(token, "Unrecognized '%s'", matcher.group(0)));
 		}
 	}
 
@@ -179,10 +172,7 @@ public class Reader {
 		final Token lstToken = rdr.next();
 
 		if (lstToken.charAt(0) != start) {
-			throw new ParseError(String.format(
-					"Expected '%c'. %s",
-					start,
-					ErrorMessage.buildErrLocation(lstToken)));
+			throw new ParseError(formatParseError(lstToken, "Expected '%c'", start));
 		}
 
 		final ArrayList<VncVal> items = new ArrayList<>();
@@ -193,10 +183,7 @@ public class Reader {
 		}
 
 		if (token == null) {
-			throw new ParseError(String.format(
-					"Expected '%c', got EOF. %s",
-					end,
-					ErrorMessage.buildErrLocation(lstToken)));
+			throw new ParseError(formatParseError(token, "Expected '%c', got EOF", end));
 		}
 		rdr.next();
 
@@ -262,9 +249,7 @@ public class Reader {
 				else if (t.charAt(0) == '(') {
 					// anonymous function literal #(> % 2)
 					if (rdr.anonymousFnArgs.isCapturing()) {
-						throw new ParseError(String.format(
-								" #() forms cannot be nested. %s",
-								ErrorMessage.buildErrLocation(t)));						
+						throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
 					}
 					rdr.anonymousFnArgs.startCapture();
 					final VncVal body = read_list(rdr, new VncList(), '(' , ')');
@@ -273,9 +258,7 @@ public class Reader {
 					rdr.anonymousFnArgs.stopCapture();
 				}
 				else {
-					throw new ParseError(String.format(
-							"Expected '{' or '('. %s",
-							ErrorMessage.buildErrLocation(t)));
+					throw new ParseError(formatParseError(t, "Expected '{' or '('"));
 				}
 				break;
 			
@@ -284,27 +267,21 @@ public class Reader {
 				break;
 			
 			case ')': 
-				throw new ParseError(String.format(
-						"Unexpected ')'. %s",
-						ErrorMessage.buildErrLocation(token)));
+				throw new ParseError(formatParseError(token, "Unexpected ')'"));
 			
 			case '[': 
 				form = read_list(rdr, new VncVector(), '[' , ']'); 
 				break;
 			
 			case ']': 
-				throw new ParseError(String.format(
-						"Unexpected ']'. %s",
-						ErrorMessage.buildErrLocation(token)));
+				throw new ParseError(formatParseError(token, "Unexpected ']'"));
 				
 			case '{': 
 				form = read_hash_map(rdr); 
 				break;
 				
 			case '}': 
-				throw new ParseError(String.format(
-						"Unexpected '}'. %s",
-						ErrorMessage.buildErrLocation(token)));
+				throw new ParseError(formatParseError(token, "Unexpected '}'"));
 				
 			default:  
 				form = read_atom(rdr);
@@ -317,7 +294,7 @@ public class Reader {
 	private static VncVal interpolate(final String s, final String filename) {
 		// this is a reader macro implemented in Java
 		
-		int pos = getFirsInterpolationFormStartPos(s);
+		int pos = getFirstInterpolationFormStartPos(s);
 		if (pos < 0) {
 			return new VncString(s);
 		}
@@ -339,7 +316,7 @@ public class Reader {
 				
 				final String tail = rdr.unprocessedRest().substring(offset);
 				
-				pos = getFirsInterpolationFormStartPos(tail);
+				pos = getFirstInterpolationFormStartPos(tail);
 				if (pos < 0) {
 					if (!tail.isEmpty()) {
 						list.add(new VncString(tail));
@@ -352,12 +329,13 @@ public class Reader {
 		}
 	}
 	
-	private static int getFirsInterpolationFormStartPos(final String s) {
-		return Stream.of(s.indexOf("~{"), s.indexOf("~("))
-					 .filter(p -> p >= 0)
-					 .sorted()
-					 .findFirst()
-					 .orElse(-1);
+	private static int getFirstInterpolationFormStartPos(final String s) {
+		final int p1 = s.indexOf("~{");
+		final int p2 = s.indexOf("~(");
+		
+		return (p1 < 0 || p2 < 0) 
+					? Math.max(p1, p2)
+					: Math.min(p1, p2);
 	}
 	
 	private static String unescapeAndDecodeUnicode(final String s) {
@@ -420,6 +398,10 @@ public class Reader {
 		}
 		
 		return new int[] {row,col};
+	}
+	
+	private static String formatParseError(final Token token, String format, Object... args) {
+		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(token);
 	}
 
 	// (?s) makes the dot match all characters, including line breaks.
