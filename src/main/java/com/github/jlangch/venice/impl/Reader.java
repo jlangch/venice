@@ -180,7 +180,7 @@ public class Reader {
 
 		if (lstToken.charAt(0) != start) {
 			throw new ParseError(String.format(
-					"Expected '%s'. %s",
+					"Expected '%c'. %s",
 					start,
 					ErrorMessage.buildErrLocation(lstToken)));
 		}
@@ -194,7 +194,8 @@ public class Reader {
 
 		if (token == null) {
 			throw new ParseError(String.format(
-					"Expected '" + end + "', got EOF. %s",
+					"Expected '%c', got EOF. %s",
+					end,
 					ErrorMessage.buildErrLocation(lstToken)));
 		}
 		rdr.next();

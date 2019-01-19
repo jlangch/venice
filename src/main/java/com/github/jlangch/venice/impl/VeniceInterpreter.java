@@ -88,16 +88,16 @@ public class VeniceInterpreter implements Serializable  {
 			return VncList.of(new VncSymbol("quote"), ast);
 		} 
 		else {
-			final VncVal a0 = Coerce.toVncSequence(ast).nth(0);
+			final VncVal a0 = Coerce.toVncSequence(ast).first();
 			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
-				return ((VncSequence)ast).nth(1);
+				return ((VncSequence)ast).second();
 			} 
 			else if (is_pair(a0)) {
-				final VncVal a00 = Coerce.toVncSequence(a0).nth(0);
+				final VncVal a00 = Coerce.toVncSequence(a0).first();
 				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
 					return VncList.of(
 								new VncSymbol("concat"),
-								Coerce.toVncSequence(a0).nth(1),
+								Coerce.toVncSequence(a0).second(),
 								quasiquote(((VncSequence)ast).rest()));
 				}
 			}
@@ -120,7 +120,7 @@ public class VeniceInterpreter implements Serializable  {
 	 */
 	private boolean is_macro_call(final VncVal ast, final Env env) {
 		if (Types.isVncList(ast) && !((VncList)ast).isEmpty()) {
-			final VncVal a0 = Coerce.toVncSequence(ast).nth(0);
+			final VncVal a0 = Coerce.toVncSequence(ast).first();
 			if (Types.isVncSymbol(a0)) {
 				final VncSymbol macroName = (VncSymbol)a0;
 				if (env.findEnv(macroName) != null) {
@@ -150,7 +150,7 @@ public class VeniceInterpreter implements Serializable  {
 	 */
 	private VncVal macroexpand(VncVal ast, final Env env) {
 		while (is_macro_call(ast, env)) {
-			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).nth(0));
+			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).first());
 			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
 			final VncList macroFnArgs = Coerce.toVncList(ast).rest();
 			ast = macroFn.apply(macroFnArgs);
@@ -206,13 +206,13 @@ public class VeniceInterpreter implements Serializable  {
 				return ast; 
 			}
 			
-			final VncVal a0 = ast.nth(0);		
+			final VncVal a0 = ast.first();		
 			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
 			switch (a0sym) {			
 				case "def": { // (def meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.nth(1), env) : new VncHashMap();
+					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
@@ -222,7 +222,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "defonce": { // (defonce meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.nth(1), env) : new VncHashMap();
+					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
@@ -232,7 +232,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "def-dynamic": { // (def-dynamic meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.nth(1), env) : new VncHashMap();
+					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = EVAL(defVal, env);
@@ -256,7 +256,7 @@ public class VeniceInterpreter implements Serializable  {
 				case "let":  { // (let [bindings*] exprs*)
 					env = new Env(env);
 
-					final VncVector bindings = Coerce.toVncVector(ast.nth(1));
+					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncList expressions = ast.slice(2);
 				
 					for(int i=0; i<bindings.size(); i+=2) {
@@ -285,7 +285,7 @@ public class VeniceInterpreter implements Serializable  {
 				case "loop": { // (loop [bindings*] exprs*)
 					env = new Env(env);					
 
-					final VncVector bindings = Coerce.toVncVector(ast.nth(1));
+					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncVal expressions = ast.nth(2);
 					
 					final List<VncVal> bindingNames = new ArrayList<>();
@@ -340,17 +340,17 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "quote":
-					return ast.nth(1);
+					return ast.second();
 					
 				case "quasiquote":
-					orig_ast = quasiquote(ast.nth(1));
+					orig_ast = quasiquote(ast.second());
 					break;
 	
 				case "defmacro":
 					return runWithCallStack("defmacro", ast, env, (a,e) -> defmacro_(a, e));
 
 				case "macroexpand": 
-					return runWithCallStack("macroexpand", ast, env, (a,e) -> macroexpand(a.nth(1), e));
+					return runWithCallStack("macroexpand", ast, env, (a,e) -> macroexpand(a.second(), e));
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					return runWithCallStack("try", ast, env, (a,e) -> try_(a, new Env(e)));
@@ -381,7 +381,7 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "if": 
-					final VncVal condArg = ast.nth(1);
+					final VncVal condArg = ast.second();
 					final VncVal cond = EVAL(condArg, env);
 					if (cond == Nil || cond == False) {
 						// eval false slot form
@@ -404,13 +404,14 @@ public class VeniceInterpreter implements Serializable  {
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
-					if (Types.isVncFunction(el.nth(0))) {
+					final VncVal elFirst = el.first();
+					if (Types.isVncFunction(elFirst)) {
 						sandboxMaxExecutionTimeChecker.check();
 						
 						// invoke function
-						final VncFunction f = (VncFunction)el.nth(0);
+						final VncFunction f = (VncFunction)elFirst;
 						final VncList fnArgs = el.rest().withMeta(el.getMeta());
-						final CallFrame frame = CallFrameBuilder.fromFunction(f, ast.nth(0));
+						final CallFrame frame = CallFrameBuilder.fromFunction(f, ast.first());
 						
 						try {
 							ThreadLocalMap.getCallStack().push(frame);
@@ -421,9 +422,9 @@ public class VeniceInterpreter implements Serializable  {
 							sandboxMaxExecutionTimeChecker.check();
 						}
 					}
-					else if (Types.isVncKeyword(el.nth(0))) {
+					else if (Types.isVncKeyword(elFirst)) {
 						// keyword as function to access map: (:a {:a 100})
-						final VncKeyword k = (VncKeyword)el.nth(0);
+						final VncKeyword k = (VncKeyword)elFirst;
 						final VncList fnArgs = el.rest().withMeta(el.getMeta());
 						return k.apply(fnArgs);
 					}
@@ -431,7 +432,7 @@ public class VeniceInterpreter implements Serializable  {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
 						throw new VncException(String.format(
 										"Not a function or keyword: '%s'", 
-										PRINT(el.nth(0))));
+										PRINT(elFirst)));
 					}
 			}
 		}
@@ -602,7 +603,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal binding_(final VncList ast, final Env env) {
-		final VncSequence bindings = Coerce.toVncSequence(ast.nth(1));
+		final VncSequence bindings = Coerce.toVncSequence(ast.second());
 		final VncList expressions = ast.slice(2);
 	
 		final List<Var> vars = new ArrayList<>();
@@ -635,7 +636,7 @@ public class VeniceInterpreter implements Serializable  {
 		VncVal result = Nil;
 
 		try {
-			result = EVAL(ast.nth(1), env);
+			result = EVAL(ast.second(), env);
 		} 
 		catch (Throwable th) {
 			CatchBlock catchBlock = null;
@@ -666,7 +667,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal try_with_(final VncList ast, final Env env) {
-		final VncSequence bindings = Coerce.toVncSequence(ast.nth(1));
+		final VncSequence bindings = Coerce.toVncSequence(ast.second());
 		final List<Binding> boundResources = new ArrayList<>();
 		
 		for(int i=0; i<bindings.size(); i+=2) {
@@ -776,7 +777,7 @@ public class VeniceInterpreter implements Serializable  {
 		final VncList block, 
 		final Throwable th
 	) {
-		final String className = resolveClassName(((VncString)block.nth(1)).getValue());
+		final String className = resolveClassName(((VncString)block.second()).getValue());
 		final Class<?> targetClass = ReflectionAccessor.classForName(className);
 		
 		return targetClass.isAssignableFrom(th.getClass());
@@ -786,7 +787,7 @@ public class VeniceInterpreter implements Serializable  {
 		for(int ii=0; ii<blocks.size(); ii++) {
 			final VncList block = Coerce.toVncList(blocks.nth(ii));
 			
-			final VncSymbol sym = Coerce.toVncSymbol(block.nth(0));
+			final VncSymbol sym = Coerce.toVncSymbol(block.first());
 			if (sym.getName().equals("finally")) {
 				return block;
 			}

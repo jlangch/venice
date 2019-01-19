@@ -130,8 +130,8 @@ public class CoreFunctions {
 				if (args.isEmpty()) {
 					throw new ValueException("throw", Constants.Nil);
 				}
-				else if (Types.isVncJavaObject(args.nth(0))) {
-					final Object obj = ((VncJavaObject)args.nth(0)).getDelegate();
+				else if (Types.isVncJavaObject(args.first())) {
+					final Object obj = ((VncJavaObject)args.first()).getDelegate();
 					if (obj instanceof RuntimeException) {
 						throw (RuntimeException)obj;
 					}
@@ -143,7 +143,7 @@ public class CoreFunctions {
 					}
 				}
 				else {
-					throw new ValueException("throw",args.nth(0));
+					throw new ValueException("throw",args.first());
 				}
 			}
 	
@@ -171,7 +171,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("nil?", args, 1);
 				
-				return args.nth(0) == Nil ? True : False;
+				return args.first() == Nil ? True : False;
 			}
 		
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -196,7 +196,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("some?", args, 1);
 				
-				return args.nth(0) == Nil ? False : True;
+				return args.first() == Nil ? False : True;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -220,7 +220,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("true?", args, 1);
 				
-				return args.nth(0) == True ? True : False;
+				return args.first() == True ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -244,7 +244,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("false?", args, 1);
 				
-				return args.nth(0) == False ? True : False;
+				return args.first() == False ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -267,7 +267,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("boolean?", args, 1);
 				
-				return args.nth(0) == True || args.nth(0) == False ? True : False;
+				return args.first() == True || args.first() == False ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -291,7 +291,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("long?", args, 1);
 	
-				return Types.isVncLong(args.nth(0)) ? True : False;
+				return Types.isVncLong(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -315,7 +315,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("double?", args, 1);
 				
-				return Types.isVncDouble(args.nth(0)) ? True : False;
+				return Types.isVncDouble(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -337,7 +337,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("decimal?", args, 1);
 				
-				return Types.isVncBigDecimal(args.nth(0)) ? True : False;
+				return Types.isVncBigDecimal(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -361,9 +361,9 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("number?", args, 1);
 				
-				return Types.isVncLong(args.nth(0)) 
-						|| Types.isVncDouble(args.nth(0))
-						|| Types.isVncBigDecimal(args.nth(0))? True : False;
+				return Types.isVncLong(args.first()) 
+						|| Types.isVncDouble(args.first())
+						|| Types.isVncBigDecimal(args.first())? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -385,10 +385,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("string?", args, 1);
 				
-				if (args.nth(0) instanceof VncKeyword) { 
+				if (args.first() instanceof VncKeyword) { 
 					return False; 
 				}
-				if (args.nth(0) instanceof VncString) { 
+				if (args.first() instanceof VncString) { 
 					return True; 
 				}
 				else {
@@ -414,16 +414,16 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("symbol", args, 1);
 	
-				if (Types.isVncSymbol(args.nth(0))) {
-					return args.nth(0);
+				if (Types.isVncSymbol(args.first())) {
+					return args.first();
 				} 
-				else if (Types.isVncString(args.nth(0))) {
-					return new VncSymbol((VncString)args.nth(0));
+				else if (Types.isVncString(args.first())) {
+					return new VncSymbol((VncString)args.first());
 				} 
 				else {
 					throw new VncException(String.format(
 							"Function 'symbol' does not allow %s name.",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -447,7 +447,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("symbol?", args, 1);
 				
-				return Types.isVncSymbol(args.nth(0)) ? True : False;
+				return Types.isVncSymbol(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -468,16 +468,16 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("keyword", args, 1);
 				
-				if (Types.isVncKeyword(args.nth(0))) {
-					return args.nth(0);
+				if (Types.isVncKeyword(args.first())) {
+					return args.first();
 				} 
-				else if (Types.isVncString(args.nth(0))) {
-					return new VncKeyword(((VncString)args.nth(0)).getValue());
+				else if (Types.isVncString(args.first())) {
+					return new VncKeyword(((VncString)args.first()).getValue());
 				} 
 				else {
 					throw new VncException(String.format(
 							"Function 'keyword' does not allow %s name",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -501,7 +501,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("keyword?", args, 1);
 				
-				return Types.isVncKeyword(args.nth(0)) ? True : False;
+				return Types.isVncKeyword(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -520,10 +520,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("fn?", args, 1);
 				
-				if (!Types.isVncFunction(args.nth(0))) { 
+				if (!Types.isVncFunction(args.first())) { 
 					return False; 
 				}
-				return ((VncFunction)args.nth(0)).isMacro() ? False : True;
+				return ((VncFunction)args.first()).isMacro() ? False : True;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -542,10 +542,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("macro?", args, 1);
 				
-				if (!Types.isVncFunction(args.nth(0))) { 
+				if (!Types.isVncFunction(args.first())) { 
 					return False; 
 				}
-				return ((VncFunction)args.nth(0)).isMacro() ? True : False;
+				return ((VncFunction)args.first()).isMacro() ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -618,7 +618,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {			
-				final String prompt = Coerce.toVncString(args.nth(0)).getValue();
+				final String prompt = Coerce.toVncString(args.first()).getValue();
 				try {
 					return new VncString(Readline.readline(prompt));
 				} 
@@ -646,7 +646,7 @@ public class CoreFunctions {
 				try {
 					assertArity("read-string", args, 1);
 	
-					return Reader.read_str(Coerce.toVncString(args.nth(0)).getValue(), null);
+					return Reader.read_str(Coerce.toVncString(args.first()).getValue(), null);
 				} 
 				catch (ContinueException c) {
 					return Nil;
@@ -741,7 +741,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("==", args, 2);
 				
-				return Types._equal_Q(args.nth(0), args.nth(1)) ? True : False;
+				return Types._equal_Q(args.first(), args.second()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -760,7 +760,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("!=", args, 2);
 				
-				return Types._equal_Q(args.nth(0), args.nth(1)) ? False : True;
+				return Types._equal_Q(args.first(), args.second()) ? False : True;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -779,18 +779,18 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("match", args, 2);
 				
-				if (!Types.isVncString(args.nth(0))) {
+				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
 							"Invalid first argument type %s while calling function 'match'",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
-				if (!Types.isVncString(args.nth(1))) {
+				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
 							"Invalid second argument type %s while calling function 'match'",
-							Types.getClassName(args.nth(1))));
+							Types.getClassName(args.second())));
 				}
 	
-				return Types._match_Q(args.nth(0), args.nth(1)) ? True : False;
+				return Types._match_Q(args.first(), args.second()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -809,18 +809,18 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("match-not", args, 2);
 				
-				if (!Types.isVncString(args.nth(0))) {
+				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
 							"Invalid first argument type %s while calling function 'match-not'",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
-				if (!Types.isVncString(args.nth(1))) {
+				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
 							"Invalid second argument type %s while calling function 'match-not'",
-							Types.getClassName(args.nth(1))));
+							Types.getClassName(args.second())));
 				}
 				
-				return Types._match_Q(args.nth(0), args.nth(1)) ? False : True;
+				return Types._match_Q(args.first(), args.second()) ? False : True;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -839,8 +839,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("<", args, 2);
 	
-				final VncVal op1 = args.nth(0);
-				final VncVal op2 = args.nth(1);
+				final VncVal op1 = args.first();
+				final VncVal op2 = args.second();
 				
 				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
 					return op1.compareTo(op2) < 0 ? True : False;
@@ -880,8 +880,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("<=", args, 2);
 	
-				final VncVal op1 = args.nth(0);
-				final VncVal op2 = args.nth(1);
+				final VncVal op1 = args.first();
+				final VncVal op2 = args.second();
 				
 				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
 					return op1.compareTo(op2) <= 0 ? True : False;
@@ -921,8 +921,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(">", args, 2);
 	
-				final VncVal op1 = args.nth(0);
-				final VncVal op2 = args.nth(1);
+				final VncVal op1 = args.first();
+				final VncVal op2 = args.second();
 				
 				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
 					return op1.compareTo(op2) > 0 ? True : False;
@@ -962,8 +962,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(">=", args, 2);
 	
-				final VncVal op1 = args.nth(0);
-				final VncVal op2 = args.nth(1);
+				final VncVal op1 = args.first();
+				final VncVal op2 = args.second();
 				
 				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
 					return op1.compareTo(op2) >= 0 ? True : False;
@@ -1013,7 +1013,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("boolean", args, 1);
 	
-				final VncVal arg = args.nth(0);
+				final VncVal arg = args.first();
 				if (arg == Nil) {
 					return False;
 				}
@@ -1048,7 +1048,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("long", args, 1);
 	
-				final VncVal op1 = args.nth(0);
+				final VncVal op1 = args.first();
 				if (op1 == Nil) {
 					return new VncLong(0);
 				}
@@ -1108,7 +1108,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("double", args, 1);
 	
-				final VncVal op1 = args.nth(0);
+				final VncVal op1 = args.first();
 				if (op1 == Nil) {
 					return new VncDouble(0.0);
 				}
@@ -1172,8 +1172,8 @@ public class CoreFunctions {
 					return new VncBigDecimal(BigDecimal.ZERO);
 				}
 				else {				
-					final VncVal arg = args.nth(0);
-					final VncLong scale = args.size() < 3 ? null : Coerce.toVncLong(args.nth(1));
+					final VncVal arg = args.first();
+					final VncLong scale = args.size() < 3 ? null : Coerce.toVncLong(args.second());
 					final RoundingMode roundingMode = args.size() < 3 ? null : VncBigDecimal.toRoundingMode((VncString)args.nth(2));
 	
 					if (arg == Constants.Nil) {
@@ -1293,7 +1293,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("list?", args, 1);
 				
-				return list_Q(args.nth(0)) ? True : False;
+				return list_Q(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1343,7 +1343,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("vector?", args, 1);
 				
-				return vector_Q(args.nth(0)) ? True : False;
+				return vector_Q(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1367,8 +1367,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("subvec", args, 2, 3);
 	
-				final VncVector vec = Coerce.toVncVector(args.nth(0));		
-				final VncLong from = Coerce.toVncLong(args.nth(1));
+				final VncVector vec = Coerce.toVncVector(args.first());		
+				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
 				
 				return new VncVector(
@@ -1401,7 +1401,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf?", args, 1);
 				
-				return Types.isVncByteBuffer(args.nth(0)) ? True : False;
+				return Types.isVncByteBuffer(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1424,7 +1424,7 @@ public class CoreFunctions {
 					return new VncByteBuffer(ByteBuffer.wrap(new byte[0]));
 				}
 				
-				final VncVal arg = args.nth(0);
+				final VncVal arg = args.first();
 	
 				if (Types.isVncString(arg)) {
 					try {
@@ -1559,8 +1559,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf-sub", args, 2, 3);
 	
-				final byte[] buf = Coerce.toVncByteBuffer(args.nth(0)).getValue().array();		
-				final VncLong from = Coerce.toVncLong(args.nth(1));
+				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();		
+				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
 				
 				
@@ -1633,7 +1633,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("set?", args, 1);
 				
-				return Types.isVncHashSet(args.nth(0)) ? True : False;
+				return Types.isVncHashSet(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1652,7 +1652,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("sorted-set?", args, 1);
 				
-				return Types.isVncSortedSet(args.nth(0)) ? True : False;
+				return Types.isVncSortedSet(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1773,11 +1773,11 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
-					return new VncHashMap(((VncMap)args.nth(0)).getMap());
+				if (args.size() == 1 && Types.isVncMap(args.first())) {
+					return new VncHashMap(((VncMap)args.first()).getMap());
 				}
-				else if (args.size() == 1 && Types.isVncJavaObject(args.nth(0))) {
-					return ((VncJavaObject)args.nth(0)).toVncMap();
+				else if (args.size() == 1 && Types.isVncJavaObject(args.first())) {
+					return ((VncJavaObject)args.first()).toVncMap();
 				}
 				else {
 					return VncHashMap.ofAll(args);
@@ -1800,8 +1800,8 @@ public class CoreFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
-					return new VncOrderedMap(((VncMap)args.nth(0)).getMap());
+				if (args.size() == 1 && Types.isVncMap(args.first())) {
+					return new VncOrderedMap(((VncMap)args.first()).getMap());
 				}
 				else {
 					return VncOrderedMap.ofAll(args);
@@ -1824,8 +1824,8 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
-					return new VncSortedMap(((VncMap)args.nth(0)).getMap());
+				if (args.size() == 1 && Types.isVncMap(args.first())) {
+					return new VncSortedMap(((VncMap)args.first()).getMap());
 				}
 				else {
 					return VncSortedMap.ofAll(args);
@@ -1849,8 +1849,8 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
-					return new VncMutableMap(((VncMap)args.nth(0)).getMap());
+				if (args.size() == 1 && Types.isVncMap(args.first())) {
+					return new VncMutableMap(((VncMap)args.first()).getMap());
 				}
 				else {
 					return VncMutableMap.ofAll(args);
@@ -1873,7 +1873,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("map?", args, 1);
 				
-				return Types.isVncMap(args.nth(0)) ? True : False;
+				return Types.isVncMap(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1892,7 +1892,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("hash-map?", args, 1);
 				
-				return Types.isVncHashMap(args.nth(0)) ? True : False;
+				return Types.isVncHashMap(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1911,7 +1911,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("ordered-map?", args, 1);
 				
-				return Types.isVncOrderedMap(args.nth(0)) ? True : False;
+				return Types.isVncOrderedMap(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1930,7 +1930,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("sorted-map?", args, 1);
 				
-				return Types.isVncSortedMap(args.nth(0)) ? True : False;
+				return Types.isVncSortedMap(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1949,7 +1949,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("mutable-map?", args, 1);
 				
-				return Types.isVncMutableMap(args.nth(0)) ? True : False;
+				return Types.isVncMutableMap(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1975,8 +1975,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("contains?", args, 2);
 				
-				final VncVal coll = args.nth(0);
-				final VncVal key = args.nth(1);
+				final VncVal coll = args.first();
+				final VncVal key = args.second();
 				
 				if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).containsKey(key);
@@ -2024,16 +2024,16 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return new VncHashMap().assoc((VncList)args.slice(1));
 				}
-				else if (Types.isVncMap(args.nth(0))) {
-					final VncMap hm = (VncMap)args.nth(0);
+				else if (Types.isVncMap(args.first())) {
+					final VncMap hm = (VncMap)args.first();
 					
 					return hm.copy().assoc((VncList)args.slice(1));
 				}
-				else if (Types.isVncVector(args.nth(0))) {
-					VncVector vec = ((VncVector)args.nth(0)).copy();
+				else if (Types.isVncVector(args.first())) {
+					VncVector vec = ((VncVector)args.first()).copy();
 					
 					final VncList keyvals = args.slice(1);
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
@@ -2048,8 +2048,8 @@ public class CoreFunctions {
 					}
 					return vec;
 				}
-				else if (Types.isVncString(args.nth(0))) {
-					String s = ((VncString)args.nth(0)).getValue();
+				else if (Types.isVncString(args.first())) {
+					String s = ((VncString)args.first()).getValue();
 					final VncList keyvals = (VncList)args.slice(1);
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2072,15 +2072,15 @@ public class CoreFunctions {
 					}
 					return new VncString(s);
 				}
-				else if (Types.isVncThreadLocal(args.nth(0))) {
-					final VncThreadLocal th = (VncThreadLocal)args.nth(0);
+				else if (Types.isVncThreadLocal(args.first())) {
+					final VncThreadLocal th = (VncThreadLocal)args.first();
 					
 					return th.assoc((VncList)args.slice(1));
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'assoc' does not allow %s as collection", 
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -2105,8 +2105,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("assoc-in", args, 3);
 							
-				final VncVal coll = args.nth(0); // may be Nil
-				final VncSequence keys = Coerce.toVncSequence(args.nth(1));
+				final VncVal coll = args.first(); // may be Nil
+				final VncSequence keys = Coerce.toVncSequence(args.second());
 				final VncVal val = args.nth(2);
 				
 				final VncVal key = keys.first();
@@ -2143,13 +2143,13 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (Types.isVncMap(args.nth(0))) {
-					final VncMap hm = (VncMap)args.nth(0);
+				if (Types.isVncMap(args.first())) {
+					final VncMap hm = (VncMap)args.first();
 					
 					return hm.copy().dissoc((VncList)args.slice(1));
 				}
-				else if (Types.isVncVector(args.nth(0))) {
-					VncVector vec = ((VncVector)args.nth(0)).copy();
+				else if (Types.isVncVector(args.first())) {
+					VncVector vec = ((VncVector)args.first()).copy();
 					final VncList keyvals = (VncList)args.slice(1);
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2159,8 +2159,8 @@ public class CoreFunctions {
 					}
 					return vec;
 				}
-				else if (Types.isVncString(args.nth(0))) {
-					String s = ((VncString)args.nth(0)).getValue();
+				else if (Types.isVncString(args.first())) {
+					String s = ((VncString)args.first()).getValue();
 					final VncList keyvals = (VncList)args.slice(1);
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2179,15 +2179,15 @@ public class CoreFunctions {
 					}
 					return new VncString(s);
 				}
-				else if (Types.isVncThreadLocal(args.nth(0))) {
-					final VncThreadLocal th = (VncThreadLocal)args.nth(0);
+				else if (Types.isVncThreadLocal(args.first())) {
+					final VncThreadLocal th = (VncThreadLocal)args.first();
 					
 					return th.dissoc((VncList)args.slice(1));
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'dissoc' does not allow %s as coll", 
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -2209,29 +2209,29 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("get", args, 2, 3);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 					return key_not_found;
 				} 
-				else if (Types.isVncMap(args.nth(0))) {
-					final VncMap mhm = Coerce.toVncMap(args.nth(0));
-					final VncVal key = args.nth(1);
+				else if (Types.isVncMap(args.first())) {
+					final VncMap mhm = Coerce.toVncMap(args.first());
+					final VncVal key = args.second();
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 					
 					final VncVal value = mhm.get(key);
 					return value != Nil ? value : key_not_found;
 				}
-				else if (Types.isVncVector(args.nth(0))) {
-					final VncVector vec = Coerce.toVncVector(args.nth(0));
-					final int idx = Coerce.toVncLong(args.nth(1)).getIntValue();
+				else if (Types.isVncVector(args.first())) {
+					final VncVector vec = Coerce.toVncVector(args.first());
+					final int idx = Coerce.toVncLong(args.second()).getIntValue();
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 					
 					return vec.nthOrDefault(idx, key_not_found);
 				}
-				else if (Types.isVncThreadLocal(args.nth(0))) {
-					final VncThreadLocal th = Coerce.toVncThreadLocal(args.nth(0));
+				else if (Types.isVncThreadLocal(args.first())) {
+					final VncThreadLocal th = Coerce.toVncThreadLocal(args.first());
 					
-					final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
+					final VncKeyword key = Coerce.toVncKeyword(args.second());
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 					
 					final VncVal value = th.get(key);
@@ -2240,7 +2240,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'get' does not allow %s as collection", 
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -2267,8 +2267,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("get-in", args, 2, 3);
 				
-				VncCollection coll = Coerce.toVncCollection(args.nth(0));
-				VncSequence keys = Coerce.toVncSequence(args.nth(1));
+				VncCollection coll = Coerce.toVncCollection(args.first());
+				VncSequence keys = Coerce.toVncSequence(args.second());
 				VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 				
 				while(!keys.isEmpty()) {
@@ -2332,12 +2332,12 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("find", args, 2);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				} 
 				else {
-					final VncMap mhm = Coerce.toVncMap(args.nth(0));
-					final VncVal key = args.nth(1);
+					final VncMap mhm = Coerce.toVncMap(args.first());
+					final VncVal key = args.second();
 					
 					final VncVal value = mhm.get(key);
 					return value == Nil ? Nil : VncVector.of(key, value);
@@ -2360,7 +2360,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("key", args, 1);
 				
-				final VncSequence entry = Coerce.toVncSequence(args.nth(0));
+				final VncSequence entry = Coerce.toVncSequence(args.first());
 				return entry.first();
 			}
 	
@@ -2380,7 +2380,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("keys", args, 1);
 				
-				return Coerce.toVncMap(args.nth(0)).keys();
+				return Coerce.toVncMap(args.first()).keys();
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -2399,7 +2399,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("val", args, 1);
 				
-				final VncSequence entry = Coerce.toVncSequence(args.nth(0));
+				final VncSequence entry = Coerce.toVncSequence(args.first());
 				return entry.second();
 			}
 	
@@ -2419,7 +2419,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("vals", args, 1);
 				
-				final VncMap mhm = Coerce.toVncMap(args.nth(0));
+				final VncMap mhm = Coerce.toVncMap(args.first());
 				return new VncList(mhm.getMap().values());
 			}
 	
@@ -2474,7 +2474,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"'update' does not allow %s as associative structure", 
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -2529,7 +2529,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"'update!' does not allow %s as associative structure", 
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -2896,7 +2896,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("count", args, 1);
 				
-				final VncVal arg = args.nth(0);
+				final VncVal arg = args.first();
 				if (arg == Nil) {
 					return new VncLong(0L);
 				} 
@@ -2971,7 +2971,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("empty?", args, 1);
 	
-				final VncVal exp = args.nth(0);
+				final VncVal exp = args.first();
 				if (exp == Nil) {
 					return True;
 				} 
@@ -3005,7 +3005,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("not-empty?", args, 1);
 	
-				final VncVal exp = args.nth(0);
+				final VncVal exp = args.first();
 				if (exp == Nil) {
 					return False;
 				} 
@@ -3044,28 +3044,28 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("cons", args, 2);
 	
-				if (Types.isVncVector(args.nth(1))) {
+				if (Types.isVncVector(args.second())) {
 					return new VncVector()
-								.addAtStart(args.nth(0))
-								.addAllAtEnd((VncVector)args.nth(1));
+								.addAtStart(args.first())
+								.addAllAtEnd((VncVector)args.second());
 				}
-				if (Types.isVncList(args.nth(1))) {
+				if (Types.isVncList(args.second())) {
 					return new VncList()
-								.addAtStart(args.nth(0))
-								.addAllAtEnd((VncList)args.nth(1));
+								.addAtStart(args.first())
+								.addAllAtEnd((VncList)args.second());
 				}
-				else if (Types.isVncHashSet(args.nth(1))) {
-					final VncHashSet src_seq = (VncHashSet)args.nth(1);
-					return VncHashSet.ofAll(src_seq.toVncList()).add(args.nth(0));
+				else if (Types.isVncHashSet(args.second())) {
+					final VncHashSet src_seq = (VncHashSet)args.second();
+					return VncHashSet.ofAll(src_seq.toVncList()).add(args.first());
 				}
-				else if (Types.isVncMap(args.nth(1)) && Types.isVncMap(args.nth(0))) {
-					final VncMap map = ((VncMap)args.nth(1)).copy();
-					return map.putAll((VncMap)args.nth(0));
+				else if (Types.isVncMap(args.second()) && Types.isVncMap(args.first())) {
+					final VncMap map = ((VncMap)args.second()).copy();
+					return map.putAll((VncMap)args.first());
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'cons'",
-							Types.getClassName(args.nth(1))));
+							Types.getClassName(args.second())));
 				}
 			}
 	
@@ -3211,7 +3211,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("first", args, 1);
 	
-				final VncVal val = args.nth(0);
+				final VncVal val = args.first();
 				if (val == Nil) {
 					return Nil;
 				}
@@ -3251,7 +3251,7 @@ public class CoreFunctions {
 				assertArity("second", args, 1);
 	
 	
-				final VncVal val = args.nth(0);
+				final VncVal val = args.first();
 				if (val == Nil) {
 					return Nil;
 				}
@@ -3288,9 +3288,9 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("nth", args, 2);
 	
-				final int idx = Coerce.toVncLong(args.nth(1)).getValue().intValue();
+				final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 	
-				final VncVal val = args.nth(0);
+				final VncVal val = args.first();
 				if (val == Nil) {
 					return Nil;
 				}
@@ -3329,7 +3329,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("last", args, 1);
 	
-				final VncVal val = args.nth(0);
+				final VncVal val = args.first();
 				if (val == Nil) {
 					return Nil;
 				}
@@ -3459,19 +3459,19 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("nfirst", args, 2);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return new VncList();
 				}
-				else if (Types.isVncVector(args.nth(0))) {
-					final VncVector vec = Coerce.toVncVector(args.nth(0));		
-					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				else if (Types.isVncVector(args.first())) {
+					final VncVector vec = Coerce.toVncVector(args.first());		
+					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
 					return vec.isEmpty() 
 							? new VncVector() 
 							: new VncVector(vec.getList().subList(0, n));
 				}
-				else if (Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0))) {
-					final VncSequence list = Coerce.toVncSequence(args.nth(0));		
-					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				else if (Types.isVncList(args.first()) || Types.isVncJavaList(args.first())) {
+					final VncSequence list = Coerce.toVncSequence(args.first());		
+					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
 					return list.isEmpty() 
 							? new VncList() 
 							: new VncList(list.getList().subList(0, n));
@@ -3479,7 +3479,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"nfirst: type %s not supported",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -3506,19 +3506,19 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("nlast", args, 2);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return new VncList();
 				}
-				else if (Types.isVncVector(args.nth(0))) {
-					final VncVector vec = Coerce.toVncVector(args.nth(0));		
-					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				else if (Types.isVncVector(args.first())) {
+					final VncVector vec = Coerce.toVncVector(args.first());		
+					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
 					return vec.isEmpty() 
 							? new VncVector() 
 							: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 				}
-				else if (Types.isVncList(args.nth(0)) || Types.isVncJavaList(args.nth(0))) {
-					final VncList list = Coerce.toVncList(args.nth(0));		
-					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.nth(1)).getValue().intValue()));				
+				else if (Types.isVncList(args.first()) || Types.isVncJavaList(args.first())) {
+					final VncList list = Coerce.toVncList(args.first());		
+					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
 					return list.isEmpty() 
 							? new VncList() 
 							: new VncList(list.getList().subList(list.size()-n, list.size()));
@@ -3526,7 +3526,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"nlast: type %s not supported",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 
@@ -3548,13 +3548,13 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("distinct", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return new VncList();
 				}
 				
-				return ((VncSequence)args.nth(0)).withValues(
+				return ((VncSequence)args.first()).withValues(
 													Coerce
-														.toVncSequence(args.nth(0))
+														.toVncSequence(args.first())
 														.getList()
 														.stream()
 														.distinct()
@@ -3579,7 +3579,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("dedupe", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return new VncList();
 				}
 				
@@ -3587,14 +3587,14 @@ public class CoreFunctions {
 	
 				final List<VncVal> items = new ArrayList<>();
 	
-				for(VncVal val : Coerce.toVncSequence(args.nth(0)).getList()) {
+				for(VncVal val : Coerce.toVncSequence(args.first()).getList()) {
 					if (seen == null || !val.equals(seen)) {
 						items.add(val);
 						seen = val;
 					}
 				}
 				
-				return ((VncSequence)args.nth(0)).withValues(items);
+				return ((VncSequence)args.first()).withValues(items);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -3622,8 +3622,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("partition", args, 2, 3 ,4);
 	
-				final int n = Coerce.toVncLong(args.nth(0)).getValue().intValue();
-				final int step = args.size() > 2 ? Coerce.toVncLong(args.nth(1)).getValue().intValue() : n;
+				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
+				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
 				final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)).getList() : new ArrayList<>();
 				final List<VncVal> coll = Coerce.toVncSequence(args.nth(args.size()-1)).getList();
 				
@@ -3705,7 +3705,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("empty-to-nil", args, 1);
 				
-				final VncVal arg = args.nth(0);
+				final VncVal arg = args.first();
 				if (Types.isVncString(arg)) {
 					return ((VncString)arg).getValue().isEmpty() ? Nil : arg;
 				}
@@ -3739,7 +3739,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("class", args, 1);
 				
-				return Types.getClassName(args.nth(0));
+				return Types.getClassName(args.first());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -3762,7 +3762,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("pop", args, 1);
 				
-				final VncVal exp = args.nth(0);
+				final VncVal exp = args.first();
 				if (exp == Nil) {
 					return new VncList();
 				}
@@ -3794,7 +3794,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("peek", args, 1);
 				
-				final VncVal exp = args.nth(0);
+				final VncVal exp = args.first();
 				if (exp == Nil) {
 					return Nil;
 				}
@@ -3804,7 +3804,7 @@ public class CoreFunctions {
 					return ml.isEmpty() ? Nil : ml.nth(ml.size()-1);
 				}
 				else {
-					return ml.isEmpty() ? Nil : ml.nth(0);
+					return ml.isEmpty() ? Nil : ml.first();
 				}
 			}
 	
@@ -3826,8 +3826,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("take-while", args, 2);
 				
-				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 				
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -3858,8 +3858,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("take", args, 2);
 				
-				final VncLong n = Coerce.toVncLong(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncLong n = Coerce.toVncLong(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 	
 				return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
 			}
@@ -3882,8 +3882,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("drop-while", args, 2);
 				
-				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 				
 				for(int i=0; i<coll.size(); i++) {
 					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -3910,8 +3910,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("drop", args, 2);
 				
-				final VncLong n = Coerce.toVncLong(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncLong n = Coerce.toVncLong(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 	
 				return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
 			}
@@ -3935,7 +3935,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("flatten", args, 1);
 				
-				final VncCollection coll = Coerce.toVncCollection(args.nth(0));
+				final VncCollection coll = Coerce.toVncCollection(args.first());
 				
 				final List<VncVal> result = new ArrayList<>();
 				flatten(coll, result);			
@@ -3958,7 +3958,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reverse", args, 1);
 				
-				final VncSequence coll = Coerce.toVncSequence(args.nth(0));
+				final VncSequence coll = Coerce.toVncSequence(args.first());
 				
 				final List<VncVal> reversed = new ArrayList<>();
 				for(int ii=coll.size()-1; ii>=0; ii--) {
@@ -3997,16 +3997,16 @@ public class CoreFunctions {
 					return sort(
 							"sort", 
 							args, 
-							args.nth(0), 
+							args.first(), 
 							(x,y) -> Coerce.toVncLong(compare.apply(VncList.of(x,y))).getIntValue());
 				}
 				else if (args.size() == 2) {
-					final VncFunction compfn = Coerce.toVncFunction(args.nth(0));
+					final VncFunction compfn = Coerce.toVncFunction(args.first());
 					
 					return sort(
 							"sort", 
 							args, 
-							args.nth(1), 
+							args.second(), 
 							(x,y) -> Coerce.toVncLong(compfn.apply(VncList.of(x,y))).getIntValue());
 				}
 				else {
@@ -4043,12 +4043,12 @@ public class CoreFunctions {
 				assertArity("sort-by", args, 2, 3);
 	
 				if (args.size() == 2) {
-					final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
+					final VncFunction keyfn = Coerce.toVncFunction(args.first());
 	
 					return sort(
 							"sort-by", 
 							args, 
-							args.nth(1), 
+							args.second(), 
 							(x,y) -> Coerce.toVncLong(
 										compare.apply(
 												VncList.of(
@@ -4057,8 +4057,8 @@ public class CoreFunctions {
 									 ).getIntValue());
 				}
 				else if (args.size() == 3) {
-					final VncFunction keyfn = Coerce.toVncFunction(args.nth(0));
-					final VncFunction compfn = Coerce.toVncFunction(args.nth(1));
+					final VncFunction keyfn = Coerce.toVncFunction(args.first());
+					final VncFunction compfn = Coerce.toVncFunction(args.second());
 	
 					return sort(
 							"sort-by", 
@@ -4098,8 +4098,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("group-by", args, 2);
 	
-				final VncFunction fn = Coerce.toVncFunction(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 	
 				VncMap map = new VncOrderedMap();
 				
@@ -4135,7 +4135,7 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				final VncFunction fn = Coerce.toVncFunction(args.nth(0));
+				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncList fn_args = args.slice(1,args.size()-1);
 				
 				final VncVal coll = args.last();
@@ -4280,7 +4280,7 @@ public class CoreFunctions {
 					return Nil;
 				}
 				
-				final VncFunction fn = Coerce.toVncFunction(args.nth(0));
+				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncList lists = removeNilValues((VncList)args.slice(1));
 				final List<VncVal> result = new ArrayList<>();
 							
@@ -4332,7 +4332,7 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				final VncFunction fn = Coerce.toVncFunction(args.nth(0));
+				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncList lists = removeNilValues((VncList)args.slice(1));
 				final List<VncVal> result = new ArrayList<>();
 	
@@ -4475,8 +4475,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("filter", args, 2);
 				
-				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 	
 				final List<VncVal> items = new ArrayList<>();
 				
@@ -4510,8 +4510,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("remove", args, 2);
 				
-				final VncFunction predicate = Coerce.toVncFunction(args.nth(0));
-				final VncSequence coll = Coerce.toVncSequence(args.nth(1));
+				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final VncSequence coll = Coerce.toVncSequence(args.second());
 	
 				final List<VncVal> items = new ArrayList<>();
 				for(int i=0; i<coll.size(); i++) {
@@ -4555,21 +4555,21 @@ public class CoreFunctions {
 				assertArity("reduce", args, 2, 3);
 				
 				final boolean twoArguments = args.size() < 3;
-				final VncFunction reduceFn = Coerce.toVncFunction(args.nth(0));
+				final VncFunction reduceFn = Coerce.toVncFunction(args.first());
 	
 				if (twoArguments) {
 					List<VncVal> coll;
 					
-					if (Types.isVncSequence(args.nth(1))) {
-						coll = Coerce.toVncSequence(args.nth(1)).getList();
+					if (Types.isVncSequence(args.second())) {
+						coll = Coerce.toVncSequence(args.second()).getList();
 					}
-					else if (Types.isVncMap(args.nth(1))) {
-						coll = Coerce.toVncMap(args.nth(1)).toVncList().getList();
+					else if (Types.isVncMap(args.second())) {
+						coll = Coerce.toVncMap(args.second()).toVncList().getList();
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'reduce' does not allow %s as coll parameter", 
-								Types.getClassName(args.nth(1))));
+								Types.getClassName(args.second())));
 					}
 					
 					if (coll.isEmpty()) {
@@ -4599,13 +4599,13 @@ public class CoreFunctions {
 					}
 					
 					if (coll.isEmpty()) {
-						return args.nth(1);
+						return args.second();
 					}
 					else if (coll.size() == 1) {
-						return reduceFn.apply(VncList.of(args.nth(1), coll.get(0)));
+						return reduceFn.apply(VncList.of(args.second(), coll.get(0)));
 					}
 					else {
-						VncVal value = args.nth(1);
+						VncVal value = args.second();
 						for(int ii=0; ii<coll.size(); ii++) {
 							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
 						}
@@ -4637,10 +4637,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reduce-kv", args, 3);
 				
-				final VncFunction reduceFn = Coerce.toVncFunction(args.nth(0));		
+				final VncFunction reduceFn = Coerce.toVncFunction(args.first());		
 				final List<VncMapEntry> values = Coerce.toVncHashMap(args.nth(2)).entries();
 				
-				VncMap value = (VncMap)args.nth(1);
+				VncMap value = (VncMap)args.second();
 				
 				if (values.isEmpty()) {
 					return value;
@@ -4717,8 +4717,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {			
 				assertMinArity("conj", args, 2);
 	
-				if (Types.isVncVector(args.nth(0))) {
-					final VncVector src_seq = (VncVector)args.nth(0);
+				if (Types.isVncVector(args.first())) {
+					final VncVector src_seq = (VncVector)args.first();
 					VncVector new_seq = src_seq.copy();
 	
 					for(int i=1; i<args.size(); i++) {
@@ -4726,8 +4726,8 @@ public class CoreFunctions {
 					}
 					return new_seq;
 				} 
-				else if (Types.isVncList(args.nth(0))) {
-					final VncList src_seq = (VncList)args.nth(0);
+				else if (Types.isVncList(args.first())) {
+					final VncList src_seq = (VncList)args.first();
 					VncList new_seq = src_seq.copy();
 	
 					for(int i=1; i<args.size(); i++) {
@@ -4735,32 +4735,32 @@ public class CoreFunctions {
 					}
 					return new_seq;
 				}
-				else if (Types.isVncHashSet(args.nth(0))) {
-					return VncHashSet.ofAll(((VncHashSet)args.nth(0)).getSet()).addAll(args.slice(1));
+				else if (Types.isVncHashSet(args.first())) {
+					return VncHashSet.ofAll(((VncHashSet)args.first()).getSet()).addAll(args.slice(1));
 				}
-				else if (Types.isVncMap(args.nth(0))) {
-					final VncMap src_map = (VncMap)args.nth(0);
+				else if (Types.isVncMap(args.first())) {
+					final VncMap src_map = (VncMap)args.first();
 					VncMap new_map = src_map.copy();
 				
-					if (Types.isVncVector(args.nth(1)) && ((VncVector)args.nth(1)).size() == 2) {
+					if (Types.isVncVector(args.second()) && ((VncVector)args.second()).size() == 2) {
 						return new_map.assoc(
 									VncList.of(
-										((VncVector)args.nth(1)).nth(0),
-										((VncVector)args.nth(1)).nth(1)));
+										((VncVector)args.second()).first(),
+										((VncVector)args.second()).second()));
 					}
-					else if (Types.isVncMap(args.nth(1))) {
-						return new_map.putAll((VncMap)args.nth(1));
+					else if (Types.isVncMap(args.second())) {
+						return new_map.putAll((VncMap)args.second());
 					}
 					else {
 						throw new VncException(String.format(
 								"Invalid x %s while calling function 'conj'",
-								Types.getClassName(args.nth(1))));
+								Types.getClassName(args.second())));
 					}
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid coll %s while calling function 'conj'",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -4780,13 +4780,13 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {			
 				assertMinArity("disj", args, 2);
 				
-				if (args.nth(0) instanceof VncHashSet) {
-					return ((VncHashSet)args.nth(0)).removeAll(args.slice(1));
+				if (args.first() instanceof VncHashSet) {
+					return ((VncHashSet)args.first()).removeAll(args.slice(1));
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid coll %s while calling function 'disj'",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -4814,7 +4814,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("seq", args, 1);
 	
-				final VncVal val = args.nth(0);
+				final VncVal val = args.first();
 				if (Types.isVncMap(val)) {
 					if (((VncMap)val).isEmpty()) { 
 						return Nil; 
@@ -4867,17 +4867,13 @@ public class CoreFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("repeat", args, 2);
-	
-				if (!Types.isVncLong(args.nth(0))) {
-					throw new VncException("repeat: the count must be a long");	
-				}
-				
-				final long repeat = ((VncLong)args.nth(0)).getValue();
+					
+				final long repeat = Coerce.toVncLong(args.first()).getValue();
 				if (repeat < 0) {
 					throw new VncException("repeat: a count n must be grater or equal to 0");	
 				}
 	
-				final VncVal val = args.nth(1);
+				final VncVal val = args.second();
 				final List<VncVal> values = new ArrayList<>();
 				for(int ii=0; ii<repeat; ii++) {
 					values.add(val.copy());
@@ -4943,7 +4939,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("meta", args, 1);
 	
-				return args.nth(0).getMeta();
+				return args.first().getMeta();
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4961,11 +4957,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("meta", args, 2);
 	
-				if (!Types.isVncMap(args.nth(1))) {
-					throw new VncException("with-meta: the meta data for the object must be a map");	
-				}
-	
-				return args.nth(0).withMeta(args.nth(1));
+				return args.first().withMeta(Coerce.toVncMap(args.second()));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4983,15 +4975,12 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("vary-meta", args, 2);
 	
-				if (!Types.isVncFunction(args.nth(1))) {
-					throw new VncException("var-meta requires a function as second argument");
-				}
-	
-				final VncVal meta = args.nth(0).getMeta();
-				final VncFunction fn = (VncFunction)args.nth(1);
+				final VncVal obj = args.first();
+				final VncVal meta = obj.getMeta();
+				final VncFunction fn = Coerce.toVncFunction(args.second());
 				final VncList fnArgs = args.slice(2).addAtStart(meta == Nil ? new VncHashMap() : meta);
 				
-				return args.nth(0).withMeta(fn.apply(fnArgs));
+				return obj.withMeta(fn.apply(fnArgs));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5020,9 +5009,9 @@ public class CoreFunctions {
 				
 				final String prefix = args.isEmpty() 
 										? "G__" 
-										: Types.isVncSymbol(args.nth(0))
-											? Coerce.toVncSymbol(args.nth(0)).getName()
-											: Coerce.toVncString(args.nth(0)).getValue();
+										: Types.isVncSymbol(args.first())
+											? Coerce.toVncSymbol(args.first()).getName()
+											: Coerce.toVncString(args.first()).getValue();
 				
 				return new VncSymbol(prefix + String.valueOf(gensymValue.incrementAndGet()));
 			}
