@@ -90,7 +90,7 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncHashSet copy() {
-		return new VncHashSet(value, getMeta());
+		return this;
 	}
 
 	@Override

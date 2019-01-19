@@ -90,7 +90,7 @@ public class VncSortedSet extends VncSet {
 	
 	@Override
 	public VncSortedSet copy() {
-		return new VncSortedSet(value, getMeta());
+		return this;
 	}
 
 	@Override

@@ -132,13 +132,11 @@ public class VncOrderedMap extends VncMap {
 
 	@Override
 	public VncOrderedMap copy() {
-		// shallow copy
-		return new VncOrderedMap(value, getMeta());
+		return this;
 	}
 
 	@Override
 	public VncOrderedMap withMeta(final VncVal meta) {
-		// shallow copy
 		return new VncOrderedMap(value, meta);
 	}
 	

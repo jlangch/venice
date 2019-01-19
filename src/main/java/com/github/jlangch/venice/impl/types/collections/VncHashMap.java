@@ -132,13 +132,11 @@ public class VncHashMap extends VncMap {
 
 	@Override
 	public VncHashMap copy() {
-		// shallow copy
-		return new VncHashMap(value, getMeta());
+		return this;
 	}
 
 	@Override
 	public VncHashMap withMeta(final VncVal meta) {
-		// shallow copy
 		return new VncHashMap(value, meta);
 	}
 	
