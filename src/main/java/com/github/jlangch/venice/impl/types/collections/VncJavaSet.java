@@ -186,6 +186,28 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	}
 	
 	@Override
+	public int compareTo(final VncVal o) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncJavaSet(o)) {
+			final Integer sizeThis = size();
+			final Integer sizeOther = size();
+			int c = sizeThis.compareTo(sizeOther);
+			if (c != 0) {
+				return c;
+			}
+			else {
+				if (equals(o)) {
+					return 0;
+				}
+			}
+		}
+
+		return super.compareTo(o);
+	}
+	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();

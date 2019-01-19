@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -248,6 +249,28 @@ public class VncHashMap extends VncMap {
 	
 	@Override public int typeRank() {
 		return 208;
+	}
+	
+	@Override
+	public int compareTo(final VncVal o) {
+		if (o == Constants.Nil) {
+			return 1;
+		}
+		else if (Types.isVncHashMap(o)) {
+			final Integer sizeThis = size();
+			final Integer sizeOther = size();
+			int c = sizeThis.compareTo(sizeOther);
+			if (c != 0) {
+				return c;
+			}
+			else {
+				if (equals(o)) {
+					return 0;
+				}
+			}
+		}
+
+		return super.compareTo(o);
 	}
 
 	@Override

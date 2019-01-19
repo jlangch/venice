@@ -240,6 +240,9 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 				if (c != 0) {
 					return c;
 				}
+				else if (equals(o)) {
+					return 0;
+				}
 			}
 		}
 
