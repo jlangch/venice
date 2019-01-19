@@ -313,6 +313,7 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("hash-map?"));
 		coll_test.addItem(getDocItem("ordered-map?"));
 		coll_test.addItem(getDocItem("sorted-map?"));
+		coll_test.addItem(getDocItem("mutable-map?"));
 		coll_test.addItem(getDocItem("bytebuf?"));
 
 		final DocSection coll_process = new DocSection("Process");
@@ -469,6 +470,7 @@ public class DocGenerator {
 		maps_create.addItem(getDocItem("hash-map"));
 		maps_create.addItem(getDocItem("ordered-map"));
 		maps_create.addItem(getDocItem("sorted-map"));
+		maps_create.addItem(getDocItem("mutable-map"));
 		maps_create.addItem(getDocItem("zipmap"));
 		
 
