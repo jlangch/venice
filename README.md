@@ -234,7 +234,7 @@ Caused by: java.lang.ArithmeticException: / by zero
 (do
    (defn sum 
          [x y] 
-         { :pre [(> x 0) (> y 0] } 
+         { :pre [(> x 0) (> y 0)] } 
          (+ x y)))
 ```
 
