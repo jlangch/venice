@@ -232,7 +232,10 @@ Caused by: java.lang.ArithmeticException: / by zero
 
 ```clojure
 (do
-   (defn sum [x y] { :pre [(> x 0) (> y 0] } (+ x y)))
+   (defn sum 
+         [x y] 
+         { :pre [(> x 0) (> y 0] } 
+         (+ x y)))
 ```
 
 
