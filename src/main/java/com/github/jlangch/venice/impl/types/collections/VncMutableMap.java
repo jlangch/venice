@@ -40,75 +40,75 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
-public class VncConcurrentMap extends VncMap {
+public class VncMutableMap extends VncMap {
 
-	public VncConcurrentMap() {
+	public VncMutableMap() {
 		this(null, null);
 	}
 
-	public VncConcurrentMap(final VncVal meta) {
+	public VncMutableMap(final VncVal meta) {
 		this(null, meta);
 	}
 
-	public VncConcurrentMap(final Map<VncVal,VncVal> vals) {
+	public VncMutableMap(final Map<VncVal,VncVal> vals) {
 		this(vals, null);
 	}
 
-	public VncConcurrentMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+	public VncMutableMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		value = vals == null ? new ConcurrentHashMap<>() : new ConcurrentHashMap<>(vals);
 	}
 	
 	
-	public static VncConcurrentMap ofAll(final VncSequence lst) {
+	public static VncMutableMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"concurrent-map: create requires an even number of list items. %s", 
+					"mutable-map: create requires an even number of list items. %s", 
 					ErrorMessage.buildErrLocation(lst)));
 		}
 		
-		return new VncConcurrentMap().assoc(lst);
+		return new VncMutableMap().assoc(lst);
 	}
 
-	public static VncConcurrentMap of(final VncVal... mvs) {
+	public static VncMutableMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
-					"concurrent-map: create requires an even number of items. %s", 
+					"mutable-map: create requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
-		return new VncConcurrentMap().assoc(mvs);
+		return new VncMutableMap().assoc(mvs);
 	}
 
 	
 	@Override
-	public VncConcurrentMap empty() {
-		return new VncConcurrentMap(getMeta());
+	public VncMutableMap empty() {
+		return new VncMutableMap(getMeta());
 	}
 
 	@Override
-	public VncConcurrentMap withValues(final Map<VncVal,VncVal> replaceVals) {
-		return new VncConcurrentMap(replaceVals, getMeta());
+	public VncMutableMap withValues(final Map<VncVal,VncVal> replaceVals) {
+		return new VncMutableMap(replaceVals, getMeta());
 	}
 	
 	@Override
-	public VncConcurrentMap withValues(
+	public VncMutableMap withValues(
 			final Map<VncVal,VncVal> replaceVals, 
 			final VncVal meta
 	) {
-		return new VncConcurrentMap(replaceVals, meta);
+		return new VncMutableMap(replaceVals, meta);
 	}
 
 	@Override
-	public VncConcurrentMap copy() {
+	public VncMutableMap copy() {
 		// shallow copy
-		return new VncConcurrentMap(value, getMeta());
+		return new VncMutableMap(value, getMeta());
 	}
 
 	@Override
-	public VncConcurrentMap withMeta(final VncVal meta) {
+	public VncMutableMap withMeta(final VncVal meta) {
 		// shallow copy
-		return new VncConcurrentMap(value, meta);
+		return new VncMutableMap(value, meta);
 	}
 
 	@Override
@@ -142,16 +142,16 @@ public class VncConcurrentMap extends VncMap {
 	}
 
 	@Override
-	public VncConcurrentMap putAll(final VncMap map) {
+	public VncMutableMap putAll(final VncMap map) {
 		value.putAll(map.getMap());
 		return this;
 	}
 
 	@Override
-	public VncConcurrentMap assoc(final VncVal... mvs) {
+	public VncMutableMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					"concurrent-map: assoc requires an even number of items. %s", 
+					"mutable-map: assoc requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
@@ -162,10 +162,10 @@ public class VncConcurrentMap extends VncMap {
 	}
 
 	@Override
-	public VncConcurrentMap assoc(final VncSequence mvs) {
+	public VncMutableMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
-					"concurrent-map: assoc requires an even number of items. %s", 
+					"mutable-map: assoc requires an even number of items. %s", 
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
@@ -176,7 +176,7 @@ public class VncConcurrentMap extends VncMap {
 	}
 
 	@Override
-	public VncConcurrentMap dissoc(final VncVal... keys) {
+	public VncMutableMap dissoc(final VncVal... keys) {
 		for (VncVal key : keys) {
 			value.remove(key);
 		}
@@ -184,7 +184,7 @@ public class VncConcurrentMap extends VncMap {
 	}
 
 	@Override
-	public VncConcurrentMap dissoc(final VncSequence keys) {
+	public VncMutableMap dissoc(final VncSequence keys) {
 		for (int i=0; i<keys.getList().size(); i++) {
 			value.remove(keys.nth(i));
 		}
@@ -239,7 +239,7 @@ public class VncConcurrentMap extends VncMap {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		VncConcurrentMap other = (VncConcurrentMap) obj;
+		VncMutableMap other = (VncMutableMap) obj;
 		if (value == null) {
 			if (other.value != null)
 				return false;
@@ -279,8 +279,8 @@ public class VncConcurrentMap extends VncMap {
 			return this;
 		}
 
-		public VncConcurrentMap build() {
-			return new VncConcurrentMap(map);
+		public VncMutableMap build() {
+			return new VncMutableMap(map);
 		}
 		
 		public Map<VncVal,VncVal> toMap() {

@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.types;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
-import com.github.jlangch.venice.impl.types.collections.VncConcurrentMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -141,8 +141,8 @@ public class Types {
 		return val != null && (val instanceof VncSortedMap);
 	}
 
-	public static boolean isVncConcurrentMap(final VncVal val) {
-		return val != null && (val instanceof VncConcurrentMap);
+	public static boolean isVncMutableMap(final VncVal val) {
+		return val != null && (val instanceof VncMutableMap);
 	}
 
 	public static boolean isVncFunction(final VncVal val) {

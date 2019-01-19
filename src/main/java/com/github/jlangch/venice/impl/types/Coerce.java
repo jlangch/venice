@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
-import com.github.jlangch.venice.impl.types.collections.VncConcurrentMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -308,19 +308,19 @@ public class Coerce {
 		}
 	}
 	
-	public static VncConcurrentMap toVncConcurrentMap(final VncVal val) {
+	public static VncMutableMap toVncVncMutableMapMap(final VncVal val) {
 		if (val == null) {
 			return null;
 		}
-		else if (val instanceof VncConcurrentMap) {
-			return (VncConcurrentMap)val;
+		else if (val instanceof VncMutableMap) {
+			return (VncMutableMap)val;
 		}
 		else if (Types.isVncMap(val)) {
-			return new VncConcurrentMap(((VncMap)val).getMap());
+			return new VncMutableMap(((VncMap)val).getMap());
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot coerce value of type %s to concurrent-map. %s", 
+					"Cannot coerce value of type %s to mutable-map. %s", 
 					Types.getClassName(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

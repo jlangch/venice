@@ -72,6 +72,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
@@ -1834,6 +1835,31 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+
+	public static VncFunction new_mutable_map = 
+		new VncFunction(
+				"mutable-map", 
+				VncFunction
+					.meta()
+					.arglists("(mutable-map & keyvals)", "(mutable-map map)")		
+					.doc("Creates a new mutable map containing the items.")
+					.examples(
+						"(mutable-map :a 1 :b 2)", 
+						"(mutable-map (hash-map :a 1 :b 2))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
+					return new VncMutableMap(((VncMap)args.nth(0)).getMap());
+				}
+				else {
+					return VncMutableMap.ofAll(args);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction map_Q = 
 		new VncFunction(
 				"map?", 
@@ -1905,6 +1931,25 @@ public class CoreFunctions {
 				assertArity("sorted-map?", args, 1);
 				
 				return Types.isVncSortedMap(args.nth(0)) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction mutable_map_Q = 
+		new VncFunction(
+				"mutable-map?", 
+				VncFunction
+					.meta()
+					.arglists("(mutable-map? obj)")		
+					.doc("Returns true if obj is a mutable map")
+					.examples("(mutable-map? (mutable-map :a 1 :b 2))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("mutable-map?", args, 1);
+				
+				return Types.isVncMutableMap(args.nth(0)) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5164,9 +5209,11 @@ public class CoreFunctions {
 				.put("hash-map?",			hash_map_Q)
 				.put("ordered-map?",		ordered_map_Q)
 				.put("sorted-map?",			sorted_map_Q)
+				.put("mutable-map?",		mutable_map_Q)
 				.put("hash-map",			new_hash_map)
 				.put("ordered-map",			new_ordered_map)
 				.put("sorted-map",			new_sorted_map)
+				.put("mutable-map",			new_mutable_map)
 				.put("assoc",				assoc)
 				.put("assoc-in",			assoc_in)
 				.put("dissoc",				dissoc)
