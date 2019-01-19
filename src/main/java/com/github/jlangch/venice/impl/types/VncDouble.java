@@ -54,6 +54,10 @@ public class VncDouble extends VncVal {
 		return value; 
 	}
 
+	@Override public int typeRank() {
+		return 3;
+	}
+
 	@Override 
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
@@ -62,9 +66,8 @@ public class VncDouble extends VncVal {
 		else if (Types.isVncNumber(o)) {
 			return value.compareTo(Numeric.toDouble(o).getValue());
 		}
-		else {
-			return 0;
-		}
+
+		return super.compareTo(o);
 	}
 
 	@Override

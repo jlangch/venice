@@ -58,6 +58,10 @@ public class VncMapEntry extends VncVal {
 	public VncMapEntry withMeta(final VncVal meta) {
 		return this;
 	}
+	
+	@Override public int typeRank() {
+		return 207;
+	}
 
 	
 	private static final long serialVersionUID = 7943559441888855596L;

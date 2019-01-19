@@ -186,6 +186,10 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	public boolean isEmpty() {
 		return false;
 	}
+	
+	@Override public int typeRank() {
+		return 9;
+	}
 
 	@Override
 	public int hashCode() {

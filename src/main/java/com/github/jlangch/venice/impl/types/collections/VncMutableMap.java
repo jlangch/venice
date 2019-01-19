@@ -222,6 +222,10 @@ public class VncMutableMap extends VncMap {
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
+	
+	@Override public int typeRank() {
+		return 212;
+	}
 
 	@Override
 	public int hashCode() {

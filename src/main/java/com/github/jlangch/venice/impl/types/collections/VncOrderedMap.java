@@ -245,6 +245,10 @@ public class VncOrderedMap extends VncMap {
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
+	
+	@Override public int typeRank() {
+		return 209;
+	}
 
 	@Override
 	public int hashCode() {

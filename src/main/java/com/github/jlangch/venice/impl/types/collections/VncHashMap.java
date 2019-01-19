@@ -245,6 +245,10 @@ public class VncHashMap extends VncMap {
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
+	
+	@Override public int typeRank() {
+		return 208;
+	}
 
 	@Override
 	public int hashCode() {

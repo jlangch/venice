@@ -57,6 +57,10 @@ public class VncLong extends VncVal {
 		return value.intValue(); 
 	}
 	
+	@Override public int typeRank() {
+		return 2;
+	}
+
 	@Override 
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
@@ -65,9 +69,8 @@ public class VncLong extends VncVal {
 		else if (Types.isVncNumber(o)) {
 			return value.compareTo(Numeric.toLong(o).getValue());
 		}
-		else {
-			return 0;
-		}
+
+		return super.compareTo(o);
 	}
 
 	@Override

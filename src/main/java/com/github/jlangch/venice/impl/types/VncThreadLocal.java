@@ -117,6 +117,10 @@ public class VncThreadLocal extends VncVal {
 		ThreadLocalMap.clear();
 		return this;
 	}
+	
+	@Override public int typeRank() {
+		return 11;
+	}
 
 	
 	@Override 

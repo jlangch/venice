@@ -40,6 +40,8 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	
 	abstract public VncVal withMeta(VncVal meta);
 	
+	abstract public int typeRank();
+
 	public VncVal getMeta() {
 		// getMeta() can be redefined. Functions do that to manage meta data themselves.
 		return meta; 
@@ -65,7 +67,8 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	@Override
 	public int compareTo(final VncVal o) {
-		return 0;
+		final int c = Integer.valueOf(typeRank()).compareTo(Integer.valueOf(o.typeRank()));
+		return c != 0 ? c : -1;
 	}
 
 	public String toString(final boolean print_readably) {

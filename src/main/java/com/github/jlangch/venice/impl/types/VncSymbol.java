@@ -53,6 +53,10 @@ public class VncSymbol extends VncVal {
 	public String getName() { 
 		return value; 
 	}
+	
+	@Override public int typeRank() {
+		return 7;
+	}
 
 	@Override 
 	public int compareTo(final VncVal o) {
@@ -62,9 +66,8 @@ public class VncSymbol extends VncVal {
 		else if (Types.isVncSymbol(o)) {
 			return getName().compareTo(((VncSymbol)o).getName());
 		}
-		else {
-			return 0;
-		}
+
+		return super.compareTo(o);
 	}
 	
 	@Override

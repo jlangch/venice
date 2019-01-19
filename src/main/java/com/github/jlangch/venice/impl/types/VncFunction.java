@@ -131,6 +131,10 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 		return (VncList)getMetaVal(MetaUtil.EXAMPLES, new VncList());
 	}
 	
+	@Override public int typeRank() {
+		return 100;
+	}
+	
 	@Override 
 	public String toString() {
 		return name;

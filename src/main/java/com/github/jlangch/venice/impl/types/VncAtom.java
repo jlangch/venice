@@ -93,6 +93,10 @@ public class VncAtom extends VncVal {
 		watchable.removeWatch(name);
 	}
 	
+	@Override public int typeRank() {
+		return 10;
+	}
+	
 	@Override 
 	public String toString() {
 		return "(atom " + Printer._pr_str(state.get(), true) + ")";

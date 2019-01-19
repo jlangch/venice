@@ -100,6 +100,10 @@ public class VncString extends VncVal {
 	public VncSymbol toSymbol() {
 		return new VncSymbol(getValue());
 	}
+	
+	@Override public int typeRank() {
+		return 5;
+	}
 
 	@Override 
 	public int compareTo(final VncVal o) {
@@ -109,9 +113,8 @@ public class VncString extends VncVal {
 		else if (Types.isVncString(o)) {
 			return getValue().compareTo(((VncString)o).getValue());
 		}
-		else {
-			return 0;
-		}
+
+		return super.compareTo(o);
 	}
 	
 	@Override

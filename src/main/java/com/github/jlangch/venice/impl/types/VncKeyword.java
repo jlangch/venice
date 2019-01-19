@@ -64,6 +64,10 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 	public VncSymbol toSymbol() {
 		return new VncSymbol(getValue());
 	}
+	
+	@Override public int typeRank() {
+		return 6;
+	}
 
 	@Override 
 	public int compareTo(final VncVal o) {
@@ -73,9 +77,8 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 		else if (Types.isVncKeyword(o)) {
 			return getValue().compareTo(((VncKeyword)o).getValue());
 		}
-		else {
-			return 0;
-		}
+
+		return super.compareTo(o);
 	}
 
 	@Override 

@@ -194,6 +194,10 @@ public class VncVector extends VncSequence {
 		return new VncVector(value.removeAt(idx), getMeta());
 	}
 	
+	@Override public int typeRank() {
+		return 201;
+	}
+	
 	@Override
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
@@ -215,8 +219,8 @@ public class VncVector extends VncSequence {
 				}
 			}
 		}
-		
-		return 0;
+
+		return super.compareTo(o);
 	}
 
 	@Override

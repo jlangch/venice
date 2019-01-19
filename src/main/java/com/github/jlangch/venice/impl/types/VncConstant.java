@@ -31,21 +31,6 @@ public class VncConstant extends VncVal {
 		value = name; 
 	}
 
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (this == Nil) {
-			return o == Nil ? 0 : -1;
-		}
-		else if (o == Nil) {
-			return 1;
-		}
-		else if (Types.isVncBoolean(this) && Types.isVncBoolean(o)) {
-			return Long.valueOf(this == False ? 0L : 1L).compareTo(o == False ? 0L : 1L);				
-		}
-		else {
-			return 0;
-		}
-	}
 
 	@Override
 	public VncConstant copy() {
@@ -59,6 +44,25 @@ public class VncConstant extends VncVal {
 
 	public String getValue() { 
 		return value; 
+	}
+	
+	@Override public int typeRank() {
+		return 1;
+	}
+
+	@Override 
+	public int compareTo(final VncVal o) {
+		if (this == Nil) {
+			return o == Nil ? 0 : -1;
+		}
+		else if (o == Nil) {
+			return 1;
+		}
+		else if (Types.isVncBoolean(this) && Types.isVncBoolean(o)) {
+			return Long.valueOf(this == False ? 0L : 1L).compareTo(o == False ? 0L : 1L);				
+		}
+
+		return super.compareTo(o);
 	}
 
 	@Override

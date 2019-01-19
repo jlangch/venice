@@ -169,6 +169,10 @@ public class VncHashSet extends VncSet {
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
+	
+	@Override public int typeRank() {
+		return 204;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

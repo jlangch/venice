@@ -224,6 +224,10 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		}
 		return this;
 	}
+	
+	@Override public int typeRank() {
+		return 202;
+	}
 
 	@Override
 	public int compareTo(final VncVal o) {
@@ -238,8 +242,8 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 				}
 			}
 		}
-		
-		return 0;
+
+		return super.compareTo(o);
 	}
 
 	@Override

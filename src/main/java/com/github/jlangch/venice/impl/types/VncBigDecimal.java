@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.types;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.Numeric;
 
 
@@ -56,6 +55,10 @@ public class VncBigDecimal extends VncVal {
 	public static RoundingMode toRoundingMode(final VncString val) {
 		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
 	}
+	
+	@Override public int typeRank() {
+		return 4;
+	}
 
 	@Override 
 	public int compareTo(final VncVal o) {
@@ -65,13 +68,8 @@ public class VncBigDecimal extends VncVal {
 		else if (Types.isVncNumber(o)) {
 			return value.compareTo(Numeric.toDecimal(o).getValue());
 		}
-		else {
-			throw new VncException(
-					String.format(
-						"Function 'compareTo' with operand 1 of type %s does not allow %s as operand 2", 
-						this.getClass().getSimpleName(),
-						o.getClass().getSimpleName()));
-		}
+
+		return super.compareTo(o);
 	}
 
 	@Override

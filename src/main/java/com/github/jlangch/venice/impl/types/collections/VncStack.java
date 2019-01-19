@@ -84,6 +84,10 @@ public class VncStack extends VncCollection {
 	public VncVal peek() {
 		return isEmpty() ? Constants.Nil : stack.peek();
 	}
+	
+	@Override public int typeRank() {
+		return 203;
+	}
 
 	@Override 
 	public String toString() {

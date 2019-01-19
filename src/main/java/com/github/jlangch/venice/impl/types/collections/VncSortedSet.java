@@ -162,6 +162,10 @@ public class VncSortedSet extends VncSet {
 		return value.isEmpty();
 	}
 	
+	@Override public int typeRank() {
+		return 205;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
