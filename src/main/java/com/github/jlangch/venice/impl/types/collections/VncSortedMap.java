@@ -127,11 +127,6 @@ public class VncSortedMap extends VncMap {
 	}
 
 	@Override
-	public VncSortedMap copy() {
-		return this;
-	}
-
-	@Override
 	public VncSortedMap withMeta(final VncVal meta) {
 		return new VncSortedMap(value, meta);
 	}

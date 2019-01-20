@@ -51,10 +51,6 @@ public class VncKeyword extends VncString implements Function<VncList, VncVal> {
 		}
 	}
 	
-	@Override
-	public VncKeyword copy() { 
-		return new VncKeyword(getValue(), getMeta()); 
-	}
 	
 	@Override
 	public VncKeyword withMeta(final VncVal meta) {

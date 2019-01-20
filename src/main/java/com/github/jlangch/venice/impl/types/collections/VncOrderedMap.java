@@ -127,10 +127,6 @@ public class VncOrderedMap extends VncMap {
 		return new VncOrderedMap(replaceVals, meta);
 	}
 
-	@Override
-	public VncOrderedMap copy() {
-		return this;
-	}
 
 	@Override
 	public VncOrderedMap withMeta(final VncVal meta) {

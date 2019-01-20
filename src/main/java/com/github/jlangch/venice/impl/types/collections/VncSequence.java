@@ -35,8 +35,6 @@ public abstract class VncSequence extends VncCollection {
 		super(meta);
 	}
 
-	@Override
-	public abstract VncSequence copy();
 	
 	public abstract VncSequence empty();
 	

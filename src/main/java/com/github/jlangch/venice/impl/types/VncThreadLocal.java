@@ -46,12 +46,7 @@ public class VncThreadLocal extends VncVal {
 		assoc(lst);
 	}
 
-	
-	@Override
-	public VncThreadLocal copy() { 
-		return this;
-	}
-	
+		
 	@Override
 	public VncThreadLocal withMeta(final VncVal meta) {
 		return this;

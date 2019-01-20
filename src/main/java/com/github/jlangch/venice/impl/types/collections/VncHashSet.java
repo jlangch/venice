@@ -87,11 +87,6 @@ public class VncHashSet extends VncSet {
 	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
 		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), meta);
 	}
-	
-	@Override
-	public VncHashSet copy() {
-		return this;
-	}
 
 	@Override
 	public VncHashSet withMeta(final VncVal meta) {

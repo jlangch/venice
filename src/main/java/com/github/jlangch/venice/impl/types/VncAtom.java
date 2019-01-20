@@ -38,11 +38,7 @@ public class VncAtom extends VncVal {
 		state.set(value); 
 	}
 
-	@Override
-	public VncAtom copy() { 
-		return new VncAtom(state.get(), getMeta()); 
-	}
-
+	
 	@Override
 	public VncAtom withMeta(final VncVal meta) {
 		return new VncAtom(state.get(), meta);

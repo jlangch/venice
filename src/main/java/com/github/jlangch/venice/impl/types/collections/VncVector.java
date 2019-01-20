@@ -88,11 +88,6 @@ public class VncVector extends VncSequence {
 	}
 
 	@Override
-	public VncVector copy() {
-		return this;
-	}
-
-	@Override
 	public VncVector withMeta(final VncVal meta) {
 		return new VncVector(value, meta);
 	}

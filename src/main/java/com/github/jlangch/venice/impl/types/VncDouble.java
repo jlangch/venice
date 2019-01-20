@@ -39,11 +39,6 @@ public class VncDouble extends VncVal {
 		value = v; 
 	}
 
-
-	@Override
-	public VncDouble copy() { 
-		return new VncDouble(value, getMeta());
-	}
 	
 	@Override
 	public VncDouble withMeta(final VncVal meta) {

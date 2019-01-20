@@ -127,10 +127,6 @@ public class VncHashMap extends VncMap {
 		return new VncHashMap(replaceVals, meta);
 	}
 
-	@Override
-	public VncHashMap copy() {
-		return this;
-	}
 
 	@Override
 	public VncHashMap withMeta(final VncVal meta) {

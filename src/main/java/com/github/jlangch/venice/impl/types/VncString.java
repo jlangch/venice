@@ -44,10 +44,6 @@ public class VncString extends VncVal {
 		return value; 
 	}
 	
-	@Override
-	public VncString copy() { 
-		return new VncString(value, getMeta()); 
-	}
 	
 	@Override
 	public VncString withMeta(final VncVal meta) {

@@ -220,7 +220,7 @@ public class Agent {
 				if (agent.getError() == null || agent.continueOnError) {
 					final VncVal oldVal = agent.value.get().val;
 					try {
-						final VncList fnArgs_ = fnArgs.copy().addAtStart(oldVal);
+						final VncList fnArgs_ = fnArgs.addAtStart(oldVal);
 						final VncVal newVal = fn.apply(fnArgs_);
 						
 						agent.value.set(new Value(newVal, null));

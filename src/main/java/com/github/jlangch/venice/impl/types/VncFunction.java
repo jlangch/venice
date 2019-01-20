@@ -70,11 +70,6 @@ public abstract class VncFunction extends VncVal implements Function<VncList, Vn
 
 	
 	@Override
-	public VncFunction copy() {
-		return this;
-	}
-
-	@Override
 	public VncFunction withMeta(final VncVal meta) {
 		this.fnMeta.set(meta);
 		return this;

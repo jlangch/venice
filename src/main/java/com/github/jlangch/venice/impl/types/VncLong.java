@@ -39,10 +39,6 @@ public class VncLong extends VncVal {
 		value = v; 
 	}
 	
-	@Override
-	public VncLong copy() { 
-		return new VncLong(value, getMeta());
-	}
 	
 	@Override
 	public VncLong withMeta(final VncVal meta) {

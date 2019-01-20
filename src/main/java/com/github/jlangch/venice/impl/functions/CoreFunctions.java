@@ -1447,7 +1447,7 @@ public class CoreFunctions {
 					}
 				}
 				else if (Types.isVncByteBuffer(arg)) {
-					return ((VncByteBuffer)arg).copy();
+					return arg;
 				}
 				else if (Types.isVncSequence(arg)) {
 					if (!((VncSequence)arg).getList().stream().allMatch(v -> Types.isVncLong(v))) {
@@ -2028,12 +2028,10 @@ public class CoreFunctions {
 					return new VncHashMap().assoc((VncList)args.slice(1));
 				}
 				else if (Types.isVncMap(args.first())) {
-					final VncMap hm = (VncMap)args.first();
-					
-					return hm.copy().assoc((VncList)args.slice(1));
+					return ((VncMap)args.first()).assoc((VncList)args.slice(1));
 				}
 				else if (Types.isVncVector(args.first())) {
-					VncVector vec = ((VncVector)args.first()).copy();
+					VncVector vec = ((VncVector)args.first());
 					
 					final VncList keyvals = args.slice(1);
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
@@ -2144,12 +2142,10 @@ public class CoreFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (Types.isVncMap(args.first())) {
-					final VncMap hm = (VncMap)args.first();
-					
-					return hm.copy().dissoc((VncList)args.slice(1));
+					return ((VncMap)args.first()).dissoc(args.slice(1));
 				}
 				else if (Types.isVncVector(args.first())) {
-					VncVector vec = ((VncVector)args.first()).copy();
+					VncVector vec = ((VncVector)args.first());
 					final VncList keyvals = (VncList)args.slice(1);
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2449,7 +2445,7 @@ public class CoreFunctions {
 				assertArity("update", args, 3);
 				
 				if (Types.isVncSequence(args.first())) {
-					final VncSequence list = ((VncSequence)args.first()).copy();
+					final VncSequence list = ((VncSequence)args.first());
 					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 							
@@ -2466,7 +2462,7 @@ public class CoreFunctions {
 					}			
 				}
 				else if (Types.isVncMap(args.first())) {
-					final VncMap map = ((VncMap)args.first()).copy();
+					final VncMap map = ((VncMap)args.first());
 					final VncVal key = args.second();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
@@ -2623,7 +2619,7 @@ public class CoreFunctions {
 					return args.first();
 				}
 		
-				final VncCollection to = Coerce.toVncCollection(args.first()).copy();
+				final VncCollection to = Coerce.toVncCollection(args.first());
 	
 				if (Types.isVncByteBuffer(args.second())) {
 					final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
@@ -3045,22 +3041,16 @@ public class CoreFunctions {
 				assertArity("cons", args, 2);
 	
 				if (Types.isVncVector(args.second())) {
-					return new VncVector()
-								.addAtStart(args.first())
-								.addAllAtEnd((VncVector)args.second());
+					return ((VncVector)args.second()).addAtStart(args.first());
 				}
 				if (Types.isVncList(args.second())) {
-					return new VncList()
-								.addAtStart(args.first())
-								.addAllAtEnd((VncList)args.second());
+					return ((VncList)args.second()).addAtStart(args.first());
 				}
 				else if (Types.isVncHashSet(args.second())) {
-					final VncHashSet src_seq = (VncHashSet)args.second();
-					return VncHashSet.ofAll(src_seq.toVncList()).add(args.first());
+					return ((VncHashSet)args.second()).add(args.first());
 				}
 				else if (Types.isVncMap(args.second()) && Types.isVncMap(args.first())) {
-					final VncMap map = ((VncMap)args.second()).copy();
-					return map.putAll((VncMap)args.first());
+					return ((VncMap)args.second()).putAll((VncMap)args.first());
 				}
 				else {
 					throw new VncException(String.format(
@@ -4252,7 +4242,7 @@ public class CoreFunctions {
 				
 				return new VncFunction() {
 					public VncVal apply(final VncList args) {
-						return fn.apply(fnArgs.copy().addAllAtEnd(args));
+						return fn.apply(fnArgs.addAllAtEnd(args));
 					}
 	
 				    private static final long serialVersionUID = -1L;
@@ -4718,38 +4708,25 @@ public class CoreFunctions {
 				assertMinArity("conj", args, 2);
 	
 				if (Types.isVncVector(args.first())) {
-					final VncVector src_seq = (VncVector)args.first();
-					VncVector new_seq = src_seq.copy();
-	
-					for(int i=1; i<args.size(); i++) {
-						new_seq = (VncVector)new_seq.addAtEnd(args.nth(i));
-					}
-					return new_seq;
+					return ((VncVector)args.first()).addAllAtEnd(args.slice(1));
 				} 
 				else if (Types.isVncList(args.first())) {
-					final VncList src_seq = (VncList)args.first();
-					VncList new_seq = src_seq.copy();
-	
-					for(int i=1; i<args.size(); i++) {
-						new_seq = new_seq.addAtStart(args.nth(i));
-					}
-					return new_seq;
+					return ((VncList)args.first()).addAllAtStart(args.slice(1));
 				}
 				else if (Types.isVncHashSet(args.first())) {
 					return VncHashSet.ofAll(((VncHashSet)args.first()).getSet()).addAll(args.slice(1));
 				}
 				else if (Types.isVncMap(args.first())) {
-					final VncMap src_map = (VncMap)args.first();
-					VncMap new_map = src_map.copy();
-				
-					if (Types.isVncVector(args.second()) && ((VncVector)args.second()).size() == 2) {
-						return new_map.assoc(
+					final VncMap map = (VncMap)args.first();			
+					final VncVal second = args.second();
+					if (Types.isVncVector(second) && ((VncVector)second).size() == 2) {
+						return map.assoc(
 									VncList.of(
-										((VncVector)args.second()).first(),
-										((VncVector)args.second()).second()));
+										((VncVector)second).first(),
+										((VncVector)second).second()));
 					}
-					else if (Types.isVncMap(args.second())) {
-						return new_map.putAll((VncMap)args.second());
+					else if (Types.isVncMap(second)) {
+						return map.putAll((VncMap)second);
 					}
 					else {
 						throw new VncException(String.format(
@@ -4876,7 +4853,7 @@ public class CoreFunctions {
 				final VncVal val = args.second();
 				final List<VncVal> values = new ArrayList<>();
 				for(int ii=0; ii<repeat; ii++) {
-					values.add(val.copy());
+					values.add(val);
 				}			
 				return new VncList(values);
 			}

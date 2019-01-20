@@ -43,10 +43,6 @@ public class VncByteBuffer extends VncVal {
 		value = v; 
 	}
 
-	@Override
-	public VncByteBuffer copy() { 
-		return new VncByteBuffer(value, getMeta());
-	}
 	
 	@Override
 	public VncByteBuffer withMeta(final VncVal meta) {

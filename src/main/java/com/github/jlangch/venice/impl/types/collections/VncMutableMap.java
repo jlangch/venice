@@ -101,12 +101,6 @@ public class VncMutableMap extends VncMap {
 	}
 
 	@Override
-	public VncMutableMap copy() {
-		// shallow copy
-		return new VncMutableMap(value, getMeta());
-	}
-
-	@Override
 	public VncMutableMap withMeta(final VncVal meta) {
 		// shallow copy
 		return new VncMutableMap(value, meta);

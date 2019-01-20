@@ -33,8 +33,6 @@ public abstract class VncMap extends VncCollection {
 		super(meta);
 	}
 
-	@Override
-	public abstract VncMap copy();
 	
 	@Override
 	public abstract VncMap empty();

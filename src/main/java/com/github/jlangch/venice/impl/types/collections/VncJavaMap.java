@@ -83,11 +83,6 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		return new VncHashMap(replaceVals, meta);
 	}
 
-	@Override
-	public VncHashMap copy() {
-		// shallow copy
-		return new VncHashMap(getMap(), getMeta());
-	}
 
 	@Override
 	public VncHashMap withMeta(final VncVal meta) {

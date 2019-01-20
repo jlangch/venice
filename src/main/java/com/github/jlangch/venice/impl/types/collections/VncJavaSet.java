@@ -75,12 +75,6 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
 		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), meta);
 	}
-	
-	@Override
-	public VncJavaSet copy() {
-		// shallow copy
-		return new VncJavaSet(new HashSet<>(value), getMeta());
-	}
 
 	@Override
 	public VncJavaSet withMeta(final VncVal meta) {

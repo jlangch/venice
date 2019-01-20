@@ -43,11 +43,6 @@ public class VncStack extends VncCollection {
 	}
 
 	@Override
-	public VncCollection copy() {
-		throw new VncException("VncStack copy is not supported");
-	}
-
-	@Override
 	public VncSortedMap withMeta(final VncVal meta) {
 		throw new VncException("VncStack copy with meta is not supported");
 	}

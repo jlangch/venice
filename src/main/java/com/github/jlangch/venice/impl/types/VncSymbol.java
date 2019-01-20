@@ -40,10 +40,6 @@ public class VncSymbol extends VncVal {
 		value = v; 
 	}
 	
-	@Override
-	public VncSymbol copy() { 
-		return new VncSymbol(value, getMeta()); 
-	}
 	
 	@Override
 	public VncSymbol withMeta(final VncVal meta) {

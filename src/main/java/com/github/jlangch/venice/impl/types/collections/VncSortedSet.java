@@ -87,11 +87,6 @@ public class VncSortedSet extends VncSet {
 	public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
 		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), meta);
 	}
-	
-	@Override
-	public VncSortedSet copy() {
-		return this;
-	}
 
 	@Override
 	public VncSortedSet withMeta(final VncVal meta) {

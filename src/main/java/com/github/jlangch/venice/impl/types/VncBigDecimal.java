@@ -38,10 +38,6 @@ public class VncBigDecimal extends VncVal {
 		value = v; 
 	}
 
-	@Override
-	public VncBigDecimal copy() { 
-		return new VncBigDecimal(value, getMeta());
-	}
 	
 	@Override
 	public VncBigDecimal withMeta(final VncVal meta) {

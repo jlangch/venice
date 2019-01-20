@@ -31,11 +31,6 @@ public class VncConstant extends VncVal {
 		value = name; 
 	}
 
-
-	@Override
-	public VncConstant copy() {
-		return this;
-	}
 	
 	@Override
 	public VncConstant withMeta(final VncVal meta) {

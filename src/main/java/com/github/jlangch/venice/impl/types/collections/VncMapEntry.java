@@ -50,11 +50,6 @@ public class VncMapEntry extends VncVal {
 	}
 
 	@Override
-	public VncMapEntry copy() {
-		return this;
-	}
-
-	@Override
 	public VncMapEntry withMeta(final VncVal meta) {
 		return this;
 	}

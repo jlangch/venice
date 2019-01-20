@@ -52,10 +52,6 @@ public class VncMultiArityFunction extends VncFunction {
 							.collect(Collectors.toList());
 	}
 
-	@Override
-	public VncMultiArityFunction copy() {
-		return this;
-	}
 
 	@Override
 	public VncMultiArityFunction withMeta(final VncVal meta) {

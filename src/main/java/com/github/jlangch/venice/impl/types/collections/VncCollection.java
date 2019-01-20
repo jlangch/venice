@@ -30,8 +30,6 @@ public abstract class VncCollection extends VncVal {
 		super(meta);
 	}
 
-	@Override
-	public abstract VncCollection copy();
 
 	@Override
 	public abstract VncCollection withMeta(VncVal meta);
