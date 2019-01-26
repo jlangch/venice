@@ -422,16 +422,22 @@ public class VeniceInterpreter implements Serializable  {
 							sandboxMaxExecutionTimeChecker.check();
 						}
 					}
-					else if (Types.isVncKeyword(elFirst)) {
-						// keyword as function to access map: (:a {:a 100})
-						final VncKeyword k = (VncKeyword)elFirst;
-						final VncList fnArgs = el.rest().withMeta(el.getMeta());
-						return k.apply(fnArgs);
+					else if (Types.isVncKeyword(elFirst) && el.size() == 2) {
+						// keyword as function to access maps: (:a {:a 100})
+						final VncKeyword key = (VncKeyword)elFirst;
+						final VncMap map = Coerce.toVncMap(el.second());
+						return map.get(key);
+					}
+					else if (Types.isVncMap(elFirst) && el.size() == 2) {
+						// a map as function to deliver its value for a key:  ({:a 100} :a)
+						final VncMap map = (VncMap)elFirst;
+						final VncVal key = el.second();
+						return map.get(key);
 					}
 					else {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
 						throw new VncException(String.format(
-										"Not a function or keyword: '%s'", 
+										"Not a function or keyword/map used as function: '%s'", 
 										PRINT(elFirst)));
 					}
 			}

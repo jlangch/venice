@@ -88,7 +88,7 @@ parameters and returns Java data types as the expression result. It coerces
 Java to/from Venice data types implicitly.
 
 Java bean parameters expose its getters as Map keys in Venice, so the 
-getters can be accessed simply through `(get bean :getterName)`
+getters can be accessed simply through `(:getterName bean)`
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -100,6 +100,12 @@ System.out.println(
     venice.eval(
         "(+ x y 3)", 
         Parameters.of("x", 6, "y", 3L)));
+        
+//(:blue (. :java.awt.Color :PINK))
+System.out.println(
+    venice.eval(
+        "(:blue color)", 
+        Parameters.of("color", java.awt.Color.PINK)));
 ```
 
 
@@ -236,6 +242,16 @@ Caused by: java.lang.ArithmeticException: / by zero
          [x y] 
          { :pre [(> x 0) (> y 0)] } 
          (+ x y)))
+```
+
+
+### Maps and Keywords as functions
+
+```clojure
+(do
+   // instead of (get {:a 1 :b 2} :b) maps/keys work as functions
+   ({:a 1 :b 2} :b)
+   (:b {:a 1 :b 2}))
 ```
 
 

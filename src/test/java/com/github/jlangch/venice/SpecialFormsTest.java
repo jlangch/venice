@@ -742,5 +742,19 @@ public class SpecialFormsTest {
 
 		assertEquals(Long.valueOf(89L), venice.eval(lisp));
 	}
+	
+	@Test
+	public void test_keyword_as_function() {
+		final Venice venice = new Venice();
+	
+		assertEquals("2", venice.eval("(str (:b {:a 1 :b 2}))"));
+	}	
+	
+	@Test
+	public void test_map_as_function() {
+		final Venice venice = new Venice();
+	
+		assertEquals("2", venice.eval("(str ({:a 1 :b 2} :b))"));
+	}	
 
 }

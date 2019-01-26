@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ...
+- added map to work as function that delivers a value to a passed key `({:a 1 :b 2} :b)`
 
 
 
@@ -19,8 +19,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- migrated all collections to immutable persistent datastructures
-        based on VAVR.
+- migrated all collections to immutable persistent data structures
+           based on VAVR.
 
 
 
