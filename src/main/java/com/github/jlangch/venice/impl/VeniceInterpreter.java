@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
 import com.github.jlangch.venice.impl.javainterop.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -422,17 +423,11 @@ public class VeniceInterpreter implements Serializable  {
 							sandboxMaxExecutionTimeChecker.check();
 						}
 					}
-					else if (Types.isVncKeyword(elFirst) && el.size() == 2) {
-						// keyword as function to access maps: (:a {:a 100})
-						final VncKeyword key = (VncKeyword)elFirst;
-						final VncMap map = Coerce.toVncMap(el.second());
-						return map.get(key);
-					}
-					else if (Types.isVncMap(elFirst) && el.size() == 2) {
-						// a map as function to deliver its value for a key:  ({:a 100} :a)
-						final VncMap map = (VncMap)elFirst;
-						final VncVal key = el.second();
-						return map.get(key);
+					if (Types.isIVncFunction(elFirst)) {
+						// 1)  keyword as function to access maps: (:a {:a 100})
+						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
+						final IVncFunction f = (IVncFunction)elFirst;
+						return f.apply(el.rest().withMeta(el.getMeta()));
 					}
 					else {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));

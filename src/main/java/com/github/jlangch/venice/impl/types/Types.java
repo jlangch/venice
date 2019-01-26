@@ -145,6 +145,10 @@ public class Types {
 		return val != null && (val instanceof VncMutableMap);
 	}
 
+	public static boolean isIVncFunction(final VncVal val) {
+		return val != null && (val instanceof IVncFunction);
+	}
+
 	public static boolean isVncFunction(final VncVal val) {
 		return val != null && (val instanceof VncFunction);
 	}

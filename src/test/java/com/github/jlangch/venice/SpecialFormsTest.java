@@ -747,14 +747,16 @@ public class SpecialFormsTest {
 	public void test_keyword_as_function() {
 		final Venice venice = new Venice();
 	
-		assertEquals("2", venice.eval("(str (:b {:a 1 :b 2}))"));
+		assertEquals("2",   venice.eval("(str (:b {:a 1 :b 2}))"));
+		assertEquals("175", venice.eval("(str (:blue (. :java.awt.Color :PINK)))"));
 	}	
 	
 	@Test
 	public void test_map_as_function() {
 		final Venice venice = new Venice();
 	
-		assertEquals("2", venice.eval("(str ({:a 1 :b 2} :b))"));
+		assertEquals("2",   venice.eval("(str ({:a 1 :b 2} :b))"));
+		assertEquals("175", venice.eval("(str ((. :java.awt.Color :PINK) :blue)))"));
 	}	
 
 }

@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
@@ -36,7 +35,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
-public abstract class VncFunction extends VncVal implements Function<VncList, VncVal> {
+public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	public VncFunction() {
 		this(null, null, null, null);
