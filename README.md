@@ -93,6 +93,7 @@ getters can be accessed simply through `(:getterName bean)`
 ```java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
+import java.awt.Color;
 
 final Venice venice = new Venice();
 
@@ -101,11 +102,11 @@ System.out.println(
         "(+ x y 3)", 
         Parameters.of("x", 6, "y", 3L)));
         
-//(:blue (. :java.awt.Color :PINK))
+//(:blue (. :Color :PINK))
 System.out.println(
     venice.eval(
         "(:blue color)", 
-        Parameters.of("color", java.awt.Color.PINK)));
+        Parameters.of("color", Color.PINK)));
 ```
 
 
