@@ -74,6 +74,14 @@ public class SystemFunctionsTest {
 	}
 
 	@Test
+	public void test_java_version() {
+		final Venice venice = new Venice();
+
+		assertNotNull(venice.eval("(java-version)"));
+		assertEquals(System.getProperty("java.version"), venice.eval("(java-version)"));
+	}
+
+	@Test
 	public void test_uuid() {
 		final Venice venice = new Venice();
 

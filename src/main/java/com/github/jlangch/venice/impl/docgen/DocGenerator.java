@@ -573,6 +573,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("version"));
 		util.addItem(getDocItem("os"));
 		util.addItem(getDocItem("system-prop"));
+		util.addItem(getDocItem("java-version"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("gc"));

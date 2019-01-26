@@ -352,6 +352,24 @@ public class SystemFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction java_version = 
+			new VncFunction(
+					"java-version", 
+					VncFunction
+						.meta()
+						.arglists("(java-version)")		
+						.doc("Returns the Jvav VM version.")
+						.examples("(java-version)")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertArity("java-version", args, 0);
+					
+					return new VncString(System.getProperty("java.version"));
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -372,6 +390,7 @@ public class SystemFunctions {
 					.put("os?",					os_Q)
 					.put("version",				version)
 					.put("system-prop",			system_prop)
+					.put("java-version",		java_version)
 					.toMap();	
 	
 	

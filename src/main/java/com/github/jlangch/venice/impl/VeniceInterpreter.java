@@ -405,35 +405,32 @@ public class VeniceInterpreter implements Serializable  {
 
 				default:
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
-					final VncVal elFirst = el.first();
-					if (Types.isVncFunction(elFirst)) {
+					final VncVal elArg0 = el.first();
+					if (Types.isVncFunction(elArg0)) {
 						sandboxMaxExecutionTimeChecker.check();
 						
-						// invoke function
-						final VncFunction f = (VncFunction)elFirst;
-						final VncList fnArgs = el.rest().withMeta(el.getMeta());
-						final CallFrame frame = CallFrameBuilder.fromFunction(f, ast.first());
-						
+						// invoke function with call frame
 						try {
+							final CallFrame frame = CallFrameBuilder.fromFunction(
+														(VncFunction)elArg0, ast.first());		
 							ThreadLocalMap.getCallStack().push(frame);
-							return f.apply(fnArgs);
+							return ((VncFunction)elArg0).apply(el.rest().withMeta(el.getMeta()));
 						}
 						finally {
 							ThreadLocalMap.getCallStack().pop();
 							sandboxMaxExecutionTimeChecker.check();
 						}
 					}
-					if (Types.isIVncFunction(elFirst)) {
+					else if (Types.isIVncFunction(elArg0)) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						final IVncFunction f = (IVncFunction)elFirst;
-						return f.apply(el.rest().withMeta(el.getMeta()));
+						return ((IVncFunction)elArg0).apply(el.rest().withMeta(el.getMeta()));
 					}
 					else {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
 						throw new VncException(String.format(
 										"Not a function or keyword/map used as function: '%s'", 
-										PRINT(elFirst)));
+										PRINT(elArg0)));
 					}
 			}
 		}
