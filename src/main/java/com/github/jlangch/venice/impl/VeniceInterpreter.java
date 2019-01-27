@@ -414,7 +414,7 @@ public class VeniceInterpreter implements Serializable  {
 							final CallFrame frame = CallFrameBuilder.fromFunction(
 														(VncFunction)elArg0, ast.first());		
 							ThreadLocalMap.getCallStack().push(frame);
-							return ((VncFunction)elArg0).apply(el.rest().withMeta(el.getMeta()));
+							return ((VncFunction)elArg0).apply(el.rest());
 						}
 						finally {
 							ThreadLocalMap.getCallStack().pop();
@@ -424,7 +424,7 @@ public class VeniceInterpreter implements Serializable  {
 					else if (Types.isIVncFunction(elArg0)) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						return ((IVncFunction)elArg0).apply(el.rest().withMeta(el.getMeta()));
+						return ((IVncFunction)elArg0).apply(el.rest());
 					}
 					else {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));

@@ -102,7 +102,7 @@ System.out.println(
         "(+ x y 3)", 
         Parameters.of("x", 6, "y", 3L)));
         
-//(:blue (. :Color :PINK))
+// (:blue (. :Color :PINK))
 System.out.println(
     venice.eval(
         "(:blue color)", 
