@@ -7,11 +7,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.3.1] - 2019-01-xx
+## [1.3.1] - 2019-02-xx
 
 ### added
 
-- added map to work as function that delivers a value to a passed key `({:a 1 :b 2} :b)`
+- added map to work as function that delivers a value to a passed key 
+        `({:a 1 :b 2} :b)`
 
 
 
