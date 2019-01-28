@@ -125,12 +125,9 @@ public class VeniceInterpreter implements Serializable  {
 		if (Types.isVncList(ast) && !((VncList)ast).isEmpty()) {
 			final VncVal a0 = Coerce.toVncSequence(ast).first();
 			if (Types.isVncSymbol(a0)) {
-				final VncSymbol macroName = (VncSymbol)a0;
-				if (env.findEnv(macroName) != null) {
-					final VncVal fn = env.get(macroName);
-					if (Types.isVncMacro(fn)) {
-						return true;
-					}
+				final VncVal fn = env.getOrNil((VncSymbol)a0);
+				if (Types.isVncMacro(fn)) {
+					return true;
 				}
 			}
 		}

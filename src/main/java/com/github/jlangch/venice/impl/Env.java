@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
@@ -46,21 +47,6 @@ public class Env implements Serializable {
 		this.globalSymbols = outer == null ? new ConcurrentHashMap<>() : outer.globalSymbols;
 		this.symbols = new ConcurrentHashMap<>();
 	}
-		
-	public Env findEnv(final VncSymbol key) {
-		if (symbols.containsKey(key)) {
-			return this;
-		} 
-		else if (outer != null) {
-			return outer.findEnv(key);
-		} 
-		else if (globalSymbols.containsKey(key)) {
-			return this;
-		}
-		else {
-			return null;
-		}
-	}
 
 	public VncVal get(final VncSymbol key) {
 		final Env e = findEnv(key);
@@ -68,19 +54,38 @@ public class Env implements Serializable {
 			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
 			throw new VncException(String.format("Symbol '%s' not found.",  key.getName()));
 		}
-		else {
-			if (e.symbols.containsKey(key)) {
-				return e.symbols.get(key).getVal();
-			}
-			else if (globalSymbols.containsKey(key)) {
-				final Var v = globalSymbols.get(key);
-				return v instanceof DynamicVar ? ((DynamicVar)v).peekVal(key) : v.getVal();
-			}
-			else {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
-				throw new VncException(String.format("Symbol '%s' not found.",  key.getName()));
-			}
+		
+		final Var loc = e.symbols.get(key);
+		if (loc != null) {
+			return loc.getVal();
 		}
+		
+		final Var glob = globalSymbols.get(key);
+		if (glob != null) {
+			return glob instanceof DynamicVar ? ((DynamicVar)glob).peekVal(key) : glob.getVal();
+		}
+
+		ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
+		throw new VncException(String.format("Symbol '%s' not found.",  key.getName()));
+	}
+
+	public VncVal getOrNil(final VncSymbol key) {
+		final Env e = findEnv(key);
+		if (e == null) {
+			return Nil;
+		}
+		
+		final Var loc = e.symbols.get(key);
+		if (loc != null) {
+			return loc.getVal();
+		}
+		
+		final Var glob = globalSymbols.get(key);
+		if (glob != null) {
+			return glob instanceof DynamicVar ? ((DynamicVar)glob).peekVal(key) : glob.getVal();
+		}
+
+		return Constants.Nil;
 	}
 
 	public int level() {
@@ -175,6 +180,22 @@ public class Env implements Serializable {
 	@Override
 	public String toString() {
 		return String.format("level %d: %s\n\nglobal: %s", level, symbols, globalSymbols);
+	}
+	
+	
+	private Env findEnv(final VncSymbol key) {
+		if (symbols.containsKey(key)) {
+			return this;
+		} 
+		else if (outer != null) {
+			return outer.findEnv(key);
+		} 
+		else if (globalSymbols.containsKey(key)) {
+			return this;
+		}
+		else {
+			return null;
+		}
 	}
 	
 	

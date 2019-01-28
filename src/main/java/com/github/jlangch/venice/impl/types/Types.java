@@ -154,7 +154,7 @@ public class Types {
 	}
 
 	public static boolean isVncMacro(final VncVal val) {
-		return isVncFunction(val) && ((VncFunction)val).isMacro();
+		return val != null && isVncFunction(val) && ((VncFunction)val).isMacro();
 	}
 
 	public static boolean isVncFunctionOrKeyword(final VncVal val) {
