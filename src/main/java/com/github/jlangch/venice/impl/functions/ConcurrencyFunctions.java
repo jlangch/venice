@@ -756,7 +756,7 @@ public class ConcurrencyFunctions {
 				assertMinArity("await-for", args, 2);
 		
 				final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();
-				final List<Agent> agents = args.slice(1)
+				final List<Agent> agents = args.rest()
 											   .getList()
 											   .stream()
 											   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())

@@ -240,7 +240,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "doc":
-					final String name = ((VncString)CoreFunctions.name.apply(ast.slice(1))).getValue();
+					final String name = ((VncString)CoreFunctions.name.apply(ast.rest())).getValue();
 					VncVal docVal = SpecialForms.ns.get(new VncSymbol(name));
 					if (docVal == null) {
 						docVal = env.get(new VncSymbol(name));
@@ -249,7 +249,7 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 
 				case "eval":
-					orig_ast = Coerce.toVncSequence(eval_ast(ast.slice(1), env)).last();
+					orig_ast = Coerce.toVncSequence(eval_ast(ast.rest(), env)).last();
 					break;
 					
 				case "let":  { // (let [bindings*] exprs*)
@@ -653,7 +653,7 @@ public class VeniceInterpreter implements Serializable  {
 			if (ast.size() > 2) {
 				final VncList finallyBlock = findFirstFinallyBlock(ast.slice(2));
 				if (finallyBlock != null) {
-					eval_ast(finallyBlock.slice(1), env);
+					eval_ast(finallyBlock.rest(), env);
 				}
 			}
 		}
@@ -708,7 +708,7 @@ public class VeniceInterpreter implements Serializable  {
 				if (ast.size() > 3) {
 					final VncList finallyBlock = findFirstFinallyBlock(ast.slice(3));
 					if (finallyBlock != null) {
-						eval_ast(finallyBlock.slice(1), env);
+						eval_ast(finallyBlock.rest(), env);
 					}
 				}
 			}

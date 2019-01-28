@@ -67,7 +67,7 @@ public class MathFunctions {
 				}
 	
 				VncVal val = args.first();
-				for(VncVal v : args.slice(1).getList()) { val = Numeric.add(val, v); }
+				for(VncVal v : args.rest().getList()) { val = Numeric.add(val, v); }
 				return val;
 			}
 	
@@ -107,7 +107,7 @@ public class MathFunctions {
 				}
 	
 				VncVal val = args.first();
-				for(VncVal v : args.slice(1).getList()) { val = Numeric.sub(val, v); }
+				for(VncVal v : args.rest().getList()) { val = Numeric.sub(val, v); }
 				return val;
 			}
 	
@@ -133,7 +133,7 @@ public class MathFunctions {
 				}
 	
 				VncVal val = args.first();
-				for(VncVal v : args.slice(1).getList()) { val = Numeric.mul(val, v); }
+				for(VncVal v : args.rest().getList()) { val = Numeric.mul(val, v); }
 				return val;
 			}
 	
@@ -173,7 +173,7 @@ public class MathFunctions {
 				}
 	
 				VncVal val = args.first();
-				for(VncVal v : args.slice(1).getList()) { val = Numeric.div(val, v); }
+				for(VncVal v : args.rest().getList()) { val = Numeric.div(val, v); }
 				return val;
 			}
 	

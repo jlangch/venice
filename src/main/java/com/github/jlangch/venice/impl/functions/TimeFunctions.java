@@ -475,7 +475,7 @@ public class TimeFunctions {
 					final VncVal val = args.first();
 					if (Types.isVncKeyword(val)) {
 						zoneId = ZoneId.of(((VncKeyword)val).getValue());
-						argList = args.slice(1);
+						argList = args.rest();
 					}
 				}
 				if (argList.size() == 0) {

@@ -600,7 +600,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				final VncString fmt = (VncString)args.nth(0);
 				final List<Object> fmtArgs = args
-											.slice(1)
+											.rest()
 											.getList()
 											.stream()
 											.map(v -> JavaInteropUtil.convertToJavaObject(v))
