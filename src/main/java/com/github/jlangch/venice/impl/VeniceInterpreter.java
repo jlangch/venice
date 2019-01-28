@@ -332,9 +332,9 @@ public class VeniceInterpreter implements Serializable  {
 					// [2] bind the values
 					final VncList recur_bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
-					for(int i=0; i<recur_bindingNames.size(); i++) {
-						final VncSymbol key = Coerce.toVncSymbol(recur_bindingNames.nth(i));
-						recur_env.set(key, recur_values.get(i));
+					for(int ii=0; ii<recur_bindingNames.size(); ii++) {
+						final VncSymbol key = Coerce.toVncSymbol(recur_bindingNames.nth(ii));
+						recur_env.set(key, recur_values.get(ii));
 					}
 					// [3] continue on the loop with the new parameters
 					orig_ast = recursionPoint.getLoopExpressions();
@@ -364,10 +364,9 @@ public class VeniceInterpreter implements Serializable  {
 					return runWithCallStack(
 								"import", ast, env, 
 								(a,e) -> {
-									a.rest()
-									 .stream()
-									 .map(clazzName -> Coerce.toVncString(clazzName).getValue())
-									 .forEach(clazzName -> javaImports.add(clazzName));
+									for(VncVal v : a.rest().getList()) {
+										javaImports.add(Coerce.toVncString(v).getValue());
+									}
 									return Nil;
 								});
 					
