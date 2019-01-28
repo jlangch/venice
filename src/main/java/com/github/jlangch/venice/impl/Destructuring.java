@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -265,12 +266,11 @@ public class Destructuring {
 			if (symValName.equals(KW_KEYS)) {
 				final VncVal symbol = symVal.get(KW_KEYS);
 				if (Types.isVncVector(symbol)) {
-					((VncVector)symbol).forEach(
-							sym -> {
-								final VncSymbol s = (VncSymbol)sym;
-								final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncKeyword(s.getName()));
-								local_bindings.add(new Binding(s, v));								
-							});
+					for(VncVal sym : ((VncVector)symbol).getList()) {
+						final VncSymbol s = (VncSymbol)sym;
+						final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncKeyword(s.getName()));
+						local_bindings.add(new Binding(s, v));								
+					}
 				}
 				else {
 					throw new VncException(
@@ -283,12 +283,11 @@ public class Destructuring {
 			else if (symValName.equals(KW_SYMS)) {
 				final VncVal symbol = symVal.get(KW_SYMS);
 				if (Types.isVncVector(symbol)) {
-					((VncVector)symbol).forEach(
-							sym -> {
-								final VncSymbol s = (VncSymbol)sym;
-								final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(s);
-								local_bindings.add(new Binding(s, v));								
-							});
+					for(VncVal sym : ((VncVector)symbol).getList()) {
+						final VncSymbol s = (VncSymbol)sym;
+						final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(s);
+						local_bindings.add(new Binding(s, v));								
+					}
 				}
 				else {
 					throw new VncException(
@@ -301,12 +300,11 @@ public class Destructuring {
 			else if (symValName.equals(KW_STRS)) {
 				final VncVal symbol = symVal.get(KW_STRS);
 				if (Types.isVncVector(symbol)) {
-					((VncVector)symbol).forEach(
-							sym -> {
-								final VncSymbol s = (VncSymbol)sym;
-								final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncString(s.getName()));
-								local_bindings.add(new Binding(s, v));								
-							});
+					for(VncVal sym : ((VncVector)symbol).getList()) {
+						final VncSymbol s = (VncSymbol)sym;
+						final VncVal v = bindVal == Nil ? Nil : ((VncMap)bindVal).get(new VncString(s.getName()));
+						local_bindings.add(new Binding(s, v));								
+					}
 				}
 				else {
 					throw new VncException(
@@ -319,7 +317,7 @@ public class Destructuring {
 			else if (symValName.equals(KW_OR)) {
 				final VncVal symbol = symVal.get(KW_OR);
 				if (symbol != Nil && Types.isVncMap(symbol)) {
-					((VncMap)symbol).entries().forEach(e -> {
+					for(Map.Entry<VncVal,VncVal> e : ((VncMap)symbol).getMap().entrySet()) {
 						final int bIdx = Binding.getBindingIndex((VncSymbol)e.getKey(), local_bindings);
 						if (bIdx == -1) {
 							local_bindings.add(new Binding((VncSymbol)e.getKey(), e.getValue()));
@@ -331,7 +329,7 @@ public class Destructuring {
 								local_bindings.set(bIdx, new Binding((VncSymbol)e.getKey(), e.getValue()));
 							}
 						}						
-					});
+					}
 				}			
 			}
 			else if (symValName.equals(KW_AS)) {

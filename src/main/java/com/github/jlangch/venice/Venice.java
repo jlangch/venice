@@ -244,11 +244,6 @@ public class Venice {
 					env.setGlobal(new DynamicVar(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val))));
 				}
 				else {
-//					if (env.findEnv(symbol) != null) {
-//						throw new VncException(String.format(
-//								"A parameter with the name '%s' already exists", 
-//								symbol.getName()));
-//					}
 					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));
 				}
 			});
