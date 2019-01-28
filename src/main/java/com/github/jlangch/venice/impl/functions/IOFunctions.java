@@ -87,7 +87,7 @@ public class IOFunctions {
 				assertArity("io/file", args, 1, 2);
 							
 				if (args.size() == 1) {
-					final VncVal path = args.nth(0);
+					final VncVal path = args.first();
 					if (Types.isVncString(path)) {
 						return new VncJavaObject(new File(((VncString)path).getValue()));
 					}
@@ -101,7 +101,7 @@ public class IOFunctions {
 					}
 				}
 				else {
-					final VncVal parent = args.nth(0);
+					final VncVal parent = args.first();
 					final VncVal child = args.nth(1);
 					
 					File parentFile;
@@ -259,7 +259,7 @@ public class IOFunctions {
 	
 				assertArity("io/file?", args, 1);
 	
-				final VncVal path = args.nth(0);
+				final VncVal path = args.first();
 				return isJavaIoFile(path) ? True : False;
 			}
 	
@@ -281,13 +281,13 @@ public class IOFunctions {
 	
 				assertArity("io/exists-file?", args, 1);
 	
-				if (!isJavaIoFile(args.nth(0)) ) {
+				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/exists-file?' does not allow %s as x",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 	
-				final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				final File file = (File)((VncJavaObject)args.first()).getDelegate();
 				return file.isFile() ? True : False;
 			}
 	
@@ -309,13 +309,13 @@ public class IOFunctions {
 	
 				assertArity("io/exists-dir?", args, 1);
 	
-				if (!isJavaIoFile(args.nth(0)) ) {
+				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/exists-dir?' does not allow %s as x",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 	
-				final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				final File file = (File)((VncJavaObject)args.first()).getDelegate();
 				return file.isDirectory() ? True : False;
 			}
 	
@@ -340,7 +340,7 @@ public class IOFunctions {
 					if (!isJavaIoFile(f) ) {
 						throw new VncException(String.format(
 								"Function 'io/delete-file' does not allow %s as f",
-								Types.getClassName(args.nth(0))));
+								Types.getClassName(args.first())));
 					}
 	
 					final File file = (File)((VncJavaObject)f).getDelegate();
@@ -375,16 +375,16 @@ public class IOFunctions {
 				assertArity("io/delete-file-on-exit", args, 1);
 	
 				File file;
-				if (Types.isVncString(args.nth(0)) ) {
-					file = new File(((VncString)args.nth(0)).getValue());
+				if (Types.isVncString(args.first()) ) {
+					file = new File(((VncString)args.first()).getValue());
 				}
-				else if (isJavaIoFile(args.nth(0)) ) {
-					file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				else if (isJavaIoFile(args.first()) ) {
+					file = (File)((VncJavaObject)args.first()).getDelegate();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'io/delete-file-on-exit' does not allow %s as x",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 	
 				try {
@@ -418,13 +418,13 @@ public class IOFunctions {
 	
 				assertArity("io/list-files", args, 1, 2);
 	
-				if (!isJavaIoFile(args.nth(0)) ) {
+				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/list-files' does not allow %s as x",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 				
-				final File file = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				final File file = (File)((VncJavaObject)args.first()).getDelegate();
 				try {
 					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.nth(1)) : null;
 	
@@ -467,10 +467,10 @@ public class IOFunctions {
 	
 				assertArity("io/copy-file", args, 2);
 	
-				if (!isJavaIoFile(args.nth(0)) ) {
+				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/copy-file' does not allow %s as input",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 				if (!isJavaIoFile(args.nth(1)) ) {
 					throw new VncException(String.format(
@@ -479,7 +479,7 @@ public class IOFunctions {
 				}
 	
 	
-				final File from = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				final File from = (File)((VncJavaObject)args.first()).getDelegate();
 				final File to = (File)((VncJavaObject)args.nth(1)).getDelegate();
 				
 				try {
@@ -516,10 +516,10 @@ public class IOFunctions {
 	
 				assertArity("io/move-file", args, 2);
 	
-				if (!isJavaIoFile(args.nth(0)) ) {
+				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/move-file' does not allow %s as source",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 				if (!isJavaIoFile(args.nth(1)) ) {
 					throw new VncException(String.format(
@@ -528,7 +528,7 @@ public class IOFunctions {
 				}
 	
 	
-				final File from = (File)((VncJavaObject)args.nth(0)).getDelegate();
+				final File from = (File)((VncJavaObject)args.first()).getDelegate();
 				final File to = (File)((VncJavaObject)args.nth(1)).getDelegate();
 				
 				try {
@@ -610,16 +610,16 @@ public class IOFunctions {
 				try {	
 					File file;
 					
-					if (Types.isVncString(args.nth(0)) ) {
-						file = new File(((VncString)args.nth(0)).getValue());
+					if (Types.isVncString(args.first()) ) {
+						file = new File(((VncString)args.first()).getValue());
 					}
-					else if (isJavaIoFile(args.nth(0)) ) {
-						file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+					else if (isJavaIoFile(args.first()) ) {
+						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp' does not allow %s as f",
-								Types.getClassName(args.nth(0))));
+								Types.getClassName(args.first())));
 					}
 	
 					
@@ -672,16 +672,16 @@ public class IOFunctions {
 					
 					File file;
 					
-					if (Types.isVncString(args.nth(0)) ) {
-						file = new File(((VncString)args.nth(0)).getValue());
+					if (Types.isVncString(args.first()) ) {
+						file = new File(((VncString)args.first()).getValue());
 					}
-					else if (isJavaIoFile(args.nth(0)) ) {
-						file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+					else if (isJavaIoFile(args.first()) ) {
+						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/spit' does not allow %s as f",
-								Types.getClassName(args.nth(0))));
+								Types.getClassName(args.first())));
 					}
 	
 			
@@ -760,7 +760,7 @@ public class IOFunctions {
 				assertMinArity("io/slurp-stream", args, 1);
 	
 				try {	
-					final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+					final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 									
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 	
@@ -818,7 +818,7 @@ public class IOFunctions {
 				assertMinArity("io/spit-stream", args, 2);
 	
 				try {
-					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 			
 					final VncVal content = args.nth(1);
 	
@@ -890,7 +890,7 @@ public class IOFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'io/mime-type' does not allow %s as fs",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -972,16 +972,16 @@ public class IOFunctions {
 				try {	
 					File file;
 					
-					if (Types.isVncString(args.nth(0)) ) {
-						file = new File(((VncString)args.nth(0)).getValue());
+					if (Types.isVncString(args.first()) ) {
+						file = new File(((VncString)args.first()).getValue());
 					}
-					else if (isJavaIoFile(args.nth(0)) ) {
-						file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+					else if (isJavaIoFile(args.first()) ) {
+						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp-temp-file' does not allow %s as ",
-								Types.getClassName(args.nth(0))));
+								Types.getClassName(args.first())));
 					}
 	
 					
@@ -1059,16 +1059,16 @@ public class IOFunctions {
 					
 					File file;
 					
-					if (Types.isVncString(args.nth(0)) ) {
-						file = new File(((VncString)args.nth(0)).getValue());
+					if (Types.isVncString(args.first()) ) {
+						file = new File(((VncString)args.first()).getValue());
 					}
-					else if (isJavaIoFile(args.nth(0)) ) {
-						file = (File)(Coerce.toVncJavaObject(args.nth(0)).getDelegate());
+					else if (isJavaIoFile(args.first()) ) {
+						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/spit-temp-file' does not allow %s as f",
-								Types.getClassName(args.nth(0))));
+								Types.getClassName(args.first())));
 					}
 					
 					if (!tempFiles.contains(file.getPath())) {

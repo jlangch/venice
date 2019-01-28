@@ -62,7 +62,7 @@ public class JavaInteropUtil {
 
 	public static VncVal applyJavaAccess(final VncList args, final JavaImports javaImports) {
 		try {
-			final VncVal arg0 = args.nth(0);		
+			final VncVal arg0 = args.first();		
 			final VncString method = (VncString)args.nth(1);
 			final VncList params = args.slice(2);
 			

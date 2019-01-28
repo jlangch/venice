@@ -67,11 +67,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/blank?", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return True;
 				}
 				
-				final String s = Coerce.toVncString(args.nth(0)).getValue();		
+				final String s = Coerce.toVncString(args.first()).getValue();		
 	
 				return StringUtil.isBlank(s) ? True : False;
 			}
@@ -92,11 +92,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/char", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
-				final long n = Coerce.toVncLong(args.nth(0)).getValue();		
+				final long n = Coerce.toVncLong(args.first()).getValue();		
 	
 				return new VncString(String.valueOf((char)n));
 			}
@@ -117,11 +117,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/starts-with?", args, 2);
 	
-				if (args.nth(0) == Nil || args.nth(1) == Nil) {
+				if (args.first() == Nil || args.nth(1) == Nil) {
 					return False;
 				}
 				
-				final VncString string = Coerce.toVncString(args.nth(0));		
+				final VncString string = Coerce.toVncString(args.first());		
 				final VncString prefix = Coerce.toVncString(args.nth(1));		
 				
 				return string.getValue().startsWith(prefix.getValue()) ? True : False;
@@ -143,11 +143,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/ends-with?", args, 2);
 	
-				if (args.nth(0) == Nil || args.nth(1) == Nil) {
+				if (args.first() == Nil || args.nth(1) == Nil) {
 					return False;
 				}
 	
-				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString string = Coerce.toVncString(args.first());
 				final VncString suffix = Coerce.toVncString(args.nth(1));
 				
 				return string.getValue().endsWith(suffix.getValue()) ? True : False;
@@ -169,11 +169,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/contains?", args, 2);
 	
-				if (args.nth(0) == Nil || args.nth(1) == Nil) {
+				if (args.first() == Nil || args.nth(1) == Nil) {
 					return False;
 				}
 	
-				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString string = Coerce.toVncString(args.first());
 				final VncString text = Coerce.toVncString(args.nth(1));
 				
 				return string.getValue().contains(text.getValue()) ? True : False;
@@ -195,11 +195,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/trim", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				return new VncString(Coerce.toVncString(args.nth(0)).getValue().trim());
+				return new VncString(Coerce.toVncString(args.first()).getValue().trim());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -224,11 +224,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/trim-to-nil", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final String str = Coerce.toVncString(args.nth(0)).getValue().trim();
+				final String str = Coerce.toVncString(args.first()).getValue().trim();
 				return str.isEmpty() ? Nil : new VncString(str);
 			}
 	
@@ -251,7 +251,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/index-of", args, 2, 3);
 	
-				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String text = Coerce.toVncString(args.first()).getValue();	
 				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
 				
 				if (args.size() == 3) {
@@ -284,11 +284,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/last-index-of", args, 2, 3);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String text = Coerce.toVncString(args.first()).getValue();	
 				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
 				
 				if (args.size() > 2) {
@@ -318,16 +318,16 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/replace-first", args, 3);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String text = Coerce.toVncString(args.first()).getValue();	
 				final String searchString = Coerce.toVncString(args.nth(1)).getValue();
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
 	
 				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-					return args.nth(0);
+					return args.first();
 				}
 	
 				int pos = text.indexOf(searchString);
@@ -336,7 +336,7 @@ public class StringFunctions {
 							text.substring(0, pos) + 
 							replacement + 
 							text.substring(pos + replacement.length()))
-				 	: args.nth(0);
+				 	: args.first();
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -355,16 +355,16 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/replace-last", args, 3);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String text = Coerce.toVncString(args.first()).getValue();	
 				final String searchString = Coerce.toVncString(args.nth(1)).getValue();
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
 	
 				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-					return args.nth(0);
+					return args.first();
 				}
 	
 				int pos = text.lastIndexOf(searchString);
@@ -373,7 +373,7 @@ public class StringFunctions {
 							text.substring(0, pos) + 
 							replacement + 
 							text.substring(pos + replacement.length()))
-				 	: args.nth(0);
+				 	: args.first();
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -392,22 +392,22 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/replace-all", args, 3);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final String text = Coerce.toVncString(args.nth(0)).getValue();	
+				final String text = Coerce.toVncString(args.first()).getValue();	
 				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
 				
 				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-					return args.nth(0);
+					return args.first();
 				}
 	
 				int start = 0;
 				int end = text.indexOf(searchString, start);
 				if (end == -1) {
-					return args.nth(0);
+					return args.first();
 				}
 				final int replLength = searchString.length();
 				final StringBuilder buf = new StringBuilder();
@@ -436,11 +436,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/lower-case", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString string = Coerce.toVncString(args.first());
 				
 				return new VncString(string.getValue().toLowerCase());
 			}
@@ -461,11 +461,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/upper-case", args, 1);
 	
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 	
-				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString string = Coerce.toVncString(args.first());
 				
 				return new VncString(string.getValue().toUpperCase());
 			}
@@ -489,7 +489,7 @@ public class StringFunctions {
 				assertArity("str/join", args, 1, 2);
 	
 				final VncSequence coll = Coerce.toVncSequence(args.last());		
-				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.nth(0)) : new VncString("");
+				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.first()) : new VncString("");
 				
 				return new VncString(
 							coll.size() > 0
@@ -521,7 +521,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/subs", args, 2, 3);
 	
-				final VncString string = Coerce.toVncString(args.nth(0));		
+				final VncString string = Coerce.toVncString(args.first());		
 				final VncLong from = Coerce.toVncLong(args.nth(1));
 				final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
 				
@@ -547,7 +547,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/split", args, 2);
 	
-				final VncString string = Coerce.toVncString(args.nth(0));
+				final VncString string = Coerce.toVncString(args.first());
 				final VncString regex = Coerce.toVncString(args.nth(1));
 				
 				return new VncList(
@@ -574,11 +574,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/split-lines", args, 1);
 	
-				return args.nth(0) == Nil
+				return args.first() == Nil
 						? new VncList()
 						: new VncList(
 								StringUtil
-									.splitIntoLines(Coerce.toVncString(args.nth(0)).getValue())
+									.splitIntoLines(Coerce.toVncString(args.first()).getValue())
 									.stream()
 									.map(s -> new VncString(s))
 									.collect(Collectors.toList()));
@@ -598,7 +598,7 @@ public class StringFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				final VncString fmt = (VncString)args.nth(0);
+				final VncString fmt = (VncString)args.first();
 				final List<Object> fmtArgs = args
 											.rest()
 											.getList()
@@ -627,7 +627,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/quote", args, 2, 3);
 	
-				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String s = Coerce.toVncString(args.first()).getValue();
 				final String start = Coerce.toVncString(args.nth(1)).getValue();
 				final String end = (args.size() == 2) 
 										? start 
@@ -657,13 +657,13 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/truncate", args, 3);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
 				return new VncString(
 							StringUtil.truncate(
-								Coerce.toVncString(args.nth(0)).getValue(), 
+								Coerce.toVncString(args.first()).getValue(), 
 								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 								Coerce.toVncString(args.nth(2)).getValue()));		
 			}
@@ -686,11 +686,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/strip-start", args, 2);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
-				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String s = Coerce.toVncString(args.first()).getValue();
 				final String substr = Coerce.toVncString(args.nth(1)).getValue();
 				
 				return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);
@@ -714,11 +714,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/strip-end", args, 2);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
-				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String s = Coerce.toVncString(args.first()).getValue();
 				final String substr = Coerce.toVncString(args.nth(1)).getValue();
 				
 				return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);
@@ -740,7 +740,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/strip-indent", args, 1);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
@@ -766,7 +766,7 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/strip-margin", args, 1);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
@@ -792,11 +792,11 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/repeat", args, 2, 3);
 				
-				if (args.nth(0) == Nil) {
+				if (args.first() == Nil) {
 					return Nil;
 				}
 				
-				final String s = Coerce.toVncString(args.nth(0)).getValue();
+				final String s = Coerce.toVncString(args.first()).getValue();
 				final int times = Coerce.toVncLong(args.nth(1)).getValue().intValue();
 				final String sep = args.size() == 3 ? Coerce.toVncString(args.nth(2)).getValue() : "";
 				

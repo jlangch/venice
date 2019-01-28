@@ -217,7 +217,7 @@ public class TimeFunctions {
 				else {
 					return new VncJavaObject(
 								LocalDate.of(
-									Coerce.toVncLong(args.nth(0)).getValue().intValue(),
+									Coerce.toVncLong(args.first()).getValue().intValue(),
 									Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 									Coerce.toVncLong(args.nth(2)).getValue().intValue()));
 				}
@@ -349,7 +349,7 @@ public class TimeFunctions {
 				else if (args.size() == 3) {
 					return new VncJavaObject(
 							LocalDateTime.of(
-								Coerce.toVncLong(args.nth(0)).getValue().intValue(),
+								Coerce.toVncLong(args.first()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								0, 0, 0, 0));
@@ -357,7 +357,7 @@ public class TimeFunctions {
 				else if (args.size() == 6) {
 					return new VncJavaObject(
 							LocalDateTime.of(
-								Coerce.toVncLong(args.nth(0)).getValue().intValue(),
+								Coerce.toVncLong(args.first()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(3)).getValue().intValue(),
@@ -368,7 +368,7 @@ public class TimeFunctions {
 				else {
 					return new VncJavaObject(
 							LocalDateTime.of(
-								Coerce.toVncLong(args.nth(0)).getValue().intValue(),
+								Coerce.toVncLong(args.first()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(3)).getValue().intValue(),
@@ -528,7 +528,7 @@ public class TimeFunctions {
 				else if (argList.size() == 3) {
 					return new VncJavaObject(
 							ZonedDateTime.of(
-								Coerce.toVncLong(argList.nth(0)).getValue().intValue(),
+								Coerce.toVncLong(argList.first()).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 								0, 0, 0, 0, 
@@ -537,7 +537,7 @@ public class TimeFunctions {
 				else if (argList.size() == 6) {
 					return new VncJavaObject(
 							ZonedDateTime.of(
-								Coerce.toVncLong(argList.nth(0)).getValue().intValue(),
+								Coerce.toVncLong(argList.first()).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(3)).getValue().intValue(),
@@ -549,7 +549,7 @@ public class TimeFunctions {
 				else {
 					return new VncJavaObject(
 							ZonedDateTime.of(
-								Coerce.toVncLong(argList.nth(0)).getValue().intValue(),
+								Coerce.toVncLong(argList.first()).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(3)).getValue().intValue(),

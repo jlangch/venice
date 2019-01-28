@@ -243,7 +243,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("add-watch", args, 3);
 				
-				final VncVal ref = args.nth(0);
+				final VncVal ref = args.first();
 				final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
 				final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 						
@@ -286,7 +286,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("remove-watch", args, 2);
 				
-				final VncVal ref = args.nth(0);
+				final VncVal ref = args.first();
 				final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
 						
 				if (Types.isVncJavaObject(ref)) {
@@ -327,7 +327,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("atom", args, 1);
 				
-				return new VncAtom(args.nth(0), args.getMeta());
+				return new VncAtom(args.first(), args.getMeta());
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -346,7 +346,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("atom?", args, 1);
 				
-				return Types.isVncAtom(args.nth(0)) ? True : False;
+				return Types.isVncAtom(args.first()) ? True : False;
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -367,7 +367,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reset!", args, 2);
 				
-				final VncAtom atm = Coerce.toVncAtom(args.nth(0));
+				final VncAtom atm = Coerce.toVncAtom(args.first());
 				return atm.reset(args.nth(1));
 			}
 			
@@ -391,7 +391,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("swap!", args, 2);
 				
-				final VncAtom atm = Coerce.toVncAtom(args.nth(0));		
+				final VncAtom atm = Coerce.toVncAtom(args.first());		
 				final VncFunction fn = Coerce.toVncFunction(args.nth(1));
 				final VncList swapArgs = args.slice(2);
 				
@@ -417,7 +417,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("compare-and-set!", args, 3);
 				
-				final VncAtom atm = Coerce.toVncAtom(args.nth(0));		
+				final VncAtom atm = Coerce.toVncAtom(args.first());		
 				
 				return atm.compare_and_set(args.nth(1), args.nth(2));
 			}
@@ -458,7 +458,7 @@ public class ConcurrencyFunctions {
 	
 				assertMinArity("agent", args, 1);
 					
-				return new VncJavaObject(new Agent(args.nth(0), args.rest()));
+				return new VncJavaObject(new Agent(args.first(), args.rest()));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -487,18 +487,18 @@ public class ConcurrencyFunctions {
 	
 				assertMinArity("send", args, 2);
 				
-				if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-					final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				if (Types.isVncJavaObject(args.first(), Agent.class)) {
+					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
 					final VncList fnArgs = args.slice(2);		
 					
 					agent.send(fn, fnArgs);
-					return args.nth(0);
+					return args.first();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'send' does not allow type %s as agent parameter",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -529,18 +529,18 @@ public class ConcurrencyFunctions {
 	
 				assertArity("send-off", args, 3);
 				
-				if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-					final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				if (Types.isVncJavaObject(args.first(), Agent.class)) {
+					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
 					final VncList fnArgs = args.slice(2);		
 					
 					agent.send_off(fn, fnArgs);
-					return args.nth(0);
+					return args.first();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'send-off' does not allow type %s as agent parameter",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -568,17 +568,17 @@ public class ConcurrencyFunctions {
 	
 				assertArity("restart-agent", args, 2);
 				
-				if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-					final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				if (Types.isVncJavaObject(args.first(), Agent.class)) {
+					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
 					final VncVal state = args.nth(1);		
 					
 					agent.restart(state);
-					return args.nth(0);
+					return args.first();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'restart-agent' does not allow type %s as agent parameter",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -612,15 +612,15 @@ public class ConcurrencyFunctions {
 	
 				assertArity("set-error-handler!", args, 2);
 				
-				if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-					final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				if (Types.isVncJavaObject(args.first(), Agent.class)) {
+					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
 					agent.setErrorHandler(Coerce.toVncFunction(args.nth(1)));
-					return args.nth(0);
+					return args.first();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'set-error-handler!' does not allow type %s as agent parameter",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -650,15 +650,15 @@ public class ConcurrencyFunctions {
 	
 				assertArity("agent-error", args, 1);
 				
-				if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-					final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				if (Types.isVncJavaObject(args.first(), Agent.class)) {
+					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
 					final RuntimeException ex = agent.getError();
 					return ex == null ? Nil : new VncJavaObject(ex);
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'agent-error' does not allow type %s as agent parameter",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -684,14 +684,14 @@ public class ConcurrencyFunctions {
 	
 				assertArity("agent-error-mode", args, 1);
 				
-				if (Types.isVncJavaObject(args.nth(0), Agent.class)) {
-					final Agent agent = (Agent)Coerce.toVncJavaObject(args.nth(0)).getDelegate();
+				if (Types.isVncJavaObject(args.first(), Agent.class)) {
+					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
 					return agent.getErrorMode();
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'agent-error-mode' does not allow type %s as agent parameter",
-							Types.getClassName(args.nth(0))));
+							Types.getClassName(args.first())));
 				}
 			}
 	
@@ -755,7 +755,7 @@ public class ConcurrencyFunctions {
 	
 				assertMinArity("await-for", args, 2);
 		
-				final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();
+				final long timeoutMillis = Coerce.toVncLong(args.first()).getValue();
 				final List<Agent> agents = args.rest()
 											   .getList()
 											   .stream()
@@ -850,7 +850,7 @@ public class ConcurrencyFunctions {
 	
 				assertArity("await-termination-agents", args, 1);
 	
-				final long timeoutMillis = Coerce.toVncLong(args.nth(0)).getValue();
+				final long timeoutMillis = Coerce.toVncLong(args.first()).getValue();
 	
 				Agent.awaitTermination(timeoutMillis);
 				
@@ -1270,8 +1270,8 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.size() == 1 && Types.isVncMap(args.nth(0))) {
-					return new VncThreadLocal(((VncMap)args.nth(0)).getMap());
+				if (args.size() == 1 && Types.isVncMap(args.first())) {
+					return new VncThreadLocal(((VncMap)args.first()).getMap());
 				}
 				else {
 					return new VncThreadLocal(args);
@@ -1294,7 +1294,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("thread-local?", args, 1);
 				
-				return Types.isVncThreadLocal(args.nth(0)) ? True : False;
+				return Types.isVncThreadLocal(args.first()) ? True : False;
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
