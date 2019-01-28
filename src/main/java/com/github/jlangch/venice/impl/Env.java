@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -41,17 +43,18 @@ public class Env implements Serializable {
 	public Env(final Env outer) {
 		this.outer = outer;
 		this.level = outer == null ? 0 : outer.level() + 1;
-		this.globalSymbols = outer == null ? new Symbols() : outer.globalSymbols;
+		this.globalSymbols = outer == null ? new ConcurrentHashMap<>() : outer.globalSymbols;
+		this.symbols = new ConcurrentHashMap<>();
 	}
 		
 	public Env findEnv(final VncSymbol key) {
-		if (symbols.contains(key)) {
+		if (symbols.containsKey(key)) {
 			return this;
 		} 
 		else if (outer != null) {
 			return outer.findEnv(key);
 		} 
-		else if (globalSymbols.contains(key)) {
+		else if (globalSymbols.containsKey(key)) {
 			return this;
 		}
 		else {
@@ -67,10 +70,10 @@ public class Env implements Serializable {
 					"Symbol '" + key.getName() + "' not found."));
 		}
 		else {
-			if (e.symbols.contains(key)) {
+			if (e.symbols.containsKey(key)) {
 				return e.symbols.get(key).getVal();
 			}
-			else if (globalSymbols.contains(key)) {
+			else if (globalSymbols.containsKey(key)) {
 				final Var v = globalSymbols.get(key);
 				return v instanceof DynamicVar ? ((DynamicVar)v).peekVal(key) : v.getVal();
 			}
@@ -87,7 +90,7 @@ public class Env implements Serializable {
 	}
 
 	public Env set(final VncSymbol name, final VncVal val) {
-		symbols.set(new Var(name, val));
+		symbols.put(name, new Var(name, val));
 		return this;
 	}
 
@@ -100,7 +103,7 @@ public class Env implements Serializable {
 					val.getName()));
 		}
 		
-		globalSymbols.set(val);
+		globalSymbols.put(val.getName(), val);
 		return this;
 	}
 
@@ -119,7 +122,7 @@ public class Env implements Serializable {
 		}
 		else {
 			final DynamicVar nv = new DynamicVar(val.getName(), Nil);
-			globalSymbols.set(nv);
+			globalSymbols.put(val.getName(), nv);
 			nv.pushVal(val.getVal());
 		}
 		return this;
@@ -162,7 +165,7 @@ public class Env implements Serializable {
 	}
 
 	public boolean hasGlobalSymbol(final VncSymbol key) {
-		return globalSymbols.contains(key);
+		return globalSymbols.containsKey(key);
 	}
 
 	public Env getRootEnv() {
@@ -181,6 +184,7 @@ public class Env implements Serializable {
 
 	private final Env outer;
 	private final int level;
-	private final Symbols globalSymbols;
-	private final Symbols symbols = new Symbols();
+	private final Map<VncSymbol,Var> globalSymbols;
+	private final Map<VncSymbol,Var> symbols;
 }
+

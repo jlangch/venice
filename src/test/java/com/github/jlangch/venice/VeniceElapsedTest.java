@@ -58,23 +58,25 @@ public class VeniceElapsedTest {
 
 		final PreCompiled compiled1 = venice.precompile("script1", script1);
 		final PreCompiled compiled2 = venice.precompile("script2", script2);
-
-		// warm up
-		for(int ii=0; ii<100; ii++) {
-			venice.eval(script1, Parameters.of("event", event));
-			venice.eval(venice.precompile("script1", script1), Parameters.of("event", event));
-		}
-		
 		
 		// --------------------------------------------------------
 		// Java
 		// --------------------------------------------------------
-		final StopWatch	sw = StopWatch.millis();
-		for(int ii=0; ii<1000; ii++) {
-			@SuppressWarnings("unused")
+		// JIT warm.up
+		@SuppressWarnings("unused")
+		int result = 0;
+		for(int ii=0; ii<12000; ii++) {
 			boolean res = event.getEventName().matches("webapp[.](started|stopped)")
 							|| event.getEventKey().equals("superuser")
 							|| event.getEventType() == AuditEventType.ALERT;
+			result += res ? 0 : 1;
+		}	
+		final StopWatch	sw = StopWatch.millis();
+		for(int ii=0; ii<1000; ii++) {
+			boolean res = event.getEventName().matches("webapp[.](started|stopped)")
+							|| event.getEventKey().equals("superuser")
+							|| event.getEventType() == AuditEventType.ALERT;
+			result += res ? 0 : 1;
 		}	
 		System.out.println("Elapsed (Java reference, 1000 calls): " + sw.stop().toString()); 
 
@@ -82,6 +84,10 @@ public class VeniceElapsedTest {
 		// --------------------------------------------------------
 		// not compiled, implicit symbol conversion
 		// --------------------------------------------------------
+		// JIT warm.up
+		for(int ii=0; ii<12000; ii++) {
+			venice.eval(script1, Parameters.of("event", event));
+		}	
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			venice.eval(script1, Parameters.of("event", event));
@@ -93,6 +99,10 @@ public class VeniceElapsedTest {
 		// --------------------------------------------------------
 		// precompiled, implicit symbol conversion
 		// --------------------------------------------------------
+		// JIT warm.up
+		for(int ii=0; ii<12000; ii++) {
+	        venice.eval(compiled1, Parameters.of("event", event));
+		}	
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// implicitly convert AuditEvent symbol (JavaInteropUtil with reflection)
@@ -104,6 +114,10 @@ public class VeniceElapsedTest {
 		// --------------------------------------------------------
 		// precompiled, explicit symbol conversion
 		// --------------------------------------------------------
+		// JIT warm.up
+		for(int ii=0; ii<12000; ii++) {
+	        venice.eval(compiled1, Parameters.of("event", toMap(event)));
+		}	
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// explicitly convert AuditEvent symbol
@@ -115,6 +129,14 @@ public class VeniceElapsedTest {
 		// --------------------------------------------------------
 		// precompiled, explicit symbol conversion
 		// --------------------------------------------------------
+		// JIT warm.up
+		for(int ii=0; ii<12000; ii++) {
+	        venice.eval(compiled2, 
+	        		Parameters.of(
+	        				"eventName", event.getEventName(),
+	        				"eventType", event.getEventType(),
+	        				"eventKey", event.getEventKey()));
+		}	
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// explicitly convert AuditEvent symbol
