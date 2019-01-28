@@ -66,8 +66,7 @@ public class Env implements Serializable {
 		final Env e = findEnv(key);
 		if (e == null) {
 			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
-			throw new VncException(String.format(
-					"Symbol '" + key.getName() + "' not found."));
+			throw new VncException(String.format("Symbol '%s' not found.",  key.getName()));
 		}
 		else {
 			if (e.symbols.containsKey(key)) {
@@ -79,8 +78,7 @@ public class Env implements Serializable {
 			}
 			else {
 				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
-				throw new VncException(String.format(
-						"Symbol '" + key.getName() + "' not found."));
+				throw new VncException(String.format("Symbol '%s' not found.",  key.getName()));
 			}
 		}
 	}
