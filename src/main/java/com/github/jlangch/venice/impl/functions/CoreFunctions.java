@@ -1842,19 +1842,16 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(mutable-map & keyvals)", "(mutable-map map)")		
-					.doc("Creates a new mutable map containing the items.")
+					.doc("Creates a new mutable threadsafe map containing the items.")
 					.examples(
 						"(mutable-map :a 1 :b 2)", 
 						"(mutable-map (hash-map :a 1 :b 2))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncMutableMap(((VncMap)args.first()).getMap());
-				}
-				else {
-					return VncMutableMap.ofAll(args);
-				}
+				return args.size() == 1 && Types.isVncMap(args.first())
+						? new VncMutableMap(((VncMap)args.first()).getMap())
+						: VncMutableMap.ofAll(args);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -2025,15 +2022,15 @@ public class CoreFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (args.first() == Nil) {
-					return new VncHashMap().assoc((VncList)args.slice(1));
+					return new VncHashMap().assoc((VncList)args.rest());
 				}
 				else if (Types.isVncMap(args.first())) {
-					return ((VncMap)args.first()).assoc((VncList)args.slice(1));
+					return ((VncMap)args.first()).assoc((VncList)args.rest());
 				}
 				else if (Types.isVncVector(args.first())) {
 					VncVector vec = ((VncVector)args.first());
 					
-					final VncList keyvals = args.slice(1);
+					final VncList keyvals = args.rest();
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 						final VncVal val = keyvals.nth(ii+1);
@@ -2048,7 +2045,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncString(args.first())) {
 					String s = ((VncString)args.first()).getValue();
-					final VncList keyvals = (VncList)args.slice(1);
+					final VncList keyvals = (VncList)args.rest();
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 						final VncString val = Coerce.toVncString(keyvals.nth(ii+1));
@@ -2073,7 +2070,7 @@ public class CoreFunctions {
 				else if (Types.isVncThreadLocal(args.first())) {
 					final VncThreadLocal th = (VncThreadLocal)args.first();
 					
-					return th.assoc((VncList)args.slice(1));
+					return th.assoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
@@ -2142,11 +2139,11 @@ public class CoreFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (Types.isVncMap(args.first())) {
-					return ((VncMap)args.first()).dissoc(args.slice(1));
+					return ((VncMap)args.first()).dissoc(args.rest());
 				}
 				else if (Types.isVncVector(args.first())) {
 					VncVector vec = ((VncVector)args.first());
-					final VncList keyvals = (VncList)args.slice(1);
+					final VncList keyvals = (VncList)args.rest();
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 						if (vec.size() > key.getValue().intValue()) {
@@ -2157,7 +2154,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncString(args.first())) {
 					String s = ((VncString)args.first()).getValue();
-					final VncList keyvals = (VncList)args.slice(1);
+					final VncList keyvals = (VncList)args.rest();
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 						final int idx = key.getValue().intValue();
@@ -2178,7 +2175,7 @@ public class CoreFunctions {
 				else if (Types.isVncThreadLocal(args.first())) {
 					final VncThreadLocal th = (VncThreadLocal)args.first();
 					
-					return th.dissoc((VncList)args.slice(1));
+					return th.dissoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
@@ -3762,7 +3759,7 @@ public class CoreFunctions {
 					return ml.size() < 2 ? new VncVector() : ml.slice(0, ml.size()-1);
 				}
 				else {
-					return ml.isEmpty() ? new VncList() : ml.slice(1);
+					return ml.isEmpty() ? new VncList() : ml.rest();
 				}
 			}
 	
@@ -4238,7 +4235,7 @@ public class CoreFunctions {
 				assertMinArity("partial", args, 2);
 				
 				final VncFunction fn = Coerce.toVncFunction(args.first());
-				final VncList fnArgs = args.slice(1);
+				final VncList fnArgs = args.rest();
 				
 				return new VncFunction() {
 					public VncVal apply(final VncList args) {
@@ -4271,7 +4268,7 @@ public class CoreFunctions {
 				}
 				
 				final VncFunction fn = Coerce.toVncFunction(args.first());
-				final VncList lists = removeNilValues((VncList)args.slice(1));
+				final VncList lists = removeNilValues((VncList)args.rest());
 				final List<VncVal> result = new ArrayList<>();
 							
 				if (lists.isEmpty()) {
@@ -4323,7 +4320,7 @@ public class CoreFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
-				final VncList lists = removeNilValues((VncList)args.slice(1));
+				final VncList lists = removeNilValues((VncList)args.rest());
 				final List<VncVal> result = new ArrayList<>();
 	
 				if (lists.isEmpty()) {
@@ -4708,13 +4705,13 @@ public class CoreFunctions {
 				assertMinArity("conj", args, 2);
 	
 				if (Types.isVncVector(args.first())) {
-					return ((VncVector)args.first()).addAllAtEnd(args.slice(1));
+					return ((VncVector)args.first()).addAllAtEnd(args.rest());
 				} 
 				else if (Types.isVncList(args.first())) {
-					return ((VncList)args.first()).addAllAtStart(args.slice(1));
+					return ((VncList)args.first()).addAllAtStart(args.rest());
 				}
 				else if (Types.isVncHashSet(args.first())) {
-					return VncHashSet.ofAll(((VncHashSet)args.first()).getSet()).addAll(args.slice(1));
+					return VncHashSet.ofAll(((VncHashSet)args.first()).getSet()).addAll(args.rest());
 				}
 				else if (Types.isVncMap(args.first())) {
 					final VncMap map = (VncMap)args.first();			
@@ -4758,7 +4755,7 @@ public class CoreFunctions {
 				assertMinArity("disj", args, 2);
 				
 				if (args.first() instanceof VncHashSet) {
-					return ((VncHashSet)args.first()).removeAll(args.slice(1));
+					return ((VncHashSet)args.first()).removeAll(args.rest());
 				}
 				else {
 					throw new VncException(String.format(

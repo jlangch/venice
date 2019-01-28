@@ -30,9 +30,11 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -166,21 +168,20 @@ public class VeniceInterpreter implements Serializable  {
 		else if (Types.isVncSequence(ast)) {
 			final VncSequence seq = (VncSequence)ast;		
 			
-			return seq.withValues(				
-						seq.getList()
-						   .stream()
-						   .map(v -> EVAL(v, env))
-						   .collect(Collectors.toList()));
+			final List<VncVal> vals = new ArrayList<>();
+			for(VncVal v : seq.getList()) {
+				vals.add(EVAL(v, env));
+			}
+			return seq.withValues(vals);
 		}
 		else if (Types.isVncMap(ast)) {
 			final VncMap map = (VncMap)ast;
 			
-			return map.withValues(
-						map.entries()
-						   .stream()
-						   .collect(Collectors.toMap(
-						            	e -> e.getKey(),
-						            	e -> EVAL(e.getValue(), env))));
+			final Map<VncVal,VncVal> vals = new HashMap<>();
+			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
+				vals.put(e.getKey(), EVAL(e.getValue(), env));
+			}
+			return map.withValues(vals);
 		} 
 		else {
 			return ast;
@@ -363,7 +364,7 @@ public class VeniceInterpreter implements Serializable  {
 					return runWithCallStack(
 								"import", ast, env, 
 								(a,e) -> {
-									a.slice(1)
+									a.rest()
 									 .stream()
 									 .map(clazzName -> Coerce.toVncString(clazzName).getValue())
 									 .forEach(clazzName -> javaImports.add(clazzName));

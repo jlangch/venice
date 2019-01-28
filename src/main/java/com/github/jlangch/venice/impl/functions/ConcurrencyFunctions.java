@@ -458,7 +458,7 @@ public class ConcurrencyFunctions {
 	
 				assertMinArity("agent", args, 1);
 					
-				return new VncJavaObject(new Agent(args.nth(0), args.slice(1)));
+				return new VncJavaObject(new Agent(args.nth(0), args.rest()));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
