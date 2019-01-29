@@ -65,10 +65,11 @@ public class MathFunctions {
 				else if (args.size() == 1) {
 					return args.first();
 				}
-	
-				VncVal val = args.first();
-				for(VncVal v : args.rest().getList()) { val = Numeric.add(val, v); }
-				return val;
+				else {
+					VncVal val = args.first();
+					for(VncVal v : args.rest().getList()) { val = Numeric.add(val, v); }
+					return val;
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -93,22 +94,23 @@ public class MathFunctions {
 				else if (args.size() == 1) {
 					final VncVal first = args.first();
 					if (Types.isVncLong(first)) {
-						return Numeric.mul(first, new VncLong(-1L));
+						return new VncLong(((VncLong)first).getValue() * -1);
 					}
 					else if (Types.isVncDouble(first)) {
-						return Numeric.mul(first, new VncDouble(-1D));
+						return new VncDouble(((VncDouble)first).getValue() * -1D);
 					}
 					else if (Types.isVncBigDecimal(first)) {
-						return Numeric.mul(first, new VncBigDecimal(new BigDecimal("-1.0")));
+						return new VncBigDecimal(((VncBigDecimal)first).getValue().negate());
 					}
 					else {
 						return first;
 					}
 				}
-	
-				VncVal val = args.first();
-				for(VncVal v : args.rest().getList()) { val = Numeric.sub(val, v); }
-				return val;
+				else {
+					VncVal val = args.first();
+					for(VncVal v : args.rest().getList()) { val = Numeric.sub(val, v); }
+					return val;
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -131,10 +133,11 @@ public class MathFunctions {
 				else if (args.size() == 1) {
 					return args.first();
 				}
-	
-				VncVal val = args.first();
-				for(VncVal v : args.rest().getList()) { val = Numeric.mul(val, v); }
-				return val;
+				else {
+					VncVal val = args.first();
+					for(VncVal v : args.rest().getList()) { val = Numeric.mul(val, v); }
+					return val;
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -171,10 +174,11 @@ public class MathFunctions {
 						return first;
 					}
 				}
-	
-				VncVal val = args.first();
-				for(VncVal v : args.rest().getList()) { val = Numeric.div(val, v); }
-				return val;
+				else {
+					VncVal val = args.first();
+					for(VncVal v : args.rest().getList()) { val = Numeric.div(val, v); }
+					return val;
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;

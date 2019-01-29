@@ -2516,7 +2516,7 @@ public class CoreFunctionsTest {
 		assertEquals(new BigDecimal("2.0"), venice.eval("(- 4.0 2.0M)"));
 
 		// Decimal
-		assertEquals(new BigDecimal("-4.00"), venice.eval("(- 4.0M)"));
+		assertEquals(new BigDecimal("-4.0"), venice.eval("(- 4.0M)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(- 4.0M 1.0M)"));
 		assertEquals(new BigDecimal("2.0"), venice.eval("(- 4.0M 1.0M 1.0M)"));
 		assertEquals(new BigDecimal("2.0"), venice.eval("(- 4.0M 2)"));
