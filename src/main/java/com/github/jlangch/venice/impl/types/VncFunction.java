@@ -88,13 +88,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 	
 	public Env genEnv(final VncList args) {
-		final Env localEnv = new Env(env);
-
-		Destructuring
-			.destructure(params, args)
-			.forEach(b -> localEnv.set(b.sym, b.val));
-
-		return localEnv;
+		return new Env(env).addAll(Destructuring.destructure(params, args));
 	}
 	
 	public boolean isMacro() { 

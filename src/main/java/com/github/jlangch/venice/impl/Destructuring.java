@@ -26,7 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Types;
@@ -392,28 +391,35 @@ public class Destructuring {
 	private static List<VncVal> sortAssociativeNames(final List<VncVal> names) {
 		final List<VncVal> sorted = new ArrayList<>();
 		
-		sorted.addAll(
-				names
-					.stream()
-					.filter(n -> n.equals(KW_KEYS) || n.equals(KW_SYMS) || n.equals(KW_STRS))
-					.collect(Collectors.toList()));
+		for(VncVal n : names) {
+			if (is_KEYS_SYMS_STRS(n)) {
+				sorted.add(n);
+			}
+		}
 		
-		sorted.addAll(
-				names
-					.stream()
-					.filter(n -> n != Nil)
-					.filter(n -> !(n.equals(KW_KEYS) || n.equals(KW_SYMS) || n.equals(KW_STRS) 
-									|| n.equals(KW_AS) || n.equals(KW_OR)))
-					.collect(Collectors.toList()));
-
-		sorted.addAll(
-				names
-					.stream()
-					.filter(n -> n.equals(KW_AS) || n.equals(KW_OR))
-					.collect(Collectors.toList()));
-
+		for(VncVal n : names) {
+			if (n != Nil && !(is_KEYS_SYMS_STRS(n) || is_AS_OR(n))) {
+				sorted.add(n);
+			}
+		}
+		
+		for(VncVal n : names) {
+			if (is_AS_OR(n)) {
+				sorted.add(n);
+			}
+		}
+		
 		return sorted;
 	}
+	
+	private static boolean is_KEYS_SYMS_STRS(final VncVal n) {
+		return n.equals(KW_KEYS) || n.equals(KW_SYMS) || n.equals(KW_STRS);
+	}
+	
+	private static boolean is_AS_OR(final VncVal n) {
+		return n.equals(KW_AS) || n.equals(KW_OR);
+	}
+	
 	
 	
 	private static final VncKeyword KW_AS = new VncKeyword(":as");
