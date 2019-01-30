@@ -262,10 +262,9 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = EVAL(bindings.nth(i+1), env);
 
-						final Env _env = env;
-						Destructuring
-							.destructure(sym, val)
-							.forEach(b -> _env.set(b.sym, b.val));
+						for(Binding b : Destructuring.destructure(sym, val)) {
+							env.set(b.sym, b.val);
+						}
 					}
 						
 					if (expressions.isEmpty()) {
@@ -292,13 +291,10 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = EVAL(bindings.nth(i+1), env);
 
-						final Env _env = env;
-						Destructuring
-							.destructure(sym, val)
-							.forEach(b -> { 
-								_env.set(b.sym, b.val); 
-								bindingNames.add(b.sym);
-							 });
+						for(Binding b : Destructuring.destructure(sym, val)) {
+							env.set(b.sym, b.val);
+							bindingNames.add(b.sym);
+						}
 					}
 					
 					recursionPoint = new RecursionPoint(new VncList(bindingNames), expressions, env);
@@ -606,9 +602,9 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal sym = bindings.nth(i);
 			final VncVal val = EVAL(bindings.nth(i+1), env);
 	
-			Destructuring
-				.destructure(sym, val)
-				.forEach(b -> vars.add(new DynamicVar(b.sym, b.val)));
+			for(Binding b : Destructuring.destructure(sym, val)) {
+				vars.add(new DynamicVar(b.sym, b.val));
+			}
 		}
 			
 		try {
@@ -802,9 +798,7 @@ public class VeniceInterpreter implements Serializable  {
 				final Env localEnv = new Env(env);
 				
 				// destructuring fn params -> args
-				Destructuring
-					.destructure(params, args)
-					.forEach(b -> localEnv.set(b.sym, b.val));
+				localEnv.addAll(Destructuring.destructure(params, args));
 				
 				validateFnPreconditions(name, preConditions, localEnv);
 				

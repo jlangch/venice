@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -94,6 +95,12 @@ public class Env implements Serializable {
 
 	public Env set(final VncSymbol name, final VncVal val) {
 		symbols.put(name, new Var(name, val));
+		return this;
+	}
+	public Env addAll(final List<Binding> bindings) {
+		for(Binding b : bindings) {
+			symbols.put(b.sym, new Var(b.sym, b.val));
+		}
 		return this;
 	}
 
