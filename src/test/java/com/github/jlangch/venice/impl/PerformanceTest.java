@@ -51,7 +51,7 @@ public class PerformanceTest {
 				"   (dotimes                                                 \n" +
 				"      [n 2000]                                              \n" +
 				"      (format \"John\" \"farmer\" \"Lucerne\"))             \n" +
-				"   (dotimes [n 3] (gc))                                     \n" +
+				"   (gc) (gc)                                                \n" +
 				"                                                            \n" +
 				"   (time (format \"John\" \"farmer\" \"Lucerne\")))           ";
 
@@ -71,7 +71,7 @@ public class PerformanceTest {
 				"   (dotimes                                                 \n" +
 				"      [n 2000]                                              \n" +
 				"      (format \"John\" \"farmer\" \"Lucerne\"))             \n" +
-				"   (dotimes [n 3] (gc))                                     \n" +
+				"   (gc) (gc)                                                \n" +
 				"                                                            \n" +
 				"   (time (format \"John\" \"farmer\" \"Lucerne\")))           ";
 
@@ -90,7 +90,7 @@ public class PerformanceTest {
 				"   (dotimes                                                 \n" +
 				"      [n 2000]                                              \n" +
 				"      (format \"John\" \"farmer\" \"Lucerne\"))             \n" +
-				"   (dotimes [n 3] (gc))                                     \n" +
+				"   (gc) (gc)                                                \n" +
 				"                                                            \n" +
 				"   (time (format \"John\" \"farmer\" \"Lucerne\")))           ";
 
@@ -109,6 +109,8 @@ public class PerformanceTest {
 				"	            (recur (inc i))                          \n" +
 				"	            i)))                                     \n" +
 				"                                                        \n" +
+				"   (sum 100000) (gc) (gc)                               \n" +
+				"                                                        \n" +
 				"   (time (sum 100000)))                                   ";
 		
 		venice.eval(script);
@@ -125,6 +127,8 @@ public class PerformanceTest {
 				"	         (if (zero? cnt)                             \n" +
 				"	            acc                                      \n" +
 				"	            (recur (dec cnt) (+ acc cnt)))))         \n" +
+				"                                                        \n" +
+				"   (sum 100000) (gc) (gc)                               \n" +
 				"                                                        \n" +
 				"   (time (sum 100000)))                                   ";
 		
