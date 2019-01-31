@@ -62,6 +62,9 @@ public class VncLong extends VncVal {
 		if (o == Constants.Nil) {
 			return 1;
 		}
+		else if (Types.isVncLong(o)) {
+			return value.compareTo(((VncLong)o).getValue());
+		}
 		else if (Types.isVncNumber(o)) {
 			return value.compareTo(Numeric.toLong(o).getValue());
 		}

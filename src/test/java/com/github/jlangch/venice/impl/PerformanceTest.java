@@ -21,12 +21,18 @@
  */
 package com.github.jlangch.venice.impl;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 
 
 public class PerformanceTest {
+
+	@BeforeAll
+	public static void test() {
+		System.out.println("Perfromance tests:");
+	}
 
 	@Test
 	public void test1() {
@@ -88,6 +94,40 @@ public class PerformanceTest {
 				"                                                            \n" +
 				"   (time (format \"John\" \"farmer\" \"Lucerne\")))           ";
 
+		venice.eval(script);
+	}
+
+	@Test
+	public void test4() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                     \n" +
+				"   (defn sum [n]                                        \n" +
+				"	      (loop [i 0]                                    \n" +
+				"	         (if (< i n)                                 \n" +
+				"	            (recur (inc i))                          \n" +
+				"	            i)))                                     \n" +
+				"                                                        \n" +
+				"   (time (sum 100000)))                                   ";
+		
+		venice.eval(script);
+	}
+
+	@Test
+	public void test5() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                     \n" +
+				"   (defn sum [n]                                        \n" +
+				"	      (loop [cnt n, acc 0]                           \n" +
+				"	         (if (zero? cnt)                             \n" +
+				"	            acc                                      \n" +
+				"	            (recur (dec cnt) (+ acc cnt)))))         \n" +
+				"                                                        \n" +
+				"   (time (sum 100000)))                                   ";
+		
 		venice.eval(script);
 	}
 

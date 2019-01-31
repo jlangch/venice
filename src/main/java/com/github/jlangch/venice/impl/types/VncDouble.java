@@ -58,6 +58,9 @@ public class VncDouble extends VncVal {
 		if (o == Constants.Nil) {
 			return 1;
 		}
+		else if (Types.isVncDouble(o)) {
+			return value.compareTo(((VncDouble)o).getValue());
+		}
 		else if (Types.isVncNumber(o)) {
 			return value.compareTo(Numeric.toDouble(o).getValue());
 		}
