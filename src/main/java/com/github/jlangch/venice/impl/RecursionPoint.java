@@ -21,14 +21,16 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.List;
+
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class RecursionPoint {
 
 	public RecursionPoint(
-			final VncList loopBindingNames,
+			final List<VncSymbol> loopBindingNames,
 			final VncVal loopExpressions,
 			final Env loopEnv
 	) {
@@ -38,7 +40,7 @@ public class RecursionPoint {
 	}
 
 	
-	public VncList getLoopBindingNames() {
+	public List<VncSymbol> getLoopBindingNames() {
 		return loopBindingNames;
 	}
 	
@@ -51,7 +53,7 @@ public class RecursionPoint {
 	}
 
 
-	private final VncList loopBindingNames;
+	private final List<VncSymbol> loopBindingNames;
 	private final VncVal loopExpressions;
 	private final Env loopEnv;
 }

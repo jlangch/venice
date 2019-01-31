@@ -286,7 +286,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncVal expressions = ast.nth(2);
 					
-					final List<VncVal> bindingNames = new ArrayList<>();
+					final List<VncSymbol> bindingNames = new ArrayList<>();
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = EVAL(bindings.nth(i+1), env);
@@ -297,12 +297,12 @@ public class VeniceInterpreter implements Serializable  {
 						}
 					}
 					
-					recursionPoint = new RecursionPoint(new VncList(bindingNames), expressions, env);
+					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
 					orig_ast = expressions;
 					break;
 				}
 
-				case "recur":  // (recur exprs*)
+				case "recur":  { // (recur exprs*)
 					// +----------------+-------------------------------------------+---------------+
 					// | Form           | Tail Position                             | recur target? |
 					// +----------------+-------------------------------------------+---------------+
@@ -317,22 +317,24 @@ public class VeniceInterpreter implements Serializable  {
 					// | or, and        | (or test test ... tail)                   | No            |
 					// +----------------+-------------------------------------------+---------------+
 
-					final VncList recur_bindingNames = recursionPoint.getLoopBindingNames();					
+					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
 
 					// [1] calculate new values
-					final List<VncVal> recur_values = new ArrayList<>();
-					for(int i=1; i<ast.size(); i++) {
-						recur_values.add(EVAL(ast.nth(i), env));
+					final VncVal[] values = new VncVal[ast.size()-1];
+					int kk=0;
+					for(VncVal v : ast.rest().getList()) {
+						values[kk++] = EVAL(v, env);
 					}
 					// [2] bind the values
-					for(int ii=0; ii<recur_bindingNames.size(); ii++) {
-						recur_env.set((VncSymbol)recur_bindingNames.nth(ii), recur_values.get(ii));
+					for(int ii=0; ii<bindingNames.size(); ii++) {
+						recur_env.set(bindingNames.get(ii), values[ii]);
 					}
 					// [3] continue on the loop with the new parameters
 					orig_ast = recursionPoint.getLoopExpressions();
 					env = recur_env;
 					break;
+				}
 					
 				case "quote":
 					return ast.second();
