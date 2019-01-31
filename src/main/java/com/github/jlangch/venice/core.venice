@@ -313,8 +313,11 @@
    
    `(let [start_ (nano-time)
           ret_ ~expr
-          end_ (nano-time)]
-       (println (str "Elapsed time: " (/ (- end_ start_) 1000) " us"))
+          end_ (nano-time)
+          elapsed_ (- end_ start_)]
+       (if (< elapsed_ 1000000)
+          (printf "Elapsed time: %.2f us\n" (/ elapsed_ 1000.0))
+          (printf "Elapsed time: %.2f ms\n" (/ elapsed_ 1000000.0)))
        ret_))
          
          
