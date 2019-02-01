@@ -291,10 +291,13 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = EVAL(bindings.nth(i+1), env);
 
-						for(Binding b : Destructuring.destructure(sym, val)) {
-							env.set(b.sym, b.val);
-							bindingNames.add(b.sym);
-						}
+						env.set((VncSymbol)sym, val);
+						bindingNames.add((VncSymbol)sym);
+
+						//for(Binding b : Destructuring.destructure(sym, val)) {
+						//	env.set(b.sym, b.val);
+						//	bindingNames.add(b.sym);
+						//}
 					}
 					
 					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
