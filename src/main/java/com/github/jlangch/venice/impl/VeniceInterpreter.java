@@ -82,109 +82,6 @@ public class VeniceInterpreter implements Serializable  {
 		return Reader.read_str(script, filename);
 	}
 
-	private static boolean is_pair(final VncVal x) {
-		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
-	}
-
-	private static VncVal quasiquote(final VncVal ast) {
-		if (!is_pair(ast)) {
-			return VncList.of(new VncSymbol("quote"), ast);
-		} 
-		else {
-			final VncVal a0 = Coerce.toVncSequence(ast).first();
-			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
-				return ((VncSequence)ast).second();
-			} 
-			else if (is_pair(a0)) {
-				final VncVal a00 = Coerce.toVncSequence(a0).first();
-				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
-					return VncList.of(
-								new VncSymbol("concat"),
-								Coerce.toVncSequence(a0).second(),
-								quasiquote(((VncSequence)ast).rest()));
-				}
-			}
-			return VncList.of(
-						new VncSymbol("cons"),
-						quasiquote(a0),
-						quasiquote(((VncSequence)ast).rest()));
-		}
-	}
-
-	/**
-	 * Returns true if ast is a list that contains a symbol as the first element 
-	 * and that symbol refers to a function in the env environment and that 
-	 * function has the is_macro attribute set to true. 
-	 * Otherwise, it returns false.
-	 * 
-	 * @param ast ast
-	 * @param env env
-	 * @return true if the ast starts with a macro
-	 */
-	private boolean is_macro_call(final VncVal ast, final Env env) {
-		if (Types.isVncList(ast) && !((VncList)ast).isEmpty()) {
-			final VncVal a0 = Coerce.toVncSequence(ast).first();
-			if (Types.isVncSymbol(a0)) {
-				final VncVal fn = env.getOrNil((VncSymbol)a0);
-				if (Types.isVncMacro(fn)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Recursively expands a macro. It calls is_macro_call with ast and env and 
-	 * loops while that condition is true. Inside the loop, the first element 
-	 * of the ast list (a symbol), is looked up in the environment to get 
-	 * the macro function. This macro function is then called/applied with 
-	 * the rest of the ast elements (2nd through the last) as arguments. 
-	 * The return value of the macro call becomes the new value of ast. 
-	 * When the loop completes because ast no longer represents a macro call, 
-	 * the current value of ast is returned.
-	 * 
-	 * @param ast ast
-	 * @param env env
-	 * @return the expanded macro
-	 */
-	private VncVal macroexpand(VncVal ast, final Env env) {
-		while (is_macro_call(ast, env)) {
-			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).first());
-			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
-			final VncList macroFnArgs = Coerce.toVncList(ast).rest();
-			ast = macroFn.apply(macroFnArgs);
-		}
-		return ast;
-	}
-
-	private VncVal eval_ast(final VncVal ast, final Env env) {
-		if (Types.isVncSymbol(ast)) {
-			return env.get((VncSymbol)ast);
-		} 
-		else if (Types.isVncSequence(ast)) {
-			final VncSequence seq = (VncSequence)ast;		
-			
-			final List<VncVal> vals = new ArrayList<>();
-			for(VncVal v : seq.getList()) {
-				vals.add(EVAL(v, env));
-			}
-			return seq.withValues(vals);
-		}
-		else if (Types.isVncMap(ast)) {
-			final VncMap map = (VncMap)ast;
-			
-			final Map<VncVal,VncVal> vals = new HashMap<>();
-			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
-				vals.put(e.getKey(), EVAL(e.getValue(), env));
-			}
-			return map.withValues(vals);
-		} 
-		else {
-			return ast;
-		}
-	}
-
 	public VncVal EVAL(VncVal orig_ast, Env env) {
 		RecursionPoint recursionPoint = null;
 		
@@ -490,6 +387,109 @@ public class VeniceInterpreter implements Serializable  {
 		return env;
 	}
 
+
+	private static boolean is_pair(final VncVal x) {
+		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
+	}
+
+	private static VncVal quasiquote(final VncVal ast) {
+		if (!is_pair(ast)) {
+			return VncList.of(new VncSymbol("quote"), ast);
+		} 
+		else {
+			final VncVal a0 = Coerce.toVncSequence(ast).first();
+			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
+				return ((VncSequence)ast).second();
+			} 
+			else if (is_pair(a0)) {
+				final VncVal a00 = Coerce.toVncSequence(a0).first();
+				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
+					return VncList.of(
+								new VncSymbol("concat"),
+								Coerce.toVncSequence(a0).second(),
+								quasiquote(((VncSequence)ast).rest()));
+				}
+			}
+			return VncList.of(
+						new VncSymbol("cons"),
+						quasiquote(a0),
+						quasiquote(((VncSequence)ast).rest()));
+		}
+	}
+
+	/**
+	 * Returns true if ast is a list that contains a symbol as the first element 
+	 * and that symbol refers to a function in the env environment and that 
+	 * function has the is_macro attribute set to true. 
+	 * Otherwise, it returns false.
+	 * 
+	 * @param ast ast
+	 * @param env env
+	 * @return true if the ast starts with a macro
+	 */
+	private boolean is_macro_call(final VncVal ast, final Env env) {
+		if (Types.isVncList(ast)) {
+			final VncVal a0 = ((VncList)ast).first();
+			if (Types.isVncSymbol(a0)) {
+				final VncVal fn = env.getOrNil((VncSymbol)a0);
+				if (Types.isVncMacro(fn)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Recursively expands a macro. It calls is_macro_call with ast and env and 
+	 * loops while that condition is true. Inside the loop, the first element 
+	 * of the ast list (a symbol), is looked up in the environment to get 
+	 * the macro function. This macro function is then called/applied with 
+	 * the rest of the ast elements (2nd through the last) as arguments. 
+	 * The return value of the macro call becomes the new value of ast. 
+	 * When the loop completes because ast no longer represents a macro call, 
+	 * the current value of ast is returned.
+	 * 
+	 * @param ast ast
+	 * @param env env
+	 * @return the expanded macro
+	 */
+	private VncVal macroexpand(VncVal ast, final Env env) {
+		while (is_macro_call(ast, env)) {
+			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).first());
+			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
+			final VncList macroFnArgs = Coerce.toVncList(ast).rest();
+			ast = macroFn.apply(macroFnArgs);
+		}
+		return ast;
+	}
+
+	private VncVal eval_ast(final VncVal ast, final Env env) {
+		if (Types.isVncSymbol(ast)) {
+			return env.get((VncSymbol)ast);
+		} 
+		else if (Types.isVncSequence(ast)) {
+			final VncSequence seq = (VncSequence)ast;		
+			
+			final List<VncVal> vals = new ArrayList<>();
+			for(VncVal v : seq.getList()) {
+				vals.add(EVAL(v, env));
+			}
+			return seq.withValues(vals);
+		}
+		else if (Types.isVncMap(ast)) {
+			final VncMap map = (VncMap)ast;
+			
+			final Map<VncVal,VncVal> vals = new HashMap<>();
+			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
+				vals.put(e.getKey(), EVAL(e.getValue(), env));
+			}
+			return map.withValues(vals);
+		} 
+		else {
+			return ast;
+		}
+	}
 	
 	private VncFunction defmacro_(final VncList ast, final Env env) {
 		int argPos = 1;
