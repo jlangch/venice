@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StopWatch;
@@ -31,7 +32,12 @@ import com.github.jlangch.venice.support.AuditEventType;
 
 
 public class VeniceElapsedTest {
-		
+
+	@BeforeAll
+	public static void test() {
+		System.out.println("Performance tests (VeniceElapsedTest):");
+	}
+
 	@Test
 	public void evalWithObject() {
 		final AuditEvent event = new AuditEvent(

@@ -31,7 +31,7 @@ public class PerformanceTest {
 
 	@BeforeAll
 	public static void test() {
-		System.out.println("Perfromance tests:");
+		System.out.println("Performance tests:");
 	}
 
 	@Test
