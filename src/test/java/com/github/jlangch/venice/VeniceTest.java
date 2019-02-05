@@ -67,6 +67,7 @@ public class VeniceTest {
 		
 		String timerData = venice.getTimerDataFormatted();
 		assertNotNull(timerData);
+		//System.out.println(timerData);
 	}
 
 	@Test
