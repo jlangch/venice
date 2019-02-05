@@ -247,7 +247,8 @@ public class Venice {
 		return meterRegistry
 					.getTimerData()
 					.stream()
-					.map(v -> v.toString())
+					.sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
+					.map(v -> String.format("%-20s [%3d]: %10s", v.name, v.count, Timer.formatNanos(v.elapsedNanos)))
 					.collect(Collectors.joining("\n"));
 	}
 	
