@@ -112,85 +112,75 @@ public class Numeric {
 	private static VncVal calc(final char op, final VncVal op1, final VncVal op2) {
 		validateNumericTypes("" + op, op1, op2);
 		
-		if (Types.isVncLong(op1)) {
-			if (Types.isVncLong(op2)) {
-				return calc(op, (VncLong)op1, (VncLong)op2);
+		try {
+			if (Types.isVncLong(op1)) {
+				if (Types.isVncLong(op2)) {
+					return calc(op, (VncLong)op1, (VncLong)op2);
+				}
+				else if (Types.isVncDouble(op2)) {
+					return calc(op, Numeric.toDouble(op1), (VncDouble)op2);
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return calc(op, Numeric.toDecimal(op1), (VncBigDecimal)op2);
+				}
 			}
-			else if (Types.isVncDouble(op2)) {
-				return calc(op, Numeric.toDouble(op1), (VncDouble)op2);
+			else if (Types.isVncDouble(op1)) {
+				if (Types.isVncLong(op2)) {
+					return calc(op, (VncDouble)op1, Numeric.toDouble(op2));
+				}
+				else if (Types.isVncDouble(op2)) {
+					return calc(op, (VncDouble)op1, (VncDouble)op2);
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return calc(op, Numeric.toDecimal(op1), (VncBigDecimal)op2);
+				}
 			}
-			else if (Types.isVncBigDecimal(op2)) {
-				return calc(op, Numeric.toDecimal(op1), (VncBigDecimal)op2);
+			else if (Types.isVncBigDecimal(op1)) {
+				if (Types.isVncLong(op2)) {
+					return calc(op, (VncBigDecimal)op1, Numeric.toDecimal(op2));
+				}
+				else if (Types.isVncDouble(op2)) {
+					return calc(op, (VncBigDecimal)op1, Numeric.toDecimal(op2));
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return calc(op, (VncBigDecimal)op1, (VncBigDecimal)op2);
+				}
 			}
 		}
-		else if (Types.isVncDouble(op1)) {
-			if (Types.isVncLong(op2)) {
-				return calc(op, (VncDouble)op1, Numeric.toDouble(op2));
-			}
-			else if (Types.isVncDouble(op2)) {
-				return calc(op, (VncDouble)op1, (VncDouble)op2);
-			}
-			else if (Types.isVncBigDecimal(op2)) {
-				return calc(op, Numeric.toDecimal(op1), (VncBigDecimal)op2);
-			}
-		}
-		else if (Types.isVncBigDecimal(op1)) {
-			if (Types.isVncLong(op2)) {
-				return calc(op, (VncBigDecimal)op1, Numeric.toDecimal(op2));
-			}
-			else if (Types.isVncDouble(op2)) {
-				return calc(op, (VncBigDecimal)op1, Numeric.toDecimal(op2));
-			}
-			else if (Types.isVncBigDecimal(op2)) {
-				return calc(op, (VncBigDecimal)op1, (VncBigDecimal)op2);
-			}
+		catch (ArithmeticException ex) {
+			throw new VncException(ex.getMessage(), ex);
 		}
 		
 		throw new RuntimeException("Unexpected outcome");
 	}
 	
 	private static VncVal calc(final char op, final VncLong op1, final VncLong op2) {
-		try {
-			switch(op) {
-				case '+': return new VncLong(op1.getValue() + op2.getValue());
-				case '-': return new VncLong(op1.getValue() - op2.getValue());
-				case '*': return new VncLong(op1.getValue() * op2.getValue());
-				case '/': return new VncLong(op1.getValue() / op2.getValue());
-				default: throw new RuntimeException("Invalid operation");
-			}
-		}
-		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage(), ex);
+		switch(op) {
+			case '+': return new VncLong(op1.getValue() + op2.getValue());
+			case '-': return new VncLong(op1.getValue() - op2.getValue());
+			case '*': return new VncLong(op1.getValue() * op2.getValue());
+			case '/': return new VncLong(op1.getValue() / op2.getValue());
+			default: throw new RuntimeException("Invalid integer math operation '" + op + "'");
 		}
 	}
 
 	private static VncVal calc(final char op, final VncDouble op1, final VncDouble op2) {
-		try {
-			switch(op) {
-				case '+': return new VncDouble(op1.getValue() + op2.getValue());
-				case '-': return new VncDouble(op1.getValue() - op2.getValue());
-				case '*': return new VncDouble(op1.getValue() * op2.getValue());
-				case '/': return new VncDouble(op1.getValue() / op2.getValue());
-				default: throw new RuntimeException("Invalid operation");
-			}
-		}
-		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage(), ex);
+		switch(op) {
+			case '+': return new VncDouble(op1.getValue() + op2.getValue());
+			case '-': return new VncDouble(op1.getValue() - op2.getValue());
+			case '*': return new VncDouble(op1.getValue() * op2.getValue());
+			case '/': return new VncDouble(op1.getValue() / op2.getValue());
+			default: throw new RuntimeException("Invalid double math operation '" + op + "'");
 		}
 	}
 
 	private static VncVal calc(final char op, final VncBigDecimal op1, final VncBigDecimal op2) {
-		try {
-			switch(op) {
-				case '+': return new VncBigDecimal(op1.getValue().add(op2.getValue()));
-				case '-': return new VncBigDecimal(op1.getValue().subtract(op2.getValue()));
-				case '*': return new VncBigDecimal(op1.getValue().multiply(op2.getValue()));
-				case '/': return new VncBigDecimal(op1.getValue().divide(op2.getValue(), 16, RoundingMode.HALF_UP));
-				default: throw new RuntimeException("Invalid operation");
-			}
-		}
-		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage(), ex);
+		switch(op) {
+			case '+': return new VncBigDecimal(op1.getValue().add(op2.getValue()));
+			case '-': return new VncBigDecimal(op1.getValue().subtract(op2.getValue()));
+			case '*': return new VncBigDecimal(op1.getValue().multiply(op2.getValue()));
+			case '/': return new VncBigDecimal(op1.getValue().divide(op2.getValue(), 16, RoundingMode.HALF_UP));
+			default: throw new RuntimeException("Invalid big decimal math operation '" + op + "'");
 		}
 	}
 
