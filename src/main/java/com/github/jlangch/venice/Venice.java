@@ -238,6 +238,10 @@ public class Venice {
 	public void disableTimer() {
 		meterRegistry.disable();
 	}
+	
+	public void resetTimer() {
+		meterRegistry.reset();
+	}
 
 	public Collection<Timer> getTimerData() {
 		return meterRegistry.getTimerData();

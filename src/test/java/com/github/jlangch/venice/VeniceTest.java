@@ -53,6 +53,21 @@ public class VeniceTest {
 		String timerData = venice.getTimerDataFormatted();
 		assertNotNull(timerData);
 	}
+	
+	@Test
+	public void evalWithTimer_Precompiled() {
+		final Venice venice = new Venice();
+
+		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
+
+		venice.resetTimer();
+		venice.enableTimer();
+		
+		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
+		
+		String timerData = venice.getTimerDataFormatted();
+		assertNotNull(timerData);
+	}
 
 	@Test
 	public void evalEnv() {
