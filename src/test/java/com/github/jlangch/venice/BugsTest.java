@@ -47,7 +47,7 @@ public class BugsTest {
 		env.set(new VncSymbol(CoreFunctions.meta.getName()), CoreFunctions.meta);
 		
 		// Test...
-		final VncVal result = venice.RE("(meta [1 2 3])", null, env, null);		
+		final VncVal result = venice.RE("(meta [1 2 3])", null, env);		
 		assertNotEquals(Constants.Nil, result);
 	}
 
@@ -61,7 +61,7 @@ public class BugsTest {
 		env.set(new VncSymbol(CoreFunctions.str.getName()), CoreFunctions.str);
 		
 		// Test...
-		final VncVal result = venice.RE("(str \"\\u0041\\u0042\\u0043\")", null, env, null);		
+		final VncVal result = venice.RE("(str \"\\u0041\\u0042\\u0043\")", null, env);		
 		assertEquals("ABC", ((VncString)result).getValue());
 	}
 

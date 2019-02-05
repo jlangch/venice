@@ -64,25 +64,104 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.CallFrame;
-import com.github.jlangch.venice.util.ScriptElapsedTime;
 
 
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
+		this(new MeterRegistry(false));
+	}
+
+	public VeniceInterpreter(final MeterRegistry perfmeter) {
 		this.sandboxMaxExecutionTimeChecker = new SandboxMaxExecutionTimeChecker();
+		this.meterRegistry = perfmeter;
 	}
 	
 	
 	// read
 	public VncVal READ(final String script, final String filename) {
-		return Reader.read_str(script, filename);
+		final long nanos = System.nanoTime();
+
+		final VncVal val = Reader.read_str(script, filename);
+	
+		if (meterRegistry.enabled) {
+			meterRegistry.record("venice.read", System.nanoTime() - nanos);
+		}
+
+		return val;
 	}
 
-	public VncVal EVAL(VncVal orig_ast, Env env) {
+	public VncVal EVAL(final VncVal ast, final Env env) {
+		final long nanos = System.nanoTime();
+
+		final VncVal val = evaluate(ast, env);
+		
+		if (meterRegistry.enabled) {
+			meterRegistry.record("venice.eval", System.nanoTime() - nanos);
+		}
+
+		return val;
+	}
+
+	// print
+	public String PRINT(final VncVal exp) {
+		return Printer._pr_str(exp, true);
+	}
+	
+	public VncVal RE(
+			final String script, 
+			final String filename, 
+			final Env env
+	) {
+		final VncVal ast = READ(script, filename);	
+		
+		final VncVal result = EVAL(ast, env);
+		
+		return result;
+	}
+	
+	public Env createEnv() {
+		return createEnv(null);
+	}
+
+	public Env createEnv(final List<String> preloadedExtensionModules) {
+		final Env env = new Env(null);
+	
+		// core functions defined in Java
+		Functions.functions
+				 .keySet()
+				 .forEach(key -> env.set((VncSymbol)key, Functions.functions.get(key)));
+
+		// core functions Java interoperability
+		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
+		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
+
+		// set Venice version
+		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION)));
+
+		// set system newline
+		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator())));
+
+		// set system stdout (dynamic)
+		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
+
+		// core module: core.venice 
+		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
+
+		if (preloadedExtensionModules != null) {
+			preloadedExtensionModules.forEach(
+				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env));
+		}
+		
+		return env;
+	}
+
+
+	public VncVal evaluate(VncVal orig_ast, Env env) {
 		RecursionPoint recursionPoint = null;
 		
 		while (true) {
@@ -108,30 +187,30 @@ public class VeniceInterpreter implements Serializable  {
 			switch (a0sym) {			
 				case "def": { // (def meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.second(), env) : new VncHashMap();
+					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = EVAL(defVal, env);
+					final VncVal res = evaluate(defVal, env);
 					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
 					return res;
 				}
 				
 				case "defonce": { // (defonce meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.second(), env) : new VncHashMap();
+					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = EVAL(defVal, env);
+					final VncVal res = evaluate(defVal, env);
 					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
 					return res;
 				}
 				
 				case "def-dynamic": { // (def-dynamic meta-data? name value)
 					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)EVAL(ast.second(), env) : new VncHashMap();
+					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = EVAL(defVal, env);
+					final VncVal res = evaluate(defVal, env);
 					env.setGlobal(new DynamicVar(defName, MetaUtil.addDefMeta(res, defMeta)));
 					return res;
 				}
@@ -157,7 +236,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
-						final VncVal val = EVAL(bindings.nth(i+1), env);
+						final VncVal val = evaluate(bindings.nth(i+1), env);
 
 						for(Binding b : Destructuring.destructure(sym, val)) {
 							env.set(b.sym, b.val);
@@ -186,7 +265,7 @@ public class VeniceInterpreter implements Serializable  {
 					final List<VncSymbol> bindingNames = new ArrayList<>();
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
-						final VncVal val = EVAL(bindings.nth(i+1), env);
+						final VncVal val = evaluate(bindings.nth(i+1), env);
 
 						env.set((VncSymbol)sym, val);
 						bindingNames.add((VncSymbol)sym);
@@ -224,7 +303,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncVal[] values = new VncVal[ast.size()-1];
 					int kk=0;
 					for(VncVal v : ast.rest().getList()) {
-						values[kk++] = EVAL(v, env);
+						values[kk++] = evaluate(v, env);
 					}
 					// [2] bind the values
 					for(int ii=0; ii<bindingNames.size(); ii++) {
@@ -278,7 +357,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "if": 
 					final VncVal condArg = ast.second();
-					final VncVal cond = EVAL(condArg, env);
+					final VncVal cond = evaluate(condArg, env);
 					if (cond == Nil || cond == False) {
 						// eval false slot form
 						if (ast.size() > 3) {
@@ -299,17 +378,23 @@ public class VeniceInterpreter implements Serializable  {
 					return fn_(ast, env);
 
 				default:
+					final long nanos = System.nanoTime();
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					final VncVal elArg0 = el.first();
 					if (Types.isVncFunction(elArg0)) {
 						sandboxMaxExecutionTimeChecker.check();
 						
 						// invoke function with call frame
+						final CallFrame frame = CallFrameBuilder.fromFunction((VncFunction)elArg0, a0);		
+						ThreadLocalMap.getCallStack().push(frame);
 						try {
-							final CallFrame frame = CallFrameBuilder.fromFunction(
-														(VncFunction)elArg0, ast.first());		
-							ThreadLocalMap.getCallStack().push(frame);
-							return ((VncFunction)elArg0).apply(el.rest());
+							final VncVal val = ((VncFunction)elArg0).apply(el.rest());
+							
+							if (meterRegistry.enabled) {
+								meterRegistry.record(((VncFunction)elArg0).getName(), System.nanoTime() - nanos);
+							}
+							
+							return val;
 						}
 						finally {
 							ThreadLocalMap.getCallStack().pop();
@@ -330,63 +415,6 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 	}
-
-	// print
-	public String PRINT(final VncVal exp) {
-		return Printer._pr_str(exp, true);
-	}
-	
-	public VncVal RE(
-			final String script, 
-			final String filename, 
-			final Env env,
-			final ScriptElapsedTime elapsedTime
-	) {
-		final VncVal ast = READ(script, filename);	
-		if (elapsedTime != null) elapsedTime.readDone();	
-		
-		final VncVal result = EVAL(ast, env);
-		if (elapsedTime != null) elapsedTime.evalDone();	
-		
-		return result;
-	}
-	
-	public Env createEnv() {
-		return createEnv(null);
-	}
-
-	public Env createEnv(final List<String> preloadedExtensionModules) {
-		final Env env = new Env(null);
-	
-		// core functions defined in Java
-		Functions.functions
-				 .keySet()
-				 .forEach(key -> env.set((VncSymbol)key, Functions.functions.get(key)));
-
-		// core functions Java interoperability
-		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
-		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
-
-		// set Venice version
-		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION)));
-
-		// set system newline
-		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator())));
-
-		// set system stdout (dynamic)
-		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
-
-		// core module: core.venice 
-		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env, null);
-
-		if (preloadedExtensionModules != null) {
-			preloadedExtensionModules.forEach(
-				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env, null));
-		}
-		
-		return env;
-	}
-
 
 	private static boolean is_pair(final VncVal x) {
 		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
@@ -473,7 +501,7 @@ public class VeniceInterpreter implements Serializable  {
 			
 			final List<VncVal> vals = new ArrayList<>();
 			for(VncVal v : seq.getList()) {
-				vals.add(EVAL(v, env));
+				vals.add(evaluate(v, env));
 			}
 			return seq.withValues(vals);
 		}
@@ -482,7 +510,7 @@ public class VeniceInterpreter implements Serializable  {
 			
 			final Map<VncVal,VncVal> vals = new HashMap<>();
 			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
-				vals.put(e.getKey(), EVAL(e.getValue(), env));
+				vals.put(e.getKey(), evaluate(e.getValue(), env));
 			}
 			return map.withValues(vals);
 		} 
@@ -496,7 +524,7 @@ public class VeniceInterpreter implements Serializable  {
 
 		final boolean hasMeta = Types.isVncMap(ast.nth(argPos));
 		
-		final VncMap defMeta = hasMeta ? (VncMap)EVAL(ast.nth(argPos++), env) : new VncHashMap();
+		final VncMap defMeta = hasMeta ? (VncMap)evaluate(ast.nth(argPos++), env) : new VncHashMap();
 		final VncVal macroName = ast.nth(argPos++);
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 
@@ -605,7 +633,7 @@ public class VeniceInterpreter implements Serializable  {
 		final List<Var> vars = new ArrayList<>();
 		for(int i=0; i<bindings.size(); i+=2) {
 			final VncVal sym = bindings.nth(i);
-			final VncVal val = EVAL(bindings.nth(i+1), env);
+			final VncVal val = evaluate(bindings.nth(i+1), env);
 	
 			for(Binding b : Destructuring.destructure(sym, val)) {
 				vars.add(new DynamicVar(b.sym, b.val));
@@ -632,7 +660,7 @@ public class VeniceInterpreter implements Serializable  {
 		VncVal result = Nil;
 
 		try {
-			result = EVAL(ast.second(), env);
+			result = evaluate(ast.second(), env);
 		} 
 		catch (Throwable th) {
 			CatchBlock catchBlock = null;
@@ -668,7 +696,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		for(int i=0; i<bindings.size(); i+=2) {
 			final VncVal sym = bindings.nth(i);
-			final VncVal val = EVAL(bindings.nth(i+1), env);
+			final VncVal val = evaluate(bindings.nth(i+1), env);
 
 			if (Types.isVncSymbol(sym)) {
 				env.set((VncSymbol)sym, val);
@@ -686,7 +714,7 @@ public class VeniceInterpreter implements Serializable  {
 		VncVal result = Nil;
 		try {
 			try {
-				result = EVAL(ast.nth(2), env);
+				result = evaluate(ast.nth(2), env);
 			} 
 			catch (Throwable th) {
 				CatchBlock catchBlock = null;
@@ -811,11 +839,11 @@ public class VeniceInterpreter implements Serializable  {
 					return Constants.Nil;
 				}
 				else if (body.size() == 1) {
-					return EVAL(body.first(), localEnv);
+					return evaluate(body.first(), localEnv);
 				}
 				else {
 					eval_ast(body.slice(0, body.size()-1), localEnv);
-					return EVAL(body.last(), localEnv);
+					return evaluate(body.last(), localEnv);
 				}
 			}
 			
@@ -854,7 +882,7 @@ public class VeniceInterpreter implements Serializable  {
 		if (preConditions != null) {
 	 		final Env local = new Env(env);	
 	 		preConditions.forEach(v -> {
-				if (!isFnConditionTrue(EVAL(v, local))) {
+				if (!isFnConditionTrue(evaluate(v, local))) {
 					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, v));
 					throw new AssertionException(
 							String.format(
@@ -901,4 +929,6 @@ public class VeniceInterpreter implements Serializable  {
 	private final JavaImports javaImports = new JavaImports();
 	
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;
+	
+	private final MeterRegistry meterRegistry;
 }

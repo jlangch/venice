@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -43,13 +44,14 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.util.ScriptElapsedTime;
 import com.github.jlangch.venice.util.NullOutputStream;
+import com.github.jlangch.venice.util.Timer;
 
 
 public class Venice {
@@ -83,7 +85,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
 		
-		final VeniceInterpreter venice = new VeniceInterpreter();
+		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false));
 		
 		final Env env = createEnv(venice, null);
 		
@@ -123,7 +125,7 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
-		lastElapsedTime = new ScriptElapsedTime();
+		final long nanos = System.nanoTime();
 
 		// The stdout PrintStream is not serializable, so re-add it as default stream
 		final Env root = precompiled.getEnv().getRootEnv();
@@ -133,15 +135,19 @@ public class Venice {
 						new VncJavaObject(new PrintStream(System.out, true))));
 		
 		return runWithSandbox( () -> {
-			final VeniceInterpreter venice = new VeniceInterpreter();
+			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
 
 			final Env env = addParams(new Env(precompiled.getEnv()), params);
-			lastElapsedTime.loadDone();
-			lastElapsedTime.readDone();
+			
+			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 				 
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
 
-			return JavaInteropUtil.convertToJavaObject(result);
+			final Object jResult = JavaInteropUtil.convertToJavaObject(result);
+			
+			meterRegistry.record("venice.total", System.nanoTime() - nanos);
+
+			return jResult;
 		});
 	}
 
@@ -190,18 +196,22 @@ public class Venice {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
 		
-		lastElapsedTime = new ScriptElapsedTime();
+		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
-			final VeniceInterpreter venice = new VeniceInterpreter();
+			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
 
 			final Env env = createEnv(venice, params);
 			
-			lastElapsedTime.loadDone();
+			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 			
-			final VncVal result = venice.RE(script, scriptName, env, lastElapsedTime);
+			final VncVal result = venice.RE(script, scriptName, env);
 						
-			return JavaInteropUtil.convertToJavaObject(result);
+			final Object jResult = JavaInteropUtil.convertToJavaObject(result);
+	
+			meterRegistry.record("venice.total", System.nanoTime() - nanos);
+
+			return jResult;
 		});
 	}
 	
@@ -220,9 +230,10 @@ public class Venice {
 		return ReflectionAccessor.isCacheEnabled();
 	}
 
-	public ScriptElapsedTime getLastElapsedTime() {
-		return lastElapsedTime;
+	public Collection<Timer> getTimerData() {
+		return meterRegistry.getTimerData();
 	}
+	
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
 		final Env env = venice.createEnv();
@@ -318,5 +329,5 @@ public class Venice {
 							true /* daemon threads */));
 	
 	private final IInterceptor interceptor;
-	private ScriptElapsedTime lastElapsedTime = null;
+	private final MeterRegistry meterRegistry = new MeterRegistry(false);
 }

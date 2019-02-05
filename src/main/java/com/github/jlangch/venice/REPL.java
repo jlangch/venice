@@ -82,7 +82,7 @@ public class REPL {
 			
 			try {
 				ThreadLocalMap.clearCallStack();
-				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env, null)));
+				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
 			} 
 			catch (ContinueException e) {
 				continue;
@@ -114,12 +114,12 @@ public class REPL {
 			final String file = cli.switchValue("-file");
 			final String script = new String(FileUtil.load(new File(file)));
 			
-			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env, null)));
+			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
 		}
 		else if (cli.switchPresent("-script")) {
 			final String script = cli.switchValue("-script");
 			
-			System.out.println(venice.PRINT(venice.RE(script, "script", env, null)));
+			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 		}
 	}
 	

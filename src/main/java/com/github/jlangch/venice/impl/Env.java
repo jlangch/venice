@@ -184,24 +184,24 @@ public class Env implements Serializable {
 	}
 	
 	private Env findEnv(final VncSymbol key) {		
-//		if (symbols.containsKey(key)) {
-//			return this;
-//		} 
-//		else if (outer != null) {
-//			return outer.findEnv(key);
-//		} 
-//		else {
-//			return null;
-//		}
-
-		Env e = this;
-		while(e != null) {
-			if (e.symbols.containsKey(key)) {
-				return e;
-			}
-			e = e.outer;
+		if (symbols.containsKey(key)) {
+			return this;
+		} 
+		else if (outer != null) {
+			return outer.findEnv(key);
+		} 
+		else {
+			return null;
 		}
-		return null;
+//
+//		Env e = this;
+//		while(e != null) {
+//			if (e.symbols.containsKey(key)) {
+//				return e;
+//			}
+//			e = e.outer;
+//		}
+//		return null;
 	}
 	
 	
