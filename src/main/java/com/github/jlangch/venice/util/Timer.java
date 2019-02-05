@@ -34,6 +34,24 @@ public class Timer implements Serializable {
 	public Timer add(final long elapsedNanos) {
 		return new Timer(name, count + 1, this.elapsedNanos + elapsedNanos);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s [%d]: %s", name, count, formatNanos(elapsedNanos));
+	}
+	
+	private static String formatNanos(final long nanos) {
+		if (nanos < 1_000) {
+			return Long.valueOf(nanos).toString() + "ns";
+		}
+		else if (nanos < 1_000_0000) {
+			return String.format("%.2f us", nanos / 1000.0D);
+		}
+		else {
+			return String.format("%.2f ms", nanos / 10000000.0D);			
+		}
+	}
+	
 	
 	public final String name; 
 	public final int count; 

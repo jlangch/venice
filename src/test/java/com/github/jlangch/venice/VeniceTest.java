@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
 
@@ -39,6 +40,18 @@ public class VeniceTest {
 		
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6)));
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
+	}
+	
+	@Test
+	public void evalWithTimer() {
+		final Venice venice = new Venice();
+		
+		venice.enableTimer();
+		
+		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
+		
+		String timerData = venice.getTimerDataFormatted();
+		assertNotNull(timerData);
 	}
 
 	@Test

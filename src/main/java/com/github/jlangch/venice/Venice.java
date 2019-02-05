@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
@@ -229,9 +230,25 @@ public class Venice {
 	public boolean isJavaInteropReflectionCacheEnabled() {
 		return ReflectionAccessor.isCacheEnabled();
 	}
+	
+	public void enableTimer() {
+		meterRegistry.enable();
+	}
+	
+	public void disableTimer() {
+		meterRegistry.disable();
+	}
 
 	public Collection<Timer> getTimerData() {
 		return meterRegistry.getTimerData();
+	}
+
+	public String getTimerDataFormatted() {
+		return meterRegistry
+					.getTimerData()
+					.stream()
+					.map(v -> v.toString())
+					.collect(Collectors.joining("\n"));
 	}
 	
 	

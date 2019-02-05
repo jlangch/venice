@@ -43,6 +43,10 @@ public class MeterRegistry implements Serializable {
 		this.enabled = false;
 	}
 	
+	public void reset() {
+		this.data.clear();
+	}
+	
 	public void record(final String name, final long elapsedTime) {
 		data.compute(name, (k, v) -> v == null 
 										? new Timer(name, 1, elapsedTime) 

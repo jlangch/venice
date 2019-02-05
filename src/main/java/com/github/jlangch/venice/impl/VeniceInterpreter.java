@@ -150,11 +150,17 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
 
 		// core module: core.venice 
+		final long nanos = System.nanoTime();
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
+		meterRegistry.record("venice.module.core", System.nanoTime() - nanos);
 
 		if (preloadedExtensionModules != null) {
 			preloadedExtensionModules.forEach(
-				m -> RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env));
+				m -> {
+					final long nanos_ = System.nanoTime();
+					RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env);
+					meterRegistry.record("venice.module." + m, System.nanoTime() - nanos_);
+				});
 		}
 		
 		return env;
