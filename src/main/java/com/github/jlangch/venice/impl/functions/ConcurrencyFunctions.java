@@ -130,7 +130,7 @@ public class ConcurrencyFunctions {
 								return JavaInteropUtil.convertToVncVal(future.get());
 							}
 							else {
-								final long timeout = Coerce.toVncLong(args.nth(1)).getValue();
+								final long timeout = Coerce.toVncLong(args.second()).getValue();
 								try {
 									return JavaInteropUtil.convertToVncVal(future.get(timeout, TimeUnit.MILLISECONDS));
 								}
@@ -244,7 +244,7 @@ public class ConcurrencyFunctions {
 				assertArity("add-watch", args, 3);
 				
 				final VncVal ref = args.first();
-				final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
+				final VncKeyword key = Coerce.toVncKeyword(args.second());
 				final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 						
 				if (Types.isVncJavaObject(ref)) {
@@ -287,7 +287,7 @@ public class ConcurrencyFunctions {
 				assertArity("remove-watch", args, 2);
 				
 				final VncVal ref = args.first();
-				final VncKeyword key = Coerce.toVncKeyword(args.nth(1));
+				final VncKeyword key = Coerce.toVncKeyword(args.second());
 						
 				if (Types.isVncJavaObject(ref)) {
 					final Object delegate = ((VncJavaObject)args.first()).getDelegate();
@@ -368,7 +368,7 @@ public class ConcurrencyFunctions {
 				assertArity("reset!", args, 2);
 				
 				final VncAtom atm = Coerce.toVncAtom(args.first());
-				return atm.reset(args.nth(1));
+				return atm.reset(args.second());
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -392,7 +392,7 @@ public class ConcurrencyFunctions {
 				assertMinArity("swap!", args, 2);
 				
 				final VncAtom atm = Coerce.toVncAtom(args.first());		
-				final VncFunction fn = Coerce.toVncFunction(args.nth(1));
+				final VncFunction fn = Coerce.toVncFunction(args.second());
 				final VncList swapArgs = args.slice(2);
 				
 				return atm.swap(fn, swapArgs);
@@ -419,7 +419,7 @@ public class ConcurrencyFunctions {
 				
 				final VncAtom atm = Coerce.toVncAtom(args.first());		
 				
-				return atm.compare_and_set(args.nth(1), args.nth(2));
+				return atm.compare_and_set(args.second(), args.nth(2));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -489,7 +489,7 @@ public class ConcurrencyFunctions {
 				
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
-					final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
+					final VncFunction fn = Coerce.toVncFunction(args.second());		
 					final VncList fnArgs = args.slice(2);		
 					
 					agent.send(fn, fnArgs);
@@ -531,7 +531,7 @@ public class ConcurrencyFunctions {
 				
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
-					final VncFunction fn = Coerce.toVncFunction(args.nth(1));		
+					final VncFunction fn = Coerce.toVncFunction(args.second());		
 					final VncList fnArgs = args.slice(2);		
 					
 					agent.send_off(fn, fnArgs);
@@ -570,7 +570,7 @@ public class ConcurrencyFunctions {
 				
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
-					final VncVal state = args.nth(1);		
+					final VncVal state = args.second();		
 					
 					agent.restart(state);
 					return args.first();
@@ -614,7 +614,7 @@ public class ConcurrencyFunctions {
 				
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
-					agent.setErrorHandler(Coerce.toVncFunction(args.nth(1)));
+					agent.setErrorHandler(Coerce.toVncFunction(args.second()));
 					return args.first();
 				}
 				else {

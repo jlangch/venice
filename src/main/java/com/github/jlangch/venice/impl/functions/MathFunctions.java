@@ -59,16 +59,14 @@ public class MathFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
-					return new VncLong(0);
-				}
-				else if (args.size() == 1) {
-					return args.first();
-				}
-				else {
-					VncVal val = args.first();
-					for(VncVal v : args.rest().getList()) { val = Numeric.add(val, v); }
-					return val;
+				switch(args.size()) {
+					case 0: return new VncLong(0);
+					case 1: return args.first();
+					case 2: return Numeric.add(args.first(), args.second());
+					default:
+						VncVal val = args.first();
+						for(VncVal v : args.rest().getList()) { val = Numeric.add(val, v); }
+						return val;
 				}
 			}
 	
@@ -88,28 +86,29 @@ public class MathFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
-					throw new ArityException(args, 0, "-");
-				}
-				else if (args.size() == 1) {
-					final VncVal first = args.first();
-					if (Types.isVncLong(first)) {
-						return new VncLong(((VncLong)first).getValue() * -1);
-					}
-					else if (Types.isVncDouble(first)) {
-						return new VncDouble(((VncDouble)first).getValue() * -1D);
-					}
-					else if (Types.isVncBigDecimal(first)) {
-						return new VncBigDecimal(((VncBigDecimal)first).getValue().negate());
-					}
-					else {
-						return first;
-					}
-				}
-				else {
-					VncVal val = args.first();
-					for(VncVal v : args.rest().getList()) { val = Numeric.sub(val, v); }
-					return val;
+				switch(args.size()) {
+					case 0: 
+						throw new ArityException(args, 0, "-");
+					case 1: 
+						final VncVal first = args.first();
+						if (Types.isVncLong(first)) {
+							return new VncLong(((VncLong)first).getValue() * -1);
+						}
+						else if (Types.isVncDouble(first)) {
+							return new VncDouble(((VncDouble)first).getValue() * -1D);
+						}
+						else if (Types.isVncBigDecimal(first)) {
+							return new VncBigDecimal(((VncBigDecimal)first).getValue().negate());
+						}
+						else {
+							return first;
+						}	
+					case 2: 
+						return Numeric.sub(args.first(), args.second());
+					default:
+						VncVal val = args.first();
+						for(VncVal v : args.rest().getList()) { val = Numeric.sub(val, v); }
+						return val;
 				}
 			}
 	
@@ -127,16 +126,14 @@ public class MathFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
-					return new VncLong(1);
-				}
-				else if (args.size() == 1) {
-					return args.first();
-				}
-				else {
-					VncVal val = args.first();
-					for(VncVal v : args.rest().getList()) { val = Numeric.mul(val, v); }
-					return val;
+				switch(args.size()) {
+					case 0: return new VncLong(1);
+					case 1: return args.first();
+					case 2: return Numeric.mul(args.first(), args.second());
+					default:
+						VncVal val = args.first();
+						for(VncVal v : args.rest().getList()) { val = Numeric.mul(val, v); }
+						return val;
 				}
 			}
 	
@@ -156,28 +153,29 @@ public class MathFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
-					throw new ArityException(args, 0, "/");
-				}
-				else if (args.size() == 1) {
-					final VncVal first = args.first();
-					if (Types.isVncLong(first)) {
-						return Numeric.div(new VncLong(1L), first);
-					}
-					else if (Types.isVncDouble(first)) {
-						return Numeric.div(new VncDouble(1D), first);
-					}
-					else if (Types.isVncBigDecimal(first)) {
-						return Numeric.div(new VncBigDecimal(BigDecimal.ONE), first);
-					}
-					else {
-						return first;
-					}
-				}
-				else {
-					VncVal val = args.first();
-					for(VncVal v : args.rest().getList()) { val = Numeric.div(val, v); }
-					return val;
+				switch(args.size()) {
+					case 0: 
+						throw new ArityException(args, 0, "/");
+					case 1: 
+						final VncVal first = args.first();
+						if (Types.isVncLong(first)) {
+							return Numeric.div(new VncLong(1L), first);
+						}
+						else if (Types.isVncDouble(first)) {
+							return Numeric.div(new VncDouble(1D), first);
+						}
+						else if (Types.isVncBigDecimal(first)) {
+							return Numeric.div(new VncBigDecimal(BigDecimal.ONE), first);
+						}
+						else {
+							return first;
+						}	
+					case 2: 
+						return Numeric.div(args.first(), args.second());
+					default:
+						VncVal val = args.first();
+						for(VncVal v : args.rest().getList()) { val = Numeric.div(val, v); }
+						return val;
 				}
 			}
 	
@@ -202,16 +200,16 @@ public class MathFunctions {
 							"Function 'mod' does not allow %s as numerator", 
 							Types.getClassName(args.first())));
 				}
-				if (!Types.isVncLong(args.nth(1))) {
+				if (!Types.isVncLong(args.second())) {
 					throw new VncException(String.format(
 							"Function 'mod' does not allow %s as denominator", 
-							Types.getClassName(args.nth(1))));
+							Types.getClassName(args.second())));
 				}
 				
 				return new VncLong(
 							((VncLong)args.first()).getValue().longValue() 
 							% 
-							((VncLong)args.nth(1)).getValue().longValue());
+							((VncLong)args.second()).getValue().longValue());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -729,7 +727,7 @@ public class MathFunctions {
 				assertArity("dec/add", args, 4);
 	
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
-				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.nth(1));
+				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
 					
@@ -757,7 +755,7 @@ public class MathFunctions {
 				assertArity("dec/sub", args, 4);
 	
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
-				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.nth(1));
+				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
 					
@@ -783,7 +781,7 @@ public class MathFunctions {
 				assertArity("dec/mul", args, 4);
 	
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
-				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.nth(1));
+				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
 					
@@ -809,7 +807,7 @@ public class MathFunctions {
 				assertArity("dec/div", args, 4);
 	
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
-				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.nth(1));
+				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
 					
@@ -840,7 +838,7 @@ public class MathFunctions {
 				assertArity("dec/scale", args, 3);
 	
 				final VncVal arg = args.first();
-				final VncLong scale = Coerce.toVncLong(args.nth(1));
+				final VncLong scale = Coerce.toVncLong(args.second());
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode((VncString)args.nth(2));
 							
 				if (Types.isVncBigDecimal(arg)) {
@@ -889,11 +887,11 @@ public class MathFunctions {
 						break;
 					case 2:
 						start = args.first();
-						end = args.nth(1);
+						end = args.second();
 						break;
 					case 3:
 						start = args.first();
-						end = args.nth(1);
+						end = args.second();
 						step = args.nth(2);
 						break;
 				}

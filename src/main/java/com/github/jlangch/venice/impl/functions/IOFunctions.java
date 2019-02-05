@@ -102,7 +102,7 @@ public class IOFunctions {
 				}
 				else {
 					final VncVal parent = args.first();
-					final VncVal child = args.nth(1);
+					final VncVal child = args.second();
 					
 					File parentFile;
 	
@@ -426,7 +426,7 @@ public class IOFunctions {
 				
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
 				try {
-					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.nth(1)) : null;
+					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
 	
 					final List<VncVal> files = new ArrayList<>();
 	
@@ -472,15 +472,15 @@ public class IOFunctions {
 							"Function 'io/copy-file' does not allow %s as input",
 							Types.getClassName(args.first())));
 				}
-				if (!isJavaIoFile(args.nth(1)) ) {
+				if (!isJavaIoFile(args.second()) ) {
 					throw new VncException(String.format(
 							"Function 'io/copy-file' does not allow %s as output",
-							Types.getClassName(args.nth(1))));
+							Types.getClassName(args.second())));
 				}
 	
 	
 				final File from = (File)((VncJavaObject)args.first()).getDelegate();
-				final File to = (File)((VncJavaObject)args.nth(1)).getDelegate();
+				final File to = (File)((VncJavaObject)args.second()).getDelegate();
 				
 				try {
 					Files.copy(from.toPath(), to.toPath());
@@ -521,15 +521,15 @@ public class IOFunctions {
 							"Function 'io/move-file' does not allow %s as source",
 							Types.getClassName(args.first())));
 				}
-				if (!isJavaIoFile(args.nth(1)) ) {
+				if (!isJavaIoFile(args.second()) ) {
 					throw new VncException(String.format(
 							"Function 'io/move-file' does not allow %s as target",
-							Types.getClassName(args.nth(1))));
+							Types.getClassName(args.second())));
 				}
 	
 	
 				final File from = (File)((VncJavaObject)args.first()).getDelegate();
-				final File to = (File)((VncJavaObject)args.nth(1)).getDelegate();
+				final File to = (File)((VncJavaObject)args.second()).getDelegate();
 				
 				try {
 					Files.move(from.toPath(), to.toPath());
@@ -685,7 +685,7 @@ public class IOFunctions {
 					}
 	
 			
-					final VncVal content = args.nth(1);
+					final VncVal content = args.second();
 	
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 	
@@ -820,7 +820,7 @@ public class IOFunctions {
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 			
-					final VncVal content = args.nth(1);
+					final VncVal content = args.second();
 	
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 	
@@ -1077,7 +1077,7 @@ public class IOFunctions {
 								file.getPath()));
 					}
 			
-					final VncVal content = args.nth(1);
+					final VncVal content = args.second();
 	
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 	

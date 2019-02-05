@@ -52,6 +52,26 @@ public class VeniceTest {
 		
 		String timerData = venice.getTimerDataFormatted();
 		assertNotNull(timerData);
+		//System.out.println(timerData);
+	}
+	
+	@Test
+	public void evalWithTimer_Warmup() {
+		final Venice venice = new Venice();
+		
+		// warmup
+		for(int ii=0; ii<2000; ii++) {
+			venice.eval("(+ 1 x)", Parameters.of("x", 6L));
+		}
+		
+		venice.resetTimer();
+		venice.enableTimer();
+		
+		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
+		
+		String timerData = venice.getTimerDataFormatted();
+		assertNotNull(timerData);
+		System.out.println(timerData);
 	}
 	
 	@Test
@@ -59,7 +79,7 @@ public class VeniceTest {
 		final Venice venice = new Venice();
 
 		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
-
+		
 		venice.resetTimer();
 		venice.enableTimer();
 		
@@ -68,6 +88,27 @@ public class VeniceTest {
 		String timerData = venice.getTimerDataFormatted();
 		assertNotNull(timerData);
 		//System.out.println(timerData);
+	}
+	
+	@Test
+	public void evalWithTimer_Precompiled_Warmup() {
+		final Venice venice = new Venice();
+
+		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
+
+		// warmup
+		for(int ii=0; ii<2000; ii++) {
+			venice.eval(precomp, Parameters.of("x", 6L));
+		}
+		
+		venice.resetTimer();
+		venice.enableTimer();
+		
+		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
+		
+		String timerData = venice.getTimerDataFormatted();
+		assertNotNull(timerData);
+		System.out.println(timerData);
 	}
 
 	@Test

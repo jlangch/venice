@@ -63,7 +63,7 @@ public class JavaInteropUtil {
 	public static VncVal applyJavaAccess(final VncList args, final JavaImports javaImports) {
 		try {
 			final VncVal arg0 = args.first();		
-			final VncString method = (VncString)args.nth(1);
+			final VncString method = (VncString)args.second();
 			final VncList params = args.slice(2);
 			
 			final String methodName = method.getValue();
@@ -297,11 +297,14 @@ public class JavaInteropUtil {
 		else if (value instanceof VncVal) {
 			return (VncVal)value;
 		}
-		else if (value instanceof Class) {
-			return new VncString(((Class<?>)value).getName());
-		}
 		else if (value instanceof String) {
 			return new VncString((String)value);
+		}
+		else if (value instanceof Long) {
+			return new VncLong((Long)value);
+		}
+		else if (value instanceof Double) {
+			return new VncDouble((Double)value);
 		}
 		else if (value instanceof Byte) {
 			return null;
@@ -312,14 +315,8 @@ public class JavaInteropUtil {
 		else if (value instanceof Integer) {
 			return new VncLong(((Integer)value).longValue());
 		}
-		else if (value instanceof Long) {
-			return new VncLong((Long)value);
-		}
 		else if (value instanceof Float) {
 			return new VncDouble((Float)value);
-		}
-		else if (value instanceof Double) {
-			return new VncDouble((Double)value);
 		}
 		else if (value instanceof BigDecimal) {
 			return new VncBigDecimal((BigDecimal)value);
@@ -354,6 +351,9 @@ public class JavaInteropUtil {
 				}
 				return new VncVector(vec);
 			}
+		}
+		else if (value instanceof Class) {
+			return new VncString(((Class<?>)value).getName());
 		}
 		else { 
 			return new VncJavaObject(value);

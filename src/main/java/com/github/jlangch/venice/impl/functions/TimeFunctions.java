@@ -218,7 +218,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 								LocalDate.of(
 									Coerce.toVncLong(args.first()).getValue().intValue(),
-									Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+									Coerce.toVncLong(args.second()).getValue().intValue(),
 									Coerce.toVncLong(args.nth(2)).getValue().intValue()));
 				}
 			}
@@ -350,7 +350,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 							LocalDateTime.of(
 								Coerce.toVncLong(args.first()).getValue().intValue(),
-								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(args.second()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								0, 0, 0, 0));
 				}
@@ -358,7 +358,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 							LocalDateTime.of(
 								Coerce.toVncLong(args.first()).getValue().intValue(),
-								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(args.second()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(3)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(4)).getValue().intValue(),
@@ -369,7 +369,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 							LocalDateTime.of(
 								Coerce.toVncLong(args.first()).getValue().intValue(),
-								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(args.second()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(3)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(4)).getValue().intValue(),
@@ -529,7 +529,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 							ZonedDateTime.of(
 								Coerce.toVncLong(argList.first()).getValue().intValue(),
-								Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(argList.second()).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 								0, 0, 0, 0, 
 								orDefaultZone(zoneId)));
@@ -538,7 +538,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 							ZonedDateTime.of(
 								Coerce.toVncLong(argList.first()).getValue().intValue(),
-								Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(argList.second()).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(3)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(4)).getValue().intValue(),
@@ -550,7 +550,7 @@ public class TimeFunctions {
 					return new VncJavaObject(
 							ZonedDateTime.of(
 								Coerce.toVncLong(argList.first()).getValue().intValue(),
-								Coerce.toVncLong(argList.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(argList.second()).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(3)).getValue().intValue(),
 								Coerce.toVncLong(argList.nth(4)).getValue().intValue(),
@@ -1440,7 +1440,7 @@ public class TimeFunctions {
 				if (dt instanceof ZonedDateTime) {
 					final ZonedDateTime date = ((ZonedDateTime)dt);
 					return new VncJavaObject(
-								date.withHour(Coerce.toVncLong(args.nth(1)).getValue().intValue())
+								date.withHour(Coerce.toVncLong(args.second()).getValue().intValue())
 									.withMinute(Coerce.toVncLong(args.nth(2)).getValue().intValue())
 									.withSecond(Coerce.toVncLong(args.nth(3)).getValue().intValue())
 									.withNano(nanos));
@@ -1448,7 +1448,7 @@ public class TimeFunctions {
 				else if (dt instanceof LocalDateTime) {
 					return new VncJavaObject(
 								((LocalDateTime)dt).toLocalDate().atTime(
-									Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+									Coerce.toVncLong(args.second()).getValue().intValue(),
 									Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 									Coerce.toVncLong(args.nth(3)).getValue().intValue(),
 									nanos));
@@ -1456,7 +1456,7 @@ public class TimeFunctions {
 				else if (dt instanceof LocalDate) {
 					return new VncJavaObject(
 							((LocalDate)dt).atTime(
-								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(args.second()).getValue().intValue(),
 								Coerce.toVncLong(args.nth(2)).getValue().intValue(),
 								Coerce.toVncLong(args.nth(3)).getValue().intValue(),
 								nanos));
@@ -1682,7 +1682,7 @@ public class TimeFunctions {
 				assertArity("time/formatter", args, 1, 2);
 					
 				// locale
-				final Locale locale = args.size() == 2 ? getLocale(args.nth(1)) : null;
+				final Locale locale = args.size() == 2 ? getLocale(args.second()) : null;
 				
 				// formatter
 				return new VncJavaObject(localize(getDateTimeFormatter(args.first()), locale));

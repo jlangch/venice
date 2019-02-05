@@ -117,12 +117,12 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/starts-with?", args, 2);
 	
-				if (args.first() == Nil || args.nth(1) == Nil) {
+				if (args.first() == Nil || args.second() == Nil) {
 					return False;
 				}
 				
 				final VncString string = Coerce.toVncString(args.first());		
-				final VncString prefix = Coerce.toVncString(args.nth(1));		
+				final VncString prefix = Coerce.toVncString(args.second());		
 				
 				return string.getValue().startsWith(prefix.getValue()) ? True : False;
 			}
@@ -143,12 +143,12 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/ends-with?", args, 2);
 	
-				if (args.first() == Nil || args.nth(1) == Nil) {
+				if (args.first() == Nil || args.second() == Nil) {
 					return False;
 				}
 	
 				final VncString string = Coerce.toVncString(args.first());
-				final VncString suffix = Coerce.toVncString(args.nth(1));
+				final VncString suffix = Coerce.toVncString(args.second());
 				
 				return string.getValue().endsWith(suffix.getValue()) ? True : False;
 			}
@@ -169,12 +169,12 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/contains?", args, 2);
 	
-				if (args.first() == Nil || args.nth(1) == Nil) {
+				if (args.first() == Nil || args.second() == Nil) {
 					return False;
 				}
 	
 				final VncString string = Coerce.toVncString(args.first());
-				final VncString text = Coerce.toVncString(args.nth(1));
+				final VncString text = Coerce.toVncString(args.second());
 				
 				return string.getValue().contains(text.getValue()) ? True : False;
 			}
@@ -252,7 +252,7 @@ public class StringFunctions {
 				assertArity("str/index-of", args, 2, 3);
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
+				final String searchString = Coerce.toVncString(args.second()).getValue();		
 				
 				if (args.size() == 3) {
 					final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
@@ -289,7 +289,7 @@ public class StringFunctions {
 				}
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
+				final String searchString = Coerce.toVncString(args.second()).getValue();		
 				
 				if (args.size() > 2) {
 					final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
@@ -323,7 +323,7 @@ public class StringFunctions {
 				}
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.nth(1)).getValue();
+				final String searchString = Coerce.toVncString(args.second()).getValue();
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
 	
 				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
@@ -360,7 +360,7 @@ public class StringFunctions {
 				}
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.nth(1)).getValue();
+				final String searchString = Coerce.toVncString(args.second()).getValue();
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
 	
 				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
@@ -397,7 +397,7 @@ public class StringFunctions {
 				}
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.nth(1)).getValue();		
+				final String searchString = Coerce.toVncString(args.second()).getValue();		
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
 				
 				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
@@ -522,7 +522,7 @@ public class StringFunctions {
 				assertArity("str/subs", args, 2, 3);
 	
 				final VncString string = Coerce.toVncString(args.first());		
-				final VncLong from = Coerce.toVncLong(args.nth(1));
+				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
 				
 				return new VncString(
@@ -548,7 +548,7 @@ public class StringFunctions {
 				assertArity("str/split", args, 2);
 	
 				final VncString string = Coerce.toVncString(args.first());
-				final VncString regex = Coerce.toVncString(args.nth(1));
+				final VncString regex = Coerce.toVncString(args.second());
 				
 				return new VncList(
 						Arrays
@@ -628,7 +628,7 @@ public class StringFunctions {
 				assertArity("str/quote", args, 2, 3);
 	
 				final String s = Coerce.toVncString(args.first()).getValue();
-				final String start = Coerce.toVncString(args.nth(1)).getValue();
+				final String start = Coerce.toVncString(args.second()).getValue();
 				final String end = (args.size() == 2) 
 										? start 
 										: Coerce.toVncString(args.nth(2)).getValue();
@@ -664,7 +664,7 @@ public class StringFunctions {
 				return new VncString(
 							StringUtil.truncate(
 								Coerce.toVncString(args.first()).getValue(), 
-								Coerce.toVncLong(args.nth(1)).getValue().intValue(),
+								Coerce.toVncLong(args.second()).getValue().intValue(),
 								Coerce.toVncString(args.nth(2)).getValue()));		
 			}
 	
@@ -691,7 +691,7 @@ public class StringFunctions {
 				}
 				
 				final String s = Coerce.toVncString(args.first()).getValue();
-				final String substr = Coerce.toVncString(args.nth(1)).getValue();
+				final String substr = Coerce.toVncString(args.second()).getValue();
 				
 				return new VncString(s.startsWith(substr) ? s.substring(substr.length()) : s);
 			}
@@ -719,7 +719,7 @@ public class StringFunctions {
 				}
 				
 				final String s = Coerce.toVncString(args.first()).getValue();
-				final String substr = Coerce.toVncString(args.nth(1)).getValue();
+				final String substr = Coerce.toVncString(args.second()).getValue();
 				
 				return new VncString(s.endsWith(substr) ? s.substring(0, s.length() - substr.length()) : s);
 			}
@@ -797,7 +797,7 @@ public class StringFunctions {
 				}
 				
 				final String s = Coerce.toVncString(args.first()).getValue();
-				final int times = Coerce.toVncLong(args.nth(1)).getValue().intValue();
+				final int times = Coerce.toVncLong(args.second()).getValue().intValue();
 				final String sep = args.size() == 3 ? Coerce.toVncString(args.nth(2)).getValue() : "";
 				
 				final StringBuilder sb = new StringBuilder();
