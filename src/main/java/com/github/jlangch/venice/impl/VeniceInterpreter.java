@@ -387,23 +387,7 @@ public class VeniceInterpreter implements Serializable  {
 					return fn_(ast, env);
 					
 				case "prof":
-					if (Types.isVncKeyword(ast.second())) {
-						final VncKeyword cmd = (VncKeyword)ast.second();
-						switch(cmd.getValue()) {
-							case "on":				meterRegistry.enable(); return Nil;
-							case "enable":			meterRegistry.enable(); return Nil;
-							case "off":				meterRegistry.disable(); return Nil;
-							case "disable":			meterRegistry.disable(); return Nil;
-							case "status":			return meterRegistry.isEnabled() ? True : False;
-							case "clear":			meterRegistry.reset(); return Nil;
-							case "data":			return meterRegistry.getVncTimerData();
-							case "data-formatted":	return new VncString(meterRegistry.getTimerDataFormatted(null));
-						}
-					}
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
-					throw new VncException(
-									"Function 'prof' expects a single keyword argument: " +
-									":on, :off, :clear, :data, or :data-formatted");
+					return prof_(ast, env);
 
 				default:
 					final long nanos = System.nanoTime();
@@ -656,6 +640,35 @@ public class VeniceInterpreter implements Serializable  {
 			
 			return new VncMultiArityFunction(name, fns);
 		}
+	}
+
+	private VncVal prof_(final VncList ast, final Env env) {
+		if (Types.isVncKeyword(ast.second())) {
+			final VncKeyword cmd = (VncKeyword)ast.second();
+			switch(cmd.getValue()) {
+				case "on":
+				case "enable":
+					meterRegistry.enable(); 
+					return new VncKeyword("on");
+				case "off":
+				case "disable":
+					meterRegistry.disable(); 
+					return new VncKeyword("off");
+				case "status":
+					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+				case "clear":
+					meterRegistry.reset(); 
+					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+				case "data":
+					return meterRegistry.getVncTimerData();
+				case "data-formatted":
+					return new VncString(meterRegistry.getTimerDataFormatted("Metrics"));
+			}
+		}
+		ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+		throw new VncException(
+						"Function 'prof' expects a single keyword argument: " +
+						":on, :off, :clear, :data, or :data-formatted");
 	}
 
 	private VncVal binding_(final VncList ast, final Env env) {
