@@ -331,13 +331,13 @@
    `(do
        (prof :on)
        (prof :clear)
-       (let [fn-warmup (fn _warmup [] (dotimes [n ~warmup-iterations] ~expr))
-             fn-gc (fn _warmup_gc [] (gc) (gc))
-             fn-test (fn _test [] (dotimes [n ~iterations] ~expr))]
-           (fn-warmup)
-           (fn-gc)
+       (let [fn-perf-warmup (fn _warmup [] (dorun ~warmup-iterations ~expr))
+             fn-perf-gc (fn _warmup-gc [] (dorun 2 (gc)))
+             fn-perf-test (fn _test [] (dorun ~iterations ~expr))]
+           (fn-perf-warmup)
+           (fn-perf-gc)
            (prof :clear-all-but ["_warmup" "_warmup_gc"])
-           (fn-test))
+           (fn-perf-test))
        nil))       
           
          

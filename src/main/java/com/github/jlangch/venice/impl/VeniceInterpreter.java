@@ -364,6 +364,14 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 					
+				case "dorun":
+					final long count = Coerce.toVncLong(ast.second()).getValue();
+					final VncList expr = VncList.of(ast.third());
+					for(int ii=0; ii<count-1; ii++) {
+						eval_ast(expr, env);
+					}
+					return ((VncList)eval_ast(expr, env)).first();
+					
 				case "if": 
 					final VncVal condArg = ast.second();
 					final VncVal cond = evaluate(condArg, env);

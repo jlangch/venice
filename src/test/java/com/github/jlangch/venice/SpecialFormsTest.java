@@ -275,6 +275,13 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_dorun() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Long.valueOf(3), venice.eval("(dorun 4 (+ 1 2))"));
+	}
+
+	@Test
 	public void test_def() {
 		final Venice venice = new Venice();
 		
