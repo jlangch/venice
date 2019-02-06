@@ -385,6 +385,25 @@ public class VeniceInterpreter implements Serializable  {
 				case "fn":
 					// (fn name? [params*] condition-map? expr*)
 					return fn_(ast, env);
+					
+				case "prof":
+					if (Types.isVncKeyword(ast.second())) {
+						final VncKeyword cmd = (VncKeyword)ast.second();
+						switch(cmd.getValue()) {
+							case "on":				meterRegistry.enable(); return Nil;
+							case "enable":			meterRegistry.enable(); return Nil;
+							case "off":				meterRegistry.disable(); return Nil;
+							case "disable":			meterRegistry.disable(); return Nil;
+							case "status":			return meterRegistry.isEnabled() ? True : False;
+							case "clear":			meterRegistry.reset(); return Nil;
+							case "data":			return meterRegistry.getVncTimerData();
+							case "data-formatted":	return new VncString(meterRegistry.getTimerDataFormatted(null));
+						}
+					}
+					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+					throw new VncException(
+									"Function 'prof' expects a single keyword argument: " +
+									":on, :off, :clear, :data, or :data-formatted");
 
 				default:
 					final long nanos = System.nanoTime();

@@ -133,12 +133,15 @@ public class Venice {
 				new DynamicVar(
 						new VncSymbol("*out*"), 
 						new VncJavaObject(new PrintStream(System.out, true))));
+
 		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
 
 			final Env env = addParams(new Env(precompiled.getEnv()), params);
-			
+
+			meterRegistry.reset();
+
 			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 				 
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
@@ -195,14 +198,17 @@ public class Venice {
 		if (StringUtil.isBlank(script)) {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
-		
+
+
 		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
 
 			final Env env = createEnv(venice, params);
-			
+
+			meterRegistry.reset();  // no metrics for creating env and loading modules 
+
 			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 			
 			final VncVal result = venice.RE(script, scriptName, env);

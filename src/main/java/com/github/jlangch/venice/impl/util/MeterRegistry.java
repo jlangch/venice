@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +30,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.util.Timer;
 
 
@@ -37,7 +44,11 @@ public class MeterRegistry implements Serializable {
 	public MeterRegistry(final boolean enabled) {
 		this.enabled = enabled;
 	}
-	
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
 	public void enable() {
 		this.enabled = true;
 	}
@@ -58,6 +69,21 @@ public class MeterRegistry implements Serializable {
 	
 	public Collection<Timer> getTimerData() {
 		return data.values();
+	}
+	
+	public VncList getVncTimerData() {
+		final VncKeyword name = new VncKeyword("name");
+		final VncKeyword count = new VncKeyword("count");
+		final VncKeyword nanos = new VncKeyword("nanos");
+
+		final List<VncMap> records = new ArrayList<>();
+		for(Timer t : getTimerData()) {
+			records.add(VncHashMap.of(
+					name, new VncString(t.name),
+					count, new VncLong(t.count),
+					nanos, new VncLong(t.elapsedNanos)));
+		}
+		return new VncList(records);
 	}
 
 	public String getTimerDataFormatted(final String title) {
