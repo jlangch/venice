@@ -50,7 +50,7 @@ public class VeniceTest {
 		
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted();
+		String timerData = venice.getTimerDataFormatted("evalWithTimer()");
 		assertNotNull(timerData);
 		//System.out.println(timerData);
 	}
@@ -69,7 +69,7 @@ public class VeniceTest {
 		
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted();
+		String timerData = venice.getTimerDataFormatted("evalWithTimer_Warmup()");
 		assertNotNull(timerData);
 		System.out.println(timerData);
 	}
@@ -85,7 +85,7 @@ public class VeniceTest {
 		
 		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted();
+		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled()");
 		assertNotNull(timerData);
 		//System.out.println(timerData);
 	}
@@ -106,7 +106,7 @@ public class VeniceTest {
 		
 		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted();
+		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled_Warmup()");
 		assertNotNull(timerData);
 		System.out.println(timerData);
 	}

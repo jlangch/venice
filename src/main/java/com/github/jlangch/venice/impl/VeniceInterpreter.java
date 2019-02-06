@@ -195,6 +195,7 @@ public class VeniceInterpreter implements Serializable  {
 					final boolean hasMeta = ast.size() > 3;
 					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+					ReservedSymbols.validate(defName);
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = evaluate(defVal, env);
 					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
@@ -205,6 +206,7 @@ public class VeniceInterpreter implements Serializable  {
 					final boolean hasMeta = ast.size() > 3;
 					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+					ReservedSymbols.validate(defName);
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = evaluate(defVal, env);
 					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
@@ -215,6 +217,7 @@ public class VeniceInterpreter implements Serializable  {
 					final boolean hasMeta = ast.size() > 3;
 					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
 					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+					ReservedSymbols.validate(defName);
 					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
 					final VncVal res = evaluate(defVal, env);
 					env.setGlobal(new DynamicVar(defName, MetaUtil.addDefMeta(res, defMeta)));
@@ -591,8 +594,12 @@ public class VeniceInterpreter implements Serializable  {
 
 		int argPos = 1;
 		
-		final String name = getFnName(ast.nth(argPos));
-		if (name != null) argPos++;
+		final VncSymbol sName = getFnName(ast.nth(argPos));
+		ReservedSymbols.validate(sName);
+		final String name = sName == null ? null : sName.getName();
+		if (name != null) {
+			argPos++;
+		}
 
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 		if (Types.isVncVector(paramsOrSig)) {
@@ -857,10 +864,10 @@ public class VeniceInterpreter implements Serializable  {
 		};
 	}
 
-	private String getFnName(final VncVal name) {
+	private VncSymbol getFnName(final VncVal name) {
 		return name == Nil
 				? null
-				: Types.isVncSymbol(name) ? ((VncSymbol)name).getName() : null;
+				: Types.isVncSymbol(name) ? (VncSymbol)name : null;
 	}
 
 	private VncVector getFnPreconditions(final VncVal prePostConditions) {

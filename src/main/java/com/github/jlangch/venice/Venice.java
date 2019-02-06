@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
@@ -247,13 +246,8 @@ public class Venice {
 		return meterRegistry.getTimerData();
 	}
 
-	public String getTimerDataFormatted() {
-		return meterRegistry
-					.getTimerData()
-					.stream()
-					.sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
-					.map(v -> String.format("%-20s [%3d]: %10s", v.name, v.count, Timer.formatNanos(v.elapsedNanos)))
-					.collect(Collectors.joining("\n"));
+	public String getTimerDataFormatted(final String title) {
+		return meterRegistry.getTimerDataFormatted(title);
 	}
 	
 	

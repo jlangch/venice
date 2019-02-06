@@ -23,8 +23,11 @@ package com.github.jlangch.venice.impl.util;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.util.Timer;
 
@@ -56,7 +59,54 @@ public class MeterRegistry implements Serializable {
 	public Collection<Timer> getTimerData() {
 		return data.values();
 	}
+
+	public String getTimerDataFormatted(final String title) {
+		final Collection<Timer> data = getTimerData();
+		
+		final int maxNameLen = data
+								.stream()
+								.mapToInt(v -> v.name.length())
+								.max()
+								.orElse(10);
+
+		final int maxCount = data
+								.stream()
+								.mapToInt(v -> v.count)
+								.max()
+								.orElse(10);
+
+		final int maxCountLen = Integer.valueOf(maxCount).toString().length();
+
+		final List<String> lines =
+				data.stream()
+					.sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
+					.map(v -> String.format("%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %10s", v.name, v.count, Timer.formatNanos(v.elapsedNanos)))
+					.collect(Collectors.toList());
+
+		if (lines.isEmpty()) {
+			lines.add("no meter data!");
+		}
+		
+		if (!StringUtil.isBlank(title)) {
+			final int maxLineLen = Math.max(
+									title.length(), 
+									lines
+										.stream()
+										.mapToInt(l -> l.length())
+										.max()
+										.orElse(0));
+			
+			final String delim = String.join("", Collections.nCopies(maxLineLen, "-"));
+			lines.add(0, delim.toString());
+			lines.add(0, title);
+			lines.add(0, delim.toString());
+			lines.add(delim.toString());
+		}
+
+		return String.join("\n", lines);
+	}
 	
+
 	private static final long serialVersionUID = 5426843508785133806L;
 
 	
