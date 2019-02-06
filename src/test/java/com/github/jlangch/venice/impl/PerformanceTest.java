@@ -135,4 +135,33 @@ public class PerformanceTest {
 		venice.eval(script);
 	}
 
+	@Test
+	public void test_profile_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"   (perf-time (* (+ 1 2) 3) 12000 1000)    \n" +
+				"	(println (prof :data-formatted)))         ";
+		
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_profile_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                     \n" +
+				"   (defn sum [n]                                        \n" +
+				"	      (loop [cnt n, acc 0]                           \n" +
+				"	         (if (zero? cnt)                             \n" +
+				"	            acc                                      \n" +
+				"	            (recur (dec cnt) (+ acc cnt)))))         \n" +
+				"   (perf-time (sum 300) 2000 1000)                      \n" +
+				"	(println (prof :data-formatted)))                      ";
+		
+		venice.eval(script);
+	}
+
 }

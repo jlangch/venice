@@ -22,7 +22,6 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
 
@@ -40,75 +39,6 @@ public class VeniceTest {
 		
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6)));
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
-	}
-	
-	@Test
-	public void evalWithTimer() {
-		final Venice venice = new Venice();
-		
-		venice.enableTimer();
-		
-		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
-		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer()");
-		assertNotNull(timerData);
-		//System.out.println(timerData);
-	}
-	
-	@Test
-	public void evalWithTimer_Warmup() {
-		final Venice venice = new Venice();
-		
-		// warmup
-		for(int ii=0; ii<2000; ii++) {
-			venice.eval("(+ 1 x)", Parameters.of("x", 6L));
-		}
-		
-		venice.resetTimer();
-		venice.enableTimer();
-		
-		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
-		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer_Warmup()");
-		assertNotNull(timerData);
-		System.out.println(timerData);
-	}
-	
-	@Test
-	public void evalWithTimer_Precompiled() {
-		final Venice venice = new Venice();
-
-		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
-		
-		venice.resetTimer();
-		venice.enableTimer();
-		
-		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
-		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled()");
-		assertNotNull(timerData);
-		//System.out.println(timerData);
-	}
-	
-	@Test
-	public void evalWithTimer_Precompiled_Warmup() {
-		final Venice venice = new Venice();
-
-		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
-
-		// warmup
-		for(int ii=0; ii<2000; ii++) {
-			venice.eval(precomp, Parameters.of("x", 6L));
-		}
-		
-		venice.resetTimer();
-		venice.enableTimer();
-		
-		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
-		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled_Warmup()");
-		assertNotNull(timerData);
-		System.out.println(timerData);
 	}
 
 	@Test
