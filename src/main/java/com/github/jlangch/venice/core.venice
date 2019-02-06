@@ -319,7 +319,27 @@
           (printf "Elapsed time: %.2f us\n" (/ elapsed_ 1000.0))
           (printf "Elapsed time: %.2f ms\n" (/ elapsed_ 1000000.0)))
        ret_))
-         
+
+
+(defmacro 
+   { :arglists '("(perf-time expr)")
+     :doc "Performance test with the given expression.  Returns nil." 
+     :examples '("(perf-time (+ 100 200) 12000 1000)") }
+
+   perf-time [expr warmup-iterations iterations]
+   
+   `(do
+       (prof :on)
+       (prof :clear)
+       (let [fn-warmup (fn _warmup [] (dotimes [n ~warmup-iterations] ~expr))
+             fn-gc (fn _warmup_gc [] (gc) (gc))
+             fn-test (fn _test [] (dotimes [n ~iterations] ~expr))]
+           (fn-warmup)
+           (fn-gc)
+           (prof :clear-all-but ["_warmup" "_warmup_gc"])
+           (fn-test))
+       nil))       
+          
          
 (defmacro
    { :arglists '("(load-string s)")

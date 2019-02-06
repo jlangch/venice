@@ -659,6 +659,9 @@ public class VeniceInterpreter implements Serializable  {
 				case "clear":
 					meterRegistry.reset(); 
 					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+				case "clear-all-but":
+					meterRegistry.resetAllBut(Coerce.toVncSequence(ast.third())); 
+					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
 				case "data":
 					return meterRegistry.getVncTimerData();
 				case "data-formatted":

@@ -30,7 +30,11 @@ public class Timer implements Serializable {
 		this.count = count;
 		this.elapsedNanos = elapsedNanos;
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
 	public Timer add(final long elapsedNanos) {
 		return new Timer(name, count + 1, this.elapsedNanos + elapsedNanos);
 	}
