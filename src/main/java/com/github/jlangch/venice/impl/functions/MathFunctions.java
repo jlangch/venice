@@ -62,10 +62,10 @@ public class MathFunctions {
 				switch(args.size()) {
 					case 0: return new VncLong(0);
 					case 1: return args.first();
-					case 2: return Numeric.add(args.first(), args.second());
+					case 2: return Numeric.calc(MathOp.ADD, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.add(val, v); }
+						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.ADD, val, v); }
 						return val;
 				}
 			}
@@ -104,10 +104,10 @@ public class MathFunctions {
 							return first;
 						}	
 					case 2: 
-						return Numeric.sub(args.first(), args.second());
+						return Numeric.calc(MathOp.SUB, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.sub(val, v); }
+						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.SUB, val, v); }
 						return val;
 				}
 			}
@@ -129,10 +129,10 @@ public class MathFunctions {
 				switch(args.size()) {
 					case 0: return new VncLong(1);
 					case 1: return args.first();
-					case 2: return Numeric.mul(args.first(), args.second());
+					case 2: return Numeric.calc(MathOp.MUL, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.mul(val, v); }
+						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.MUL, val, v); }
 						return val;
 				}
 			}
@@ -159,22 +159,22 @@ public class MathFunctions {
 					case 1: 
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
-							return Numeric.div(new VncLong(1L), first);
+							return Numeric.calc(MathOp.DIV, new VncLong(1L), first);
 						}
 						else if (Types.isVncDouble(first)) {
-							return Numeric.div(new VncDouble(1D), first);
+							return Numeric.calc(MathOp.DIV, new VncDouble(1D), first);
 						}
 						else if (Types.isVncBigDecimal(first)) {
-							return Numeric.div(new VncBigDecimal(BigDecimal.ONE), first);
+							return Numeric.calc(MathOp.DIV, new VncBigDecimal(BigDecimal.ONE), first);
 						}
 						else {
 							return first;
 						}	
 					case 2: 
-						return Numeric.div(args.first(), args.second());
+						return Numeric.calc(MathOp.DIV, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.div(val, v); }
+						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.DIV, val, v); }
 						return val;
 				}
 			}

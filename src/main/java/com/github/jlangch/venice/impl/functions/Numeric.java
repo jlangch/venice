@@ -46,10 +46,10 @@ public class Numeric {
 			return (VncLong)val;
 		}
 		else if (Types.isVncDouble(val)) {
-			return new VncLong(((VncDouble)val).getValue().longValue());
+			return doubleToLong((VncDouble)val);
 		}
 		else if (Types.isVncBigDecimal(val)) {
-			return new VncLong(((VncBigDecimal)val).getValue().longValue());
+			return decimalToLong((VncBigDecimal)val);
 		}
 		else {
 			throw new VncException(String.format(
@@ -60,13 +60,13 @@ public class Numeric {
 	
 	public static VncDouble toDouble(final VncVal val) {
 		if (Types.isVncLong(val)) {
-			return new VncDouble(((VncLong)val).getValue().doubleValue());
+			return longToDouble((VncLong)val);
 		}
 		else if (Types.isVncDouble(val)) {
 			return (VncDouble)val;
 		}
 		else if (Types.isVncBigDecimal(val)) {
-			return new VncDouble(((VncBigDecimal)val).getValue().doubleValue());
+			return decimalToDouble((VncBigDecimal)val);
 		}
 		else {
 			throw new VncException(String.format(
@@ -77,10 +77,10 @@ public class Numeric {
 
 	public static VncBigDecimal toDecimal(final VncVal val) {
 		if (Types.isVncLong(val)) {
-			return new VncBigDecimal(new BigDecimal(((VncLong)val).getValue()));
+			return longToDecimal((VncLong)val);
 		}
 		else if (Types.isVncDouble(val)) {
-			return new VncBigDecimal(new BigDecimal(((VncDouble)val).getValue()));
+			return doubleToDecimal((VncDouble)val);
 		}
 		else if (Types.isVncBigDecimal(val)) {
 			return (VncBigDecimal)val;
@@ -92,60 +92,68 @@ public class Numeric {
 		}
 	}
 
-	public static VncVal add(final VncVal op1, final VncVal op2) {
-		return calc('+', op1, op2);
-	}
-	
-	public static VncVal sub(final VncVal op1, final VncVal op2) {
-		return calc('-', op1, op2);
-	}
-	
-	public static VncVal mul(final VncVal op1, final VncVal op2) {
-		return calc('*', op1, op2);
-	}
-	
-	public static VncVal div(final VncVal op1, final VncVal op2) {
-		return calc('/', op1, op2);
+	public static VncDouble longToDouble(final VncLong val) {
+		return new VncDouble(val.getValue().doubleValue());
 	}
 
-	
-	private static VncVal calc(final char op, final VncVal op1, final VncVal op2) {
-		validateNumericTypes("" + op, op1, op2);
-		
+	public static VncBigDecimal longToDecimal(final VncLong val) {
+		return new VncBigDecimal(new BigDecimal(val.getValue()));
+	}
+
+	public static VncLong doubleToLong(final VncDouble val) {
+		return new VncLong(val.getValue().longValue());
+	}
+
+	public static VncBigDecimal doubleToDecimal(final VncDouble val) {
+		return new VncBigDecimal(new BigDecimal(val.getValue()));
+	}
+
+	public static VncLong decimalToLong(final VncBigDecimal val) {
+		return new VncLong(val.getValue().longValue());
+	}
+
+	public static VncDouble decimalToDouble(final VncBigDecimal val) {
+		return new VncDouble(val.getValue().doubleValue());
+	}
+
+	public static VncVal calc(final MathOp op, final VncVal op1, final VncVal op2) {
 		try {
 			if (Types.isVncLong(op1)) {
 				if (Types.isVncLong(op2)) {
 					return calcLong(op, (VncLong)op1, (VncLong)op2);
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcDouble(op, Numeric.toDouble(op1), (VncDouble)op2);
+					return calcDouble(op, longToDouble((VncLong)op1), (VncDouble)op2);
 				}
 				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, Numeric.toDecimal(op1), (VncBigDecimal)op2);
+					return calcDecimal(op, longToDecimal((VncLong)op1), (VncBigDecimal)op2);
 				}
 			}
 			else if (Types.isVncDouble(op1)) {
 				if (Types.isVncLong(op2)) {
-					return calcDouble(op, (VncDouble)op1, Numeric.toDouble(op2));
+					return calcDouble(op, (VncDouble)op1, longToDouble((VncLong)op2));
 				}
 				else if (Types.isVncDouble(op2)) {
 					return calcDouble(op, (VncDouble)op1, (VncDouble)op2);
 				}
 				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, Numeric.toDecimal(op1), (VncBigDecimal)op2);
+					return calcDecimal(op, doubleToDecimal((VncDouble)op1), (VncBigDecimal)op2);
 				}
 			}
 			else if (Types.isVncBigDecimal(op1)) {
 				if (Types.isVncLong(op2)) {
-					return calcDecimal(op, (VncBigDecimal)op1, Numeric.toDecimal(op2));
+					return calcDecimal(op, (VncBigDecimal)op1, longToDecimal((VncLong)op2));
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcDecimal(op, (VncBigDecimal)op1, Numeric.toDecimal(op2));
+					return calcDecimal(op, (VncBigDecimal)op1, doubleToDecimal((VncDouble)op2));
 				}
 				else if (Types.isVncBigDecimal(op2)) {
 					return calcDecimal(op, (VncBigDecimal)op1, (VncBigDecimal)op2);
 				}
 			}
+			
+			// error: bad numeric types - check add the end to minimize the type checks
+			validateNumericTypes(op, op1, op2);
 		}
 		catch (ArithmeticException ex) {
 			throw new VncException(ex.getMessage(), ex);
@@ -154,50 +162,60 @@ public class Numeric {
 		throw new RuntimeException("Unexpected outcome");
 	}
 	
-	private static VncLong calcLong(final char op, final VncLong op1, final VncLong op2) {
+	private static VncLong calcLong(final MathOp op, final VncLong op1, final VncLong op2) {
 		switch(op) {
-			case '+': return new VncLong(op1.getValue() + op2.getValue());
-			case '-': return new VncLong(op1.getValue() - op2.getValue());
-			case '*': return new VncLong(op1.getValue() * op2.getValue());
-			case '/': return new VncLong(op1.getValue() / op2.getValue());
+			case ADD: return new VncLong(op1.getValue() + op2.getValue());
+			case SUB: return new VncLong(op1.getValue() - op2.getValue());
+			case MUL: return new VncLong(op1.getValue() * op2.getValue());
+			case DIV: return new VncLong(op1.getValue() / op2.getValue());
 			default: throw new RuntimeException("Invalid integer math operation '" + op + "'");
 		}
 	}
 
-	private static VncDouble calcDouble(final char op, final VncDouble op1, final VncDouble op2) {
+	private static VncDouble calcDouble(final MathOp op, final VncDouble op1, final VncDouble op2) {
 		switch(op) {
-			case '+': return new VncDouble(op1.getValue() + op2.getValue());
-			case '-': return new VncDouble(op1.getValue() - op2.getValue());
-			case '*': return new VncDouble(op1.getValue() * op2.getValue());
-			case '/': return new VncDouble(op1.getValue() / op2.getValue());
+			case ADD: return new VncDouble(op1.getValue() + op2.getValue());
+			case SUB: return new VncDouble(op1.getValue() - op2.getValue());
+			case MUL: return new VncDouble(op1.getValue() * op2.getValue());
+			case DIV: return new VncDouble(op1.getValue() / op2.getValue());
 			default: throw new RuntimeException("Invalid double math operation '" + op + "'");
 		}
 	}
 
-	private static VncBigDecimal calcDecimal(final char op, final VncBigDecimal op1, final VncBigDecimal op2) {
+	private static VncBigDecimal calcDecimal(final MathOp op, final VncBigDecimal op1, final VncBigDecimal op2) {
 		switch(op) {
-			case '+': return new VncBigDecimal(op1.getValue().add(op2.getValue()));
-			case '-': return new VncBigDecimal(op1.getValue().subtract(op2.getValue()));
-			case '*': return new VncBigDecimal(op1.getValue().multiply(op2.getValue()));
-			case '/': return new VncBigDecimal(op1.getValue().divide(op2.getValue(), 16, RoundingMode.HALF_UP));
+			case ADD: return new VncBigDecimal(op1.getValue().add(op2.getValue()));
+			case SUB: return new VncBigDecimal(op1.getValue().subtract(op2.getValue()));
+			case MUL: return new VncBigDecimal(op1.getValue().multiply(op2.getValue()));
+			case DIV: return new VncBigDecimal(op1.getValue().divide(op2.getValue(), 16, RoundingMode.HALF_UP));
 			default: throw new RuntimeException("Invalid big decimal math operation '" + op + "'");
 		}
 	}
 
-	private static void validateNumericTypes(final String fn, final VncVal op1, final VncVal op2) {
+	private static void validateNumericTypes(final MathOp op, final VncVal op1, final VncVal op2) {
 		if (!Types.isVncNumber(op1)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 1 (%s) is not a numeric type", 
-					fn,
+					toFnName(op),
 					Types.getClassName(op1)));
 		}
 
 		if (!Types.isVncNumber(op2)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 2 (%s) is not a numeric type", 
-					fn,
+					toFnName(op),
 					Types.getClassName(op2)));
 		}
+	}
+	
+	private static String toFnName(final MathOp op) {
+		switch(op) {
+			case ADD: return "+";
+			case SUB: return "-";
+			case MUL: return "*";
+			case DIV: return "/";
+			default: return op.name();
+		}		
 	}
 	
 }
