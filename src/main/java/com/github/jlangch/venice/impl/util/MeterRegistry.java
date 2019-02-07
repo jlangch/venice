@@ -113,7 +113,12 @@ public class MeterRegistry implements Serializable {
 		final List<String> lines =
 				data.stream()
 					.sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
-					.map(v -> String.format("%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %10s", v.name, v.count, Timer.formatNanos(v.elapsedNanos)))
+					.map(v -> String.format(
+								"%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s", 
+								v.name, 
+								v.count, 
+								Timer.formatNanos(v.elapsedNanos),
+								v.count == 1 ? "" : Timer.formatNanos(v.elapsedNanos / v.count)))
 					.collect(Collectors.toList());
 
 		if (lines.isEmpty()) {

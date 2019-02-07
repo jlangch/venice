@@ -365,12 +365,7 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "dorun":
-					final long count = Coerce.toVncLong(ast.second()).getValue();
-					final VncList expr = VncList.of(ast.third());
-					for(int ii=0; ii<count-1; ii++) {
-						eval_ast(expr, env);
-					}
-					return ((VncList)eval_ast(expr, env)).first();
+					return dorun_(ast, env);
 					
 				case "if": 
 					final VncVal condArg = ast.second();
@@ -598,7 +593,20 @@ public class VeniceInterpreter implements Serializable  {
 			return macro;
 		}
 	}
-	
+
+	private VncVal dorun_(final VncList ast, final Env env) {
+		if (ast.size() != 3) {
+			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+			throw new VncException("dorun requires two arguments a count and an expression to run");
+		}
+		final long count = Coerce.toVncLong(ast.second()).getValue();
+		final VncList expr = VncList.of(ast.third());
+		for(int ii=0; ii<count-1; ii++) {
+			eval_ast(expr, env);
+		}
+		return ((VncList)eval_ast(expr, env)).first();
+	}
+
 	private VncFunction fn_(final VncList ast, final Env env) {
 		// single arity:  (fn name? [params*] condition-map? expr*)
 		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
