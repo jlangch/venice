@@ -188,7 +188,7 @@ public class VeniceElapsedTest {
 		
 		String timerData = venice.getTimerDataFormatted("evalWithTimer_Warmup()");
 		assertNotNull(timerData);
-		System.out.println(timerData);
+		//System.out.println(timerData);
 	}
 	
 	@Test
@@ -225,7 +225,7 @@ public class VeniceElapsedTest {
 		
 		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled_Warmup()");
 		assertNotNull(timerData);
-		System.out.println(timerData);
+		//System.out.println(timerData);
 	}
 	
 	private Map<String,Object> toMap(final AuditEvent event) {

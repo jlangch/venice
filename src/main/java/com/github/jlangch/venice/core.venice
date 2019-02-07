@@ -322,11 +322,11 @@
 
 
 (defmacro 
-   { :arglists '("(perf-time expr warmup-iterations test-iterations)")
-     :doc "Performance test with the given expression.  Returns nil." 
-     :examples '("(perf-time (+ 100 200) 12000 1000)") }
+   { :arglists '("(perf expr warmup-iterations test-iterations)")
+     :doc "Performance test with the given expression. Returns nil." 
+     :examples '("(perf (+ 100 200) 12000 1000)") }
 
-   perf-time [expr warmup-iterations test-iterations]
+   perf [expr warmup-iterations test-iterations]
    
    `(do
        (prof :on)

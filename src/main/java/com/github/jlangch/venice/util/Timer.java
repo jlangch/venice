@@ -45,14 +45,17 @@ public class Timer implements Serializable {
 	}
 	
 	public static String formatNanos(final long nanos) {
-		if (nanos < 1_000) {
+		if (nanos < 1_000L) {
 			return Long.valueOf(nanos).toString() + " ns";
 		}
-		else if (nanos < 1_000_000) {
+		else if (nanos < 1_000_000L) {
 			return String.format("%.2f us", nanos / 1_000.0D);
 		}
+		else if (nanos < 9_000_000_000L) {
+			return String.format("%.2f ms", nanos / 1_000_000.0D);
+		}
 		else {
-			return String.format("%.2f ms", nanos / 1_000_000.0D);			
+			return String.format("%.2f s ", nanos / 1_000_000_000.0D);			
 		}
 	}
 	

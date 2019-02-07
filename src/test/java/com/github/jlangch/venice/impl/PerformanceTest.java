@@ -141,7 +141,7 @@ public class PerformanceTest {
 
 		final String script = 
 				"(do                                        \n" +
-				"   (perf-time (* (+ 1 2) 3) 12000 1000)    \n" +
+				"   (perf (* (+ 1 2) 3) 12000 1000)         \n" +
 				"	(println (prof :data-formatted)))         ";
 		
 		venice.eval(script);
@@ -158,7 +158,7 @@ public class PerformanceTest {
 				"	         (if (zero? cnt)                             \n" +
 				"	            acc                                      \n" +
 				"	            (recur (dec cnt) (+ acc cnt)))))         \n" +
-				"   (perf-time (sum 300) 2000 1000)                      \n" +
+				"   (perf (sum 300) 2000 1000)                           \n" +
 				"	(println (prof :data-formatted)))                      ";
 		
 		venice.eval(script);
