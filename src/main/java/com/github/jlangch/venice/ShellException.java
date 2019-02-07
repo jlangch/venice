@@ -38,21 +38,6 @@ public class ShellException extends VncException {
 		super(message, cause);
 		this.exitCode = null;
 	}
-
-	public ShellException(final String message, final Integer exitCode, final Throwable cause) {
-		super(message, cause);
-		this.exitCode = exitCode;
-	}
-
-	public ShellException(final Throwable cause) {
-		super(cause);
-		this.exitCode = null;
-	}
-
-	public ShellException(final Integer exitCode, final Throwable cause) {
-		super(cause);
-		this.exitCode = exitCode;
-	}
 	
 	public Integer getExitCode() {
 		return exitCode;

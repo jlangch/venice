@@ -308,16 +308,25 @@ public class VeniceInterpreter implements Serializable  {
 					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
 
-					// [1] calculate new values
-					final VncVal[] values = new VncVal[ast.size()-1];
-					int kk=0;
-					for(VncVal v : ast.rest().getList()) {
-						values[kk++] = evaluate(v, env);
+					final VncList values = ast.rest();
+					if (values.size() == 1) {
+						// [1][2] calculate and bind the new value
+						recur_env.set(bindingNames.get(0), evaluate(values.first(), env));
 					}
-					// [2] bind the values
-					for(int ii=0; ii<bindingNames.size(); ii++) {
-						recur_env.set(bindingNames.get(ii), values[ii]);
+					else {
+						// [1] calculate new values
+						final VncVal[] newValues = new VncVal[values.size()];
+						int kk=0;
+						for(VncVal v : values.getList()) {
+							newValues[kk++] = evaluate(v, env);
+						}
+						
+						// [2] bind the new values
+						for(int ii=0; ii<bindingNames.size(); ii++) {
+							recur_env.set(bindingNames.get(ii), newValues[ii]);
+						}
 					}
+					
 					// [3] continue on the loop with the new parameters
 					orig_ast = recursionPoint.getLoopExpressions();
 					env = recur_env;
@@ -368,9 +377,8 @@ public class VeniceInterpreter implements Serializable  {
 					return dorun_(ast, env);
 					
 				case "if": 
-					final VncVal condArg = ast.second();
-					final VncVal cond = evaluate(condArg, env);
-					if (cond == Nil || cond == False) {
+					final VncVal cond = evaluate(ast.second(), env);
+					if (cond == False || cond == Nil) {
 						// eval false slot form
 						if (ast.size() > 3) {
 							orig_ast = ast.nth(3);
@@ -422,10 +430,15 @@ public class VeniceInterpreter implements Serializable  {
 						return ((IVncFunction)elArg0).apply(el.rest());
 					}
 					else {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
-						throw new VncException(String.format(
-										"Not a function or keyword/map used as function: '%s'", 
-										PRINT(elArg0)));
+						try {
+							ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+							throw new VncException(String.format(
+											"Not a function or keyword/map used as function: '%s'", 
+											PRINT(elArg0)));
+						}
+						finally {
+							ThreadLocalMap.getCallStack().pop();
+						}
 					}
 			}
 		}
@@ -498,12 +511,21 @@ public class VeniceInterpreter implements Serializable  {
 	 * @return the expanded macro
 	 */
 	private VncVal macroexpand(VncVal ast, final Env env) {
-		while (is_macro_call(ast, env)) {
-			final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).first());
-			final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
-			final VncList macroFnArgs = Coerce.toVncList(ast).rest();
-			ast = macroFn.apply(macroFnArgs);
+		final long nanos = System.nanoTime();
+		
+		if (is_macro_call(ast, env)) {
+			do {
+				final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).first());
+				final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
+				final VncList macroFnArgs = Coerce.toVncList(ast).rest();
+				ast = macroFn.apply(macroFnArgs);
+			} while (is_macro_call(ast, env));
+			
+			if (meterRegistry.enabled) {
+				meterRegistry.record("macroexpand", System.nanoTime() - nanos);
+			}
 		}
+
 		return ast;
 	}
 
@@ -596,8 +618,13 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal dorun_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
-			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
-			throw new VncException("dorun requires two arguments a count and an expression to run");
+			try {
+				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+				throw new VncException("dorun requires two arguments a count and an expression to run");
+			}
+			finally {
+				ThreadLocalMap.getCallStack().pop();
+			}
 		}
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
@@ -684,10 +711,16 @@ public class VeniceInterpreter implements Serializable  {
 					return new VncString(meterRegistry.getTimerDataFormatted("Metrics"));
 			}
 		}
-		ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
-		throw new VncException(
-						"Function 'prof' expects a single keyword argument: " +
-						":on, :off, :status, :clear, :data, or :data-formatted");
+		
+		try {
+			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+			throw new VncException(
+							"Function 'prof' expects a single keyword argument: " +
+							":on, :off, :status, :clear, :data, or :data-formatted");
+		}
+		finally {
+			ThreadLocalMap.getCallStack().pop();
+		}
 	}
 
 	private VncVal binding_(final VncList ast, final Env env) {
@@ -947,11 +980,16 @@ public class VeniceInterpreter implements Serializable  {
 	 		final Env local = new Env(env);	
 	 		preConditions.forEach(v -> {
 				if (!isFnConditionTrue(evaluate(v, local))) {
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, v));
-					throw new AssertionException(
-							String.format(
-									"pre-condition assert failed: %s",
-									((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));		
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, v));
+						throw new AssertionException(
+								String.format(
+										"pre-condition assert failed: %s",
+										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));		
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 				}
  			});
 		}

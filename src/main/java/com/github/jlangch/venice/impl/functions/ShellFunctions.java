@@ -239,13 +239,18 @@ public class ShellFunctions {
 				}
 
 				if (exitCode != 0 && opts.get(new VncKeyword(":throw-ex")) == Constants.True) {
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", cmd));
-					throw new ShellException(
-								String.format(
-									"Shell execution failed: (sh %s). Exit code: %d", 
-									((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
-									exitCode),
-								exitCode);
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", cmd));
+						throw new ShellException(
+									String.format(
+										"Shell execution failed: (sh %s). Exit code: %d", 
+										((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
+										exitCode),
+									exitCode);
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 				}
 				else {				
 					return VncHashMap.of(
@@ -259,12 +264,17 @@ public class ShellFunctions {
 			throw ex;
 		}
 		catch(Exception ex) {
-			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", cmd));
-			throw new VncException(
-					String.format(
-						"Shell execution processing failed: (sh %s)", 
-						((VncString)CoreFunctions.pr_str.apply(cmd)).getValue()),
-					ex);
+			try {
+				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", cmd));
+				throw new VncException(
+						String.format(
+							"Shell execution processing failed: (sh %s)", 
+							((VncString)CoreFunctions.pr_str.apply(cmd)).getValue()),
+						ex);
+			}
+			finally {
+				ThreadLocalMap.getCallStack().pop();
+			}
 		}
 	}
 
@@ -313,11 +323,16 @@ public class ShellFunctions {
 	private static void validateArgs(final VncList args) {
 		args.forEach(arg -> {
 			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg) || Types.isVncBoolean(arg))) {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", arg));
-				throw new VncException(
-						String.format(
-								"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
-								Types.getClassName(arg)));
+				try {
+					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", arg));
+					throw new VncException(
+							String.format(
+									"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
+									Types.getClassName(arg)));
+				}
+				finally {
+					ThreadLocalMap.getCallStack().pop();
+				}
 			}
 		});
 	}

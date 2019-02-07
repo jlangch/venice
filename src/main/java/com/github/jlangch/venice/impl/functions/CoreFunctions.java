@@ -79,6 +79,8 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.CallFrameBuilder;
+import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
 public class CoreFunctions {
@@ -143,7 +145,7 @@ public class CoreFunctions {
 					}
 				}
 				else {
-					throw new ValueException("throw",args.first());
+					throw new ValueException("throw", args.first());
 				}
 			}
 	
@@ -623,7 +625,13 @@ public class CoreFunctions {
 					return new VncString(Readline.readline(prompt));
 				} 
 				catch (IOException ex) {
-					throw new ValueException(new VncString(ex.getMessage()), ex);
+					try {
+						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("readline", args));
+						throw new ValueException(new VncString(ex.getMessage()), ex);
+					}
+					finally {
+						ThreadLocalMap.getCallStack().pop();
+					}
 				} 
 				catch (EofException e) {
 					return Nil;
@@ -842,7 +850,7 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 				
-				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) < 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {

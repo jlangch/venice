@@ -88,8 +88,8 @@ public class REPL {
 				continue;
 			} 
 			catch (ValueException e) {
-				System.out.println(e.getMessage());
-				System.out.println("Value: " + Printer._pr_str(e.getValue(), false));
+				e.printVeniceStackTrace();
+				System.out.println("Thrown value: " + Printer._pr_str(e.getValue(), false));
 				continue;
 			} 
 			catch (VncException e) {
