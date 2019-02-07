@@ -92,7 +92,7 @@ public class MathFunctions {
 					case 1: 
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
-							return new VncLong(((VncLong)first).getValue() * -1);
+							return new VncLong(((VncLong)first).getValue() * -1L);
 						}
 						else if (Types.isVncDouble(first)) {
 							return new VncDouble(((VncDouble)first).getValue() * -1D);
@@ -230,7 +230,7 @@ public class MathFunctions {
 	
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
-					return new VncLong(((VncLong)arg).getValue() + 1);
+					return new VncLong(((VncLong)arg).getValue() + 1L);
 				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(((VncDouble)arg).getValue() + 1D);
@@ -263,7 +263,7 @@ public class MathFunctions {
 	
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
-					return new VncLong(((VncLong)arg).getValue() - 1);
+					return new VncLong(((VncLong)arg).getValue() - 1L);
 				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(((VncDouble)arg).getValue() - 1D);
@@ -671,7 +671,7 @@ public class MathFunctions {
 				
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() % 2 == 0 ? True : False;
+					return ((VncLong)op1).getValue() % 2L == 0L ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
@@ -698,7 +698,7 @@ public class MathFunctions {
 				
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() % 2 == 1 ? True : False;
+					return ((VncLong)op1).getValue() % 2L == 1L ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
