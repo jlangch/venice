@@ -68,6 +68,11 @@ public class Env implements Serializable {
 		return val == null ? Nil : val;
 	}
 
+	public VncVal getGlobalOrNil(final VncSymbol key) {
+		final Var glob = globalSymbols.get(key);
+		return glob == null ? Nil : glob.getVal();
+	}
+
 	public int level() {
 		return level;
 	}
@@ -90,7 +95,7 @@ public class Env implements Serializable {
 			try {
 				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(val.getName()));
 				throw new VncException(String.format(
-						"The existing var %s must not overwritten!",
+						"The existing global var %s must not be overwritten!",
 						val.getName()));
 			}
 			finally {
@@ -132,7 +137,7 @@ public class Env implements Serializable {
 		final Var dv = globalSymbols.get(sym);
 		if (dv != null) {
 			if (dv instanceof DynamicVar) {
-				return ((DynamicVar)dv).popVal(sym);
+				return ((DynamicVar)dv).popVal();
 			}
 			else {
 				try {
@@ -155,7 +160,7 @@ public class Env implements Serializable {
 		final Var dv = globalSymbols.get(sym);
 		if (dv != null) {
 			if (dv instanceof DynamicVar) {
-				return ((DynamicVar)dv).peekVal(sym);
+				return ((DynamicVar)dv).peekVal();
 			}
 			else {
 				try {
@@ -195,7 +200,7 @@ public class Env implements Serializable {
 		if (e == null) {
 			final Var glob = globalSymbols.get(key);
 			if (glob != null) {
-				return glob instanceof DynamicVar ? ((DynamicVar)glob).peekVal(key) : glob.getVal();
+				return glob.getVal();
 			}
 		}
 		else {
@@ -218,15 +223,6 @@ public class Env implements Serializable {
 		else {
 			return null;
 		}
-//
-//		Env e = this;
-//		while(e != null) {
-//			if (e.symbols.containsKey(key)) {
-//				return e;
-//			}
-//			e = e.outer;
-//		}
-//		return null;
 	}
 	
 	

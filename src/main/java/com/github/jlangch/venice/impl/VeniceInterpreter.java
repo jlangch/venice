@@ -312,6 +312,13 @@ public class VeniceInterpreter implements Serializable  {
 						// [1][2] calculate and bind the single new value
 						recur_env.set(bindingNames.get(0), evaluate(ast.second(), env));
 					}
+					else if (ast.size() == 3) {
+						// [1][2] calculate and bind the new values
+						VncVal v1 = evaluate(ast.second(), env);
+						VncVal v2 = evaluate(ast.third(), env);
+						recur_env.set(bindingNames.get(0), v1);
+						recur_env.set(bindingNames.get(1), v2);
+					}
 					else {
 						// [1] calculate new values
 						final VncList values = ast.rest();
@@ -405,16 +412,18 @@ public class VeniceInterpreter implements Serializable  {
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					final VncVal elArg0 = el.first();
 					if (Types.isVncFunction(elArg0)) {
+						final VncFunction fn = (VncFunction)elArg0;
+						
 						sandboxMaxExecutionTimeChecker.check();
 						
 						// invoke function with call frame
-						final CallFrame frame = CallFrameBuilder.fromFunction((VncFunction)elArg0, a0);		
+						final CallFrame frame = CallFrameBuilder.fromFunction(fn, a0);		
 						ThreadLocalMap.getCallStack().push(frame);
 						try {
-							final VncVal val = ((VncFunction)elArg0).apply(el.rest());
+							final VncVal val = fn.apply(el.rest());
 							
 							if (meterRegistry.enabled) {
-								meterRegistry.record(((VncFunction)elArg0).getName(), System.nanoTime() - nanos);
+								meterRegistry.record(fn.getName(), System.nanoTime() - nanos);
 							}
 							
 							return val;
@@ -487,12 +496,13 @@ public class VeniceInterpreter implements Serializable  {
 		if (Types.isVncList(ast)) {
 			final VncVal a0 = ((VncList)ast).first();
 			if (Types.isVncSymbol(a0)) {
-				final VncVal fn = env.getOrNil((VncSymbol)a0);
+				final VncVal fn = env.getGlobalOrNil((VncSymbol)a0);
 				if (Types.isVncMacro(fn)) {
 					return true;
 				}
 			}
 		}
+		
 		return false;
 	}
 
@@ -595,7 +605,7 @@ public class VeniceInterpreter implements Serializable  {
 											env);
 	
 			macroFn.setMacro();
-			env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta));
+			env.setGlobal(new Var((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta), false));
 			
 			return macroFn;
 		}
@@ -619,7 +629,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncFunction macro = new VncMultiArityFunction(sMacroName, fns);
 			
 			macro.setMacro();
-			env.set((VncSymbol)macroName, MetaUtil.addDefMeta(macro, defMeta));
+			env.setGlobal(new Var((VncSymbol)macroName, MetaUtil.addDefMeta(macro, defMeta), false));
 
 			return macro;
 		}
