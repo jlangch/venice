@@ -111,7 +111,7 @@ public class Env implements Serializable {
 			try {
 				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(val.getName()));
 				throw new VncException(String.format(
-						"The existing global var %s must not be overwritten!",
+						"The existing global var '%s' must not be overwritten!",
 						val.getName()));
 			}
 			finally {
@@ -133,7 +133,7 @@ public class Env implements Serializable {
 				try {
 					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(val.getName()));
 					throw new VncException(String.format(
-							"The var %s is not defined as dynamic",
+							"The var '%s' is not defined as dynamic",
 							val.getName()));
 				}
 				finally {
@@ -159,7 +159,7 @@ public class Env implements Serializable {
 				try {
 					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(sym));
 					throw new VncException(String.format(
-							"The var %s is not defined as dynamic",
+							"The var '%s' is not defined as dynamic",
 							sym.getName()));
 				}
 				finally {
@@ -182,7 +182,7 @@ public class Env implements Serializable {
 				try {
 					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(sym));
 					throw new VncException(String.format(
-							"The var %s is not defined as dynamic",
+							"The var '%s' is not defined as dynamic",
 							sym.getName()));
 				}
 				finally {
