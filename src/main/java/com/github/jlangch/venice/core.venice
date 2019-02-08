@@ -531,14 +531,14 @@
    zipmap
    
    (fn zipmap [keys vals]     
-      (loop [map (ordered-map)
+      (loop [omap (ordered-map)
              ks (seq keys)
              vs (seq vals)]
          (if (and (not-empty? ks) (not-empty? vs))
-            (recur (assoc map (first ks) (first vs))
+            (recur (assoc omap (first ks) (first vs))
                    (rest ks)
                    (rest vs))
-            map))))
+            omap))))
 
 
 (def 

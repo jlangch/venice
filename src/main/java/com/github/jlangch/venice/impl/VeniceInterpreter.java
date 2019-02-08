@@ -134,17 +134,17 @@ public class VeniceInterpreter implements Serializable  {
 		// core functions defined in Java
 		Functions.functions
 				 .keySet()
-				 .forEach(key -> env.set((VncSymbol)key, Functions.functions.get(key)));
+				 .forEach(key -> env.setGlobal(new Var((VncSymbol)key, Functions.functions.get(key), false)));
 
 		// core functions Java interoperability
-		env.set(new VncSymbol("."), JavaInteropFn.create(javaImports)); 
-		env.set(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports)); 
+		env.setGlobal(new Var(new VncSymbol("."), JavaInteropFn.create(javaImports), false));
+		env.setGlobal(new Var(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports), false));
 
 		// set Venice version
-		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION)));
+		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
 
 		// set system newline
-		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator())));
+		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 
 		// set system stdout (dynamic)
 		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));

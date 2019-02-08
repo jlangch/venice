@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrameBuilder;
@@ -78,6 +79,21 @@ public class Env implements Serializable {
 	}
 
 	public Env set(final VncSymbol name, final VncVal val) {
+		final Var v = globalSymbols.get(name);
+		if (v != null && !v.isOverwritable() && Types.isVncFunction(v.getVal())) {
+			// allow shadowing of a global non function var by a local var
+			// e.g.:   (do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))
+			try {
+				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(name));
+				throw new VncException(String.format(
+						"The global function '%s' must not be shadowed by a local var!",
+						name));
+			}
+			finally {
+				ThreadLocalMap.getCallStack().pop();
+			}
+		}
+
 		symbols.put(name, new Var(name, val));
 		return this;
 	}
