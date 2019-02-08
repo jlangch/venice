@@ -176,7 +176,7 @@ public class VeniceInterpreter implements Serializable  {
 				return eval_ast(orig_ast, env);
 			}
 	
-			// apply list
+			// expand macros
 			final VncVal expanded = macroexpand(orig_ast, env);
 			if (!Types.isVncList(expanded)) {
 				return eval_ast(expanded, env);
@@ -314,8 +314,8 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					else if (ast.size() == 3) {
 						// [1][2] calculate and bind the new values
-						VncVal v1 = evaluate(ast.second(), env);
-						VncVal v2 = evaluate(ast.third(), env);
+						final VncVal v1 = evaluate(ast.second(), env);
+						final VncVal v2 = evaluate(ast.third(), env);
 						recur_env.set(bindingNames.get(0), v1);
 						recur_env.set(bindingNames.get(1), v2);
 					}
@@ -363,9 +363,7 @@ public class VeniceInterpreter implements Serializable  {
 					return runWithCallStack(
 								"import", ast, env, 
 								(a,e) -> {
-									for(VncVal v : a.rest().getList()) {
-										javaImports.add(Coerce.toVncString(v).getValue());
-									}
+									a.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
 									return Nil;
 								});
 					
