@@ -734,7 +734,7 @@ public class VeniceInterpreter implements Serializable  {
 			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
 			throw new VncException(
 							"Function 'prof' expects a single keyword argument: " +
-							":on, :off, :status, :clear, :data, or :data-formatted");
+							":on, :off, :status, :clear, :clear-all-but, :data, or :data-formatted");
 		}
 		finally {
 			ThreadLocalMap.getCallStack().pop();

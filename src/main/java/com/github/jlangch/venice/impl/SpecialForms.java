@@ -237,6 +237,42 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction dorun = 
+		new SpecialFormsDocFunction(
+				"dorun",
+				VncFunction
+				.meta()
+				.arglists("(dorun count expr)")		
+				.doc("Runs the expr count times in the most effective way. It's main purpose is supporting performance test.")
+				.examples("(do (dorun 10 (+ 1 1)))")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
+	public static VncFunction prof = 
+		new SpecialFormsDocFunction(
+				"prof",
+				VncFunction
+				.meta()
+				.arglists("(prof opts)")		
+				.doc(
+					"Controls the code profiling. See the companion functions/macros 'dorun' and 'perf'. " +
+					"The perf macro is built on prof and dorun and provides all to do simple Venice profiling.")
+				.examples(
+					"(do  \n" +
+					"  (prof :on)   ; turn profiler on  \n" +
+					"  (prof :off)   ; turn profiler off  \n" +
+					"  (prof :status)   ; returns the profiler on/off staus  \n" +
+					"  (prof :clear)   ; clear profiler data captured so far  \n" +
+					"  (prof :data)   ; returns the profiler data as map  \n" +
+					"  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
+					"  nil)  ")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction if_ = 
 		new SpecialFormsDocFunction(
 				"if",
@@ -468,5 +504,7 @@ public class SpecialForms {
 					.put("try-with",	try_with)
 					.put("defmacro",	defmacro)
 					.put("macroexpand",	macroexpand)
+					.put("dorun",		dorun)
+					.put("prof",		prof)
 					.toMap();
 }

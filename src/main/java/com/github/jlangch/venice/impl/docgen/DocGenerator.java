@@ -646,6 +646,11 @@ public class DocGenerator {
 		util.addItem(getDocItem("comment"));
 		util.addItem(getDocItem("gensym"));
 		util.addItem(getDocItem("time"));
+
+		final DocSection profil = new DocSection("Profiling");
+		all.addSection(profil);
+		profil.addItem(getDocItem("time"));
+		profil.addItem(getDocItem("perf"));
 		
 		return section;
 	}
@@ -912,6 +917,12 @@ public class DocGenerator {
 		generic.addItem(getDocItem("recur"));
 		generic.addItem(getDocItem("try", true, true));   // FIXME: try
 		generic.addItem(getDocItem("try-with", true, true));
+
+		final DocSection profiling = new DocSection("Profiling");
+		all.addSection(profiling);
+
+		profiling.addItem(getDocItem("dorun"));
+		profiling.addItem(getDocItem("prof"));
 
 		return section;
 	}
