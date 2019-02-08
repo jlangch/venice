@@ -123,11 +123,11 @@ public class SpecialForms {
 					
 					";; defining a pre-condition                 \n" + 
 					"(do                                         \n" +
-					"   (def sqrt                                \n" +
+					"   (def square-root                         \n" +
 					"        (fn [x]                             \n" +
 					"            { :pre [(>= x 0)] }             \n" +
 					"            (. :java.lang.Math :sqrt x)))   \n" +
-					"   (sqrt 4))                                  ",
+					"   (square-root 4))                           ",
 					
 					";; higher-order function                                           \n" + 
 					"(do                                                                \n" +
@@ -164,7 +164,7 @@ public class SpecialForms {
 				.arglists("(def name expr)")		
 				.doc("Creates a global variable.")
 				.examples(
-					 "(def val 5)",
+					 "(def x 5)",
 					 "(def sum (fn [x y] (+ x y)))")
 				.build()
 	) {
@@ -178,7 +178,7 @@ public class SpecialForms {
 				.meta()
 				.arglists("(defonce name expr)")		
 				.doc("Creates a global variable that can not be overwritten")
-				.examples("(defonce val 5)")
+				.examples("(defonce x 5)")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;

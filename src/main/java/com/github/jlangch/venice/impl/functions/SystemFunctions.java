@@ -243,14 +243,14 @@ public class SystemFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction os = 
+	public static VncFunction os_type = 
 		new VncFunction(
-				"os", 
+				"os-type", 
 				VncFunction
 					.meta()
-					.arglists("(os)")		
+					.arglists("(os-type)")		
 					.doc("Returns the OS type")
-					.examples("(os)")
+					.examples("(os-type)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -274,20 +274,20 @@ public class SystemFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction os_Q = 
+	public static VncFunction os_type_Q = 
 		new VncFunction(
-				"os?", 
+				"os-type?", 
 				VncFunction
 					.meta()
-					.arglists("(os? type)")		
+					.arglists("(os-type? type)")		
 					.doc(
 						"Returns true if the OS id of the type otherwise false. Type is one " +
 						"of :windows, :mac-osx, or :linux")
-					.examples("(os? :mac-osx)", "(os? :windows)")
+					.examples("(os-type? :mac-osx)", "(os-type? :windows)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("os?", args, 1);
+				assertArity("os-type?", args, 1);
 				
 				final String type = Coerce.toVncKeyword(args.first()).getValue();
 				final String osName = System.getProperty("os.name");
@@ -386,8 +386,8 @@ public class SystemFunctions {
 					.put("sandboxed?",			sandboxed_Q)
 					.put("sleep",				sleep)
 					.put("callstack",			callstack)
-					.put("os",					os)
-					.put("os?",					os_Q)
+					.put("os-type",				os_type)
+					.put("os-type?",			os_type_Q)
 					.put("version",				version)
 					.put("system-prop",			system_prop)
 					.put("java-version",		java_version)

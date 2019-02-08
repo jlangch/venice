@@ -566,12 +566,12 @@ public class DocGenerator {
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);
 		test.addItem(getDocItem("sandboxed?"));
-		test.addItem(getDocItem("os?"));
+		test.addItem(getDocItem("os-type?"));
 
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
 		util.addItem(getDocItem("version"));
-		util.addItem(getDocItem("os"));
+		util.addItem(getDocItem("os-type"));
 		util.addItem(getDocItem("system-prop"));
 		util.addItem(getDocItem("java-version"));
 		util.addItem(getDocItem("uuid"));
