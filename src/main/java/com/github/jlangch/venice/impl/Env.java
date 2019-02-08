@@ -100,7 +100,7 @@ public class Env implements Serializable {
 	
 	public Env addAll(final List<Binding> bindings) {
 		for(Binding b : bindings) {
-			symbols.put(b.sym, new Var(b.sym, b.val));
+			set(b.sym, b.val);
 		}
 		return this;
 	}

@@ -134,7 +134,7 @@ public class VeniceInterpreter implements Serializable  {
 		// core functions defined in Java
 		Functions.functions
 				 .keySet()
-				 .forEach(key -> env.setGlobal(new Var((VncSymbol)key, Functions.functions.get(key), false)));
+				 .forEach(key -> env.setGlobal(new Var((VncSymbol)key, Functions.functions.get(key), true)));
 
 		// core functions Java interoperability
 		env.setGlobal(new Var(new VncSymbol("."), JavaInteropFn.create(javaImports), false));
@@ -407,6 +407,7 @@ public class VeniceInterpreter implements Serializable  {
 
 				default:
 					final long nanos = System.nanoTime();
+					
 					final VncList el = Coerce.toVncList(eval_ast(ast, env));
 					final VncVal elArg0 = el.first();
 					if (Types.isVncFunction(elArg0)) {

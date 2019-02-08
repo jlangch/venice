@@ -5257,7 +5257,7 @@ public class CoreFunctions {
 				.put("take-while",			take_while)
 				.put("drop",				drop)
 				.put("drop-while",			drop_while)
-				.put("flatten",			flatten)
+				.put("flatten",				flatten)
 				.put("reverse",				reverse)
 				.put("group-by",			group_by)
 				.put("sort",				sort)

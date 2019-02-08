@@ -559,11 +559,11 @@
    memoize
    
    (fn memoize [f]
-      (let [mem (atom {})]
+      (let [mem_ (atom {})]
          (fn [& args]
-            (if-let [e (find @mem args)]
+            (if-let [e (find @mem_ args)]
                (val e)
                (let [ret (apply f args)]
-                  (swap! mem assoc args ret)
+                  (swap! mem_ assoc args ret)
                   ret))))))
      
