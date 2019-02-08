@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -68,13 +67,18 @@ public class VncVector extends VncSequence {
 	
 	
 	public static VncVector of(final VncVal... mvs) {
-		return new VncVector(Arrays.asList(mvs));
+		return new VncVector(io.vavr.collection.Vector.of(mvs), Constants.Nil);
 	}
 	
 	
 	@Override
 	public VncVector empty() {
 		return new VncVector(getMeta());
+	}
+	
+	@Override
+	public VncVector withVariadicValues(final VncVal... replaceVals) {
+		return VncVector.of(replaceVals);
 	}
 	
 	@Override

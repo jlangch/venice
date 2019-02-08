@@ -84,7 +84,9 @@ public class Venice {
 		if (StringUtil.isBlank(script)) {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
-		
+
+		final long nanos = System.nanoTime();
+
 		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false));
 		
 		final Env env = createEnv(venice, null);
@@ -93,7 +95,11 @@ public class Venice {
 		final Env root = env.getRootEnv();
 		root.setGlobal(new DynamicVar(new VncSymbol("*out*"), Constants.Nil));
 
-		return new PreCompiled(scriptName, venice.READ(script, scriptName), env);
+		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName), env);
+
+		meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
+		
+		return pc;
 	}
 
 	/**

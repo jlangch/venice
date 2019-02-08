@@ -664,7 +664,25 @@ public class SpecialFormsTest {
 	}
 
 	@Test
-	public void test_loop() {
+	public void test_loop_1_arg() {
+		final Venice venice = new Venice();
+		
+		final String lisp = 
+				"(do                                           " +
+				"  (defn cnt [n]                               " +
+				"     (loop [i 0]                              " +
+				"         (if (< i n)                          " +
+				"            (recur (inc i))                   " +
+				"            i)))                              " +
+				"                                              " +
+				"   (cnt 6)                                    " +
+				")                                             ";
+
+		assertEquals(Long.valueOf(6L), venice.eval(lisp));
+	}
+
+	@Test
+	public void test_loop_2_args() {
 		final Venice venice = new Venice();
 		
 		final String lisp = 

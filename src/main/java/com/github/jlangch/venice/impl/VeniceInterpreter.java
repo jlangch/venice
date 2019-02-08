@@ -152,14 +152,14 @@ public class VeniceInterpreter implements Serializable  {
 		// core module: core.venice 
 		final long nanos = System.nanoTime();
 		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
-		meterRegistry.record("venice.module.core", System.nanoTime() - nanos);
+		meterRegistry.record("venice.module.core.load", System.nanoTime() - nanos);
 
 		if (preloadedExtensionModules != null) {
 			preloadedExtensionModules.forEach(
 				m -> {
 					final long nanos_ = System.nanoTime();
 					RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env);
-					meterRegistry.record("venice.module." + m, System.nanoTime() - nanos_);
+					meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos_);
 				});
 		}
 		
@@ -308,13 +308,13 @@ public class VeniceInterpreter implements Serializable  {
 					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();					
 					final Env recur_env = recursionPoint.getLoopEnv();
 
-					final VncList values = ast.rest();
-					if (values.size() == 1) {
-						// [1][2] calculate and bind the new value
-						recur_env.set(bindingNames.get(0), evaluate(values.first(), env));
+					if (ast.size() == 2) {
+						// [1][2] calculate and bind the single new value
+						recur_env.set(bindingNames.get(0), evaluate(ast.second(), env));
 					}
 					else {
 						// [1] calculate new values
+						final VncList values = ast.rest();
 						final VncVal[] newValues = new VncVal[values.size()];
 						int kk=0;
 						for(VncVal v : values.getList()) {
@@ -536,11 +536,20 @@ public class VeniceInterpreter implements Serializable  {
 		else if (Types.isVncSequence(ast)) {
 			final VncSequence seq = (VncSequence)ast;		
 			
-			final List<VncVal> vals = new ArrayList<>();
-			for(VncVal v : seq.getList()) {
-				vals.add(evaluate(v, env));
+			switch(seq.size()) {
+				case 0: 
+					return seq;
+				case 1: 
+					return seq.withVariadicValues(evaluate(seq.first(), env));
+				case 2: 
+					return seq.withVariadicValues(evaluate(seq.first(), env), evaluate(seq.second(), env));
+				default: 
+					final List<VncVal> vals = new ArrayList<>();
+					for(VncVal v : seq.getList()) {
+						vals.add(evaluate(v, env));
+					}
+					return seq.withValues(vals);
 			}
-			return seq.withValues(vals);
 		}
 		else if (Types.isVncMap(ast)) {
 			final VncMap map = (VncMap)ast;
