@@ -76,9 +76,8 @@ public class MeterRegistry implements Serializable {
 	}
 	
 	public void record(final String name, final long elapsedTime) {
-		data.compute(name, (k, v) -> v == null 
-										? new Timer(name, 1, elapsedTime) 
-										: v.add(elapsedTime));
+		final Timer oldVal = data.get(name);
+		data.put(name, oldVal == null ? new Timer(name, elapsedTime): oldVal.add(elapsedTime));
 	}
 	
 	public Collection<Timer> getTimerData() {
@@ -113,12 +112,7 @@ public class MeterRegistry implements Serializable {
 		final List<String> lines =
 				data.stream()
 					.sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
-					.map(v -> String.format(
-								"%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s", 
-								v.name, 
-								v.count, 
-								Timer.formatNanos(v.elapsedNanos),
-								v.count == 1 ? "" : Timer.formatNanos(v.elapsedNanos / v.count)))
+					.map(v -> format(v, maxNameLen, maxCountLen))
 					.collect(Collectors.toList());
 
 		if (lines.isEmpty()) {
@@ -128,11 +122,10 @@ public class MeterRegistry implements Serializable {
 		if (!StringUtil.isBlank(title)) {
 			final int maxLineLen = Math.max(
 									title.length(), 
-									lines
-										.stream()
-										.mapToInt(l -> l.length())
-										.max()
-										.orElse(0));
+									lines.stream()
+										 .mapToInt(l -> l.length())
+										 .max()
+										 .orElse(0));
 			
 			final String delim = String.join("", Collections.nCopies(maxLineLen, "-"));
 			lines.add(0, delim.toString());
@@ -142,6 +135,15 @@ public class MeterRegistry implements Serializable {
 		}
 
 		return String.join("\n", lines);
+	}
+	
+	private String format(final Timer t, final int maxNameLen, final int maxCountLen) {
+		return String.format(
+					"%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s", 
+					t.name, 
+					t.count, 
+					Timer.formatNanos(t.elapsedNanos),
+					t.count == 1 ? "" : Timer.formatNanos(t.elapsedNanos / t.count));	
 	}
 	
 	private VncMap convertToVncMap(final Timer timer) {

@@ -25,6 +25,12 @@ import java.io.Serializable;
 
 
 public class Timer implements Serializable {
+	public Timer(final String name, final long elapsedNanos) {
+		this.name = name;
+		this.count = 1;
+		this.elapsedNanos = elapsedNanos;
+	}
+
 	public Timer(final String name, final int count, final long elapsedNanos) {
 		this.name = name;
 		this.count = count;
