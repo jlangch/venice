@@ -482,30 +482,6 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	/**
-	 * Returns true if ast is a list that contains a symbol as the first element 
-	 * and that symbol refers to a function in the env environment and that 
-	 * function has the is_macro attribute set to true. 
-	 * Otherwise, it returns false.
-	 * 
-	 * @param ast ast
-	 * @param env env
-	 * @return true if the ast starts with a macro
-	 */
-	private boolean is_macro_call(final VncVal ast, final Env env) {
-		if (Types.isVncList(ast)) {
-			final VncVal a0 = ((VncList)ast).first();
-			if (Types.isVncSymbol(a0)) {
-				final VncVal fn = env.getGlobalOrNil((VncSymbol)a0);
-				if (Types.isVncMacro(fn)) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-
-	/**
 	 * Recursively expands a macro. It calls is_macro_call with ast and env and 
 	 * loops while that condition is true. Inside the loop, the first element 
 	 * of the ast list (a symbol), is looked up in the environment to get 
@@ -515,6 +491,11 @@ public class VeniceInterpreter implements Serializable  {
 	 * When the loop completes because ast no longer represents a macro call, 
 	 * the current value of ast is returned.
 	 * 
+	 * <p>Macro check:
+	 * An ast is a macro if ast is a list that contains a symbol as the first element 
+	 * and that symbol refers to a function in the env environment and that 
+	 * function has the is_macro attribute set to true. 
+	 * 
 	 * @param ast ast
 	 * @param env env
 	 * @return the expanded macro
@@ -523,19 +504,24 @@ public class VeniceInterpreter implements Serializable  {
 		final long nanos = System.nanoTime();
 		
 		VncVal ast_ = ast;
+		boolean expanded = false;
 		
-		if (is_macro_call(ast_, env)) {
-			do {
-				final VncList list = Coerce.toVncList(ast_);				
-				final VncSymbol macroName = Coerce.toVncSymbol(list.first());
-				final VncFunction macroFn = Coerce.toVncFunction(env.getGlobalOrNil(macroName));
-				final VncList macroFnArgs = list.rest();
-				ast_ = macroFn.apply(macroFnArgs);
-			} while (is_macro_call(ast_, env));
+		while(Types.isVncList(ast_)) {
+			final VncList list = (VncList)ast_;	
+			final VncVal a0 = list.first();
+			if (!Types.isVncSymbol(a0)) break;
 			
-			if (meterRegistry.enabled) {
-				meterRegistry.record("macroexpand", System.nanoTime() - nanos);
-			}
+			final VncSymbol macroName = (VncSymbol)a0;
+			final VncVal fn = env.getGlobalOrNil(macroName);
+			
+			if (!Types.isVncMacro(fn)) break;
+			
+			expanded = true;
+			ast_ = ((VncFunction)fn).apply(list.rest());
+		}
+	
+		if (expanded && meterRegistry.enabled) {
+			meterRegistry.record("macroexpand", System.nanoTime() - nanos);
 		}
 
 		return ast_;
