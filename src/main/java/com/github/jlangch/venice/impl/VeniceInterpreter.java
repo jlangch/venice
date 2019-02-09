@@ -492,9 +492,9 @@ public class VeniceInterpreter implements Serializable  {
 	 * the current value of ast is returned.
 	 * 
 	 * <p>Macro check:
-	 * An ast is a macro if ast is a list that contains a symbol as the first element 
-	 * and that symbol refers to a function in the env environment and that 
-	 * function has the is_macro attribute set to true. 
+	 * An ast is a macro if the ast is a list that contains a symbol as the 
+	 * first element and that symbol refers to a function in the env environment 
+	 * and that function has the macro attribute set to true. 
 	 * 
 	 * @param ast ast
 	 * @param env env
