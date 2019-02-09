@@ -519,23 +519,26 @@ public class VeniceInterpreter implements Serializable  {
 	 * @param env env
 	 * @return the expanded macro
 	 */
-	private VncVal macroexpand(VncVal ast, final Env env) {
+	private VncVal macroexpand(final VncVal ast, final Env env) {
 		final long nanos = System.nanoTime();
 		
-		if (is_macro_call(ast, env)) {
+		VncVal ast_ = ast;
+		
+		if (is_macro_call(ast_, env)) {
 			do {
-				final VncSymbol macroName = Coerce.toVncSymbol(Coerce.toVncSequence(ast).first());
-				final VncFunction macroFn = Coerce.toVncFunction(env.get(macroName));
-				final VncList macroFnArgs = Coerce.toVncList(ast).rest();
-				ast = macroFn.apply(macroFnArgs);
-			} while (is_macro_call(ast, env));
+				final VncList list = Coerce.toVncList(ast_);				
+				final VncSymbol macroName = Coerce.toVncSymbol(list.first());
+				final VncFunction macroFn = Coerce.toVncFunction(env.getGlobalOrNil(macroName));
+				final VncList macroFnArgs = list.rest();
+				ast_ = macroFn.apply(macroFnArgs);
+			} while (is_macro_call(ast_, env));
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("macroexpand", System.nanoTime() - nanos);
 			}
 		}
 
-		return ast;
+		return ast_;
 	}
 
 	private VncVal eval_ast(final VncVal ast, final Env env) {
