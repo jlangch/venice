@@ -80,6 +80,7 @@ public class VeniceElapsedTest {
 							|| event.getEventType() == AuditEventType.ALERT;
 			result += res ? 0 : 1;
 		}	
+		System.gc();
 		final StopWatch	sw = StopWatch.millis();
 		for(int ii=0; ii<1000; ii++) {
 			boolean res = event.getEventName().matches("webapp[.](started|stopped)")
@@ -97,6 +98,7 @@ public class VeniceElapsedTest {
 		for(int ii=0; ii<12000; ii++) {
 			venice.eval(script1, Parameters.of("event", event));
 		}	
+		System.gc();
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			venice.eval(script1, Parameters.of("event", event));
@@ -112,6 +114,7 @@ public class VeniceElapsedTest {
 		for(int ii=0; ii<12000; ii++) {
 	        venice.eval(compiled1, Parameters.of("event", event));
 		}	
+		System.gc();
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// implicitly convert AuditEvent symbol (JavaInteropUtil with reflection)
@@ -127,6 +130,7 @@ public class VeniceElapsedTest {
 		for(int ii=0; ii<12000; ii++) {
 	        venice.eval(compiled1, Parameters.of("event", toMap(event)));
 		}	
+		System.gc();
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// explicitly convert AuditEvent symbol
@@ -145,7 +149,8 @@ public class VeniceElapsedTest {
 	        				"eventName", event.getEventName(),
 	        				"eventType", event.getEventType(),
 	        				"eventKey", event.getEventKey()));
-		}	
+		}
+		System.gc();
 		sw.start();	
 		for(int ii=0; ii<1000; ii++) {
 			// explicitly convert AuditEvent symbol
@@ -180,7 +185,9 @@ public class VeniceElapsedTest {
 		for(int ii=0; ii<2000; ii++) {
 			venice.eval("(+ 1 x)", Parameters.of("x", 6L));
 		}
-		
+
+		System.gc();
+
 		venice.resetTimer();
 		venice.enableTimer();
 		
@@ -217,7 +224,9 @@ public class VeniceElapsedTest {
 		for(int ii=0; ii<2000; ii++) {
 			venice.eval(precomp, Parameters.of("x", 6L));
 		}
-		
+
+		System.gc();
+
 		venice.resetTimer();
 		venice.enableTimer();
 		
