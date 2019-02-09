@@ -406,6 +406,8 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 		
 		assertEquals(Long.valueOf(7), venice.eval("test", "(do (defn add5 [x] (+ x 5)) (add5 2))"));
+		assertEquals(Long.valueOf(7), venice.eval("test", "(do (defn add5 [x] (+ x 5)) (add5 (+ 1 1)))"));
+		assertEquals(Long.valueOf(7), venice.eval("test", "(do (defn add5 [x] (+ x 5)) (add5 (+ (- 2 1) (+ 0 1))))"));
 	}
 
 	@Test

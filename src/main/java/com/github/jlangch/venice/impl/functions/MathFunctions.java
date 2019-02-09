@@ -582,7 +582,7 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'zero' does not allow %s as operand 1", 
+											"Function 'zero?' does not allow %s as operand 1", 
 											Types.getClassName(op1)));
 				}
 			}
@@ -615,7 +615,7 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'pos' does not allow %s as operand 1", 
+											"Function 'pos?' does not allow %s as operand 1", 
 											Types.getClassName(op1)));
 				}
 			}
@@ -675,7 +675,7 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'even' does not allow %s as operand.", 
+											"Function 'even?' does not allow %s as operand.", 
 											Types.getClassName(op1)));
 				}
 			}
@@ -702,7 +702,7 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'odd' does not allow %s as operand", 
+											"Function 'odd?' does not allow %s as operand", 
 											Types.getClassName(op1)));
 				}
 			}

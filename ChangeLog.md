@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added upgrade to VAVR 0.10.0 
+- upgraded to VAVR 0.10.0 
+- addded ... 
 
 
 
