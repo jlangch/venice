@@ -167,7 +167,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 
-	public VncVal evaluate(VncVal orig_ast, Env env) {
+	private VncVal evaluate(VncVal orig_ast, Env env) {
 		RecursionPoint recursionPoint = null;
 		
 		while (true) {
@@ -452,32 +452,39 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private static boolean is_pair(final VncVal x) {
-		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
-	}
-
-	private static VncVal quasiquote(final VncVal ast) {
-		if (!is_pair(ast)) {
-			return VncList.of(new VncSymbol("quote"), ast);
+	private VncVal eval_ast(final VncVal ast, final Env env) {
+		if (Types.isVncSymbol(ast)) {
+			return env.get((VncSymbol)ast);
+		} 
+		else if (Types.isVncSequence(ast)) {
+			final VncSequence seq = (VncSequence)ast;		
+			
+			switch(seq.size()) {
+				case 0: 
+					return seq;
+				case 1: 
+					return seq.withVariadicValues(evaluate(seq.first(), env));
+				case 2: 
+					return seq.withVariadicValues(evaluate(seq.first(), env), evaluate(seq.second(), env));
+				default: 
+					final List<VncVal> vals = new ArrayList<>();
+					for(VncVal v : seq.getList()) {
+						vals.add(evaluate(v, env));
+					}
+					return seq.withValues(vals);
+			}
+		}
+		else if (Types.isVncMap(ast)) {
+			final VncMap map = (VncMap)ast;
+			
+			final Map<VncVal,VncVal> vals = new HashMap<>();
+			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
+				vals.put(e.getKey(), evaluate(e.getValue(), env));
+			}
+			return map.withValues(vals);
 		} 
 		else {
-			final VncVal a0 = Coerce.toVncSequence(ast).first();
-			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
-				return ((VncSequence)ast).second();
-			} 
-			else if (is_pair(a0)) {
-				final VncVal a00 = Coerce.toVncSequence(a0).first();
-				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
-					return VncList.of(
-								new VncSymbol("concat"),
-								Coerce.toVncSequence(a0).second(),
-								quasiquote(((VncSequence)ast).rest()));
-				}
-			}
-			return VncList.of(
-						new VncSymbol("cons"),
-						quasiquote(a0),
-						quasiquote(((VncSequence)ast).rest()));
+			return ast;
 		}
 	}
 
@@ -527,39 +534,32 @@ public class VeniceInterpreter implements Serializable  {
 		return ast_;
 	}
 
-	private VncVal eval_ast(final VncVal ast, final Env env) {
-		if (Types.isVncSymbol(ast)) {
-			return env.get((VncSymbol)ast);
-		} 
-		else if (Types.isVncSequence(ast)) {
-			final VncSequence seq = (VncSequence)ast;		
-			
-			switch(seq.size()) {
-				case 0: 
-					return seq;
-				case 1: 
-					return seq.withVariadicValues(evaluate(seq.first(), env));
-				case 2: 
-					return seq.withVariadicValues(evaluate(seq.first(), env), evaluate(seq.second(), env));
-				default: 
-					final List<VncVal> vals = new ArrayList<>();
-					for(VncVal v : seq.getList()) {
-						vals.add(evaluate(v, env));
-					}
-					return seq.withValues(vals);
-			}
-		}
-		else if (Types.isVncMap(ast)) {
-			final VncMap map = (VncMap)ast;
-			
-			final Map<VncVal,VncVal> vals = new HashMap<>();
-			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
-				vals.put(e.getKey(), evaluate(e.getValue(), env));
-			}
-			return map.withValues(vals);
+	private static boolean is_pair(final VncVal x) {
+		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
+	}
+
+	private static VncVal quasiquote(final VncVal ast) {
+		if (!is_pair(ast)) {
+			return VncList.of(new VncSymbol("quote"), ast);
 		} 
 		else {
-			return ast;
+			final VncVal a0 = Coerce.toVncSequence(ast).first();
+			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
+				return ((VncSequence)ast).second();
+			} 
+			else if (is_pair(a0)) {
+				final VncVal a00 = Coerce.toVncSequence(a0).first();
+				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
+					return VncList.of(
+								new VncSymbol("concat"),
+								Coerce.toVncSequence(a0).second(),
+								quasiquote(((VncSequence)ast).rest()));
+				}
+			}
+			return VncList.of(
+						new VncSymbol("cons"),
+						quasiquote(a0),
+						quasiquote(((VncSequence)ast).rest()));
 		}
 	}
 	
