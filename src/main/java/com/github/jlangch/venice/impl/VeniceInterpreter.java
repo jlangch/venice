@@ -489,8 +489,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	/**
-	 * Recursively expands a macro. It calls is_macro_call with ast and env and 
-	 * loops while that condition is true. Inside the loop, the first element 
+	 * Recursively expands a macro. Inside the loop, the first element 
 	 * of the ast list (a symbol), is looked up in the environment to get 
 	 * the macro function. This macro function is then called/applied with 
 	 * the rest of the ast elements (2nd through the last) as arguments. 
@@ -514,17 +513,14 @@ public class VeniceInterpreter implements Serializable  {
 		boolean expanded = false;
 		
 		while(Types.isVncList(ast_)) {
-			final VncList list = (VncList)ast_;	
-			final VncVal a0 = list.first();
+			final VncVal a0 = ((VncList)ast_).first();
 			if (!Types.isVncSymbol(a0)) break;
 			
-			final VncSymbol macroName = (VncSymbol)a0;
-			final VncVal fn = env.getGlobalOrNil(macroName);
-			
+			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);			
 			if (!Types.isVncMacro(fn)) break;
 			
 			expanded = true;
-			ast_ = ((VncFunction)fn).apply(list.rest());
+			ast_ = ((VncFunction)fn).apply(((VncList)ast_).rest());
 		}
 	
 		if (expanded && meterRegistry.enabled) {

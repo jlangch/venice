@@ -74,6 +74,11 @@ public class Env implements Serializable {
 		return glob == null ? Nil : glob.getVal();
 	}
 
+	public VncVal getGlobalOrNull(final VncSymbol key) {
+		final Var glob = globalSymbols.get(key);
+		return glob == null ? null : glob.getVal();
+	}
+
 	public int level() {
 		return level;
 	}
