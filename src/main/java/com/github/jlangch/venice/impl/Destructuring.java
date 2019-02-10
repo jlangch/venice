@@ -85,14 +85,14 @@ public class Destructuring {
 		else if (Types.isVncSequence(symVal)) {
 			// sequential destructuring	
 			
-			if (bindVal == Nil) {
-				sequential_list_destructure((VncSequence)symVal, new VncList(), bindings);
-			}
-			else if (Types.isVncSequence(bindVal)) {
+			if (Types.isVncSequence(bindVal)) {
 				sequential_list_destructure((VncSequence)symVal, (VncSequence)bindVal, bindings);
 			}
 			else if (Types.isVncString(bindVal)) {
 				sequential_string_destructure((VncSequence)symVal, bindVal, bindings);
+			}
+			else if (bindVal == Nil) {
+				sequential_list_destructure((VncSequence)symVal, new VncList(), bindings);
 			}
 			else {
 				throw new VncException(
@@ -105,10 +105,7 @@ public class Destructuring {
 		else if (Types.isVncMap(symVal)) {			
 			// associative destructuring
 			
-			if (bindVal == Nil) {
-				associative_map_destructure((VncMap)symVal, new VncHashMap(), bindings);
-			}
-			else if (Types.isVncMap(bindVal)) {
+			if (Types.isVncMap(bindVal)) {
 				associative_map_destructure((VncMap)symVal, bindVal, bindings);
 			}
 			else if (Types.isVncVector(bindVal)) {
@@ -117,6 +114,9 @@ public class Destructuring {
 								"Associative destructuring on vector is not yet implemented",
 								Types.getClassName(bindVal),
 								ErrorMessage.buildErrLocation(bindVal)));
+			}
+			else if (bindVal == Nil) {
+				associative_map_destructure((VncMap)symVal, new VncHashMap(), bindings);
 			}
 			else {
 				throw new VncException(
@@ -183,14 +183,7 @@ public class Destructuring {
 				bindings.add(new Binding(sym, bindVal));
 				symIdx += 2; 
 			}
-			else if (Types.isVncVector(sVal)) {
-				final VncVal syms = sVal;
-				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
-				bindings.addAll(destructure(syms, val));
-				symIdx++; 
-				valIdx++;
-			}
-			else if (Types.isVncList(sVal)) {
+			else if (Types.isVncSequence(sVal)) {
 				final VncVal syms = sVal;
 				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
 				bindings.addAll(destructure(syms, val));
