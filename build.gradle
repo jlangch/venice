@@ -68,6 +68,7 @@ shadowJar {
     // https://github.com/johnrengelman/shadow/blob/master/README.md
     
     relocate 'io.vavr', 'org.repackage.io.vavr'
+    relocate 'org.jline', 'org.repackage.org.jline'
 
     from('src/main/java') {
         include 'com/github/jlangch/venice/**/*.venice'
@@ -130,4 +131,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'io.vavr:vavr:0.10.0'
+    compile 'org.jline:jline:3.9.0'
 }

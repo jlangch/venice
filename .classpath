@@ -9,6 +9,7 @@
 	<classpathentry kind="lib" path="lib/docgen/flying-saucer-core-9.1.16.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/flying-saucer-pdf-openpdf-9.1.16.jar"/>
 	<classpathentry kind="lib" path="lib/docgen/openpdf-1.2.10.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/jline-3.9.0.jar" sourcepath="lib/eclipse/jline-3.9.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/vavr-0.10.0.jar" sourcepath="lib/eclipse/vavr-0.10.0-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
