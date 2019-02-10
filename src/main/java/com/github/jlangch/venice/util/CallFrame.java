@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.Coerce;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -43,18 +42,18 @@ public class CallFrame {
 	}
 	
 	public String getFile() {
-		final VncVal vFile = meta == Nil ? Nil : getMetaVal(MetaUtil.FILE);
+		final VncVal vFile = getMetaVal(MetaUtil.FILE);
 		final String file = vFile == Nil ? null : Coerce.toVncString(vFile).getValue();
 		return file == null || file.isEmpty() ? "unknown" : file;
 	}
 	
 	public int getLine() {
-		final VncVal vLine = meta == Nil ? Nil : getMetaVal(MetaUtil.LINE);
+		final VncVal vLine = getMetaVal(MetaUtil.LINE);
 		return vLine == Nil ? -1 : Coerce.toVncLong(vLine).getValue().intValue();		
 	}
 	
 	public int getCol() {
-		final VncVal vCol = meta == Nil ? Nil : getMetaVal(MetaUtil.COLUMN);
+		final VncVal vCol = getMetaVal(MetaUtil.COLUMN);
 		return vCol == Nil ? -1 : Coerce.toVncLong(vCol).getValue().intValue();		
 	}
 
@@ -66,14 +65,14 @@ public class CallFrame {
 	}
 
 	private VncVal getMetaVal(final VncString key) {
-		if (meta == Constants.Nil) {
-			return Constants.Nil;
+		if (meta == Nil) {
+			return Nil;
 		}
 		else if (meta instanceof VncHashMap) {
 			return ((VncHashMap)meta).get(key);
 		}
 		else {
-			return Constants.Nil; // not a map
+			return Nil; // not a map
 		}
 	}
 
