@@ -21,18 +21,21 @@
  */
 package com.github.jlangch.venice.util;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
+import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.types.Coerce;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+
+
 public class CallFrame {
 
-	public CallFrame(
-			final String fnName, 
-			final String file, 
-			final Integer line, 
-			final Integer col
-	) {
+	public CallFrame(final String fnName, final VncVal meta) {
 		this.fnName = fnName;
-		this.file = file == null || file.isEmpty() ? "unknown" : file;
-		this.line = line == null ? -1 : line;
-		this.col = col == null ? -1 : col;
+		this.meta = meta;
 	}
 	
 	public String getFnName() {
@@ -40,28 +43,41 @@ public class CallFrame {
 	}
 	
 	public String getFile() {
-		return file;
+		final VncVal vFile = meta == Nil ? Nil : getMetaVal(MetaUtil.FILE);
+		final String file = vFile == Nil ? null : Coerce.toVncString(vFile).getValue();
+		return file == null || file.isEmpty() ? "unknown" : file;
 	}
 	
 	public int getLine() {
-		return line;
+		final VncVal vLine = meta == Nil ? Nil : getMetaVal(MetaUtil.LINE);
+		return vLine == Nil ? -1 : Coerce.toVncLong(vLine).getValue().intValue();		
 	}
 	
 	public int getCol() {
-		return col;
+		final VncVal vCol = meta == Nil ? Nil : getMetaVal(MetaUtil.COLUMN);
+		return vCol == Nil ? -1 : Coerce.toVncLong(vCol).getValue().intValue();		
 	}
-
 
 	@Override
 	public String toString() {
 		return fnName == null
-				? String.format("%s: line %d, col %d", file, line, col)
-				: String.format("%s (%s: line %d, col %d)", fnName, file, line, col);
+				? String.format("%s: line %d, col %d", getFile(), getLine(), getCol())
+				: String.format("%s (%s: line %d, col %d)", fnName, getFile(), getLine(), getCol());
+	}
+
+	private VncVal getMetaVal(final VncString key) {
+		if (meta == Constants.Nil) {
+			return Constants.Nil;
+		}
+		else if (meta instanceof VncHashMap) {
+			return ((VncHashMap)meta).get(key);
+		}
+		else {
+			return Constants.Nil; // not a map
+		}
 	}
 
 	
 	private final String fnName;
-	private final String file; 
-	private final int line; 
-	private final int col;
+	private final VncVal meta; 
 }

@@ -23,9 +23,6 @@ package com.github.jlangch.venice.impl.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.types.Coerce;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -35,45 +32,20 @@ import com.github.jlangch.venice.util.CallFrame;
 public class CallFrameBuilder {
 	
 	public static CallFrame fromVal(final String fnName, final VncVal val) {
-		return build(
-				fnName,
-				val.getMetaVal(MetaUtil.FILE),
-				val.getMetaVal(MetaUtil.LINE),
-				val.getMetaVal(MetaUtil.COLUMN));
+		return new CallFrame(fnName, val.getMeta());
 	}
 	
 	public static CallFrame fromVal(final VncVal val) {
-		return build(
-				null,
-				val.getMetaVal(MetaUtil.FILE),
-				val.getMetaVal(MetaUtil.LINE),
-				val.getMetaVal(MetaUtil.COLUMN));
+		return new CallFrame(null, val.getMeta());
 	}
 
 	public static CallFrame fromFunction(final VncFunction fn, final VncVal fnSym) {
 		if (Types.isVncSymbol(fnSym)) {
-			return build(
-					fn.getName(), 		
-					fnSym.getMetaVal(MetaUtil.FILE),
-					fnSym.getMetaVal(MetaUtil.LINE),
-					fnSym.getMetaVal(MetaUtil.COLUMN));
+			return new CallFrame(fn.getName(), fnSym.getMeta());
 		}
 		else {
-			return CallFrameBuilder.build(fn.getName(), Nil, Nil, Nil);
+			return new CallFrame(fn.getName(), Nil);
 		}
-	}
-	
-	public static CallFrame build(
-			final String fnName,
-			final VncVal file, 
-			final VncVal line, 
-			final VncVal column
-	) {
-		return new CallFrame(
-				fnName,
-				file == Constants.Nil ? null : Coerce.toVncString(file).getValue(),
-				line == Constants.Nil ? null : Coerce.toVncLong(line).getValue().intValue(),
-				column == Constants.Nil ? null : Coerce.toVncLong(column).getValue().intValue());
 	}
 
 }
