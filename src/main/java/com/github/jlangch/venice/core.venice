@@ -323,7 +323,7 @@
 
 (defmacro 
    { :arglists '("(perf expr warmup-iterations test-iterations)")
-     :doc "Performance test with the given expression. \nRuns the test in 3 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression under profiling. \nReturns nil." 
+     :doc "Performance test with the given expression. \n\nRuns the test in 3 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression under profiling.\nReturns nil.\n\nAfter a test run metrics data can be printed with (println (prof :data-formatted))" 
      :examples '("(perf (+ 100 200) 12000 1000)") }
 
    perf [expr warmup-iterations test-iterations]
