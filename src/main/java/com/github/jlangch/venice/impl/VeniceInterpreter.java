@@ -929,10 +929,10 @@ public class VeniceInterpreter implements Serializable  {
 		return new VncFunction(name, body, env, params) {
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
-				
+
 				// destructuring fn params -> args
 				localEnv.addAll(Destructuring.destructure(params, args));
-				
+
 				validateFnPreconditions(name, preConditions, localEnv);
 				
 				if (body.isEmpty()) {
@@ -940,6 +940,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				else if (body.size() == 1) {
 					return evaluate(body.first(), localEnv);
+				}
+				else if (body.size() == 2) {
+					evaluate(body.first(), localEnv);
+					return evaluate(body.last(), localEnv);
 				}
 				else {
 					eval_ast(body.slice(0, body.size()-1), localEnv);
@@ -979,9 +983,9 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVector preConditions, 
 			final Env env
 	) {
-		if (preConditions != null) {
+		if (preConditions != null && !preConditions.isEmpty()) {
 	 		final Env local = new Env(env);	
-	 		preConditions.forEach(v -> {
+	 		for(VncVal v : preConditions.getList()) {
 				if (!isFnConditionTrue(evaluate(v, local))) {
 					try {
 						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, v));
@@ -994,7 +998,7 @@ public class VeniceInterpreter implements Serializable  {
 						ThreadLocalMap.getCallStack().pop();
 					}
 				}
- 			});
+ 			}
 		}
 	}
 
