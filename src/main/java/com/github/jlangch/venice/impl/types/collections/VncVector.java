@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -103,7 +102,7 @@ public class VncVector extends VncSequence {
 
 	@Override
 	public List<VncVal> getList() { 
-		return Collections.unmodifiableList(value.toJavaList()); 
+		return value.toJavaList(); 
 	}
 
 	@Override

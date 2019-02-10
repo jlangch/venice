@@ -104,7 +104,7 @@ public class VncList extends VncSequence {
 
 	@Override
 	public List<VncVal> getList() { 
-		return Collections.unmodifiableList(value.toJavaList()); 
+		return value.toJavaList(); 
 	}
 
 	@Override
