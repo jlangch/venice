@@ -58,14 +58,17 @@ public class VncBigDecimal extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncBigDecimal(o)) {
+		if (Types.isVncBigDecimal(o)) {
 			return value.compareTo(((VncBigDecimal)o).getValue());
 		}
-		else if (Types.isVncNumber(o)) {
-			return value.compareTo(Numeric.toDecimal(o).getValue());
+		else if (Types.isVncDouble(o)) {
+			return value.compareTo(Numeric.doubleToDecimal((VncDouble)o).getValue());
+		}
+		else if (Types.isVncLong(o)) {
+			return value.compareTo(Numeric.longToDecimal((VncLong)o).getValue());
+		}
+		else if (o == Constants.Nil) {
+			return 1;
 		}
 
 		return super.compareTo(o);

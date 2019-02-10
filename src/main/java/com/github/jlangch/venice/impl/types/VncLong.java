@@ -59,14 +59,17 @@ public class VncLong extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncLong(o)) {
+		if (Types.isVncLong(o)) {
 			return value.compareTo(((VncLong)o).getValue());
 		}
-		else if (Types.isVncNumber(o)) {
-			return value.compareTo(Numeric.toLong(o).getValue());
+		else if (Types.isVncDouble(o)) {
+			return value.compareTo(Numeric.doubleToLong((VncDouble)o).getValue());
+		}
+		else if (Types.isVncBigDecimal(o)) {
+			return value.compareTo(Numeric.decimalToLong((VncBigDecimal)o).getValue());
+		}
+		else if (o == Constants.Nil) {
+			return 1;
 		}
 
 		return super.compareTo(o);

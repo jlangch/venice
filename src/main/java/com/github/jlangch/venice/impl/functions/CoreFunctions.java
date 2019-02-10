@@ -891,7 +891,7 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 				
-				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) <= 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
@@ -932,7 +932,7 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 				
-				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) > 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
@@ -973,7 +973,7 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 				
-				if (Types.isVncLong(op1) || Types.isVncDouble(op1) || Types.isVncBigDecimal(op1)) {
+				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) >= 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
