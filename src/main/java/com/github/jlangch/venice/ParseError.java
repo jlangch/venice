@@ -24,9 +24,6 @@ package com.github.jlangch.venice;
 
 public class ParseError extends VncException {
 
-	public ParseError() {
-	}
-	
 	public ParseError(final String message) {
 		super(message);
 	}

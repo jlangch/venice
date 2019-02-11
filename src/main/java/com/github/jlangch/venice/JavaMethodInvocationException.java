@@ -24,9 +24,6 @@ package com.github.jlangch.venice;
 
 public class JavaMethodInvocationException extends VncException {
 
-	public JavaMethodInvocationException() {
-	}
-	
 	public JavaMethodInvocationException(final String message) {
 		super(message);
 	}

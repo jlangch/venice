@@ -24,9 +24,6 @@ package com.github.jlangch.venice;
 
 public class FileException extends VncException {
 
-	public FileException() {
-	}
-	
 	public FileException(final String message) {
 		super(message);
 	}

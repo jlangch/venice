@@ -217,14 +217,17 @@ public class Types {
 		else if (Types.isVncSymbol(val)) {
 			return new VncString("venice.Symbol");
 		}
-		else if (Types.isVncHashSet(val)) {
-			return new VncString("venice.Set");
-		}
 		else if (Types.isVncVector(val)) {
 			return new VncString("venice.Vector");
 		}
 		else if (Types.isVncList(val)) {
 			return new VncString("venice.List");
+		}
+		else if (Types.isVncHashSet(val)) {
+			return new VncString("venice.Set");
+		}
+		else if (Types.isVncSortedSet(val)) {
+			return new VncString("venice.SortedSet");
 		}
 		else if (Types.isVncHashMap(val)) {
 			return new VncString("venice.HashMap");
@@ -234,6 +237,9 @@ public class Types {
 		}
 		else if (Types.isVncSortedMap(val)) {
 			return new VncString("venice.SortedMap");
+		}
+		else if (Types.isVncMutableMap(val)) {
+			return new VncString("venice.MutableMap");
 		}
 		else if (Types.isVncJavaObject(val)) {
 			return new VncString("venice.JavaObject(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
