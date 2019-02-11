@@ -222,7 +222,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		}
 		else if (Types.isVncJavaMap(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = size();
+			final Integer sizeOther = ((VncJavaMap)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;

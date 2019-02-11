@@ -249,7 +249,7 @@ public class VncOrderedMap extends VncMap {
 		}
 		else if (Types.isVncOrderedMap(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = size();
+			final Integer sizeOther = ((VncOrderedMap)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
