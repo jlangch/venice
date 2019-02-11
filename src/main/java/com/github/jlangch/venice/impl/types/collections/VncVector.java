@@ -220,18 +220,19 @@ public class VncVector extends VncSequence {
 		}
 		else if (Types.isVncVector(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = size();
+			final Integer sizeOther = ((VncVector)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
 			}
 			else {
-				for(int ii=0; ii<size(); ii++) {
+				for(int ii=0; ii<sizeThis; ii++) {
 					c = nth(ii).compareTo(((VncVector)o).nth(ii));
 					if (c != 0) {
 						return c;
 					}
-				}
+				}				
+				return 0;
 			}
 		}
 

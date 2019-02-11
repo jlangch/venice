@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -188,7 +187,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = new ArrayList<>(list.getList());
+		final List<VncVal> items = list.getList();
 		Collections.reverse(items);
 		return new VncList(value.prependAll(items), getMeta());
 	}
@@ -224,18 +223,19 @@ public class VncList extends VncSequence {
 		}
 		else if (Types.isVncList(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = size();
+			final Integer sizeOther = ((VncList)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
 			}
 			else {
-				for(int ii=0; ii<size(); ii++) {
+				for(int ii=0; ii<sizeThis; ii++) {
 					c = nth(ii).compareTo(((VncList)o).nth(ii));
 					if (c != 0) {
 						return c;
 					}
 				}
+				return 0;
 			}
 		}
 

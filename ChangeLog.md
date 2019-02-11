@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - upgraded to VAVR 0.10.0 
 - added ... 
 
+### fixed
+
+- fixed compareTo for collection types (list, vector, set, and map)
+
 
 
 ## [1.3.1] - 2019-02-08

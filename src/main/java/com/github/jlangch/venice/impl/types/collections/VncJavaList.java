@@ -235,14 +235,20 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 			return 1;
 		}
 		else if (Types.isVncJavaList(o)) {
-			for(int ii=0; ii<Math.min(size(), ((VncJavaList)o).size()); ii++) {
-				int c = nth(ii).compareTo(((VncJavaList)o).nth(ii));
-				if (c != 0) {
-					return c;
+			final Integer sizeThis = size();
+			final Integer sizeOther = ((VncJavaList)o).size();
+			int c = sizeThis.compareTo(sizeOther);
+			if (c != 0) {
+				return c;
+			}
+			else {
+				for(int ii=0; ii<sizeThis; ii++) {
+					c = nth(ii).compareTo(((VncJavaList)o).nth(ii));
+					if (c != 0) {
+						return c;
+					}
 				}
-				else if (equals(o)) {
-					return 0;
-				}
+				return 0;
 			}
 		}
 

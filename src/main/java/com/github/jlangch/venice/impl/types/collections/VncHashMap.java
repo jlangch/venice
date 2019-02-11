@@ -255,9 +255,7 @@ public class VncHashMap extends VncMap {
 				return c;
 			}
 			else {
-				if (equals(o)) {
-					return 0;
-				}
+				return equals(o) ? 0 : -1;
 			}
 		}
 
