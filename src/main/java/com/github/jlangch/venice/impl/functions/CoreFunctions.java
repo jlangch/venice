@@ -79,8 +79,8 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.util.CallFrame;
 
 
 public class CoreFunctions {
@@ -626,7 +626,7 @@ public class CoreFunctions {
 				} 
 				catch (IOException ex) {
 					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("readline", args));
+						ThreadLocalMap.getCallStack().push(CallFrame.fromVal("readline", args));
 						throw new ValueException(new VncString(ex.getMessage()), ex);
 					}
 					finally {

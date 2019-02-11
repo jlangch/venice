@@ -54,10 +54,10 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.util.CallFrame;
 
 
 public class ShellFunctions {
@@ -240,7 +240,7 @@ public class ShellFunctions {
 
 				if (exitCode != 0 && opts.get(new VncKeyword(":throw-ex")) == Constants.True) {
 					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", cmd));
+						ThreadLocalMap.getCallStack().push(CallFrame.fromVal("sh", cmd));
 						throw new ShellException(
 									String.format(
 										"Shell execution failed: (sh %s). Exit code: %d", 
@@ -265,7 +265,7 @@ public class ShellFunctions {
 		}
 		catch(Exception ex) {
 			try {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", cmd));
+				ThreadLocalMap.getCallStack().push(CallFrame.fromVal("sh", cmd));
 				throw new VncException(
 						String.format(
 							"Shell execution processing failed: (sh %s)", 
@@ -324,7 +324,7 @@ public class ShellFunctions {
 		args.forEach(arg -> {
 			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg) || Types.isVncBoolean(arg))) {
 				try {
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal("sh", arg));
+					ThreadLocalMap.getCallStack().push(CallFrame.fromVal("sh", arg));
 					throw new VncException(
 							String.format(
 									"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",

@@ -32,8 +32,8 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.util.CallFrame;
 
 
 public class Env implements Serializable {
@@ -56,7 +56,7 @@ public class Env implements Serializable {
 		}
 		
 		try {
-			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(key));
+			ThreadLocalMap.getCallStack().push(CallFrame.fromVal(key));
 			throw new VncException(String.format("Symbol '%s' not found.",  key.getName()));
 		}
 		finally {
@@ -89,7 +89,7 @@ public class Env implements Serializable {
 			// allow shadowing of a global non function var by a local var
 			// e.g.:   (do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))
 			try {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(name));
+				ThreadLocalMap.getCallStack().push(CallFrame.fromVal(name));
 				throw new VncException(String.format(
 						"The global function '%s' must not be shadowed by a local var!",
 						name));
@@ -114,7 +114,7 @@ public class Env implements Serializable {
 		final Var v = globalSymbols.get(val.getName());
 		if (v != null && !v.isOverwritable()) {
 			try {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(val.getName()));
+				ThreadLocalMap.getCallStack().push(CallFrame.fromVal(val.getName()));
 				throw new VncException(String.format(
 						"The existing global var '%s' must not be overwritten!",
 						val.getName()));
@@ -136,7 +136,7 @@ public class Env implements Serializable {
 			}
 			else {
 				try {
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(val.getName()));
+					ThreadLocalMap.getCallStack().push(CallFrame.fromVal(val.getName()));
 					throw new VncException(String.format(
 							"The var '%s' is not defined as dynamic",
 							val.getName()));
@@ -162,7 +162,7 @@ public class Env implements Serializable {
 			}
 			else {
 				try {
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(sym));
+					ThreadLocalMap.getCallStack().push(CallFrame.fromVal(sym));
 					throw new VncException(String.format(
 							"The var '%s' is not defined as dynamic",
 							sym.getName()));
@@ -185,7 +185,7 @@ public class Env implements Serializable {
 			}
 			else {
 				try {
-					ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(sym));
+					ThreadLocalMap.getCallStack().push(CallFrame.fromVal(sym));
 					throw new VncException(String.format(
 							"The var '%s' is not defined as dynamic",
 							sym.getName()));

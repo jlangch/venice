@@ -61,7 +61,6 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.CallFrameBuilder;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -416,7 +415,7 @@ public class VeniceInterpreter implements Serializable  {
 						sandboxMaxExecutionTimeChecker.check();
 						
 						// invoke function with call frame
-						final CallFrame frame = CallFrameBuilder.fromFunction(fn, a0);		
+						final CallFrame frame = CallFrame.fromFunction(fn, a0);		
 						ThreadLocalMap.getCallStack().push(frame);
 						try {
 							final VncVal val = fn.apply(el.rest());
@@ -439,7 +438,7 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					else {
 						try {
-							ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+							ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
 							throw new VncException(String.format(
 											"Not a function or keyword/map used as function: '%s'", 
 											PRINT(elArg0)));
@@ -622,7 +621,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal dorun_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
 			try {
-				ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+				ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
 				throw new VncException("dorun requires two arguments a count and an expression to run");
 			}
 			finally {
@@ -716,7 +715,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		
 		try {
-			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(ast));
+			ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
 			throw new VncException(
 							"Function 'prof' expects a single keyword argument: " +
 							":on, :off, :status, :clear, :clear-all-but, :data, or :data-formatted");
@@ -988,7 +987,7 @@ public class VeniceInterpreter implements Serializable  {
 	 		for(VncVal v : preConditions.getList()) {
 				if (!isFnConditionTrue(evaluate(v, local))) {
 					try {
-						ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, v));
+						ThreadLocalMap.getCallStack().push(CallFrame.fromVal(fnName, v));
 						throw new AssertionException(
 								String.format(
 										"pre-condition assert failed: %s",
@@ -1009,7 +1008,7 @@ public class VeniceInterpreter implements Serializable  {
 			final BiFunction<VncList,Env,VncVal> fn
 	) {
 		try {
-			ThreadLocalMap.getCallStack().push(CallFrameBuilder.fromVal(fnName, ast));
+			ThreadLocalMap.getCallStack().push(CallFrame.fromVal(fnName, ast));
 			return fn.apply(ast, env);
 		}
 		finally {
