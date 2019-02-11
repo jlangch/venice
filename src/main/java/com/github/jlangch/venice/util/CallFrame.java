@@ -51,6 +51,7 @@ public class CallFrame {
 		return new CallFrame(fn.getName(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
 	}
 
+	
 	public String getFnName() {
 		return fnName;
 	}
@@ -79,15 +80,7 @@ public class CallFrame {
 	}
 
 	private VncVal getMetaVal(final VncString key) {
-		if (meta == Nil) {
-			return Nil;
-		}
-		else if (meta instanceof VncHashMap) {
-			return ((VncHashMap)meta).get(key);
-		}
-		else {
-			return Nil; // not a map
-		}
+		return (meta instanceof VncHashMap) ? ((VncHashMap)meta).get(key) : Nil;
 	}
 
 	
