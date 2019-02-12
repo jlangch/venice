@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
@@ -548,6 +549,84 @@ public class IOFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+	public static VncFunction io_mkdir = 
+		new VncFunction(
+				"io/mkdir", 
+				VncFunction
+					.meta()
+					.arglists("(io/mkdir dir)")		
+					.doc("Creates the directory. dir must be a java.io.File.")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/mkdir");
+	
+				assertArity("io/mkdir", args, 1);
+	
+				if (!isJavaIoFile(args.first()) ) {
+					throw new VncException(String.format(
+							"Function 'io/mkdir' does not allow %s as dir",
+							Types.getClassName(args.first())));
+				}
+	
+				final File dir = (File)((VncJavaObject)args.first()).getDelegate();				
+				try {
+					dir.mkdir();
+				}
+				catch(Exception ex) {
+					throw new VncException(
+							String.format(
+									"Failed to create dir %s", 
+									dir.getPath()),
+							ex);
+				}
+				
+				return Nil;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction io_mkdirs = 
+		new VncFunction(
+				"io/mkdir", 
+				VncFunction
+					.meta()
+					.arglists("(io/mkdirs dir)")		
+					.doc(
+						"Creates the directory including any necessary but nonexistent " +
+						"parent directories. dir must be a java.io.File.")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/mkdirs");
+	
+				assertArity("io/mkdirs", args, 1);
+	
+				if (!isJavaIoFile(args.first()) ) {
+					throw new VncException(String.format(
+							"Function 'io/mkdirs' does not allow %s as dir",
+							Types.getClassName(args.first())));
+				}
+	
+				final File dir = (File)((VncJavaObject)args.first()).getDelegate();				
+				try {
+					dir.mkdirs();
+				}
+				catch(Exception ex) {
+					throw new VncException(
+							String.format(
+									"Failed to create dir %s", 
+									dir.getPath()),
+							ex);
+				}
+				
+				return Nil;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction io_tmp_dir = 
 		new VncFunction(
@@ -585,6 +664,61 @@ public class IOFunctions {
 				assertArity("io/user-dir", args, 0);
 	
 				return new VncJavaObject(new File(System.getProperty("user.dir")));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_slurp_lines = 
+		new VncFunction(
+				"io/slurp-lines", 
+				VncFunction
+					.meta()
+					.arglists("(io/slurp-lines file & options)")		
+					.doc(
+						"Read all lines from a text file. \n" +
+						"Defaults encoding=UTF-8. \n" +
+						"Options: :encoding \"UTF-8")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("io/slurp-lines");
+	
+				assertMinArity("io/slurp-lines", args, 1);
+	
+				try {	
+					File file;
+					
+					if (Types.isVncString(args.first()) ) {
+						file = new File(((VncString)args.first()).getValue());
+					}
+					else if (isJavaIoFile(args.first()) ) {
+						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/slurp-lines' does not allow %s as f",
+								Types.getClassName(args.first())));
+					}
+	
+					
+					final VncHashMap options = VncHashMap.ofAll(args.rest());
+	
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 
+					
+					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+
+					final List<VncString> lines = 
+							Files.readAllLines(file.toPath(), Charset.forName(encoding))
+								 .stream()
+								 .map(s -> new VncString(s))
+								 .collect(Collectors.toList());
+					
+					return new VncList(lines);
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1209,10 +1343,13 @@ public class IOFunctions {
 					.put("io/delete-file-on-exit",		io_delete_file_on_exit)
 					.put("io/copy-file",				io_copy_file)
 					.put("io/move-file",				io_move_file)
+					.put("io/mkdir",					io_mkdir)
+					.put("io/mkdirs",					io_mkdirs)
 					.put("io/temp-file",				io_temp_file)
 					.put("io/tmp-dir",					io_tmp_dir)
 					.put("io/user-dir",					io_user_dir)
 					.put("io/slurp",					io_slurp)
+					.put("io/slurp-lines",				io_slurp_lines)
 					.put("io/spit",						io_spit)
 					.put("io/spit-temp-file",			io_spit_temp_file)
 					.put("io/slurp-temp-file",			io_slurp_temp_file)
