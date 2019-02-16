@@ -1399,23 +1399,62 @@ public class CoreFunctions {
 						"vector/seq with any elements = a key in smap replaced with the\n" + 
 						"corresponding val in smap.")
 					.examples(
-						"(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])")
+							"(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])",
+							"(replace {2 :two, 4 :four} #{1 2 3 4 5})",
+							"(replace {[:a 10] [:c 30]} {:a 10 :b 20})")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("replace", args, 2);
 	
-				final VncMap map = Coerce.toVncMap(args.first());		
-				final VncSequence coll = Coerce.toVncSequence(args.second());
+				final VncMap map = Coerce.toVncMap(args.first());
+				final VncVal coll = args.second();
 				
-				final List<VncVal> vals = new ArrayList<>();
-						
-				for(VncVal v : coll.getList()) {
-					final VncVal r = map.get(v);
-					vals.add(r == Nil ? v : r);
+				if (Types.isVncSequence(coll)) {
+					final VncSequence seq = (VncSequence)coll;
+					
+					final List<VncVal> vals = new ArrayList<>();
+							
+					for(VncVal v : seq.getList()) {
+						final VncVal r = map.get(v);
+						vals.add(r == Nil ? v : r);
+					}
+	
+					return seq.withValues(vals, coll.getMeta());
 				}
-
-				return coll.withValues(vals, coll.getMeta());
+				else if (Types.isVncSet(coll)) {
+					final VncSet set = (VncSet)coll;
+					
+					final List<VncVal> vals = new ArrayList<>();
+							
+					for(VncVal v : set.getList()) {
+						final VncVal r = map.get(v);
+						vals.add(r == Nil ? v : r);
+					}
+	
+					return set.withValues(vals, coll.getMeta());
+				}
+				else if (Types.isVncMap(coll)) {
+					VncMap mapc = (VncMap)coll;
+					
+					for(VncMapEntry e : map.entries()) {
+						final VncVal k = Coerce.toVncVector(e.getKey()).first();
+						final VncVal v = Coerce.toVncVector(e.getKey()).second();
+						
+						if (v.equals(mapc.get(k))) {
+							mapc = mapc.dissoc(k);
+							mapc = mapc.assoc(
+										Coerce.toVncVector(e.getValue()).first(),
+										Coerce.toVncVector(e.getValue()).second());
+						}
+					}
+					
+					return mapc;
+				}
+				else {
+					throw new VncException(
+							"Function 'repeat' requires a list, vector, set, or map as coll argument");
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
