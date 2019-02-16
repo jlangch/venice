@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Types;
@@ -212,10 +213,25 @@ public class Env implements Serializable {
 	
 	@Override
 	public String toString() {
-		return String.format("level %d: %s\n\nglobal: %s", level, symbols, globalSymbols);
+		return String.format(
+				"level %d:\n   [local]\n%s\n   [global]\n%s", 
+				level, 
+				toString(symbols, "      "), 
+				toString(globalSymbols, "      "));
 	}
 	
-
+	private String toString(final Map<VncSymbol,Var> vars, final String indent) {
+		return vars.values()
+				   .stream()
+				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
+				   .map(v -> String.format(
+							"%s%s: %s", 
+							indent,
+							v.getName().getName(), 
+							Printer._pr_str(v.getVal(), true)))
+				   .collect(Collectors.joining("\n"));
+	}
+	
 	private VncVal getOrNull(final VncSymbol key) {
 		final Env e = findEnv(key);
 		if (e == null) {
