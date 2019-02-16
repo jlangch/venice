@@ -2121,6 +2121,23 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_replace() {
+		final Venice venice = new Venice();
+
+		// list
+		assertEquals("()", venice.eval("(str (replace {} '()))"));
+		assertEquals("(10 20)", venice.eval("(str (replace {} '(10 20)))"));
+		assertEquals("(11 20)", venice.eval("(str (replace {10 11} '(10 20)))"));
+		assertEquals("(11 21 11)", venice.eval("(str (replace {10 11 20 21} '(10 20 10)))"));
+
+		// vector
+		assertEquals("[]", venice.eval("(str (replace {} []))"));
+		assertEquals("[10 20]", venice.eval("(str (replace {} [10 20]))"));
+		assertEquals("[11 20]", venice.eval("(str (replace {10 11} [10 20]))"));
+		assertEquals("[11 21 11]", venice.eval("(str (replace {10 11 20 21} [10 20 10]))"));
+	}
+
+	@Test
 	public void test_repeat() {
 		final Venice venice = new Venice();
 

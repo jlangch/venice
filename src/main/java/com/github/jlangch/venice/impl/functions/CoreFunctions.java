@@ -1356,7 +1356,7 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
+		
 	public static VncFunction subvec = 
 		new VncFunction(
 				"subvec", 
@@ -1383,6 +1383,39 @@ public class CoreFunctions {
 								to == null
 									? vec.getList().subList(from.getValue().intValue(), vec.size())
 									: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction replace = 
+		new VncFunction(
+				"replace", 
+				VncFunction
+					.meta()
+					.arglists("(replace smap coll)")		
+					.doc(
+						"Given a map of replacement pairs and a vector/collection, returns a\n" + 
+						"vector/seq with any elements = a key in smap replaced with the\n" + 
+						"corresponding val in smap.")
+					.examples(
+						"(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("replace", args, 2);
+	
+				final VncMap map = Coerce.toVncMap(args.first());		
+				final VncSequence coll = Coerce.toVncSequence(args.second());
+				
+				final List<VncVal> vals = new ArrayList<>();
+						
+				for(VncVal v : coll.getList()) {
+					final VncVal r = map.get(v);
+					vals.add(r == Nil ? v : r);
+				}
+
+				return coll.withValues(vals, coll.getMeta());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5259,6 +5292,7 @@ public class CoreFunctions {
 				.put("drop-while",			drop_while)
 				.put("flatten",				flatten)
 				.put("reverse",				reverse)
+				.put("replace",				replace)
 				.put("group-by",			group_by)
 				.put("sort",				sort)
 				.put("sort-by",				sort_by)
