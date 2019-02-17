@@ -721,12 +721,12 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(== [1 2] nil)"));
 
 		// Map
-		assertTrue((Boolean)venice.eval("(== {a: 1 b: 2} {a: 1 b: 2})"));
-		assertFalse((Boolean)venice.eval("(== {a: 1 b: 2} {a: 1 b: 3})"));
-		assertFalse((Boolean)venice.eval("(== {a: 1 b: 2} {a: 1 c: 2})"));
-		assertFalse((Boolean)venice.eval("(== {a: 1 b: 2} {a: 1})"));
-		assertFalse((Boolean)venice.eval("(== {a: 1 b: 2} {})"));
-		assertFalse((Boolean)venice.eval("(== {a: 1 b: 2} nil)"));
+		assertTrue((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1 :b 2})"));
+		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1 :b 3})"));
+		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1 :c 2})"));
+		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1})"));
+		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {})"));
+		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} nil)"));
 	}
 
 	public void test_drop() {
@@ -1898,12 +1898,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(!= [1 2] nil)"));
 
 		// Map
-		assertFalse((Boolean)venice.eval("(!= {a: 1 b: 2} {a: 1 b: 2})"));
-		assertTrue((Boolean)venice.eval("(!= {a: 1 b: 2} {a: 1 b: 3})"));
-		assertTrue((Boolean)venice.eval("(!= {a: 1 b: 2} {a: 1 c: 2})"));
-		assertTrue((Boolean)venice.eval("(!= {a: 1 b: 2} {a: 1})"));
-		assertTrue((Boolean)venice.eval("(!= {a: 1 b: 2} {})"));
-		assertTrue((Boolean)venice.eval("(!= {a: 1 b: 2} nil)"));
+		assertFalse((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1 :b 2})"));
+		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1 :b 3})"));
+		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1 :c 2})"));
+		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1})"));
+		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {})"));
+		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} nil)"));
 	}
 	
 	@Test
@@ -2135,6 +2135,8 @@ public class CoreFunctionsTest {
 		assertEquals("[10 20]", venice.eval("(str (replace {} [10 20]))"));
 		assertEquals("[11 20]", venice.eval("(str (replace {10 11} [10 20]))"));
 		assertEquals("[11 21 11]", venice.eval("(str (replace {10 11 20 21} [10 20 10]))"));
+		assertEquals("[10 5 10]", venice.eval("(str (replace {:a 5} [10 :a 10]))"));
+		assertEquals("[10 5 10]", venice.eval("(str (replace {'a 5} [10 'a 10]))"));
 
 		// set
 		assertEquals("#{}", venice.eval("(str (replace {} #{}))"));
@@ -2581,6 +2583,8 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(symbol? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(symbol? :a)"));
 		assertTrue((Boolean)venice.eval("(symbol? (symbol :a))"));
+		assertTrue((Boolean)venice.eval("(symbol? (symbol '<>))"));
+		assertTrue((Boolean)venice.eval("(symbol? '<>)"));
 		assertFalse((Boolean)venice.eval("(symbol? '())"));
 		assertFalse((Boolean)venice.eval("(symbol? [])"));
 		assertFalse((Boolean)venice.eval("(symbol? {})"));

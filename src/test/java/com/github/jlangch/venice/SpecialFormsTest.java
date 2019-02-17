@@ -462,7 +462,7 @@ public class SpecialFormsTest {
 		final String script2 = 
 				"(do                                        \n" +
 				"   (def datagen                            \n" +
-				"        (fn [] { :a 100 :b 200 c: 300 } )) \n" +
+				"        (fn [] { :a 100 :b 200 :c 300 } )) \n" +
 				"                                           \n" +
 				"   (datagen )                              \n" +
 				") ";
@@ -507,7 +507,7 @@ public class SpecialFormsTest {
 		final String script1 = 
 				"(do                                             \n" +
 				"   (def datagen                                 \n" +
-				"        (fn test [] { :a 100 :b 200 c: 300 } )) \n" +
+				"        (fn test [] { :a 100 :b 200 :c 300 } )) \n" +
 				"                                                \n" +
 				"   (datagen )                                   \n" +
 				") ";
