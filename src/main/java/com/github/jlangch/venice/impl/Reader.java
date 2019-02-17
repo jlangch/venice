@@ -50,7 +50,11 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class Reader {
 	
-	private Reader(final String filename, final String form, final ArrayList<Token> formTokens) {
+	private Reader(
+			final String filename, 
+			final String form, 
+			final ArrayList<Token> formTokens
+	) {
 		this.filename = filename;
 		this.form = form;
 		this.tokens = formTokens;
@@ -77,7 +81,10 @@ public class Reader {
 	public String toString() {
 		return tokens
 				.stream()
-				.map(t -> String.format("%-8s %s",  String.format("%d,%d:", t.getLine(), t.getColumn()), t.getToken()))
+				.map(t -> String.format(
+							"%-8s %s", 
+							String.format("%d,%d:", t.getLine(), t.getColumn()), 
+							t.getToken()))
 				.collect(Collectors.joining("\n"));
 	}
 

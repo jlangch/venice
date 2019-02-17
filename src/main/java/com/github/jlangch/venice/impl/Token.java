@@ -24,7 +24,13 @@ package com.github.jlangch.venice.impl;
 
 public class Token {
 	
-	public Token(final String token, final String file, final int filePos, final int line, final int col) {
+	public Token(
+			final String token, 
+			final String file, 
+			final int filePos, 
+			final int line, 
+			final int col
+	) {
 		this.token = token;
 		this.file = file == null || file.isEmpty() ? "unknown" : file;
 		this.filePos = filePos;
