@@ -65,7 +65,7 @@ public class AnonymousFnArgs {
 			argDef.add(new VncSymbol("%"));
 		}
 		else {
-			for(int ii=1; ii<=getMaArgxPos(); ii++) {
+			for(int ii=1; ii<=getMaxArgPos(); ii++) {
 				argDef.add(new VncSymbol("%" + ii));
 			}
 			
@@ -79,7 +79,7 @@ public class AnonymousFnArgs {
 	}
 	
 	
-	private int getMaArgxPos() {
+	private int getMaxArgPos() {
 		return fnArgs.stream()
 					 .filter(s -> s.matches("%[1-9][0-9]*"))
 					 .map(s -> Integer.parseInt(s.substring(1)))
