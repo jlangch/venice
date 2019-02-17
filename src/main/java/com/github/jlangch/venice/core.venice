@@ -265,7 +265,7 @@
 
 
 (defmacro 
-   ;; helper macro used by public macro -<>. Inserts x in place of '<>' in form
+   ;; private helper macro used by public macro -<>. Inserts x in place of '<>' in form
    
    -<>* [form x]
    
