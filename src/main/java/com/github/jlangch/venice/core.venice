@@ -276,11 +276,11 @@
               (map? form) (count-pos (mapcat concat form))
               :otherwise 0)]
       (cond
-         (not (== c 1))       (throw (. :com.github.jlangch.venice.VncException :new "One position per form is required."))
-         (symbol? form)       `(~form ~x)
-         (vector? form)       (substitute-pos form)
-         (map? form)          (apply hash-map (mapcat substitute-pos form))
-         :else                `(~(first form) ~@(substitute-pos (rest form))))))
+         (not (== c 1))   (throw (. :com.github.jlangch.venice.VncException :new "-<> macro: one position per form is required."))
+         (symbol? form)   `(~form ~x)
+         (vector? form)   (substitute-pos form)
+         (map? form)      (apply hash-map (mapcat substitute-pos form))
+         :else            `(~(first form) ~@(substitute-pos (rest form))))))
 
 (defmacro 
    { :arglists '("(-<> x & forms)")
