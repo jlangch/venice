@@ -478,7 +478,9 @@ public class VeniceInterpreter implements Serializable  {
 			
 			final Map<VncVal,VncVal> vals = new HashMap<>();
 			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
-				vals.put(e.getKey(), evaluate(e.getValue(), env));
+				vals.put(
+					evaluate(e.getKey(), env), 
+					evaluate(e.getValue(), env));
 			}
 			return map.withValues(vals);
 		} 
