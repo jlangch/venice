@@ -284,7 +284,7 @@
 
 (defmacro 
    { :arglists '("(-<> x & forms)")
-     :doc "Threads the x through the forms. Inserts x at position of the <> symbol item of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol item in second form, etc." 
+     :doc "Threads the x through the forms. Inserts x at position of the <> symbol of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol in second form, etc." 
      :examples (list (str/strip-margin
                         "(-<> 5
                         |     (+ <> 3)
