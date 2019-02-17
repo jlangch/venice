@@ -96,7 +96,7 @@ public class SpecialForms {
 				.meta()
 				.arglists("")		
 				.doc("Creates a hash map.")
-				.examples("{:a 10 b: 20}")
+				.examples("{:a 10 :b 20}")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;

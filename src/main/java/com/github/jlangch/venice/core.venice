@@ -215,7 +215,7 @@
 
 (defmacro 
    { :arglists '("(-> x & forms)")
-     :doc "Threads the expr through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
+     :doc "Threads the x through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
      :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
      
                      (str/strip-margin
@@ -242,7 +242,7 @@
 
 (defmacro 
    { :arglists '("(->> x & forms)")
-     :doc "Threads the expr through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
+     :doc "Threads the x through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
      :examples (list
                  "(->> 5 (+ 3) (/ 32) (- 1))"
 
@@ -265,13 +265,47 @@
 
 
 (defmacro 
+   ;; helper macro used by public macro -<>. Inserts x in place of '<>' in form
+   
+   -<>* [form x]
+   
+   (let [substitute-pos (fn [form_] (replace {'<> x} form_))
+         count-pos (fn [form_] (count (filter #(== % '<>) form_)))
+         c (cond
+              (or (set? form) (list? form) (vector? form)) (count-pos form)
+              (map? form) (count-pos (mapcat concat form))
+              :otherwise 0)]
+      (cond
+         (not (== c 1))       (throw (. :com.github.jlangch.venice.VncException :new "One position per form is required."))
+         (symbol? form)       `(~form ~x)
+         (vector? form)       (substitute-pos form)
+         (map? form)          (apply hash-map (mapcat substitute-pos form))
+         :else                `(~(first form) ~@(substitute-pos (rest form))))))
+
+(defmacro 
+   { :arglists '("(-<> x & forms)")
+     :doc "Threads the x through the forms. Inserts x at position of the <> symbol item of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol item in second form, etc." 
+     :examples (list (str/strip-margin
+                        "(-<> 5
+                        |     (+ <> 3)
+                        |     (/ 2 <>)
+                        |     (- <> 1))" )) }
+
+   -<>
+   
+   ([x] x)
+   ([x form] `(-<>* ~form ~x))
+   ([x form & forms] `(-<> (-<> ~x ~form) ~@forms)))
+
+
+(defmacro 
    { :arglists '("(as-> expr name & forms)")
      :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position." 
      :examples (list (str/strip-margin
                         "(as-> [:foo :bar] v
                         |      (map name v)
                         |      (first v)
-                        |      (str/subs v 1)) " )) }
+                        |      (str/subs v 1))" )) }
 
    as-> [expr name & forms]
    

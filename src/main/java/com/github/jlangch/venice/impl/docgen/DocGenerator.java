@@ -623,6 +623,7 @@ public class DocGenerator {
 		call.addItem(getDocItem("doto"));
 		call.addItem(getDocItem("->"));
 		call.addItem(getDocItem("->>"));
+		call.addItem(getDocItem("-<>"));
 		call.addItem(getDocItem("as->"));
 
 		final DocSection loading = new DocSection("Loading");

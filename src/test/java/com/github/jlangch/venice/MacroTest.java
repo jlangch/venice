@@ -478,7 +478,7 @@ public class MacroTest {
 	}
 
 	@Test
-	public void test_threadfirst() {
+	public void test_thread_first() {
 		final Venice venice = new Venice();
 
 		// (- (/ (+ 5 3) 2) 1)
@@ -486,7 +486,7 @@ public class MacroTest {
 	}
 
 	@Test
-	public void test_threadlast() {
+	public void test_thread_last() {
 		final Venice venice = new Venice();
 	
 		// (- 1 (/ 32 (+ 3 5)))
@@ -500,6 +500,13 @@ public class MacroTest {
 						"        (map (fn [x] (get x :b)))                         " +
 						"        (filter (fn [x] (> x 4)))                         " +
 						"        (map inc))))                                      "));
+	}
+
+	@Test
+	public void test_thread_any() {
+		final Venice venice = new Venice();
+
+		assertEquals(Long.valueOf(-1L), venice.eval("(-<> 5 (+ <> 3) (/ 2 <>) (- <> 1))"));
 	}
 
 	@Test

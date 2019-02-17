@@ -54,22 +54,22 @@ public class Destructuring {
 	// [[v x & y] z] [[10 20 30 40] 50]         -> v: 10, x: 20, y: [30 40], z: 50
 
 	// associative destructuring on map
-	// {a :a b :b} {:a 1 :b 2 :c 3}               -> a: 1, b: 2
-	// {:keys [a b]} {:a 1 :b 2 :c 3}             -> a: 1, b: 2
-	// {:syms [a b]} {'a 1 'b 2 'c 3}             -> a: 1, b: 2
-	// {:strs [a b]} {"a" 1 "b" 2 "c" 3}          -> a: 1, b: 2
-	// {:keys [a b] :as all} {:a 1 :b 2 :c 3}     -> a: 1, b: 2, all: {:a 1 :b 2 :c 3}
-	// {:syms [a b] :as all} {'a 1 'b 2 'c 3}     -> a: 1, b: 2, all: {'a 1 'b 2 'c 3}
-	// {:strs [a b] :as all} {"a" 1 "b" 2 "c" 3}  -> a: 1, b: 2, all: {"a" 1 "b" 2 "c" 3}
-	// {:keys [a b] :or {:b 2}} {:a 1 :c 3}       -> a: 1, b: 2
-	// {:syms [a b] :or {'b 2}} {'a 1 'c 3}       -> a: 1, b: 2
-	// {:strs [a b] :or {"b" 2}} {"a" 1 "c" 3}    -> a: 1, b: 2
+	// {a :a b :b} {:a 1 :b 2 :c 3}               -> a: 1, :b 2
+	// {:keys [a b]} {:a 1 :b 2 :c 3}             -> a: 1, :b 2
+	// {:syms [a b]} {'a 1 'b 2 'c 3}             -> a: 1, :b 2
+	// {:strs [a b]} {"a" 1 "b" 2 "c" 3}          -> a: 1, :b 2
+	// {:keys [a b] :as all} {:a 1 :b 2 :c 3}     -> a: 1, :b 2, all: {:a 1 :b 2 :c 3}
+	// {:syms [a b] :as all} {'a 1 'b 2 'c 3}     -> a: 1, :b 2, all: {'a 1 'b 2 'c 3}
+	// {:strs [a b] :as all} {"a" 1 "b" 2 "c" 3}  -> a: 1, :b 2, all: {"a" 1 "b" 2 "c" 3}
+	// {:keys [a b] :or {:b 2}} {:a 1 :c 3}       -> a: 1, :b 2
+	// {:syms [a b] :or {'b 2}} {'a 1 'c 3}       -> a: 1, :b 2
+	// {:strs [a b] :or {"b" 2}} {"a" 1 "c" 3}    -> a: 1, :b 2
 	
 	// associative destructuring on map nested
-	// {a :a, {x :x, y :y} :c} {:a 1, :b 2, :c {:x 10, :y 11}}   -> a: 1, b: 2, x: 10, y: 11
+	// {a :a, {x :x, y :y} :c} {:a 1, :b 2, :c {:x 10, :y 11}}   -> a: 1, :b 2, x: 10, y: 11
 	
 	// associative destructuring on vector
-	// [x {:keys [a b]}] [10 {:a 1 :b 2 :c 3}]  -> a: 1, b: 2
+	// [x {:keys [a b]}] [10 {:a 1 :b 2 :c 3}]  -> a: 1, :b 2
 
 	public static List<Binding> destructure(
 			final VncVal symVal, 
@@ -249,11 +249,11 @@ public class Destructuring {
 			final VncVal bindVal,
 			final List<Binding> bindings
 	) {
-		// {:keys [a b]} {:a 1 :b 2 :c 3}           -> a: 1, b: 2
-		// {:syms [a b]} {'a 1 'b 2 'c 3}           -> a: 1, b: 2
-		// {:strs [a b]} {"a" 1 "b" 2 "c" 3}        -> a: 1, b: 2
+		// {:keys [a b]} {:a 1 :b 2 :c 3}           -> a: 1, :b 2
+		// {:syms [a b]} {'a 1 'b 2 'c 3}           -> a: 1, :b 2
+		// {:strs [a b]} {"a" 1 "b" 2 "c" 3}        -> a: 1, :b 2
 
-		// {a :a b :b} {:a 1 :b 2 :c 3}             -> a: 1, b: 2
+		// {a :a b :b} {:a 1 :b 2 :c 3}             -> a: 1, :b 2
 
 		final List<Binding> local_bindings = new ArrayList<>();
 
