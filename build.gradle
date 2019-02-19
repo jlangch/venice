@@ -112,7 +112,7 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                          " venice-${version}-javadoc.jar venice-${version}-javadoc.jar.asc" +
                          " venice-${version}-sources.jar venice-${version}-sources.jar.asc" +
                          " venice-${version}.jar venice-${version}.jar.asc" +
-                 "; echo 'Bundling done.'"
+                  "; echo 'Bundling done.'"
                          
     standardOutput new ByteArrayOutputStream()
     
