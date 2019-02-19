@@ -131,5 +131,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'io.vavr:vavr:0.10.0'
-    compile 'org.jline:jline:3.9.0'
+    compile 'org.jline:jline:3.10.0'
 }
