@@ -51,7 +51,7 @@ venice>
 ## Executing scripts
 
 ```text
-foo> java -jar venice-1.3.0.jar -script "(+ 1 1)"
+foo> java -jar venice-1.3.2.jar -script "(+ 1 1)"
 => 2
 ```
 
