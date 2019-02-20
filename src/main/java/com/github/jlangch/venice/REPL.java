@@ -25,9 +25,16 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.MaskingCallback;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -47,61 +54,136 @@ public class REPL {
 			exec(cli);
 		}
 		else {
-			repl(args);
+			repl_jline(args);
 		}
 	}
 
-	private static void repl(final String[] args) {
-		final VeniceInterpreter venice = new VeniceInterpreter();
-		
-		final VncList argv = toList(args);
-		
-		final Env env = venice.createEnv();
-		env.setGlobal(new Var(new VncSymbol("*ARGV*"), argv));
-		
-		// REPL loop
-		while (true) {
-			String line;
-			try {
-				line = Readline.readline(PROMPT);
-				if (line == null) { 
-					continue; 
-				}
-			} 
-			catch (EofException e) {
-				break;
-			} 
-			catch (VncException e) {
-				e.printVeniceStackTrace();
-				break;
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				break;
-			}
+	private static void repl_jline(final String[] args) {
+		try {
+			final VeniceInterpreter venice = new VeniceInterpreter();
 			
-			try {
-				ThreadLocalMap.clearCallStack();
-				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
-			} 
-			catch (ContinueException e) {
-				continue;
-			} 
-			catch (ValueException e) {
-				e.printVeniceStackTrace();
-				System.out.println("Thrown value: " + Printer._pr_str(e.getValue(), false));
-				continue;
-			} 
-			catch (VncException e) {
-				e.printVeniceStackTrace();
-				continue;
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				continue;
+			final Env env = venice
+								.createEnv()
+								.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)));
+			
+			final TerminalBuilder builder = TerminalBuilder.builder();
+	
+			final Terminal terminal = builder
+										.encoding("UTF-8")
+										.build();
+			
+	        final DefaultParser parser = new DefaultParser();
+	        parser.setQuoteChars(new char[] {'"', '\''});
+			
+	        final LineReader reader = LineReaderBuilder
+		        						.builder()
+		        						.appName("Venice")
+						                .terminal(terminal)
+						                //.completer(completer)
+						                .parser(parser)
+						                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
+						                .build();
+	        
+			// REPL loop
+			while (true) {
+				String line;
+				try {
+					line = reader.readLine(PROMPT, null, (MaskingCallback) null, null);
+					if (line == null) { 
+						continue; 
+					}
+				} 
+				catch (EofException | EndOfFileException ex) {
+					break;
+				} 
+				catch (VncException ex) {
+					ex.printVeniceStackTrace();
+					break;
+				}
+				catch (Exception ex) {
+					ex.printStackTrace();
+					break;
+				}
+				
+				try {
+					ThreadLocalMap.clearCallStack();
+					terminal.writer().println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
+					terminal.flush();
+				} 
+				catch (ContinueException ex) {
+					continue;
+				} 
+				catch (ValueException ex) {
+					ex.printVeniceStackTrace(terminal.writer());
+					terminal.writer().println("Thrown value: " + Printer._pr_str(ex.getValue(), false));
+					terminal.flush();
+					continue;
+				} 
+				catch (VncException ex) {
+					ex.printVeniceStackTrace(terminal.writer());
+					continue;
+				}
+				catch (Exception ex) {
+					ex.printStackTrace(terminal.writer());
+					continue;
+				}
 			}
 		}
+		catch (Exception ex) {
+            ex.printStackTrace();
+		}	
 	}
+
+//	private static void repl(final String[] args) {
+//		final VeniceInterpreter venice = new VeniceInterpreter();
+//		
+//		final Env env = venice
+//							.createEnv()
+//							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)));
+//		
+//		// REPL loop
+//		while (true) {
+//			String line;
+//			try {
+//				line = Readline.readline(PROMPT);
+//				if (line == null) { 
+//					continue; 
+//				}
+//			} 
+//			catch (EofException e) {
+//				break;
+//			} 
+//			catch (VncException e) {
+//				e.printVeniceStackTrace();
+//				break;
+//			}
+//			catch (Exception e) {
+//				e.printStackTrace();
+//				break;
+//			}
+//			
+//			try {
+//				ThreadLocalMap.clearCallStack();
+//				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
+//			} 
+//			catch (ContinueException e) {
+//				continue;
+//			} 
+//			catch (ValueException e) {
+//				e.printVeniceStackTrace();
+//				System.out.println("Thrown value: " + Printer._pr_str(e.getValue(), false));
+//				continue;
+//			} 
+//			catch (VncException e) {
+//				e.printVeniceStackTrace();
+//				continue;
+//			}
+//			catch (Exception e) {
+//				e.printStackTrace();
+//				continue;
+//			}
+//		}
+//	}
 
 	private static void exec(final CommandLineArgs cli) {
 		final VncList argv = toList(cli.args());
