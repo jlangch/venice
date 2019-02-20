@@ -23,12 +23,14 @@ package com.github.jlangch.venice;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
+import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -70,6 +72,7 @@ public class REPL {
 	
 			final Terminal terminal = builder
 										.encoding("UTF-8")
+										.type("xterm-256color")
 										.build();
 			
 	        final DefaultParser parser = new DefaultParser();
@@ -93,12 +96,17 @@ public class REPL {
 						continue; 
 					}
 				} 
+				catch (UserInterruptException ex) {
+					write(terminal, ANSI_256_RED, "! interrupted !");
+					Thread.sleep(1000);
+					break;
+				} 
 				catch (EofException | EndOfFileException ex) {
 					break;
 				} 
 				catch (VncException ex) {
-					ex.printVeniceStackTrace();
-					break;
+					write(terminal, ANSI_256_ORANGE, t -> ex.printVeniceStackTrace(t.writer()));
+					continue;
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
@@ -107,24 +115,22 @@ public class REPL {
 				
 				try {
 					ThreadLocalMap.clearCallStack();
-					terminal.writer().println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
-					terminal.flush();
+					write(terminal, ANSI_256_BLUE, "=> " + venice.PRINT(venice.RE(line, "repl", env)));
 				} 
 				catch (ContinueException ex) {
 					continue;
 				} 
 				catch (ValueException ex) {
-					ex.printVeniceStackTrace(terminal.writer());
-					terminal.writer().println("Thrown value: " + Printer._pr_str(ex.getValue(), false));
-					terminal.flush();
+					write(terminal, ANSI_256_ORANGE, t -> ex.printVeniceStackTrace(t.writer()));
+					write(terminal, ANSI_256_ORANGE, "Thrown value: " + Printer._pr_str(ex.getValue(), false));
 					continue;
 				} 
 				catch (VncException ex) {
-					ex.printVeniceStackTrace(terminal.writer());
+					write(terminal, ANSI_256_ORANGE, t -> ex.printVeniceStackTrace(t.writer()));
 					continue;
 				}
 				catch (Exception ex) {
-					ex.printStackTrace(terminal.writer());
+					write(terminal, ANSI_256_ORANGE, t -> ex.printStackTrace(t.writer()));
 					continue;
 				}
 			}
@@ -212,7 +218,31 @@ public class REPL {
 							.map(s -> new VncString(s))
 							.collect(Collectors.toList()));
 	}
+
+	private static void write(
+			final Terminal terminal,
+			final int colorID,
+			final Consumer<Terminal> fn
+	) {
+		terminal.writer().print(String.format("\u001b[38;5;%dm", colorID));
+		fn.accept(terminal);
+		terminal.writer().print("\u001b[0m");
+		terminal.flush();
+	}
+
+	private static void write(
+			final Terminal terminal,
+			final int colorID,
+			final String text
+	) {
+		write(terminal, colorID, t -> t.writer().println(text));
+	}
+
 	
+	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors	
+	private final static int ANSI_256_BLUE = 20;
+	private final static int ANSI_256_ORANGE = 202;
+	private final static int ANSI_256_RED = 196;
 	
 	private static final String PROMPT = "venice> ";
 }
