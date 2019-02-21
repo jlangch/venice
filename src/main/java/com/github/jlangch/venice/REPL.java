@@ -22,7 +22,12 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -34,6 +39,8 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
@@ -46,6 +53,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.util.CapturingPrintStream;
@@ -60,7 +68,10 @@ public class REPL {
 			exec(cli);
 		}
 		else {
-			repl_jline(args);
+			vncColors = cli.switchPresent("-colors");
+			if (loadConfig()) {
+				repl_jline(args);
+			}
 		}
 	}
 
@@ -106,7 +117,7 @@ public class REPL {
 					}
 				} 
 				catch (UserInterruptException ex) {
-					write(terminal, ANSI_256_RED, "! interrupted !");
+					write(terminal, "interrupted", "! interrupted !");
 					Thread.sleep(1000);
 					break;
 				} 
@@ -114,7 +125,7 @@ public class REPL {
 					break;
 				} 
 				catch (VncException ex) {
-					write(terminal, ANSI_256_ORANGE, t -> ex.printVeniceStackTrace(t.writer()));
+					write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
 					continue;
 				}
 				catch (Exception ex) {
@@ -128,24 +139,24 @@ public class REPL {
 					final VncVal result = venice.RE(line, "repl", env);
 					final String out = ps.getOutput();
 					if (out != null && !out.isEmpty()) {
-						write(terminal, ANSI_256_GREY, out);					
+						write(terminal, "stdout", out);					
 					}
-					write(terminal, ANSI_256_BLUE, "=> " + venice.PRINT(result));
+					write(terminal, "result", "=> " + venice.PRINT(result));
 				} 
 				catch (ContinueException ex) {
 					continue;
 				} 
 				catch (ValueException ex) {
-					write(terminal, ANSI_256_ORANGE, t -> ex.printVeniceStackTrace(t.writer()));
-					write(terminal, ANSI_256_ORANGE, "Thrown value: " + Printer._pr_str(ex.getValue(), false));
+					write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+					write(terminal, "error", "Thrown value: " + Printer._pr_str(ex.getValue(), false));
 					continue;
 				} 
 				catch (VncException ex) {
-					write(terminal, ANSI_256_ORANGE, t -> ex.printVeniceStackTrace(t.writer()));
+					write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
 					continue;
 				}
 				catch (Exception ex) {
-					write(terminal, ANSI_256_ORANGE, t -> ex.printStackTrace(t.writer()));
+					write(terminal, "error", t -> ex.printStackTrace(t.writer()));
 					continue;
 				}
 			}
@@ -236,30 +247,73 @@ public class REPL {
 
 	private static void write(
 			final Terminal terminal,
-			final int colorID,
+			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		terminal.writer().print(String.format("\u001b[38;5;%dm", colorID));
+		if (vncColors) {
+			terminal.writer().print(colors.getOrDefault("colors." + colorID, ""));
+		}
+		
 		fn.accept(terminal);
-		terminal.writer().print("\u001b[0m");
+		
+		if (vncColors) {
+			terminal.writer().print("\u001b[0m");
+		}
+		
 		terminal.flush();
 	}
 
 	private static void write(
 			final Terminal terminal,
-			final int colorID,
+			final String colorID,
 			final String text
 	) {
 		write(terminal, colorID, t -> t.writer().println(text));
 	}
 
+	@SuppressWarnings("unchecked")
+	private static boolean loadConfig() {
+		// defaults
+		colors.put("colors.result", "\u001b[38;5;20m");
+		colors.put("colors.stdout", "\u001b[38;5;243m");
+		colors.put("colors.error", "\u001b[38;5;202m");
+		colors.put("colors.interrupt", "\u001b[38;5;196m");
+				
+		try {
+			final String cpathJson = new ClassPathResource("com/github/jlangch/venice/repl.json")
+											.getResourceAsString("UTF-8");
+
+			final File fileJson = new File("repl.json");
+
+			final JSONParser parser = new JSONParser();
+			
+			final List<JSONObject> jsonObjs = new ArrayList<>();
+			jsonObjs.add((JSONObject)parser.parse(cpathJson));
+			if (fileJson.isFile()) {
+				System.out.println("Loading REPL config from " + fileJson + "...");
+				jsonObjs.add((JSONObject)parser.parse(new FileReader(fileJson)));
+			}
+			
+			for(JSONObject jsonObj: jsonObjs) {
+				for(String cname : new String[] {"result", "stdout", "error", "interrupt"}) {
+					colors.put(
+							"colors." + cname, 
+							(String)jsonObj.getOrDefault(cname, colors.get("colors." + cname)));
+				}
+			}			
+			return true;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			return true;
+		}	
+	}
+	
 	
 	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors	
-	private final static int ANSI_256_BLUE = 20;
-	private final static int ANSI_256_GREY = 243;
-	private final static int ANSI_256_ORANGE = 202;
-	private final static int ANSI_256_RED = 196;
-	
+	private static final Map<String,String> colors = new HashMap<>();
 	
 	private static final String PROMPT = "venice> ";
+	
+	private static boolean vncColors;
 }

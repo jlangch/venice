@@ -55,6 +55,7 @@ sourceSets {
 jar {
     from('src/main/java') {
         include 'com/github/jlangch/venice/**/*.venice'
+        include 'com/github/jlangch/venice/**/*.json'
     }
 
     manifest {
@@ -69,9 +70,11 @@ shadowJar {
     
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
-
+    relocate 'org.json.simple', 'org.repackage.org.json.simple'
+    
     from('src/main/java') {
         include 'com/github/jlangch/venice/**/*.venice'
+        include 'com/github/jlangch/venice/**/*.json'
     }
 
     manifest {
@@ -132,4 +135,5 @@ dependencies {
 
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
 }

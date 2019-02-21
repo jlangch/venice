@@ -48,6 +48,9 @@ venice> (+ 1 1)
 venice>
 ```
 
+To show colors in the REPL start it with `java -jar venice-1.3.4.jar -colors` (Venice 1.3.4 or newer) 
+
+
 ## Executing scripts
 
 ```text
