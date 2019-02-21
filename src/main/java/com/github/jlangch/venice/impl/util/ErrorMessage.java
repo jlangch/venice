@@ -32,11 +32,13 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class ErrorMessage {
 	
 	public static String buildErrLocation(final Token token) {
-		return String.format(
-				"File <%s> (%d,%d)",
-				token.getFile(),
-				token.getLine(),
-				token.getColumn());
+		return token != null
+				? String.format(
+						"File <%s> (%d,%d)",
+						token.getFile(),
+						token.getLine(),
+						token.getColumn())
+				: "File unknown (1,1)";
 	}
 	
 	public static String buildErrLocation(final VncVal val) {
