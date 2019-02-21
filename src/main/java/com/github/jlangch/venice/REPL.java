@@ -68,7 +68,7 @@ public class REPL {
 				repl_jline(args);
 			}
 			catch (Exception ex) {
-	            ex.printStackTrace();
+				ex.printStackTrace();
 			}	
 		}
 	}
@@ -102,17 +102,17 @@ public class REPL {
 									.type("xterm-256color")
 									.build();
 		
-        final DefaultParser parser = new DefaultParser();
-        parser.setQuoteChars(new char[] {'"', '\''});
+		final DefaultParser parser = new DefaultParser();
+		parser.setQuoteChars(new char[] {'"', '\''});
 		
-        final LineReader reader = LineReaderBuilder
-	        						.builder()
-	        						.appName("Venice")
-					                .terminal(terminal)
-					                //.completer(completer)
-					                .parser(parser)
-					                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
-					                .build();
+		final LineReader reader = LineReaderBuilder
+									.builder()
+									.appName("Venice")
+									.terminal(terminal)
+									//.completer(completer)
+									.parser(parser)
+									.variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
+									.build();
  
 		final VeniceInterpreter venice = new VeniceInterpreter();
 		
@@ -217,7 +217,7 @@ public class REPL {
 
 	
 	
-	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors	
+	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
 	private static ReplConfig config;
 	
 	private static final String PROMPT = "venice> ";
