@@ -38,7 +38,7 @@ public class ErrorMessage {
 						token.getFile(),
 						token.getLine(),
 						token.getColumn())
-				: "File unknown (1,1)";
+				: "File <unknown> (1,1)";
 	}
 	
 	public static String buildErrLocation(final VncVal val) {
