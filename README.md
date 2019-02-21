@@ -38,7 +38,7 @@ Venice requires Java 8 or newer.
 
 ## REPL
 
-Venice comes with a simple REPL.
+Venice comes with a REPL.
 
 Start the REPL with `java -jar venice-1.3.4.jar -colors`
 
