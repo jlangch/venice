@@ -1395,9 +1395,9 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(replace smap coll)")		
 					.doc(
-						"Given a map of replacement pairs and a vector/collection, returns a\n" + 
-						"vector/seq with any elements = a key in smap replaced with the\n" + 
-						"corresponding val in smap.")
+						"Given a map of replacement pairs and a collection, returns a\n" + 
+						"collection with any elements that are a key in smap replaced with the\n" + 
+						"corresponding value in smap.")
 					.examples(
 							"(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])",
 							"(replace {2 :two, 4 :four} #{1 2 3 4 5})",
