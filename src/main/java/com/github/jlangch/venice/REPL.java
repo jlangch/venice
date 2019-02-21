@@ -127,7 +127,7 @@ public class REPL {
 							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
 							.setGlobal(new DynamicVar(
 											new VncSymbol("*out*"), 
-											new VncJavaObject(ps)));
+											new VncJavaObject(config.useColors() ? ps : System.out)));
 		
 
 		// REPL loop
