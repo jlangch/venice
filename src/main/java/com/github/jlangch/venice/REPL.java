@@ -64,7 +64,7 @@ public class REPL {
 			System.out.println("REPL Venice: V" + Venice.getVersion());
 
 			try {
-				config = ReplConfig.load(cli.switchPresent("-colors"));
+				config = ReplConfig.load(cli);
 				repl_jline(args);
 			}
 			catch (Exception ex) {

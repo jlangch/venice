@@ -33,6 +33,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.util.CommandLineArgs;
 
 
 /**
@@ -47,7 +48,9 @@ public class ReplConfig {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static ReplConfig load(final boolean useColors) {
+	public static ReplConfig load(final CommandLineArgs cli) {
+		final boolean useColors = cli.switchPresent("-colors");
+		
 		final Map<String,String> config = new HashMap<>();
 		
 		// defaults
