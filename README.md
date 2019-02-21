@@ -40,7 +40,7 @@ Venice requires Java 8 or newer.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-1.3.3.jar`
+Start the REPL with `java -jar venice-1.3.4.jar -colors`
 
 ```text
 venice> (+ 1 1)
@@ -48,7 +48,22 @@ venice> (+ 1 1)
 venice>
 ```
 
-To show colors in the REPL start it with `java -jar venice-1.3.4.jar -colors` (Venice 1.3.4 or newer) 
+If the REPL's colors don't harmonize well with your terminal's color schema 
+omit the '-colors' option or place a 'repl.json' config file with customized 
+ANSI escape code colors on the working dir:
+
+```
+{
+  "colors": {
+    "result": "\u001b[38;5;20m",
+    "stdout": "\u001b[38;5;243m",
+    "error": "\u001b[38;5;202m",
+    "interrupt": "\u001b[48;5;196m\u001b[38;5;15m",
+
+    "comment": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
+  }
+}
+```
 
 
 ## Executing scripts
