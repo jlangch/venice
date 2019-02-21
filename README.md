@@ -40,7 +40,7 @@ Venice requires Java 8 or newer.
 
 Venice comes with a simple REPL.
 
-Start the REPL with `java -jar venice-1.3.2.jar`
+Start the REPL with `java -jar venice-1.3.3.jar`
 
 ```text
 venice> (+ 1 1)
@@ -51,13 +51,13 @@ venice>
 ## Executing scripts
 
 ```text
-foo> java -jar venice-1.3.2.jar -script "(+ 1 1)"
+foo> java -jar venice-1.3.3.jar -script "(+ 1 1)"
 => 2
 ```
 
 ```text
 foo> echo "(+ 1 1)" > script.venice
-foo> java -jar venice-1.3.2.jar -file script.venice
+foo> java -jar venice-1.3.3.jar -file script.venice
 => 2
 ```
 
@@ -1131,7 +1131,7 @@ transitive dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:1.3.2'
+    compile 'com.github.jlangch:venice:1.3.3'
 }
 ```
 
@@ -1143,7 +1143,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>1.3.2</version>
+        <version>1.3.3</version>
     </dependency>
 </dependencies>
 ```
