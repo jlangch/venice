@@ -22,12 +22,7 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -39,12 +34,11 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.ReplConfig;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -53,7 +47,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.util.CapturingPrintStream;
@@ -68,154 +61,18 @@ public class REPL {
 			exec(cli);
 		}
 		else {
-			vncColors = cli.switchPresent("-colors");
-			if (loadConfig()) {
+			System.out.println("REPL Venice: V" + Venice.getVersion());
+
+			try {
+				config = ReplConfig.load(cli.switchPresent("-colors"));
 				repl_jline(args);
 			}
+			catch (Exception ex) {
+	            ex.printStackTrace();
+			}	
 		}
 	}
-
-	private static void repl_jline(final String[] args) {
-		try {
-			final VeniceInterpreter venice = new VeniceInterpreter();
-			
-			final CapturingPrintStream ps = CapturingPrintStream.create();
-			
-			final Env env = venice
-								.createEnv()
-								.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
-								.setGlobal(new DynamicVar(
-												new VncSymbol("*out*"), 
-												new VncJavaObject(ps)));
-			
-			final TerminalBuilder builder = TerminalBuilder.builder();
 	
-			final Terminal terminal = builder
-										.encoding("UTF-8")
-										.type("xterm-256color")
-										.build();
-			
-	        final DefaultParser parser = new DefaultParser();
-	        parser.setQuoteChars(new char[] {'"', '\''});
-			
-	        final LineReader reader = LineReaderBuilder
-		        						.builder()
-		        						.appName("Venice")
-						                .terminal(terminal)
-						                //.completer(completer)
-						                .parser(parser)
-						                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
-						                .build();
-	        
-			// REPL loop
-			while (true) {
-				String line;
-				try {
-					line = reader.readLine(PROMPT, null, (MaskingCallback) null, null);
-					if (line == null) { 
-						continue; 
-					}
-				} 
-				catch (UserInterruptException ex) {
-					write(terminal, "interrupted", "! interrupted !");
-					Thread.sleep(1000);
-					break;
-				} 
-				catch (EofException | EndOfFileException ex) {
-					break;
-				} 
-				catch (VncException ex) {
-					write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-					continue;
-				}
-				catch (Exception ex) {
-					ex.printStackTrace();
-					break;
-				}
-				
-				try {
-					ThreadLocalMap.clearCallStack();
-					ps.reset();
-					final VncVal result = venice.RE(line, "repl", env);
-					final String out = ps.getOutput();
-					if (out != null && !out.isEmpty()) {
-						write(terminal, "stdout", out);					
-					}
-					write(terminal, "result", "=> " + venice.PRINT(result));
-				} 
-				catch (ContinueException ex) {
-					continue;
-				} 
-				catch (ValueException ex) {
-					write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-					write(terminal, "error", "Thrown value: " + Printer._pr_str(ex.getValue(), false));
-					continue;
-				} 
-				catch (VncException ex) {
-					write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-					continue;
-				}
-				catch (Exception ex) {
-					write(terminal, "error", t -> ex.printStackTrace(t.writer()));
-					continue;
-				}
-			}
-		}
-		catch (Exception ex) {
-            ex.printStackTrace();
-		}	
-	}
-
-//	private static void repl(final String[] args) {
-//		final VeniceInterpreter venice = new VeniceInterpreter();
-//		
-//		final Env env = venice
-//							.createEnv()
-//							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)));
-//		
-//		// REPL loop
-//		while (true) {
-//			String line;
-//			try {
-//				line = Readline.readline(PROMPT);
-//				if (line == null) { 
-//					continue; 
-//				}
-//			} 
-//			catch (EofException e) {
-//				break;
-//			} 
-//			catch (VncException e) {
-//				e.printVeniceStackTrace();
-//				break;
-//			}
-//			catch (Exception e) {
-//				e.printStackTrace();
-//				break;
-//			}
-//			
-//			try {
-//				ThreadLocalMap.clearCallStack();
-//				System.out.println("=> " + venice.PRINT(venice.RE(line, "repl", env)));
-//			} 
-//			catch (ContinueException e) {
-//				continue;
-//			} 
-//			catch (ValueException e) {
-//				e.printVeniceStackTrace();
-//				System.out.println("Thrown value: " + Printer._pr_str(e.getValue(), false));
-//				continue;
-//			} 
-//			catch (VncException e) {
-//				e.printVeniceStackTrace();
-//				continue;
-//			}
-//			catch (Exception e) {
-//				e.printStackTrace();
-//				continue;
-//			}
-//		}
-//	}
 
 	private static void exec(final CommandLineArgs cli) {
 		final VncList argv = toList(cli.args());
@@ -236,6 +93,93 @@ public class REPL {
 			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 		}
 	}
+
+	private static void repl_jline(final String[] args) throws Exception {
+		final VeniceInterpreter venice = new VeniceInterpreter();
+		
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+		
+		final Env env = venice
+							.createEnv()
+							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
+							.setGlobal(new DynamicVar(
+											new VncSymbol("*out*"), 
+											new VncJavaObject(ps)));
+		
+		final TerminalBuilder builder = TerminalBuilder.builder();
+
+		final Terminal terminal = builder
+									.encoding("UTF-8")
+									.type("xterm-256color")
+									.build();
+		
+        final DefaultParser parser = new DefaultParser();
+        parser.setQuoteChars(new char[] {'"', '\''});
+		
+        final LineReader reader = LineReaderBuilder
+	        						.builder()
+	        						.appName("Venice")
+					                .terminal(terminal)
+					                //.completer(completer)
+					                .parser(parser)
+					                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
+					                .build();
+        
+		// REPL loop
+		while (true) {
+			String line;
+			try {
+				line = reader.readLine(PROMPT, null, (MaskingCallback) null, null);
+				if (line == null) { 
+					continue; 
+				}
+			} 
+			catch (UserInterruptException ex) {
+				write(terminal, "interrupt", " ! interrupted ! ");
+				terminal.writer().println(" ");
+				Thread.sleep(1000);
+				break;
+			} 
+			catch (EofException | EndOfFileException ex) {
+				break;
+			} 
+			catch (VncException ex) {
+				write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+				continue;
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				break;
+			}
+			
+			try {
+				ThreadLocalMap.clearCallStack();
+				ps.reset();
+				final VncVal result = venice.RE(line, "repl", env);
+				final String out = ps.getOutput();
+				if (out != null && !out.isEmpty()) {
+					write(terminal, "stdout", out);					
+				}
+				write(terminal, "result", "=> " + venice.PRINT(result));
+			} 
+			catch (ContinueException ex) {
+				continue;
+			} 
+			catch (ValueException ex) {
+				write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+				write(terminal, "error", "Thrown value: " + Printer._pr_str(ex.getValue(), false));
+				continue;
+			} 
+			catch (VncException ex) {
+				write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+				continue;
+			}
+			catch (Exception ex) {
+				write(terminal, "error", t -> ex.printStackTrace(t.writer()));
+				continue;
+			}
+		}
+	}
 	
 	private static VncList toList(final String[] args) {
 		return new VncList(Arrays
@@ -250,13 +194,13 @@ public class REPL {
 			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		if (vncColors) {
-			terminal.writer().print(colors.getOrDefault("colors." + colorID, ""));
+		if (config.useColors()) {
+			terminal.writer().print(config.getOrDefault("colors." + colorID, ""));
 		}
 		
 		fn.accept(terminal);
 		
-		if (vncColors) {
+		if (config.useColors()) {
 			terminal.writer().print("\u001b[0m");
 		}
 		
@@ -271,49 +215,10 @@ public class REPL {
 		write(terminal, colorID, t -> t.writer().println(text));
 	}
 
-	@SuppressWarnings("unchecked")
-	private static boolean loadConfig() {
-		// defaults
-		colors.put("colors.result", "\u001b[38;5;20m");
-		colors.put("colors.stdout", "\u001b[38;5;243m");
-		colors.put("colors.error", "\u001b[38;5;202m");
-		colors.put("colors.interrupt", "\u001b[38;5;196m");
-				
-		try {
-			final String cpathJson = new ClassPathResource("com/github/jlangch/venice/repl.json")
-											.getResourceAsString("UTF-8");
-
-			final File fileJson = new File("repl.json");
-
-			final JSONParser parser = new JSONParser();
-			
-			final List<JSONObject> jsonObjs = new ArrayList<>();
-			jsonObjs.add((JSONObject)parser.parse(cpathJson));
-			if (fileJson.isFile()) {
-				System.out.println("Loading REPL config from " + fileJson + "...");
-				jsonObjs.add((JSONObject)parser.parse(new FileReader(fileJson)));
-			}
-			
-			for(JSONObject jsonObj: jsonObjs) {
-				for(String cname : new String[] {"result", "stdout", "error", "interrupt"}) {
-					colors.put(
-							"colors." + cname, 
-							(String)jsonObj.getOrDefault(cname, colors.get("colors." + cname)));
-				}
-			}			
-			return true;
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			return true;
-		}	
-	}
 	
 	
 	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors	
-	private static final Map<String,String> colors = new HashMap<>();
+	private static ReplConfig config;
 	
 	private static final String PROMPT = "venice> ";
-	
-	private static boolean vncColors;
 }
