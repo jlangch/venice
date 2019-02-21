@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -39,17 +40,16 @@ import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.ReplConfig;
+import com.github.jlangch.venice.impl.ReplPrintStream;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
-import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.github.jlangch.venice.util.CommandLineArgs;
 
 
@@ -95,17 +95,6 @@ public class REPL {
 	}
 
 	private static void repl_jline(final String[] args) throws Exception {
-		final VeniceInterpreter venice = new VeniceInterpreter();
-		
-		final CapturingPrintStream ps = CapturingPrintStream.create();
-		
-		final Env env = venice
-							.createEnv()
-							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
-							.setGlobal(new DynamicVar(
-											new VncSymbol("*out*"), 
-											new VncJavaObject(ps)));
-		
 		final TerminalBuilder builder = TerminalBuilder.builder();
 
 		final Terminal terminal = builder
@@ -124,7 +113,23 @@ public class REPL {
 					                .parser(parser)
 					                .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
 					                .build();
-        
+ 
+		final VeniceInterpreter venice = new VeniceInterpreter();
+		
+		final ReplPrintStream ps = new ReplPrintStream(
+											Charset.defaultCharset().name(), 
+											System.out, 
+											terminal, 
+											config.getOrDefault("colors.stdout", ""));
+		
+		final Env env = venice
+							.createEnv()
+							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
+							.setGlobal(new DynamicVar(
+											new VncSymbol("*out*"), 
+											new VncJavaObject(ps)));
+		
+
 		// REPL loop
 		while (true) {
 			String line;
@@ -135,8 +140,9 @@ public class REPL {
 				}
 			} 
 			catch (UserInterruptException ex) {
+				terminal.flush();
 				write(terminal, "interrupt", " ! interrupted ! ");
-				terminal.writer().println(" ");
+				terminal.flush();
 				Thread.sleep(1000);
 				break;
 			} 
@@ -154,13 +160,7 @@ public class REPL {
 			
 			try {
 				ThreadLocalMap.clearCallStack();
-				ps.reset();
-				final VncVal result = venice.RE(line, "repl", env);
-				final String out = ps.getOutput();
-				if (out != null && !out.isEmpty()) {
-					write(terminal, "stdout", out);					
-				}
-				write(terminal, "result", "=> " + venice.PRINT(result));
+				write(terminal, "result", "=> " + venice.PRINT(venice.RE(line, "repl", env)));
 			} 
 			catch (ContinueException ex) {
 				continue;
