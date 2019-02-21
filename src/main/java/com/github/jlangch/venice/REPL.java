@@ -35,16 +35,20 @@ import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.github.jlangch.venice.util.CommandLineArgs;
 
 
@@ -64,9 +68,14 @@ public class REPL {
 		try {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 			
+			final CapturingPrintStream ps = CapturingPrintStream.create();
+			
 			final Env env = venice
 								.createEnv()
-								.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)));
+								.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
+								.setGlobal(new DynamicVar(
+												new VncSymbol("*out*"), 
+												new VncJavaObject(ps)));
 			
 			final TerminalBuilder builder = TerminalBuilder.builder();
 	
@@ -115,7 +124,13 @@ public class REPL {
 				
 				try {
 					ThreadLocalMap.clearCallStack();
-					write(terminal, ANSI_256_BLUE, "=> " + venice.PRINT(venice.RE(line, "repl", env)));
+					ps.reset();
+					final VncVal result = venice.RE(line, "repl", env);
+					final String out = ps.getOutput();
+					if (out != null && !out.isEmpty()) {
+						write(terminal, ANSI_256_GREY, out);					
+					}
+					write(terminal, ANSI_256_BLUE, "=> " + venice.PRINT(result));
 				} 
 				catch (ContinueException ex) {
 					continue;
@@ -241,8 +256,10 @@ public class REPL {
 	
 	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors	
 	private final static int ANSI_256_BLUE = 20;
+	private final static int ANSI_256_GREY = 243;
 	private final static int ANSI_256_ORANGE = 202;
 	private final static int ANSI_256_RED = 196;
+	
 	
 	private static final String PROMPT = "venice> ";
 }

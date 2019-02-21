@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- migrating REPL to JLine3
+- migrated REPL to JLine3
 
 
 
