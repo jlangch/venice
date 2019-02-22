@@ -143,6 +143,8 @@ public class REPL {
 				terminal.flush();
 				write(terminal, "interrupt", " ! interrupted ! ");
 				terminal.flush();
+				terminal.writer().println();
+				terminal.flush();
 				Thread.sleep(1000);
 				break;
 			} 
