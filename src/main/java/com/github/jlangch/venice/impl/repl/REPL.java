@@ -114,6 +114,7 @@ public class REPL {
 				}
 			} 
 			catch (UserInterruptException ex) {
+				// User typed ctrl-C
 				terminal.flush();
 				write(terminal, "interrupt", " ! interrupted ! ");
 				terminal.flush();

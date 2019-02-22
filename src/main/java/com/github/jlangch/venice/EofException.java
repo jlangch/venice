@@ -22,9 +22,18 @@
 package com.github.jlangch.venice;
 
 
-public class EofException extends VncException {
+public class EofException extends ParseError {
 
-	public EofException() {
+	public EofException(final String message) {
+		super(message);
+	}
+
+	public EofException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+
+	public EofException(final Throwable cause) {
+		super(cause);
 	}
 	
 

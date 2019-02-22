@@ -36,7 +36,7 @@ public class Readline {
 		final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
 		final String line=buffer.readLine();
 		if (line == null) {
-			throw new EofException();
+			throw new EofException("stdin EOF");
 		}
 		return line;
 	}

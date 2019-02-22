@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -190,7 +191,7 @@ public class Reader {
 		}
 
 		if (token == null) {
-			throw new ParseError(formatParseError(token, "Expected '%c', got EOF", end));
+			throw new EofException(formatParseError(token, "Expected '%c', got EOF", end));
 		}
 		rdr.next();
 
