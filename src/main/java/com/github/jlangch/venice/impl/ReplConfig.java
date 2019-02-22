@@ -23,10 +23,8 @@ package com.github.jlangch.venice.impl;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -47,44 +45,23 @@ public class ReplConfig {
 		this.config = config;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static ReplConfig load(final CommandLineArgs cli) {
 		final boolean useColors = cli.switchPresent("-colors");
 		
 		final Map<String,String> config = new HashMap<>();
 		
-		// defaults
+		// use colors
 		config.put("colors.use", useColors ? "true" : "false");
-		config.put("colors.result", "\u001b[38;5;20m");
-		config.put("colors.stdout", "\u001b[38;5;243m");
-		config.put("colors.error", "\u001b[38;5;202m");
-		config.put("colors.interrupt", "\u001b[48;5;196m\u001b[38;5;15m");
 				
 		try {
-			final String cpathJson = new ClassPathResource("com/github/jlangch/venice/repl.json")
-											.getResourceAsString("UTF-8");
-
-			final File fileJson = new File("repl.json");
-
-			final JSONParser parser = new JSONParser();
-			
-			final List<JSONObject> jsonObjs = new ArrayList<>();
-			jsonObjs.add((JSONObject)parser.parse(cpathJson));
-			if (fileJson.isFile()) {
-				System.out.println("Loading REPL config from " + fileJson + "...");
-				jsonObjs.add((JSONObject)parser.parse(new FileReader(fileJson)));
-			}
-			
-			for(JSONObject jsonObj: jsonObjs) {
-				JSONObject colObj = (JSONObject)jsonObj.get("colors");
-				if (colObj != null) {
-					for(String cname : Arrays.asList("result", "stdout", "error", "interrupt")) {
-						config.put(
-								"colors." + cname, 
-								(String)colObj.getOrDefault(cname, config.get("colors." + cname)));
-					}
+			final JSONObject jsonObj = loadJsonConfig();
+			final JSONObject colObj = (JSONObject)jsonObj.get("colors");
+			if (colObj != null) {
+				for(String cname : Arrays.asList("result", "stdout", "error", "interrupt", "prompt")) {
+					config.put("colors." + cname, emptyToNull((String)colObj.get(cname)));
 				}
-			}			
+			}
+
 			return new ReplConfig(config);
 		} 
 		catch (Exception ex) {
@@ -93,17 +70,41 @@ public class ReplConfig {
 	}
 	
 	public String get(final String key) {
-		return config.get(key);
+		return useColors() ? emptyToNull(config.get(key)) : null;
 	}
 	
 	public String getOrDefault(final String key, final String defaultValue) {
-		return config.getOrDefault(key, defaultValue);
+		return useColors() 
+					? emptyToNull(config.getOrDefault(key, defaultValue)) 
+					: null;
 	}
 
 	public boolean useColors() {
 		return "true".equals(config.get("colors.use"));
 	}
+	
+	private static JSONObject loadJsonConfig() throws Exception {
+		final File fileJson = new File("repl.json");
 
+		final JSONParser parser = new JSONParser();
+
+		if (fileJson.isFile()) {
+			System.out.println("Loading REPL config from " + fileJson + "...");
+			return (JSONObject)parser.parse(new FileReader(fileJson));
+		}
+		else {
+			final String cpathJson = new ClassPathResource("com/github/jlangch/venice/repl.json")
+											.getResourceAsString("UTF-8");
+			return (JSONObject)parser.parse(cpathJson);
+		}
+	}
+	
+	private static String emptyToNull(final String s) {
+		return s == null || s.isEmpty() ? null : s;
+	}
+	
+
+	public static final String ANSI_RESET = "\u001b[0m";
 
 	private final Map<String,String> config;
 }

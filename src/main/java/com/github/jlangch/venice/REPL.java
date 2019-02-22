@@ -101,7 +101,7 @@ public class REPL {
 									.encoding("UTF-8")
 									.type("xterm-256color")
 									.build();
-		
+ 		
 		final DefaultParser parser = new DefaultParser();
 		parser.setQuoteChars(new char[] {'"', '\''});
 		
@@ -111,7 +111,6 @@ public class REPL {
 									.terminal(terminal)
 									//.completer(completer)
 									.parser(parser)
-									.variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
 									.build();
  
 		final VeniceInterpreter venice = new VeniceInterpreter();
@@ -120,7 +119,7 @@ public class REPL {
 											Charset.defaultCharset().name(), 
 											System.out, 
 											terminal, 
-											config.getOrDefault("colors.stdout", ""));
+											config.get("colors.stdout"));
 		
 		final Env env = venice
 							.createEnv()
@@ -128,13 +127,14 @@ public class REPL {
 							.setGlobal(new DynamicVar(
 											new VncSymbol("*out*"), 
 											new VncJavaObject(config.useColors() ? ps : System.out)));
-		
+
+		final String prompt = getPrompt();
 
 		// REPL loop
 		while (true) {
 			String line;
 			try {
-				line = reader.readLine(PROMPT, null, (MaskingCallback) null, null);
+				line = reader.readLine(prompt, null, (MaskingCallback) null, null);
 				if (line == null) { 
 					continue; 
 				}
@@ -194,14 +194,15 @@ public class REPL {
 			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		if (config.useColors()) {
-			terminal.writer().print(config.getOrDefault("colors." + colorID, ""));
+		final String color = config.get("colors." + colorID);
+		if (color != null) {
+			terminal.writer().print(color);
 		}
 		
 		fn.accept(terminal);
 		
-		if (config.useColors()) {
-			terminal.writer().print("\u001b[0m");
+		if (color != null) {
+			terminal.writer().print(ReplConfig.ANSI_RESET);
 		}
 		
 		terminal.flush();
@@ -215,6 +216,11 @@ public class REPL {
 		write(terminal, colorID, t -> t.writer().println(text));
 	}
 
+	private static String getPrompt() {
+		return config.get("colors.prompt") == null 
+				? PROMPT
+				: config.get("colors.prompt") + PROMPT + ReplConfig.ANSI_RESET;
+	}
 	
 	
 	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors

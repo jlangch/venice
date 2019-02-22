@@ -49,11 +49,11 @@ public class ReplPrintStream extends PrintStream {
 	}
 
 	private void write(final String s) {
-		terminal.writer().print(colorEscape);
+		if (colorEscape != null) terminal.writer().print(colorEscape);
 		
 		terminal.writer().print(s);
 		
-		terminal.writer().print("\u001b[0m");
+		if (colorEscape != null) terminal.writer().print(ReplConfig.ANSI_RESET);
 		
 		terminal.flush();
 	}
