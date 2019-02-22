@@ -29,7 +29,7 @@ public class SwingREPL {
 	}
 	
 	public void run(final String[] args) {
-		
+		System.out.println("The Swing REPL is not yet available!");
 	}
 		
 }

@@ -1,4 +1,8 @@
-{
+{ 
+  "prompt": "venice> ",
+  
+  "result-prefix": "=> ",
+  
   "colors": {
     "prompt": null,
     "result": "\u001b[38;5;20m",

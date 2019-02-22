@@ -50,9 +50,12 @@ public class ReplConfig {
 		
 		// use colors
 		config.put("colors.use", cli.switchPresent("-colors") ? "true" : "false");
-				
+
 		try {
 			final JSONObject jsonObj = loadJsonConfig();
+			config.put("prompt", (String)jsonObj.get("prompt"));
+			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
+
 			final JSONObject colObj = (JSONObject)jsonObj.get("colors");
 			if (colObj != null) {
 				for(String cname : Arrays.asList("result", "stdout", "error", "interrupt", "prompt")) {
@@ -67,14 +70,17 @@ public class ReplConfig {
 		}	
 	}
 	
+	public String getColor(final String key) {
+		return useColors() ? get(key) : null;
+	}
+
 	public String get(final String key) {
-		return useColors() ? emptyToNull(config.get(key)) : null;
+		return emptyToNull(config.get(key));
 	}
 	
 	public String getOrDefault(final String key, final String defaultValue) {
-		return useColors() 
-					? emptyToNull(config.getOrDefault(key, defaultValue)) 
-					: null;
+		final String val = get(key);
+		return val == null ? defaultValue : val;
 	}
 
 	public boolean useColors() {
@@ -82,9 +88,14 @@ public class ReplConfig {
 	}
 
 	public String getPrompt() {
+		final String prompt = getOrDefault("prompt", DEFAULT_PROMPT);
 		return !useColors() || get("colors.prompt") == null
-				? PROMPT
-				: get("colors.prompt") + PROMPT + ReplConfig.ANSI_RESET;
+				? prompt
+				: get("colors.prompt") + prompt + ReplConfig.ANSI_RESET;
+	}
+
+	public String getResultPrefix() {
+		return getOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
 	}
 
 	private static JSONObject loadJsonConfig() throws Exception {
@@ -109,7 +120,9 @@ public class ReplConfig {
 	
 
 	public static final String ANSI_RESET = "\u001b[0m";
-	public static final String PROMPT = "venice> ";
+
+	private static final String DEFAULT_PROMPT = "venice> ";
+	private static final String DEFAULT_RESULT_PREFIX = "=> ";
 
 	private final Map<String,String> config;
 }

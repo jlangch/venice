@@ -77,7 +77,6 @@ public class REPL {
 									.build();
  		
 		final DefaultParser parser = new DefaultParser();
-		parser.setQuoteChars(new char[] {'"', '\''});
 		
 		final LineReader reader = LineReaderBuilder
 									.builder()
@@ -93,7 +92,7 @@ public class REPL {
 											Charset.defaultCharset().name(), 
 											System.out, 
 											terminal, 
-											config.get("colors.stdout"));
+											config.getColor("colors.stdout"));
 		
 		final Env env = venice
 							.createEnv()
@@ -103,6 +102,7 @@ public class REPL {
 											new VncJavaObject(config.useColors() ? ps : System.out)));
 
 		final String prompt = config.getPrompt();
+		final String resultPrefix = config.getResultPrefix();
 
 		// REPL loop
 		while (true) {
@@ -136,7 +136,7 @@ public class REPL {
 			
 			try {
 				ThreadLocalMap.clearCallStack();
-				write(terminal, "result", "=> " + venice.PRINT(venice.RE(line, "repl", env)));
+				write(terminal, "result", resultPrefix + venice.PRINT(venice.RE(line, "repl", env)));
 			} 
 			catch (ContinueException ex) {
 				continue;
@@ -162,7 +162,7 @@ public class REPL {
 			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		final String color = config.get("colors." + colorID);
+		final String color = config.getColor("colors." + colorID);
 		if (color != null) {
 			terminal.writer().print(color);
 		}
