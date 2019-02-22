@@ -57,6 +57,7 @@ Sample 'repl.json':
 ```
 {
   "colors": {
+    "prompt": null,
     "result": "\u001b[38;5;20m",
     "stdout": "\u001b[38;5;243m",
     "error": "\u001b[38;5;202m",
