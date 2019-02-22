@@ -24,6 +24,6 @@ package com.github.jlangch.venice;
 
 public class Version {
 
-	public static final String VERSION = "1.3.4-snapshot";
+	public static final String VERSION = "1.3.4";
 	
 }

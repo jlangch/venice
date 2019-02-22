@@ -70,13 +70,13 @@ Sample 'repl.json':
 ## Executing scripts
 
 ```text
-foo> java -jar venice-1.3.3.jar -script "(+ 1 1)"
+foo> java -jar venice-1.3.4.jar -script "(+ 1 1)"
 => 2
 ```
 
 ```text
 foo> echo "(+ 1 1)" > script.venice
-foo> java -jar venice-1.3.3.jar -file script.venice
+foo> java -jar venice-1.3.4.jar -file script.venice
 => 2
 ```
 
@@ -1150,7 +1150,7 @@ transitive dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:1.3.3'
+    compile 'com.github.jlangch:venice:1.3.4'
 }
 ```
 
@@ -1162,7 +1162,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>1.3.3</version>
+        <version>1.3.4</version>
     </dependency>
 </dependencies>
 ```
