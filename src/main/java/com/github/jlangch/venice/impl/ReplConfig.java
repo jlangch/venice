@@ -46,12 +46,10 @@ public class ReplConfig {
 	}
 	
 	public static ReplConfig load(final CommandLineArgs cli) {
-		final boolean useColors = cli.switchPresent("-colors");
-		
 		final Map<String,String> config = new HashMap<>();
 		
 		// use colors
-		config.put("colors.use", useColors ? "true" : "false");
+		config.put("colors.use", cli.switchPresent("-colors") ? "true" : "false");
 				
 		try {
 			final JSONObject jsonObj = loadJsonConfig();
@@ -82,7 +80,13 @@ public class ReplConfig {
 	public boolean useColors() {
 		return "true".equals(config.get("colors.use"));
 	}
-	
+
+	public String getPrompt() {
+		return !useColors() || get("colors.prompt") == null
+				? PROMPT
+				: get("colors.prompt") + PROMPT + ReplConfig.ANSI_RESET;
+	}
+
 	private static JSONObject loadJsonConfig() throws Exception {
 		final File fileJson = new File("repl.json");
 
@@ -105,6 +109,7 @@ public class ReplConfig {
 	
 
 	public static final String ANSI_RESET = "\u001b[0m";
+	public static final String PROMPT = "venice> ";
 
 	private final Map<String,String> config;
 }

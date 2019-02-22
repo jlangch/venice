@@ -128,7 +128,7 @@ public class REPL {
 											new VncSymbol("*out*"), 
 											new VncJavaObject(config.useColors() ? ps : System.out)));
 
-		final String prompt = getPrompt();
+		final String prompt = config.getPrompt();
 
 		// REPL loop
 		while (true) {
@@ -217,16 +217,7 @@ public class REPL {
 	) {
 		write(terminal, colorID, t -> t.writer().println(text));
 	}
-
-	private static String getPrompt() {
-		return config.get("colors.prompt") == null 
-				? PROMPT
-				: config.get("colors.prompt") + PROMPT + ReplConfig.ANSI_RESET;
-	}
 	
 	
-	// http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
 	private static ReplConfig config;
-	
-	private static final String PROMPT = "venice> ";
 }
