@@ -19,9 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.impl.repl;
 
-import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -36,11 +35,13 @@ import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import com.github.jlangch.venice.ContinueException;
+import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.ReplConfig;
-import com.github.jlangch.venice.impl.ReplPrintStream;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -48,53 +49,30 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.util.CommandLineArgs;
 
 
 public class REPL {
 	
-	public static void main(final String[] args) {
-		final CommandLineArgs cli = new CommandLineArgs(args);
-		if (cli.switchPresent("-file") || cli.switchPresent("-script")) {
-			exec(cli);
-		}
-		else {
-			System.out.println("REPL Venice: V" + Venice.getVersion());
-
-			try {
-				config = ReplConfig.load(cli);
-				repl_jline(args);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-			}	
-		}
+	public REPL() {
 	}
 	
+	public void run(final String[] args) {
+		final CommandLineArgs cli = new CommandLineArgs(args);
 
-	private static void exec(final CommandLineArgs cli) {
-		final VncList argv = toList(cli.args());
+		System.out.println("REPL Venice: V" + Venice.getVersion());
 
-		final VeniceInterpreter venice = new VeniceInterpreter();
-		final Env env = venice.createEnv();
-		env.setGlobal(new Var(new VncSymbol("*ARGV*"), argv));
-
-		if (cli.switchPresent("-file")) {
-			final String file = cli.switchValue("-file");
-			final String script = new String(FileUtil.load(new File(file)));
-			
-			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
+		try {
+			config = ReplConfig.load(cli);
+			repl_jline(args);
 		}
-		else if (cli.switchPresent("-script")) {
-			final String script = cli.switchValue("-script");
-			
-			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
-		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}	
 	}
 
-	private static void repl_jline(final String[] args) throws Exception {
+	private void repl_jline(final String[] args) throws Exception {
 		final TerminalBuilder builder = TerminalBuilder.builder();
 
 		final Terminal terminal = builder
@@ -183,7 +161,7 @@ public class REPL {
 		}
 	}
 	
-	private static VncList toList(final String[] args) {
+	private VncList toList(final String[] args) {
 		return new VncList(Arrays
 							.asList(args)
 							.stream()
@@ -191,7 +169,7 @@ public class REPL {
 							.collect(Collectors.toList()));
 	}
 
-	private static void write(
+	private void write(
 			final Terminal terminal,
 			final String colorID,
 			final Consumer<Terminal> fn
@@ -210,7 +188,7 @@ public class REPL {
 		terminal.flush();
 	}
 
-	private static void write(
+	private void write(
 			final Terminal terminal,
 			final String colorID,
 			final String text
@@ -219,5 +197,5 @@ public class REPL {
 	}
 	
 	
-	private static ReplConfig config;
+	private ReplConfig config;
 }
