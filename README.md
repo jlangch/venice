@@ -38,7 +38,7 @@ Venice requires Java 8 or newer.
 
 ## REPL
 
-Venice comes with a simple REPL.
+Venice comes with a REPL.
 
 Start the REPL with `java -jar venice-1.3.4.jar -colors`
 
@@ -50,7 +50,9 @@ venice>
 
 If the REPL's colors don't harmonize well with your terminal's color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
-ANSI escape code colors on the working dir:
+ANSI escape code colors on the working dir.
+
+Sample 'repl.json':
 
 ```
 {
