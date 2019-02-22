@@ -22,9 +22,7 @@
 package com.github.jlangch.venice.impl.repl;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -46,11 +44,9 @@ import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
-import com.github.jlangch.venice.util.CommandLineArgs;
 
 
 public class REPL {
@@ -65,14 +61,14 @@ public class REPL {
 
 		try {
 			config = ReplConfig.load(cli);
-			repl_jline(args);
+			repl_jline(cli);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}	
 	}
 
-	private void repl_jline(final String[] args) throws Exception {
+	private void repl_jline(final CommandLineArgs cli) throws Exception {
 		final TerminalBuilder builder = TerminalBuilder.builder();
 
 		final Terminal terminal = builder
@@ -101,7 +97,7 @@ public class REPL {
 		
 		final Env env = venice
 							.createEnv()
-							.setGlobal(new Var(new VncSymbol("*ARGV*"), toList(args)))
+							.setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
 							.setGlobal(new DynamicVar(
 											new VncSymbol("*out*"), 
 											new VncJavaObject(config.useColors() ? ps : System.out)));
@@ -159,14 +155,6 @@ public class REPL {
 				continue;
 			}
 		}
-	}
-	
-	private VncList toList(final String[] args) {
-		return new VncList(Arrays
-							.asList(args)
-							.stream()
-							.map(s -> new VncString(s))
-							.collect(Collectors.toList()));
 	}
 
 	private void write(

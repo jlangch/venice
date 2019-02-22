@@ -19,12 +19,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util;
+package com.github.jlangch.venice.impl.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class CommandLineArgs {
@@ -49,6 +54,16 @@ public class CommandLineArgs {
 	public String[] args() {
 		return args;
 	}
+	
+	
+	public VncList argsAsList() {
+		return new VncList(Arrays
+							.asList(args)
+							.stream()
+							.map(s -> new VncString(s))
+							.collect(Collectors.toList()));
+	}
+
 	
 	public String arg(final int index){
 		return args[index];

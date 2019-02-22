@@ -22,18 +22,14 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.repl.REPL;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
-import com.github.jlangch.venice.util.CommandLineArgs;
 
 
 public class Launcher {
@@ -42,35 +38,27 @@ public class Launcher {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 		if (cli.switchPresent("-file")) {
 			final VeniceInterpreter venice = new VeniceInterpreter();
-			final Env env = createEnv(venice, args);
+			final Env env = venice.createEnv()
+								  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()));
 
 			final String file = cli.switchValue("-file");
 			final String script = new String(FileUtil.load(new File(file)));
 			
 			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
+			System.exit(0);
 		}
 		else if (cli.switchPresent("-script")) {
 			final VeniceInterpreter venice = new VeniceInterpreter();
-			final Env env = createEnv(venice, args);
+			final Env env = venice.createEnv()
+					  			  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()));
 
 			final String script = cli.switchValue("-script");
 			
 			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
+			System.exit(0);
 		}
 		else {
 			new REPL().run(args);
 		}
-	}
-	
-	private static Env createEnv(final VeniceInterpreter venice, final String[] args) {
-		final VncList argList = new VncList(Arrays
-											.asList(args)
-											.stream()
-											.map(s -> new VncString(s))
-											.collect(Collectors.toList()));
-
-		return venice.createEnv()
-					 .setGlobal(new Var(new VncSymbol("*ARGV*"), argList));
-		
 	}
 }

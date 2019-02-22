@@ -31,7 +31,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
-import com.github.jlangch.venice.util.CommandLineArgs;
+import com.github.jlangch.venice.impl.util.CommandLineArgs;
 
 
 /**
