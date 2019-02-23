@@ -129,6 +129,7 @@ public class REPL {
 					continue;
 				}
 				else {
+					// quit the REPL
 					terminal.flush();
 					write(terminal, "interrupt", " ! interrupted ! ");
 					terminal.flush();
