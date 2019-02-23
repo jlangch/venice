@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -123,6 +124,13 @@ public class ReaderTest {
 		assertEquals("3", tokens.get(pos++).getToken());
 		assertEquals(")", tokens.get(pos++).getToken());
 		assertEquals(")", tokens.get(pos++).getToken());
+	}
+
+	@Test
+	public void testTokenizeTripleQuotedStringEof() {	
+		assertThrows(EofException.class, () -> {
+			Reader.tokenize("\"\"\"uvwxyz", "test");
+		});
 	}
 
 	@Test

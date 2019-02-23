@@ -107,8 +107,18 @@ public class Reader {
 		final ArrayList<Token> tokens = new ArrayList<>();
 		while (matcher.find()) {
 			final String token = matcher.group(1);
-			
-			if (token != null && !token.equals("") && !(token.charAt(0) == ';')) {
+			if (token == null) {
+				continue;
+			}
+			else if (token.startsWith("\"\"\"") && !token.endsWith("\"\"\"")) {
+				// EOF in triple quoted string
+				final int tokenStartPos = matcher.start(1);			
+				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
+				throw new EofException(formatParseError(
+							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
+							"Expected closing \"\"\" but got EOF"));
+			}
+			else if (!token.equals("") && !(token.charAt(0) == ';')) {
 				final int tokenStartPos = matcher.start(1);
 				
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);
@@ -131,37 +141,47 @@ public class Reader {
 		}
 		
 		if (matcher.group(1) != null) {
+			// 1: long
 			return new VncLong(Long.parseLong(matcher.group(1)), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(2) != null) {
+			// 2: double
 			return new VncDouble(Double.parseDouble(matcher.group(2)), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(3) != null) {
+			// 3: bigdecimal
 			String dec = matcher.group(3);
 			dec = dec.substring(0, dec.length()-1);
 			return new VncBigDecimal(new BigDecimal(dec), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(4) != null) {
+			// 4: nil
 			return Constants.Nil;
 		} 
 		else if (matcher.group(5) != null) {
+			// 5: true
 			return Constants.True;
 		} 
 		else if (matcher.group(6) != null) {
+			// 6: false
 			return Constants.False;
 		} 
 		else if (matcher.group(7) != null) {
+			// 7: string """
 			final String s = unescapeAndDecodeUnicode(matcher.group(7));			
 			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(8) != null) {
+			// 8: string "
 			final String s = unescapeAndDecodeUnicode(matcher.group(8));			
 			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(9) != null) {
+			// 9: keyword
 			return new VncKeyword(matcher.group(9), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(10) != null) {
+			// 10: symbol
 			final VncSymbol sym = new VncSymbol(matcher.group(10));
 			rdr.anonymousFnArgs.addSymbol(sym);
 			return sym.withMeta(MetaUtil.toMeta(token));
@@ -451,6 +471,7 @@ public class Reader {
 														+ "~@"
 														+ "|[\\[\\]{}()'`~@]"
 														+ "|\"{3}(?:[\\s\\S]*?)\"{3}"
+														+ "|\"{3}(?:[\\s\\S]*)"
 														+ "|\"(?:[\\\\].|[^\\\\\"])*\""
 														+ "|;.*"
 														+ "|[^\\s \\[\\]{}()'\"`~@,;]*"
