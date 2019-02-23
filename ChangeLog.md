@@ -7,11 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.3.5] - 2019-03-x
+## [1.3.5] - 2019-03-xx
 
 ### added
 
-- added ...
+- added REPL multi-line support
 
 
 
