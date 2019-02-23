@@ -117,9 +117,9 @@ public class ReplConfig {
 			return (JSONObject)parser.parse(new FileReader(fileJson));
 		}
 		else {
-			final String cpathJson = new ClassPathResource("com/github/jlangch/venice/repl.json")
-											.getResourceAsString("UTF-8");
-			return (JSONObject)parser.parse(cpathJson);
+			return (JSONObject)parser.parse(
+						new ClassPathResource("com/github/jlangch/venice/repl.json")
+								.getResourceAsString("UTF-8"));
 		}
 	}
 	
