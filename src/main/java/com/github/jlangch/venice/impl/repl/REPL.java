@@ -121,20 +121,13 @@ public class REPL {
 				// User typed ctrl-C
 				if (parser.isEOF()) {
 					// cancel multi-line edit
-					terminal.flush();
-					write(terminal, "interrupt", " cancel ");
-					terminal.flush();
-					
+					println(terminal, "interrupt", " cancel ");					
 					parser.reset();
 					continue;
 				}
 				else {
 					// quit the REPL
-					terminal.flush();
-					write(terminal, "interrupt", " ! interrupted ! ");
-					terminal.flush();
-					terminal.writer().println();
-					terminal.flush();
+					println(terminal, "interrupt", " ! interrupted ! ");
 					Thread.sleep(1000);
 					break;
 				}
@@ -143,7 +136,7 @@ public class REPL {
 				break;
 			} 
 			catch (VncException ex) {
-				write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+				print(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
 				continue;
 			}
 			catch (Exception ex) {
@@ -153,28 +146,28 @@ public class REPL {
 			
 			try {
 				ThreadLocalMap.clearCallStack();
-				write(terminal, "result", resultPrefix + venice.PRINT(venice.RE(line, "repl", env)));
+				println(terminal, "result", resultPrefix + venice.PRINT(venice.RE(line, "repl", env)));
 			} 
 			catch (ContinueException ex) {
 				continue;
 			} 
 			catch (ValueException ex) {
-				write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-				write(terminal, "error", "Thrown value: " + Printer._pr_str(ex.getValue(), false));
+				print(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+				println(terminal, "error", "Thrown value: " + Printer._pr_str(ex.getValue(), false));
 				continue;
 			} 
 			catch (VncException ex) {
-				write(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
+				print(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
 				continue;
 			}
 			catch (Exception ex) {
-				write(terminal, "error", t -> ex.printStackTrace(t.writer()));
+				print(terminal, "error", t -> ex.printStackTrace(t.writer()));
 				continue;
 			}
 		}
 	}
 
-	private void write(
+	private void print(
 			final Terminal terminal,
 			final String colorID,
 			final Consumer<Terminal> fn
@@ -192,14 +185,17 @@ public class REPL {
 		
 		terminal.flush();
 	}
-
-	private void write(
+	
+	private void println(
 			final Terminal terminal,
 			final String colorID,
 			final String text
 	) {
-		write(terminal, colorID, t -> t.writer().println(text));
+		print(terminal, colorID, t -> t.writer().print(text));
+		terminal.writer().println();
+		terminal.flush();
 	}
+
 	
 	
 	private ReplConfig config;
