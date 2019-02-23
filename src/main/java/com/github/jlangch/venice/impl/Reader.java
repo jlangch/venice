@@ -463,6 +463,7 @@ public class Reader {
 	//    unquote splicing => ~@
 	//    chars            => [\\[\\]{}()'`~@]
 	//    string           => \"{3}(?:[\\s\\S]*?)\"{3}
+	//    string           => \"{3}(?:[\\s\\S]*)"          (-> EOF in triple quoted string)
 	//    string           => \"(?:[\\\\].|[^\\\\\"])*\"
 	//    comment          => ;.*
 	//    else             => [^\\s \\[\\]{}()'\"`~@,;]
