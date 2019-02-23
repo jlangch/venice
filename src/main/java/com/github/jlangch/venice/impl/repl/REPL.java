@@ -28,8 +28,8 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
+import org.jline.reader.Parser;
 import org.jline.reader.UserInterruptException;
-import org.jline.reader.impl.DefaultParser;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
@@ -69,21 +69,15 @@ public class REPL {
 	}
 
 	private void repl_jline(final CommandLineArgs cli) throws Exception {
+		final String prompt = config.getPrompt();
+		final String secondaryPrompt = config.getSecondaryPrompt();
+		final String resultPrefix = config.getResultPrefix();
+
 		final TerminalBuilder builder = TerminalBuilder.builder();
 
 		final Terminal terminal = builder
 									.encoding("UTF-8")
 									.type("xterm-256color")
-									.build();
- 		
-		final DefaultParser parser = new DefaultParser();
-		
-		final LineReader reader = LineReaderBuilder
-									.builder()
-									.appName("Venice")
-									.terminal(terminal)
-									//.completer(completer)
-									.parser(parser)
 									.build();
  
 		final VeniceInterpreter venice = new VeniceInterpreter();
@@ -101,8 +95,16 @@ public class REPL {
 											new VncSymbol("*out*"), 
 											new VncJavaObject(config.useColors() ? ps : System.out)));
 
-		final String prompt = config.getPrompt();
-		final String resultPrefix = config.getResultPrefix();
+		final Parser parser = new ReplParser(venice, env);
+		
+		final LineReader reader = LineReaderBuilder
+									.builder()
+									.appName("Venice")
+									.terminal(terminal)
+									//.completer(completer)
+									.parser(parser)
+									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
+									.build();
 
 		// REPL loop
 		while (true) {

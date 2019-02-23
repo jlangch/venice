@@ -54,6 +54,7 @@ public class ReplConfig {
 		try {
 			final JSONObject jsonObj = loadJsonConfig();
 			config.put("prompt", (String)jsonObj.get("prompt"));
+			config.put("secondary-prompt", (String)jsonObj.get("secondary-prompt"));
 			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
 
 			final JSONObject colObj = (JSONObject)jsonObj.get("colors");
@@ -94,6 +95,13 @@ public class ReplConfig {
 				: get("colors.prompt") + prompt + ReplConfig.ANSI_RESET;
 	}
 
+	public String getSecondaryPrompt() {
+		final String prompt = getOrDefault("secondary-prompt", DEFAULT_SECONDARY_PROMPT);
+		return !useColors() || get("colors.secondary-prompt") == null
+				? prompt
+				: get("colors.secondary-prompt") + prompt + ReplConfig.ANSI_RESET;
+	}
+
 	public String getResultPrefix() {
 		return getOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
 	}
@@ -122,6 +130,7 @@ public class ReplConfig {
 	public static final String ANSI_RESET = "\u001b[0m";
 
 	private static final String DEFAULT_PROMPT = "venice> ";
+	private static final String DEFAULT_SECONDARY_PROMPT = "| ";
 	private static final String DEFAULT_RESULT_PREFIX = "=> ";
 
 	private final Map<String,String> config;
