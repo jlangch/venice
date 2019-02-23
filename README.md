@@ -46,6 +46,8 @@ venice> (+ 1 1)
 venice>
 ```
 
+Break out of the REPL with `ctrl-c`
+
 The REPL supports multi-line editing and copy/paste of multi-line code
 snippets.
 
