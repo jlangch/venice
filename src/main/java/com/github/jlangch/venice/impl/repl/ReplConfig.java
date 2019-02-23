@@ -32,6 +32,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
@@ -60,7 +61,7 @@ public class ReplConfig {
 			final JSONObject colObj = (JSONObject)jsonObj.get("colors");
 			if (colObj != null) {
 				for(String cname : Arrays.asList("result", "stdout", "error", "interrupt", "prompt")) {
-					config.put("colors." + cname, emptyToNull((String)colObj.get(cname)));
+					config.put("colors." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
 				}
 			}
 
@@ -76,7 +77,7 @@ public class ReplConfig {
 	}
 
 	public String get(final String key) {
-		return emptyToNull(config.get(key));
+		return StringUtil.emptyToNull(config.get(key));
 	}
 	
 	public String getOrDefault(final String key, final String defaultValue) {
@@ -120,10 +121,6 @@ public class ReplConfig {
 											.getResourceAsString("UTF-8");
 			return (JSONObject)parser.parse(cpathJson);
 		}
-	}
-	
-	private static String emptyToNull(final String s) {
-		return s == null || s.isEmpty() ? null : s;
 	}
 	
 

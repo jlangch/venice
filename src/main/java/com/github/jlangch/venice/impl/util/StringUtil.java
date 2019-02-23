@@ -210,6 +210,10 @@ public class StringUtil {
 		}
 	}
 	
+	public static String emptyToNull(final String s) {
+		return s == null || s.isEmpty() ? null : s;
+	}
+	
 	public static String trimToEmpty(final String str) {
 		return str == null ? "" : str.trim();
 	}
