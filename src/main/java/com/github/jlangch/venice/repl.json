@@ -1,6 +1,6 @@
 { 
   "prompt": "venice> ",
-  "secondary-prompt": "| ", 
+  "secondary-prompt": "      | ", 
   "result-prefix": "=> ",
   
   "colors": {

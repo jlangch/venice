@@ -44,6 +44,7 @@ public class ReplParser extends DefaultParser {
 			final ParseContext context
 	) throws SyntaxError {
 		try {
+			eof = false;
 			venice.RE(line, "repl", env);
 			return super.parse(line, cursor, context);
 		}
