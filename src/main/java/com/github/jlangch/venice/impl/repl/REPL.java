@@ -117,9 +117,11 @@ public class REPL {
 			catch (UserInterruptException ex) {
 				// User typed ctrl-C
 				if (parser.isEOF()) {
+					// cancel multi-line edit
 					terminal.flush();
 					write(terminal, "interrupt", " cancel ");
 					terminal.flush();
+					
 					parser.reset();
 					continue;
 				}
