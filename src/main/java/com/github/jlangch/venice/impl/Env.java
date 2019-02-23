@@ -210,6 +210,23 @@ public class Env implements Serializable {
 		while(env.outer != null) env = env.outer;
 		return env;
 	}
+
+	public Env getLevelEnv(final int level) {
+		Env env = this;
+		if (env.level == level) {
+			return env;
+		}
+		else {
+			while(env.outer != null) {
+				env = env.outer;
+				if (env.level == level) {
+					return env;
+				}
+			}
+		}
+		
+		throw new VncException(String.format("No env level %d", level));
+	}
 	
 	@Override
 	public String toString() {
