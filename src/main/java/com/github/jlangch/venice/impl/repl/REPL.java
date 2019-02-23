@@ -28,7 +28,6 @@ import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
-import org.jline.reader.Parser;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -95,7 +94,7 @@ public class REPL {
 											new VncSymbol("*out*"), 
 											new VncJavaObject(config.useColors() ? ps : System.out)));
 
-		final Parser parser = new ReplParser(venice, env);
+		final ReplParser parser = new ReplParser(venice, env);
 		
 		final LineReader reader = LineReaderBuilder
 									.builder()
@@ -117,13 +116,22 @@ public class REPL {
 			} 
 			catch (UserInterruptException ex) {
 				// User typed ctrl-C
-				terminal.flush();
-				write(terminal, "interrupt", " ! interrupted ! ");
-				terminal.flush();
-				terminal.writer().println();
-				terminal.flush();
-				Thread.sleep(1000);
-				break;
+				if (parser.isEOF()) {
+					terminal.flush();
+					write(terminal, "interrupt", " cancel ");
+					terminal.flush();
+					parser.reset();
+					continue;
+				}
+				else {
+					terminal.flush();
+					write(terminal, "interrupt", " ! interrupted ! ");
+					terminal.flush();
+					terminal.writer().println();
+					terminal.flush();
+					Thread.sleep(1000);
+					break;
+				}
 			} 
 			catch (EofException | EndOfFileException ex) {
 				break;

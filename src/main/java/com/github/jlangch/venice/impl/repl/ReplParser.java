@@ -48,12 +48,23 @@ public class ReplParser extends DefaultParser {
 			return super.parse(line, cursor, context);
 		}
 		catch(EofException ex) {
+			eof = true;
 			// proceed with multi-line editing
 			throw new EOFError(1, 1, ex.getMessage());
 		}
 	}
 
+	public boolean isEOF() {
+		return eof;
+	}
+
+	public void reset() {
+		eof = false;
+	}
 	
+
 	private final VeniceInterpreter venice;
 	private final Env env;
+	
+	private boolean eof = false;
 }
