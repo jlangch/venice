@@ -43,6 +43,10 @@ Start the REPL with `java -jar venice-1.3.4.jar -colors`
 ```text
 venice> (+ 1 1)
 => 2
+venice> (defn sum [x y]
+      |    (+ x y))
+venice> (sum 1 4)
+=> 5
 venice>
 ```
 
