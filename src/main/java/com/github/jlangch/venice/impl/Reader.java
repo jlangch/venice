@@ -107,7 +107,7 @@ public class Reader {
 		final ArrayList<Token> tokens = new ArrayList<>();
 		while (matcher.find()) {
 			final String token = matcher.group(1);
-			if (token == null) {
+			if (token == null || token.equals("")) {
 				continue;
 			}
 			else if (token.startsWith("\"\"\"") && !token.endsWith("\"\"\"")) {
@@ -118,7 +118,8 @@ public class Reader {
 							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
 							"Expected closing \"\"\" but got EOF"));
 			}
-			else if (!token.equals("") && !(token.charAt(0) == ';')) {
+			else if (token.charAt(0) != ';') {
+				// not a comment
 				final int tokenStartPos = matcher.start(1);
 				
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);
