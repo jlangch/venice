@@ -114,6 +114,9 @@ public class REPL {
 					continue; 
 				}
 			} 
+			catch (ContinueException ex) {
+				continue;
+			}
 			catch (UserInterruptException ex) {
 				// User typed ctrl-C
 				if (parser.isEOF()) {
