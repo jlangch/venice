@@ -46,6 +46,19 @@ venice> (+ 1 1)
 venice>
 ```
 
+Break out of the REPL with `ctrl-c`
+
+The REPL supports multi-line editing and copy/paste of multi-line code
+snippets.
+
+```text
+venice> (defn sum [x y]
+      |    (+ x y))
+venice> (sum 1 4)
+=> 5
+venice>
+```
+
 If the REPL's colors don't harmonize well with your terminal's color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
 ANSI escape code colors on the working dir.
@@ -55,7 +68,7 @@ Sample 'repl.json':
 ```
 {
   "prompt": "venice> ",
-  "secondary-prompt": "| ", 
+  "secondary-prompt": "      | ", 
   "result-prefix": "=> ",
   
   "colors": {
