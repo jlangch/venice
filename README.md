@@ -54,6 +54,10 @@ Sample 'repl.json':
 
 ```
 {
+  "prompt": "venice> ",
+  "secondary-prompt": "| ", 
+  "result-prefix": "=> ",
+  
   "colors": {
     "prompt": null,
     "result": "\u001b[38;5;20m",
