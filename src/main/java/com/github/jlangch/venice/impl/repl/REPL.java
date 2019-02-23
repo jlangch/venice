@@ -135,13 +135,9 @@ public class REPL {
 			catch (EofException | EndOfFileException ex) {
 				break;
 			} 
-			catch (VncException ex) {
-				print(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-				continue;
-			}
 			catch (Exception ex) {
-				ex.printStackTrace();
-				break;
+				printex(terminal, "error", ex);
+				continue;
 			}
 			
 			try {
@@ -151,17 +147,8 @@ public class REPL {
 			catch (ContinueException ex) {
 				continue;
 			} 
-			catch (ValueException ex) {
-				print(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-				println(terminal, "error", "Thrown value: " + Printer._pr_str(ex.getValue(), false));
-				continue;
-			} 
-			catch (VncException ex) {
-				print(terminal, "error", t -> ex.printVeniceStackTrace(t.writer()));
-				continue;
-			}
 			catch (Exception ex) {
-				print(terminal, "error", t -> ex.printStackTrace(t.writer()));
+				printex(terminal, "error", ex);
 				continue;
 			}
 		}
@@ -194,6 +181,23 @@ public class REPL {
 		print(terminal, colorID, t -> t.writer().print(text));
 		terminal.writer().println();
 		terminal.flush();
+	}
+	
+	private void printex(
+			final Terminal terminal,
+			final String colorID,
+			final Exception ex
+	) {
+		if (ex instanceof ValueException) {
+			print(terminal, colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
+			println(terminal, colorID, "Thrown value: " + Printer._pr_str(((ValueException)ex).getValue(), false));			
+		}
+		else if (ex instanceof VncException) {
+			print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+		}
+		else {
+			print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
+		}
 	}
 
 	
