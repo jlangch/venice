@@ -27,15 +27,13 @@ import org.jline.reader.SyntaxError;
 import org.jline.reader.impl.DefaultParser;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 
 
 public class ReplParser extends DefaultParser {
 	
-	public ReplParser(final VeniceInterpreter venice, final Env env) {
+	public ReplParser(final VeniceInterpreter venice) {
 		this.venice = venice;
-		this.env = env;
 	}
 
 	public ParsedLine parse(
@@ -45,7 +43,7 @@ public class ReplParser extends DefaultParser {
 	) throws SyntaxError {
 		try {
 			eof = false;
-			venice.RE(line, "repl", env);
+			venice.READ(line, "repl");
 			return super.parse(line, cursor, context);
 		}
 		catch(EofException ex) {
@@ -65,7 +63,6 @@ public class ReplParser extends DefaultParser {
 	
 
 	private final VeniceInterpreter venice;
-	private final Env env;
 	
 	private boolean eof = false;
 }

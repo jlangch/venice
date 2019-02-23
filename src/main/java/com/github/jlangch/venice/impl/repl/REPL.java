@@ -94,7 +94,7 @@ public class REPL {
 											new VncSymbol("*out*"), 
 											new VncJavaObject(config.useColors() ? ps : System.out)));
 
-		final ReplParser parser = new ReplParser(venice, env);
+		final ReplParser parser = new ReplParser(venice);
 		
 		final LineReader reader = LineReaderBuilder
 									.builder()
