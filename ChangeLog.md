@@ -15,8 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### fixed
 
-- fixed handling EOF in triple quoted strings
-- fixed handling EOL in single quoted strings
+- fixed handling EOF/EOL in strings and providing better error messages
 
 
 
