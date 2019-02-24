@@ -452,7 +452,7 @@ Associative destructuring can be nested and combined with sequential destructuri
 
    (let [{{:keys [role branch]} :peter} users]
       (println "Peter is a" role "located at" branch))
-      ;=> Peter is a clerk located a Zurich
+      ;=> Peter is a clerk located at Zurich
 )
 ```
 
