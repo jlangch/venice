@@ -59,7 +59,7 @@ venice> (sum 1 4)
 venice>
 ```
 
-If the REPL's colors don't harmonize well with your terminal's color schema 
+If the REPL colors don't harmonize well with your terminal color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
 ANSI escape code colors on the working dir.
 
