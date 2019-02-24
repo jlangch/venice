@@ -286,7 +286,8 @@ Caused by: java.lang.ArithmeticException: / by zero
 
 ```clojure
 (do
-   // instead of (get {:a 1 :b 2} :b) maps/keys work as functions
+   ; instead of (get {:a 1 :b 2} :b) maps/keys 
+   ; work as functions
    ({:a 1 :b 2} :b)
    (:b {:a 1 :b 2}))
 ```
