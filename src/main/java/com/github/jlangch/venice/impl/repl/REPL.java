@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
@@ -77,22 +78,23 @@ public class REPL {
 		final Terminal terminal = builder
 									.encoding("UTF-8")
 									.type("xterm-256color")
+									.system(true)
 									.build();
  
-		final VeniceInterpreter venice = new VeniceInterpreter();
-		
-		final ReplPrintStream ps = new ReplPrintStream(
+		final PrintStream ps = config.useColors() 
+									? new ReplPrintStream(
 											Charset.defaultCharset().name(), 
 											System.out, 
 											terminal, 
-											config.getColor("colors.stdout"));
+											config.getColor("colors.stdout"))
+									: System.out;
+		
+		final VeniceInterpreter venice = new VeniceInterpreter();
 		
 		final Env env = venice
 							.createEnv()
 							.setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
-							.setGlobal(new DynamicVar(
-											new VncSymbol("*out*"), 
-											new VncJavaObject(config.useColors() ? ps : System.out)));
+							.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(ps)));
 
 		final ReplParser parser = new ReplParser(venice);
 		
@@ -200,7 +202,6 @@ public class REPL {
 		}
 	}
 
-	
 	
 	private ReplConfig config;
 }
