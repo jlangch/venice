@@ -118,6 +118,14 @@ public class Reader {
 							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
 							"Expected closing \"\"\" but got EOF"));
 			}
+			else if (token.startsWith("\"") && !token.endsWith("\"")) {
+				// EOL in single quoted string
+				final int tokenStartPos = matcher.start(1);			
+				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
+				throw new ParseError(formatParseError(
+							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
+							"Expected closing \" but got EOL"));
+			}
 			else if (token.charAt(0) != ';') {
 				// not a comment
 				final int tokenStartPos = matcher.start(1);
@@ -464,8 +472,9 @@ public class Reader {
 	//    unquote splicing => ~@
 	//    chars            => [\\[\\]{}()'`~@]
 	//    string           => \"{3}(?:[\\s\\S]*?)\"{3}
-	//    string           => \"{3}(?:[\\s\\S]*)"          (-> EOF in triple quoted string)
+	//    string           => \"{3}(?:[\\s\\S]*)           (-> EOF in triple quoted string)
 	//    string           => \"(?:[\\\\].|[^\\\\\"])*\"
+	//    string           => \"(?:[\\\\].|[^\\\\\"])*     (-> EOL in single quoted string)
 	//    comment          => ;.*
 	//    else             => [^\\s \\[\\]{}()'\"`~@,;]
 	private static final Pattern tokenize_pattern = Pattern.compile(
@@ -475,6 +484,7 @@ public class Reader {
 														+ "|\"{3}(?:[\\s\\S]*?)\"{3}"
 														+ "|\"{3}(?:[\\s\\S]*)"
 														+ "|\"(?:[\\\\].|[^\\\\\"])*\""
+														+ "|\"(?:[\\\\].|[^\\\\\"])*"
 														+ "|;.*"
 														+ "|[^\\s \\[\\]{}()'\"`~@,;]*"
 														+ ")");

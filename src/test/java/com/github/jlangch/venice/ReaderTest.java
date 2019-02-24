@@ -134,6 +134,13 @@ public class ReaderTest {
 	}
 
 	@Test
+	public void testTokenizeSingleQuotedStringEol() {	
+		assertThrows(ParseError.class, () -> {
+			Reader.tokenize("\"uvwxyz", "test");
+		});
+	}
+
+	@Test
 	public void testStringInterpolation_single_simple_value() {	
 		assertEquals("100", new Venice().eval("(do (def x 100) \"~{x}\")"));
 		assertEquals(" 100", new Venice().eval("(do (def x 100) \" ~{x}\")"));

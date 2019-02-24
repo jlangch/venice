@@ -111,7 +111,7 @@ public class TimeFunctionsTest {
 		assertTrue(venice.eval("(time/zoned-date-time :UTC)") instanceof ZonedDateTime);		
 		assertTrue(venice.eval("(time/zoned-date-time :UTC 798797979)") instanceof ZonedDateTime);		
 		assertTrue(venice.eval("(time/zoned-date-time :UTC \"2018-08-01T10:15:30.980+01:00\")") instanceof ZonedDateTime);		
-		assertTrue(venice.eval("(time/zoned-date-time :UTC 2018 8 1 10 15 30 980\")") instanceof ZonedDateTime);		
+		assertTrue(venice.eval("(time/zoned-date-time :UTC 2018 8 1 10 15 30 980)") instanceof ZonedDateTime);		
 		assertTrue(venice.eval("(time/zoned-date-time :UTC (time/local-date))") instanceof ZonedDateTime);		
 		assertTrue(venice.eval("(time/zoned-date-time :UTC (time/local-date-time))") instanceof ZonedDateTime);		
 		assertTrue(venice.eval("(time/zoned-date-time :UTC (time/zoned-date-time))") instanceof ZonedDateTime);
