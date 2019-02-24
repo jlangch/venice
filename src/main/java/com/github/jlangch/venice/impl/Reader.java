@@ -116,7 +116,7 @@ public class Reader {
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
 				throw new EofException(formatParseError(
 							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
-							"Expected closing \"\"\" but got EOF"));
+							"Expected closing \"\"\" for triple quoted string but got EOF"));
 			}
 			else if (token.startsWith("\"") && !token.endsWith("\"")) {
 				// EOL in single quoted string
@@ -124,7 +124,7 @@ public class Reader {
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
 				throw new ParseError(formatParseError(
 							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
-							"Expected closing \" but got EOL"));
+							"Expected closing \" for single quoted string but got EOL"));
 			}
 			else if (token.charAt(0) != ';') {
 				// not a comment
