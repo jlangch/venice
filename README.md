@@ -306,7 +306,7 @@ list or vector within a let binding.
       (println x y z))
       ;=> 1 2 3
 
-   (let [[x y z] '(1 2 3]
+   (let [[x y z] '(1 2 3)]
       (println x y z))
       ;=> 1 2 3
 
