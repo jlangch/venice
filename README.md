@@ -863,7 +863,7 @@ Alternative to UNIX shell scripts:
 ;; ----------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
-;; > java -jar venice-1.3.0.jar -file zip-tomcat-logs.venice ./logs
+;; > java -jar venice-1.3.5.jar -file zip-tomcat-logs.venice ./logs
 ;; ----------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
