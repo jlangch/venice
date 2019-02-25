@@ -31,6 +31,7 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
+import org.jline.terminal.Terminal.Signal;
 import org.jline.terminal.TerminalBuilder;
 
 import com.github.jlangch.venice.ContinueException;
@@ -61,24 +62,36 @@ public class REPL {
 
 		try {
 			config = ReplConfig.load(cli);
-			repl_jline(cli);
+			repl(cli);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}	
 	}
 
-	private void repl_jline(final CommandLineArgs cli) throws Exception {
+	private void repl(final CommandLineArgs cli) throws Exception {
 		final String prompt = config.getPrompt();
 		final String secondaryPrompt = config.getSecondaryPrompt();
 		final String resultPrefix = config.getResultPrefix();
 
 		final TerminalBuilder builder = TerminalBuilder.builder();
+		
+		final Thread mainThread = Thread.currentThread();
+		
 
 		final Terminal terminal = builder
 									.encoding("UTF-8")
 									.type("xterm-256color")
 									.system(true)
+									.nativeSignals(true)
+									.signalHandler(new Terminal.SignalHandler() {
+										public void handle(final Signal signal) {
+											if (signal == Signal.INT) {
+												// ctrl-C stops infinite Venice loops
+												mainThread.interrupt();
+											}
+										}
+									 })
 									.build();
  
 		final PrintStream ps = config.useColors() 
@@ -111,6 +124,8 @@ public class REPL {
 		while (true) {
 			String line;
 			try {
+				Thread.interrupted(); // reset the thread's interrupt status
+				
 				line = reader.readLine(prompt, null, (MaskingCallback) null, null);
 				if (line == null) { 
 					continue; 
@@ -120,6 +135,8 @@ public class REPL {
 				continue;
 			}
 			catch (UserInterruptException ex) {
+				Thread.interrupted(); // reset the thread's interrupt status
+
 				// User typed ctrl-C
 				if (parser.isEOF()) {
 					// cancel multi-line edit
@@ -142,7 +159,7 @@ public class REPL {
 				continue;
 			}
 			
-			try {
+			try {				
 				ThreadLocalMap.clearCallStack();
 				println(terminal, "result", resultPrefix + venice.PRINT(venice.RE(line, "repl", env)));
 			} 

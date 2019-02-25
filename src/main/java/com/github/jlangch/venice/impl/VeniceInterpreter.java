@@ -413,7 +413,8 @@ public class VeniceInterpreter implements Serializable  {
 						final VncFunction fn = (VncFunction)elArg0;
 						
 						sandboxMaxExecutionTimeChecker.check();
-						
+						checkInterrupted();
+					
 						// invoke function with call frame
 						final CallFrame frame = CallFrame.fromFunction(fn, a0);		
 						ThreadLocalMap.getCallStack().push(frame);
@@ -429,6 +430,7 @@ public class VeniceInterpreter implements Serializable  {
 						finally {
 							ThreadLocalMap.getCallStack().pop();
 							sandboxMaxExecutionTimeChecker.check();
+							checkInterrupted();
 						}
 					}
 					else if (Types.isIVncFunction(elArg0)) {
@@ -1030,7 +1032,12 @@ public class VeniceInterpreter implements Serializable  {
 		return javaImports.resolveClassName(className);
 	}
 	
-	
+	private void checkInterrupted() {
+		if (Thread.currentThread().isInterrupted()) {
+			throw new com.github.jlangch.venice.InterruptedException("interrupted");
+		}
+	}
+
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 

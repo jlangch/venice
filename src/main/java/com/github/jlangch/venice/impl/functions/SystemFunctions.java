@@ -170,7 +170,7 @@ public class SystemFunctions {
 					Thread.sleep(Coerce.toVncLong(args.first()).getValue());
 				} 
 				catch(InterruptedException ex) {
-					Thread.interrupted(); // resets the thread's "interrupted" status
+					throw new com.github.jlangch.venice.InterruptedException("sleep() interrupted", ex);
 				} 
 				catch(Exception ex) {
 				}
