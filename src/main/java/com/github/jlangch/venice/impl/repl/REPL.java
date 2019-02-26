@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
@@ -120,8 +121,12 @@ public class REPL {
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.build();
 
+		final ReplResultHistory resultHistory = new ReplResultHistory(3);
+		
 		// REPL loop
 		while (true) {
+			resultHistory.mergeToEnv(env);
+			
 			String line;
 			try {
 				Thread.interrupted(); // reset the thread's interrupt status
@@ -161,7 +166,9 @@ public class REPL {
 			
 			try {				
 				ThreadLocalMap.clearCallStack();
-				println(terminal, "result", resultPrefix + venice.PRINT(venice.RE(line, "repl", env)));
+				final VncVal result = venice.RE(line, "repl", env);
+				resultHistory.add(result);
+				println(terminal, "result", resultPrefix + venice.PRINT(result));
 			} 
 			catch (ContinueException ex) {
 				continue;

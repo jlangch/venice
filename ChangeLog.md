@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ...
+- added a result history to the REPL `*1`, `*2`, `*3` return the last, the second 
+       last and the third last result
 
 
 
