@@ -21,13 +21,16 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class ReplResultHistory {
 	
@@ -41,11 +44,17 @@ public class ReplResultHistory {
 	}
 	
 	public void mergeToEnv(final Env env) {
+		final List<VncVal> all = new ArrayList<>();
+
 		for(int ii=0; ii<max; ii++) {
-			env.setGlobal(new Var(
-					new VncSymbol("*" + (ii + 1)),
-					ii < results.size() ? results.get(ii) : Constants.Nil));
+			final VncVal val = ii < results.size() ? results.get(ii) : Constants.Nil;
+			
+			all.add(val);
+			
+			env.setGlobal(new Var(new VncSymbol("*" + (ii + 1)), val));
 		}
+
+		env.setGlobal(new Var(new VncSymbol("**"), new VncList(all)));
 	}
 
 	
