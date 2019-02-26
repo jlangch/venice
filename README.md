@@ -86,15 +86,17 @@ Sample 'repl.json':
 }
 ```
 
-REPL commands:
+Useful REPL keyboard shortcuts:
 
-`ctrl-a`  move the cursor to the start
+`ctrl-A`  move the cursor to the start
 
-`ctrl-e`  move the cursor to the end
+`ctrl-E`  move the cursor to the end
 
-`ctrl-k`  remove the text after the cursor and store it in a cut-buffer
+`ctrl-K`  remove the text after the cursor and store it in a cut-buffer
 
-`ctrl-y`  yank the text from the cut-buffer
+`ctrl-L`  clear the screen
+
+`ctrl-Y`  yank the text from the cut-buffer
 
 `ctrl-_`  undo
 
