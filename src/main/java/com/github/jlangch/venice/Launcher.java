@@ -27,7 +27,6 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.repl.REPL;
-import com.github.jlangch.venice.impl.repl.swing.SwingREPL;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
@@ -57,9 +56,6 @@ public class Launcher {
 			
 			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 			System.exit(0);
-		}
-		else if (cli.switchPresent("-swing-repl")) {
-			new SwingREPL().run(args);
 		}
 		else if (cli.switchPresent("-repl")) {
 			new REPL().run(args);

@@ -46,12 +46,12 @@ public class ReplResultHistory {
 	public void mergeToEnv(final Env env) {
 		final List<VncVal> all = new ArrayList<>();
 
-		for(int ii=0; ii<max; ii++) {
-			final VncVal val = ii < results.size() ? results.get(ii) : Constants.Nil;
+		for(int ii=1; ii<=max; ii++) {
+			final VncVal val = ii <= results.size() ? results.get(ii-1) : Constants.Nil;
 			
 			all.add(val);
 			
-			env.setGlobal(new Var(new VncSymbol("*" + (ii + 1)), val));
+			env.setGlobal(new Var(new VncSymbol("*" + ii), val));
 		}
 
 		env.setGlobal(new Var(new VncSymbol("**"), new VncList(all)));
