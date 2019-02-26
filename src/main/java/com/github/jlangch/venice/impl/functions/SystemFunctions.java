@@ -167,13 +167,11 @@ public class SystemFunctions {
 				assertArity("sleep", args, 1);
 				
 				try {
-					Thread.sleep(Coerce.toVncLong(args.first()).getValue());
+					Thread.sleep(Math.max(0, Coerce.toVncLong(args.first()).getValue()));
 				} 
 				catch(InterruptedException ex) {
-					throw new com.github.jlangch.venice.InterruptedException("sleep() interrupted", ex);
+					throw new com.github.jlangch.venice.InterruptedException("(sleep n) interrupted", ex);
 				} 
-				catch(Exception ex) {
-				}
 				
 				return Nil;
 			}
