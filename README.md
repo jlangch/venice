@@ -46,8 +46,6 @@ venice> (+ 1 1)
 venice>
 ```
 
-Break out of the REPL with `ctrl-C`
-
 A history of the last three result values is kept by the REPL, accessible through 
 the symbols `*1`, `*2`, `*3`.
 
@@ -89,6 +87,8 @@ Sample 'repl.json':
 Useful REPL keyboard shortcuts:
 
 `ctrl-A`  move the cursor to the start
+
+`ctrl-C`  stop the running command, cancel a multi-line edit, or break out of the REPL
 
 `ctrl-E`  move the cursor to the end
 
