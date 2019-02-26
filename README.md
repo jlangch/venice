@@ -48,7 +48,7 @@ venice>
 
 Break out of the REPL with `ctrl-C`
 
-The REPL keeps a history of the last three result values, accessible through 
+A history of the last three result values is kept by the REPL, accessible through 
 the symbols `*1`, `*2`, `*3`.
 
 The REPL supports multi-line editing and copy/paste of multi-line code
