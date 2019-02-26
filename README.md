@@ -86,6 +86,19 @@ Sample 'repl.json':
 }
 ```
 
+REPL commands:
+
+`ctrl-a`  move the cursor to the start
+
+`ctrl-e`  move the cursor to the end
+
+`ctrl-k`  remove the text after the cursor and store it in a cut-buffer
+
+`ctrl-y`  yank the text from the cut-buffer
+
+`ctrl-_`  undo
+
+
 
 ## Executing scripts
 
