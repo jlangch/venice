@@ -33,6 +33,7 @@ import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -265,11 +266,16 @@ public class Reader {
 								  .withMeta(MetaUtil.toMeta(token));
 				}
 			
-			case '^': 
+			case '^': {
 				rdr.next();
-				final VncVal meta = read_form(rdr);
+				VncVal meta = read_form(rdr);
+				if (Types.isVncKeyword(meta)) {
+					// allow ^:private is equivalent to ^{:private true}
+					meta = VncHashMap.of(meta, Constants.True);
+				}				
 				final Token symToken = rdr.peek();
 				return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
+			}
 			
 			case '@': 
 				rdr.next();
@@ -480,6 +486,7 @@ public class Reader {
 	private static final Pattern tokenize_pattern = Pattern.compile(
 														"[\\s ,]*("
 														+ "~@"
+														+ "|\\^"
 														+ "|[\\[\\]{}()'`~@]"
 														+ "|\"{3}(?:[\\s\\S]*?)\"{3}"
 														+ "|\"{3}(?:[\\s\\S]*)"

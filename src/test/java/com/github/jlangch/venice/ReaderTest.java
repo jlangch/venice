@@ -40,6 +40,7 @@ public class ReaderTest {
 		assertEquals(100L, new Venice().eval("(do (def ^{:a 200} x 100) x)"));
 		assertEquals(200L, new Venice().eval("(do (def ^{:a 200} x 100) (:a (meta x)))"));
 		assertEquals("(xx yy)", new Venice().eval("(do (def ^{:a '(\"xx\" \"yy\")} x 100) (str (:a (meta x))))"));
+		assertEquals(true, new Venice().eval("(do (def ^:private x 100) (:private (meta x))))"));
 	}
 
 	@Test

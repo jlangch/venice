@@ -208,7 +208,7 @@
       :doc "Threads the x through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
       :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
      
-                     (str/strip-margin
+                      (str/strip-margin
                         """(do
                           |   (def person 
                           |        {:name "Peter Meier"
@@ -233,14 +233,13 @@
 (defmacro 
    ^{ :arglists '("(->> x & forms)")
       :doc "Threads the x through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
-      :examples (list
-                 "(->> 5 (+ 3) (/ 32) (- 1))"
+      :examples (list "(->> 5 (+ 3) (/ 32) (- 1))"
 
-                 (str/strip-margin
-                    "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
-                    |     (map (fn [x] (get x :b)))
-                    |     (filter (fn [x] (> x 4)))
-                    |     (map inc)))) " )) }
+                      (str/strip-margin
+                         "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
+                         |     (map (fn [x] (get x :b)))
+                         |     (filter (fn [x] (> x 4)))
+                         |     (map inc)))) " )) }
 
    ->> [x & forms]
    
@@ -255,7 +254,9 @@
 
 
 (defmacro 
-   ;; private helper macro used by public macro -<>. Inserts x in place of '<>' in form
+   ^:private
+   
+   ;; serves the macro -<>. Inserts x in place of '<>' in form
    
    -<>* [form x]
    
