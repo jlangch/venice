@@ -1,9 +1,9 @@
 ;; Venice core macros & functions
 
 (defmacro
-   { :arglists '("(comment & body)")
-     :doc "Ignores body, yields nil" 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(comment & body)")
+      :doc "Ignores body, yields nil" 
+      :examples (list (str/strip-margin
                         "(comment 
                         |   (println 1)
                         |   (println 5))" )) }
@@ -12,8 +12,8 @@
 
 
 (defmacro 
-   { :arglists '("(assert expr)" "(assert expr message)")
-     :doc "Evaluates expr and throws an exception if it does not evaluate to logical true." }
+   ^{ :arglists '("(assert expr)" "(assert expr message)")
+      :doc "Evaluates expr and throws an exception if it does not evaluate to logical true." }
 
    assert [expr message]
    
@@ -28,20 +28,10 @@
                      (str "Assert failed: " (pr-str '~expr)))))))
 
 
-;; (defmacro 
-;;    { :arglists '("(defn name [args*] condition-map? expr*)")
-;;      :doc "Same as (def name (fn name [args*] condition-map? expr*))" 
-;;      :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
-;;      
-;;    defn [name args & body]
-;;    
-;;    `(def ~name (fn ~name ~args ~@body)))
-
-
 (defmacro 
-   { :arglists '("(defn name [args*] condition-map? expr*)" "(defn name ([args*] condition-map? expr*)+)")
-     :doc "Same as (def name (fn name [args*] condition-map? expr*)) or (def name (fn name ([args*] condition-map? expr*)+))" 
-     :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
+   ^{ :arglists '("(defn name [args*] condition-map? expr*)" "(defn name ([args*] condition-map? expr*)+)")
+      :doc "Same as (def name (fn name [args*] condition-map? expr*)) or (def name (fn name ([args*] condition-map? expr*)+))" 
+      :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
      
    defn [name & forms]
    
@@ -51,9 +41,9 @@
 
 
 (defmacro 
-   { :arglists '("(and x)" "(and x & next)")
-     :doc "Ands the predicate forms"
-     :examples '("(and true true)", "(and true false)") }
+   ^{ :arglists '("(and x)" "(and x & next)")
+      :doc "Ands the predicate forms"
+      :examples '("(and true true)", "(and true false)") }
      
    and
    
@@ -64,9 +54,9 @@
 
 
 (defmacro 
-   { :arglists '("(or x)" "(or x & next)")
-     :doc "Ors the predicate forms" 
-     :examples '("(or true false)", "(or false false)") }
+   ^{ :arglists '("(or x)" "(or x & next)")
+      :doc "Ors the predicate forms" 
+      :examples '("(or true false)", "(or false false)") }
 
    or
     
@@ -77,9 +67,9 @@
 
 
 (defmacro 
-   { :arglists '("(cond & clauses)")
-     :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(cond & clauses)")
+      :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil." 
+      :examples (list (str/strip-margin
                         """(let [n 5]
                           |     (cond
                           |        (< n 0) "negative"
@@ -97,9 +87,9 @@
 
 
 (defmacro 
-   { :arglists '("(case expr & clauses)")
-     :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr" 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(case expr & clauses)")
+      :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr" 
+      :examples (list (str/strip-margin
                         "(case (+ 1 9)
                         |   10  :ten
                         |   20  :twenty
@@ -127,9 +117,9 @@
 
 
 (defmacro 
-   { :arglists '("(when test & body)")
-     :doc "Evaluates test. If logical true, evaluates body in an implicit do." 
-     :examples '("(when (== 1 1) true)") }
+   ^{ :arglists '("(when test & body)")
+      :doc "Evaluates test. If logical true, evaluates body in an implicit do." 
+      :examples '("(when (== 1 1) true)") }
 
    when [test & body]
    
@@ -137,9 +127,9 @@
 
 
 (defmacro 
-   { :arglists '("(when-not test & body)")
-     :doc "Evaluates test. If logical false, evaluates body in an implicit do." 
-     :examples '("(when-not (== 1 2) true)") }
+   ^{ :arglists '("(when-not test & body)")
+      :doc "Evaluates test. If logical false, evaluates body in an implicit do." 
+      :examples '("(when-not (== 1 2) true)") }
 
    when-not [test & body]
    
@@ -147,9 +137,9 @@
 
 
 (defmacro 
-   { :arglists '("(if-let bindings then)")
-     :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else" 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(if-let bindings then)")
+      :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else" 
+      :examples (list (str/strip-margin
                         """(if-let [value (* 100 2)]
                           |    (str "The expression is true. value=" value)
                           |    (str "The expression is false value=" value))""" )) }
@@ -165,9 +155,9 @@
 
 
 (defmacro 
-   { :arglists '("(dotimes bindings & body)")
-     :doc "Repeatedly executes body with name bound to integers from 0 through n-1." 
-     :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
+   ^{ :arglists '("(dotimes bindings & body)")
+      :doc "Repeatedly executes body with name bound to integers from 0 through n-1." 
+      :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
 
    dotimes [bindings & body]
    
@@ -181,9 +171,9 @@
 
 
 (defmacro 
-   { :arglists '("(while test & body)")
-     :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(while test & body)")
+      :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
+      :examples (list (str/strip-margin
                         "(do 
                         |   (def a (atom 5))
                         |   (while (pos? (deref a))
@@ -198,9 +188,9 @@
 
 
 (defmacro 
-   { :arglists '("(doto x & forms)")
-     :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(doto x & forms)")
+      :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x." 
+      :examples (list (str/strip-margin
                         "(doto (. :java.util.HashMap :new)
                         |      (. :put :a 1)
                         |      (. :put :b 2))" )) }
@@ -214,9 +204,9 @@
 
 
 (defmacro 
-   { :arglists '("(-> x & forms)")
-     :doc "Threads the x through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
-     :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
+   ^{ :arglists '("(-> x & forms)")
+      :doc "Threads the x through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc." 
+      :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
      
                      (str/strip-margin
                         """(do
@@ -241,9 +231,9 @@
 
 
 (defmacro 
-   { :arglists '("(->> x & forms)")
-     :doc "Threads the x through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
-     :examples (list
+   ^{ :arglists '("(->> x & forms)")
+      :doc "Threads the x through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc." 
+      :examples (list
                  "(->> 5 (+ 3) (/ 32) (- 1))"
 
                  (str/strip-margin
@@ -283,9 +273,9 @@
          :else            `(~(first form) ~@(substitute-pos (rest form))))))
 
 (defmacro 
-   { :arglists '("(-<> x & forms)")
-     :doc "Threads the x through the forms. Inserts x at position of the <> symbol of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol in second form, etc." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(-<> x & forms)")
+      :doc "Threads the x through the forms. Inserts x at position of the <> symbol of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol in second form, etc." 
+      :examples (list (str/strip-margin
                         "(-<> 5
                         |     (+ <> 3)
                         |     (/ 2 <>)
@@ -299,9 +289,9 @@
 
 
 (defmacro 
-   { :arglists '("(as-> expr name & forms)")
-     :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(as-> expr name & forms)")
+      :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position." 
+      :examples (list (str/strip-margin
                         "(as-> [:foo :bar] v
                         |      (map name v)
                         |      (first v)
@@ -317,13 +307,13 @@
 
 
 (defmacro 
-   { :arglists '("(list-comp seq-exprs body-expr)")
-     :doc "List comprehension. Takes a vector of one or more binding-form/collection-expr pairs, each followed by zero or more modifiers, and yields a collection of evaluations of expr. Supported modifiers are: :when test." 
-     :examples '("(list-comp [x (range 10)] x)"
-                 "(list-comp [x (range 5)] (* x 2))"
-                 "(list-comp [x (range 10) :when (odd? x)] x)"
-                 "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
-                 "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
+   ^{ :arglists '("(list-comp seq-exprs body-expr)")
+      :doc "List comprehension. Takes a vector of one or more binding-form/collection-expr pairs, each followed by zero or more modifiers, and yields a collection of evaluations of expr. Supported modifiers are: :when test." 
+      :examples '("(list-comp [x (range 10)] x)"
+                  "(list-comp [x (range 5)] (* x 2))"
+                  "(list-comp [x (range 10) :when (odd? x)] x)"
+                  "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
+                  "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
 
    list-comp [[binding coll-expr & bindings] body-expr]
    
@@ -339,9 +329,9 @@
 
 
 (defmacro 
-   { :arglists '("(time expr)")
-     :doc "Evaluates expr and prints the time it took.  Returns the value of expr." 
-     :examples '("(time (+ 100 200))") }
+   ^{ :arglists '("(time expr)")
+      :doc "Evaluates expr and prints the time it took.  Returns the value of expr." 
+      :examples '("(time (+ 100 200))") }
 
    time [expr]
    
@@ -356,9 +346,9 @@
 
 
 (defmacro 
-   { :arglists '("(perf expr warmup-iterations test-iterations)")
-     :doc "Performance test with the given expression. \n\nRuns the test in 3 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression under profiling.\nReturns nil.\n\nAfter a test run metrics data can be printed with (println (prof :data-formatted))" 
-     :examples '("(perf (+ 100 200) 12000 1000)") }
+   ^{ :arglists '("(perf expr warmup-iterations test-iterations)")
+      :doc "Performance test with the given expression. \n\nRuns the test in 3 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression under profiling.\nReturns nil.\n\nAfter a test run metrics data can be printed with (println (prof :data-formatted))" 
+      :examples '("(perf (+ 100 200) 12000 1000)") }
 
    perf [expr warmup-iterations test-iterations]
    
@@ -376,9 +366,9 @@
           
          
 (defmacro
-   { :arglists '("(load-string s)")
-     :doc "Sequentially read and evaluate the set of forms contained in the string." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(load-string s)")
+      :doc "Sequentially read and evaluate the set of forms contained in the string." 
+      :examples (list (str/strip-margin
                         """(do 
                           |   (load-string "(def x 1)")
                           |   (+ x 2))""" )) }
@@ -389,9 +379,9 @@
 
 
 (defmacro
-   { :arglists '("(load-file name)")
-     :doc "Sequentially read and evaluate the set of forms contained in the file." 
-     :examples '() }
+   ^{ :arglists '("(load-file name)")
+      :doc "Sequentially read and evaluate the set of forms contained in the file." 
+      :examples '() }
 
    load-file [f]
    
@@ -399,9 +389,9 @@
 
 
 (defmacro
-   { :arglists '("(load-classpath-file name)")
-     :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(load-classpath-file name)")
+      :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'." 
+      :examples (list (str/strip-margin
                         """(do 
                           |   (load-classpath-file "com/github/jlangch/venice/test.venice")
                           |   (test/println "hello"))""" )) }
@@ -412,9 +402,9 @@
 
 
 (defmacro 
-   { :arglists '("(load-module s)")
-     :doc "Loads a Venice predefined extension module." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(load-module s)")
+      :doc "Loads a Venice predefined extension module." 
+      :examples (list (str/strip-margin
                         "(do 
                         |   (load-module :logger))" )) }
    
@@ -424,9 +414,9 @@
 
 
 (defmacro 
-   { :arglists '("(with-sh-dir dir & forms)")
-     :doc "Sets the directory for use with sh, see sh for details." 
-     :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""") }
+   ^{ :arglists '("(with-sh-dir dir & forms)")
+      :doc "Sets the directory for use with sh, see sh for details." 
+      :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""") }
 
    with-sh-dir [dir & forms]
   
@@ -439,9 +429,9 @@
 
 
 (defmacro 
-   { :arglists '("(with-sh-env env & forms)")
-     :doc "Sets the environment for use with sh, see sh for details."
-     :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""") }
+   ^{ :arglists '("(with-sh-env env & forms)")
+      :doc "Sets the environment for use with sh, see sh for details."
+      :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""") }
 
    with-sh-env [env & forms]
   
@@ -449,9 +439,9 @@
 
 
 (defmacro 
-   { :arglists '("(with-sh-throw forms)")
-     :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
-     :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
+   ^{ :arglists '("(with-sh-throw forms)")
+      :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
+      :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
 
    with-sh-throw [& forms]
   
@@ -459,9 +449,9 @@
 
 
 (defmacro 
-   { :arglists '("(with-out-str & forms)")
-     :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
-     :examples '("""(with-out-str (println "a string"))""") }
+   ^{ :arglists '("(with-out-str & forms)")
+      :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
+      :examples '("""(with-out-str (println "a string"))""") }
 
    with-out-str [& forms]
   
@@ -472,9 +462,9 @@
 
 
 (defmacro 
-   { :arglists '("(delay & body)")
-     :doc "Takes a body of expressions and yields a Delay object that will invoke the body only the first time it is forced (with force or deref/@), and will cache the result and return it on all subsequent force calls"
-     :examples '("""(do\n   (def x (delay (println "working...") 100))\n   (deref x))""") }
+   ^{ :arglists '("(delay & body)")
+      :doc "Takes a body of expressions and yields a Delay object that will invoke the body only the first time it is forced (with force or deref/@), and will cache the result and return it on all subsequent force calls"
+      :examples '("""(do\n   (def x (delay (println "working...") 100))\n   (deref x))""") }
 
    delay [& body]
 
@@ -482,9 +472,9 @@
 
 
 (def
-   { :arglists '("(print & xs)")
-     :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
-     :examples '("(print [10 20 30])") }
+   ^{ :arglists '("(print & xs)")
+      :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+      :examples '("(print [10 20 30])") }
 
    print
    
@@ -495,9 +485,9 @@
 
 
 (def
-   { :arglists '("(printf fmt & args)")
-     :doc "Prints formatted output, as per format"
-     :examples '("""(printf "%s: %d" "abc" 100)""") }
+   ^{ :arglists '("(printf fmt & args)")
+      :doc "Prints formatted output, as per format"
+      :examples '("""(printf "%s: %d" "abc" 100)""") }
 
    printf
    
@@ -505,9 +495,9 @@
    
    
 (def
-   { :arglists '("(println & xs)")
-     :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
-     :examples '("(do (println 200) (println [10 20 30]))") }
+   ^{ :arglists '("(println & xs)")
+      :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+      :examples '("(do (println 200) (println [10 20 30]))") }
 
    println
    
@@ -515,9 +505,9 @@
 
 
 (def  
-   { :arglists '("(newline)")
-     :doc "Writes a platform-specific newline to *out*"
-     :examples '("(newline)") }
+   ^{ :arglists '("(newline)")
+      :doc "Writes a platform-specific newline to *out*"
+      :examples '("(newline)") }
     
    newline 
    
@@ -525,9 +515,9 @@
 
 
 (def  
-   { :arglists '("(flush)", "(flush os)")
-     :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
-     :examples '("(flush)", "(flush *out*)") }
+   ^{ :arglists '("(flush)", "(flush os)")
+      :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
+      :examples '("(flush)", "(flush *out*)") }
     
    flush 
    
@@ -535,9 +525,9 @@
 
 
 (def 
-   { :arglists '("(not x)")
-     :doc "Returns true if x is logical false, false otherwise." 
-     :examples '("(not true)"
+   ^{ :arglists '("(not x)")
+      :doc "Returns true if x is logical false, false otherwise." 
+      :examples '("(not true)"
                  "(not (== 1 2))") }
      
    not 
@@ -546,10 +536,10 @@
 
 
 (def 
-   { :arglists '("(identity x)")
-     :doc "Returns its argument." 
-     :examples '("(identity 4)"
-                 "(filter identity [1 2 3 nil 4 false true 1234])") }
+   ^{ :arglists '("(identity x)")
+      :doc "Returns its argument." 
+      :examples '("(identity 4)"
+                  "(filter identity [1 2 3 nil 4 false true 1234])") }
      
    identity 
    
@@ -557,9 +547,9 @@
 
 
 (def 
-   { :arglists '("(zipmap keys vals)")
-     :doc "Returns a map with the keys mapped to the corresponding vals." 
-     :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
+   ^{ :arglists '("(zipmap keys vals)")
+      :doc "Returns a map with the keys mapped to the corresponding vals." 
+      :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
                  "(zipmap [:a :b :c] [1 2 3 4 5])") }
 
    zipmap
@@ -576,9 +566,9 @@
 
 
 (def 
-   { :arglists '("(memoize f)")
-     :doc "Returns a memoized version of a referentially transparent function." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(memoize f)")
+      :doc "Returns a memoized version of a referentially transparent function." 
+      :examples (list (str/strip-margin
                         "(do
                         |   (def fibonacci
                         |      (memoize

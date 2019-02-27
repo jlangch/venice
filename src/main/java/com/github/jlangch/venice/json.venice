@@ -1,16 +1,16 @@
 ;; JSON utils (requires the Jackson JSON libs on the classpath)
 
 (def
-   { :arglists '("(json/avail?)")
-     :doc "Returns true if JSON is available (Jackson libs on classpath) otherwise false"
-     :examples '("(json/avail?)") }
+   ^{ :arglists '("(json/avail?)")
+      :doc "Returns true if JSON is available (Jackson libs on classpath) otherwise false"
+      :examples '("(json/avail?)") }
 
    json/avail?
 
    (fn json/avail? [] (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class))))
 
 (def
-   { :arglists '("(json/avail-jdk8-module?)")
+  ^{ :arglists '("(json/avail-jdk8-module?)")
      :doc "Returns true if JSON jdk8 is available otherwise false"
      :examples '("(json/avail-jdk8-module?)") }
 
@@ -20,20 +20,20 @@
        (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class))))
 
 (def
-   { :arglists '("(json/pretty-print json)")
-     :doc "Pretty prints JSON"
-     :examples '("(json/pretty-print (json/to-json {:a 100 :b 100}))") }
+   ^{ :arglists '("(json/pretty-print json)")
+      :doc "Pretty prints JSON"
+      :examples '("(json/pretty-print (json/to-json {:a 100 :b 100}))") }
 
    json/pretty-print
 
    (fn json/pretty-print [json] (json/to-pretty-json (json/parse json))))
 
 (def
-   { :arglists '("(json/to-json val)")
-     :doc "Converts the val to JSON"
-     :examples '("(json/to-json {:a 100 :b 100})") }
+   ^{ :arglists '("(json/to-json val)")
+      :doc "Converts the val to JSON"
+      :examples '("(json/to-json {:a 100 :b 100})") }
 
-   json/to-json 
+   json/to-json
 
    (fn json/to-json [val]
        (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
@@ -44,9 +44,9 @@
                 (. :writeValueAsString val)))))
 
 (def
-   { :arglists '("to-pretty-json  val")
-     :doc "Converts the val to pretty printed JSON"
-     :examples '("(json/to-pretty-json {:a 100 :b 100})") }
+   ^{ :arglists '("to-pretty-json  val")
+      :doc "Converts the val to pretty printed JSON"
+      :examples '("(json/to-pretty-json {:a 100 :b 100})") }
 
    json/to-pretty-json
 
@@ -61,9 +61,9 @@
                 (. :writeValueAsString val)))))
 
 (def
-   { :arglists '("(json/parse s)")
-     :doc "Parses a JSON string"
-     :examples '("(json/parse (json/to-json [{:a 100 :b 100}]))") }
+   ^{ :arglists '("(json/parse s)")
+      :doc "Parses a JSON string"
+      :examples '("(json/parse (json/to-json [{:a 100 :b 100}]))") }
 
    json/parse
 

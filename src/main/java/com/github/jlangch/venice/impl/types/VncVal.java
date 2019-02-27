@@ -36,8 +36,8 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		this.meta = meta;
 	}
 	
-	abstract public VncVal withMeta(VncVal meta);
-	
+	abstract public VncVal withMeta(final VncVal meta);
+		
 	abstract public int typeRank();
 
 	public VncVal getMeta() {

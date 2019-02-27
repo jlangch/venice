@@ -303,7 +303,7 @@ public class VncHashMap extends VncMap {
 
 		return "{" + Printer.join(list, " ", print_readably) + "}";
 	}
-	
+
 	public static class Builder {
 		public Builder() {
 		}

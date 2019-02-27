@@ -268,8 +268,8 @@ public class Reader {
 			case '^': 
 				rdr.next();
 				final VncVal meta = read_form(rdr);
-				return VncList.of(new VncSymbol("with-meta"), read_form(rdr), meta)
-							  .withMeta(MetaUtil.toMeta(token));
+				final Token symToken = rdr.peek();
+				return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
 			
 			case '@': 
 				rdr.next();

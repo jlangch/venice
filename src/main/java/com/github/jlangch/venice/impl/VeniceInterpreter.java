@@ -56,7 +56,6 @@ import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
@@ -190,36 +189,33 @@ public class VeniceInterpreter implements Serializable  {
 			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
 			switch (a0sym) {			
-				case "def": { // (def meta-data? name value)
-					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+				case "def": { // (def name value)
+					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = evaluate(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new Var(defName, res, true));
 					return res;
 				}
 				
-				case "defonce": { // (defonce meta-data? name value)
-					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+				case "defonce": { // (defonce name value)
+					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = evaluate(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new Var(defName, res, false));
 					return res;
 				}
 				
-				case "def-dynamic": { // (def-dynamic meta-data? name value)
-					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+				case "def-dynamic": { // (def-dynamic name value)
+					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = evaluate(defVal, env);
-					env.setGlobal(new DynamicVar(defName, MetaUtil.addDefMeta(res, defMeta)));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new DynamicVar(defName, res));
 					return res;
 				}
 
@@ -565,10 +561,8 @@ public class VeniceInterpreter implements Serializable  {
 	private VncFunction defmacro_(final VncList ast, final Env env) {
 		int argPos = 1;
 
-		final boolean hasMeta = Types.isVncMap(ast.nth(argPos));
-		
-		final VncMap defMeta = hasMeta ? (VncMap)evaluate(ast.nth(argPos++), env) : new VncHashMap();
-		final VncVal macroName = ast.nth(argPos++);
+		VncVal macroName = ast.nth(argPos++);
+		macroName = macroName.withMeta(evaluate(macroName.getMeta(), env));
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 
 		final String sMacroName = Types.isVncSymbol(macroName) 
@@ -592,7 +586,7 @@ public class VeniceInterpreter implements Serializable  {
 											env);
 	
 			macroFn.setMacro();
-			env.setGlobal(new Var((VncSymbol)macroName, MetaUtil.addDefMeta(macroFn, defMeta), false));
+			env.setGlobal(new Var((VncSymbol)macroName, macroFn.withMeta(macroName.getMeta()), false));
 			
 			return macroFn;
 		}
@@ -613,10 +607,10 @@ public class VeniceInterpreter implements Serializable  {
 				fns.add(buildFunction(sMacroName, params, body, null, env));
 			});
 
-			final VncFunction macro = new VncMultiArityFunction(sMacroName, fns);
+			final VncFunction macro = new VncMultiArityFunction(sMacroName, fns).withMeta(macroName.getMeta());
 			
 			macro.setMacro();
-			env.setGlobal(new Var((VncSymbol)macroName, MetaUtil.addDefMeta(macro, defMeta), false));
+			env.setGlobal(new Var((VncSymbol)macroName, macro, false));
 
 			return macro;
 		}
