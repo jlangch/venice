@@ -190,36 +190,33 @@ public class VeniceInterpreter implements Serializable  {
 			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
 			switch (a0sym) {			
-				case "def": { // (def meta-data? name value)
-					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+				case "def": { // (def name value)
+					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = evaluate(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), true));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new Var(defName, res, true));
 					return res;
 				}
 				
-				case "defonce": { // (defonce meta-data? name value)
-					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+				case "defonce": { // (defonce name value)
+					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = evaluate(defVal, env);
-					env.setGlobal(new Var(defName, MetaUtil.addDefMeta(res, defMeta), false));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new Var(defName, res, false));
 					return res;
 				}
 				
-				case "def-dynamic": { // (def-dynamic meta-data? name value)
-					final boolean hasMeta = ast.size() > 3;
-					final VncMap defMeta = hasMeta ? (VncHashMap)evaluate(ast.second(), env) : new VncHashMap();
-					final VncSymbol defName = Coerce.toVncSymbol(ast.nth(hasMeta ? 2 : 1));
+				case "def-dynamic": { // (def-dynamic name value)
+					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(hasMeta ? 3 : 2);
-					final VncVal res = evaluate(defVal, env);
-					env.setGlobal(new DynamicVar(defName, MetaUtil.addDefMeta(res, defMeta)));
+					final VncVal defVal = ast.nth(2);
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new DynamicVar(defName, res));
 					return res;
 				}
 

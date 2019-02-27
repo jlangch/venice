@@ -21,6 +21,12 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -66,6 +72,26 @@ public class MetaUtil {
 		}
 	}
 
+	public static VncVal mergeMeta(final VncVal meta1, VncVal meta2) {		
+		if (meta1 == Nil) {
+			return meta2;
+		}
+		else if (meta2 == Nil) {
+			return meta1;
+		}
+		else if (Types.isVncMap(meta1) && Types.isVncMap(meta2)) {
+			final Map<VncVal,VncVal> m = new HashMap<>(((VncMap)meta1).getMap());
+			m.putAll(((VncMap)meta2).getMap());						
+			return new VncHashMap(m);
+		}
+		else {
+			throw new VncException(String.format(
+					"Failed to merge meta data on incompatible old (%s) and new (%s) meta data types", 
+					Types.getClassName(meta1),
+					Types.getClassName(meta2)));
+		}
+	}
+	
 	
 	// Var definition
 	public static final VncKeyword ARGLIST = new VncKeyword(":arglists"); 

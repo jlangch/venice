@@ -482,9 +482,9 @@
 
 
 (def
-   { :arglists '("(print & xs)")
-     :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
-     :examples '("(print [10 20 30])") }
+   ^{ :arglists '("(print & xs)")
+      :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+      :examples '("(print [10 20 30])") }
 
    print
    
@@ -495,9 +495,9 @@
 
 
 (def
-   { :arglists '("(printf fmt & args)")
-     :doc "Prints formatted output, as per format"
-     :examples '("""(printf "%s: %d" "abc" 100)""") }
+   ^{ :arglists '("(printf fmt & args)")
+      :doc "Prints formatted output, as per format"
+      :examples '("""(printf "%s: %d" "abc" 100)""") }
 
    printf
    
@@ -505,9 +505,9 @@
    
    
 (def
-   { :arglists '("(println & xs)")
-     :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
-     :examples '("(do (println 200) (println [10 20 30]))") }
+   ^{ :arglists '("(println & xs)")
+      :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+      :examples '("(do (println 200) (println [10 20 30]))") }
 
    println
    
@@ -515,9 +515,9 @@
 
 
 (def  
-   { :arglists '("(newline)")
-     :doc "Writes a platform-specific newline to *out*"
-     :examples '("(newline)") }
+   ^{ :arglists '("(newline)")
+      :doc "Writes a platform-specific newline to *out*"
+      :examples '("(newline)") }
     
    newline 
    
@@ -525,9 +525,9 @@
 
 
 (def  
-   { :arglists '("(flush)", "(flush os)")
-     :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
-     :examples '("(flush)", "(flush *out*)") }
+   ^{ :arglists '("(flush)", "(flush os)")
+      :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
+      :examples '("(flush)", "(flush *out*)") }
     
    flush 
    
@@ -535,9 +535,9 @@
 
 
 (def 
-   { :arglists '("(not x)")
-     :doc "Returns true if x is logical false, false otherwise." 
-     :examples '("(not true)"
+   ^{ :arglists '("(not x)")
+      :doc "Returns true if x is logical false, false otherwise." 
+      :examples '("(not true)"
                  "(not (== 1 2))") }
      
    not 
@@ -546,10 +546,10 @@
 
 
 (def 
-   { :arglists '("(identity x)")
-     :doc "Returns its argument." 
-     :examples '("(identity 4)"
-                 "(filter identity [1 2 3 nil 4 false true 1234])") }
+   ^{ :arglists '("(identity x)")
+      :doc "Returns its argument." 
+      :examples '("(identity 4)"
+                  "(filter identity [1 2 3 nil 4 false true 1234])") }
      
    identity 
    
@@ -557,9 +557,9 @@
 
 
 (def 
-   { :arglists '("(zipmap keys vals)")
-     :doc "Returns a map with the keys mapped to the corresponding vals." 
-     :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
+   ^{ :arglists '("(zipmap keys vals)")
+      :doc "Returns a map with the keys mapped to the corresponding vals." 
+      :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
                  "(zipmap [:a :b :c] [1 2 3 4 5])") }
 
    zipmap
@@ -576,9 +576,9 @@
 
 
 (def 
-   { :arglists '("(memoize f)")
-     :doc "Returns a memoized version of a referentially transparent function." 
-     :examples (list (str/strip-margin
+   ^{ :arglists '("(memoize f)")
+      :doc "Returns a memoized version of a referentially transparent function." 
+      :examples (list (str/strip-margin
                         "(do
                         |   (def fibonacci
                         |      (memoize
