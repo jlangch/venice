@@ -268,13 +268,20 @@ public class Reader {
 			
 			case '^': {
 				rdr.next();
+				final Token metaToken = rdr.peek();
 				VncVal meta = read_form(rdr);
 				if (Types.isVncKeyword(meta)) {
 					// allow ^:private is equivalent to ^{:private true}
 					meta = VncHashMap.of(meta, Constants.True);
-				}				
-				final Token symToken = rdr.peek();
-				return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
+				}
+				if (Types.isVncMap(meta)) {
+					final Token symToken = rdr.peek();
+					return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
+				}
+				else {
+					throw new ParseError(formatParseError(
+							metaToken, "Invalid meta data type %s", Types.getClassName(meta)));						
+				}
 			}
 			
 			case '@': 
