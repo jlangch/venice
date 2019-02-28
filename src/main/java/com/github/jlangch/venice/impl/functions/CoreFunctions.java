@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
@@ -5018,27 +5017,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction merge_meta = 
-			new VncFunction(
-					"merge-meta", 
-					VncFunction
-						.meta()
-						.arglists("(merge-meta obj m)")		
-						.doc("Returns a copy of the object obj, with the merged metadata.")
-						.build()
-			) {		
-				public VncVal apply(final VncList args) {
-					assertArity("merge-meta", args, 2);
-
-					return args.first().withMeta(
-								MetaUtil.mergeMeta(
-										args.first().getMeta(), 
-										args.second().getMeta()));
-				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
-
 	public static VncFunction vary_meta = 
 		new VncFunction(
 				"vary-meta", 
@@ -5367,7 +5345,6 @@ public class CoreFunctions {
 		
 				.put("meta",				meta)
 				.put("with-meta",			with_meta)
-				.put("merge-meta",			merge_meta)
 				.put("vary-meta",			vary_meta)
 				
 				.put("coalesce",			coalesce)
