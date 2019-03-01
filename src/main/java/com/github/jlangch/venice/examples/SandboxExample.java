@@ -79,28 +79,41 @@ public class SandboxExample {
 						new SandboxRules()
 								.rejectAllVeniceIoFunctions()
 								.withClasses(
-									"java.lang.Long",  // Math::min, Math::max arguments/return type
-									"java.lang.Boolean",  // ArrayList::add return type
+									"java.lang.Math:PI", 
 									"java.lang.Math:min", 
 									"java.lang.Math:max", 
 									"java.time.ZonedDateTime:*", 
+					                "java.awt.**:*", 
 									"java.util.ArrayList:new",
 									"java.util.ArrayList:add"));
 
 		final Venice venice = new Venice(interceptor);
 
+		// rule: "java.lang.Math:PI"
+		// => OK (static field)
+		venice.eval("(. :java.lang.Math :PI)"); 
+
+		// rule: "java.lang.Math:min"
 		// => OK (static method)
 		venice.eval("(. :java.lang.Math :min 20 30)"); 
 		
+		// rule: "java.lang.Math:max"
 		// => OK (static method)
 		venice.eval("(. :java.lang.Math :max 20 30)"); 
 		
+		// rule: "java.time.ZonedDateTime:*"
 		// => OK (constructor & instance method)
 		venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
 		
+		// rule: "java.awt.**:*"
+		// => OK (constructor & instance method)
+		venice.eval("(. (. :java.awt.color.ICC_ColorSpace :getInstance (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)) :getMaxValue 0)");	
+		
+		// rule: "java.util.ArrayList:new"
 		// => OK (constructor)
 		venice.eval("(. :java.util.ArrayList :new)");
 	
+		// rule: "java.util.ArrayList:add"
 		// => OK (constructor & instance method)
 		venice.eval(
 				"(doto (. :java.util.ArrayList :new)  " +

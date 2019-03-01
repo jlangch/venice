@@ -829,24 +829,40 @@ final IInterceptor interceptor =
               .rejectAllVeniceIoFunctions()
               .allowAccessToStandardSystemProperties()
               .withClasses(
+                "java.lang.Math:PI"
                 "java.lang.Math:min", 
                 "java.time.ZonedDateTime:*", 
+                "java.awt.**:*", 
                 "java.util.ArrayList:new",
                 "java.util.ArrayList:add"));
 
 final Venice venice = new Venice(interceptor);
 
+// rule: "java.lang.Math:PI"
+// => OK (static field)
+venice.eval("(. :java.lang.Math :PI)"); 
+
+// rule: "java.lang.Math:min"
 // => OK (static method)
 venice.eval("(. :java.lang.Math :min 20 30)"); 
     
+// rule: "java.time.ZonedDateTime:*
 // => OK (constructor & instance method)
 venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
  
+// rule: "java.util.ArrayList:new" and "java.util.ArrayList:add"
 // => OK (constructor & instance method)
 venice.eval(
     "(doto (. :java.util.ArrayList :new)  " +
     "      (. :add 1)                     " +
     "      (. :add 2))                    ");
+	
+// rule: "java.awt.**:*"
+// => OK
+venice.eval(
+    "(-<> (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)      " +
+    "     (. :java.awt.color.ICC_ColorSpace :getInstance <>) " +
+    "     (. <> :getMaxValue 0))                             ");
 
 // => FAIL (invoking non whitelisted static method)
 venice.eval("(. :java.lang.System :exit 0)"); 
