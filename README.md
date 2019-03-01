@@ -823,6 +823,7 @@ that are available to the script in the JVM!
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.*;
 
+// for details see javadoc of class "com.github.jlangch.venice.javainterop.SandboxRules"
 final IInterceptor interceptor =
     new SandboxInterceptor(
         new SandboxRules()

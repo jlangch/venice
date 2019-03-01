@@ -73,6 +73,7 @@ public class SandboxRules {
 	 *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
 	 *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
 	 *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
+	 *   <li>java.awt.**:*  (allow calling all constructors/methods/fields for classes in the package 'java.awt' and all its subpackages)
 	 * </ul>
 	 * 
 	 * @param rules rules
@@ -100,7 +101,7 @@ public class SandboxRules {
 	 *   <li>java.lang.Math:abs (allow calling Math::abs method)</li>
 	 *   <li>java.lang.Math:* (allow calling all Math constructors/methods/fields)</li>
 	 *   <li>java.lang.*:*  (allow calling all constructors/methods/fields for classes in the package 'java.lang')</li>
-	 *   <li>ava.awt.**:*  (allow calling all constructors/methods/fields for classes in the package 'java.awt' and all its subpackages)
+	 *   <li>java.awt.**:*  (allow calling all constructors/methods/fields for classes in the package 'java.awt' and all its subpackages)
 	 * </ul>
 	 * 
 	 * @param rules rules
