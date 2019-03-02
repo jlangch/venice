@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 
 
@@ -136,7 +137,7 @@ public class REPL {
 				}
 				
 				if (line.startsWith("!")) {
-					final String cmd = line.substring(1);				
+					final String cmd = StringUtil.trimToEmpty(line.substring(1));				
 					if (cmd.equals("reload")) {
 						env = loadEnv(venice, cli, ps);
 						println(terminal, "system", "reloaded");					
@@ -147,10 +148,12 @@ public class REPL {
 						continue;
 					}
 					else if (cmd.equals("config")) {
-						terminal.writer().println("Sample REPL configuration. Save it as 'repl.json'");
-						terminal.writer().println("in the REPL's working directory:");
-						terminal.writer().println();
-						terminal.writer().println(ReplConfig.getRawClasspathConfig());
+						handleConfigCommand(terminal);
+						continue;
+					}
+					else if (cmd.equals("env") || cmd.startsWith("env ")) {
+						final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
+						handleEnvCommand(params, terminal, venice, env);
 						continue;
 					}
 					else if (cmd.equals("exit")) {
@@ -158,6 +161,9 @@ public class REPL {
 						Thread.sleep(1000);
 						break;
 					}
+					
+					println(terminal, "system", "invalid command");					
+					continue;
 				}
 			} 
 			catch (ContinueException ex) {
@@ -202,6 +208,45 @@ public class REPL {
 				continue;
 			}
 		}
+	}
+
+	private void handleConfigCommand(final Terminal terminal) {
+		terminal.writer().println("Sample REPL configuration. Save it as 'repl.json'");
+		terminal.writer().println("in the REPL's working directory:");
+		terminal.writer().println();
+		terminal.writer().println(ReplConfig.getRawClasspathConfig());
+	}
+
+	private void handleEnvCommand(
+			final String[] params,
+			final Terminal terminal,
+			final VeniceInterpreter venice,
+			final Env env
+	) {
+		if (params.length == 1) {
+			if (params[0].equals("levels")) {
+				terminal.writer().println("Levels: " + (env.level() + 1));
+				return;
+			}
+			else if (params[0].equals("global")) {
+				terminal.writer().println(env.globalsToString());
+				return;
+			}
+		}
+		else if (params.length == 2) {
+			if (params[0].equals("print")) {
+				final VncVal val = env.get(new VncSymbol(params[1]));
+				terminal.writer().println(venice.PRINT(val));
+				return;
+			}
+			else if (params[0].equals("level")) {
+				final int level = Integer.valueOf(params[1]);
+				terminal.writer().println(env.getLevelEnv(level).localsToString());
+				return;
+			}
+		}
+		
+		println(terminal, "system", "invalid env command");					
 	}
 
 	private Env loadEnv(
@@ -268,6 +313,11 @@ public class REPL {
 			"  !reload     reload Venice environment\n" +	
 			"  !?, !help   help\n" +	
 			"  !config     show a sample REPL config\n" +	
+			"  !env        print env symbols:\n" +	
+			"                !env levels\n" +	
+			"                !env global\n" +	
+			"                !env print {symbol-name}\n" +	
+			"                !env level {level}\n" +	
 			"  !exit       quit REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	

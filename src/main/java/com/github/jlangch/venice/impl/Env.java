@@ -237,6 +237,19 @@ public class Env implements Serializable {
 				toString(globalSymbols, "      "));
 	}
 	
+	public String localsToString() {
+		return String.format(
+				"[level %d]\n%s", 
+				level, 
+				toString(symbols, "    "));
+	}
+	
+	public String globalsToString() {
+		return String.format(
+				"[global]\n%s", 
+				toString(globalSymbols, "    "));
+	}
+	
 	private String toString(final Map<VncSymbol,Var> vars, final String indent) {
 		return vars.values()
 				   .stream()
