@@ -46,6 +46,8 @@ venice> (+ 1 1)
 venice>
 ```
 
+Type `!` from the REPL to get the help.
+
 A history of the last three result values is kept by the REPL, accessible through 
 the symbols `*1`, `*2`, `*3`, `**`.
 
@@ -59,6 +61,7 @@ venice> (sum 1 4)
 => 5
 venice>
 ```
+
 
 If the REPL colors don't harmonize well with your terminal color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 

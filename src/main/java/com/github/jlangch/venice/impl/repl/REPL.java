@@ -59,7 +59,8 @@ public class REPL {
 	public void run(final String[] args) {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
-		System.out.println("REPL Venice: V" + Venice.getVersion());
+		System.out.println("Venice REPL: V" + Venice.getVersion());
+		System.out.println("Type '!' for help.");
 
 		try {
 			config = ReplConfig.load(cli);
@@ -104,11 +105,6 @@ public class REPL {
 									: System.out;
 		
 		final VeniceInterpreter venice = new VeniceInterpreter();
-		
-		final Env env = venice
-							.createEnv()
-							.setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
-							.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(ps)));
 
 		final ReplParser parser = new ReplParser(venice);
 		
@@ -122,7 +118,10 @@ public class REPL {
 									.build();
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
+
 		
+		Env env = loadEnv(venice, cli, ps);
+
 		// REPL loop
 		while (true) {
 			resultHistory.mergeToEnv(env);
@@ -134,6 +133,24 @@ public class REPL {
 				line = reader.readLine(prompt, null, (MaskingCallback) null, null);
 				if (line == null) { 
 					continue; 
+				}
+				
+				if (line.startsWith("!")) {
+					final String cmd = line.substring(1);				
+					if (cmd.equals("reload")) {
+						env = loadEnv(venice, cli, ps);
+						println(terminal, "system", "reloaded");					
+						continue;
+					}
+					else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
+						terminal.writer().println(HELP);
+						continue;
+					}
+					else if (cmd.equals("exit")) {
+						println(terminal, "interrupt", " good bye ");					
+						Thread.sleep(1000);
+						break;
+					}
 				}
 			} 
 			catch (ContinueException ex) {
@@ -180,6 +197,17 @@ public class REPL {
 		}
 	}
 
+	private Env loadEnv(
+			final VeniceInterpreter venice,
+			final CommandLineArgs cli,
+			final PrintStream ps
+	) {
+		return venice
+					.createEnv()
+					.setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+					.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(ps)));
+	}
+	
 	private void print(
 			final Terminal terminal,
 			final String colorID,
@@ -227,5 +255,26 @@ public class REPL {
 	}
 
 	
+	private final static String HELP =
+			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
+			"Commands: \n" +	
+			"  !reload     reload Venice environment\n" +	
+			"  !?, !help   help\n" +	
+			"  !exit       quit REPL\n\n" +	
+			"History: \n" +	
+			"  A history of the last three result values is kept by\n" +	
+			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +	
+			"  and `**`. E.g. (printl *1)\n\n" +	
+			"Shortcuts:\n" +	
+			"  ctrl-A   move the cursor to the start\n" +
+			"  ctrl-C   stop the running command, cancel a multi-line\n" +
+			"           edit, or break out of the REPL\n" +
+			"  ctrl-E   move the cursor to the end\n" +
+			"  ctrl-K   remove the text after the cursor and store it\n" +
+			"           in a cut-buffer\n" +
+			"  ctrl-L   clear the screen\n" +
+			"  ctrl-Y   yank the text from the cut-buffer\n" +
+			"  ctrl-_   undo\n";
+
 	private ReplConfig config;
 }

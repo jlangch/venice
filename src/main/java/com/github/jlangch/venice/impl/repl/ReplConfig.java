@@ -60,7 +60,7 @@ public class ReplConfig {
 
 			final JSONObject colObj = (JSONObject)jsonObj.get("colors");
 			if (colObj != null) {
-				for(String cname : Arrays.asList("result", "stdout", "error", "interrupt", "prompt")) {
+				for(String cname : Arrays.asList("result", "stdout", "error", "system", "interrupt", "prompt")) {
 					config.put("colors." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
 				}
 			}
