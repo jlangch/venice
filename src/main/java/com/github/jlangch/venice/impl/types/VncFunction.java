@@ -125,7 +125,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	@Override 
 	public String toString() {
-		return name;
+		return macro ? "macro "+ name : "fn "+ name;
 	}
 
 	public VncVal getMeta() { 

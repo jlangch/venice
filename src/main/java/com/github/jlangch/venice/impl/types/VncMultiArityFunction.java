@@ -76,7 +76,7 @@ public class VncMultiArityFunction extends VncFunction {
 	}
 	@Override 
 	public String toString() {
-		return getName();
+		return "fn " + getName();
 	}
 	
 	private VncFunction findFunction(final int arity) {

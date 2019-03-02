@@ -210,6 +210,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 			return false;
 		return true;
 	}
+	
+	@Override 
+	public String toString() {
+		return "Java object: " + delegate.toString();
+	}
 
 	@Override
 	public String toString(final boolean print_readably) {
