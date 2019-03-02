@@ -489,11 +489,13 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("cons"));
 		map_modify.addItem(getDocItem("conj"));
 		map_modify.addItem(getDocItem("assoc"));
+		map_modify.addItem(getDocItem("assoc!"));
 		map_modify.addItem(getDocItem("assoc-in"));
 		map_modify.addItem(getDocItem("get-in"));
 		map_modify.addItem(getDocItem("update"));
 		map_modify.addItem(getDocItem("update!"));
 		map_modify.addItem(getDocItem("dissoc"));
+		map_modify.addItem(getDocItem("dissoc!"));
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));
 		map_modify.addItem(getDocItem("flatten"));

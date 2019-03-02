@@ -2101,14 +2101,20 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.first() == Nil) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
 					return new VncHashMap().assoc((VncList)args.rest());
 				}
-				else if (Types.isVncMap(args.first())) {
-					return ((VncMap)args.first()).assoc((VncList)args.rest());
+				else if (Types.isVncMutableMap(coll)) {
+					throw new VncException(String.format(
+							"Function 'assoc' can not be used with mutable maps use assoc!", 
+							Types.getClassName(coll)));
 				}
-				else if (Types.isVncVector(args.first())) {
-					VncVector vec = ((VncVector)args.first());
+				else if (Types.isVncMap(coll)) {
+					return ((VncMap)coll).assoc((VncList)args.rest());
+				}
+				else if (Types.isVncVector(coll)) {
+					VncVector vec = ((VncVector)coll);
 					
 					final VncList keyvals = args.rest();
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
@@ -2123,8 +2129,8 @@ public class CoreFunctions {
 					}
 					return vec;
 				}
-				else if (Types.isVncString(args.first())) {
-					String s = ((VncString)args.first()).getValue();
+				else if (Types.isVncString(coll)) {
+					String s = ((VncString)coll).getValue();
 					final VncList keyvals = (VncList)args.rest();
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2147,15 +2153,45 @@ public class CoreFunctions {
 					}
 					return new VncString(s);
 				}
-				else if (Types.isVncThreadLocal(args.first())) {
-					final VncThreadLocal th = (VncThreadLocal)args.first();
+				else if (Types.isVncThreadLocal(coll)) {
+					final VncThreadLocal th = (VncThreadLocal)coll;
 					
 					return th.assoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'assoc' does not allow %s as collection", 
-							Types.getClassName(args.first())));
+							Types.getClassName(coll)));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction assoc_BANG = 
+		new VncFunction(
+				"assoc!", 
+				VncFunction
+					.meta()
+					.arglists("(assoc! coll key val)", "(assoc! coll key val & kvs)")		
+					.doc("Associates key/vals with a mutable map, returns the map")
+					.examples(
+						"(assoc! (mutable-map ) :a 1 :b 2)",
+						"(assoc! nil :a 1 :b 2)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
+					return new VncMutableMap().assoc((VncList)args.rest());
+				}
+				else if (Types.isVncMutableMap(coll)) {
+					return ((VncMutableMap)coll).assoc((VncList)args.rest());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'assoc!' does not allow %s as collection. It works with mutable maps only.", 
+							Types.getClassName(coll)));
 				}
 			}
 	
@@ -2218,11 +2254,20 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (Types.isVncMap(args.first())) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncMutableMap(coll)) {
+					throw new VncException(String.format(
+							"Function 'dissoc' can not be used with mutable maps use dissoc!", 
+							Types.getClassName(coll)));
+				}
+				else if (Types.isVncMap(coll)) {
 					return ((VncMap)args.first()).dissoc(args.rest());
 				}
-				else if (Types.isVncVector(args.first())) {
-					VncVector vec = ((VncVector)args.first());
+				else if (Types.isVncVector(coll)) {
+					VncVector vec = ((VncVector)coll);
 					final VncList keyvals = (VncList)args.rest();
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2232,8 +2277,8 @@ public class CoreFunctions {
 					}
 					return vec;
 				}
-				else if (Types.isVncString(args.first())) {
-					String s = ((VncString)args.first()).getValue();
+				else if (Types.isVncString(coll)) {
+					String s = ((VncString)coll).getValue();
 					final VncList keyvals = (VncList)args.rest();
 					for(int ii=0; ii<keyvals.size(); ii++) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2252,15 +2297,45 @@ public class CoreFunctions {
 					}
 					return new VncString(s);
 				}
-				else if (Types.isVncThreadLocal(args.first())) {
-					final VncThreadLocal th = (VncThreadLocal)args.first();
+				else if (Types.isVncThreadLocal(coll)) {
+					final VncThreadLocal th = (VncThreadLocal)coll;
 					
 					return th.dissoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'dissoc' does not allow %s as coll", 
-							Types.getClassName(args.first())));
+							Types.getClassName(coll)));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction dissoc_BANG = 
+		new VncFunction(
+				"dissoc!", 
+				VncFunction
+					.meta()
+					.arglists("(dissoc! coll key)", "(dissoc! coll key & ks)")		
+					.doc("Dissociates keys from a mutable map, returns the map")
+					.examples(
+						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :b)",
+						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :c :b)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncMap(coll)) {
+					return ((VncMap)coll).dissoc(args.rest());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'dissoc!' does not allow %s as coll. It works with mutable maps only.", 
+							Types.getClassName(coll)));
 				}
 			}
 	
@@ -2561,47 +2636,27 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(update! m k f)")		
 					.doc(
-						"Updates a value in an associative structure, where k is a " + 
+						"Updates a value in a mutable map, where k is a " + 
 						"key and f is a function that will take the old value " + 
 						"return the new value.")
 					.examples(
-						"(update! [] 0 (fn [x] 5))",
-						"(update! [0 1 2] 0 (fn [x] 5))",
-						"(update! [0 1 2] 0 (fn [x] (+ x 1)))",
-						"(update! {} :a (fn [x] 5))",
-						"(update! {:a 0} :b (fn [x] 5))",
-						"(update! {:a 0 :b 1} :a (fn [x] 5))")
+						"(update! (mutable-map) :a (fn [x] 5))",
+						"(update! (mutable-map :a 0) :b (fn [x] 5))",
+						"(update! (mutable-map :a 0 :b 1) :a (fn [x] 5))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("update!", args, 3);
 				
-				if (Types.isVncSequence(args.first())) {
-					final VncSequence list = (VncSequence)args.first();
-					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
-					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
-							
-					if (idx < 0 || idx > list.size()) {
-						throw new VncException(String.format(
-								"Function 'update' index %d out of bounds",
-								idx));
-					}
-					else if (idx < list.size()) {
-						return list.setAt(idx, fn.apply(VncList.of(list.nth(idx))));
-					}
-					else {
-						return list.addAtEnd(fn.apply(VncList.of(Nil)));
-					}			
-				}
-				else if (Types.isVncMap(args.first())) {
-					final VncMap map = (VncMap)args.first();
+				if (Types.isVncMutableMap(args.first())) {
+					final VncMutableMap map = (VncMutableMap)args.first();
 					final VncVal key = args.second();
 					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
 					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
 				}
 				else {
 					throw new VncException(String.format(
-							"'update!' does not allow %s as associative structure", 
+							"'update!' does not allow %s as map. It works with mutable maps only.", 
 							Types.getClassName(args.first())));
 				}
 			}
@@ -3116,23 +3171,25 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("cons", args, 2);
-	
-				if (Types.isVncVector(args.second())) {
-					return ((VncVector)args.second()).addAtStart(args.first());
+
+				final VncVal coll = args.second();
+
+				if (Types.isVncVector(coll)) {
+					return ((VncVector)coll).addAtStart(args.first());
 				}
-				if (Types.isVncList(args.second())) {
-					return ((VncList)args.second()).addAtStart(args.first());
+				if (Types.isVncList(coll)) {
+					return ((VncList)coll).addAtStart(args.first());
 				}
-				else if (Types.isVncHashSet(args.second())) {
-					return ((VncHashSet)args.second()).add(args.first());
+				else if (Types.isVncHashSet(coll)) {
+					return ((VncHashSet)coll).add(args.first());
 				}
-				else if (Types.isVncMap(args.second()) && Types.isVncMap(args.first())) {
-					return ((VncMap)args.second()).putAll((VncMap)args.first());
+				else if (Types.isVncMap(coll) && Types.isVncMap(args.first())) {
+					return ((VncMap)coll).putAll((VncMap)args.first());
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'cons'",
-							Types.getClassName(args.second())));
+							Types.getClassName(coll)));
 				}
 			}
 	
@@ -4783,18 +4840,20 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {			
 				assertMinArity("conj", args, 2);
-	
-				if (Types.isVncVector(args.first())) {
-					return ((VncVector)args.first()).addAllAtEnd(args.rest());
+
+				final VncVal coll = args.first();
+
+				if (Types.isVncVector(coll)) {
+					return ((VncVector)coll).addAllAtEnd(args.rest());
 				} 
-				else if (Types.isVncList(args.first())) {
-					return ((VncList)args.first()).addAllAtStart(args.rest());
+				else if (Types.isVncList(coll)) {
+					return ((VncList)coll).addAllAtStart(args.rest());
 				}
-				else if (Types.isVncHashSet(args.first())) {
-					return VncHashSet.ofAll(((VncHashSet)args.first()).getSet()).addAll(args.rest());
+				else if (Types.isVncHashSet(coll)) {
+					return VncHashSet.ofAll(((VncHashSet)coll).getSet()).addAll(args.rest());
 				}
-				else if (Types.isVncMap(args.first())) {
-					final VncMap map = (VncMap)args.first();			
+				else if (Types.isVncMap(coll)) {
+					final VncMap map = (VncMap)coll;			
 					final VncVal second = args.second();
 					if (Types.isVncVector(second) && ((VncVector)second).size() == 2) {
 						return map.assoc(
@@ -4814,7 +4873,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid coll %s while calling function 'conj'",
-							Types.getClassName(args.first())));
+							Types.getClassName(coll)));
 				}
 			}
 	
@@ -5258,8 +5317,10 @@ public class CoreFunctions {
 				.put("sorted-map",			new_sorted_map)
 				.put("mutable-map",			new_mutable_map)
 				.put("assoc",				assoc)
+				.put("assoc!",				assoc_BANG)
 				.put("assoc-in",			assoc_in)
 				.put("dissoc",				dissoc)
+				.put("dissoc!",				dissoc_BANG)
 				.put("contains?", 			contains_Q)
 				.put("find",				find)
 				.put("get",					get)

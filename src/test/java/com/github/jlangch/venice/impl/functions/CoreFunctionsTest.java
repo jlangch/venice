@@ -88,6 +88,15 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_assoc_BANG() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a 1 :b 2}", venice.eval("(str (assoc! (mutable-map) :a 1 :b 2))"));
+		
+		assertEquals("{:a 1 :b 2}", venice.eval("(str (assoc! (mutable-map :a 4) :a 1 :b 2))"));
+	}
+	
+	@Test
 	public void test_assoc_in() {
 		final Venice venice = new Venice();
 
@@ -639,6 +648,13 @@ public class CoreFunctionsTest {
 		assertEquals("xy", venice.eval("(str (dissoc \"xyz\" 2))"));
 		assertEquals("z", venice.eval("(str (dissoc \"xyz\" 0 0))"));
 		assertEquals("", venice.eval("(str (dissoc \"xyz\" 0 0 0))"));
+	}
+
+	@Test
+	public void test_dissoc_BANG() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a 1 :c 3}", venice.eval("(str (dissoc! (mutable-map :a 1 :b 2 :c 3) :b)))"));
 	}
 
 	@Test
@@ -2717,23 +2733,11 @@ public class CoreFunctionsTest {
 	public void test_update_BANG() {
 		final Venice venice = new Venice();
 		
-		// list
-		assertEquals("(3)", venice.eval("(str (update! '() 0 (fn [x] 3)))"));
-		assertEquals("(0 1)", venice.eval("(str (update! '(0) 1 (fn [x] 1)))"));
-		assertEquals("(3 1)", venice.eval("(str (update! '(0 1) 0 (fn [x] 3)))"));
-		assertEquals("(4 1)", venice.eval("(str (update! '(0 1) 0 (fn [x] (+ x 4))))"));
-		
-		// vector
-		assertEquals("[3]", venice.eval("(str (update! [] 0 (fn [x] 3)))"));
-		assertEquals("[0 1]", venice.eval("(str (update! [0] 1 (fn [x] 1)))"));
-		assertEquals("[3 1]", venice.eval("(str (update! [0 1] 0 (fn [x] 3)))"));
-		assertEquals("[4 1]", venice.eval("(str (update! [0 1] 0 (fn [x] (+ x 4))))"));
-		
 		// map
-		assertEquals("{:a 0}", venice.eval("(str (update! {} :a (fn [x] 0)))"));
-		assertEquals("{:a 1 :b 1}", venice.eval("(str (update! {:a 0 :b 1} :a (fn [x] 1)))"));
-		assertEquals("{:a 3 :b 1}", venice.eval("(str (update! {:a 0 :b 1} :a (fn [x] 3)))"));
-		assertEquals("{:a 4 :b 1}", venice.eval("(str (update! {:a 0 :b 1} :a (fn [x] (+ x 4))))"));		
+		assertEquals("{:a 0}", venice.eval("(str (update! (mutable-map) :a (fn [x] 0)))"));
+		assertEquals("{:a 1 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 1)))"));
+		assertEquals("{:a 3 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 3)))"));
+		assertEquals("{:a 4 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] (+ x 4))))"));		
 	}
 	
 	@Test
