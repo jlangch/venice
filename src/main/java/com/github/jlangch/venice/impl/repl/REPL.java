@@ -239,7 +239,7 @@ public class REPL {
 				terminal.writer().println(venice.PRINT(val));
 				return;
 			}
-			else if (params[0].equals("level")) {
+			else if (params[0].equals("local")) {
 				final int level = Integer.valueOf(params[1]);
 				terminal.writer().println(env.getLevelEnv(level).localsToString());
 				return;
@@ -314,10 +314,10 @@ public class REPL {
 			"  !?, !help   help\n" +	
 			"  !config     show a sample REPL config\n" +	
 			"  !env        print env symbols:\n" +	
-			"                !env levels\n" +	
-			"                !env global\n" +	
 			"                !env print {symbol-name}\n" +	
-			"                !env level {level}\n" +	
+			"                !env global\n" +	
+			"                !env local {level}\n" +	
+			"                !env levels\n" +	
 			"  !exit       quit REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
