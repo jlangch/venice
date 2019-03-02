@@ -106,6 +106,11 @@ public class ReplConfig {
 	public String getResultPrefix() {
 		return getOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
 	}
+	
+	public static String getRawClasspathConfig() {
+		return new ClassPathResource("com/github/jlangch/venice/repl.json")
+						.getResourceAsString("UTF-8");
+	}
 
 	private static JSONObject loadJsonConfig() throws Exception {
 		final File fileJson = new File("repl.json");
@@ -117,9 +122,7 @@ public class ReplConfig {
 			return (JSONObject)parser.parse(new FileReader(fileJson));
 		}
 		else {
-			return (JSONObject)parser.parse(
-						new ClassPathResource("com/github/jlangch/venice/repl.json")
-								.getResourceAsString("UTF-8"));
+			return (JSONObject)parser.parse(getRawClasspathConfig());
 		}
 	}
 	

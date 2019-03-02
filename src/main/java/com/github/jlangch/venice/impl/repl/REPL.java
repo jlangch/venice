@@ -146,6 +146,13 @@ public class REPL {
 						terminal.writer().println(HELP);
 						continue;
 					}
+					else if (cmd.equals("config")) {
+						terminal.writer().println("Sample REPL configuration. Save it as 'repl.json'");
+						terminal.writer().println("in the REPL's working directory:");
+						terminal.writer().println();
+						terminal.writer().println(ReplConfig.getRawClasspathConfig());
+						continue;
+					}
 					else if (cmd.equals("exit")) {
 						println(terminal, "interrupt", " good bye ");					
 						Thread.sleep(1000);
@@ -260,6 +267,7 @@ public class REPL {
 			"Commands: \n" +	
 			"  !reload     reload Venice environment\n" +	
 			"  !?, !help   help\n" +	
+			"  !config     show a sample REPL config\n" +	
 			"  !exit       quit REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
