@@ -46,7 +46,8 @@ venice> (+ 1 1)
 venice>
 ```
 
-Type `!` from the REPL to get the help.
+Type `!` from the REPL to get the help. Browse through the history expressions 
+with the left and right arrow.
 
 A history of the last three result values is kept by the REPL, accessible through 
 the symbols `*1`, `*2`, `*3`, `**`.
