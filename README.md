@@ -177,17 +177,17 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 
 final Venice venice = new Venice();
 
-// redirect stdout to the <null> device
+// redirect stdout to the null device
 venice.eval(
     "(println [1 2])", 
     Parameters.of("*out*", null));
 
-// capture stdout within Venice script and return as result
+// capture stdout within the script and return it as the result
 System.out.println(
     venice.eval(
         "(do (with-out-str (println 1) (println [4 5])))"));
 
-// capturing stdout preserving script result
+// capturing stdout preserving the script result
 final CapturingPrintStream ps = CapturingPrintStream.create();
 System.out.println(
     venice.eval(
