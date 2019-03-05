@@ -47,7 +47,7 @@ venice>
 ```
 
 Type `!` from the REPL to get the help. Browse through the history expressions 
-with the left and right arrow.
+with the up/down arrows.
 
 A history of the last three result values is kept by the REPL, accessible through 
 the symbols `*1`, `*2`, `*3`, `**`.
@@ -86,7 +86,7 @@ Sample 'repl.json':
     "comment": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
   }
 }
-```
+```i
 
 Useful REPL keyboard shortcuts:
 
