@@ -86,7 +86,7 @@ Sample 'repl.json':
     "comment": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
   }
 }
-```i
+```
 
 Useful REPL keyboard shortcuts:
 
