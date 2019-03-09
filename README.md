@@ -248,12 +248,9 @@ Caused by: java.lang.ArithmeticException: / by zero
 
 ```clojure
 (do
-   (map (fn [x] (* 2 x)) (range 0 10))
-   
-   (map #(* 2 %) (range 0 10))
-   
-   (map #(* 2 %1) (range 0 10))
-   
+   (map (fn [x] (* 2 x)) (range 0 10))   
+   (map #(* 2 %) (range 0 10)) 
+   (map #(* 2 %1) (range 0 10))  
    (let [f #(+ %1 %2 %3)] (f 1 2 3)))
 ```
 
