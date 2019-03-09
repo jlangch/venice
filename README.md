@@ -63,46 +63,10 @@ venice> (sum 1 4)
 venice>
 ```
 
-
 If the REPL colors don't harmonize well with your terminal color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
-ANSI escape code colors on the working dir.
-
-Sample 'repl.json':
-
-```
-{
-  "prompt": "venice> ",
-  "secondary-prompt": "      | ", 
-  "result-prefix": "=> ",
-  
-  "colors": {
-    "prompt": null,
-    "result": "\u001b[38;5;20m",
-    "stdout": "\u001b[38;5;243m",
-    "error": "\u001b[38;5;202m",
-    "interrupt": "\u001b[48;5;196m\u001b[38;5;15m",
-
-    "comment": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
-  }
-}
-```
-
-Useful REPL keyboard shortcuts:
-
-`ctrl-A`  move the cursor to the start
-
-`ctrl-C`  stop the running command, cancel a multi-line edit, or break out of the REPL
-
-`ctrl-E`  move the cursor to the end
-
-`ctrl-K`  remove the text after the cursor and store it in a cut-buffer
-
-`ctrl-L`  clear the screen
-
-`ctrl-Y`  yank the text from the cut-buffer
-
-`ctrl-_`  undo
+ANSI escape code colors on the working dir. The REPL command `!config` shows
+as sample 'repl.json' that can be modified.
 
 
 
