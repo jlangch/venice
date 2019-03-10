@@ -83,7 +83,7 @@ foo> java -jar venice-1.3.6.jar -file script.venice
 => 2
 ```
 
-## Venice as scripting engine
+## Embedding Venice in Java
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -91,7 +91,6 @@ import com.github.jlangch.venice.VncException;
 
 try {
    final Venice venice = new Venice();
-
    System.out.println(venice.eval("(+ 1 1)"));
 } 
 catch(VncException ex) {
@@ -204,7 +203,6 @@ Caused by: java.lang.ArithmeticException: / by zero
 
 
 ## Functions
-
 
 ### Creating functions
 
