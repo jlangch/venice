@@ -21,9 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.IntStream;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
@@ -32,32 +31,29 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
+
 public class ReplResultHistory {
 	
 	public ReplResultHistory(final int max) {
-		this.max = max;
+		IntStream.range(0, max).forEach(ii -> results.add(Constants.Nil));
 	}
 
 	public void add(final VncVal val) {
 		results.addFirst(val == null ? Constants.Nil : val);
-		if (results.size() > max) results.removeLast();
+		results.removeLast();
 	}
-	
+
 	public void mergeToEnv(final Env env) {
-		final List<VncVal> all = new ArrayList<>();
+		IntStream.rangeClosed(1, results.size())
+				 .forEach(ii -> addToEnv(env, "*" + ii, results.get(ii-1)));
 
-		for(int ii=1; ii<=max; ii++) {
-			final VncVal val = ii <= results.size() ? results.get(ii-1) : Constants.Nil;
-			
-			all.add(val);
-			
-			env.setGlobal(new Var(new VncSymbol("*" + ii), val));
-		}
-
-		env.setGlobal(new Var(new VncSymbol("**"), new VncList(all)));
+		addToEnv(env, "**", new VncList(results));
+	}
+	
+	public void addToEnv(final Env env, final String name, final VncVal val) {
+		env.setGlobal(new Var(new VncSymbol(name), val));
 	}
 
 	
-	private final int max;
 	private final LinkedList<VncVal> results = new LinkedList<>();
 }

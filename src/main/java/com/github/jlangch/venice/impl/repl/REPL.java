@@ -318,7 +318,7 @@ public class REPL {
 			"                !env global\n" +	
 			"                !env local {level}\n" +	
 			"                !env levels\n" +	
-			"  !exit       quit REPL\n\n" +	
+			"  !exit       quit the REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
 			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +	
