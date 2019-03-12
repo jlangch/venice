@@ -147,19 +147,16 @@ public class VeniceInterpreter implements Serializable  {
 		// set system stdout (dynamic)
 		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
 
-		// core module: core.venice 
-		final long nanos = System.nanoTime();
-		RE("(eval " + ModuleLoader.load("core") + ")", "core.venice", env);
-		meterRegistry.record("venice.module.core.load", System.nanoTime() - nanos);
-
-		if (preloadedExtensionModules != null) {
-			preloadedExtensionModules.forEach(
-				m -> {
-					final long nanos_ = System.nanoTime();
-					RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env);
-					meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos_);
-				});
-		}
+		// load modules
+		final List<String> modules = new ArrayList<>();
+		modules.add("core");
+		modules.addAll(toEmpty(preloadedExtensionModules));
+		
+		modules.forEach(m -> {
+			final long nanos = System.nanoTime();
+			RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env);
+			meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos);
+		});
 		
 		return env;
 	}
@@ -1032,6 +1029,9 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
+	private static <T> List<T> toEmpty(final List<T> list) {
+		return list == null ? new ArrayList<T>() : list;
+	}
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 
