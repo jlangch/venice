@@ -196,26 +196,16 @@ public class Numeric {
 		if (!Types.isVncNumber(op1)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 1 (%s) is not a numeric type", 
-					toFnName(op),
+					op.getFnName(),
 					Types.getClassName(op1)));
 		}
 
 		if (!Types.isVncNumber(op2)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 2 (%s) is not a numeric type", 
-					toFnName(op),
+					op.getFnName(),
 					Types.getClassName(op2)));
 		}
-	}
-	
-	private static String toFnName(final MathOp op) {
-		switch(op) {
-			case ADD: return "+";
-			case SUB: return "-";
-			case MUL: return "*";
-			case DIV: return "/";
-			default: return op.name();
-		}		
 	}
 	
 }

@@ -23,6 +23,18 @@ package com.github.jlangch.venice.impl.functions;
 
 public enum MathOp {
 		
-	ADD, SUB, MUL, DIV;
+	ADD("+"), 
+	SUB("-"), 
+	MUL("*"), 
+	DIV("/");
 
+	public String getFnName() {
+		return op;
+	}
+	
+	private MathOp(final String op) { 
+		this.op = op; 
+	} 
+	
+	private String op;
 }
