@@ -29,12 +29,12 @@ public enum MathOp {
 	DIV("/");
 
 	public String getFnName() {
-		return op;
+		return fnName;
 	}
 	
-	private MathOp(final String op) { 
-		this.op = op; 
+	private MathOp(final String fnName) { 
+		this.fnName = fnName; 
 	} 
 	
-	private String op;
+	private String fnName;
 }
