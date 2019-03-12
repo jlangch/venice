@@ -190,30 +190,30 @@ public class VeniceInterpreter implements Serializable  {
 			
 			switch (a0sym) {			
 				case "def": { // (def name value)
-					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					VncSymbol defName = Coerce.toVncSymbol(ast.second());
 					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(2);
+					final VncVal defVal = ast.third();
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, true));
 					return res;
 				}
 				
 				case "defonce": { // (defonce name value)
-					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					VncSymbol defName = Coerce.toVncSymbol(ast.second());
 					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(2);
+					final VncVal defVal = ast.third();
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, false));
 					return res;
 				}
 				
 				case "def-dynamic": { // (def-dynamic name value)
-					VncSymbol defName = Coerce.toVncSymbol(ast.nth(1));
+					VncSymbol defName = Coerce.toVncSymbol(ast.second());
 					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.nth(2);
+					final VncVal defVal = ast.third();
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new DynamicVar(defName, res));
 					return res;

@@ -131,7 +131,7 @@ public class REPL {
 			try {
 				Thread.interrupted(); // reset the thread's interrupt status
 				
-				line = reader.readLine(prompt, null, (MaskingCallback) null, null);
+				line = reader.readLine(prompt, null, (MaskingCallback)null, null);
 				if (line == null) { 
 					continue; 
 				}
@@ -254,10 +254,9 @@ public class REPL {
 			final CommandLineArgs cli,
 			final PrintStream ps
 	) {
-		return venice
-					.createEnv()
-					.setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
-					.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(ps)));
+		return venice.createEnv()
+					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+					 .setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(ps)));
 	}
 	
 	private void print(
