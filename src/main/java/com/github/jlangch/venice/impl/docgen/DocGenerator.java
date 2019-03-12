@@ -211,6 +211,7 @@ public class DocGenerator {
 		final DocSection use = new DocSection("Use");
 		strings.addSection(use);
 		use.addItem(getDocItem("count"));
+		use.addItem(getDocItem("compare"));
 		use.addItem(getDocItem("empty-to-nil"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
@@ -287,6 +288,7 @@ public class DocGenerator {
 		final DocSection generic = new DocSection("Generic");
 		collections.addSection(generic);
 		generic.addItem(getDocItem("count"));
+		generic.addItem(getDocItem("compare"));
 		generic.addItem(getDocItem("empty-to-nil"));
 		generic.addItem(getDocItem("empty"));
 		generic.addItem(getDocItem("into"));
