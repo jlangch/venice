@@ -4332,13 +4332,23 @@ public class CoreFunctions {
 					.arglists("(compare x y)")		
 					.doc(
 						"Comparator. Returns -1, 0, or 1 when x is logically 'less than', " +
-						"'equal to', or 'greater than' y.")
+						"'equal to', or 'greater than' y. For list and vectors the longer " + 
+						"sequence is always 'greater' regardless of its contents. " +
+						"For sets and maps only the size of the collection is compared.")
 					.examples(
 						"(compare nil 0)", 
 						"(compare 0 nil)", 
 						"(compare 1 0)", 
 						"(compare 1 1)", 
-						"(compare 1 2)")
+						"(compare 1M 2M)", 
+						"(compare 1 nil)", 
+						"(compare nil 1)", 
+						"(compare \"aaa\" \"bbb\")", 
+						"(compare [0 1 2] [0 1 2])", 
+						"(compare [0 1 2] [0 9 2])", 
+						"(compare [0 9 2] [0 1 2])", 
+						"(compare [1 2 3] [0 1 2 3])", 
+						"(compare [0 1 2] [3 4])")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
