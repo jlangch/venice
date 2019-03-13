@@ -130,25 +130,25 @@ public class Numeric {
 				}
 			}
 			else if (Types.isVncDouble(op1)) {
-				if (Types.isVncLong(op2)) {
-					return calcDouble(op, (VncDouble)op1, longToDouble((VncLong)op2));
-				}
-				else if (Types.isVncDouble(op2)) {
+				if (Types.isVncDouble(op2)) {
 					return calcDouble(op, (VncDouble)op1, (VncDouble)op2);
+				}
+				else if (Types.isVncLong(op2)) {
+					return calcDouble(op, (VncDouble)op1, longToDouble((VncLong)op2));
 				}
 				else if (Types.isVncBigDecimal(op2)) {
 					return calcDecimal(op, doubleToDecimal((VncDouble)op1), (VncBigDecimal)op2);
 				}
 			}
 			else if (Types.isVncBigDecimal(op1)) {
-				if (Types.isVncLong(op2)) {
+				if (Types.isVncBigDecimal(op2)) {
+					return calcDecimal(op, (VncBigDecimal)op1, (VncBigDecimal)op2);
+				}
+				else if (Types.isVncLong(op2)) {
 					return calcDecimal(op, (VncBigDecimal)op1, longToDecimal((VncLong)op2));
 				}
 				else if (Types.isVncDouble(op2)) {
 					return calcDecimal(op, (VncBigDecimal)op1, doubleToDecimal((VncDouble)op2));
-				}
-				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, (VncBigDecimal)op1, (VncBigDecimal)op2);
 				}
 			}
 			
