@@ -47,7 +47,7 @@ public class Sandbox_MaxExecTime_Test {
 				() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))"));
 		
 		final long elapsed = sw.stop().elapsedMillis();
-		assertTrue(2000 < elapsed && elapsed < 2500);
+		assertTrue(2000 < elapsed && elapsed < 2500, "Elapsed: " + elapsed);
 	}
 
 	@Test

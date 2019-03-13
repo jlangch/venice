@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiFunction;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -60,6 +59,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.CallStackUtil;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -340,20 +340,33 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 	
 				case "defmacro":
-					return runWithCallStack("defmacro", ast, env, (a,e) -> defmacro_(a, e));
+					return CallStackUtil.runWithCallStack(
+								CallFrame.fromVal("defmacro", ast), 
+								ast, env, 
+								(a,e) -> defmacro_(a, e));
 
 				case "macroexpand": 
-					return runWithCallStack("macroexpand", ast, env, (a,e) -> macroexpand(a.second(), e));
+					return CallStackUtil.runWithCallStack(
+								CallFrame.fromVal("macroexpand", ast), 
+								ast, env, 
+								(a,e) -> macroexpand(a.second(), e));
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
-					return runWithCallStack("try", ast, env, (a,e) -> try_(a, new Env(e)));
+					return CallStackUtil.runWithCallStack(
+								CallFrame.fromVal("try", ast), 
+								ast, env, 
+								(a,e) -> try_(ast, new Env(e)));
 					
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
-					return runWithCallStack("try-with", ast, env, (a,e) -> try_with_(a, new Env(e)));
+					return CallStackUtil.runWithCallStack(
+								CallFrame.fromVal("try-with", ast), 
+								ast, env, 
+								(a,e) -> try_with_(a, new Env(e)));
 
 				case "import":
-					return runWithCallStack(
-								"import", ast, env, 
+					return CallStackUtil.runWithCallStack(
+								CallFrame.fromVal("import", ast), 
+								ast, env, 
 								(a,e) -> {
 									a.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
 									return Nil;
@@ -432,15 +445,12 @@ public class VeniceInterpreter implements Serializable  {
 						return ((IVncFunction)elArg0).apply(el.rest());
 					}
 					else {
-						try {
-							ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
-							throw new VncException(String.format(
-											"Not a function or keyword/map used as function: '%s'", 
-											PRINT(elArg0)));
-						}
-						finally {
-							ThreadLocalMap.getCallStack().pop();
-						}
+						CallStackUtil.runWithCallStack(
+								CallFrame.fromVal(ast), 
+								() -> { throw new VncException(String.format(
+													"Not a function or keyword/map used as function: '%s'", 
+													PRINT(elArg0))); 
+								      });		
 					}
 			}
 		}
@@ -615,13 +625,11 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal dorun_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
-			try {
-				ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
-				throw new VncException("dorun requires two arguments a count and an expression to run");
-			}
-			finally {
-				ThreadLocalMap.getCallStack().pop();
-			}
+			CallStackUtil.runWithCallStack(
+					CallFrame.fromVal(ast), 
+					() -> { throw new VncException(
+											"dorun requires two arguments a count and an expression to run");
+						  });		
 		}
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
@@ -709,15 +717,14 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 		
-		try {
-			ThreadLocalMap.getCallStack().push(CallFrame.fromVal(ast));
-			throw new VncException(
-							"Function 'prof' expects a single keyword argument: " +
-							":on, :off, :status, :clear, :clear-all-but, :data, or :data-formatted");
-		}
-		finally {
-			ThreadLocalMap.getCallStack().pop();
-		}
+		CallStackUtil.runWithCallStack(
+				CallFrame.fromVal(ast), 
+				() -> { throw new VncException(
+									"Function 'prof' expects a single keyword argument: " +
+									":on, :off, :status, :clear, :clear-all-but, :data, or :data-formatted");
+				      });	
+	
+		return Nil;
 	}
 
 	private VncVal binding_(final VncList ast, final Env env) {
@@ -981,33 +988,14 @@ public class VeniceInterpreter implements Serializable  {
 	 		final Env local = new Env(env);	
 	 		for(VncVal v : preConditions.getList()) {
 				if (!isFnConditionTrue(evaluate(v, local))) {
-					try {
-						ThreadLocalMap.getCallStack().push(CallFrame.fromVal(fnName, v));
-						throw new AssertionException(
-								String.format(
-										"pre-condition assert failed: %s",
-										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));		
-					}
-					finally {
-						ThreadLocalMap.getCallStack().pop();
-					}
+					CallStackUtil.runWithCallStack(
+							CallFrame.fromVal(fnName, v), 
+							() -> { throw new AssertionException(String.format(
+												"pre-condition assert failed: %s",
+												((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
+								  });		
 				}
  			}
-		}
-	}
-
-	private VncVal runWithCallStack(
-			final String fnName, 
-			final VncList ast, 
-			final Env env, 
-			final BiFunction<VncList,Env,VncVal> fn
-	) {
-		try {
-			ThreadLocalMap.getCallStack().push(CallFrame.fromVal(fnName, ast));
-			return fn.apply(ast, env);
-		}
-		finally {
-			ThreadLocalMap.getCallStack().pop();
 		}
 	}
 
