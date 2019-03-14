@@ -141,13 +141,13 @@ venice.eval(
 // capture stdout within the script and return it as the result
 System.out.println(
     venice.eval(
-        "(do (with-out-str (println 1) (println [4 5])))"));
+        "(do (with-out-str (println [4 5])))"));
 
 // capturing stdout preserving the script result
 final CapturingPrintStream ps = CapturingPrintStream.create();
 System.out.println(
     venice.eval(
-        "(do (println 1) (println [4 5]) 100)", 
+        "(do (println [4 5]) 100)", 
         Parameters.of("*out*", ps)));
 System.out.println(ps.getOutput());
 ```
