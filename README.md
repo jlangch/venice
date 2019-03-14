@@ -450,7 +450,7 @@ Associative destructuring can be nested and combined with sequential destructuri
    (def s2 """{ 
                 "fruit": "apple",
                 "color": "red" 
-               }""")
+              }""")
 
    ; strip-indent removes the indentation on multi-line strings. The indentation
    ; will be determined from the first line's indentation. Escaping the first 
