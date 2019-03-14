@@ -439,7 +439,7 @@ Associative destructuring can be nested and combined with sequential destructuri
 
 
 
-## String interpolation
+## Advanced String features
 
 ### Triple quoted, multi-line strings
 
@@ -450,7 +450,7 @@ Associative destructuring can be nested and combined with sequential destructuri
    (def s2 """{ 
                 "fruit": "apple",
                 "color": "red" 
-               }""")
+              }""")
 
    ; strip-indent removes the indentation on multi-line strings. The indentation
    ; will be determined from the first line's indentation. Escaping the first 
@@ -800,6 +800,8 @@ final IInterceptor interceptor =
         new SandboxRules()
               .rejectAllVeniceIoFunctions()
               .allowAccessToStandardSystemProperties()
+              .withSystemProperties("db.name", "db.port")
+              .withMaxExecTimeSeconds(5)
               .withClasses(
                 "java.lang.Math:PI"
                 "java.lang.Math:min", 
@@ -841,6 +843,9 @@ venice.eval("(. :java.lang.System :exit 0)");
 
 // => FAIL (invoking rejected Venice I/O function)
 venice.eval("(io/slurp \"/tmp/file\")"); 
+
+// => FAIL exceeded max exec time of 5s
+venice.eval("(sleep 30000)"); 
 
 // => FAIL (accessing non whitelisted system property)
 venice.eval("(system-prop \"db.password\")"); 
