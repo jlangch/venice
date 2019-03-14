@@ -218,7 +218,7 @@ Caused by: java.lang.ArithmeticException: / by zero
       [message & args]
       (apply println (cons message (cons ": " args))))
 
-   (log "message from" "192.0.0.76" "12:00:00"))
+   (log "message from" "192.0.0.76" "12:00" "Hello"))
 ```
 
 ### Multi-Arity functions
@@ -414,10 +414,10 @@ Nested bindings
 (do
    (def line [[5 10] [10 20]])
    (let [[[a b :as group1] [c d :as group2]] line]
-     (println a b group1)
-     (println c d group2))
-     ;=> 5 10 [5 10]
-     ;=> 10 20 [10 20])
+      (println a b group1)
+      (println c d group2))
+      ;=> 5 10 [5 10]
+      ;=> 10 20 [10 20])
 )
 ```
 
@@ -575,9 +575,9 @@ Try with resources
    (import :java.io.FileInputStream)
    
    (let [file (io/temp-file "test-", ".txt")]
-        (io/spit file "123456789" :append true)
-        (try-with [is (. :FileInputStream :new file)]
-           (io/slurp-stream is :binary false))))
+      (io/spit file "123456789" :append true)
+      (try-with [is (. :FileInputStream :new file)]
+        (io/slurp-stream is :binary false))))
 ```
 
 Java Callbacks:
@@ -607,17 +607,17 @@ Java Callbacks:
    (import :javax.swing.SwingUtilities)
 
    (defn swing-open-window [title]
-         (let [frame (. :JFrame :new title)
-               label (. :JLabel :new "Hello World")
-               closeOP (. :JFrame :EXIT_ON_CLOSE)]
-              (. frame :setDefaultCloseOperation closeOP)
-              (. frame :add label)
-              (. frame :setSize 200 200)
-              (. frame :setVisible true)))
+      (let [frame (. :JFrame :new title)
+            label (. :JLabel :new "Hello World")
+            closeOP (. :JFrame :EXIT_ON_CLOSE)]
+         (. frame :setDefaultCloseOperation closeOP)
+         (. frame :add label)
+         (. frame :setSize 200 200)
+         (. frame :setVisible true)))
 
    (defn swing-gui [title]
-         (. :SwingUtilities :invokeLater
-            (proxify :Runnable { :run #(swing-open-window title) } )))
+      (. :SwingUtilities :invokeLater
+         (proxify :Runnable { :run #(swing-open-window title) } )))
 
    (swing-gui "Test"))
 ```
