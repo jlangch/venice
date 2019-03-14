@@ -78,6 +78,13 @@ public class TimeFunctionsTest {
 	}
 
 	@Test
+	public void test_local_date_parse() {
+		final Venice venice = new Venice();
+		
+		assertEquals("2018-08-01", venice.eval("(str (time/local-date-parse \"2018-08-01\" \"yyyy-MM-dd\"))"));		
+	}
+
+	@Test
 	public void test_local_date_time() {
 		final Venice venice = new Venice();
 		
@@ -95,6 +102,13 @@ public class TimeFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertTrue((Boolean)venice.eval("(time/local-date-time? (time/local-date-time))"));
+	}
+
+	@Test
+	public void test_local_date_time_parse() {
+		final Venice venice = new Venice();
+		
+		assertEquals("2018-08-01T10:15:30", venice.eval("(str (time/local-date-time-parse \"2018-08-01 10:15:30\" \"yyyy-MM-dd HH:mm:ss\"))"));		
 	}
 
 	@Test
@@ -123,6 +137,13 @@ public class TimeFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertTrue((Boolean)venice.eval("(time/zoned-date-time? (time/zoned-date-time))"));
+	}
+
+	@Test
+	public void test_zoned_date_time_parse() {
+		final Venice venice = new Venice();
+		
+		assertEquals("2018-08-01T10:15:30+01:00", venice.eval("(str (time/zoned-date-time-parse \"2018-08-01T10:15:30+01:00\" \"yyyy-MM-dd'T'HH:mm:ssz\"))"));		
 	}
 
 	@Test

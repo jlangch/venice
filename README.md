@@ -445,17 +445,25 @@ Associative destructuring can be nested and combined with sequential destructuri
 
 ```clojure
 (do
+   (def s1 """{ "fruit": "apple", "color": "red" }""")
+   
+   (def s2 """{ 
+                "fruit": "apple",
+                "color": "red" 
+               }""")
+
    ; strip-indent removes the indentation on multi-line strings. The indentation
    ; will be determined from the first line's indentation. Escaping the first 
    ; line of the multi-line string with '\' makes strip-indent work as expected.  
-   (def data (str/strip-indent """\
+   (def s3 (str/strip-indent """\
                 {
                   "fruit": "apple",
-                  "size": "large",
                   "color": "red"
                 }"""))
                
-   (println data))
+   (println s1))
+   (println s2))
+   (println s3))
 ```
 
 ### Interpolation 
