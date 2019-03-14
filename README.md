@@ -122,12 +122,6 @@ System.out.println(
     venice.eval(
         "(+ x y 3)", 
         Parameters.of("x", 6, "y", 3L)));
-        
-// (:blue (. :Color :PINK))
-System.out.println(
-    venice.eval(
-        "(:blue color)", 
-        Parameters.of("color", Color.PINK)));
 ```
 
 
@@ -272,6 +266,74 @@ Caused by: java.lang.ArithmeticException: / by zero
    ({:a 1 :b 2} :b)
    (:b {:a 1 :b 2}))
 ```
+
+
+## Advanced String features
+
+### Triple quoted, multi-line strings
+
+```clojure
+(do
+   (def s1 """{ "fruit": "apple", "color": "red" }""")
+   
+   (def s2 """{ 
+                "fruit": "apple",
+                "color": "red" 
+              }""")
+
+   ; strip-indent removes the indentation on multi-line strings. The indentation
+   ; will be determined from the first line's indentation. Escaping the first 
+   ; line of the multi-line string with '\' makes strip-indent work as expected.  
+   (def s3 (str/strip-indent """\
+                {
+                  "fruit": "apple",
+                  "color": "red"
+                }"""))
+               
+   (println s1))
+   (println s2))
+   (println s3))
+```
+
+### Interpolation 
+
+Interpolation is controlled using `~{}` and `~()` forms. The former is 
+used for simple value replacement while the latter can be used to
+embed the results of arbitrary function invocation into the produced 
+string.
+
+_Interpolation is implemented as a reader macro. It's parsed at read time and turned into a_ 
+`(str args)` _function._
+
+```clojure
+(do
+   (let [x 100] 
+      (println "x: ~{x}")
+      (println "f(x): ~(inc x)")))
+```
+
+```clojure
+(do
+   (let [x 100] 
+      (println """x: ~{x}""")
+      (println """f(x): ~(inc x)""")))
+```
+
+
+
+## Recursion:
+
+```clojure
+(do
+   (defn sum [n]
+      (loop [cnt n, acc 0]
+         (if (zero? cnt)
+            acc
+            (recur (dec cnt) (+ acc cnt)))))
+
+   (sum 100000))
+```
+
 
 
 ## Destructuring
@@ -436,74 +498,6 @@ Associative destructuring can be nested and combined with sequential destructuri
       ;=> Peter is a clerk located at Zurich
 )
 ```
-
-
-
-## Advanced String features
-
-### Triple quoted, multi-line strings
-
-```clojure
-(do
-   (def s1 """{ "fruit": "apple", "color": "red" }""")
-   
-   (def s2 """{ 
-                "fruit": "apple",
-                "color": "red" 
-              }""")
-
-   ; strip-indent removes the indentation on multi-line strings. The indentation
-   ; will be determined from the first line's indentation. Escaping the first 
-   ; line of the multi-line string with '\' makes strip-indent work as expected.  
-   (def s3 (str/strip-indent """\
-                {
-                  "fruit": "apple",
-                  "color": "red"
-                }"""))
-               
-   (println s1))
-   (println s2))
-   (println s3))
-```
-
-### Interpolation 
-
-Interpolation is controlled using `~{}` and `~()` forms. The former is 
-used for simple value replacement while the latter can be used to
-embed the results of arbitrary function invocation into the produced 
-string.
-
-_Interpolation is implemented as a reader macro. It's parsed at read time and turned into a_ 
-`(str args)` _function._
-
-```clojure
-(do
-   (let [x 100] 
-      (println "x: ~{x}")
-      (println "f(x): ~(inc x)")))
-```
-
-```clojure
-(do
-   (let [x 100] 
-      (println """x: ~{x}""")
-      (println """f(x): ~(inc x)""")))
-```
-
-
-## Recursion:
-
-```clojure
-(do
-   (defn sum [n]
-      (loop [cnt n, acc 0]
-         (if (zero? cnt)
-            acc
-            (recur (dec cnt) (+ acc cnt)))))
-
-   (sum 100000))
-```
-
 
 
 ## Java Interop
