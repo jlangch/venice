@@ -721,7 +721,8 @@ public class VeniceInterpreter implements Serializable  {
 				CallFrame.fromVal(ast), 
 				() -> { throw new VncException(
 									"Function 'prof' expects a single keyword argument: " +
-									":on, :off, :status, :clear, :clear-all-but, :data, or :data-formatted");
+									":on, :off, :status, :clear, :clear-all-but, :data, " +
+									"or :data-formatted");
 				      });	
 	
 		return Nil;

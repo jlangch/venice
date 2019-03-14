@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -218,6 +219,202 @@ public class TimeFunctionsTest {
 		
 		assertTrue((Boolean)venice.eval(
 				"(time/within? (time/local-date \"2018-08-01\") nil nil)"));		
+	}
+
+	@Test
+	public void test_before() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/before? (time/local-date \"2018-08-09\")" +
+				"              (time/local-date \"2018-08-10\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/before? (time/local-date-time \"2018-08-09T10:00:00.000\")" +
+				"              (time/local-date-time \"2018-08-10T10:00:00.000\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/before? (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\")" +
+				"              (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_not_before() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/not-before? (time/local-date \"2018-08-10\")" +
+				"                  (time/local-date \"2018-08-09\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/not-before? (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+				"                  (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/not-before? (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+				"                  (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_after() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/not-before? (time/local-date \"2018-08-10\")" +
+				"                  (time/local-date \"2018-08-09\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/not-before? (time/local-date-time \"2018-08-10T10:00:00.000\")" +
+				"                  (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/not-before? (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\")" +
+				"                  (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_not_after() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/before? (time/local-date \"2018-08-09\")" +
+				"              (time/local-date \"2018-08-10\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/before? (time/local-date-time \"2018-08-09T10:00:00.000\")" +
+				"              (time/local-date-time \"2018-08-10T10:00:00.000\"))"));		
+		
+		assertTrue((Boolean)venice.eval(
+				"(time/before? (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\")" +
+				"              (time/zoned-date-time \"2018-08-10T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_year() {
+		final Venice venice = new Venice();
+		
+		assertEquals(2018L, venice.eval("(time/year (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(2018L, venice.eval("(time/year (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals(2018L, venice.eval("(time/year (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_month() {
+		final Venice venice = new Venice();
+		
+		assertEquals(8L, venice.eval("(time/month (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(8L, venice.eval("(time/month (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals(8L, venice.eval("(time/month (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_day_of_year() {
+		final Venice venice = new Venice();
+		
+		assertEquals(221L, venice.eval("(time/day-of-year (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(221L, venice.eval("(time/day-of-year (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals(221L, venice.eval("(time/day-of-year (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_day_of_month() {
+		final Venice venice = new Venice();
+		
+		assertEquals(9L, venice.eval("(time/day-of-month (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(9L, venice.eval("(time/day-of-month (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals(9L, venice.eval("(time/day-of-month (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_day_of_week() {
+		final Venice venice = new Venice();
+		
+		assertEquals("THURSDAY", venice.eval("(time/day-of-week (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals("THURSDAY", venice.eval("(time/day-of-week (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals("THURSDAY", venice.eval("(time/day-of-week (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_hour() {
+		final Venice venice = new Venice();
+		
+		assertEquals(0L, venice.eval("(time/hour (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(10L, venice.eval("(time/hour (time/local-date-time \"2018-08-09T10:20:30.400\"))"));		
+		
+		assertEquals(10L, venice.eval("(time/hour (time/zoned-date-time \"2018-08-09T10:20:30.400+00:00\"))"));		
+	}
+
+	@Test
+	public void test_minute() {
+		final Venice venice = new Venice();
+		
+		assertEquals(0L, venice.eval("(time/minute (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(20L, venice.eval("(time/minute (time/local-date-time \"2018-08-09T10:20:30.400\"))"));		
+		
+		assertEquals(20L, venice.eval("(time/minute (time/zoned-date-time \"2018-08-09T10:20:30.400+00:00\"))"));		
+	}
+
+	@Test
+	public void test_second() {
+		final Venice venice = new Venice();
+		
+		assertEquals(0L, venice.eval("(time/second (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(30L, venice.eval("(time/second (time/local-date-time \"2018-08-09T10:20:30.400\"))"));		
+		
+		assertEquals(30L, venice.eval("(time/second (time/zoned-date-time \"2018-08-09T10:20:30.400+00:00\"))"));		
+	}
+
+	@Test
+	public void test_length_of_year() {
+		final Venice venice = new Venice();
+		
+		assertEquals(365L, venice.eval("(time/length-of-year (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(365L, venice.eval("(time/length-of-year (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals(365L, venice.eval("(time/length-of-year (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_length_of_month() {
+		final Venice venice = new Venice();
+		
+		assertEquals(31L, venice.eval("(time/length-of-month (time/local-date \"2018-08-09\"))"));		
+		
+		assertEquals(31L, venice.eval("(time/length-of-month (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertEquals(31L, venice.eval("(time/length-of-month (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
+	}
+
+	@Test
+	public void test_leap_year() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(time/leap-year? (time/local-date \"2016-08-09\"))"));		
+		
+		assertTrue((Boolean)venice.eval("(time/leap-year? (time/local-date-time \"2016-08-09T10:00:00.000\"))"));		
+		
+		assertTrue((Boolean)venice.eval("(time/leap-year? (time/zoned-date-time \"2016-08-09T10:00:00.000+01:00\"))"));		
+
+		
+		assertFalse((Boolean)venice.eval("(time/leap-year? (time/local-date \"2018-08-09\"))"));		
+		
+		assertFalse((Boolean)venice.eval("(time/leap-year? (time/local-date-time \"2018-08-09T10:00:00.000\"))"));		
+		
+		assertFalse((Boolean)venice.eval("(time/leap-year? (time/zoned-date-time \"2018-08-09T10:00:00.000+01:00\"))"));		
 	}
 
 }
