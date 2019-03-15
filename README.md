@@ -118,9 +118,9 @@ import com.github.jlangch.venice.Parameters;
 final Venice venice = new Venice();
 
 System.out.println(
-    venice.eval(
-        "(+ x y 3)", 
-        Parameters.of("x", 6, "y", 3L)));
+   venice.eval(
+      "(+ x y 3)", 
+      Parameters.of("x", 6, "y", 3L)));
 ```
 
 
@@ -135,20 +135,20 @@ final Venice venice = new Venice();
 
 // redirect stdout to the null device
 venice.eval(
-    "(println [1 2])", 
-    Parameters.of("*out*", null));
+   "(println [1 2])", 
+   Parameters.of("*out*", null));
 
 // capture stdout within the script and return it as the result
 System.out.println(
-    venice.eval(
-        "(do (with-out-str (println [4 5])))"));
+   venice.eval(
+      "(do (with-out-str (println [1 2])))"));
 
 // capturing stdout preserving the script result
 final CapturingPrintStream ps = CapturingPrintStream.create();
 System.out.println(
-    venice.eval(
-        "(do (println [4 5]) 100)", 
-        Parameters.of("*out*", ps)));
+   venice.eval(
+      "(do (println [1 2]) 100)", 
+      Parameters.of("*out*", ps)));
 System.out.println(ps.getOutput());
 ```
 
