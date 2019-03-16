@@ -91,7 +91,9 @@ import com.github.jlangch.venice.VncException;
 
 try {
    final Venice venice = new Venice();
-   System.out.println(venice.eval("(+ 1 1)"));
+  
+   System.out.println(
+      venice.eval("(+ 1 1)"));
 } 
 catch(VncException ex) {
    ex.printVeniceStackTrace();
