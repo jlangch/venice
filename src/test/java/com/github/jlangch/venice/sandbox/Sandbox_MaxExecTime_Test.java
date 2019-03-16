@@ -36,6 +36,8 @@ public class Sandbox_MaxExecTime_Test {
 		
 	@Test
 	public void test_too_long() {
+		Thread.interrupted(); // reset the thread's interrupt status
+		
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 	
@@ -52,6 +54,8 @@ public class Sandbox_MaxExecTime_Test {
 
 	@Test
 	public void test_future_too_long() {
+		Thread.interrupted(); // reset the thread's interrupt status
+		
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 
@@ -76,6 +80,8 @@ public class Sandbox_MaxExecTime_Test {
 
 	@Test
 	public void test_ok() {
+		Thread.interrupted(); // reset the thread's interrupt status
+		
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 	
