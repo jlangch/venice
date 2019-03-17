@@ -27,13 +27,12 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncMultiFunction extends VncFunction {
 
-	public VncMultiFunction(final String name, final VncFunction dicriminatorFn, final VncVal ast) {
-		super(name, ast, null, null);
+	public VncMultiFunction(final String name, final VncFunction dicriminatorFn) {
+		super(name);
 		
 		if (dicriminatorFn == null) {
 			throw new VncException("A dicriminator function must not be null");
@@ -65,10 +64,9 @@ public class VncMultiFunction extends VncFunction {
 		
 		if (fn == null) {
 			throw new VncException(String.format(
-					"No matching '%s' multi function defined for dispatch value %s. %s", 
+					"No matching '%s' multi function defined for dispatch value %s", 
 					getName(),
-					Printer._pr_str(dispatchVal, true),
-					ErrorMessage.buildErrLocation(getAst())));
+					Printer._pr_str(dispatchVal, true)));
 		}
 		
 		return fn.apply(params);

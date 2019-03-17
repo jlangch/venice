@@ -63,7 +63,6 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallStackUtil;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -213,7 +212,7 @@ public class VeniceInterpreter implements Serializable  {
 					multiFnName = multiFnName.withMeta(evaluate(multiFnName.getMeta(), env));
 					ReservedSymbols.validate(multiFnName);
 					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
-					final VncMultiFunction multiFn = new VncMultiFunction(multiFnName.getName(), dispatchFn, ast);
+					final VncMultiFunction multiFn = new VncMultiFunction(multiFnName.getName(), dispatchFn);
 					env.setGlobal(new Var(multiFnName, multiFn, false));
 					return multiFn;
 				}
@@ -222,21 +221,25 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol multiFnName = Coerce.toVncSymbol(ast.nth(1));
 					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 					if (multiFnVal == null) {
-						throw new VncException(String.format(
-								"No multi function '%s' defined. %s", 
-								multiFnName.getName(),
-								ErrorMessage.buildErrLocation(ast)));
+						CallStackUtil.runWithCallStack(
+								CallFrame.fromVal(ast), 
+								() -> { throw new VncException(String.format(
+													"No multi function '%s' defined for the method definition", 
+													multiFnName.getName())); 
+								      });		
 					}
 					final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
 					final VncVal dispatchVal = ast.nth(2);
 					
 					final VncVector params = Coerce.toVncVector(ast.nth(3));
 					if (params.size() != multiFn.getParams().size()) {
-						throw new VncException(String.format(
-								"A method for the multi function '%s' defined must have %d paramters defined. %s", 
-								multiFnName.getName(),
-								multiFn.getParams().size(),
-								ErrorMessage.buildErrLocation(ast)));
+						CallStackUtil.runWithCallStack(
+								CallFrame.fromVal(ast), 
+								() -> { throw new VncException(String.format(
+										"A method definition for the multi function '%s' must have %d parameters", 
+										multiFnName.getName(),
+										multiFn.getParams().size()));
+								      });								
 					}
 					final VncVector preConditions = getFnPreconditions(ast.nth(4));					
 					final VncList body = ast.slice(preConditions == null ? 4 : 5);
