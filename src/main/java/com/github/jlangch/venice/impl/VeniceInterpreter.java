@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -62,6 +63,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallStackUtil;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -206,6 +208,44 @@ public class VeniceInterpreter implements Serializable  {
 					return res;
 				}
 				
+				case "defmulti": { // (defmulti name dispatch-fn)
+					VncSymbol multiFnName = Coerce.toVncSymbol(ast.second());
+					multiFnName = multiFnName.withMeta(evaluate(multiFnName.getMeta(), env));
+					ReservedSymbols.validate(multiFnName);
+					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
+					final VncMultiFunction multiFn = new VncMultiFunction(multiFnName.getName(), dispatchFn, ast);
+					env.setGlobal(new Var(multiFnName, multiFn, false));
+					return multiFn;
+				}
+				
+				case "defmethod": { // (defmethod multifn-name dispatch-val & fn-tail)
+					final VncSymbol multiFnName = Coerce.toVncSymbol(ast.nth(1));
+					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
+					if (multiFnVal == null) {
+						throw new VncException(String.format(
+								"No multi function '%s' defined. %s", 
+								multiFnName.getName(),
+								ErrorMessage.buildErrLocation(ast)));
+					}
+					final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
+					final VncVal dispatchVal = ast.nth(2);
+					
+					final VncVector params = Coerce.toVncVector(ast.nth(3));
+					if (params.size() != multiFn.getParams().size()) {
+						throw new VncException(String.format(
+								"A method for the multi function '%s' defined must have %d paramters defined. %s", 
+								multiFnName.getName(),
+								multiFn.getParams().size(),
+								ErrorMessage.buildErrLocation(ast)));
+					}
+					final VncVector preConditions = getFnPreconditions(ast.nth(4));					
+					final VncList body = ast.slice(preConditions == null ? 4 : 5);
+					final VncFunction fn = buildFunction(multiFnName.getName(), params, body, preConditions, env);
+
+					multiFn.addFn(dispatchVal, fn);
+					return multiFn;					
+				}
+								
 				case "def-dynamic": { // (def-dynamic name value)
 					VncSymbol defName = Coerce.toVncSymbol(ast.second());
 					defName = defName.withMeta(evaluate(defName.getMeta(), env));
@@ -920,7 +960,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		return null;
 	}
-		
+	
 	private VncFunction buildFunction(
 			final String name, 
 			final VncVector params, 
