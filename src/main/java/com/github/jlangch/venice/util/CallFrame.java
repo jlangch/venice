@@ -34,7 +34,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 
 public class CallFrame {
 
-	public CallFrame(final String fnName, final VncVal meta) {
+	private CallFrame(final String fnName, final VncVal meta) {
 		this.fnName = fnName;
 		this.meta = meta;
 	}

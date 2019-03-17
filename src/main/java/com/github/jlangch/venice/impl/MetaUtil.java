@@ -45,8 +45,8 @@ public class MetaUtil {
 		if (valMeta == Constants.Nil) {
 			valMeta = meta;
 		}
-		else if (Types.isVncHashMap(valMeta)) {
-			valMeta = ((VncHashMap)valMeta).assoc(meta.toVncList());
+		else if (Types.isVncMap(valMeta)) {
+			valMeta = ((VncMap)valMeta).assoc(meta.toVncList());
 		}
 		
 		return val.withMeta(valMeta);
@@ -63,8 +63,8 @@ public class MetaUtil {
 		if (meta == Constants.Nil) {
 			return new VncHashMap().assoc(key, val);	
 		}
-		else if (meta instanceof VncHashMap) {
-			return ((VncHashMap)meta).assoc(key, val);	
+		else if (Types.isVncMap(meta)) {
+			return ((VncMap)meta).assoc(key, val);	
 		}
 		else {
 			// not a map

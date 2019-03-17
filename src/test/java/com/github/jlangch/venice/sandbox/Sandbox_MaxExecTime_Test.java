@@ -50,7 +50,7 @@ public class Sandbox_MaxExecTime_Test {
 					() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))"));
 			
 			final long elapsed = sw.stop().elapsedMillis();
-			assertTrue(2000 < elapsed && elapsed < 2500, "Elapsed: " + elapsed);
+			assertTrue(1900 < elapsed && elapsed < 2500, "Elapsed: " + elapsed);
 		}
 		finally {
 			Thread.interrupted();
@@ -81,7 +81,7 @@ public class Sandbox_MaxExecTime_Test {
 			assertThrows(SecurityException.class, () -> venice.eval(script));
 			
 			final long elapsed = sw.stop().elapsedMillis();
-			assertTrue(2000 < elapsed && elapsed < 3000);
+			assertTrue(1900 < elapsed && elapsed < 2500);
 		}
 		finally {
 			Thread.interrupted();

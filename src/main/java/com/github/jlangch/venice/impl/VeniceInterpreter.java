@@ -413,14 +413,14 @@ public class VeniceInterpreter implements Serializable  {
 				default:
 					final long nanos = System.nanoTime();
 					
-					final VncList el = Coerce.toVncList(eval_ast(ast, env));
-					final VncVal elArg0 = el.first();
-					if (Types.isVncFunction(elArg0)) {
-						final VncFunction fn = (VncFunction)elArg0;
+					final VncList el = (VncList)eval_ast(ast, env);
+					final VncVal elFirst = el.first();
+					if (Types.isVncFunction(elFirst)) {
+						final VncFunction fn = (VncFunction)elFirst;
 						
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
-					
+
 						// invoke function with call frame
 						final CallFrame frame = CallFrame.fromFunction(fn, a0);		
 						ThreadLocalMap.getCallStack().push(frame);
@@ -439,17 +439,17 @@ public class VeniceInterpreter implements Serializable  {
 							checkInterrupted();
 						}
 					}
-					else if (Types.isIVncFunction(elArg0)) {
+					else if (Types.isIVncFunction(elFirst)) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						return ((IVncFunction)elArg0).apply(el.rest());
+						return ((IVncFunction)elFirst).apply(el.rest());
 					}
 					else {
 						CallStackUtil.runWithCallStack(
 								CallFrame.fromVal(ast), 
 								() -> { throw new VncException(String.format(
 													"Not a function or keyword/map used as function: '%s'", 
-													PRINT(elArg0))); 
+													PRINT(elFirst))); 
 								      });		
 					}
 			}
@@ -626,9 +626,9 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal dorun_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
 			CallStackUtil.runWithCallStack(
-					CallFrame.fromVal(ast), 
+					CallFrame.fromVal("dorun", ast), 
 					() -> { throw new VncException(
-											"dorun requires two arguments a count and an expression to run");
+										"dorun requires two arguments a count and an expression to run");
 						  });		
 		}
 		final long count = Coerce.toVncLong(ast.second()).getValue();
@@ -718,7 +718,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		
 		CallStackUtil.runWithCallStack(
-				CallFrame.fromVal(ast), 
+				CallFrame.fromVal("prof", ast), 
 				() -> { throw new VncException(
 									"Function 'prof' expects a single keyword argument: " +
 									":on, :off, :status, :clear, :clear-all-but, :data, " +

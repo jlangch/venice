@@ -5202,8 +5202,8 @@ public class CoreFunctions {
 		if (Types.isVncSequence(value)) {
 			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
 		}
-		else if (Types.isVncHashMap(value)) {
-			((VncHashMap)value).entries().forEach(e -> {
+		else if (Types.isVncMap(value)) {
+			((VncMap)value).entries().forEach(e -> {
 				result.add(e.getKey());
 				flatten(e.getValue(), result);
 			});
