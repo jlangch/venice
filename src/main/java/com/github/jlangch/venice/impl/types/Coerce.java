@@ -113,6 +113,21 @@ public class Coerce {
 		}
 	}
 
+	public static VncMultiFunction toVncMultiFunction(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (Types.isVncMultiFunction(val)) {
+			return (VncMultiFunction)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to multi function. %s", 
+					Types.getClassName(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
 	public static VncString toVncString(final VncVal val) {
 		if (val == null) {
 			return null;
@@ -308,7 +323,7 @@ public class Coerce {
 		}
 	}
 	
-	public static VncMutableMap toVncVncMutableMapMap(final VncVal val) {
+	public static VncMutableMap toVncMutableMapMap(final VncVal val) {
 		if (val == null) {
 			return null;
 		}

@@ -152,6 +152,10 @@ public class Types {
 	public static boolean isVncFunction(final VncVal val) {
 		return val != null && (val instanceof VncFunction);
 	}
+	
+	public static boolean isVncMultiFunction(final VncVal val) {
+		return val != null && (val instanceof VncMultiFunction);
+	}
 
 	public static boolean isVncMacro(final VncVal val) {
 		return val != null && isVncFunction(val) && ((VncFunction)val).isMacro();
