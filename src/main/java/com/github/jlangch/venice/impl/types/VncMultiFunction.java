@@ -48,6 +48,12 @@ public class VncMultiFunction extends VncFunction {
 	}
 	
 	public void addFn(final VncVal dispatchVal, final VncFunction fn) {
+		if (dispatchVal == null) {
+			throw new VncException("A dispatch value must not be null");
+		}
+		if (fn == null) {
+			throw new VncException("A multi method function must not be null");
+		}
 		functions.put(dispatchVal, fn);
 	}
 	
