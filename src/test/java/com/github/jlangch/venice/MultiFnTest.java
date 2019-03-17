@@ -76,5 +76,4 @@ public class MultiFnTest {
 		assertEquals("35", venice.eval(s));
 	}
 
-
 }
