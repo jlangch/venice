@@ -58,5 +58,23 @@ public class MultiFnTest {
 		assertEquals(8L, venice.eval(s));
 	}
 
+	@Test
+	public void test_defmethod_default() {
+		final Venice venice = new Venice();
+
+
+		final String s = 
+				"(do                                             \n" +
+				"   (defmulti math (fn [op _ _] op))             \n" +
+				"   (defmethod math :+ [_ x y] (+ x y))          \n" +
+				"   (defmethod math :- [_ x y] (- x y))          \n" +
+				"   (defmethod math :default [_ x y] (str x y))  \n" +
+				"                                                \n" +
+				"   (math :* 3 5)                                \n" +
+				")                                               ";
+	
+		assertEquals("35", venice.eval(s));
+	}
+
 
 }

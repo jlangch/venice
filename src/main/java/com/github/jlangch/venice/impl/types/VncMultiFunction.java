@@ -66,8 +66,10 @@ public class VncMultiFunction extends VncFunction {
 	public VncVal apply(final VncList params) {
 		final VncVal dispatchVal = dicriminatorFn.apply(params);
 		
-		final VncFunction fn = functions.get(dispatchVal);
-		
+		VncFunction fn = functions.get(dispatchVal);
+		if (fn == null) {
+			fn = functions.get(DEFAULT_METHOD);
+		}
 		if (fn == null) {
 			throw new VncException(String.format(
 					"No matching '%s' multi function defined for dispatch value %s", 
@@ -89,6 +91,8 @@ public class VncMultiFunction extends VncFunction {
 		
 	
 	private static final long serialVersionUID = -1848883965231344442L;
+	
+	private static final VncKeyword DEFAULT_METHOD = new VncKeyword(":default");
     
 	private final VncFunction dicriminatorFn;
     private final ConcurrentHashMap<VncVal,VncFunction> functions = new ConcurrentHashMap<>();
