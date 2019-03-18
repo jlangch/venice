@@ -38,7 +38,7 @@ public class RendererFlags {
 	/**
 	 * Parses a colon delimited format flag string. 
 	 * 
-	 * <p>"flag1:flag2:flag3" => { 'flag1', 'flag2', 'flag3'}
+	 * <p>"flag1:flag2:flag3" =&gt; { 'flag1', 'flag2', 'flag3'}
 	 * 
 	 * @param	format
 	 * 				A format
