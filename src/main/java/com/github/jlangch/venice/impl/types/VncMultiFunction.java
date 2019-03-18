@@ -31,14 +31,14 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 public class VncMultiFunction extends VncFunction {
 
-	public VncMultiFunction(final String name, final VncFunction dicriminatorFn) {
+	public VncMultiFunction(final String name, final VncFunction discriminatorFn) {
 		super(name);
 		
-		if (dicriminatorFn == null) {
-			throw new VncException("A dicriminator function must not be null");
+		if (discriminatorFn == null) {
+			throw new VncException("A discriminator function must not be null");
 		}
 		
-		this.dicriminatorFn = dicriminatorFn;
+		this.discriminatorFn = discriminatorFn;
 	}
 
 	@Override
@@ -59,12 +59,12 @@ public class VncMultiFunction extends VncFunction {
 	
 	@Override
 	public VncVector getParams() { 
-		return dicriminatorFn.getParams();
+		return discriminatorFn.getParams();
 	}
 
 	@Override
 	public VncVal apply(final VncList params) {
-		final VncVal dispatchVal = dicriminatorFn.apply(params);
+		final VncVal dispatchVal = discriminatorFn.apply(params);
 		
 		VncFunction fn = functions.get(dispatchVal);
 		if (fn == null) {
@@ -94,6 +94,6 @@ public class VncMultiFunction extends VncFunction {
 	
 	private static final VncKeyword DEFAULT_METHOD = new VncKeyword(":default");
     
-	private final VncFunction dicriminatorFn;
+	private final VncFunction discriminatorFn;
     private final ConcurrentHashMap<VncVal,VncFunction> functions = new ConcurrentHashMap<>();
 }
