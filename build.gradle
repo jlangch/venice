@@ -89,7 +89,7 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
 	description="Generate cheatsheet"
 
     main = 'com.github.jlangch.venice.impl.docgen.DocGenerator'
-    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.allSource
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -138,13 +138,15 @@ artifacts {
 }
 
 dependencies {
-    compile 'org.antlr:ST4:4.0.8'
-    compile 'org.apache.commons:commons-text:1.2'
-    compile 'org.apache.commons:commons-lang3:3.7'
-    compile 'com.github.librepdf:openpdf:1.2.10'
-    compile 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
-    compile 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
+	// required for cheatsheet generation
+    compileOnly 'org.antlr:ST4:4.0.8'
+    compileOnly 'org.apache.commons:commons-text:1.2'
+    compileOnly 'org.apache.commons:commons-lang3:3.7'
+    compileOnly 'com.github.librepdf:openpdf:1.2.10'
+    compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
+    compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
 
+	// runtime dependencies
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'
     compile 'com.grack:nanojson:1.3'
