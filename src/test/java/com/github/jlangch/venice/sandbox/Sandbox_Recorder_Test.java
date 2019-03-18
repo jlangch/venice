@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.sandbox;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -31,7 +31,7 @@ import com.github.jlangch.venice.javainterop.SandboxRecorder;
 public class Sandbox_Recorder_Test {
 
 	@Test
-	@Ignore
+	@Disabled
 	public void testSandboxRecorder() {
 		final Venice venice = new Venice(new SandboxRecorder());
 		

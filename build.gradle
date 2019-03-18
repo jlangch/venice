@@ -39,6 +39,13 @@ compileJava {
     options.compilerArgs += "-parameters"
 }
 
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.encoding = 'UTF-8'
+    options.compilerArgs += "-parameters"
+}
+
 repositories {
     jcenter()
 }
@@ -52,6 +59,11 @@ sourceSets {
             srcDirs = ['src/main/resources']
 		}
     }
+}
+
+test {
+	useJUnitPlatform {
+	}
 }
 
 jar {
@@ -138,6 +150,10 @@ artifacts {
 }
 
 dependencies {
+	// unit tests
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
+    
 	// required for cheatsheet generation
     compileOnly 'org.antlr:ST4:4.0.8'
     compileOnly 'org.apache.commons:commons-text:1.2'
