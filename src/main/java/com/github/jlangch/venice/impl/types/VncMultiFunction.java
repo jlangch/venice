@@ -70,7 +70,6 @@ public class VncMultiFunction extends VncFunction {
 		return findMethod(dispatchVal).apply(params);
 	}
 
-	
 	@Override public int typeRank() {
 		return 102;
 	}

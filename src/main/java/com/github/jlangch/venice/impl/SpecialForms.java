@@ -184,6 +184,58 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction defmulti = 
+		new SpecialFormsDocFunction(
+				"defmulti",
+				VncFunction
+				.meta()
+				.arglists("(defmulti name dispatch-fn)")		
+				.doc("Creates a new multimethod with the associated dispatch function.")
+				.examples(
+					"(do                                                                       \n" +
+					"   ;;defmulti with dispatch function                                      \n" +
+					"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
+					"                                                                          \n" +
+					"   ;;defmethod provides a function implementation for a particular value  \n" +
+					"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+					"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
+					"   (defmethod salary :default  [amount] (:b amount))                      \n" +
+					"                                                                          \n" +
+					"   [(salary {:t \"com\" :b 1000})                                         \n" +
+					"    (salary {:t \"bon\" :b 1000})                                         \n" +
+					"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
+					")                                                                           ")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
+	public static VncFunction defmethod = 
+		new SpecialFormsDocFunction(
+				"defmethod",
+				VncFunction
+				.meta()
+				.arglists("(defmethod multifn-name dispatch-val & fn-tail)")		
+				.doc("Creates a new method of multimethod associated with a dispatch-value.")
+				.examples(
+						"(do                                                                       \n" +
+						"   ;;defmulti with dispatch function                                      \n" +
+						"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
+						"                                                                          \n" +
+						"   ;;defmethod provides a function implementation for a particular value  \n" +
+						"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+						"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
+						"   (defmethod salary :default  [amount] (:b amount))                      \n" +
+						"                                                                          \n" +
+						"   [(salary {:t \"com\" :b 1000})                                         \n" +
+						"    (salary {:t \"bon\" :b 1000})                                         \n" +
+						"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
+						")                                                                           ")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction def_dynamic = 
 		new SpecialFormsDocFunction(
 				"def-dynamic",
@@ -493,6 +545,8 @@ public class SpecialForms {
 					.put("eval",		eval)
 					.put("def",			def)
 					.put("defonce",		defonce)
+					.put("defmulti",	defmulti)
+					.put("defmethod",	defmethod)
 					.put("def-dynamic",	def_dynamic)
 					.put("binding",		binding)
 					.put("do",			do_)

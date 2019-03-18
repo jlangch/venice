@@ -917,6 +917,8 @@ public class DocGenerator {
 		generic.addItem(getDocItem("def"));
 		generic.addItem(getDocItem("defonce"));
 		generic.addItem(getDocItem("def-dynamic"));
+		generic.addItem(getDocItem("defmulti"));
+		generic.addItem(getDocItem("defmethod"));
 		generic.addItem(getDocItem("if"));
 		generic.addItem(getDocItem("do"));
 		generic.addItem(getDocItem("let"));
