@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/eclipse/vavr-0.10.0.jar" sourcepath="lib/eclipse/vavr-0.10.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/json-simple-1.1.1.jar" sourcepath="lib/eclipse/json-simple-1.1.1-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="src/main/resources"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
