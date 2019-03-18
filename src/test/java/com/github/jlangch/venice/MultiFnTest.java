@@ -149,10 +149,8 @@ public class MultiFnTest {
 
 		final String s = 
 				"(do                                                                       \n" +
-				"   ;;defmulti with dispatch function                                      \n" +
 				"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
 				"                                                                          \n" +
-				"   ;;defmethod provides a function implementation for a particular value  \n" +
 				"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
 				"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
 				"   (defmethod salary :default  [amount] (:b amount))                      \n" +
@@ -170,20 +168,20 @@ public class MultiFnTest {
 		final Venice venice = new Venice();
 
 		final String s = 
-				"(do                                                        \n" +
-				"   (defmulti test (fn[x y & xs] (count xs)))               \n" +
-				"                                                           \n" +
-				"   (defmethod test 0 [x y & xs] 0)                         \n" +
-				"   (defmethod test 1 [x y & xs] 1)                         \n" +
-				"   (defmethod test 2 [x y & xs] 2)                         \n" +
-				"   (defmethod test :default  [x y & xs] 9)                 \n" +
-				"                                                           \n" +
-				"   [(test 1 2)                                             \n" +
-				"    (test 1 2 3)                                           \n" +
-				"    (test 1 2 3 4)                                         \n" +
-				"    (test 1 2 3 4 5)]                                      \n" +
-				")                                                            ";
+				"(do                                                \n" +
+				"   (defmulti test (fn[x y & xs] (count xs)))       \n" +
+				"                                                   \n" +
+				"   (defmethod test 0 [x y & xs] 2)                 \n" +
+				"   (defmethod test 1 [x y & xs] 3)                 \n" +
+				"   (defmethod test 2 [x y & xs] 4)                 \n" +
+				"   (defmethod test :default  [x y & xs] 9)         \n" +
+				"                                                   \n" +
+				"   [(test 1 2)                                     \n" +
+				"    (test 1 2 3)                                   \n" +
+				"    (test 1 2 3 4)                                 \n" +
+				"    (test 1 2 3 4 5)]                              \n" +
+				")                                                  ";
 	
-		assertEquals("[0 1 2 9]", venice.eval("(str " + s + ")"));
+		assertEquals("[2 3 4 9]", venice.eval("(str " + s + ")"));
 	}
 }

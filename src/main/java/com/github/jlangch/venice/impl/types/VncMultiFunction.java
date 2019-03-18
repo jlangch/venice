@@ -54,10 +54,18 @@ public class VncMultiFunction extends VncFunction {
 		if (fn == null) {
 			throw new VncException("A multifunction method must not be null");
 		}
-		
-		functions.put(dispatchVal, fn);
+				
+		functions.put(dispatchVal, fn); // replace is allowed
 	}
-	
+
+	public void removeFn(final VncVal dispatchVal) {
+		if (dispatchVal == null) {
+			throw new VncException("A dispatch value must not be null");
+		}
+		
+		functions.remove(dispatchVal);
+	}
+
 	@Override
 	public VncVector getParams() { 
 		return discriminatorFn.getParams();
@@ -91,7 +99,7 @@ public class VncMultiFunction extends VncFunction {
 		}
 		
 		throw new VncException(String.format(
-					"No matching '%s' multifunction defined for dispatch value %s", 
+					"No matching '%s' multifunction method defined for dispatch value %s", 
 					getName(),
 					Printer._pr_str(dispatchVal, true)));
 	}
