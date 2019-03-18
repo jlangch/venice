@@ -216,7 +216,7 @@ public class SpecialForms {
 				VncFunction
 				.meta()
 				.arglists("(defmethod multifn-name dispatch-val & fn-tail)")		
-				.doc("Creates a new method of multimethod associated with a dispatch-value.")
+				.doc("Creates a new method for a multimethod associated with a dispatch-value.")
 				.examples(
 						"(do                                                                       \n" +
 						"   ;;defmulti with dispatch function                                      \n" +
