@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class MultiFnTest {
 
 	@Test
-	public void test_defmulti() {
+	public void test_defmulti_simple() {
 		final Venice venice = new Venice();
 
 		final String s = 
@@ -42,7 +42,7 @@ public class MultiFnTest {
 	}
 
 	@Test
-	public void test_defmethod() {
+	public void test_defmulti() {
 		final Venice venice = new Venice();
 
 		final String s = 
@@ -58,7 +58,7 @@ public class MultiFnTest {
 	}
 
 	@Test
-	public void test_defmethod_default() {
+	public void test_defmulti_default() {
 		final Venice venice = new Venice();
 
 		final String s = 
@@ -75,7 +75,7 @@ public class MultiFnTest {
 	}
 
 	@Test
-	public void test_defmethod_1() {
+	public void test_defmulti_1() {
 		final Venice venice = new Venice();
 
 		final String s_en = 
@@ -144,7 +144,7 @@ public class MultiFnTest {
 	}
 
 	@Test
-	public void test_defmethod_2() {
+	public void test_defmulti_2() {
 		final Venice venice = new Venice();
 
 		final String s = 
@@ -163,5 +163,27 @@ public class MultiFnTest {
 				")                                                                           ";
 	
 		assertEquals("[1500 1099 1000]", venice.eval("(str " + s + ")"));
+	}
+
+	@Test
+	public void test_defmulti_varargs() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                        \n" +
+				"   (defmulti test (fn[x y & xs] (count xs)))               \n" +
+				"                                                           \n" +
+				"   (defmethod test 0 [x y & xs] 0)                         \n" +
+				"   (defmethod test 1 [x y & xs] 1)                         \n" +
+				"   (defmethod test 2 [x y & xs] 2)                         \n" +
+				"   (defmethod test :default  [x y & xs] 9)                 \n" +
+				"                                                           \n" +
+				"   [(test 1 2)                                             \n" +
+				"    (test 1 2 3)                                           \n" +
+				"    (test 1 2 3 4)                                         \n" +
+				"    (test 1 2 3 4 5)]                                      \n" +
+				")                                                            ";
+	
+		assertEquals("[0 1 2 9]", venice.eval("(str " + s + ")"));
 	}
 }
