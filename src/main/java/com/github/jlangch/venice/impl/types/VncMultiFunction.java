@@ -52,8 +52,9 @@ public class VncMultiFunction extends VncFunction {
 			throw new VncException("A dispatch value must not be null");
 		}
 		if (fn == null) {
-			throw new VncException("A multi function method must not be null");
+			throw new VncException("A multifunction method must not be null");
 		}
+		
 		functions.put(dispatchVal, fn);
 	}
 	
@@ -65,35 +66,42 @@ public class VncMultiFunction extends VncFunction {
 	@Override
 	public VncVal apply(final VncList params) {
 		final VncVal dispatchVal = discriminatorFn.apply(params);
-		
-		VncFunction fn = functions.get(dispatchVal);
-		if (fn == null) {
-			fn = functions.get(DEFAULT_METHOD);
-		}
-		if (fn == null) {
-			throw new VncException(String.format(
-					"No matching '%s' multi function defined for dispatch value %s", 
-					getName(),
-					Printer._pr_str(dispatchVal, true)));
-		}
-		
-		return fn.apply(params);
+				
+		return findFunction(dispatchVal).apply(params);
 	}
 
 	
 	@Override public int typeRank() {
 		return 102;
 	}
+	
 	@Override 
 	public String toString() {
 		return "multi-fn " + getName();
 	}
 		
+	private VncFunction findFunction(final VncVal dispatchVal) {
+		final VncFunction fn = functions.get(dispatchVal);
+		if (fn != null) {
+			return fn;
+		}
+
+		final VncFunction defaultFn = functions.get(DEFAULT_METHOD);
+		if (defaultFn != null) {
+			return defaultFn;
+		}
+		
+		throw new VncException(String.format(
+					"No matching '%s' multifunction defined for dispatch value %s", 
+					getName(),
+					Printer._pr_str(dispatchVal, true)));
+	}
+	
 	
 	private static final long serialVersionUID = -1848883965231344442L;
 	
 	private static final VncKeyword DEFAULT_METHOD = new VncKeyword(":default");
-    
+
 	private final VncFunction discriminatorFn;
-    private final ConcurrentHashMap<VncVal,VncFunction> functions = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<VncVal,VncFunction> functions = new ConcurrentHashMap<>();
 }

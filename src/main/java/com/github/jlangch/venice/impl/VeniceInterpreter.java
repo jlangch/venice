@@ -224,9 +224,9 @@ public class VeniceInterpreter implements Serializable  {
 						CallStackUtil.runWithCallStack(
 								CallFrame.fromVal(ast), 
 								() -> { throw new VncException(String.format(
-													"No multi function '%s' defined for the method definition", 
+													"No multifunction '%s' defined for the method definition", 
 													multiFnName.getName())); 
-								      });		
+									  });
 					}
 					final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
 					final VncVal dispatchVal = ast.nth(2);
@@ -236,17 +236,18 @@ public class VeniceInterpreter implements Serializable  {
 						CallStackUtil.runWithCallStack(
 								CallFrame.fromVal(ast), 
 								() -> { throw new VncException(String.format(
-										"A method definition for the multi function '%s' must have %d parameters", 
-										multiFnName.getName(),
-										multiFn.getParams().size()));
-								      });								
+													"A method definition for the multifunction '%s' " 
+														+ "must have %d parameters", 
+													multiFnName.getName(),
+													multiFn.getParams().size()));
+									  });
 					}
-					final VncVector preConditions = getFnPreconditions(ast.nth(4));					
+					final VncVector preConditions = getFnPreconditions(ast.nth(4));
 					final VncList body = ast.slice(preConditions == null ? 4 : 5);
 					final VncFunction fn = buildFunction(multiFnName.getName(), params, body, preConditions, env);
 
 					multiFn.addFn(dispatchVal, fn);
-					return multiFn;					
+					return multiFn;
 				}
 								
 				case "def-dynamic": { // (def-dynamic name value)
@@ -340,7 +341,7 @@ public class VeniceInterpreter implements Serializable  {
 					// | or, and        | (or test test ... tail)                   | No            |
 					// +----------------+-------------------------------------------+---------------+
 
-					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();					
+					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();
 					final Env recur_env = recursionPoint.getLoopEnv();
 
 					if (ast.size() == 2) {
@@ -465,7 +466,7 @@ public class VeniceInterpreter implements Serializable  {
 						checkInterrupted();
 
 						// invoke function with call frame
-						final CallFrame frame = CallFrame.fromFunction(fn, a0);		
+						final CallFrame frame = CallFrame.fromFunction(fn, a0);
 						ThreadLocalMap.getCallStack().push(frame);
 						try {
 							final VncVal val = fn.apply(el.rest());
@@ -504,7 +505,7 @@ public class VeniceInterpreter implements Serializable  {
 			return env.get((VncSymbol)ast);
 		} 
 		else if (Types.isVncSequence(ast)) {
-			final VncSequence seq = (VncSequence)ast;		
+			final VncSequence seq = (VncSequence)ast;
 			
 			switch(seq.size()) {
 				case 0: 
@@ -565,7 +566,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal a0 = ((VncList)ast_).first();
 			if (!Types.isVncSymbol(a0)) break;
 			
-			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);			
+			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);
 			if (!Types.isVncMacro(fn)) break;
 			
 			expanded = true;
@@ -672,7 +673,7 @@ public class VeniceInterpreter implements Serializable  {
 					CallFrame.fromVal("dorun", ast), 
 					() -> { throw new VncException(
 										"dorun requires two arguments a count and an expression to run");
-						  });		
+						  });
 		}
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
@@ -766,7 +767,7 @@ public class VeniceInterpreter implements Serializable  {
 									"Function 'prof' expects a single keyword argument: " +
 									":on, :off, :status, :clear, :clear-all-but, :data, " +
 									"or :data-formatted");
-				      });	
+					  });	
 	
 		return Nil;
 	}
@@ -996,7 +997,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 			}
 			
-		    private static final long serialVersionUID = -1L;
+			private static final long serialVersionUID = -1L;
 		};
 	}
 
@@ -1037,7 +1038,7 @@ public class VeniceInterpreter implements Serializable  {
 							() -> { throw new AssertionException(String.format(
 												"pre-condition assert failed: %s",
 												((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
-								  });		
+								  });
 				}
  			}
 		}

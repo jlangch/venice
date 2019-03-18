@@ -784,6 +784,8 @@ public class SpecialFormsTest {
 	
 		assertEquals("2",   venice.eval("(str ({:a 1 :b 2} :b))"));
 		assertEquals("175", venice.eval("(str ((. :java.awt.Color :PINK) :blue)))"));
+		
+		assertEquals("2",   venice.eval("(str ({\"a\" 1 \"b\" 2} \"b\"))"));
 	}	
 
 }
