@@ -20,7 +20,8 @@
  * limitations under the License.
  */
  
- 
+ // https://guides.gradle.org/creating-new-gradle-builds/
+ //
  // to get the gradle wrapper init a new gradle project:
  //   ❯ mkdir test
  //   ❯ cd test
@@ -38,13 +39,6 @@ compileJava {
     options.compilerArgs += "-parameters"
 }
 
-compileTestJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    options.encoding = 'UTF-8'
-    options.compilerArgs += "-parameters"
-}
-
 repositories {
     jcenter()
 }
@@ -53,7 +47,6 @@ sourceSets {
     main {
         java {
             srcDirs = ['src/main/java']
-            exclude 'com/github/jlangch/venice/impl/docgen/**'
         }
         resources {
             srcDirs = ['src/main/resources']
@@ -62,11 +55,6 @@ sourceSets {
 }
 
 jar {
-    from('src/main/resources') {
-        include 'com/github/jlangch/venice/**/*.venice'
-        include 'com/github/jlangch/venice/**/*.json'
-    }
-
     manifest {
         attributes 'Main-Class': 'com.github.jlangch.venice.Launcher'
     }
@@ -75,17 +63,21 @@ jar {
 }
 
 shadowJar {
-    // https://github.com/johnrengelman/shadow/blob/master/README.md
-    
+    // https://github.com/johnrengelman/shadow/
+
+	dependencies {
+		exclude(dependency('org.apache.logging.log4j::'))
+		exclude(dependency('org.hamcrest::'))
+		exclude(dependency('org.antlr::'))
+		exclude(dependency('org.apache.commons::'))
+		exclude(dependency('com.github.librepdf::'))
+		exclude(dependency('org.xhtmlrenderer::'))
+	}
+         
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
-    relocate 'org.json.simple', 'org.repackage.org.json.simple'
-    
-    from('src/main/resources') {
-        include 'com/github/jlangch/venice/**/*.venice'
-        include 'com/github/jlangch/venice/**/*.json'
-    }
-
+    relocate 'com.grack.nanojson', 'org.repackage.com.grack.nanojson'
+        
     manifest {
         attributes 'Main-Class': 'com.github.jlangch.venice.Launcher'
     }
@@ -146,16 +138,14 @@ artifacts {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
-
-//    compile 'org.antlr:ST4:4.0.8'
-//    compile 'org.apache.commons:commons-text:1.2'
-//    compile 'org.apache.commons:commons-lang3:3.7'
-//    compile 'com.github.librepdf:openpdf:1.2.10'
-//    compile 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
-//    compile 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
+    compile 'org.antlr:ST4:4.0.8'
+    compile 'org.apache.commons:commons-text:1.2'
+    compile 'org.apache.commons:commons-lang3:3.7'
+    compile 'com.github.librepdf:openpdf:1.2.10'
+    compile 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
+    compile 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
 
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'
-    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'com.grack:nanojson:1.3'
 }

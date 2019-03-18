@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.grack.nanojson.JsonObject;
+import com.grack.nanojson.JsonParser;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
@@ -53,12 +53,12 @@ public class ReplConfig {
 		config.put("colors.use", cli.switchPresent("-colors") ? "true" : "false");
 
 		try {
-			final JSONObject jsonObj = loadJsonConfig();
+			final JsonObject jsonObj = loadJsonConfig();
 			config.put("prompt", (String)jsonObj.get("prompt"));
 			config.put("secondary-prompt", (String)jsonObj.get("secondary-prompt"));
 			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
 
-			final JSONObject colObj = (JSONObject)jsonObj.get("colors");
+			final JsonObject colObj = (JsonObject)jsonObj.get("colors");
 			if (colObj != null) {
 				for(String cname : Arrays.asList("result", "stdout", "error", "system", "interrupt", "prompt")) {
 					config.put("colors." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
@@ -112,17 +112,15 @@ public class ReplConfig {
 						.getResourceAsString("UTF-8");
 	}
 
-	private static JSONObject loadJsonConfig() throws Exception {
+	private static JsonObject loadJsonConfig() throws Exception {
 		final File fileJson = new File("repl.json");
-
-		final JSONParser parser = new JSONParser();
 
 		if (fileJson.isFile()) {
 			System.out.println("Loading REPL config from " + fileJson + "...");
-			return (JSONObject)parser.parse(new FileReader(fileJson));
+			return (JsonObject)JsonParser.object().from(new FileReader(fileJson));
 		}
 		else {
-			return (JSONObject)parser.parse(getRawClasspathConfig());
+			return (JsonObject)JsonParser.object().from(getRawClasspathConfig());
 		}
 	}
 	
