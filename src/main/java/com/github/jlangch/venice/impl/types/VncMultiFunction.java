@@ -67,7 +67,7 @@ public class VncMultiFunction extends VncFunction {
 	public VncVal apply(final VncList params) {
 		final VncVal dispatchVal = discriminatorFn.apply(params);
 				
-		return findFunction(dispatchVal).apply(params);
+		return findMethod(dispatchVal).apply(params);
 	}
 
 	
@@ -80,7 +80,7 @@ public class VncMultiFunction extends VncFunction {
 		return "multi-fn " + getName();
 	}
 		
-	private VncFunction findFunction(final VncVal dispatchVal) {
+	private VncFunction findMethod(final VncVal dispatchVal) {
 		final VncFunction fn = functions.get(dispatchVal);
 		if (fn != null) {
 			return fn;
