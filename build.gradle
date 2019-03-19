@@ -30,6 +30,13 @@
 // Build the Venice bundle for uploading to Maven
 //   $> ./gradlew bundle
 //
+// Modify the Venice version:
+//   - gradle.properties
+//   - pom.xml
+//   - README.md
+//   - src/main/java/com/github/jlangch/venice/Version
+//   - doc/maven-central.svg
+//   
 // Get the Gradle wrapper (Venice currently uses Gradle 5.2.1)
 //   See https://guides.gradle.org/creating-new-gradle-builds/
 //
@@ -100,9 +107,15 @@ shadowJar {
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
     relocate 'com.grack.nanojson', 'org.repackage.com.grack.nanojson'
+
+    def buildTimestamp = new Date().format("yyyy-MM-dd'T'HH:mm:ss")
         
     manifest {
-        attributes 'Main-Class': 'com.github.jlangch.venice.Launcher'
+        attributes 'Main-Class': 'com.github.jlangch.venice.Launcher',
+                   'Build-Date': buildTimestamp,
+                   'Implementation-Vendor' : 'com.github.jlangch',
+                   'Implementation-Title' : 'Venice',
+                   'Implementation-Version' : "${version}"
     }
     
     archiveName = "venice-${version}.jar"

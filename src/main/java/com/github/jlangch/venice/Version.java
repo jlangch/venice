@@ -21,9 +21,32 @@
  */
 package com.github.jlangch.venice;
 
+import java.net.URL;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 public class Version {
 
-	public static final String VERSION = "1.4.1-snapshot";
+	public static String getVersionFromManifest() {
+		try {
+			final Class<?> clazz = Version.class;
+			final String className = clazz.getSimpleName() + ".class";
+			final String classPath = clazz.getResource(className).toString();
+			if (!classPath.startsWith("jar")) {	  
+				return null; // Class not from JAR
+			}
+			
+			final String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) 
+											+ "/META-INF/MANIFEST.MF";
+			final Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+			final Attributes attr = manifest.getMainAttributes();
+			return attr.getValue("Implementation-Version");		
+		}
+		catch(Exception ex) {
+			return null;
+		}
+	}
 	
+	
+	public static final String VERSION = "1.4.1-snapshot";
 }
