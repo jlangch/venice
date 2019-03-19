@@ -30,7 +30,7 @@
 // Build the Venice bundle for uploading to Maven
 //   $> ./gradlew bundle
 //
-// Get the Gradle wrapper
+// Get the Gradle wrapper (Venice currently uses Gradle 5.2.1)
 //   See https://guides.gradle.org/creating-new-gradle-builds/
 //
 //   Create and init a gradle project:
