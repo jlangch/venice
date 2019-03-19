@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.StopWatch;
+
 
 public class PrecompiledTest {
 		
@@ -38,5 +40,28 @@ public class PrecompiledTest {
 		System.out.println("PreCompiled size: " + data.length);
 		assertEquals(Long.valueOf(4), venice.eval(PreCompiled.deserialize(data)));
 	}
-	
+
+	@Test
+	public void test_elapsed() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ 1 3))");
+		
+		final byte[] data = precomp.serialize();
+		
+		final PreCompiled pre = PreCompiled.deserialize(data);
+		
+		// warmup
+		for(int ii=0; ii<40_000; ii++) {
+			venice.eval(pre);
+		}
+		
+		final StopWatch	sw = StopWatch.millis();
+		for(int ii=0; ii<10_000; ii++) {
+			venice.eval(pre);
+		}	
+		
+		System.out.println("Elapsed (pre-compiled, 10'000 calls): " + sw.stop().toString()); 
+	}
+
 }
