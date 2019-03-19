@@ -20,12 +20,24 @@
  * limitations under the License.
  */
  
- // https://guides.gradle.org/creating-new-gradle-builds/
- //
- // to get the gradle wrapper init a new gradle project:
- //   ❯ mkdir test
- //   ❯ cd test
- //   ❯ gradle init
+// -----------------------------------------------------------------------------
+// Build the Venice jar for testing
+//   $> ./gradlew shadowJar
+//
+// Build the Venice cheatsheet (HTML & PDF)
+//   $> ./gradlew cheatsheet
+//
+// Build the Venice bundle for uploading to Maven
+//   $> ./gradlew bundle
+//
+// Get the Gradle wrapper
+//   See https://guides.gradle.org/creating-new-gradle-builds/
+//
+//   Create and init a gradle project:
+//      $> mkdir test
+//      $> cd test
+//      $> gradle init
+// -----------------------------------------------------------------------------
 
 plugins {
     id 'java'
@@ -78,7 +90,6 @@ shadowJar {
     // https://github.com/johnrengelman/shadow/
 
 	dependencies {
-		exclude(dependency('org.apache.logging.log4j::'))
 		exclude(dependency('org.hamcrest::'))
 		exclude(dependency('org.antlr::'))
 		exclude(dependency('org.apache.commons::'))
@@ -162,7 +173,7 @@ dependencies {
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
 
-	// runtime dependencies
+	// runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'
     compile 'com.grack:nanojson:1.3'
