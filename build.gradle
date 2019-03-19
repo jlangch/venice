@@ -86,7 +86,6 @@ test {
 }
 
 jar {
-	throw new StopExecutionException("Please use the 'shadowJar' task!")
 }
 
 shadowJar {
