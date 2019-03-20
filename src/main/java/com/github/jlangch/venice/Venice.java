@@ -126,27 +126,29 @@ public class Venice {
 
 		meterRegistry.disable(); // enable when really needed
 
-		final long nanos = System.nanoTime();
-
-		return runWithSandbox( () -> {
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
-
-			final Env env = addParams(getPrecompiledEnv(), params);
-
-			if (meterRegistry.enabled) {
-				meterRegistry.record("venice.setup", System.nanoTime() - nanos);
-			}
-				 
-			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
-
-			final Object jResult = JavaInteropUtil.convertToJavaObject(result);
-			
-			if (meterRegistry.enabled) {
-				meterRegistry.record("venice.total", System.nanoTime() - nanos);
-			}
-
-			return jResult;
-		});
+		synchronized(precompiledEnv) {
+			final long nanos = System.nanoTime();
+	
+			return runWithSandbox( () -> {
+				final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
+	
+				final Env env = addParams(getPrecompiledEnv(), params);
+	
+				if (meterRegistry.enabled) {
+					meterRegistry.record("venice.setup", System.nanoTime() - nanos);
+				}
+					 
+				final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
+	
+				final Object jResult = JavaInteropUtil.convertToJavaObject(result);
+				
+				if (meterRegistry.enabled) {
+					meterRegistry.record("venice.total", System.nanoTime() - nanos);
+				}
+	
+				return jResult;
+			});
+		}
 	}
 
 	/**
@@ -253,11 +255,8 @@ public class Venice {
 	
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		final Env env = venice.createEnv();
-		
-		addParams(env, params);
-		
-		return env;
+		final Env env = venice.createEnv();		
+		return addParams(env, params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
