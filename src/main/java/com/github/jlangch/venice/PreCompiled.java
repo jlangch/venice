@@ -34,6 +34,10 @@ import com.github.jlangch.venice.impl.Env;
 
 public class PreCompiled implements Serializable {
 	
+	public PreCompiled(final String name, final Object precompiled) {
+		this(name, precompiled, null);
+	}
+	
 	public PreCompiled(final String name, final Object precompiled, final Env env) {
 		this.name = name;
 		this.precompiled = precompiled;

@@ -88,7 +88,7 @@ public class Venice {
 
 		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false));
 		
-		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName), null);
+		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName));
 
 		meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 		
