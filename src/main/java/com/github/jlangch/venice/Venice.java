@@ -124,24 +124,26 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
+		meterRegistry.disable(); // enable when really needed
+
 		final long nanos = System.nanoTime();
 
-		final Env root = getPrecompiledEnv();
-		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
 
-			final Env env = addParams(new Env(root), params);
+			final Env env = addParams(getPrecompiledEnv(), params);
 
-			meterRegistry.reset();
-
-			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
+			if (meterRegistry.enabled) {
+				meterRegistry.record("venice.setup", System.nanoTime() - nanos);
+			}
 				 
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
 
 			final Object jResult = JavaInteropUtil.convertToJavaObject(result);
 			
-			meterRegistry.record("venice.total", System.nanoTime() - nanos);
+			if (meterRegistry.enabled) {
+				meterRegistry.record("venice.total", System.nanoTime() - nanos);
+			}
 
 			return jResult;
 		});
