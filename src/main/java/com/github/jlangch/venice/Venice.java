@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
@@ -40,8 +41,6 @@ import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
-import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -89,13 +88,7 @@ public class Venice {
 
 		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false));
 		
-		final Env env = createEnv(venice, null);
-		
-		// The default stdout PrintStream is not serializable, so remove it
-		final Env root = env.getRootEnv();
-		root.setGlobal(new DynamicVar(new VncSymbol("*out*"), Constants.Nil));
-
-		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName), env);
+		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName), null);
 
 		meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 		
@@ -133,18 +126,12 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		// The stdout PrintStream is not serializable, so re-add it as default stream
-		final Env root = precompiled.getEnv().getRootEnv();
-		root.setGlobal(
-				new DynamicVar(
-						new VncSymbol("*out*"), 
-						new VncJavaObject(new PrintStream(System.out, true))));
-
+		final Env root = getPrecompiledEnv();
 		
 		return runWithSandbox( () -> {
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
 
-			final Env env = addParams(new Env(precompiled.getEnv()), params);
+			final Env env = addParams(new Env(root), params);
 
 			meterRegistry.reset();
 
@@ -273,7 +260,7 @@ public class Venice {
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
 		if (params != null) {
-			params.entrySet().forEach(entry -> {
+			for(Map.Entry<String,Object> entry : params.entrySet()) {
 				final String key = entry.getKey();
 				final Object val = entry.getValue();
 
@@ -285,7 +272,7 @@ public class Venice {
 				else {
 					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));
 				}
-			});
+			}
 		}
 		
 		return env;
@@ -346,6 +333,18 @@ public class Venice {
 		}
 	}
 	
+	private Env getPrecompiledEnv() {
+		final Env env = precompiledEnv.get();
+		if (env != null) {
+			return env;
+		}
+		else {
+			final Env e = new VeniceInterpreter().createEnv();
+			precompiledEnv.set(e);
+			return e;
+		}		
+	}
+	
 	
 	private final static AtomicLong timeoutThreadPoolCounter = new AtomicLong(0);
 
@@ -358,4 +357,5 @@ public class Venice {
 	
 	private final IInterceptor interceptor;
 	private final MeterRegistry meterRegistry = new MeterRegistry(false);
+	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 }
