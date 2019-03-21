@@ -4,6 +4,8 @@
 ;; (https://github.com/hypirion/clj-xchart). Venice's xchart
 ;; builds heavily on Jean Niklas smart work.
 
+(import :com.github.jlangch.venice.impl.util.xchart.XChartEncoder)
+
 (import :org.knowm.xchart.BubbleChart)
 (import :org.knowm.xchart.XYChart)
 (import :org.knowm.xchart.PieChart)
@@ -105,11 +107,14 @@
       (let [format (get xchart/bitmap-formats type)]
            (. :BitmapEncoder :getBitmapBytes chart format)))
 
-(defn xchart/to-bytes-with-dpi [chart type dpi]
+(defn xchart/to-bytes-with-dpi-old [chart type dpi]
       (let [format (get xchart/bitmap-formats type)
             file (io/temp-file "xchart-", (get xchart/file-extension type))]
          (. :BitmapEncoder :saveBitmapWithDPI chart file format dpi)
          (io/slurp-temp-file file :binary true :remove true)))
+
+(defn xchart/to-bytes-with-dpi [chart type dpi]
+      (. :XChartEncoder :getBitmapBytesWithDPI chart type dpi))
 
 (defn xchart/write-to-file [chart type dpi file]
       (let [bytes (xchart/to-bytes-with-dpi chart type dpi)]

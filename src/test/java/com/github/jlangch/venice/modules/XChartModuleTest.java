@@ -247,8 +247,27 @@ public class XChartModuleTest {
 			"    (sleep 20000)                                                               \n" +
 			") ";
 
-
 		System.out.println(venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	@Disabled
+	public void test_encoder() {
+		final Venice venice = new Venice();
+
+		final String script =
+			"(do                                                  \n" +
+			"   (load-module :xchart)                             \n" +
+			"                                                     \n" +
+			"   (xchart/to-bytes-with-dpi-ex                      \n" +
+			"      (xchart/pie-chart                              \n" +
+			"         { \"A\" 400 \"B\" 310 \"C\" 50 }            \n" +
+			"         { :title \"Pie Chart\" :theme :xchart } )   \n" +
+			"      :png                                           \n" +
+			"      120)                                           \n" +
+			") ";
+
+		System.out.println(venice.eval(script));
 	}
 
 	@Test
@@ -272,9 +291,7 @@ public class XChartModuleTest {
 			"   (macroexpand (xchart/doto-cond 100 200 (p 200) 300 (p 300)))    \n" +
 			") ";
 
-
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
-
 
 }
