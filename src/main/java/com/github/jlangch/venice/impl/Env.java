@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,14 +41,27 @@ import com.github.jlangch.venice.util.CallFrame;
 public class Env implements Serializable {
 	
 	public Env() {
-		this(null);
+		this((Env)null);
 	}
 
 	public Env(final Env outer) {
 		this.outer = outer;
 		this.level = outer == null ? 0 : outer.level() + 1;
+		this.coreGlobalSymbols = outer == null ? null : outer.coreGlobalSymbols; 
 		this.globalSymbols = outer == null ? new ConcurrentHashMap<>() : outer.globalSymbols;
 		this.localSymbols = new ConcurrentHashMap<>();
+	}
+	
+	private Env(final Map<VncSymbol,Var> coreGlobalSymbols) {
+		this.outer = null;
+		this.level = 0;
+		this.coreGlobalSymbols = coreGlobalSymbols; 
+		this.globalSymbols = new ConcurrentHashMap<>();
+		this.localSymbols = new ConcurrentHashMap<>();
+	}
+
+	public Env makeCoreOnlyGlobalEnv() {
+		return new Env(this.globalSymbols);
 	}
 
 	public VncVal get(final VncSymbol key) {
@@ -183,12 +197,6 @@ public class Env implements Serializable {
 		return hasGlobalVar(key);
 	}
 
-	public Env getRootEnv() {
-		Env env = this;
-		while(env.outer != null) env = env.outer;
-		return env;
-	}
-
 	public Env getLevelEnv(final int level) {
 		Env env = this;
 		if (env.level == level) {
@@ -211,7 +219,7 @@ public class Env implements Serializable {
 		return new StringBuilder()
 					.append("level ").append(level).append(":")
 					.append("\n   [local]\n").append(toString(localSymbols, "      "))
-					.append("\n   [global]\n").append(toString(globalSymbols, "      "))
+					.append("\n   [global]\n").append(toString(getAllGlobalSymbols(), "      "))
 					.toString();
 	}
 	
@@ -224,7 +232,7 @@ public class Env implements Serializable {
 	
 	public String globalsToString() {
 		return new StringBuilder()
-					.append("[global]\n").append(toString(globalSymbols, "   "))
+					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   "))
 					.toString();
 	}
 	
@@ -271,6 +279,10 @@ public class Env implements Serializable {
 	}
 	
 	private Var getGlobalVar(final VncSymbol key) {
+		if (coreGlobalSymbols != null) {
+			final Var v = coreGlobalSymbols.get(key);
+			if (v != null) return v;
+		}
 		return globalSymbols.get(key);
 	}
 
@@ -279,6 +291,9 @@ public class Env implements Serializable {
 	}
 
 	private boolean hasGlobalVar(final VncSymbol key) {
+		if (coreGlobalSymbols != null && coreGlobalSymbols.containsKey(key)) {
+			return true;
+		}
 		return globalSymbols.containsKey(key);
 	}
 
@@ -293,12 +308,22 @@ public class Env implements Serializable {
 	private boolean hasLocalVar(final VncSymbol key) {
 		return localSymbols.containsKey(key);
 	}
+	
+	private Map<VncSymbol,Var> getAllGlobalSymbols() {
+		final Map<VncSymbol,Var> all = new HashMap<>();
+		if (coreGlobalSymbols != null) {
+			all.putAll(coreGlobalSymbols);
+		}
+		all.putAll(globalSymbols);
+		return all;
+	}
 
 	
 	private static final long serialVersionUID = 9002640180394221858L;
 
 	private final Env outer;
 	private final int level;
+	private final Map<VncSymbol,Var> coreGlobalSymbols;
 	private final Map<VncSymbol,Var> globalSymbols;
 	private final Map<VncSymbol,Var> localSymbols;
 }
