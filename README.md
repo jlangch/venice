@@ -157,7 +157,10 @@ System.out.println(ps.getOutput());
 
 ### Precompiling Venice
 
-Precompiling Venice speeds up evaluation significantly when calling an expression multiple times with different parameters:
+Precompiling Venice speeds up evaluation significantly when calling an expression 
+multiple times with different parameters. If required precompiled scripts can be
+serialized/deserialized. Running precompiled scripts is threadsafe, so they can easily 
+be used in WebApp servers.
 
 ```java
 import com.github.jlangch.venice.Venice;
