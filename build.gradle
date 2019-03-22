@@ -155,12 +155,6 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                          " venice-${version}-sources.jar venice-${version}-sources.jar.asc" +
                          " venice-${version}.jar venice-${version}.jar.asc" +
                   "; echo 'Bundling done.'"
-                         
-    standardOutput new ByteArrayOutputStream()
-    
-  	doLast {
-		println standardOutput.toString()
-	}
 }
 
 artifacts {
