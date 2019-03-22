@@ -23,6 +23,13 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StopWatch;
@@ -119,6 +126,38 @@ public class PrecompiledTest {
 		sw.stop();
 		
 		System.out.println("Elapsed (pre-compiled, params, 10'000 calls): " + sw.toString()); 
+	}
+
+	@Test
+	public void test_multi_threaded() throws Exception {
+		final ExecutorService es = Executors.newFixedThreadPool(10);
+
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile(
+										"test", 
+										"(do (defn sum[a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
+		
+		final List<Callable<Object>> tasks = new ArrayList<>();
+		for(int ii=0; ii<2000; ii++) {
+			final int count = ii;
+			tasks.add(new Callable<Object>() {
+				public Object call() throws Exception {
+					return venice.eval(precomp, Parameters.of("x", 100, "y", 0, "z", count));
+				}
+			});
+		}
+		
+		final List<Future<Object>> results = es.invokeAll(tasks);
+
+		assertEquals(2000, results.size());
+		
+		long resVal = 100L;
+		for(Future<Object> result : results) {
+			assertEquals(resVal++, result.get());		
+		}
+		
+		es.shutdown();
 	}
 
 }
