@@ -66,10 +66,11 @@ public final class XChartEncoder {
 			final int DPI
 	) throws IOException {
 		final double scaleFactor = DPI / 72.0;
-		final int chartWidth = getChartWidth(xchart); 
-		final int chartHeight = getChartHeight(xchart);
+		
+		final int chartWidth = (Integer)ReflectionAccessor.getBeanProperty(xchart, "width"); 
+		final int chartHeight = (Integer)ReflectionAccessor.getBeanProperty(xchart, "height");
 
-		BufferedImage image = new BufferedImage(
+		final BufferedImage image = new BufferedImage(
 										(int)(chartWidth * scaleFactor),
 										(int)(chartHeight * scaleFactor),
 										BufferedImage.TYPE_INT_RGB);
@@ -95,6 +96,7 @@ public final class XChartEncoder {
 
 			final ImageTypeSpecifier typeSpecifier =
 					ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
+			
 			final IIOMetadata metadata = writer.getDefaultImageMetadata(typeSpecifier, iwp);
 			if (metadata.isReadOnly() || !metadata.isStandardMetadataFormatSupported()) {
 				throw new IllegalArgumentException(
@@ -130,13 +132,5 @@ public final class XChartEncoder {
 		root.appendChild(dim);
 		
 		metadata.mergeTree("javax_imageio_1.0", root);
-	}
-	
-	private static int getChartWidth(final Object chart) {
-		return (Integer)ReflectionAccessor.getBeanProperty(chart, "width");
-	}
-	
-	private static int getChartHeight(final Object chart) {
-		return (Integer)ReflectionAccessor.getBeanProperty(chart, "height");
 	}
 }
