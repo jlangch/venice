@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added ...
-- improved performance and size of precompiled scripts
+- improved performance and reduced the size of precompiled scripts
 
 
 
