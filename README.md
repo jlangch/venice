@@ -1003,7 +1003,7 @@ classpath:
            :theme :xchart } )
       :png ; write as PNG
       120  ; render with 120 dpi
-      (. :java.io.File :new "line-chart.png")))
+      (io/file "line-chart.png")))
 ```
 
 ##### Area Chart Example
@@ -1031,7 +1031,7 @@ classpath:
            :theme :xchart } )
       :png ; write as PNG
       120  ; render with 120 dpi
-      (. :java.io.File :new "area-chart.png")))
+      (io/file "area-chart.png")))
 ```
 
 ##### Scatter Chart Example
@@ -1058,7 +1058,7 @@ classpath:
            :theme :xchart } )
       :png ; write as PNG
       120  ; render with 120 dpi
-      (. :java.io.File :new "scatter-chart.png")))
+      (io/file "scatter-chart.png")))
 ```
 
 ##### Bubble Chart Example
@@ -1095,7 +1095,7 @@ classpath:
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "bubble-chart.png")))
+      (io/file "bubble-chart.png")))
 ```
 
 ##### Bar Chart Example
@@ -1116,7 +1116,7 @@ classpath:
            :x-axis {:order ["Mon" "Tue" "Wed" "Thu" "Fri"] } } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "bar-chart.png")))
+      (io/file "bar-chart.png")))
 ```
 
 ##### Pie Chart Example
@@ -1137,7 +1137,7 @@ classpath:
            :theme :xchart } )
       :png ;; write as PNG
       120  ;; render with 120 dpi
-      (. :java.io.File :new "pie-chart.png")))
+      (io/file "pie-chart.png")))
 ```
 
 ### WebDAV

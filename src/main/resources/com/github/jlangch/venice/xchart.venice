@@ -65,7 +65,7 @@
 ;;             expr                        (when cond1 (my e call))
 ;;             cond1 (my call)             (when cond2 (my2 e call2))
 ;;             cond2 (my2 call2))          e)
-(defmacro xchart/doto-cond
+(defmacro ^:private xchart/doto-cond
    [expr & clauses]
    (let [pairs (partition 2 clauses)
          expr-sym (gensym "expr")]
@@ -103,25 +103,23 @@
          (== (get-in m ks ::not-found) ::not-found)
          (assoc-in ks v)))
 
+
+;; ---------------------------------------------------------------------------
+;; export / view
+;; ---------------------------------------------------------------------------
+
 (defn xchart/to-bytes [chart type]
       (let [format (get xchart/bitmap-formats type)]
            (. :BitmapEncoder :getBitmapBytes chart format)))
-
-(defn xchart/to-bytes-with-dpi-old [chart type dpi]
-      (let [format (get xchart/bitmap-formats type)
-            file (io/temp-file "xchart-", (get xchart/file-extension type))]
-         (. :BitmapEncoder :saveBitmapWithDPI chart file format dpi)
-         (io/slurp-temp-file file :binary true :remove true)))
 
 (defn xchart/to-bytes-with-dpi [chart type dpi]
       (. :XChartEncoder :exportToBitmapWithDPI chart type dpi))
 
 (defn xchart/write-to-file [chart type dpi file]
-      (let [bytes (xchart/to-bytes-with-dpi chart type dpi)]
-           (try-with [os (. :FileOutputStream :new file)]
-               (io/spit-stream os bytes :flush true))))
+      (try-with [os (. :FileOutputStream :new file)]
+         (. :XChartEncoder :exportToBitmapStreamWithDPI chart os type dpi)))
 
-(defn xchart/swing-open-window [chart title]
+(defn ^:private xchart/swing-open-window [chart title]
       (let [frame (. :JFrame :new title)
             closeOP (. :JFrame :EXIT_ON_CLOSE)]
          (. frame :setDefaultCloseOperation closeOP)
