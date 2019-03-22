@@ -40,6 +40,15 @@ public class PrecompiledTest {
 	}
 
 	@Test
+	public void test_simple_with_params() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(do (+ x y))");
+		
+		assertEquals(300L, venice.eval(precomp, Parameters.of("x", 100, "y", 200)));
+	}
+
+	@Test
 	public void test_simple_serialize() {
 		final Venice venice = new Venice();
 		
@@ -81,12 +90,35 @@ public class PrecompiledTest {
 			venice.eval(precomp);
 		}
 		
+		System.gc();
 		final StopWatch	sw = StopWatch.nanos();
 		for(int ii=0; ii<10_000; ii++) {
 			venice.eval(precomp);
-		}	
+		}
+		sw.stop();	
 		
-		System.out.println("Elapsed (pre-compiled, 10'000 calls): " + sw.stop().toString()); 
+		System.out.println("Elapsed (pre-compiled, 10'000 calls): " + sw.toString()); 
+	}
+
+	@Test
+	public void test_elapsed_with_params() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ x y))");
+				
+		// warmup
+		for(int ii=0; ii<40_000; ii++) {
+			venice.eval(precomp, Parameters.of("x", 100, "y", 200));
+		}
+		
+		System.gc();
+		final StopWatch	sw = StopWatch.nanos();
+		for(int ii=0; ii<10_000; ii++) {
+			venice.eval(precomp, Parameters.of("x", 100, "y", 200));
+		}
+		sw.stop();
+		
+		System.out.println("Elapsed (pre-compiled, params, 10'000 calls): " + sw.toString()); 
 	}
 
 }

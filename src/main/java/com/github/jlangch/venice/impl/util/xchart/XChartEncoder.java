@@ -42,24 +42,30 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 
+/**
+ * Export a XChart in-memory to a PNG, JPG, ... and returns it as binary.
+ * 
+ * <p>The original XChart BitmapDecoder does not support exporting a chart to 
+ * a binary when using customized DPI values (e.g. for high-res charts)
+ */
 public final class XChartEncoder {
 
 	private XChartEncoder() {}
 
-	public static byte[] getBitmapBytesWithDPI(
+	public static byte[] exportToBitmapWithDPI(
 			final Object xchart, 
 			final String bitmapFormat, // png, jpg, gif
 			final int DPI
 	) throws IOException {
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
 		
-		saveBitmapWithDPI(xchart, os, bitmapFormat, DPI);
+		exportToBitmapStreamWithDPI(xchart, os, bitmapFormat, DPI);
 		os.flush();
 		
 		return os.toByteArray();
 	}
 
-	public static void saveBitmapWithDPI(
+	public static void exportToBitmapStreamWithDPI(
 			final Object xchart, 
 			final OutputStream os, 
 			final String bitmapFormat, // png, jpg, gif 

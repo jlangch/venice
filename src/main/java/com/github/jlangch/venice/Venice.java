@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -266,7 +267,7 @@ public class Venice {
 				final VncSymbol symbol = new VncSymbol(key);
 
 				if (key.equals("*out*")) {
-					env.setGlobal(new DynamicVar(symbol, JavaInteropUtil.convertToVncVal(buildStdOutPrintStream(val))));
+					env.setGlobal(new DynamicVar(symbol, new VncJavaObject(buildStdOutPrintStream(val))));
 				}
 				else {
 					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));

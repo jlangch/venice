@@ -114,7 +114,7 @@
          (io/slurp-temp-file file :binary true :remove true)))
 
 (defn xchart/to-bytes-with-dpi [chart type dpi]
-      (. :XChartEncoder :getBitmapBytesWithDPI chart type dpi))
+      (. :XChartEncoder :exportToBitmapWithDPI chart type dpi))
 
 (defn xchart/write-to-file [chart type dpi file]
       (let [bytes (xchart/to-bytes-with-dpi chart type dpi)]
