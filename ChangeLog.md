@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added ...
-- improved performance and reduced the size of precompiled scripts
+- improved performance and significantly reduced the size of precompiled scripts
 - added math module with bigint support
 - added support for compare` function for all raw java types
 
