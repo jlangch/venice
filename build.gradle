@@ -167,13 +167,19 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
     
+ 	// required for json module testing
+    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
+    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    testRuntimeOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8'
+    
 	// required for cheatsheet generation
     compileOnly 'org.antlr:ST4:4.0.8'
     compileOnly 'org.apache.commons:commons-text:1.2'
     compileOnly 'org.apache.commons:commons-lang3:3.7'
-    compileOnly 'com.github.librepdf:openpdf:1.2.10'
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
+    compileOnly 'com.github.librepdf:openpdf:1.2.10'
 
 	// runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
