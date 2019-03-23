@@ -59,6 +59,86 @@ public class MathModuleTest {
 
 		assertEquals("java.math.BigInteger", venice.eval(script));
 	}
+	
+	@Test
+	public void test_equal1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            " +
+				"   (load-module :math)                         " +
+				"                                               " +
+				"   (==                                         " + 
+				"        (math/bigint \"100\")                  " + 
+				"        (math/bigint \"100\"))                 " + 
+				") ";
+
+		assertEquals(Boolean.TRUE, venice.eval(script));
+	}
+	
+	@Test
+	public void test_equal2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            " +
+				"   (load-module :math)                         " +
+				"                                               " +
+				"   (==                                         " + 
+				"        (math/bigint \"200\")                  " + 
+				"        (math/bigint \"100\"))                 " + 
+				") ";
+
+		assertEquals(Boolean.FALSE, venice.eval(script));
+	}
+	
+	@Test
+	public void test_compare_equal() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            " +
+				"   (load-module :math)                         " +
+				"                                               " +
+				"   (compare                                    " + 
+				"        (math/bigint \"100\")                  " + 
+				"        (math/bigint \"100\"))                 " + 
+				") ";
+
+		assertEquals(0L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_compare_lower() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            " +
+				"   (load-module :math)                         " +
+				"                                               " +
+				"   (compare                                    " + 
+				"        (math/bigint \"100\")                  " + 
+				"        (math/bigint \"200\"))                 " + 
+				") ";
+
+		assertEquals(-1L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_compare_greater() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            " +
+				"   (load-module :math)                         " +
+				"                                               " +
+				"   (compare                                    " + 
+				"        (math/bigint \"200\")                  " + 
+				"        (math/bigint \"100\"))                 " + 
+				") ";
+
+		assertEquals(1L, venice.eval(script));
+	}
 
 	@Test
 	public void test_add() {
