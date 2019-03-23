@@ -33,7 +33,7 @@ import com.github.jlangch.venice.Venice;
 public class MathModuleTest {
 
 	@Test
-	public void test_create() {
+	public void test_create_string() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -44,6 +44,34 @@ public class MathModuleTest {
 				") ";
 
 		assertEquals("12345678901234567890", ((BigInteger)venice.eval(script)).toString());
+	}
+
+	@Test
+	public void test_create_long() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       " +
+				"   (load-module :math)                    " +
+				"                                          " +
+				"   (math/bigint 2343642364163) " + 
+				") ";
+
+		assertEquals("2343642364163", ((BigInteger)venice.eval(script)).toString());
+	}
+
+	@Test
+	public void test_create_double() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       " +
+				"   (load-module :math)                    " +
+				"                                          " +
+				"   (math/bigint 2343642364163.1002) " + 
+				") ";
+
+		assertEquals("2343642364163", ((BigInteger)venice.eval(script)).toString());
 	}
 	
 	@Test
@@ -244,6 +272,20 @@ public class MathModuleTest {
 				") ";
 
 		assertEquals(-1L, venice.eval(script));
+	}
+
+	@Test
+	public void test_to_long() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                               " +
+				"   (load-module :math)                            " +
+				"                                                  " +
+				"   (math/bigint-to-long (math/bigint \"100000\")) " + 
+				") ";
+
+		assertEquals(100000L, venice.eval(script));
 	}
 	
 }

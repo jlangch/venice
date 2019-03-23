@@ -516,6 +516,8 @@ Float, Double, and BigDecimal.
 
 ```clojure
 (do
+   (import :java.math.BigInteger)
+   
    ;; static field
    (. :java.lang.Math :PI)
 
@@ -530,6 +532,12 @@ Float, Double, and BigDecimal.
    (. :java.lang.Math :class)
    (-> (. :java.time.ZonedDateTime :now) 
        (. :class))
+       
+   ;; constructor and instance method
+   (defn bigint [x] (. :BigInteger :new x))
+   (-> (bigint "100000000")
+        (. :multiply (bigint "600000000"))
+        (. :add (bigint "300000000"))))
 ```
 
 
