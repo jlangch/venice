@@ -162,6 +162,12 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("negate"));
 		arithmetic.addItem(getDocItem("sqrt"));
 
+		final DocSection convert = new DocSection("Convert");
+		numbers.addSection(convert);
+		convert.addItem(getDocItem("long"));
+		convert.addItem(getDocItem("double"));
+		convert.addItem(getDocItem("decimal"));
+
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
 		compare.addItem(getDocItem("=="));

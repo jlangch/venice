@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added ...
+- added numeric converter functions `(long x)`, `(double x)`, `(decimal x scale rounding-mode)`
 - improved performance and reduced the size of precompiled scripts
 
 

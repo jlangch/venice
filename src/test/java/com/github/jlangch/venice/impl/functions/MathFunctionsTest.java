@@ -132,6 +132,26 @@ public class MathFunctionsTest {
 	}
 
 	@Test
+	public void test_decimal() {
+		final Venice venice = new Venice();
+
+		assertEquals(new BigDecimal("1.00"), venice.eval("(decimal 1 2 :HALF_UP)"));
+		assertEquals(new BigDecimal("1.23"), venice.eval("(decimal 1.23 2 :HALF_UP)"));
+		assertEquals(new BigDecimal("1.230"), venice.eval("(decimal 1.23M 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("1.23"), venice.eval("(decimal \"1.23\" 2 :HALF_UP)"));
+	}
+
+	@Test
+	public void test_double() {
+		final Venice venice = new Venice();
+
+		assertEquals(1D, venice.eval("(double 1)"));
+		assertEquals(1.23D, venice.eval("(double 1.23)"));
+		assertEquals(1.23D, venice.eval("(double 1.23M)"));
+		assertEquals(1.23D, venice.eval("(double \"1.23\")"));
+	}
+
+	@Test
 	public void test_div() {
 		final Venice venice = new Venice();
 		
@@ -200,6 +220,16 @@ public class MathFunctionsTest {
 		assertEquals(Double.valueOf(3.2D), (Double)venice.eval("(inc 2.2)"), 0.00001);
 
 		assertEquals(new BigDecimal("4.01234"), venice.eval("(inc 3.01234M)"));
+	}
+
+	@Test
+	public void test_long() {
+		final Venice venice = new Venice();
+
+		assertEquals(1L, venice.eval("(long 1)"));
+		assertEquals(1L, venice.eval("(long 1.23)"));
+		assertEquals(1L, venice.eval("(long 1.23M)"));
+		assertEquals(1L, venice.eval("(long \"1\")"));
 	}
 	
 	@Test
