@@ -1,0 +1,91 @@
+;; Math utils
+
+(defn
+   ^{ :arglists '("(math/bigint x)")
+      :doc "Creates a new big integer from a string"
+      :examples '("(math/bigint \"686686783535435353535353\")") }
+
+   math/bigint [x] (. :java.math.BigInteger :new x))
+
+
+(defn
+   ^{ :arglists '("(math/bigint-add x)")
+      :doc "Returns the sum of two bigints"
+      :examples '("(math/bigint-add (math/bigint\"100\") (math/bigint\"200\"))") }
+
+   math/bigint-add
+
+   [x y]
+      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      (. x :add y))
+
+
+(defn
+   ^{ :arglists '("(math/bigint-sub x y)")
+      :doc "Subtracts y from x"
+      :examples '("(math/bigint-sub (math/bigint\"100\") (math/bigint\"200\"))") }
+
+   math/bigint-sub
+
+   [x y]
+      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      (. x :subtract y))
+
+
+(defn
+   ^{ :arglists '("(math/bigint-mul x y)")
+      :doc "Returns the product of two bigints"
+      :examples '("(math/bigint-mul (math/bigint\"100\") (math/bigint\"200\"))") }
+
+   math/bigint-mul
+
+   [x y]
+      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      (. x :multiply y))
+
+(defn
+   ^{ :arglists '("(math/bigint-div x y)")
+      :doc "Returns x divided by y"
+      :examples '("(math/bigint-div (math/bigint\"100\") (math/bigint\"200\"))") }
+
+   math/bigint-div
+
+   [x y]
+      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      (. x :divide y))
+
+
+(defn
+   ^{ :arglists '("(math/bigint-neg x)")
+      :doc "Negates x"
+      :examples '("(math/bigint-neg (math/bigint\"100\"))") }
+
+   math/bigint-neg
+
+   [x]
+      { :pre [(== (class x) "java.math.BigInteger")] }
+      (. x :negate))
+
+
+(defn
+   ^{ :arglists '("(math/bigint-sig x)")
+      :doc "Returns the signum of x"
+      :examples '("(math/bigint-sig (math/bigint\"-100\"))") }
+
+   math/bigint-sig
+
+   [x]
+      { :pre [(== (class x) "java.math.BigInteger")] }
+      (. x :signum))
+
+
+(defn
+   ^{ :arglists '("(math/bigint-abs x)")
+      :doc "Returns the absolute value of x"
+      :examples '("(math/bigint-abs (math/bigint\"-100\"))") }
+
+   math/bigint-abs
+
+   [x]
+      { :pre [(== (class x) "java.math.BigInteger")] }
+      (. x :abs))

@@ -84,5 +84,5 @@ public class ModuleLoader {
 				new HashSet<>(
 					Arrays.asList(
 							"core", "http", "json", "logger", 
-							"webdav", "xchart")));
+							"math", "webdav", "xchart")));
 }

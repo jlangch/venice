@@ -246,16 +246,16 @@ public class Types {
 			return new VncString("venice.MutableMap");
 		}
 		else if (Types.isVncJavaObject(val)) {
-			return new VncString("venice.JavaObject(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncJavaSet(val)) {
-			return new VncString("venice.JavaSet(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncJavaList(val)) {
-			return new VncString("venice.JavaList(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncJavaMap(val)) {
-			return new VncString("venice.JavaMap(" + ((IVncJavaObject)val).getDelegate().getClass().getName() + ")");
+			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncMap(val)) {
 			return new VncString("venice.Map");

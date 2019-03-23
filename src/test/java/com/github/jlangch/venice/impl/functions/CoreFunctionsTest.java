@@ -224,9 +224,9 @@ public class CoreFunctionsTest {
 
 		// Java Interop
 		
-		assertEquals("venice.JavaList(java.util.ArrayList)", venice.eval("(class (. :java.util.ArrayList :new))"));
-		assertEquals("venice.JavaSet(java.util.HashSet)", venice.eval("(class (. :java.util.HashSet :new))"));
-		assertEquals("venice.JavaMap(java.util.HashMap)", venice.eval("(class (. :java.util.HashMap :new))"));
+		assertEquals("java.util.ArrayList", venice.eval("(class (. :java.util.ArrayList :new))"));
+		assertEquals("java.util.HashSet", venice.eval("(class (. :java.util.HashSet :new))"));
+		assertEquals("java.util.HashMap", venice.eval("(class (. :java.util.HashMap :new))"));
 	}
 	
 	@Test
@@ -920,8 +920,9 @@ public class CoreFunctionsTest {
 	public void test_flush() {
 		final Venice venice = new Venice();
 
-		venice.eval("(flush )");
-		venice.eval("(flush (. :java.lang.System :out))");
+		assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush )))"));	
+		assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush (. :java.lang.System :out))))"));	
+		assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush *out*)))"));	
 	}
 	
 	@Test
@@ -1805,6 +1806,14 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_newline() {
+		final Venice venice = new Venice();
+
+		assertEquals("1\n", venice.eval("(with-out-str (do (print 1) (newline )))"));	
+		assertEquals("1 2\n", venice.eval("(with-out-str (do (print 1 2) (newline )))"));	
+	}
+	
+	@Test
 	public void test_nfirst() {
 		final Venice venice = new Venice();
 
@@ -2103,6 +2112,33 @@ public class CoreFunctionsTest {
 		assertEquals("[1 2]", venice.eval("(pr-str [1 2])"));
 		assertEquals("{:a 1 :b 2}", venice.eval("(pr-str (ordered-map :a 1 :b 2))"));
 		assertEquals("{:a \"1\" :b \"2\"}", venice.eval("(pr-str (ordered-map :a \"1\" :b \"2\"))"));
+	}
+	
+	@Test
+	public void test_print() {
+		final Venice venice = new Venice();
+
+		assertEquals("", venice.eval("(with-out-str (print ))"));	
+		assertEquals("1", venice.eval("(with-out-str (print 1))"));	
+		assertEquals("1 2", venice.eval("(with-out-str (print 1 2))"));	
+		assertEquals("1 2 3", venice.eval("(with-out-str (print 1 2 3))"));	
+	}
+	
+	@Test
+	public void test_println() {
+		final Venice venice = new Venice();
+
+		assertEquals("\n", venice.eval("(with-out-str (println ))"));	
+		assertEquals("1\n", venice.eval("(with-out-str (println 1))"));	
+		assertEquals("1 2\n", venice.eval("(with-out-str (println 1 2))"));	
+		assertEquals("1 2 3\n", venice.eval("(with-out-str (println 1 2 3))"));	
+	}
+	
+	@Test
+	public void test_printf() {
+		final Venice venice = new Venice();
+
+		assertEquals("abc: 100", venice.eval("(with-out-str (printf \"%s: %d\" \"abc\" 100))"));	
 	}
 	
 	@Test
