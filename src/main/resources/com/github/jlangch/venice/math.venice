@@ -23,7 +23,7 @@
    math/bigint-add
 
    [x y]
-      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger") (class-of? y "java.math.BigInteger")] }
       (. x :add y))
 
 
@@ -35,7 +35,7 @@
    math/bigint-sub
 
    [x y]
-      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger") (class-of? y "java.math.BigInteger")] }
       (. x :subtract y))
 
 
@@ -47,7 +47,7 @@
    math/bigint-mul
 
    [x y]
-      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger") (class-of? y "java.math.BigInteger")] }
       (. x :multiply y))
 
 (defn
@@ -58,7 +58,7 @@
    math/bigint-div
 
    [x y]
-      { :pre [(== (class x) "java.math.BigInteger") (== (class y) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger") (class-of? y "java.math.BigInteger")] }
       (. x :divide y))
 
 
@@ -70,7 +70,7 @@
    math/bigint-neg
 
    [x]
-      { :pre [(== (class x) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger")] }
       (. x :negate))
 
 
@@ -82,7 +82,7 @@
    math/bigint-sig
 
    [x]
-      { :pre [(== (class x) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger")] }
       (. x :signum))
 
 
@@ -94,7 +94,7 @@
    math/bigint-abs
 
    [x]
-      { :pre [(== (class x) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger")] }
       (. x :abs))
 
 
@@ -106,5 +106,5 @@
    math/bigint-to-long
 
    [x]
-      { :pre [(== (class x) "java.math.BigInteger")] }
+      { :pre [(class-of? x "java.math.BigInteger")] }
       (. x :longValue))

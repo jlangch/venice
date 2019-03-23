@@ -222,11 +222,26 @@ public class CoreFunctionsTest {
 		assertEquals("venice.Vector", venice.eval("(class '[])"));
 		assertEquals("venice.HashMap", venice.eval("(class '{})"));
 
-		// Java Interop
-		
+		// Java Interop		
 		assertEquals("java.util.ArrayList", venice.eval("(class (. :java.util.ArrayList :new))"));
 		assertEquals("java.util.HashSet", venice.eval("(class (. :java.util.HashSet :new))"));
 		assertEquals("java.util.HashMap", venice.eval("(class (. :java.util.HashMap :new))"));
+	}
+
+	@Test
+	public void test_classOf() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(class-of? 1 \"venice.Long\")"));
+		assertTrue((Boolean)venice.eval("(class-of? 1.0 \"venice.Double\")"));
+		assertTrue((Boolean)venice.eval("(class-of? '() \"venice.List\")"));
+		assertTrue((Boolean)venice.eval("(class-of? '[] \"venice.Vector\")"));
+		assertTrue((Boolean)venice.eval("(class-of? '{} \"venice.HashMap\")"));
+
+		// Java Interop		
+		assertTrue((Boolean) venice.eval("(class-of? (. :java.util.ArrayList :new) \"java.util.ArrayList\")"));
+		assertTrue((Boolean)venice.eval("(class-of? (. :java.util.HashSet :new) \"java.util.HashSet\")"));
+		assertTrue((Boolean)venice.eval("(class-of? (. :java.util.HashMap :new) \"java.util.HashMap\")"));
 	}
 	
 	@Test

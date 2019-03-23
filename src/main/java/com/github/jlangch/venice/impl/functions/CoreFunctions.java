@@ -3866,6 +3866,26 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+	public static VncFunction classOf = 
+			new VncFunction(
+					"class-of?", 
+					VncFunction
+						.meta()
+						.arglists("(class-of? x type)")		
+						.doc("Returns true if the class of x is of given type else false")
+						.examples("(class-of? 500 \"venice.Long\")")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertArity("class-of?", args, 2);
+					
+					return Types.getClassName(args.first())
+								.equals(Coerce.toVncString(args.second())) ? True : False;
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
 
 	public static VncFunction pop = 
 		new VncFunction(
@@ -5423,6 +5443,7 @@ public class CoreFunctions {
 				.put("type",				type)
 				
 				.put("class",					className)	
+				.put("class-of?",				classOf)	
 				.put("load-core-module",		loadCoreModule)
 				.put("load-classpath-venice",	loadClasspathVenice)
 

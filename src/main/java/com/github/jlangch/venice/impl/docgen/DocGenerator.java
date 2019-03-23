@@ -552,6 +552,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("some?"));
 		misc.addItem(getDocItem("doc"));
 		misc.addItem(getDocItem("class"));
+		misc.addItem(getDocItem("class-of?"));
 		misc.addItem(getDocItem("type"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
