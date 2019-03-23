@@ -557,7 +557,7 @@ can be sorted and java types can be used with sets and maps.
       (== b1 b2)
       (compare b1 b3)
       (sort [b1 b3 b2])
-      (hash-map b1 1 b2 2 b3 3))
+      (hash-map b1 1 b2 2 b3 3)))
 ```
 
 
