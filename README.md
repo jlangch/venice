@@ -544,6 +544,20 @@ Java enum values can be passed as simple or scoped keywords:
 ```
 
 
+Java types support equals and compare:
+
+```clojure
+(do
+   (import :java.math.BigInteger)
+   
+   (let [b1 (. :BigInteger :new "10000")
+         b2 (. :BigInteger :new "10000")
+         b3 (. :BigInteger :new "20000")] 
+      (== b1 b2)
+      (compare b1 b3)))
+```
+
+
 Java VarArgs:
 
 ```clojure
