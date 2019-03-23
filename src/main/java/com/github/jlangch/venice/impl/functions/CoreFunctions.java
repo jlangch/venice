@@ -1047,7 +1047,7 @@ public class CoreFunctions {
 						"(long true)",
 						"(long 1.2)",
 						"(long 1.2M)",
-						"(long \"1.2\")")
+						"(long \"1\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1166,6 +1166,7 @@ public class CoreFunctions {
 						"(decimal 2)", 
 						"(decimal 2 3 :HALF_UP)", 
 						"(decimal 2.5787 3 :HALF_UP)",
+						"(decimal 2.5787M 3 :HALF_UP)",
 						"(decimal \"2.5787\" 3 :HALF_UP)",
 						"(decimal nil)")
 					.build()

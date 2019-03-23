@@ -141,7 +141,7 @@ public class DocGenerator {
 		literals.addItem(new DocItem("Double: 3.569", null));
 		literals.addItem(new DocItem("Boolean: true, false", null));
 		literals.addItem(new DocItem("BigDecimal: 6.897M", null));
-		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\"", null) );
+		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", null) );
 		literals.addItem(new DocItem("String: \"\"\"{ \"age\": 42 }\"\"\"", null) );
 
 		final DocSection numbers = new DocSection("Numbers");
