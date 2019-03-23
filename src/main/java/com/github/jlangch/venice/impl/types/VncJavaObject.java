@@ -186,6 +186,24 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 		return 9;
 	}
 
+	@Override 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public int compareTo(final VncVal o) {
+		if (delegate instanceof Comparable) {
+			if (Types.isVncJavaObject(o)) {
+				final Object other = ((VncJavaObject)o).getDelegate();
+				if (other instanceof Comparable) {
+					return ((Comparable)delegate).compareTo(((Comparable)other));
+				}
+			}
+		}
+		else if (o == Constants.Nil) {
+			return 1;
+		}
+
+		return super.compareTo(o);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
