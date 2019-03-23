@@ -544,7 +544,8 @@ Java enum values can be passed as simple or scoped keywords:
 ```
 
 
-Java types support equals and compare:
+Java types support hash codes, equals, and compare. Thereby sequences with java types
+can be sorted and java types can be used with sets and maps.
 
 ```clojure
 (do
@@ -554,7 +555,9 @@ Java types support equals and compare:
          b2 (. :BigInteger :new "10000")
          b3 (. :BigInteger :new "20000")] 
       (== b1 b2)
-      (compare b1 b3)))
+      (compare b1 b3)
+      (sort [b3 b2])
+      (hash-map b1 1 b2 2))
 ```
 
 
