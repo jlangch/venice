@@ -167,7 +167,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
     
- 	// required for json module testing
+ 	// required for json module unit tests
     testRuntimeOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
     testRuntimeOnly 'com.fasterxml.jackson.core:jackson-core:2.9.8'
     testRuntimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
