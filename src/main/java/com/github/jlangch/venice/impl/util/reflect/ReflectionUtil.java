@@ -166,16 +166,16 @@ public class ReflectionUtil {
 	 */
 	public static Class<?> getGenericType(final Class<?> clazz, final int idx) {
 		if (clazz.getGenericSuperclass() instanceof ParameterizedType) {
-			final ParameterizedType parameterizedType = (ParameterizedType) clazz.getGenericSuperclass();
+			final ParameterizedType parameterizedType = (ParameterizedType)clazz.getGenericSuperclass();
 			if (parameterizedType.getActualTypeArguments().length > idx) {
 				final Type type = parameterizedType.getActualTypeArguments()[idx];
 				if (type instanceof Class) {
-					return (Class<?>) type;
+					return (Class<?>)type;
 				}
 				if (type instanceof ParameterizedType) {
-					final Type rawType = ((ParameterizedType) type).getRawType();
+					final Type rawType = ((ParameterizedType)type).getRawType();
 					if (rawType instanceof Class) {
-						return (Class<?>) rawType; 
+						return (Class<?>)rawType; 
 					}
 				}
 			}
@@ -211,7 +211,9 @@ public class ReflectionUtil {
 		}
 	}
 
-	public static List<Constructor<?>> getPublicConstructors(final Class<?> type, final int numArgs) {
+	public static List<Constructor<?>> getPublicConstructors(
+			final Class<?> type, final int numArgs
+	) {
 		final List<Constructor<?>> constructors = new ArrayList<>();
 		
 		for(Constructor<?> c : type.getDeclaredConstructors()) {
@@ -436,10 +438,14 @@ public class ReflectionUtil {
 
 
 	private static boolean isGetAccessor(final String methodName) {
-		return methodName.startsWith("get") && methodName.length() > 3 && StringUtil.isAsciiAlphaUpper(methodName.charAt(3));
+		return methodName.startsWith("get") 
+				&& methodName.length() > 3 
+				&& StringUtil.isAsciiAlphaUpper(methodName.charAt(3));
 	}
 
 	private static boolean isIsAccessor(final String methodName) {
-		return methodName.startsWith("is") && methodName.length() > 2 && StringUtil.isAsciiAlphaUpper(methodName.charAt(2));
+		return methodName.startsWith("is")
+				&& methodName.length() > 2 
+				&& StringUtil.isAsciiAlphaUpper(methodName.charAt(2));
 	}
 }
