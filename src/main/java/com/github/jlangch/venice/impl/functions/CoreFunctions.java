@@ -3874,7 +3874,9 @@ public class CoreFunctions {
 						.meta()
 						.arglists("(class-of? x type)")		
 						.doc("Returns true if the class of x is of given type else false")
-						.examples("(class-of? 500 \"venice.Long\")")
+						.examples(
+							"(class-of? 500 \"venice.Long\")",
+							"(class-of? 500 \"java.math.BigInteger\")")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
