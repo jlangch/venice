@@ -2782,8 +2782,11 @@ public class CoreFunctionsTest {
 		assertEquals("venice.ThreadLocal", venice.eval("(type (thread-local))"));
 		
 		assertEquals("venice.Long", venice.eval("(type 1)"));
+		assertEquals("venice.Long", venice.eval("(type (* 1 3))"));
 		assertEquals("venice.Double", venice.eval("(type 1.0)"));
+		assertEquals("venice.Double", venice.eval("(type (* 1.0 2.0))"));
 		assertEquals("venice.Decimal", venice.eval("(type 1.06M)"));
+		assertEquals("venice.Decimal", venice.eval("(type (* 1.06M 2.0M))"));
 		
 		assertEquals("venice.List", venice.eval("(type '())"));
 		assertEquals("venice.List", venice.eval("(type (list))"));
