@@ -235,7 +235,7 @@ public class Types {
 			return new VncString("venice.List");
 		}
 		else if (Types.isVncHashSet(val)) {
-			return new VncString("venice.Set");
+			return new VncString("venice.HashSet");
 		}
 		else if (Types.isVncSortedSet(val)) {
 			return new VncString("venice.SortedSet");
@@ -263,6 +263,9 @@ public class Types {
 		}
 		else if (Types.isVncJavaMap(val)) {
 			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
+		}
+		else if (Types.isVncSet(val)) {
+			return new VncString("venice.Set");
 		}
 		else if (Types.isVncMap(val)) {
 			return new VncString("venice.Map");
