@@ -309,15 +309,15 @@ public class Types {
 					}
 					else if (Types.isVncJavaSet(val)) {
 						return Class.forName(clazz)
-								.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else if (Types.isVncJavaList(val)) {
 						return Class.forName(clazz)
-								.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else if (Types.isVncJavaMap(val)) {
 						return Class.forName(clazz)
-								.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else {
 						return false;
