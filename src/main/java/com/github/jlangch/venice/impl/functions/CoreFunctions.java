@@ -3860,30 +3860,31 @@ public class CoreFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("class", args, 1);
-				
 				return Types.getClassName(args.first());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
-	public static VncFunction classOf = 
+	public static VncFunction instance_Q = 
 			new VncFunction(
-					"class-of?", 
+					"instance?", 
 					VncFunction
 						.meta()
-						.arglists("(class-of? x type)")		
-						.doc("Returns true if the class of x is of given type else false")
+						.arglists("(instance? type x)")		
+						.doc("Returns true if x is an instance of the given type")
 						.examples(
-							"(class-of? 500 \"venice.Long\")",
-							"(class-of? 500 \"java.math.BigInteger\")")
+							"(instance? :venice.Long 500)",
+							"(instance? :java.math.BigInteger 500)")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertArity("class-of?", args, 2);
+					assertArity("instance?", args, 2);
 					
-					return Types.getClassName(args.first())
-								.equals(Coerce.toVncString(args.second())) ? True : False;
+					final VncKeyword type = Coerce.toVncKeyword(args.first());
+					final VncVal x = args.second();
+					
+					return Types.isInstanceOf(type, x) ? True : False;
 				}
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
@@ -5445,7 +5446,7 @@ public class CoreFunctions {
 				.put("type",				type)
 				
 				.put("class",					className)	
-				.put("class-of?",				classOf)	
+				.put("instance?",				instance_Q)	
 				.put("load-core-module",		loadCoreModule)
 				.put("load-classpath-venice",	loadClasspathVenice)
 

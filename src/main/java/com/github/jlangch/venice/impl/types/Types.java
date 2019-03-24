@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
@@ -221,6 +225,9 @@ public class Types {
 		else if (Types.isVncSymbol(val)) {
 			return new VncString("venice.Symbol");
 		}
+		else if (Types.isVncKeyword(val)) {
+			return new VncString("venice.Keyword");
+		}
 		else if (Types.isVncVector(val)) {
 			return new VncString("venice.Vector");
 		}
@@ -264,6 +271,60 @@ public class Types {
 			return new VncString(val.getClass().getName());
 		}
 	};
+	
+	public static boolean isInstanceOf(final VncKeyword type, final VncVal val) {
+		final String clazz = type.getValue();
+		
+		switch(clazz) {
+			case "venice.Nil" : 		return val == Nil;
+			case "venice.Boolean" : 	return val == True || val == False;
+			case "venice.Atom" : 		return Types.isVncAtom(val);
+			case "venice.ThreadLocal" :	return Types.isVncThreadLocal(val);
+			case "venice.Long" : 		return Types.isVncLong(val);
+			case "venice.Double" : 		return Types.isVncDouble(val);
+			case "venice.Decimal" : 	return Types.isVncBigDecimal(val);
+			case "venice.ByteBuffer" :	return Types.isVncByteBuffer(val);
+			case "venice.Function" : 	return Types.isVncFunction(val);
+			case "venice.String" : 		return Types.isVncString(val);
+			case "venice.Symbol" : 		return Types.isVncSymbol(val);
+			case "venice.Keyword" : 	return Types.isVncKeyword(val);
+			case "venice.Vector" : 		return Types.isVncVector(val);
+			case "venice.List" : 		return Types.isVncList(val);
+			case "venice.Set" : 		return Types.isVncSet(val);
+			case "venice.HashSet" : 	return Types.isVncHashSet(val);
+			case "venice.SortedSet" : 	return Types.isVncSortedSet(val);
+			case "venice.Map" : 		return Types.isVncMap(val);
+			case "venice.HashMap" : 	return Types.isVncHashMap(val);
+			case "venice.OrderedMap" : 	return Types.isVncOrderedMap(val);
+			case "venice.SortedMap" : 	return Types.isVncSortedMap(val);
+			case "venice.MutableMap" : 	return Types.isVncMutableMap(val);
+			default:
+				try {
+					if (Types.isVncJavaObject(val)) {
+						return Class.forName(clazz)
+									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+					}
+					else if (Types.isVncJavaSet(val)) {
+						return Class.forName(clazz)
+								.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+					}
+					else if (Types.isVncJavaList(val)) {
+						return Class.forName(clazz)
+								.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+					}
+					else if (Types.isVncJavaMap(val)) {
+						return Class.forName(clazz)
+								.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
+					}
+					else {
+						return false;
+					}	
+				}
+				catch(Exception ex) {
+					return false;
+				}
+		}		
+	}
 
 	public static boolean _equal_Q(VncVal a, VncVal b) {
 		final Class<?> ota = a.getClass(), otb = b.getClass();

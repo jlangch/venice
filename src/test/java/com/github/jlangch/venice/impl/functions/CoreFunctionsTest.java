@@ -227,25 +227,6 @@ public class CoreFunctionsTest {
 		assertEquals("java.util.HashSet", venice.eval("(class (. :java.util.HashSet :new))"));
 		assertEquals("java.util.HashMap", venice.eval("(class (. :java.util.HashMap :new))"));
 	}
-
-	@Test
-	public void test_classOf() {
-		final Venice venice = new Venice();
-
-		assertTrue((Boolean)venice.eval("(class-of? 1 (class 1))"));
-		assertTrue((Boolean)venice.eval("(let [x (. :java.math.BigInteger :new \"1\")] (class-of? x (class x)))"));
-
-		assertTrue((Boolean)venice.eval("(class-of? 1 \"venice.Long\")"));
-		assertTrue((Boolean)venice.eval("(class-of? 1.0 \"venice.Double\")"));
-		assertTrue((Boolean)venice.eval("(class-of? '() \"venice.List\")"));
-		assertTrue((Boolean)venice.eval("(class-of? '[] \"venice.Vector\")"));
-		assertTrue((Boolean)venice.eval("(class-of? '{} \"venice.HashMap\")"));
-
-		// Java Interop		
-		assertTrue((Boolean) venice.eval("(class-of? (. :java.util.ArrayList :new) \"java.util.ArrayList\")"));
-		assertTrue((Boolean)venice.eval("(class-of? (. :java.util.HashSet :new) \"java.util.HashSet\")"));
-		assertTrue((Boolean)venice.eval("(class-of? (. :java.util.HashMap :new) \"java.util.HashMap\")"));
-	}
 	
 	@Test
 	public void test_coalesce() {
@@ -1238,6 +1219,34 @@ public class CoreFunctionsTest {
 		assertEquals("4", venice.eval("(str (identity 4))"));
 		assertEquals("[1 2 3 4 true 1234]", venice.eval("(str (filter identity [1 2 3 nil 4 false true 1234]))"));		
 	}	
+
+	@Test
+	public void test_instanceQ() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(instance? :venice.Nil nil)"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Boolean true)"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Boolean false)"));
+		
+		assertTrue((Boolean)venice.eval("(instance? :venice.Long 1)"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Double 1.0)"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Decimal 1.0M)"));
+		
+		assertTrue((Boolean)venice.eval("(instance? :venice.List '())"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Vector '[])"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Set '#{})"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.HashSet '#{})"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.Map '{})"));
+		assertTrue((Boolean)venice.eval("(instance? :venice.HashMap '{})"));
+
+		// Java Interop		
+		assertTrue((Boolean)venice.eval("(instance? :java.util.List (. :java.util.ArrayList :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.ArrayList (. :java.util.ArrayList :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.Set (. :java.util.HashSet :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.HashSet (. :java.util.HashSet :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.Map (. :java.util.HashMap :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.HashMap (. :java.util.HashMap :new))"));
+	}
 	
 	@Test
 	public void test_interleave() {
