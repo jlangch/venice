@@ -5192,7 +5192,7 @@ public class CoreFunctions {
 					.examples(
 						"(type 5)",
 						"(type [1 2])",
-						"(type (. :java.math.BigInteger :new 100))")
+						"(type (. :java.math.BigInteger :valueOf 100))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
