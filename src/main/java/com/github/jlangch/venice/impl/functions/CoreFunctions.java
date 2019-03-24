@@ -425,7 +425,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'symbol' does not allow %s name.",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -479,7 +479,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'keyword' does not allow %s name",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -787,12 +787,12 @@ public class CoreFunctions {
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
 							"Invalid first argument type %s while calling function 'match'",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
 							"Invalid second argument type %s while calling function 'match'",
-							Types.getClassName(args.second())));
+							Types.getType(args.second())));
 				}
 	
 				return Types._match_Q(args.first(), args.second()) ? True : False;
@@ -817,12 +817,12 @@ public class CoreFunctions {
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
 							"Invalid first argument type %s while calling function 'match-not'",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
 							"Invalid second argument type %s while calling function 'match-not'",
-							Types.getClassName(args.second())));
+							Types.getType(args.second())));
 				}
 				
 				return Types._match_Q(args.first(), args.second()) ? False : True;
@@ -854,8 +854,8 @@ public class CoreFunctions {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
 								"Function '<' with operand 1 of type %s does not allow %s as operand 2", 
-								Types.getClassName(op1),
-								Types.getClassName(op2)));
+								Types.getType(op1),
+								Types.getType(op2)));
 					}
 	
 					final String s1 = ((VncString)op1).getValue();
@@ -865,7 +865,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function '<' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -895,8 +895,8 @@ public class CoreFunctions {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
 								"Function '<=' with operand 1 of type %s does not allow %s as operand 2", 
-								Types.getClassName(op1),
-								Types.getClassName(op2)));
+								Types.getType(op1),
+								Types.getType(op2)));
 					}
 	
 					final String s1 = ((VncString)op1).getValue();
@@ -906,7 +906,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function '<=' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -936,8 +936,8 @@ public class CoreFunctions {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
 								"Function '>' with operand 1 of type %s does not allow %s as operand 2", 
-								Types.getClassName(op1),
-								Types.getClassName(op2)));
+								Types.getType(op1),
+								Types.getType(op2)));
 					}
 	
 					final String s1 = ((VncString)op1).getValue();
@@ -947,7 +947,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function '>' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -977,8 +977,8 @@ public class CoreFunctions {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
 								"Function '>=' with operand 1 of type %s does not allow %s as operand 2", 
-								Types.getClassName(op1),
-								Types.getClassName(op2)));
+								Types.getType(op1),
+								Types.getType(op2)));
 					}
 	
 					final String s1 = ((VncString)op1).getValue();
@@ -988,7 +988,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function '>=' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -1086,7 +1086,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'long' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -1146,7 +1146,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 								"Function 'double' does not allow %s as operand 1", 
-								Types.getClassName(op1)));
+								Types.getType(op1)));
 				}
 			}
 	
@@ -1205,7 +1205,7 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'decimal' does not allow %s as operand 1", 
-								Types.getClassName(arg)));
+								Types.getType(arg)));
 					}
 				}
 			}
@@ -1270,7 +1270,7 @@ public class CoreFunctions {
 				else if (!Types.isVncSequence(args.last())) {
 					throw new VncException(String.format(
 							"Function 'list*' does not allow %s as last argument", 
-							Types.getClassName(args.last())));
+							Types.getType(args.last())));
 				}
 				else {			
 					return new VncList()
@@ -1545,7 +1545,7 @@ public class CoreFunctions {
 	
 				throw new VncException(String.format(
 							"Function 'bytebuf' does not allow %s as argument", 
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -2073,7 +2073,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'contains?' does not allow %s as coll", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -2106,7 +2106,7 @@ public class CoreFunctions {
 				else if (Types.isVncMutableMap(coll)) {
 					throw new VncException(String.format(
 							"Function 'assoc' can not be used with mutable maps use assoc!", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).assoc((VncList)args.rest());
@@ -2159,7 +2159,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'assoc' does not allow %s as collection", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -2189,7 +2189,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'assoc!' does not allow %s as collection. It works with mutable maps only.", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -2259,7 +2259,7 @@ public class CoreFunctions {
 				else if (Types.isVncMutableMap(coll)) {
 					throw new VncException(String.format(
 							"Function 'dissoc' can not be used with mutable maps use dissoc!", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)args.first()).dissoc(args.rest());
@@ -2303,7 +2303,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'dissoc' does not allow %s as coll", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -2333,7 +2333,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'dissoc!' does not allow %s as coll. It works with mutable maps only.", 
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -2386,7 +2386,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'get' does not allow %s as collection", 
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -2620,7 +2620,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"'update' does not allow %s as associative structure", 
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -2655,7 +2655,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"'update!' does not allow %s as map. It works with mutable maps only.", 
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -2814,13 +2814,13 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'into' does not allow %s as from-coll into a map", 
-								Types.getClassName(from)));
+								Types.getType(from)));
 					}
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'into' does not allow %s as to-coll", 
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -3044,7 +3044,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'count'",
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -3077,7 +3077,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'empty'",
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -3187,7 +3187,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'cons'",
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -3238,7 +3238,7 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Invalid argument type %s while calling function 'concat'",
-								Types.getClassName(val)));
+								Types.getType(val)));
 					}
 				});
 				
@@ -3347,7 +3347,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'first'",
-							Types.getClassName(val)));
+							Types.getType(val)));
 				}
 			}
 	
@@ -3387,7 +3387,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'second'",
-							Types.getClassName(val)));
+							Types.getType(val)));
 				}
 			}
 	
@@ -3426,7 +3426,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'nth'",
-							Types.getClassName(val)));
+							Types.getType(val)));
 				}
 			}
 	
@@ -3465,7 +3465,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'last'",
-							Types.getClassName(val)));
+							Types.getType(val)));
 				}
 			}
 	
@@ -3508,7 +3508,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'rest'",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -3554,7 +3554,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'butlast'",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -3601,7 +3601,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"nfirst: type %s not supported",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -3648,7 +3648,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"nlast: type %s not supported",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 
@@ -3843,24 +3843,6 @@ public class CoreFunctions {
 				else {
 					return arg;
 				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction className = 
-		new VncFunction(
-				"class", 
-				VncFunction
-					.meta()
-					.arglists("(class x)")		
-					.doc("Returns the class of x")
-					.examples("(class 5)", "(class [1 2])", "(class (. :java.time.ZonedDateTime :now))")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("class", args, 1);
-				return Types.getClassName(args.first());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4585,7 +4567,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"docoll: collection type %s not supported",
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 					
 				return Nil;
@@ -4724,7 +4706,7 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'reduce' does not allow %s as coll parameter", 
-								Types.getClassName(args.second())));
+								Types.getType(args.second())));
 					}
 					
 					if (coll.isEmpty()) {
@@ -4750,7 +4732,7 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'reduce' does not allow %s as coll parameter", 
-								Types.getClassName(args.nth(2))));
+								Types.getType(args.nth(2))));
 					}
 					
 					if (coll.isEmpty()) {
@@ -4898,13 +4880,13 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Invalid x %s while calling function 'conj'",
-								Types.getClassName(args.second())));
+								Types.getType(args.second())));
 					}
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid coll %s while calling function 'conj'",
-							Types.getClassName(coll)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -4930,7 +4912,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid coll %s while calling function 'disj'",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -5193,7 +5175,7 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'name' does not allow %s as parameter", 
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -5209,12 +5191,13 @@ public class CoreFunctions {
 					.doc("Returns the type of x.")
 					.examples(
 						"(type 5)",
-						"(type (. :java.time.ZonedDateTime :now))")
+						"(type [1 2])",
+						"(type (. :java.math.BigInteger :new 100))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("type", args, 1);
-				return Types.getClassName(args.first());
+				return Types.getType(args.first());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5279,7 +5262,7 @@ public class CoreFunctions {
 		else {
 			throw new VncException(String.format(
 					"%s: collection type %s not supported",
-					fnName, Types.getClassName(coll)));
+					fnName, Types.getType(coll)));
 		}
 	}
 
@@ -5444,9 +5427,8 @@ public class CoreFunctions {
 				.put("gensym",				gensym)
 				.put("name",				name)
 				.put("type",				type)
+				.put("instance?",			instance_Q)	
 				
-				.put("class",					className)	
-				.put("instance?",				instance_Q)	
 				.put("load-core-module",		loadCoreModule)
 				.put("load-classpath-venice",	loadClasspathVenice)
 

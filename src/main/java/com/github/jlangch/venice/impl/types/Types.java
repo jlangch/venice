@@ -22,13 +22,12 @@
 package com.github.jlangch.venice.impl.types;
 
 import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -36,6 +35,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
@@ -191,87 +191,87 @@ public class Types {
 		return val != null && (val instanceof VncJavaMap);
 	}
 
-	public static VncString getClassName(final VncVal val) {
+	public static VncKeyword getType(final VncVal val) {
 		if (val == Constants.Nil) {
-			return new VncString("venice.Nil");
+			return new VncKeyword("venice.Nil");
 		}
 		else if (val ==  Constants.True || val == Constants.False) {
-			return new VncString("venice.Boolean");
+			return new VncKeyword("venice.Boolean");
 		}
 		else if (Types.isVncAtom(val)) {
-			return new VncString("venice.Atom");
+			return new VncKeyword("venice.Atom");
 		}
 		else if (Types.isVncThreadLocal(val)) {
-			return new VncString("venice.ThreadLocal");
+			return new VncKeyword("venice.ThreadLocal");
 		}
 		else if (Types.isVncLong(val)) {
-			return new VncString("venice.Long");
+			return new VncKeyword("venice.Long");
 		}
 		else if (Types.isVncDouble(val)) {
-			return new VncString("venice.Double");
+			return new VncKeyword("venice.Double");
 		}
 		else if (Types.isVncBigDecimal(val)) {
-			return new VncString("venice.Decimal");
+			return new VncKeyword("venice.Decimal");
 		}
 		else if (Types.isVncByteBuffer(val)) {
-			return new VncString("venice.ByteBuffer");
+			return new VncKeyword("venice.ByteBuffer");
 		}
 		else if (Types.isVncFunction(val)) {
-			return new VncString("venice.Function");
+			return new VncKeyword("venice.Function");
 		}
 		else if (Types.isVncString(val)) {
-			return new VncString("venice.String");
+			return new VncKeyword("venice.String");
 		}
 		else if (Types.isVncSymbol(val)) {
-			return new VncString("venice.Symbol");
+			return new VncKeyword("venice.Symbol");
 		}
 		else if (Types.isVncKeyword(val)) {
-			return new VncString("venice.Keyword");
+			return new VncKeyword("venice.Keyword");
 		}
 		else if (Types.isVncVector(val)) {
-			return new VncString("venice.Vector");
+			return new VncKeyword("venice.Vector");
 		}
 		else if (Types.isVncList(val)) {
-			return new VncString("venice.List");
+			return new VncKeyword("venice.List");
 		}
 		else if (Types.isVncHashSet(val)) {
-			return new VncString("venice.HashSet");
+			return new VncKeyword("venice.HashSet");
 		}
 		else if (Types.isVncSortedSet(val)) {
-			return new VncString("venice.SortedSet");
+			return new VncKeyword("venice.SortedSet");
 		}
 		else if (Types.isVncHashMap(val)) {
-			return new VncString("venice.HashMap");
+			return new VncKeyword("venice.HashMap");
 		}
 		else if (Types.isVncOrderedMap(val)) {
-			return new VncString("venice.OrderedMap");
+			return new VncKeyword("venice.OrderedMap");
 		}
 		else if (Types.isVncSortedMap(val)) {
-			return new VncString("venice.SortedMap");
+			return new VncKeyword("venice.SortedMap");
 		}
 		else if (Types.isVncMutableMap(val)) {
-			return new VncString("venice.MutableMap");
+			return new VncKeyword("venice.MutableMap");
 		}
 		else if (Types.isVncJavaObject(val)) {
-			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
+			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncJavaSet(val)) {
-			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
+			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncJavaList(val)) {
-			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
+			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncJavaMap(val)) {
-			return new VncString(((IVncJavaObject)val).getDelegate().getClass().getName());
+			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
 		else if (Types.isVncSet(val)) {
-			return new VncString("venice.Set");
+			return new VncKeyword("venice.Set");
 		}
 		else if (Types.isVncMap(val)) {
-			return new VncString("venice.Map");
+			return new VncKeyword("venice.Map");
 		}
 		else {
-			return new VncString(val.getClass().getName());
+			return new VncKeyword(val.getClass().getName());
 		}
 	};
 	

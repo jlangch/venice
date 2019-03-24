@@ -852,7 +852,7 @@ public class VeniceInterpreter implements Serializable  {
 				throw new VncException(
 						String.format(
 								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
-								Types.getClassName(sym)));
+								Types.getType(sym)));
 			}
 		}
 

@@ -54,7 +54,7 @@ public class Numeric {
 		else {
 			throw new VncException(String.format(
 					"Cannot convert value of type %s to long", 
-					Types.getClassName(val)));
+					Types.getType(val)));
 		}
 	}
 	
@@ -71,7 +71,7 @@ public class Numeric {
 		else {
 			throw new VncException(String.format(
 					"Cannot convert value of type %s to double", 
-					Types.getClassName(val)));
+					Types.getType(val)));
 		}
 	}
 
@@ -88,7 +88,7 @@ public class Numeric {
 		else {
 			throw new VncException(String.format(
 					"Cannot convert value of type %s to decimal", 
-					Types.getClassName(val)));
+					Types.getType(val)));
 		}
 	}
 
@@ -197,14 +197,14 @@ public class Numeric {
 			throw new VncException(String.format(
 					"Function '%s' operand 1 (%s) is not a numeric type", 
 					op.getFnName(),
-					Types.getClassName(op1)));
+					Types.getType(op1)));
 		}
 
 		if (!Types.isVncNumber(op2)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 2 (%s) is not a numeric type", 
 					op.getFnName(),
-					Types.getClassName(op2)));
+					Types.getType(op2)));
 		}
 	}
 	

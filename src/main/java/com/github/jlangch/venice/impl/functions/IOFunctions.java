@@ -98,7 +98,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/file' does not allow %s as path",
-								Types.getClassName(path)));
+								Types.getType(path)));
 					}
 				}
 				else {
@@ -116,7 +116,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/file' does not allow %s as parent",
-								Types.getClassName(parent)));
+								Types.getType(parent)));
 					}
 	
 					if (Types.isVncString(child)) {
@@ -125,7 +125,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/file' does not allow %s as child",
-								Types.getClassName(child)));
+								Types.getType(child)));
 					}
 				}		
 			}
@@ -151,7 +151,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/file-size' does not allow %s as f",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -179,7 +179,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/file-path' does not allow %s as f",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -207,7 +207,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/file-parent' does not allow %s as f",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -235,7 +235,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/file-name' does not allow %s as f",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -285,7 +285,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/exists-file?' does not allow %s as x",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -313,7 +313,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/exists-dir?' does not allow %s as x",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -341,7 +341,7 @@ public class IOFunctions {
 					if (!isJavaIoFile(f) ) {
 						throw new VncException(String.format(
 								"Function 'io/delete-file' does not allow %s as f",
-								Types.getClassName(args.first())));
+								Types.getType(args.first())));
 					}
 	
 					final File file = (File)((VncJavaObject)f).getDelegate();
@@ -385,7 +385,7 @@ public class IOFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'io/delete-file-on-exit' does not allow %s as x",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				try {
@@ -422,7 +422,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/list-files' does not allow %s as x",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 				
 				final File file = (File)((VncJavaObject)args.first()).getDelegate();
@@ -471,12 +471,12 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/copy-file' does not allow %s as input",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 				if (!isJavaIoFile(args.second()) ) {
 					throw new VncException(String.format(
 							"Function 'io/copy-file' does not allow %s as output",
-							Types.getClassName(args.second())));
+							Types.getType(args.second())));
 				}
 	
 	
@@ -520,12 +520,12 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/move-file' does not allow %s as source",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 				if (!isJavaIoFile(args.second()) ) {
 					throw new VncException(String.format(
 							"Function 'io/move-file' does not allow %s as target",
-							Types.getClassName(args.second())));
+							Types.getType(args.second())));
 				}
 	
 	
@@ -567,7 +567,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/mkdir' does not allow %s as dir",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File dir = (File)((VncJavaObject)args.first()).getDelegate();				
@@ -607,7 +607,7 @@ public class IOFunctions {
 				if (!isJavaIoFile(args.first()) ) {
 					throw new VncException(String.format(
 							"Function 'io/mkdirs' does not allow %s as dir",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 	
 				final File dir = (File)((VncJavaObject)args.first()).getDelegate();				
@@ -698,7 +698,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp-lines' does not allow %s as f",
-								Types.getClassName(args.first())));
+								Types.getType(args.first())));
 					}
 	
 					
@@ -753,7 +753,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp' does not allow %s as f",
-								Types.getClassName(args.first())));
+								Types.getType(args.first())));
 					}
 	
 					
@@ -815,7 +815,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/spit' does not allow %s as f",
-								Types.getClassName(args.first())));
+								Types.getType(args.first())));
 					}
 	
 			
@@ -840,7 +840,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/spit' does not allow %s as content",
-								Types.getClassName(content)));
+								Types.getType(content)));
 					}
 	
 					final List<OpenOption> openOptions = new ArrayList<>();
@@ -975,7 +975,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'spit-stream' does not allow %s as content",
-								Types.getClassName(content)));
+								Types.getType(content)));
 					}
 					
 					os.write(data);
@@ -1024,7 +1024,7 @@ public class IOFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'io/mime-type' does not allow %s as fs",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -1115,7 +1115,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp-temp-file' does not allow %s as ",
-								Types.getClassName(args.first())));
+								Types.getType(args.first())));
 					}
 	
 					
@@ -1202,7 +1202,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/spit-temp-file' does not allow %s as f",
-								Types.getClassName(args.first())));
+								Types.getType(args.first())));
 					}
 					
 					if (!tempFiles.contains(file.getPath())) {
@@ -1232,7 +1232,7 @@ public class IOFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'io/spit-temp-file' does not allow %s as content",
-								Types.getClassName(content)));
+								Types.getType(content)));
 					}
 	
 					final List<OpenOption> openOptions = new ArrayList<>();

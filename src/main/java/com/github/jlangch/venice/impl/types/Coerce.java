@@ -48,7 +48,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to atom. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -63,7 +63,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to thread-local. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -78,7 +78,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to keyword. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -93,7 +93,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to symbol. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -108,7 +108,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to function. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -123,7 +123,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to multi function. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -138,7 +138,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to string. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -153,7 +153,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to boolean. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -168,7 +168,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to long. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -183,7 +183,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to double. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -198,7 +198,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to big-decimal. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -213,7 +213,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to bytebuf. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -228,7 +228,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to collection. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -243,7 +243,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to a sequential collection. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -264,7 +264,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to list. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -285,7 +285,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to vector. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -300,7 +300,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to map. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -318,7 +318,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to hash-map. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -336,7 +336,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to mutable-map. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -351,7 +351,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to set. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -366,7 +366,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to set. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -381,7 +381,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to sorted set. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
@@ -396,7 +396,7 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to java-object. %s", 
-					Types.getClassName(val),
+					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}

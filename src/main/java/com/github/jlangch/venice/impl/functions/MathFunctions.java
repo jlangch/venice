@@ -198,12 +198,12 @@ public class MathFunctions {
 				if (!Types.isVncLong(args.first())) {
 					throw new VncException(String.format(
 							"Function 'mod' does not allow %s as numerator", 
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 				if (!Types.isVncLong(args.second())) {
 					throw new VncException(String.format(
 							"Function 'mod' does not allow %s as denominator", 
-							Types.getClassName(args.second())));
+							Types.getType(args.second())));
 				}
 				
 				return new VncLong(
@@ -241,7 +241,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'inc'",
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -274,7 +274,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'dec'",
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -310,7 +310,7 @@ public class MathFunctions {
 					else {
 						throw new VncException(String.format(
 												"Function 'max' does not allow %s as operand", 
-												Types.getClassName(max)));
+												Types.getType(max)));
 					}
 				}
 				
@@ -349,7 +349,7 @@ public class MathFunctions {
 					else {
 						throw new VncException(String.format(
 												"Function 'min' does not allow %s as operand", 
-												Types.getClassName(min)));
+												Types.getType(min)));
 					}
 				}
 				
@@ -386,7 +386,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'abs'",
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -420,7 +420,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'negate'",
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -457,7 +457,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'sqrt'",
-							Types.getClassName(arg)));
+							Types.getType(arg)));
 				}
 			}
 	
@@ -583,7 +583,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'zero?' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -616,7 +616,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'pos?' does not allow %s as operand 1", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -649,7 +649,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'neg?' does not allow %s as operand 1s", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -676,7 +676,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'even?' does not allow %s as operand.", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -703,7 +703,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'odd?' does not allow %s as operand", 
-											Types.getClassName(op1)));
+											Types.getType(op1)));
 				}
 			}
 	
@@ -848,7 +848,7 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 											"Function 'dec/scale' does not allow %s as operand 1s",
-											Types.getClassName(arg)));
+											Types.getType(arg)));
 				}
 			}
 	

@@ -339,7 +339,7 @@ public class JavaInteropTest {
 		assertEquals("{a=1, b=2}", venice.eval(map1).toString());
 
 		final String map2 =
-				"(class                                        " +
+				"(type                                         " +
 				"  (hash-map                                   " +
 				"     (doto (. :java.util.LinkedHashMap :new)  " +
 				"	        (. :put :a 1)                      " +
@@ -364,7 +364,7 @@ public class JavaInteropTest {
 		assertEquals("{a=1, b=2}", venice.eval(map1).toString());
 
 		final String map2 =
-				"(class                                        " +
+				"(type                                         " +
 				"  (ordered-map                                " +
 				"     (doto (. :java.util.LinkedHashMap :new)  " +
 				"	        (. :put :a 1)                      " +
@@ -389,7 +389,7 @@ public class JavaInteropTest {
 		assertEquals("{a=1, b=2}", venice.eval(map1).toString());
 
 		final String map2 =
-				"(class                                        " +
+				"(type                                         " +
 				"  (sorted-map                                 " +
 				"     (doto (. :java.util.LinkedHashMap :new)  " +
 				"	        (. :put :a 1)                      " +

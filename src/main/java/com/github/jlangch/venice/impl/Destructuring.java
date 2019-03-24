@@ -98,7 +98,7 @@ public class Destructuring {
 				throw new VncException(
 						String.format(
 								"Invalid sequential destructuring bind value type %s. Expected list, vector, or string. %s",
-								Types.getClassName(bindVal),
+								Types.getType(bindVal),
 								ErrorMessage.buildErrLocation(bindVal)));
 			}
 		}
@@ -112,7 +112,7 @@ public class Destructuring {
 				throw new VncException(
 						String.format(
 								"Associative destructuring on vector is not yet implemented",
-								Types.getClassName(bindVal),
+								Types.getType(bindVal),
 								ErrorMessage.buildErrLocation(bindVal)));
 			}
 			else if (bindVal == Nil) {
@@ -122,7 +122,7 @@ public class Destructuring {
 				throw new VncException(
 						String.format(
 								"Invalid associative destructuring bind value type %s. Expected map. %s",
-								Types.getClassName(bindVal),
+								Types.getType(bindVal),
 								ErrorMessage.buildErrLocation(bindVal)));
 			}
 		}
@@ -130,7 +130,7 @@ public class Destructuring {
 			throw new VncException(
 					String.format(
 							"Invalid destructuring sym value type %s. Expected symbol. %s",
-							Types.getClassName(symVal),
+							Types.getType(symVal),
 							ErrorMessage.buildErrLocation(symVal)));
 		}
 				
@@ -249,7 +249,7 @@ public class Destructuring {
 				throw new VncException(
 						String.format(
 								"Invalid sequential string destructuring symbol type %s. %s",
-								Types.getClassName(sVal),
+								Types.getType(sVal),
 								ErrorMessage.buildErrLocation(sVal)));
 			}
 		}
@@ -287,7 +287,7 @@ public class Destructuring {
 					throw new VncException(
 							String.format(
 									"Invalid associative destructuring with :keys symbol type %s. Expected vector. %s",
-									Types.getClassName(symbol),
+									Types.getType(symbol),
 									ErrorMessage.buildErrLocation(symbol)));
 				}					
 			}
@@ -304,7 +304,7 @@ public class Destructuring {
 					throw new VncException(
 							String.format(
 									"Invalid associative destructuring with :syms symbol type %s. Expected vector. %s",
-									Types.getClassName(symbol),
+									Types.getType(symbol),
 									ErrorMessage.buildErrLocation(symbol)));
 				}					
 			}
@@ -321,7 +321,7 @@ public class Destructuring {
 					throw new VncException(
 							String.format(
 									"Invalid associative destructuring with :strs symbol type %s. Expected vector. %s",
-									Types.getClassName(symbol),
+									Types.getType(symbol),
 									ErrorMessage.buildErrLocation(symbol)));
 				}					
 			}
@@ -379,7 +379,7 @@ public class Destructuring {
 				throw new VncException(
 						String.format(
 								"Invalid associative destructuring name type %s. %s",
-								Types.getClassName(symValName),
+								Types.getType(symValName),
 								ErrorMessage.buildErrLocation(symValName)));
 			}
 		}

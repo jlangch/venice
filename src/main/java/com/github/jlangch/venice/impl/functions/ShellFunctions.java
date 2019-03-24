@@ -324,7 +324,7 @@ public class ShellFunctions {
 						CallFrame.fromVal("sh", arg), 
 						() -> { throw new VncException(String.format(
 										"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
-										Types.getClassName(arg)));
+										Types.getType(arg)));
 							  });		
 			}
 		});

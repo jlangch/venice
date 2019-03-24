@@ -158,7 +158,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'deref' does not allow type %s as parameter.",
-						Types.getClassName(args.first())));
+						Types.getType(args.first())));
 		
 			}
 			
@@ -261,7 +261,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'add-watch' does not allow type %s as ref.",
-						Types.getClassName(ref)));
+						Types.getType(ref)));
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -303,7 +303,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'remove-watch' does not allow type %s as ref.",
-						Types.getClassName(ref)));
+						Types.getType(ref)));
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -498,7 +498,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'send' does not allow type %s as agent parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -540,7 +540,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'send-off' does not allow type %s as agent parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -578,7 +578,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'restart-agent' does not allow type %s as agent parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -620,7 +620,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'set-error-handler!' does not allow type %s as agent parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -658,7 +658,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'agent-error' does not allow type %s as agent parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -691,7 +691,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'agent-error-mode' does not allow type %s as agent parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 	
@@ -925,7 +925,7 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'deliver' does not allow type %s as parameter",
-							Types.getClassName(args.first())));
+							Types.getType(args.first())));
 				}
 			}
 			
@@ -1113,7 +1113,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'future-done?' does not allow type %s as parameter",
-						Types.getClassName(args.first())));
+						Types.getType(args.first())));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1149,7 +1149,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'future-cancel' does not allow type %s as parameter.",
-						Types.getClassName(args.first())));
+						Types.getType(args.first())));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1183,7 +1183,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'future-cancelled?' does not allow type %s as parameter",
-						Types.getClassName(args.first())));
+						Types.getType(args.first())));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;

@@ -82,7 +82,7 @@ public class MathModuleTest {
 				"(do                                       " +
 				"   (load-module :math)                    " +
 				"                                          " +
-				"   (class (math/bigint \"100\"))          " + 
+				"   (type (math/bigint \"100\"))           " + 
 				") ";
 
 		assertEquals("java.math.BigInteger", venice.eval(script));

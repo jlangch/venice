@@ -99,7 +99,7 @@ public class JavaInteropUtil {
 					return new VncJavaObject(((VncJavaObject)arg0).getDelegate().getClass());
 				}
 				else {
-					return new VncJavaObject(Types.getClassName(arg0));
+					return new VncJavaObject(arg0.getClass());
 				}
 			}
 			else {

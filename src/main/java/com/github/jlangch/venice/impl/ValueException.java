@@ -29,7 +29,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class ValueException extends VncException {
 		
 	public ValueException(final String fnName, final VncVal value) {
-		super(String.format("%s value thrown from %s", Types.getClassName(value), fnName));
+		super(String.format("%s value thrown from %s", Types.getType(value), fnName));
 		this.value = value;
 	}
 

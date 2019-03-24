@@ -211,22 +211,6 @@ public class CoreFunctionsTest {
 		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
 		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
 	}
-
-	@Test
-	public void test_class() {
-		final Venice venice = new Venice();
-
-		assertEquals("venice.Long", venice.eval("(class 1)"));
-		assertEquals("venice.Double", venice.eval("(class 1.0)"));
-		assertEquals("venice.List", venice.eval("(class '())"));
-		assertEquals("venice.Vector", venice.eval("(class '[])"));
-		assertEquals("venice.HashMap", venice.eval("(class '{})"));
-
-		// Java Interop		
-		assertEquals("java.util.ArrayList", venice.eval("(class (. :java.util.ArrayList :new))"));
-		assertEquals("java.util.HashSet", venice.eval("(class (. :java.util.HashSet :new))"));
-		assertEquals("java.util.HashMap", venice.eval("(class (. :java.util.HashMap :new))"));
-	}
 	
 	@Test
 	public void test_coalesce() {
@@ -2751,6 +2735,22 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(true? true)"));	
 		assertFalse((Boolean)venice.eval("(true? false)"));	
 		assertFalse((Boolean)venice.eval("(true? 1)"));	
+	}
+
+	@Test
+	public void test_type() {
+		final Venice venice = new Venice();
+
+		assertEquals("venice.Long", venice.eval("(type 1)"));
+		assertEquals("venice.Double", venice.eval("(type 1.0)"));
+		assertEquals("venice.List", venice.eval("(type '())"));
+		assertEquals("venice.Vector", venice.eval("(type '[])"));
+		assertEquals("venice.HashMap", venice.eval("(type '{})"));
+
+		// Java Interop		
+		assertEquals("java.util.ArrayList", venice.eval("(type (. :java.util.ArrayList :new))"));
+		assertEquals("java.util.HashSet", venice.eval("(type (. :java.util.HashSet :new))"));
+		assertEquals("java.util.HashMap", venice.eval("(type (. :java.util.HashMap :new))"));
 	}
 
 	@Test

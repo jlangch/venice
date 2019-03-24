@@ -87,8 +87,8 @@ public class MetaUtil {
 		else {
 			throw new VncException(String.format(
 					"Failed to merge meta data on incompatible old (%s) and new (%s) meta data types", 
-					Types.getClassName(meta1),
-					Types.getClassName(meta2)));
+					Types.getType(meta1),
+					Types.getType(meta2)));
 		}
 	}
 	

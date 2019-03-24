@@ -280,7 +280,7 @@ public class Reader {
 				}
 				else {
 					throw new ParseError(formatParseError(
-							metaToken, "Invalid meta data type %s", Types.getClassName(meta)));						
+							metaToken, "Invalid meta data type %s", Types.getType(meta)));						
 				}
 			}
 			
