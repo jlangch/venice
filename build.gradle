@@ -76,13 +76,13 @@ sourceSets {
         }
         resources {
             srcDirs = ['src/main/resources']
-		}
+        }
     }
 }
 
 test {
-	useJUnitPlatform {
-	}
+    useJUnitPlatform {
+    }
 }
 
 jar {
@@ -91,14 +91,6 @@ jar {
 shadowJar {
     // https://github.com/johnrengelman/shadow/
 
-	dependencies {
-		exclude(dependency('org.hamcrest::'))
-		exclude(dependency('org.antlr::'))
-		exclude(dependency('org.apache.commons::'))
-		exclude(dependency('com.github.librepdf::'))
-		exclude(dependency('org.xhtmlrenderer::'))
-	}
-         
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
     relocate 'com.grack.nanojson', 'org.repackage.com.grack.nanojson'
@@ -117,7 +109,7 @@ shadowJar {
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
-	description="Generate cheatsheet"
+    description="Generate cheatsheet"
 
     main = 'com.github.jlangch.venice.impl.docgen.DocGenerator'
     classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
@@ -163,17 +155,17 @@ artifacts {
 }
 
 dependencies {
-	// unit tests
+    // unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
-    
- 	// required for json module unit tests
+
+    // required for json module unit tests
     testRuntimeOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
     testRuntimeOnly 'com.fasterxml.jackson.core:jackson-core:2.9.8'
     testRuntimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
     testRuntimeOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8'
-    
-	// required for cheatsheet generation
+
+    // required for cheatsheet generation
     compileOnly 'org.antlr:ST4:4.0.8'
     compileOnly 'org.apache.commons:commons-text:1.2'
     compileOnly 'org.apache.commons:commons-lang3:3.7'
@@ -181,7 +173,7 @@ dependencies {
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
     compileOnly 'com.github.librepdf:openpdf:1.2.10'
 
-	// runtime dependencies (repackaged)
+    // runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'
     compile 'com.grack:nanojson:1.3'
