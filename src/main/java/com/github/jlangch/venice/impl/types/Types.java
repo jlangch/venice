@@ -276,28 +276,28 @@ public class Types {
 		final String clazz = type.getValue();
 		
 		switch(clazz) {
-			case "venice.Nil" : 		return val == Nil;
-			case "venice.Boolean" : 	return val == True || val == False;
-			case "venice.Atom" : 		return Types.isVncAtom(val);
-			case "venice.ThreadLocal" :	return Types.isVncThreadLocal(val);
-			case "venice.Long" : 		return Types.isVncLong(val);
-			case "venice.Double" : 		return Types.isVncDouble(val);
-			case "venice.Decimal" : 	return Types.isVncBigDecimal(val);
-			case "venice.ByteBuffer" :	return Types.isVncByteBuffer(val);
-			case "venice.Function" : 	return Types.isVncFunction(val);
-			case "venice.String" : 		return Types.isVncString(val);
-			case "venice.Symbol" : 		return Types.isVncSymbol(val);
-			case "venice.Keyword" : 	return Types.isVncKeyword(val);
-			case "venice.Vector" : 		return Types.isVncVector(val);
-			case "venice.List" : 		return Types.isVncList(val);
-			case "venice.Set" : 		return Types.isVncSet(val);
-			case "venice.HashSet" : 	return Types.isVncHashSet(val);
-			case "venice.SortedSet" : 	return Types.isVncSortedSet(val);
-			case "venice.Map" : 		return Types.isVncMap(val);
-			case "venice.HashMap" : 	return Types.isVncHashMap(val);
-			case "venice.OrderedMap" : 	return Types.isVncOrderedMap(val);
-			case "venice.SortedMap" : 	return Types.isVncSortedMap(val);
-			case "venice.MutableMap" : 	return Types.isVncMutableMap(val);
+			case "venice.Nil":			return val == Nil;
+			case "venice.Boolean":		return val == True || val == False;
+			case "venice.Atom":			return Types.isVncAtom(val);
+			case "venice.ThreadLocal":	return Types.isVncThreadLocal(val);
+			case "venice.Long":			return Types.isVncLong(val);
+			case "venice.Double":		return Types.isVncDouble(val);
+			case "venice.Decimal":		return Types.isVncBigDecimal(val);
+			case "venice.ByteBuffer":	return Types.isVncByteBuffer(val);
+			case "venice.Function":		return Types.isVncFunction(val);
+			case "venice.String":		return Types.isVncString(val);
+			case "venice.Symbol":		return Types.isVncSymbol(val);
+			case "venice.Keyword":		return Types.isVncKeyword(val);
+			case "venice.Vector":		return Types.isVncVector(val);
+			case "venice.List":			return Types.isVncList(val);
+			case "venice.Set":			return Types.isVncSet(val);
+			case "venice.HashSet":		return Types.isVncHashSet(val);
+			case "venice.SortedSet":	return Types.isVncSortedSet(val);
+			case "venice.Map":			return Types.isVncMap(val);
+			case "venice.HashMap":		return Types.isVncHashMap(val);
+			case "venice.OrderedMap":	return Types.isVncOrderedMap(val);
+			case "venice.SortedMap":	return Types.isVncSortedMap(val);
+			case "venice.MutableMap":	return Types.isVncMutableMap(val);
 			default:
 				try {
 					if (Types.isVncJavaObject(val)) {
