@@ -279,30 +279,29 @@ Caused by: java.lang.ArithmeticException: / by zero
 ```clojure
 (do
    (def s1 """{ "fruit": "apple", "color": "red" }""")
-   
+
    (def s2 """{ 
                 "fruit": "apple",
                 "color": "red" 
               }""")
 
-   ; strip-indent removes the indentation on multi-line strings. The indentation
-   ; will be determined from the first line's indentation. Escaping the first 
-   ; line of the multi-line string with '\' makes strip-indent work as expected.  
+   ; remove the indentation on multi-line strings
    (def s3 (str/strip-indent """\
                 {
                   "fruit": "apple",
                   "color": "red"
                 }"""))
-		
-(def s4 (str/strip-margin
-                     """{
-		        |  "fruit": "apple",
-                        |  "color": "red"
-			|}"""))
-               
-   (println s1))
-   (println s2))
-   (println s3))
+
+   ; remove the indentation on multi-line strings
+   (def s4 (str/strip-margin
+             """{
+                |  "fruit": "apple",
+                |  "color": "red"
+                |}"""))
+
+   (println s1)
+   (println s2)
+   (println s3)
    (println s4))
 ```
 
