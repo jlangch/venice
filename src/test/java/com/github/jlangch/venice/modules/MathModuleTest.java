@@ -54,7 +54,7 @@ public class MathModuleTest {
 				"(do                                       " +
 				"   (load-module :math)                    " +
 				"                                          " +
-				"   (math/bigint 2343642364163) " + 
+				"   (math/bigint 2343642364163)            " + 
 				") ";
 
 		assertEquals("2343642364163", ((BigInteger)venice.eval(script)).toString());
@@ -68,7 +68,7 @@ public class MathModuleTest {
 				"(do                                       " +
 				"   (load-module :math)                    " +
 				"                                          " +
-				"   (math/bigint 2343642364163.1002) " + 
+				"   (math/bigint 2343642364163.1002)       " + 
 				") ";
 
 		assertEquals("2343642364163", ((BigInteger)venice.eval(script)).toString());
@@ -96,9 +96,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (==                                         " + 
-				"        (math/bigint \"100\")                  " + 
-				"        (math/bigint \"100\"))                 " + 
+				"   (== (math/bigint \"100\")                   " + 
+				"       (math/bigint \"100\"))                  " + 
 				") ";
 
 		assertEquals(Boolean.TRUE, venice.eval(script));
@@ -112,9 +111,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (==                                         " + 
-				"        (math/bigint \"200\")                  " + 
-				"        (math/bigint \"100\"))                 " + 
+				"   (== (math/bigint \"200\")                   " + 
+				"       (math/bigint \"100\"))                  " + 
 				") ";
 
 		assertEquals(Boolean.FALSE, venice.eval(script));
@@ -128,9 +126,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (compare                                    " + 
-				"        (math/bigint \"100\")                  " + 
-				"        (math/bigint \"100\"))                 " + 
+				"   (compare (math/bigint \"100\")              " + 
+				"            (math/bigint \"100\"))             " + 
 				") ";
 
 		assertEquals(0L, venice.eval(script));
@@ -144,9 +141,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (compare                                    " + 
-				"        (math/bigint \"100\")                  " + 
-				"        (math/bigint \"200\"))                 " + 
+				"   (compare (math/bigint \"100\")              " + 
+				"            (math/bigint \"200\"))             " + 
 				") ";
 
 		assertEquals(-1L, venice.eval(script));
@@ -160,9 +156,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (compare                                    " + 
-				"        (math/bigint \"200\")                  " + 
-				"        (math/bigint \"100\"))                 " + 
+				"   (compare (math/bigint \"200\")              " + 
+				"            (math/bigint \"100\"))             " + 
 				") ";
 
 		assertEquals(1L, venice.eval(script));
@@ -176,9 +171,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (math/bigint-add                            " + 
-				"        (math/bigint \"100\")                  " + 
-				"        (math/bigint \"200\"))                 " + 
+				"   (math/bigint-add (math/bigint \"100\")      " + 
+				"                    (math/bigint \"200\"))     " + 
 				") ";
 
 		assertEquals("300", ((BigInteger)venice.eval(script)).toString());
@@ -192,9 +186,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (math/bigint-sub                            " + 
-				"        (math/bigint \"100\")                  " + 
-				"        (math/bigint \"200\"))                 " + 
+				"   (math/bigint-sub (math/bigint \"100\")      " + 
+				"                    (math/bigint \"200\"))     " + 
 				") ";
 
 		assertEquals("-100", ((BigInteger)venice.eval(script)).toString());
@@ -208,9 +201,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (math/bigint-mul                            " + 
-				"        (math/bigint \"100\")                  " + 
-				"        (math/bigint \"200\"))                 " + 
+				"   (math/bigint-mul (math/bigint \"100\")      " + 
+				"                    (math/bigint \"200\"))     " + 
 				") ";
 
 		assertEquals("20000", ((BigInteger)venice.eval(script)).toString());
@@ -224,9 +216,8 @@ public class MathModuleTest {
 				"(do                                            " +
 				"   (load-module :math)                         " +
 				"                                               " +
-				"   (math/bigint-div                            " + 
-				"        (math/bigint \"100000\")               " + 
-				"        (math/bigint \"200\"))                 " + 
+				"   (math/bigint-div (math/bigint \"100000\")   " + 
+				"                    (math/bigint \"200\"))     " + 
 				") ";
 
 		assertEquals("500", ((BigInteger)venice.eval(script)).toString());
