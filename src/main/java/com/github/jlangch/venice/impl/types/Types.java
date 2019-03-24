@@ -219,14 +219,14 @@ public class Types {
 		else if (Types.isVncFunction(val)) {
 			return new VncKeyword("venice.Function");
 		}
-		else if (Types.isVncString(val)) {
-			return new VncKeyword("venice.String");
-		}
 		else if (Types.isVncSymbol(val)) {
 			return new VncKeyword("venice.Symbol");
 		}
 		else if (Types.isVncKeyword(val)) {
 			return new VncKeyword("venice.Keyword");
+		}
+		else if (Types.isVncString(val)) {
+			return new VncKeyword("venice.String");
 		}
 		else if (Types.isVncVector(val)) {
 			return new VncKeyword("venice.Vector");
@@ -291,6 +291,8 @@ public class Types {
 			case "venice.String":		return Types.isVncString(val);
 			case "venice.Symbol":		return Types.isVncSymbol(val);
 			case "venice.Keyword":		return Types.isVncKeyword(val);
+			case "venice.Collection":	return Types.isVncCollection(val);
+			case "venice.Sequence":		return Types.isVncSequence(val);
 			case "venice.Vector":		return Types.isVncVector(val);
 			case "venice.List":			return Types.isVncList(val);
 			case "venice.Set":			return Types.isVncSet(val);
