@@ -232,6 +232,9 @@ public class CoreFunctionsTest {
 	public void test_classOf() {
 		final Venice venice = new Venice();
 
+		assertTrue((Boolean)venice.eval("(class-of? 1 (class 1))"));
+		assertTrue((Boolean)venice.eval("(let [x (. :java.math.BigInteger :new \"1\")] (class-of? x (class x)))"));
+
 		assertTrue((Boolean)venice.eval("(class-of? 1 \"venice.Long\")"));
 		assertTrue((Boolean)venice.eval("(class-of? 1.0 \"venice.Double\")"));
 		assertTrue((Boolean)venice.eval("(class-of? '() \"venice.List\")"));
