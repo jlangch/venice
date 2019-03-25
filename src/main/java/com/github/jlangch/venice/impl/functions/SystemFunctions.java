@@ -162,8 +162,6 @@ public class SystemFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				JavaInterop.getInterceptor().validateVeniceFunction("sleep");
-	
 				assertArity("sleep", args, 1);
 				
 				try {
@@ -190,8 +188,6 @@ public class SystemFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				JavaInterop.getInterceptor().validateVeniceFunction("gc");
-	
 				assertArity("gc", args, 0);
 				
 				Runtime.getRuntime().runFinalization();

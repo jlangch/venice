@@ -115,7 +115,7 @@ public abstract class Interceptor implements IInterceptor {
 	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {
-		// ok,  no black listed Venice functions
+		// ok, no black listed Venice functions
 	}
 
 	@Override

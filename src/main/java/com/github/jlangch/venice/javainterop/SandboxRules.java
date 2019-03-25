@@ -157,9 +157,10 @@ public class SandboxRules {
 	 * 
 	 * E.g: 
 	 * <ul>
-	 *   <li>/foo/org/image.png</li>
-	 *   <li>/foo/org/*.png</li>
-	 *   <li>/foo/org/*.jpg</li>
+	 *   <li>foo/org/image.png</li>
+	 *   <li>foo/org/*.png</li>
+	 *   <li>foo/org/*.jpg</li>
+	 *   <li>foo/&ast;&ast;/*.jpg</li>
 	 * </ul>
 	 * 
 	 * @param rules rules
@@ -177,9 +178,10 @@ public class SandboxRules {
 	 * 
 	 * E.g: 
 	 * <ul>
-	 *   <li>/foo/org/image.png</li>
-	 *   <li>/foo/org/*.png</li>
-	 *   <li>/foo/org/*.jpg</li>
+	 *   <li>foo/org/image.png</li>
+	 *   <li>foo/org/*.png</li>
+	 *   <li>foo/org/*.jpg</li>
+	 *   <li>foo/&ast;&ast;/*.jpg</li>
 	 * </ul>
 	 * 
 	 * @param rules rules
@@ -302,6 +304,18 @@ public class SandboxRules {
 	}
 	
 	/**
+	 * Reject access to all Java related functions
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules rejectAllJavaCalls() {
+		if (rules != null) {
+			withBlacklistedVeniceFn(".");
+		}
+		return this;
+	}
+	
+	/**
 	 * Allow access to all standard Java system properties
 	 * 
 	 * <p>Standard system properties:
@@ -409,8 +423,8 @@ public class SandboxRules {
 				"com.github.jlangch.venice.impl.ValueException:*",
 				"com.github.jlangch.venice.impl.types.collections.VncVector",
 
-				"com.github.jlangch.venice.impl.util.Delay:*",
-				"com.github.jlangch.venice.impl.util.Agent:*",
+				"com.github.jlangch.venice.impl.types.concurrent.Delay:*",
+				"com.github.jlangch.venice.impl.types.concurrent.Agent:*",
 
 				// Venice dynamic proxies
 				"com.sun.proxy.$Proxy*:*",

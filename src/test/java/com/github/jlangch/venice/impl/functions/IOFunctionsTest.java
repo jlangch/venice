@@ -368,6 +368,20 @@ public class IOFunctionsTest {
 	}
 
 	@Test
+	public void test_io_load_classpath_resource() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                  \n" +
+				"   (-<> (identity \"com/github/jlangch/venice/test.venice\")         \n" +
+				"        (io/load-classpath-resource <>)                              \n" +
+				"        (bytebuf-to-string <> :UTF-8)                                \n" +
+				"        (str/contains? <> \"(defn test/println \"))))                  ";
+		
+		assertTrue((Boolean)venice.eval(script));	
+	}
+
+	@Test
 	public void test_io_default_charset() {
 		final Venice venice = new Venice();
 
