@@ -830,14 +830,15 @@ final IInterceptor interceptor =
               .rejectAllVeniceIoFunctions()
               .withStandardSystemProperties()
               .withSystemProperties("db.name", "db.port")
-              .withMaxExecTimeSeconds(5)
+              .withClasspathResources("resources/images/*.png")
               .withClasses(
                 "java.lang.Math:PI"
                 "java.lang.Math:min", 
                 "java.time.ZonedDateTime:*", 
                 "java.awt.**:*", 
                 "java.util.ArrayList:new",
-                "java.util.ArrayList:add"));
+                "java.util.ArrayList:add")
+              .withMaxExecTimeSeconds(5));
 
 final Venice venice = new Venice(interceptor);
 
@@ -878,6 +879,9 @@ venice.eval("(sleep 30000)");
 
 // => FAIL (accessing non whitelisted system property)
 venice.eval("(system-prop \"db.password\")"); 
+
+// => FAIL (accessing non whitelisted classpath resources)
+venice.eval("(io/load-classpath-resource "resources/images/img.tiff")"); 
 ```
 
 
