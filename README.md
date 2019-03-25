@@ -828,7 +828,7 @@ final IInterceptor interceptor =
     new SandboxInterceptor(
         new SandboxRules()
               .rejectAllVeniceIoFunctions()
-              .allowAccessToStandardSystemProperties()
+              .withStandardSystemProperties()
               .withSystemProperties("db.name", "db.port")
               .withMaxExecTimeSeconds(5)
               .withClasses(

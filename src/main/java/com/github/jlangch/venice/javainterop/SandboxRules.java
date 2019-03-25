@@ -337,7 +337,7 @@ public class SandboxRules {
 	 * 
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules allowAccessToStandardSystemProperties() {
+	public SandboxRules withStandardSystemProperties() {
 		withSystemProperties(DEFAULT_SYSTEM_PROPERTIES);
 		return this;
 	}
@@ -347,7 +347,7 @@ public class SandboxRules {
 	 * 
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules allowAccessToAllSystemProperties() {
+	public SandboxRules withAllSystemProperties() {
 		withSystemProperties("*");
 		return this;
 	}
