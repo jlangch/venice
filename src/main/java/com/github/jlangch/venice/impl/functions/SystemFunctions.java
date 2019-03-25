@@ -42,9 +42,9 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.ThreadLocalMap;
-import com.github.jlangch.venice.util.CallStack;
+import com.github.jlangch.venice.impl.util.CallStack;
 
 
 public class SystemFunctions {

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util;
+package com.github.jlangch.venice.impl.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.util.StackFrame;
 
 
 public class CallFrame {
@@ -70,6 +71,10 @@ public class CallFrame {
 	public int getCol() {
 		final VncVal vCol = getMetaVal(MetaUtil.COLUMN);
 		return vCol == Nil ? -1 : Coerce.toVncLong(vCol).getValue().intValue();		
+	}
+	
+	public StackFrame toStackFrame() {
+		return new StackFrame(getFnName(), getFile(), getLine(), getCol());
 	}
 
 	@Override

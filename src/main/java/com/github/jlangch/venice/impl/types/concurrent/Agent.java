@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util;
+package com.github.jlangch.venice.impl.types.concurrent;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -40,8 +40,10 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.concurrency.StripedExecutorService;
-import com.github.jlangch.venice.impl.util.concurrency.StripedRunnable;
+import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.util.Watchable;
+import com.github.jlangch.venice.impl.util.concurrent.StripedExecutorService;
+import com.github.jlangch.venice.impl.util.concurrent.StripedRunnable;
 
 
 public class Agent {

@@ -22,7 +22,7 @@
  * Modified to fit Venice's needs.
  */
 
-package com.github.jlangch.venice.impl.util.concurrency;
+package com.github.jlangch.venice.impl.util.concurrent;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;

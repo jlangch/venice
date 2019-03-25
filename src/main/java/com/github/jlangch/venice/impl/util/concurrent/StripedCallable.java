@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.concurrency;
+package com.github.jlangch.venice.impl.util.concurrent;
 
 import java.util.concurrent.Callable;
 

@@ -26,7 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
 public class DynamicVar extends Var {

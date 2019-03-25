@@ -62,7 +62,7 @@ public class JavaInteropProxifyFn extends VncFunction {
 
 	public VncVal apply(final VncList args) {
 		if (args.size() != 2) {
-			throw new ArityException(args, 2, "proxify");
+			throw new ArityException(2, "proxify");
 		}
 
 		final VncVal clazzVal = args.first();

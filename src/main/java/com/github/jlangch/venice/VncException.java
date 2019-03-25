@@ -27,9 +27,10 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.util.ThreadLocalMap;
-import com.github.jlangch.venice.util.CallFrame;
-import com.github.jlangch.venice.util.CallStack;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.util.StackFrame;
 
 
 public class VncException extends RuntimeException {
@@ -57,19 +58,25 @@ public class VncException extends RuntimeException {
 		return !callstack.isEmpty();
 	}
 
-	public List<CallFrame> getCallStack() {
-		return callstack.callstack();
+	public List<StackFrame> getCallStack() {
+		return callstack
+					.callstack()
+					.stream()
+					.map(f -> f.toStackFrame())
+					.collect(Collectors.toList());
 	}
 
 	public List<String> getCallStackAsStringList() {
-		return getCallStack()
+		return callstack
+					.callstack()
 					.stream()
 					.map(v -> callFrameToString(v))
 					.collect(Collectors.toList());
 	}
 
 	public String getCallStackAsString(final String indent) {
-		return getCallStack()
+		return callstack
+					.callstack()
 					.stream()
 					.map(v -> (indent == null ? "" : indent) + callFrameToString(v))
 					.collect(Collectors.joining("\n"));

@@ -19,29 +19,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.util;
 
-public class ArityException extends VncException {
+public class StackFrame {
 
-	public ArityException(final int arity, final String fnName) {
-		super(String.format("Wrong number of args %d passed to %s", arity, fnName));
-		
-		this.arity = arity;
-		this.name = fnName;
+	public StackFrame(
+			final String fnName, 
+			final String file,
+			final int line,
+			final int col
+	) {
+		this.fnName = fnName;
+		this.file = file;
+		this.line = line;
+		this.col = col;
 	}
 
-
-	public int getArity() {
-		return arity;
-	}
-
-	public String getName() {
-		return name;
+	
+	public String getFnName() {
+		return fnName;
 	}
 	
+	public String getFile() {
+		return file;
+	}
 	
-	private static final long serialVersionUID = 1349237272157335345L;
+	public int getLine() {
+		return line;
+	}
+	
+	public int getCol() {
+		return col;
+	}
 
-	private final int arity;
-	private final String name;
+
+	private final String fnName;
+	private final String file; 
+	private final int line; 
+	private final int col; 
 }

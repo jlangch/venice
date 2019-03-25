@@ -23,7 +23,7 @@ public class FunctionsUtil {
 		for (int a : expectedArities) {
 			if (a == arity) return;
 		}		
-		throw new ArityException(args, arity, fnName);
+		throw new ArityException(arity, fnName);
 	}
 	
 	public static void assertMinArity(
@@ -33,7 +33,7 @@ public class FunctionsUtil {
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throw new ArityException(args, arity, fnName);
+			throw new ArityException(arity, fnName);
 		}
 	}
 

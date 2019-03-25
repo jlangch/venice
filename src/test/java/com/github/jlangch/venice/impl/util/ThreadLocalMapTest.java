@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
 public class ThreadLocalMapTest {

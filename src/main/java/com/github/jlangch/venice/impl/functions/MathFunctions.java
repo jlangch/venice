@@ -88,7 +88,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0: 
-						throw new ArityException(args, 0, "-");
+						throw new ArityException(0, "-");
 					case 1: 
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
@@ -155,7 +155,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0: 
-						throw new ArityException(args, 0, "/");
+						throw new ArityException(0, "/");
 					case 1: 
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
@@ -297,7 +297,7 @@ public class MathFunctions {
 		) {	
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					throw new ArityException(args, 0, "max");
+					throw new ArityException(0, "max");
 				}
 	
 				final VncVal op1 = args.first();
@@ -336,7 +336,7 @@ public class MathFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					throw new ArityException(args, 0, "min");
+					throw new ArityException(0, "min");
 				}
 				
 				final VncVal op1 = args.first();

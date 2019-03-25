@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.util.CallFrame;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
 public class CallStackUtil {

@@ -34,8 +34,8 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStackUtil;
-import com.github.jlangch.venice.util.CallFrame;
 
 
 public class Env implements Serializable {

@@ -469,7 +469,7 @@
 
    delay [& body]
 
-   `(. :com.github.jlangch.venice.impl.util.Delay :new (fn [] (do ~@body))))
+   `(. :com.github.jlangch.venice.impl.types.concurrent.Delay :new (fn [] (do ~@body))))
 
 
 (defn

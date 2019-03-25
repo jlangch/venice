@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util;
+package com.github.jlangch.venice.impl.types.concurrent;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
@@ -30,7 +30,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
-import com.github.jlangch.venice.util.CallStack;
+import com.github.jlangch.venice.impl.util.CallStack;
 
 public class ThreadLocalMap {
 	

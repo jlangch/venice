@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl;
 import java.util.concurrent.Callable;
 
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.util.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
