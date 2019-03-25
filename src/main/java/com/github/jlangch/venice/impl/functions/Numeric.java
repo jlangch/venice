@@ -25,11 +25,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 /**

@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.types;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import com.github.jlangch.venice.impl.types.util.Types;
+
 public class VncConstant extends VncVal {
 
 	public VncConstant(final String name) { 

@@ -28,8 +28,8 @@ import java.util.Set;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncSortedSet extends VncSet {

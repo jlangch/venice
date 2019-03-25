@@ -22,57 +22,33 @@
 package com.github.jlangch.venice.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+
 
 public class Printer {
 
 	public static String join(
-			final List<VncVal> value, 
+			final List<VncVal> values, 
 			final String delim, 
 			final boolean print_readably
 	) {
-		return value.stream()
-					.map(v -> v.toString(print_readably))
-					.collect(Collectors.joining(delim));
+		return values.stream()
+					 .map(v -> v.toString(print_readably))
+					 .collect(Collectors.joining(delim));
 	}
 
-	public static String join(
-			final Map<String,VncVal> value, 
-			final String delim, 
-			final boolean print_readably
-	) {
-		return value
-				.entrySet()
-				.stream()
-				.map(e -> {
-					final String v = e.getValue().toString(print_readably);
-					if (Types.isVncKeyword(e.getKey())) {
-						return ":" + e.getKey().substring(1) + delim + v;
-					} 
-					else if (print_readably) {
-						return "\"" + e.getKey().toString() + "\"" + delim + v;
-					} 
-					else {
-						return e.getKey().toString() + delim + v;
-					}
-				 })
-				.collect(Collectors.joining(delim));
+	public static String pr_str(final VncVal val, final boolean print_readably) {
+		return val.toString(print_readably);
 	}
 
-	public static String _pr_str(final VncVal mv, final boolean print_readably) {
-		return mv.toString(print_readably);
-	}
-
-	public static String _pr_str_args(
+	public static String pr_str_args(
 			final VncList args,
-			final String sep, 
+			final String delim, 
 			final boolean print_readably
 	) {
-		return join(args.getList(), sep, print_readably);
+		return join(args.getList(), delim, print_readably);
 	}
 }

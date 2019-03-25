@@ -101,7 +101,7 @@ public class VncMultiFunction extends VncFunction {
 		throw new VncException(String.format(
 					"No matching '%s' multifunction method defined for dispatch value %s", 
 					getName(),
-					Printer._pr_str(dispatchVal, true)));
+					Printer.pr_str(dispatchVal, true)));
 	}
 	
 	

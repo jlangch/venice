@@ -95,11 +95,11 @@ public class VncAtom extends VncVal {
 	
 	@Override 
 	public String toString() {
-		return "(atom " + Printer._pr_str(state.get(), true) + ")";
+		return "(atom " + Printer.pr_str(state.get(), true) + ")";
 	}
 
 	public String toString(final boolean print_readably) {
-		return "(atom " + Printer._pr_str(state.get(), print_readably) + ")";
+		return "(atom " + Printer.pr_str(state.get(), print_readably) + ")";
 	}
 	
 	

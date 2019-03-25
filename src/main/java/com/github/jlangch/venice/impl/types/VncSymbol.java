@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import com.github.jlangch.venice.impl.types.util.Types;
+
 public class VncSymbol extends VncVal {
 
 	public VncSymbol(final VncString v) { 

@@ -24,11 +24,11 @@ package com.github.jlangch.venice.impl.util;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class Doc {

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.types;
+package com.github.jlangch.venice.impl.types.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
@@ -27,6 +27,23 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.IVncJavaObject;
+import com.github.jlangch.venice.impl.types.VncAtom;
+import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncConstant;
+import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncMultiFunction;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncThreadLocal;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
@@ -63,10 +80,6 @@ public class Types {
 
 	public static boolean isVncString(final VncVal val) {
 		return val != null && (val instanceof VncString);
-	}
-
-	public static boolean isVncKeyword(final String s) {
-		return s.length() != 0 && s.charAt(0) == Constants.KEYWORD_PREFIX;
 	}
 
 	public static boolean isVncKeyword(final VncVal val) {

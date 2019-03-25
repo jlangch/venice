@@ -51,9 +51,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
-import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -79,6 +77,8 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallStackUtil;
 import com.github.jlangch.venice.util.CallFrame;
 
@@ -577,7 +577,7 @@ public class CoreFunctions {
 						: new VncString(
 								args.getList()
 									.stream()
-									.map(v -> Printer._pr_str(v, true))
+									.map(v -> Printer.pr_str(v, true))
 									.collect(Collectors.joining(" ")));
 			}
 	
@@ -601,7 +601,7 @@ public class CoreFunctions {
 				final StringBuilder sb = new StringBuilder();
 				for(VncVal v : args.getList()) {
 					if (v != Nil) {
-						sb.append(Printer._pr_str(v, false));
+						sb.append(Printer.pr_str(v, false));
 					}
 				}		
 				return new VncString(sb.toString());

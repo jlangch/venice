@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncBigDecimal extends VncVal {

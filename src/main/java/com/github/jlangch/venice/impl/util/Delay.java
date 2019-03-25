@@ -61,7 +61,7 @@ public class Delay {
 		if (isRealized()) {
 			try {
 				final VncVal val = deref();
-				return "(delay :value " + Printer._pr_str(val, print_readably) + ")";
+				return "(delay :value " + Printer.pr_str(val, print_readably) + ")";
 			}
 			catch(Exception ex) {
 				return "(delay :exception :" + ex.getClass().getName() + ")";

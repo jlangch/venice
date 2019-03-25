@@ -28,7 +28,5 @@ public class Constants {
 	public static VncConstant True = new VncConstant("true");
 	
 	public static VncConstant False = new VncConstant("false");
-	
-	public static char KEYWORD_PREFIX = '\u029e';
 
 }

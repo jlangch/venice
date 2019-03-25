@@ -34,8 +34,6 @@ import java.util.Random;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Coerce;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -44,6 +42,8 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class MathFunctions {

@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.types.Coerce;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -40,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.concurrency.StripedExecutorService;
 import com.github.jlangch.venice.impl.util.concurrency.StripedRunnable;
 
@@ -112,7 +112,7 @@ public class Agent {
 			sb.append(v.ex.getClass().getName());
 		}
 		sb.append(":value ");
-		sb.append(Printer._pr_str(v.val, print_readably));
+		sb.append(Printer.pr_str(v.val, print_readably));
 		sb.append(")");
 		
 		return sb.toString();

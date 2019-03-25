@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncDouble extends VncVal {

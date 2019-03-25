@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.types;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncKeyword extends VncString implements IVncFunction {

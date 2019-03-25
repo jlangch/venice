@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
-import com.github.jlangch.venice.impl.types.Types;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class FunctionsUtil {

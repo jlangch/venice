@@ -295,7 +295,7 @@ public class REPL {
 	) {
 		if (ex instanceof ValueException) {
 			print(terminal, colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
-			println(terminal, colorID, "Thrown value: " + Printer._pr_str(((ValueException)ex).getValue(), false));			
+			println(terminal, colorID, "Thrown value: " + Printer.pr_str(((ValueException)ex).getValue(), false));			
 		}
 		else if (ex instanceof VncException) {
 			print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
