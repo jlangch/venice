@@ -302,6 +302,18 @@ public class SandboxRules {
 	}
 	
 	/**
+	 * Reject access to all Java related functions
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules rejectAllJavaCalls() {
+		if (rules != null) {
+			withBlacklistedVeniceFn(".");
+		}
+		return this;
+	}
+	
+	/**
 	 * Allow access to all standard Java system properties
 	 * 
 	 * <p>Standard system properties:

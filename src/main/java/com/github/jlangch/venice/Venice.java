@@ -87,7 +87,7 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false));
+		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false), interceptor);
 		
 		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName));
 
@@ -130,7 +130,7 @@ public class Venice {
 		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
+			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
@@ -199,7 +199,7 @@ public class Venice {
 		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry);
+			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
 
 			final Env env = createEnv(venice, params);
 

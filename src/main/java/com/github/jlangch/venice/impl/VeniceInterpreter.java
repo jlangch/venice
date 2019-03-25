@@ -67,17 +67,23 @@ import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		this(new MeterRegistry(false));
+		this(new MeterRegistry(false), new AcceptAllInterceptor());
 	}
 
-	public VeniceInterpreter(final MeterRegistry perfmeter) {
+	public VeniceInterpreter(
+			final MeterRegistry perfmeter, 
+			final IInterceptor interceptor
+	) {
 		this.sandboxMaxExecutionTimeChecker = new SandboxMaxExecutionTimeChecker();
 		this.meterRegistry = perfmeter;
+		this.interceptor = interceptor;
 	}
 	
 	
@@ -462,6 +468,7 @@ public class VeniceInterpreter implements Serializable  {
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
+						interceptor.validateVeniceFunction(fn.getName());					
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
 
@@ -1070,9 +1077,8 @@ public class VeniceInterpreter implements Serializable  {
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 	
-	private final JavaImports javaImports = new JavaImports();
-	
-	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;
-	
+	private final JavaImports javaImports = new JavaImports();	
+	private final IInterceptor interceptor;	
+	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
 }
