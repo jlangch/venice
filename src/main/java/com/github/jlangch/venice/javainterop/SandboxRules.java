@@ -257,6 +257,11 @@ public class SandboxRules {
 		return this;
 	}
 	
+	@Deprecated
+	public SandboxRules withBlacklistedVeniceFn(final String... rules) {
+		return rejectVeniceFunctions(rules);
+	}
+	
 	/**
 	 * Reject Venice function rules to the sandbox.
 	 * 
@@ -277,6 +282,11 @@ public class SandboxRules {
 				rules.stream().map(r -> "blacklist:venice:" + r).collect(Collectors.toList()));
 		}
 		return this;
+	}
+	
+	@Deprecated
+	public SandboxRules withBlacklistedVeniceFn(final Collection<String> rules) {
+		return rejectVeniceFunctions(rules);
 	}
 	
 	/**
@@ -341,6 +351,12 @@ public class SandboxRules {
 		withSystemProperties(DEFAULT_SYSTEM_PROPERTIES);
 		return this;
 	}
+	
+	@Deprecated
+	public SandboxRules allowAccessToStandardSystemProperties() {
+		return withStandardSystemProperties();
+	}
+	
 	
 	/**
 	 * Allow access to all Java system properties
