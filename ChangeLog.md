@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added support for `compare` function for all raw java types. Thereby sequences 
   with java types can be sorted.
 - added function `instance?`
-- added sandbox support for macros. E.g. Venice macros like `load-classpath-file`
+- added sandbox support for macros. E.g. Venice macros like `load-file`
   and `load-classpath-file` can now be rejected by the sandbox
 
 
