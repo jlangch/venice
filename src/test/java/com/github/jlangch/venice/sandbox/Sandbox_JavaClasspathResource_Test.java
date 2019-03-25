@@ -79,7 +79,7 @@ public class Sandbox_JavaClasspathResource_Test {
 		assertThrows(SecurityException.class, () -> {
 			Interceptor i2 = new SandboxInterceptor(
 								new SandboxRules()
-										.withBlacklistedVeniceFn("io/load-classpath-resource"));
+										.rejectVeniceFunctions("io/load-classpath-resource"));
 			new Venice(i2).eval(script);
 		});
 		

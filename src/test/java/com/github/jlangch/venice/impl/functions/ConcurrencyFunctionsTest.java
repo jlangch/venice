@@ -457,7 +457,7 @@ public class ConcurrencyFunctionsTest {
 	public void test_future_sandboxed() {
 		// all venice 'file' function blacklisted
 		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/file"));
+				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
 
 		final Venice venice = new Venice(interceptor);
 
@@ -476,7 +476,7 @@ public class ConcurrencyFunctionsTest {
 	public void test_future_sandbox_violation() {
 		// all venice 'file' function blacklisted
 		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/file"));
+				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
 
 		final Venice venice = new Venice(interceptor);
 
@@ -497,7 +497,7 @@ public class ConcurrencyFunctionsTest {
 	public void test_future_sandbox_ok() {
 		// all venice 'file' function blacklisted
 		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/slurp"));
+				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));
 
 		final Venice venice = new Venice(interceptor);
 

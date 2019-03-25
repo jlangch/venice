@@ -237,7 +237,7 @@ public class SandboxRules {
 	}
 	
 	/**
-	 * Add blacklisted Venice IO function rules to the sandbox.
+	 * Reject Venice function rules to the sandbox.
 	 * 
 	 * <p>
 	 * E.g:
@@ -250,15 +250,15 @@ public class SandboxRules {
 	 * @param rules rules
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules withBlacklistedVeniceFn(final String... rules) {
+	public SandboxRules rejectVeniceFunctions(final String... rules) {
 		if (rules != null) {
-			withBlacklistedVeniceFn(Arrays.asList(rules));
+			rejectVeniceFunctions(Arrays.asList(rules));
 		}
 		return this;
 	}
 	
 	/**
-	 * Add blacklisted Venice IO function rules to the sandbox.
+	 * Reject Venice function rules to the sandbox.
 	 * 
 	 * <p>
 	 * E.g:
@@ -271,7 +271,7 @@ public class SandboxRules {
 	 * @param rules rules
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules withBlacklistedVeniceFn(final Collection<String> rules) {
+	public SandboxRules rejectVeniceFunctions(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(
 				rules.stream().map(r -> "blacklist:venice:" + r).collect(Collectors.toList()));
@@ -298,7 +298,7 @@ public class SandboxRules {
 	 */
 	public SandboxRules rejectAllVeniceIoFunctions() {
 		if (rules != null) {
-			withBlacklistedVeniceFn("*io*");
+			rejectVeniceFunctions("*io*");
 		}
 		return this;
 	}
@@ -310,7 +310,7 @@ public class SandboxRules {
 	 */
 	public SandboxRules rejectAllJavaCalls() {
 		if (rules != null) {
-			withBlacklistedVeniceFn(".");
+			rejectVeniceFunctions(".");
 		}
 		return this;
 	}

@@ -18,6 +18,7 @@ public class Functions {
 	
 	static {
 		functions.putAll(CoreFunctions.ns);
+		functions.putAll(ModuleLoadFunctions.ns);
 		functions.putAll(StringFunctions.ns);
 		functions.putAll(MathFunctions.ns);
 		functions.putAll(IOFunctions.ns);

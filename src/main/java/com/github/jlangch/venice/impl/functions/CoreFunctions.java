@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
@@ -655,73 +654,6 @@ public class CoreFunctions {
 				} 
 				catch (ContinueException c) {
 					return Nil;
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction loadCoreModule = 
-		new VncFunction(
-				"load-core-module", 
-				VncFunction
-					.meta()
-					.arglists("(load-core-module name)")		
-					.doc("Loads a Venice extension module.")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				try {	
-					assertArity("load-core-module", args, 1);
-					
-					final VncVal name = args.first();
-					
-					if (Types.isVncString(name)) {
-						final String module = ModuleLoader.load(((VncString)args.first()).getValue());
-						return new VncString(module);
-					}
-					else if (Types.isVncSymbol(name)) {
-						final String module = ModuleLoader.load(((VncSymbol)args.first()).getName());
-						return new VncString(module);
-					}
-					else {
-						return Nil;
-					}
-				} 
-				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction loadClasspathVenice = 
-		new VncFunction("load-classpath-venice") {
-			public VncVal apply(final VncList args) {
-				try {	
-					assertArity("load-classpath-venice", args, 1);
-					
-					final VncVal name = args.first();
-					
-					if (Types.isVncString(name)) {
-						final String res = ModuleLoader.loadVeniceResource(((VncString)args.first()).getValue());
-						return res == null ? Nil : new VncString(res);
-					}
-					else if (Types.isVncKeyword(name)) {
-						final String res = ModuleLoader.loadVeniceResource(((VncKeyword)args.first()).getValue());
-						return res == null ? Nil : new VncString(res);
-					}
-					else if (Types.isVncSymbol(name)) {
-						final String res = ModuleLoader.loadVeniceResource(((VncSymbol)args.first()).getName());
-						return res == null ? Nil : new VncString(res);
-					}
-					else {
-						return Nil;
-					}
-				} 
-				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
 				}
 			}
 	
@@ -5428,9 +5360,6 @@ public class CoreFunctions {
 				.put("name",				name)
 				.put("type",				type)
 				.put("instance?",			instance_Q)	
-				
-				.put("load-core-module",		loadCoreModule)
-				.put("load-classpath-venice",	loadClasspathVenice)
 
 				.toMap();
 

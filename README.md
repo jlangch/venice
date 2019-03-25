@@ -828,6 +828,9 @@ final IInterceptor interceptor =
     new SandboxInterceptor(
         new SandboxRules()
               .rejectAllVeniceIoFunctions()
+              .rejectVeniceFunctions(
+              	"time/date",
+              	"time/zone-ids")
               .withStandardSystemProperties()
               .withSystemProperties("db.name", "db.port")
               .withClasspathResources("resources/images/*.png")

@@ -30,10 +30,11 @@ public class IOFnBlacklisted {
 
 	public static Set<String> getAllIoFunctions() {
 		return new HashSet<>(Arrays.asList(
-								// load
+								// load (macros)
 								"load-file",
+								"load-classpath-file",
 
-								// System
+								// system
 								"gc",
 								"sleep",
 								"sh",

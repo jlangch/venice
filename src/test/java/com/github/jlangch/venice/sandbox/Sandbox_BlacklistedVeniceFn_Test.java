@@ -71,7 +71,7 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 	public void test_blacklistedIO_slurp() {
 		// all Venice IO functions blacklisted
 		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("*io*"));
+				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*io*"));
 	
 		assertThrows(SecurityException.class, () -> {
 			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
@@ -82,7 +82,7 @@ public class Sandbox_BlacklistedVeniceFn_Test {
 	public void test_withBlacklistedVeniceFn_slurp() {
 		// Venice 'slurp' function blacklisted
 		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withBlacklistedVeniceFn("io/slurp"));				
+				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));				
 		
 		assertThrows(SecurityException.class, () -> {
 			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");

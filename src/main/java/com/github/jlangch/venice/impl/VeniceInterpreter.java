@@ -468,7 +468,9 @@ public class VeniceInterpreter implements Serializable  {
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
+						// validate that the function allowed by the sandox
 						interceptor.validateVeniceFunction(fn.getName());					
+						
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
 
@@ -576,6 +578,9 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);
 			if (!Types.isVncMacro(fn)) break;
 			
+			// validate that the macro allowed by the sandox
+			interceptor.validateVeniceFunction(((VncFunction)fn).getName());					
+
 			expanded = true;
 			ast_ = ((VncFunction)fn).apply(((VncList)ast_).rest());
 		}
