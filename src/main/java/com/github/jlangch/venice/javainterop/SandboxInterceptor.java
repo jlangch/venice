@@ -129,7 +129,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	}
 
 	@Override
-	public void validateBlackListedVeniceFunction(
+	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {
 		if (sandboxRules.isBlackListedVeniceFunction(funcName)) {

@@ -63,7 +63,7 @@ public class JavaInteropFn extends VncFunction {
 	}
 
 	public VncVal apply(final VncList args) {
-		JavaInterop.getInterceptor().validateBlackListedVeniceFunction(".");
+		JavaInterop.getInterceptor().validateVeniceFunction(".");
 		
 		return JavaInteropUtil.applyJavaAccess(args, javaImports);
 	}

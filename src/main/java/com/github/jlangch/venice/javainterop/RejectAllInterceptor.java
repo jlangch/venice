@@ -127,7 +127,7 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public void validateBlackListedVeniceFunction(
+	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {
 		if (blacklistedVeniceFunctions.contains(funcName)) {

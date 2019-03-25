@@ -134,7 +134,7 @@ public class ShellFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				JavaInterop.getInterceptor().validateBlackListedVeniceFunction("sh");
+				JavaInterop.getInterceptor().validateVeniceFunction("sh");
 	
 				assertMinArity("sh", args, 1);
 	

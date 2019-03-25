@@ -155,13 +155,13 @@ public interface IInterceptor {
 	String onReadSystemProperty(String propertyName) throws SecurityException;
 	
 	/**
-	 * Validates the invocation of a Venice function with args.
+	 * Validates the invocation of a Venice function.
 	 * 
 	 * @param funcName A venice function name
 	 * 
 	 * @throws SecurityException if the function is blacklisted and not allowed to be invoked.
 	 */
-	void validateBlackListedVeniceFunction(String funcName) throws SecurityException;
+	void validateVeniceFunction(String funcName) throws SecurityException;
 
 	/**
 	 * @return the max execution time in seconds a Venice script under this 
