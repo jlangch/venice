@@ -78,8 +78,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	@Override
 	public VncJavaSet withMeta(final VncVal meta) {
-		// shallow copy
-		return new VncJavaSet(new HashSet<>(value), meta);
+		return new VncJavaSet(value, meta);
 	}
 	
 	@Override

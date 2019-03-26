@@ -82,8 +82,8 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
-	public VncList withMeta(final VncVal meta) {
-		return new VncList(getList(), meta);
+	public VncJavaList withMeta(final VncVal meta) {
+		return new VncJavaList(value, meta);
 	}
 
 	@Override
