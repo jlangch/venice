@@ -41,7 +41,7 @@ import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
-public class Sandbox_BlacklistedVeniceFn_Test {
+public class Sandbox_VeniceFunction_Test {
 
 	
 	// ------------------------------------------------------------------------
