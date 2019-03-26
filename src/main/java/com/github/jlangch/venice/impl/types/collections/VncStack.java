@@ -21,10 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -33,9 +31,14 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class VncStack extends VncCollection {
 
 	public VncStack() {
-		super(Constants.Nil);
+		this(null, Constants.Nil);
 	}
-	
+
+	private VncStack(final ConcurrentLinkedDeque<VncVal> stack, final VncVal meta) {
+		super(meta);
+		this.stack = stack != null ? stack : new ConcurrentLinkedDeque<>();
+	}
+
 	
 	@Override
 	public VncCollection empty() {
@@ -43,8 +46,8 @@ public class VncStack extends VncCollection {
 	}
 
 	@Override
-	public VncSortedMap withMeta(final VncVal meta) {
-		throw new VncException("VncStack copy with meta is not supported");
+	public VncStack withMeta(final VncVal meta) {
+		return new VncStack(stack, meta);
 	}
 
 	@Override
@@ -96,5 +99,5 @@ public class VncStack extends VncCollection {
 
 	private static final long serialVersionUID = -564531670922145260L;
 
-	private final Deque<VncVal> stack = new ConcurrentLinkedDeque<>();
+	private final ConcurrentLinkedDeque<VncVal> stack;
 }
