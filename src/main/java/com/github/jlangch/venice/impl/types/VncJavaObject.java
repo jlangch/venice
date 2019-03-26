@@ -82,7 +82,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	@Override
 	public VncMap withMeta(final VncVal meta) {
-		return this;
+		return new VncJavaObject(delegate, meta);
 	}
 
 	public VncVal getProperty(final VncString name) {
