@@ -79,7 +79,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallStackUtil;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
 public class CoreFunctions {
@@ -624,10 +624,9 @@ public class CoreFunctions {
 					return new VncString(Readline.readline(prompt));
 				} 
 				catch (IOException ex) {
-					CallStackUtil.runWithCallStack(
-							CallFrame.fromVal("readline", args), 
-							() -> { throw new ValueException(new VncString(ex.getMessage()), ex); });
-					return Nil;
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("readline", args))) {
+						throw new ValueException(new VncString(ex.getMessage()), ex);
+					}
 				} 
 				catch (EofException e) {
 					return Nil;

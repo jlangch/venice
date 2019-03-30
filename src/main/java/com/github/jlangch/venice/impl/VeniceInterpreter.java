@@ -62,10 +62,10 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallStackUtil;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -227,26 +227,23 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol multiFnName = Coerce.toVncSymbol(ast.nth(1));
 					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 					if (multiFnVal == null) {
-						CallStackUtil.runWithCallStack(
-								CallFrame.fromVal(ast), 
-								() -> { throw new VncException(String.format(
-													"No multifunction '%s' defined for the method definition", 
-													multiFnName.getName())); 
-									  });
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+							throw new VncException(String.format(
+										"No multifunction '%s' defined for the method definition", 
+										multiFnName.getName())); 
+						}
 					}
 					final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
 					final VncVal dispatchVal = ast.nth(2);
 					
 					final VncVector params = Coerce.toVncVector(ast.nth(3));
 					if (params.size() != multiFn.getParams().size()) {
-						CallStackUtil.runWithCallStack(
-								CallFrame.fromVal(ast), 
-								() -> { throw new VncException(String.format(
-													"A method definition for the multifunction '%s' " 
-														+ "must have %d parameters", 
-													multiFnName.getName(),
-													multiFn.getParams().size()));
-									  });
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+							throw new VncException(String.format(
+									"A method definition for the multifunction '%s' must have %d parameters", 
+									multiFnName.getName(),
+									multiFn.getParams().size()));
+						}
 					}
 					final VncVector preConditions = getFnPreconditions(ast.nth(4));
 					final VncList body = ast.slice(preConditions == null ? 4 : 5);
@@ -390,37 +387,30 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 	
 				case "defmacro":
-					return CallStackUtil.runWithCallStack(
-								CallFrame.fromVal("defmacro", ast), 
-								ast, env, 
-								(a,e) -> defmacro_(a, e));
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {
+						return defmacro_(ast, env);
+					}
 
 				case "macroexpand": 
-					return CallStackUtil.runWithCallStack(
-								CallFrame.fromVal("macroexpand", ast), 
-								ast, env, 
-								(a,e) -> macroexpand(a.second(), e));
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
+						return macroexpand(ast.second(), env);
+					}
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
-					return CallStackUtil.runWithCallStack(
-								CallFrame.fromVal("try", ast), 
-								ast, env, 
-								(a,e) -> try_(ast, new Env(e)));
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try", ast))) {
+						return try_(ast, new Env(env));
+					}
 					
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
-					return CallStackUtil.runWithCallStack(
-								CallFrame.fromVal("try-with", ast), 
-								ast, env, 
-								(a,e) -> try_with_(a, new Env(e)));
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+						return try_with_(ast, new Env(env));
+					}
 
 				case "import":
-					return CallStackUtil.runWithCallStack(
-								CallFrame.fromVal("import", ast), 
-								ast, env, 
-								(a,e) -> {
-									a.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
-									return Nil;
-								});
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
+						ast.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
+						return Nil;
+					}
 					
 				case "do":
 					if (ast.size() < 2) {
@@ -498,12 +488,11 @@ public class VeniceInterpreter implements Serializable  {
 						return ((IVncFunction)elFirst).apply(el.rest());
 					}
 					else {
-						CallStackUtil.runWithCallStack(
-								CallFrame.fromVal(ast), 
-								() -> { throw new VncException(String.format(
-													"Not a function or keyword/map used as function: '%s'", 
-													PRINT(elFirst))); 
-								      });		
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+							throw new VncException(String.format(
+									"Not a function or keyword/map used as function: '%s'", 
+									PRINT(elFirst)));
+						}
 					}
 			}
 		}
@@ -681,11 +670,9 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal dorun_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
-			CallStackUtil.runWithCallStack(
-					CallFrame.fromVal("dorun", ast), 
-					() -> { throw new VncException(
-										"dorun requires two arguments a count and an expression to run");
-						  });
+			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("dorun", ast))) {
+				throw new VncException("dorun requires two arguments a count and an expression to run");
+			}
 		}
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
@@ -772,16 +759,13 @@ public class VeniceInterpreter implements Serializable  {
 					return new VncString(meterRegistry.getTimerDataFormatted("Metrics"));
 			}
 		}
-		
-		CallStackUtil.runWithCallStack(
-				CallFrame.fromVal("prof", ast), 
-				() -> { throw new VncException(
-									"Function 'prof' expects a single keyword argument: " +
-									":on, :off, :status, :clear, :clear-all-but, :data, " +
-									"or :data-formatted");
-					  });	
-	
-		return Nil;
+
+		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("prof", ast))) {
+			throw new VncException(
+					"Function 'prof' expects a single keyword argument: " +
+					":on, :off, :status, :clear, :clear-all-but, :data, " +
+					"or :data-formatted");
+		}
 	}
 
 	private VncVal binding_(final VncList ast, final Env env) {
@@ -1045,12 +1029,11 @@ public class VeniceInterpreter implements Serializable  {
 	 		final Env local = new Env(env);	
 	 		for(VncVal v : preConditions.getList()) {
 				if (!isFnConditionTrue(evaluate(v, local))) {
-					CallStackUtil.runWithCallStack(
-							CallFrame.fromVal(fnName, v), 
-							() -> { throw new AssertionException(String.format(
-												"pre-condition assert failed: %s",
-												((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
-								  });
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fnName, v))) {
+						throw new AssertionException(String.format(
+								"pre-condition assert failed: %s",
+								((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
+					}
 				}
  			}
 		}

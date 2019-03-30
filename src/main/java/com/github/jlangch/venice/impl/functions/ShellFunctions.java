@@ -54,9 +54,9 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallStackUtil;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
 public class ShellFunctions {
@@ -236,16 +236,14 @@ public class ShellFunctions {
 				}
 
 				if (exitCode != 0 && opts.get(new VncKeyword(":throw-ex")) == Constants.True) {
-					CallStackUtil.runWithCallStack(
-							CallFrame.fromVal("sh", cmd), 
-							() -> { throw new ShellException(
-										String.format(
-											"Shell execution failed: (sh %s). Exit code: %d", 
-											((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
-											exitCode),
-										exitCode);
-								  });
-					return Nil;
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", cmd))) {
+						throw new ShellException(
+								String.format(
+									"Shell execution failed: (sh %s). Exit code: %d", 
+									((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
+									exitCode),
+								exitCode); 
+					}
 				}
 				else {				
 					return VncHashMap.of(
@@ -259,16 +257,13 @@ public class ShellFunctions {
 			throw ex;
 		}
 		catch(Exception ex) {
-			CallStackUtil.runWithCallStack(
-					CallFrame.fromVal("sh", cmd), 
-					() -> { throw new VncException(
-								String.format(
-										"Shell execution processing failed: (sh %s)", 
-										((VncString)CoreFunctions.pr_str.apply(cmd)).getValue()),
-								ex);
-
-						  });		
-			return Nil;
+			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", cmd))) {
+				throw new VncException(
+						String.format(
+								"Shell execution processing failed: (sh %s)", 
+								((VncString)CoreFunctions.pr_str.apply(cmd)).getValue()),
+						ex);
+			}
 		}
 	}
 
@@ -317,12 +312,11 @@ public class ShellFunctions {
 	private static void validateArgs(final VncList args) {
 		args.forEach(arg -> {
 			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg) || Types.isVncBoolean(arg))) {
-				CallStackUtil.runWithCallStack(
-						CallFrame.fromVal("sh", arg), 
-						() -> { throw new VncException(String.format(
-										"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
-										Types.getType(arg)));
-							  });		
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", arg))) {
+					throw new VncException(String.format(
+							"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
+							Types.getType(arg)));
+				}
 			}
 		});
 	}
