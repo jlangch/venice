@@ -66,7 +66,7 @@ venice>
 If the REPL colors don't harmonize well with your terminal color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
 ANSI escape code colors on the working dir. The REPL command `!config` shows
-as sample 'repl.json' that can be modified.
+a sample 'repl.json' that can be modified.
 
 
 
