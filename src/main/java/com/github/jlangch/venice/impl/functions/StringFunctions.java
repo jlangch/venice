@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -603,7 +602,7 @@ public class StringFunctions {
 											.rest()
 											.getList()
 											.stream()
-											.map(v -> JavaInteropUtil.convertToJavaObject(v))
+											.map(v -> v.convertToJavaObject())
 											.collect(Collectors.toList());
 				
 				return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));

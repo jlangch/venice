@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -74,6 +75,16 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	public abstract VncMap dissoc(VncSequence keys);
 
+	@Override
+	public Object convertToJavaObject() {
+		return entries()
+				.stream()
+				.collect(
+					Collectors.toMap(
+						e -> e.getKey().convertToJavaObject(),
+						e -> e.getValue().convertToJavaObject()));
+	}
 
-    private static final long serialVersionUID = -1848883965231344442L;
+ 
+	private static final long serialVersionUID = -1848883965231344442L;
 }

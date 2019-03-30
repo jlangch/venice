@@ -381,7 +381,7 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
-	public void test_future_deref() {
+	public void test_future_deref_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
@@ -391,6 +391,19 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertEquals("{:a 100}", venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	public void test_future_deref_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                             " +
+				"   (let [f (future (fn [] {:a 100}))]           " +
+				"        (conj @f {:c 3}))                       " +
+				") ";
+
+		assertEquals("{:a 100 :c 3}", venice.eval("(str " + script + ")"));
 	}
 
 	@Test

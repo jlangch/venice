@@ -72,7 +72,7 @@ public class JavaInteropTest {
 		assertEquals("text", ((VncString)javaObj.get(new VncKeyword("eventMessage"))).getValue());
 		assertEquals(AuditEvent.class.getName(), ((VncString)javaObj.get(new VncKeyword("class"))).getValue());
 		
-		final Object obj = JavaInteropUtil.convertToJavaObject(val);
+		final Object obj = val.convertToJavaObject();
 		assertTrue(obj instanceof AuditEvent);
 	}
 	

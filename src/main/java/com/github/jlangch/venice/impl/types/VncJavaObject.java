@@ -102,7 +102,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 					new Invoker(), 
 					delegate, 
 					name.getValue(), 
-					JavaInteropUtil.convertToJavaObject(value));
+					value.convertToJavaObject());
 	}
 	
 	@Override
@@ -183,8 +183,15 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 		return false;
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 9;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		// return delegate instanceof VncVal ? ((VncVal)delegate).convertToJavaObject() : delegate;
+		return delegate;
 	}
 
 	@Override 

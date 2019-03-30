@@ -50,8 +50,14 @@ public class VncDouble extends VncVal {
 		return value; 
 	}
 
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 3;
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return value;
 	}
 
 	@Override 

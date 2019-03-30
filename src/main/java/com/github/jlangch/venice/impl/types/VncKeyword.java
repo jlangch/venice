@@ -61,7 +61,8 @@ public class VncKeyword extends VncString implements IVncFunction {
 		return new VncSymbol(getValue());
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 6;
 	}
 

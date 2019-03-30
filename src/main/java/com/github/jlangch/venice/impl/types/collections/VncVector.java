@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -209,8 +210,17 @@ public class VncVector extends VncSequence {
 		return new VncVector(value.removeAt(idx), getMeta());
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 201;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return getList()
+				.stream()
+				.map(v -> v.convertToJavaObject())
+				.collect(Collectors.toList());
 	}
 	
 	@Override

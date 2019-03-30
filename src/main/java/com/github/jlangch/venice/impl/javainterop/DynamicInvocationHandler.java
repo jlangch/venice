@@ -83,7 +83,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
 			if (proxyInterceptor == parentInterceptor) {
 				// we run in the same thread
-				return JavaInteropUtil.convertToJavaObject(fn.apply(new VncList(vncArgs)));
+				return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 			}
 			else {
 				// the callback function run's in another thread
@@ -92,7 +92,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				try {
 					JavaInterop.register(parentInterceptor);
 					
-					return JavaInteropUtil.convertToJavaObject(fn.apply(new VncList(vncArgs)));
+					return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 				}
 				finally {
 					JavaInterop.unregister();

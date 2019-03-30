@@ -52,8 +52,14 @@ public class VncSymbol extends VncVal {
 		return value; 
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 7;
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return value;
 	}
 
 	@Override 

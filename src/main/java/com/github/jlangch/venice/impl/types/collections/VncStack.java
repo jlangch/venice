@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -83,8 +85,17 @@ public class VncStack extends VncCollection {
 		return isEmpty() ? Constants.Nil : stack.peek();
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 203;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return Arrays
+				.stream(stack.toArray(new VncVal[0]))
+				.map(v -> v.convertToJavaObject())
+				.collect(Collectors.toList());
 	}
 
 	@Override 

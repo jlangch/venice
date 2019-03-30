@@ -337,6 +337,8 @@ public class CoreFunctionsTest {
 		
 		// Set
 		assertEquals("#{1}", venice.eval("(str (conj (set ) 1))"));
+		assertEquals("#{1 2}", venice.eval("(str (conj (set ) 1 2))"));
+		assertEquals("#{1 3 5}", venice.eval("(str (conj (sorted-set 1) 3 5))"));
 		
 		// Map
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (conj (ordered-map :a 1 :b 2) [:c 3]))"));
@@ -475,6 +477,14 @@ public class CoreFunctionsTest {
 
 
 		// Java Interop
+		
+		assertEquals(
+				"(1 2)", 
+				venice.eval(
+						"(str                                     " +
+						"    (doto (. :java.util.ArrayList :new)  " +
+						"	       (. :add 1)                     " +
+						"	       (. :add 2)))                   " ));
 		
 		assertEquals(
 				Long.valueOf(2L), 

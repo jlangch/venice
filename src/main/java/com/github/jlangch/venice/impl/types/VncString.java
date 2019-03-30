@@ -98,8 +98,14 @@ public class VncString extends VncVal {
 		return new VncSymbol(getValue());
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 5;
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return value;
 	}
 
 	@Override 

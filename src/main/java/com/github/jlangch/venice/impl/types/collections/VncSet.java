@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -64,6 +65,14 @@ public abstract class VncSet extends VncCollection {
 	
 	public abstract List<VncVal> getList();
 
+	@Override
+	public Object convertToJavaObject() {
+		return getSet()
+				.stream()
+				.map(v -> v.convertToJavaObject())
+				.collect(Collectors.toSet());
+	}
 
+	
     private static final long serialVersionUID = -1848883965231344442L;
 }

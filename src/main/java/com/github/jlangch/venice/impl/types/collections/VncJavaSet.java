@@ -83,7 +83,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
 	@Override
 	public VncJavaSet add(final VncVal val) {
-		value.add(JavaInteropUtil.convertToJavaObject(val));
+		value.add(val.convertToJavaObject());
 		return this;
 	}
 
@@ -112,7 +112,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	@Override
 	public VncJavaSet remove(final VncVal val) {
-		value.remove(JavaInteropUtil.convertToJavaObject(val));
+		value.remove(val.convertToJavaObject());
 		return this;
 	}
 
@@ -174,10 +174,19 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return value.isEmpty();
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 206;
 	}
-	
+
+	@Override
+	public Object convertToJavaObject() {
+		return value;
+//				.stream()
+//				.map(v -> v instanceof VncVal ? ((VncVal)v).convertToJavaObject() : v)
+//				.collect(Collectors.toSet());
+	}
+
 	@Override
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
@@ -237,7 +246,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		if (val != null) {
 			val.forEach(v -> {
 				value.add(v instanceof VncVal
-							? JavaInteropUtil.convertToJavaObject((VncVal)val)
+							? ((VncVal)val).convertToJavaObject()
 							: v);
 			});
 		}

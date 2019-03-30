@@ -175,7 +175,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncJavaList setAt(final int idx, final VncVal val) {
-		value.set(idx, JavaInteropUtil.convertToJavaObject(val));
+		value.set(idx, val.convertToJavaObject());
 		return this;
 	}
 
@@ -197,7 +197,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	@Override
 	public VncJavaList addAtStart(final VncVal val) {
-		value.add(0, JavaInteropUtil.convertToJavaObject(val));
+		value.add(0, val.convertToJavaObject());
 		return this;
 	}
 
@@ -205,14 +205,14 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	public VncJavaList addAllAtStart(final VncSequence list) {
 		final List<VncVal> items = list.getList();
 		for(int ii=0; ii<items.size(); ii++) {
-			value.add(0, JavaInteropUtil.convertToJavaObject(items.get(ii)));
+			value.add(0, items.get(ii).convertToJavaObject());
 		}
 		return this;
 	}
 	
 	@Override
 	public VncJavaList addAtEnd(final VncVal val) {
-		value.add(JavaInteropUtil.convertToJavaObject(val));
+		value.add(val.convertToJavaObject());
 		return this;
 	}
 
@@ -220,13 +220,22 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	public VncJavaList addAllAtEnd(final VncSequence list) {
 		final List<VncVal> items = list.getList();
 		for(int ii=0; ii<items.size(); ii++) {
-			value.add(JavaInteropUtil.convertToJavaObject(items.get(ii)));
+			value.add(items.get(ii).convertToJavaObject());
 		}
 		return this;
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 202;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return value;
+//				.stream()
+//				.map(v -> v instanceof VncVal ? ((VncVal)v).convertToJavaObject() : v)
+//				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -293,7 +302,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		if (val != null) {
 			val.forEach(v -> {
 				value.add(Types.isVncVal(val)
-							? JavaInteropUtil.convertToJavaObject((VncVal)val)
+							? ((VncVal)val).convertToJavaObject()
 							: v);
 			});
 		}

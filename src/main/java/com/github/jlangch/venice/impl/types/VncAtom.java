@@ -89,8 +89,14 @@ public class VncAtom extends VncVal {
 		watchable.removeWatch(name);
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 10;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return null;
 	}
 	
 	@Override 

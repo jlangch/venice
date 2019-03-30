@@ -54,8 +54,14 @@ public class VncLong extends VncVal {
 		return value.intValue(); 
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 2;
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return value;
 	}
 
 	@Override 

@@ -43,8 +43,25 @@ public class VncConstant extends VncVal {
 		return value; 
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 1;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		if (this == Constants.Nil) {
+			return null;
+		}
+		else if (this == Constants.True) {
+			return Boolean.TRUE;
+		}
+		else if (this == Constants.False) {
+			return Boolean.FALSE;
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override 

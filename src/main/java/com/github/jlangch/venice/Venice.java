@@ -140,7 +140,7 @@ public class Venice {
 				 
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
 
-			final Object jResult = JavaInteropUtil.convertToJavaObject(result);
+			final Object jResult = result.convertToJavaObject();
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.total", System.nanoTime() - nanos);
@@ -209,7 +209,7 @@ public class Venice {
 			
 			final VncVal result = venice.RE(script, scriptName, env);
 						
-			final Object jResult = JavaInteropUtil.convertToJavaObject(result);
+			final Object jResult = result.convertToJavaObject();
 	
 			meterRegistry.record("venice.total", System.nanoTime() - nanos);
 
@@ -289,9 +289,10 @@ public class Venice {
 			return new PrintStream((OutputStream)val, true);
 		}
 		else {
-			throw new VncException(
-					"The *out* parameter value must be either null or an "
-							+ "instance of PrintStream or OutputStream");
+			throw new VncException(String.format(
+						"The *out* parameter value (%s) must be either null or an "
+							+ "instance of PrintStream or OutputStream",
+						val.getClass().getSimpleName()));
 		}
 	}
 	
@@ -308,8 +309,7 @@ public class Venice {
 		}
 		catch(ValueException ex) {
 			// convert the Venice value to a Java value
-			throw new JavaValueException(
-						JavaInteropUtil.convertToJavaObject(ex.getValue()));
+			throw new JavaValueException(ex.getValue().convertToJavaObject());
 		}
 		catch(RuntimeException ex) {
 			throw ex;

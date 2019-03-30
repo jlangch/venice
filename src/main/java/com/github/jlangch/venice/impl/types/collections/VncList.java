@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -212,8 +213,17 @@ public class VncList extends VncSequence {
 		return new VncList(value.removeAt(idx), getMeta());
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 200;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return getList()
+				.stream()
+				.map(v -> v.convertToJavaObject())
+				.collect(Collectors.toList());
 	}
 	
 	@Override

@@ -53,8 +53,14 @@ public class VncBigDecimal extends VncVal {
 		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 4;
+	}
+	
+	@Override
+	public Object convertToJavaObject() {
+		return value;
 	}
 
 	@Override 

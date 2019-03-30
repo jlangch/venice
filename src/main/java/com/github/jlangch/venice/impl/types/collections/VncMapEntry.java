@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.Constants;
@@ -54,8 +55,16 @@ public class VncMapEntry extends VncVal {
 		return this;
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 207;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return Arrays.asList(
+				key.convertToJavaObject(),
+				val.convertToJavaObject());
 	}
 
 	

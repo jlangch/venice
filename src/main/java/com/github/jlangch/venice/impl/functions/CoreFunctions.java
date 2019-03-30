@@ -4793,8 +4793,8 @@ public class CoreFunctions {
 				else if (Types.isVncList(coll)) {
 					return ((VncList)coll).addAllAtStart(args.rest());
 				}
-				else if (Types.isVncHashSet(coll)) {
-					return VncHashSet.ofAll(((VncHashSet)coll).getSet()).addAll(args.rest());
+				else if (Types.isVncSet(coll)) {
+					return ((VncSet)coll).addAll(args.rest());
 				}
 				else if (Types.isVncMap(coll)) {
 					final VncMap map = (VncMap)coll;			

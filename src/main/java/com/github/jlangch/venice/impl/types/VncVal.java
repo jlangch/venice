@@ -39,6 +39,8 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	abstract public VncVal withMeta(final VncVal meta);
 		
 	abstract public int typeRank();
+	
+	abstract public Object convertToJavaObject();
 
 	public VncVal getMeta() {
 		// getMeta() can be redefined. Functions do that to manage meta data themselves.

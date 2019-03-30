@@ -67,8 +67,14 @@ public class VncByteBuffer extends VncVal {
 		return new VncList(list);
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 8;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return value;
 	}
 	
 	@Override 

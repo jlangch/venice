@@ -114,10 +114,15 @@ public class VncThreadLocal extends VncVal {
 		return this;
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 11;
 	}
 
+	@Override
+	public Object convertToJavaObject() {
+		return null;
+	}
 	
 	@Override 
 	public String toString() {

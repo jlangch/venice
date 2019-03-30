@@ -101,12 +101,12 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	@Override
 	public VncVal get(final VncVal key) {
 		return JavaInteropUtil.convertToVncVal(
-					value.get(JavaInteropUtil.convertToJavaObject(key)));
+					value.get(key.convertToJavaObject()));
 	}
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return value.containsKey(value.get(JavaInteropUtil.convertToJavaObject(key))) ? True : False;
+		return value.containsKey(value.get(key.convertToJavaObject())) ? True : False;
 	}
 
 	@Override
@@ -132,8 +132,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public VncJavaMap putAll(final VncMap map) {
 		getMap().entrySet().forEach(
 				e -> value.put(
-					JavaInteropUtil.convertToJavaObject(e.getKey()), 
-					JavaInteropUtil.convertToJavaObject(e.getValue())));
+					e.getKey().convertToJavaObject(), 
+					e.getValue().convertToJavaObject()));
 		return this;
 	}
 	
@@ -141,8 +141,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public VncJavaMap assoc(final VncVal... mvs) {
 		for (int i=0; i<mvs.length; i+=2) {
 			value.put(
-				JavaInteropUtil.convertToJavaObject(mvs[i]), 
-				JavaInteropUtil.convertToJavaObject(mvs[i+1]));
+				mvs[i].convertToJavaObject(), 
+				mvs[i+1].convertToJavaObject());
 		}
 		return this;
 	}
@@ -151,8 +151,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public VncJavaMap assoc(final VncSequence mvs) {
 		for (int i=0; i<mvs.getList().size(); i+=2) {
 			value.put(
-				JavaInteropUtil.convertToJavaObject(mvs.nth(i)), 
-				JavaInteropUtil.convertToJavaObject(mvs.nth(i)));
+				mvs.nth(i).convertToJavaObject(), 
+				mvs.nth(i).convertToJavaObject());
 		}
 		return this;
 	}
@@ -160,7 +160,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	@Override
 	public VncJavaMap dissoc(final VncVal... keys) {
 		for (VncVal key : keys) {
-			value.remove(JavaInteropUtil.convertToJavaObject(key));
+			value.remove(key.convertToJavaObject());
 		}
 		return this;
 	}
@@ -168,7 +168,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	@Override
 	public VncJavaMap dissoc(final VncSequence keys) {
 		for (int i=0; i<keys.getList().size(); i++) {
-			value.remove(JavaInteropUtil.convertToJavaObject(keys.nth(i)));
+			value.remove(keys.nth(i).convertToJavaObject());
 		}
 		return this;
 	}
@@ -209,8 +209,25 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		return value.isEmpty();
 	}
 	
-	@Override public int typeRank() {
+	@Override 
+	public int typeRank() {
 		return 211;
+	}
+
+	@Override
+	public Object convertToJavaObject() {
+		return value;
+//				.entrySet()
+//				.stream()
+//				.collect(
+//					Collectors.toMap(
+//						e -> e.getKey() instanceof VncVal 
+//								? ((VncVal)e.getKey()).convertToJavaObject() 
+//								: e.getKey(),
+//								
+//						e -> e.getValue() instanceof VncVal 
+//								? ((VncVal)e.getValue()).convertToJavaObject() 
+//								: e.getValue()));
 	}
 	
 	@Override
