@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import java.util.function.Supplier;
+
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
@@ -28,8 +30,15 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
  * Run code with an explicit Venice call stack
  * 
  * <pre>
- *    try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
- *       ast.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
+ *    try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("rest", ast))) {
+ *       return ast.rest();
+ *    }
+ * </pre>
+ * 
+ * <pre>
+ *    WithCallStack.run(
+ *       CallFrame.fromVal("rest", ast)));
+ *       () -> return ast.rest();
  *    }
  * </pre>
  */
@@ -46,6 +55,19 @@ public class WithCallStack implements AutoCloseable {
 	@Override
 	public void close() {
 		ThreadLocalMap.getCallStack().pop();
+	}
+	
+	
+	public static <T> T run(final CallFrame callFrame, final Supplier<T> func) {
+		try (WithCallStack cs = new WithCallStack(callFrame)) {
+			return func.get();
+		}
+	}
+
+	public static void run(final CallFrame callFrame, final Runnable func) {
+		try (WithCallStack cs = new WithCallStack(callFrame)) {
+			func.run();
+		}
 	}
 
 }
