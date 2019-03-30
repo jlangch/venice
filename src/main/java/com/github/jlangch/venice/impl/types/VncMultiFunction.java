@@ -47,7 +47,7 @@ public class VncMultiFunction extends VncFunction {
 		return this;
 	}
 	
-	public void addFn(final VncVal dispatchVal, final VncFunction fn) {
+	public VncMultiFunction addFn(final VncVal dispatchVal, final VncFunction fn) {
 		if (dispatchVal == null) {
 			throw new VncException("A dispatch value must not be null");
 		}
@@ -56,14 +56,18 @@ public class VncMultiFunction extends VncFunction {
 		}
 				
 		functions.put(dispatchVal, fn); // replace is allowed
+		
+		return this;
 	}
 
-	public void removeFn(final VncVal dispatchVal) {
+	public VncMultiFunction removeFn(final VncVal dispatchVal) {
 		if (dispatchVal == null) {
 			throw new VncException("A dispatch value must not be null");
 		}
 		
 		functions.remove(dispatchVal);
+		
+		return this;
 	}
 
 	@Override

@@ -249,8 +249,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncList body = ast.slice(preConditions == null ? 4 : 5);
 					final VncFunction fn = buildFunction(multiFnName.getName(), params, body, preConditions, env);
 
-					multiFn.addFn(dispatchVal, fn);
-					return multiFn;
+					return multiFn.addFn(dispatchVal, fn);
 				}
 								
 				case "def-dynamic": { // (def-dynamic name value)

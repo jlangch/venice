@@ -294,35 +294,32 @@ public class JavaInteropUtil {
 		if (value == null) {
 			return Constants.Nil;
 		}
-		else if (value instanceof VncVal) {
-			return (VncVal)value;
-		}
 		else if (value instanceof String) {
 			return new VncString((String)value);
-		}
-		else if (value instanceof Long) {
-			return new VncLong((Long)value);
-		}
-		else if (value instanceof Double) {
-			return new VncDouble((Double)value);
-		}
-		else if (value instanceof Byte) {
-			return null;
-		}
-		else if (value instanceof Short) {
-			return new VncLong(((Short)value).longValue());
 		}
 		else if (value instanceof Integer) {
 			return new VncLong(((Integer)value).longValue());
 		}
+		else if (value instanceof Long) {
+			return new VncLong((Long)value);
+		}
 		else if (value instanceof Float) {
 			return new VncDouble((Float)value);
+		}
+		else if (value instanceof Double) {
+			return new VncDouble((Double)value);
+		}
+		else if (value instanceof Boolean) {
+			return ((Boolean)value).booleanValue() ? Constants.True : Constants.False;
 		}
 		else if (value instanceof BigDecimal) {
 			return new VncBigDecimal((BigDecimal)value);
 		}
-		else if (value instanceof Boolean) {
-			return ((Boolean)value).booleanValue() ? Constants.True : Constants.False;
+		else if (value instanceof Byte) {
+			return new VncLong((((Byte)value).byteValue() & 0xFF));
+		}
+		else if (value instanceof Short) {
+			return new VncLong(((Short)value).longValue());
 		}
 		else if (ReflectionTypes.isEnumType(value.getClass())) {
 			return new VncString(value.toString());
@@ -338,6 +335,9 @@ public class JavaInteropUtil {
 		}
 		else if (value instanceof Map) {
 			return new VncJavaMap((Map<Object,Object>)value);
+		}
+		else if (value instanceof VncVal) {
+			return (VncVal)value;
 		}
 		else if (ReflectionTypes.isArrayType(value.getClass())) {
 			final Class<?> componentType = value.getClass().getComponentType();					
