@@ -295,9 +295,9 @@ public class JavaInteropTest {
 
 		assertEquals("123", venice.eval("(. :com.github.jlangch.venice.support.JavaObject :staticVoid)"));
 	}
-	
+
 	@Test
-	public void test_doto() {
+	public void test_java_collections() {
 		final Venice venice = new Venice();
 
 		//new JavaSandboxRecorder().register();
@@ -312,6 +312,15 @@ public class JavaInteropTest {
 				") ";
 
 		assertEquals("{a=1, b=2}", venice.eval(map).toString());
+		
+		final String set =
+				"(do                                  " +
+				"  (doto (. :java.util.HashSet :new)  " +
+				"	     (. :add :a)                  " +
+				"	     (. :add :b))                 " +
+				") ";
+
+		assertEquals("[a, b]", venice.eval(set).toString());
 		
 		
 		final String list =

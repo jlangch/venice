@@ -232,10 +232,10 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public Object convertToJavaObject() {
-		return value;
-//				.stream()
-//				.map(v -> v instanceof VncVal ? ((VncVal)v).convertToJavaObject() : v)
-//				.collect(Collectors.toList());
+		return value
+				.stream()
+				.map(v -> v instanceof VncVal ? ((VncVal)v).convertToJavaObject() : v)
+				.collect(Collectors.toList());
 	}
 
 	@Override

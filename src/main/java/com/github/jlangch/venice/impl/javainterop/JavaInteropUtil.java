@@ -31,6 +31,7 @@ import java.util.Set;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -131,8 +132,8 @@ public class JavaInteropUtil {
 				else {
 					// instance method/field:   (. person :getLastName)
 					//	                        (. person :setLastName \"john\")
-					final Object target = Types.isVncJavaObject(arg0)
-											? ((VncJavaObject)arg0).getDelegate()
+					Object target = arg0 instanceof IVncJavaObject
+											? ((IVncJavaObject)arg0).getDelegate()
 											: arg0.convertToJavaObject();
 											
 					// Delay & Agents exceptionally get the original Venice data types passed!
@@ -213,6 +214,9 @@ public class JavaInteropUtil {
 		if (value == null) {
 			return Constants.Nil;
 		}
+		else if (value instanceof VncVal) {
+			return (VncVal)value;
+		}
 		else if (value instanceof String) {
 			return new VncString((String)value);
 		}
@@ -256,9 +260,6 @@ public class JavaInteropUtil {
 		}
 		else if (value instanceof Map) {
 			return new VncJavaMap((Map<Object,Object>)value);
-		}
-		else if (value instanceof VncVal) {
-			return (VncVal)value;
 		}
 		else if (value instanceof ByteBuffer) {
 			return new VncByteBuffer((ByteBuffer)value);
