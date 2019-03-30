@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
  *    try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
  *       ast.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
  *    }
+ * </pre>
  */
 public class WithCallStack implements AutoCloseable {
 
