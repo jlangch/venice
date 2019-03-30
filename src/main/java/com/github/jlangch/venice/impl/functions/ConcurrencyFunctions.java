@@ -989,13 +989,13 @@ public class ConcurrencyFunctions {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 	
 				// wrap the passed function so that its return value can be
-				// wrapped with a VncJavaObject. So that there are no 
+				// wrapped with a VncTunnelAsJavaObject. So that there are no 
 				// VncVal -> Java Object conversions. Thus
 				// the function's return value is not touched (just 
-				// wrapped/unwrapped with a VncJavaObject)!			
+				// wrapped/unwrapped with a VncTunnelAsJavaObject)!			
 				final VncFunction wrapped = new VncFunction() {
 					public VncVal apply(final VncList args) {
-						return new VncJavaObject(fn.apply(args));
+						return new VncTunnelAsJavaObject(fn.apply(args));
 					}
 					
 				    private static final long serialVersionUID = -1L;
@@ -1386,7 +1386,21 @@ public class ConcurrencyFunctions {
 					.put("thread-local-clear",	thread_local_clear)
 					.toMap();	
 	
+	
+	private static class VncTunnelAsJavaObject extends VncJavaObject {
+		public VncTunnelAsJavaObject(final VncVal val) {
+			super(val);
+		}
+		
+		@Override
+		public VncVal convertToJavaObject() {
+			return (VncVal)getDelegate(); // no conversion!
+		}
+				
+	    private static final long serialVersionUID = -1848883965231344442L;
+	}
 
+	
 	private final static AtomicLong futureThreadPoolCounter = new AtomicLong(0);
 
 	private final static ExecutorService executor = 
