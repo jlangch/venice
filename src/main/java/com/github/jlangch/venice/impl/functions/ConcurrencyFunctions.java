@@ -124,7 +124,7 @@ public class ConcurrencyFunctions {
 					if (delegate instanceof Future) {
 						try {
 							@SuppressWarnings("unchecked")
-							final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+							final Future<VncVal> future = (Future<VncVal>)delegate;
 							if (args.size() == 1) {
 								return future.get();
 							}
@@ -1000,14 +1000,14 @@ public class ConcurrencyFunctions {
 					
 				    private static final long serialVersionUID = -1L;
 				};
-	
+				
 				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
 													Callable.class, 
 													VncHashMap.of(new VncKeyword("call"), wrapped));
 	
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
-				final Callable<Object> taskWrapper = () -> {
+				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
@@ -1021,7 +1021,7 @@ public class ConcurrencyFunctions {
 					}
 				};
 				
-				final Future<Object> future = executor.submit(taskWrapper);
+				final Future<VncVal> future = executor.submit(taskWrapper);
 				
 				return new VncJavaObject(future);
 			}

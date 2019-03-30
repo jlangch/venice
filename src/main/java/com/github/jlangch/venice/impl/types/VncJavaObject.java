@@ -190,7 +190,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public Object convertToJavaObject() {
-		// return delegate instanceof VncVal ? ((VncVal)delegate).convertToJavaObject() : delegate;
+		//return delegate instanceof VncVal ? ((VncVal)delegate).convertToJavaObject() : delegate;
 		return delegate;
 	}
 
