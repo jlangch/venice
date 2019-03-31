@@ -7,6 +7,8 @@
 *.eap binary
 *.EAP binary
 
+*.pdf -diff
+
 # Use the correct line endings for Windows batch scripts and Unix shell scripts
 *.bat text eol=crlf
 *.sh text eol=lf
