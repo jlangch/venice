@@ -160,7 +160,7 @@ public class SandboxRules {
 	 *   <li>foo/org/image.png</li>
 	 *   <li>foo/org/*.png</li>
 	 *   <li>foo/org/*.jpg</li>
-	 *   <li>foo/&ast;&ast;/*.jpg</li>
+	 *   <li>foo/&#42;&#42;/*.jpg</li>
 	 * </ul>
 	 * 
 	 * @param rules rules
@@ -181,7 +181,7 @@ public class SandboxRules {
 	 *   <li>foo/org/image.png</li>
 	 *   <li>foo/org/*.png</li>
 	 *   <li>foo/org/*.jpg</li>
-	 *   <li>foo/&ast;&ast;/*.jpg</li>
+	 *   <li>foo/&#42;&#42;/*.jpg</li>
 	 * </ul>
 	 * 
 	 * @param rules rules

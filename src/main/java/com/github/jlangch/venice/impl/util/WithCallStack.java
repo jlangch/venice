@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
  * <pre>
  *    WithCallStack.run(
  *       CallFrame.fromVal("rest", ast)));
- *       () -> return ast.rest();
+ *       () -&gt; return ast.rest();
  *    }
  * </pre>
  */
