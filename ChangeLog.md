@@ -26,7 +26,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
   with raw java types can be sorted.
 - added function `instance?`
 - added sandbox support for macros. E.g. Venice macros like `load-file`
-  and `load-classpath-file` can now be rejected by the sandbox
+  and `load-classpath-file` can now be rejected by the sandbox without needing
+  to sandbox the underlying functions.
 
 
 
