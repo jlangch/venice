@@ -52,8 +52,7 @@ with the up/down arrows.
 A history of the last three result values is kept by the REPL, accessible through 
 the symbols `*1`, `*2`, `*3`, `**`.
 
-The REPL supports multi-line editing and copy/paste of multi-line code
-snippets.
+The REPL supports multi-line editing and:
 
 ```text
 venice> (defn sum [x y]
