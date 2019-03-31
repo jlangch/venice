@@ -215,18 +215,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public Object convertToJavaObject() {
-		return value
-				.entrySet()
-				.stream()
-				.collect(
-					Collectors.toMap(
-						e -> e.getKey() instanceof VncVal 
-								? ((VncVal)e.getKey()).convertToJavaObject() 
-								: e.getKey(),
-								
-						e -> e.getValue() instanceof VncVal 
-								? ((VncVal)e.getValue()).convertToJavaObject() 
-								: e.getValue()));
+		return value;
 	}
 	
 	@Override

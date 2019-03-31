@@ -1389,15 +1389,23 @@ public class ConcurrencyFunctions {
 	
 	private static class VncTunnelAsJavaObject extends VncJavaObject {
 		public VncTunnelAsJavaObject(final VncVal val) {
-			super(val);
+			super(null);
+			this.val = val;
+		}
+		
+		@Override
+		public VncVal getDelegate() {
+			return val;
 		}
 		
 		@Override
 		public VncVal convertToJavaObject() {
-			return (VncVal)getDelegate(); // no conversion!
+			return val;
 		}
 				
 	    private static final long serialVersionUID = -1848883965231344442L;
+	    
+	    private final VncVal val;
 	}
 
 	

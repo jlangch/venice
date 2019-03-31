@@ -54,7 +54,8 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	public VncJavaObject(final Object obj, final VncVal meta) {
 		super(meta);
-		this.delegate = obj;
+
+		this.delegate = obj instanceof VncVal ? ((VncVal)obj).convertToJavaObject() : obj;
 	}
 	
 	
@@ -190,7 +191,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public Object convertToJavaObject() {
-		return delegate instanceof VncVal ? ((VncVal)delegate).convertToJavaObject() : delegate;
+		return delegate;
 	}
 
 	@Override 

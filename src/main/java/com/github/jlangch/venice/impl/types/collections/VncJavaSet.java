@@ -180,10 +180,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	@Override
 	public Object convertToJavaObject() {
-		return value
-				.stream()
-				.map(v -> v instanceof VncVal ? ((VncVal)v).convertToJavaObject() : v)
-				.collect(Collectors.toSet());
+		return value;
 	}
 
 	@Override

@@ -297,22 +297,62 @@ public class JavaInteropTest {
 	}
 
 	@Test
-	public void test_java_collections() {
+	public void test_java_list() {
 		final Venice venice = new Venice();
 
-		//new JavaSandboxRecorder().register();
-		
-		// let [x (. :java.util.LinkedHashMap :new)] (. x :put :a 1), (. x :put :b 2) x)
-		
-		final String map =
-				"(do                                  " +
-				"  (doto (. :java.util.HashMap :new)  " +
-				"	     (. :put :a 1)                " +
-				"	     (. :put :b 2))               " +
+		final String list1 =
+				"(do                                    " +
+				"  (doto (. :java.util.ArrayList :new)  " +
+				"	     (. :add 1)                     " +
+				"	     (. :add (+ 1 2)))              " +
 				") ";
 
-		assertEquals("{a=1, b=2}", venice.eval(map).toString());
+		assertEquals("java.util.ArrayList", venice.eval(list1).getClass().getName());
+		assertEquals("[1, 3]", venice.eval(list1).toString());
 		
+		final String list2 =
+				"(do                                           " +
+				"  (first (doto (. :java.util.ArrayList :new)  " +
+				"	            (. :add 1)                     " +
+				"	            (. :add (+ 1 2))))             " +
+				") ";
+
+		assertEquals(1L, venice.eval(list2));
+		
+		final String list3 =
+				"(do                                          " +
+				"  (rest (doto (. :java.util.ArrayList :new)  " +
+				"	           (. :add 1)                     " +
+				"	           (. :add (+ 1 2))))             " +
+				") ";
+
+		assertEquals("[3]", venice.eval(list3).toString());
+		
+		final String list4 =
+				"(do                                          " +
+				"  (nth (doto (. :java.util.ArrayList :new)   " +
+				"	           (. :add 1)                     " +
+				"	           (. :add (+ 1 2)))              " +
+				"	    1)                                    " +
+				") ";
+
+		assertEquals(3L, venice.eval(list4));
+
+		final String list5 =
+				"(do                                                          " +
+				"  (doto (. :java.util.concurrent.CopyOnWriteArrayList :new)  " +
+				"	     (. :add 1)                                           " +
+				"	     (. :add (+ 1 2)))                                    " +
+				") ";
+
+		assertEquals("java.util.concurrent.CopyOnWriteArrayList", venice.eval(list5).getClass().getName());
+		assertEquals("[1, 3]", venice.eval(list5).toString());
+	}
+
+	@Test
+	public void test_java_set() {
+		final Venice venice = new Venice();
+
 		final String set =
 				"(do                                  " +
 				"  (doto (. :java.util.HashSet :new)  " +
@@ -320,17 +360,23 @@ public class JavaInteropTest {
 				"	     (. :add :b))                 " +
 				") ";
 
+		assertEquals("java.util.HashSet", venice.eval(set).getClass().getName());
 		assertEquals("[a, b]", venice.eval(set).toString());
-		
-		
-		final String list =
-				"(do                                    " +
-				"  (doto (. :java.util.ArrayList :new)  " +
-				"	     (. :add 1)                     " +
-				"	     (. :add 2))                    " +
+	}
+
+	@Test
+	public void test_java_map() {
+		final Venice venice = new Venice();
+
+		final String map =
+				"(do                                  " +
+				"  (doto (. :java.util.HashMap :new)  " +
+				"	     (. :put :a 1)                " +
+				"	     (. :put :b (+ 1 2)))         " +
 				") ";
 
-		assertEquals("[1, 2]", venice.eval(list).toString());
+		assertEquals("java.util.HashMap", venice.eval(map).getClass().getName());
+		assertEquals("{a=1, b=3}", venice.eval(map).toString());
 	}
 
 	@Test
