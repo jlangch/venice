@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,13 +45,13 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		this(null, meta);
 	}
 
-	public VncJavaSet(final Collection<Object> val) {
+	public VncJavaSet(final Set<Object> val) {
 		this(val, null);
 	}
 
-	public VncJavaSet(final Collection<Object> val, final VncVal meta) {
+	public VncJavaSet(final Set<Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		addAll(val);
+		value = val;
 	}
 	
 	
@@ -141,7 +140,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	@Override
 	public boolean contains(final VncVal val) {
-		return value.contains(JavaInteropUtil.convertToVncVal(val));
+		return value.contains(val.convertToJavaObject());
 	}
 
 	@Override
@@ -242,16 +241,6 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return "#{" + Printer.join(getVncValueList(), " ", print_readably) + "}";
 	}
 
-	private void addAll(final Collection<Object> val) {
-		if (val != null) {
-			val.forEach(v -> {
-				value.add(v instanceof VncVal
-							? ((VncVal)val).convertToJavaObject()
-							: v);
-			});
-		}
-	}
-
 	private List<VncVal> getVncValueList() {
 		return value
 				.stream()
@@ -269,5 +258,5 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final HashSet<Object> value = new HashSet<>();	
+	private final Set<Object> value;	
 }
