@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- ...
+- enhanced the function `into` to handle raw Java collections the most efficient way
 
 
 

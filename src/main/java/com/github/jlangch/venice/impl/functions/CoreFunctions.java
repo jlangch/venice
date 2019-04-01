@@ -66,6 +66,7 @@ import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
+import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -2670,9 +2671,18 @@ public class CoreFunctions {
 						"(into [] (bytebuf [0 1 2]))",
 						"(into '() \"abc\")",
 						"(into [] \"abc\")",
-						"(into (sorted-map) {:b 2 :c 3 :a 1})")
+						"(into (sorted-map) {:b 2 :c 3 :a 1})",
+						"(do\n" +
+						"   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
+						"         (doto (. :java.util.ArrayList :new)\n" +
+						"               (. :add 3)\n" +
+						"               (. :add 4))))\n",
+						"(do\n" +
+						"   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
+						"         '(3 4)))\n")
 					.build()
 		) {		
+			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {
 				assertArity("into", args, 2);
 				
@@ -2719,10 +2729,7 @@ public class CoreFunctions {
 				else if (Types.isVncList(to)) {
 					return ((VncList)to).addAllAtStart(from.toVncList());
 				}
-				else if (Types.isVncJavaList(to)) {
-					return ((VncJavaList)to).addAllAtStart(from.toVncList());
-				}
-				else if (Types.isVncHashSet(to)) {
+				else if (Types.isVncHashSet(to) || Types.isVncSortedSet(to)) {
 					return ((VncHashSet)to).addAll(from.toVncList());
 				}
 				else if (Types.isVncMap(to)) {
@@ -2746,6 +2753,40 @@ public class CoreFunctions {
 						throw new VncException(String.format(
 								"Function 'into' does not allow %s as from-coll into a map", 
 								Types.getType(from)));
+					}
+				}
+				else if (Types.isVncJavaList(to)) {
+					if (Types.isVncJavaList(from)) {
+						List<Object> to_ = (List<Object>)((VncJavaList)to).getDelegate();
+						List<Object> from_ = (List<Object>)((VncJavaList)from).getDelegate();
+						to_.addAll(from_);
+						return to;
+					}
+					if (Types.isVncJavaSet(from)) {
+						List<Object> to_ = (List<Object>)((VncJavaList)to).getDelegate();
+						Set<Object> from_ = (Set<Object>)((VncJavaSet)from).getDelegate();
+						to_.addAll(from_);
+						return to;
+					}
+					else {
+						return ((VncJavaList)to).addAllAtEnd(from.toVncList());					
+					}
+				}
+				else if (Types.isVncJavaSet(to)) {
+					if (Types.isVncJavaSet(from)) {
+						Set<Object> to_ = (Set<Object>)((VncJavaSet)to).getDelegate();
+						Set<Object> from_ = (Set<Object>)((VncJavaSet)from).getDelegate();
+						to_.addAll(from_);
+						return to;
+					}
+					if (Types.isVncJavaList(from)) {
+						Set<Object> to_ = (Set<Object>)((VncJavaSet)to).getDelegate();
+						List<Object> from_ = (List<Object>)((VncJavaList)to).getDelegate();
+						to_.addAll(from_);
+						return to;
+					}
+					else {
+						return ((VncJavaSet)to).addAll(from.toVncList());					
 					}
 				}
 				else {
