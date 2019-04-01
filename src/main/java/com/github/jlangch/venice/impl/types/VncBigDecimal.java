@@ -68,6 +68,9 @@ public class VncBigDecimal extends VncVal {
 		if (Types.isVncBigDecimal(o)) {
 			return value.compareTo(((VncBigDecimal)o).getValue());
 		}
+		else if (Types.isVncInteger(o)) {
+			return value.compareTo(Numeric.intToDecimal((VncInteger)o).getValue());
+		}
 		else if (Types.isVncDouble(o)) {
 			return value.compareTo(Numeric.doubleToDecimal((VncDouble)o).getValue());
 		}

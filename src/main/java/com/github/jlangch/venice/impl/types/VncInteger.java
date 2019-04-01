@@ -25,34 +25,38 @@ import com.github.jlangch.venice.impl.functions.Numeric;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
-public class VncDouble extends VncVal {
+public class VncInteger extends VncVal {
 
-	public VncDouble(final Double v) { 
+	public VncInteger(final Integer v) { 
 		this(v, Constants.Nil); 
 	}
 	
-	public VncDouble(final Float v) { 
-		this(v.doubleValue(), Constants.Nil); 
+	public VncInteger(final Long v) { 
+		this(v.intValue(), Constants.Nil); 
 	}
 
-	public VncDouble(final Double v, final VncVal meta) { 
+	public VncInteger(final Integer v, final VncVal meta) { 
 		super(meta);
 		value = v; 
 	}
-
+	
 	
 	@Override
-	public VncDouble withMeta(final VncVal meta) {
-		return new VncDouble(value, meta);
+	public VncInteger withMeta(final VncVal meta) {
+		return new VncInteger(value, meta);
 	}
 
-	public Double getValue() { 
+	public Integer getValue() { 
 		return value; 
 	}
-
+	
+	public Long getLongValue() { 
+		return value.longValue(); 
+	}
+	
 	@Override 
 	public int typeRank() {
-		return 3;
+		return 12;
 	}
 	
 	@Override
@@ -62,17 +66,17 @@ public class VncDouble extends VncVal {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		if (Types.isVncDouble(o)) {
-			return value.compareTo(((VncDouble)o).getValue());
-		}
-		else if (Types.isVncInteger(o)) {
-			return value.compareTo(Numeric.intToDouble((VncInteger)o).getValue());
+		if (Types.isVncInteger(o)) {
+			return value.compareTo(((VncInteger)o).getValue());
 		}
 		else if (Types.isVncLong(o)) {
-			return value.compareTo(Numeric.longToDouble((VncLong)o).getValue());
+			return value.compareTo(Numeric.longToInt((VncLong)o).getValue());
+		}
+		else if (Types.isVncDouble(o)) {
+			return value.compareTo(Numeric.doubleToInt((VncDouble)o).getValue());
 		}
 		else if (Types.isVncBigDecimal(o)) {
-			return value.compareTo(Numeric.decimalToDouble((VncBigDecimal)o).getValue());
+			return value.compareTo(Numeric.decimalToInt((VncBigDecimal)o).getValue());
 		}
 		else if (o == Constants.Nil) {
 			return 1;
@@ -97,7 +101,7 @@ public class VncDouble extends VncVal {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		VncDouble other = (VncDouble) obj;
+		VncInteger other = (VncInteger) obj;
 		if (value == null) {
 			if (other.value != null)
 				return false;
@@ -114,5 +118,5 @@ public class VncDouble extends VncVal {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Double value;
+	private final Integer value;
 }

@@ -69,6 +69,9 @@ public class VncLong extends VncVal {
 		if (Types.isVncLong(o)) {
 			return value.compareTo(((VncLong)o).getValue());
 		}
+		else if (Types.isVncInteger(o)) {
+			return value.compareTo(Numeric.intToLong((VncInteger)o).getValue());
+		}
 		else if (Types.isVncDouble(o)) {
 			return value.compareTo(Numeric.doubleToLong((VncDouble)o).getValue());
 		}

@@ -164,6 +164,7 @@ public class DocGenerator {
 
 		final DocSection convert = new DocSection("Convert");
 		numbers.addSection(convert);
+		convert.addItem(getDocItem("int"));
 		convert.addItem(getDocItem("long"));
 		convert.addItem(getDocItem("double"));
 		convert.addItem(getDocItem("decimal"));
@@ -186,6 +187,7 @@ public class DocGenerator {
 		test.addItem(getDocItem("even?"));
 		test.addItem(getDocItem("odd?"));
 		test.addItem(getDocItem("number?"));
+		test.addItem(getDocItem("int?"));
 		test.addItem(getDocItem("long?"));
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
