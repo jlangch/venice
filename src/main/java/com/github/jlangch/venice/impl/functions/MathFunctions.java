@@ -56,7 +56,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(+)", "(+ x)", "(+ x y)", "(+ x y & more)")		
 					.doc("Returns the sum of the numbers. (+) returns 0.")
-					.examples("(+)", "(+ 1)", "(+ 1 2)", "(+ 1 2 3 4)")
+					.examples("(+)", "(+ 1)", "(+ 1 2)", "(+ 1 2 3 4)", "(+ (int 1) (int 2))", "(+ 1 2.5)", "(+ 1 2.5M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -83,7 +83,7 @@ public class MathFunctions {
 					.doc(
 						"If one number is supplied, returns the negation, else subtracts " +
 						"the numbers from x and returns the result.")
-					.examples("(- 4)", "(- 8 3 -2 -1)", "(- 8 2.5)", "(- 8 1.5M)")
+					.examples("(- 4)", "(- 8 3 -2 -1)", "(- (int 5) (int 2))", "(- 8 2.5)", "(- 8 1.5M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -126,7 +126,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(*)", "(* x)", "(* x y)", "(* x y & more)")		
 					.doc("Returns the product of numbers. (*) returns 1")
-					.examples("(*)", "(* 4)", "(* 4 3)", "(* 4 3 2)", "(* 6.0 2)", "(* 6 1.5M)")
+					.examples("(*)", "(* 4)", "(* 4 3)", "(* 4 3 2)", "(* (int 4) (int 3))", "(* 6.0 2)", "(* 6 1.5M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -153,7 +153,7 @@ public class MathFunctions {
 					.doc(
 						"If no denominators are supplied, returns 1/numerator, " + 
 						"else returns numerator divided by all of the denominators.")
-					.examples("(/ 2.0)", "(/ 12 2 3)", "(/ 12 3)", "(/ 6.0 2)", "(/ 6 1.5M)")
+					.examples("(/ 2.0)", "(/ 12 2 3)", "(/ 12 3)", "(/ (int 12) (int 3))", "(/ 6.0 2)", "(/ 6 1.5M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -196,7 +196,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(mod n d)")		
 					.doc("Modulus of n and d.")
-					.examples("(mod 10 4)")
+					.examples("(mod 10 4)", "(mod (int 10) (int 4))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -248,7 +248,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(inc x)")		
 					.doc("Increments the number x")
-					.examples("(inc 10)", "(inc 10.1)", "(inc 10.12M)")
+					.examples("(inc 10)", "(inc (int 10))", "(inc 10.1)", "(inc 10.12M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -284,7 +284,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(dec x)")		
 					.doc("Decrements the number x")
-					.examples("(dec 10)", "(dec 10.1)", "(dec 10.12M)")
+					.examples("(dec 10)", "(dec (int 10))", "(dec 10.1)", "(dec 10.12M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -322,6 +322,7 @@ public class MathFunctions {
 					.doc("Returns the greatest of the values")
 					.examples(
 						"(max 1)", "(max 1 2)", "(max 4 3 2 1)",
+						"(max (int 1) (int 2))",
 						"(max 1.0)", "(max 1.0 2.0)", "(max 4.0 3.0 2.0 1.0)",
 						"(max 1.0M)", "(max 1.0M 2.0M)", "(max 4.0M 3.0M 2.0M 1.0M)",
 						"(max 1.0M 2)")
@@ -361,6 +362,7 @@ public class MathFunctions {
 					.doc("Returns the smallest of the values")
 					.examples(
 						"(min 1)", "(min 1 2)", "(min 4 3 2 1)",
+						"(min (int 1) (int 2))",
 						"(min 1.0)", "(min 1.0 2.0)", "(min 4.0 3.0 2.0 1.0)",
 						"(min 1.0M)", "(min 1.0M 2.0M)", "(min 4.0M 3.0M 2.0M 1.0M)",
 						"(min 1.0M 2)")
@@ -398,7 +400,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(abs x)")		
 					.doc("Returns the absolute value of the number")
-					.examples("(abs 10)", "(abs -10)", "(abs -10.1)", "(abs -10.12M)")
+					.examples("(abs 10)", "(abs -10)", "(abs (int -10))", "(abs -10.1)", "(abs -10.12M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -435,7 +437,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(negate x)")		
 					.doc("Negates x")
-					.examples("(negate 10)", "(negate 1.23)", "(negate 1.23M)")
+					.examples("(negate 10)", "(negate (int 10))", "(negate 1.23)", "(negate 1.23M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -472,7 +474,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(sqrt x)")		
 					.doc("Square root of x")
-					.examples("(sqrt 10)", "(sqrt 10.23)", "(sqrt 10.23M)")
+					.examples("(sqrt 10)", "(sqrt (int 10))", "(sqrt 10.23)", "(sqrt 10.23M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -605,7 +607,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(zero? x)")		
 					.doc("Returns true if x zero else false")
-					.examples("(zero? 0)", "(zero? 2)", "(zero? 0.0)", "(zero? 0.0M)")
+					.examples("(zero? 0)", "(zero? 2)", "(zero? (int 0))", "(zero? 0.0)", "(zero? 0.0M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -641,7 +643,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(pos? x)")		
 					.doc("Returns true if x greater than zero else false")
-					.examples("(pos? 3)", "(pos? -3)", "(pos? 3.2)", "(pos? 3.2M)")
+					.examples("(pos? 3)", "(pos? -3)", "(pos? (int 3))", "(pos? 3.2)", "(pos? 3.2M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -677,7 +679,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(neg? x)")		
 					.doc("Returns true if x smaller than zero else false")
-					.examples("(neg? -3)", "(neg? 3)", "(neg? -3.2)", "(neg? -3.2M)")
+					.examples("(neg? -3)", "(neg? 3)", "(neg? (int -3))", "(neg? -3.2)", "(neg? -3.2M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -713,7 +715,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(even? n)")		
 					.doc("Returns true if n is even, throws an exception if n is not an integer")
-					.examples("(even? 4)", "(even? 3)")
+					.examples("(even? 4)", "(even? 3)", "(even? (int 3))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -743,7 +745,7 @@ public class MathFunctions {
 					.meta()
 					.arglists("(odd? n)")		
 					.doc("Returns true if n is odd, throws an exception if n is not an integer")
-					.examples("(odd? 3)", "(odd? 4)")
+					.examples("(odd? 3)", "(odd? 4)", "(odd? (int 4))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -926,6 +928,8 @@ public class MathFunctions {
 						"(range 10)",
 						"(range 10 20)",
 						"(range 10 20 3)",
+						"(range (int 10) (int 20))",
+						"(range (int 10) (int 20) (int 3))",
 						"(range 10 15 0.5)",
 						"(range 1.1M 2.2M 0.1M)")
 					.build()
