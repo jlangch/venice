@@ -262,7 +262,7 @@ public class MathModuleTest {
 				"   (math/bigint-sig (math/bigint \"-100000\")) " + 
 				") ";
 
-		assertEquals(-1L, venice.eval(script));
+		assertEquals(-1, venice.eval(script));
 	}
 
 	@Test

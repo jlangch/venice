@@ -76,7 +76,7 @@ public class UserTest {
 		final Map<Object,Object> map = (Map<Object,Object>)venice.eval(script);
 		
 		assertEquals("john", map.get("firstname"));
-		assertEquals(Long.valueOf(24), map.get("age"));
+		assertEquals(Integer.valueOf(24), map.get("age"));
 		assertEquals(LocalDate.of(2018, 07, 21), map.get("birthday"));
 		assertEquals("com.github.jlangch.venice.support.User", map.get("class"));
 	}

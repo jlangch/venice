@@ -107,10 +107,10 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(. jobj :getInteger)", symbols()));
-		assertEquals(100L, venice.eval("(do (. jobj :setInteger 100) (. jobj :getInteger))", symbols()));
+		assertEquals(100, venice.eval("(do (. jobj :setInteger 100) (. jobj :getInteger))", symbols()));
 
-		assertEquals(0L, venice.eval("(. jobj :getPrimitiveInt)", symbols()));
-		assertEquals(100L, venice.eval("(do (. jobj :setPrimitiveInt 100) (. jobj :getPrimitiveInt))", symbols()));
+		assertEquals(0, venice.eval("(. jobj :getPrimitiveInt)", symbols()));
+		assertEquals(100, venice.eval("(do (. jobj :setPrimitiveInt 100) (. jobj :getPrimitiveInt))", symbols()));
 	}
 	
 	@Test
@@ -266,9 +266,9 @@ public class JavaInteropTest {
 				
 		assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. :java.lang.Math :PI)"), 0.0000001D);
 		
-		assertEquals(0L, venice.eval("(:red (. :java.awt.Color :BLUE))"));		
-		assertEquals(0L, venice.eval("(:green (. :java.awt.Color :BLUE))"));		
-		assertEquals(255L, venice.eval("(:blue (. :java.awt.Color :BLUE))"));		
+		assertEquals(0, venice.eval("(:red (. :java.awt.Color :BLUE))"));		
+		assertEquals(0, venice.eval("(:green (. :java.awt.Color :BLUE))"));		
+		assertEquals(255, venice.eval("(:blue (. :java.awt.Color :BLUE))"));		
 	}
 	
 	@Test

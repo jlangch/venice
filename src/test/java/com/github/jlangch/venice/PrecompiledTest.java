@@ -52,7 +52,8 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile("test", "(do (+ x y))");
 		
-		assertEquals(300L, venice.eval(precomp, Parameters.of("x", 100, "y", 200)));
+		assertEquals(300, venice.eval(precomp, Parameters.of("x", 100, "y", 200)));
+		assertEquals(300L, venice.eval(precomp, Parameters.of("x", 100L, "y", 200L)));
 	}
 
 	@Test
@@ -139,11 +140,11 @@ public class PrecompiledTest {
 										"(do (defn sum[a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
-		for(int ii=0; ii<2000; ii++) {
-			final int count = ii;
+		for(long ii=0; ii<2000; ii++) {
+			final long count = ii;
 			tasks.add(new Callable<Object>() {
 				public Object call() throws Exception {
-					return venice.eval(precomp, Parameters.of("x", 100, "y", 0, "z", count));
+					return venice.eval(precomp, Parameters.of("x", 100L, "y", 0L, "z", count));
 				}
 			});
 		}
