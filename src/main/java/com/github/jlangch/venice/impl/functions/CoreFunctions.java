@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -275,6 +276,31 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+	public static VncFunction int_Q = 
+		new VncFunction(
+				"int?", 
+				VncFunction
+					.meta()
+					.arglists("(int? n)")		
+					.doc("Returns true if n is an int")
+					.examples(
+						"(int? (int 4))",
+						"(int? 4)",
+						"(int? 3.1)",
+						"(int? true)",
+						"(int? nil)",
+						"(int? {})")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("int?", args, 1);
+	
+				return Types.isVncInteger(args.first()) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction long_Q = 
 		new VncFunction(
 				"long?", 
@@ -364,6 +390,7 @@ public class CoreFunctions {
 				assertArity("number?", args, 1);
 				
 				return Types.isVncLong(args.first()) 
+						|| Types.isVncInteger(args.first())
 						|| Types.isVncDouble(args.first())
 						|| Types.isVncBigDecimal(args.first())? True : False;
 			}
@@ -998,11 +1025,14 @@ public class CoreFunctions {
 				else if (Types.isVncLong(op1)) {
 					return op1;
 				}
+				else if (Types.isVncInteger(op1)) {
+					return Numeric.intToLong((VncInteger)op1);
+				}
 				else if (Types.isVncDouble(op1)) {
-					return new VncLong(((VncDouble)op1).getValue().longValue());
+					return Numeric.doubleToLong((VncDouble)op1);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return new VncLong(((VncBigDecimal)op1).getValue().longValue());
+					return Numeric.decimalToLong((VncBigDecimal)op1);
 				}
 				else if (Types.isVncString(op1)) {
 					final String s = ((VncString)op1).getValue();
@@ -1011,7 +1041,7 @@ public class CoreFunctions {
 					}
 					catch(Exception ex) {
 						throw new VncException(String.format(
-								"Function 'long': the string %s can not be converted to a longs", 
+								"Function 'long': the string %s can not be converted to a long", 
 								s));
 					}
 				}
@@ -1024,7 +1054,70 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
+
+	public static VncFunction int_cast = 
+	new VncFunction(
+			"int", 
+			VncFunction
+				.meta()
+				.arglists("(int x)")		
+				.doc("Converts to int")
+				.examples(
+					"(int 1)",
+					"(int nil)",
+					"(int false)",
+					"(int true)",
+					"(int 1.2)",
+					"(int 1.2M)",
+					"(int \"1\")")
+				.build()
+	) {		
+		public VncVal apply(final VncList args) {
+			assertArity("int", args, 1);
+
+			final VncVal op1 = args.first();
+			if (op1 == Nil) {
+				return new VncLong(0);
+			}
+			else if (op1 == False) {
+				return new VncLong(0);
+			}
+			else if (op1 == True) {
+				return new VncLong(1);
+			}
+			else if (Types.isVncInteger(op1)) {
+				return op1;
+			}
+			else if (Types.isVncLong(op1)) {
+				return Numeric.longToInt((VncLong)op1);
+			}
+			else if (Types.isVncDouble(op1)) {
+				return Numeric.doubleToInt((VncDouble)op1);
+			}
+			else if (Types.isVncBigDecimal(op1)) {
+				return Numeric.decimalToInt((VncBigDecimal)op1);
+			}
+			else if (Types.isVncString(op1)) {
+				final String s = ((VncString)op1).getValue();
+				try {
+					return new VncInteger(Integer.parseInt(s));
+				}
+				catch(Exception ex) {
+					throw new VncException(String.format(
+							"Function 'long': the string %s can not be converted to an int", 
+							s));
+				}
+			}
+			else {
+				throw new VncException(String.format(
+										"Function 'int' does not allow %s as operand 1", 
+										Types.getType(op1)));
+			}
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	};
+
 	public static VncFunction double_cast = 
 		new VncFunction(
 				"double", 
@@ -1056,13 +1149,13 @@ public class CoreFunctions {
 					return new VncDouble(1.0);
 				}
 				else if (Types.isVncLong(op1)) {
-					return new VncDouble(((VncLong)op1).getValue().doubleValue());
+					return Numeric.longToDouble((VncLong)op1);
 				}
 				else if (Types.isVncDouble(op1)) {
 					return op1;
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return new VncDouble(((VncBigDecimal)op1).getValue().doubleValue());
+					return Numeric.decimalToDouble((VncBigDecimal)op1);
 				}
 				else if (Types.isVncString(op1)) {
 					final String s = ((VncString)op1).getValue();
@@ -5252,6 +5345,7 @@ public class CoreFunctions {
 				.put("true?",				true_Q)
 				.put("false?",				false_Q)
 				.put("boolean?",			boolean_Q)
+				.put("int?",				int_Q)
 				.put("long?",				long_Q)
 				.put("double?",				double_Q)
 				.put("decimal?",			decimal_Q)
@@ -5281,6 +5375,7 @@ public class CoreFunctions {
 				.put("match-not",			match_not_Q)
 				
 				.put("boolean",				boolean_cast)
+				.put("int",					int_cast)
 				.put("long",				long_cast)
 				.put("double",				double_cast)
 				.put("decimal",				decimal_cast)

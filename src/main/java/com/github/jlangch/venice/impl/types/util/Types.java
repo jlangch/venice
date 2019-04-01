@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -94,6 +95,10 @@ public class Types {
 		return val == Constants.True || val == Constants.False;
 	}
 
+	public static boolean isVncInteger(final VncVal val) {
+		return val != null && (val instanceof VncInteger);
+	}
+
 	public static boolean isVncLong(final VncVal val) {
 		return val != null && (val instanceof VncLong);
 	}
@@ -107,7 +112,7 @@ public class Types {
 	}
 
 	public static boolean isVncNumber(final VncVal val) {
-		return val != null && (isVncLong(val) || isVncDouble(val) || isVncBigDecimal(val));
+		return val != null && (isVncLong(val) || isVncInteger(val) || isVncDouble(val) || isVncBigDecimal(val));
 	}
 
 	public static boolean isVncByteBuffer(final VncVal val) {
@@ -220,6 +225,9 @@ public class Types {
 		else if (Types.isVncLong(val)) {
 			return new VncKeyword("venice.Long");
 		}
+		else if (Types.isVncInteger(val)) {
+			return new VncKeyword("venice.Integer");
+		}
 		else if (Types.isVncDouble(val)) {
 			return new VncKeyword("venice.Double");
 		}
@@ -297,6 +305,7 @@ public class Types {
 			case "venice.Atom":			return Types.isVncAtom(val);
 			case "venice.ThreadLocal":	return Types.isVncThreadLocal(val);
 			case "venice.Long":			return Types.isVncLong(val);
+			case "venice.Integer":		return Types.isVncInteger(val);
 			case "venice.Double":		return Types.isVncDouble(val);
 			case "venice.Decimal":		return Types.isVncBigDecimal(val);
 			case "venice.ByteBuffer":	return Types.isVncByteBuffer(val);
@@ -358,6 +367,9 @@ public class Types {
 			} 
 			else if (a instanceof VncLong) {
 				return ((VncLong)a).getValue().equals(((VncLong)b).getValue());
+			} 
+			else if (a instanceof VncInteger) {
+				return ((VncInteger)a).getValue().equals(((VncInteger)b).getValue());
 			} 
 			else if (a instanceof VncDouble) {
 				return ((VncDouble)a).getValue().equals(((VncDouble)b).getValue());

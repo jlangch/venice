@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -38,12 +39,12 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
@@ -168,6 +169,21 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to boolean. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
+	public static VncInteger toVncInteger(final VncVal val) {
+		if (val == null) {
+			return null;
+		}
+		else if (Types.isVncInteger(val)) {
+			return (VncInteger)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to int. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
