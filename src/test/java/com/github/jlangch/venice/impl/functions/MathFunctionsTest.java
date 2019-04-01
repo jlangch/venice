@@ -267,6 +267,16 @@ public class MathFunctionsTest {
 	public void test_max() {
 		final Venice venice = new Venice();
 
+		// Integer
+		assertEquals(Integer.valueOf(3), venice.eval("(max (int 3))"));
+		assertEquals(Integer.valueOf(3), venice.eval("(max (int 1) (int 3))"));
+		assertEquals(Integer.valueOf(3), venice.eval("(max (int 1) (int 2) (int 3))"));
+		assertEquals(Integer.valueOf(3), venice.eval("(max 1 2 (int 3))"));
+		assertEquals(Integer.valueOf(3), venice.eval("(max 1 2 (int 3) 1.0)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(max 1 2 (int 3) 1.0M)"));
+		assertEquals(Double.valueOf(3.0D), venice.eval("(max (int 1) 2 3.0)"));
+		assertEquals(new BigDecimal("3.0"), venice.eval("(max (int 1) 2 2.0 3.0M)"));
+
 		// Long
 		assertEquals(Long.valueOf(3), venice.eval("(max 3)"));
 		assertEquals(Long.valueOf(3), venice.eval("(max 1 3)"));
@@ -298,6 +308,16 @@ public class MathFunctionsTest {
 	@Test
 	public void test_min() {
 		final Venice venice = new Venice();
+
+		// Integer
+		assertEquals(Integer.valueOf(3), venice.eval("(min (int 3))"));
+		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) (int 3))"));
+		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) (int 2) (int 3))"));
+		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) 2 (int 3) 4.0)"));
+		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) 2 (int 3) 4.0M)"));
+		assertEquals(Long.valueOf(1), venice.eval("(min 1 2 (int 3))"));
+		assertEquals(Double.valueOf(3.0D), venice.eval("(min (int 4) 5 3.0)"));
+		assertEquals(new BigDecimal("3.0"), venice.eval("(min (int 4) 5 6.0 3.0M)"));
 
 		// Long
 		assertEquals(Long.valueOf(3), venice.eval("(min 3)"));
@@ -331,6 +351,10 @@ public class MathFunctionsTest {
 	public void test_mod() {
 		final Venice venice = new Venice();
 
+		assertEquals(Integer.valueOf(0), venice.eval("(mod (int 0) (int 6))"));
+		assertEquals(Integer.valueOf(4), venice.eval("(mod (int 4) (int 6))"));
+		assertEquals(Integer.valueOf(1), venice.eval("(mod (int 13) (int 6))"));
+
 		assertEquals(Long.valueOf(0), venice.eval("(mod 0 6)"));
 		assertEquals(Long.valueOf(4), venice.eval("(mod 4 6)"));
 		assertEquals(Long.valueOf(1), venice.eval("(mod 13 6)"));
@@ -341,6 +365,14 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals(Long.valueOf(1), venice.eval("(*)"));
+
+		// Integer
+		assertEquals(Integer.valueOf(3), venice.eval("(* (int 3))"));
+		assertEquals(Integer.valueOf(2), venice.eval("(* (int 1) (int 2))"));
+		assertEquals(Integer.valueOf(6), venice.eval("(* (int 1) (int 2) (int 3))"));
+		assertEquals(Long.valueOf(6), venice.eval("(* (int 1) 2 (int 3))"));
+		assertEquals(Double.valueOf(2.0D), venice.eval("(* (int 1) 2.0)"));
+		assertEquals(new BigDecimal("2.0"), venice.eval("(* 1 2.0M)"));
 
 		// Long
 		assertEquals(Long.valueOf(3), venice.eval("(* 3)"));
@@ -366,6 +398,11 @@ public class MathFunctionsTest {
 	public void test_neg() {
 		final Venice venice = new Venice();
 
+		// Integer
+		assertTrue((Boolean)venice.eval("(neg? (int -3))"));
+		assertFalse((Boolean)venice.eval("(neg? (int 0))"));
+		assertFalse((Boolean)venice.eval("(neg? (int 3))"));
+
 		// Long
 		assertTrue((Boolean)venice.eval("(neg? -3)"));
 		assertFalse((Boolean)venice.eval("(neg? 0)"));
@@ -386,12 +423,24 @@ public class MathFunctionsTest {
 	public void test_odd_Q() {
 		final Venice venice = new Venice();
 
+		assertFalse((Boolean)venice.eval("(odd? (int 2))"));	
+		assertFalse((Boolean)venice.eval("(odd? (int 0))"));	
+		assertTrue((Boolean)venice.eval("(odd? (int 1))"));	
+
 		assertFalse((Boolean)venice.eval("(odd? 2)"));	
 		assertFalse((Boolean)venice.eval("(odd? 0)"));	
 		assertTrue((Boolean)venice.eval("(odd? 1)"));	
 		
 		try {
 			venice.eval("(odd? 1.0)");
+			fail("Expected exception");
+		}
+		catch(RuntimeException ex) {
+			assertTrue(true);
+		}
+		
+		try {
+			venice.eval("(odd? 1.0M)");
 			fail("Expected exception");
 		}
 		catch(RuntimeException ex) {
@@ -433,7 +482,21 @@ public class MathFunctionsTest {
 	public void test_range() {
 		final Venice venice = new Venice();
 
+		// Integer
+		assertEquals("()", venice.eval("(str (range (int 10) (int 10)))"));
+		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(str (range (int 1) (int 10)))"));
+		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(str (range (int 1) (int 10) (int 1)))"));
+		assertEquals("(-5 -4 -3 -2 -1 0 1 2 3 4)", venice.eval("(str (range (int -5) (int 5)))"));
+		assertEquals("(-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90)", venice.eval("(str (range (int -100) (int 100) (int 10)))"));
+		assertEquals("(0 2)", venice.eval("(str (range (int 0) (int 4) (int 2)))"));
+		assertEquals("(0 2 4)", venice.eval("(str (range (int 0) (int 5) (int 2)))"));
+		assertEquals("(0 2 4)", venice.eval("(str (range (int 0) (int 6) (int 2)))"));
+		assertEquals("(0 2 4 6)", venice.eval("(str (range (int 0) (int 7) (int 2)))"));
+		assertEquals("(100 90 80 70 60 50 40 30 20 10)", venice.eval("(str (range (int 100) (int 0) (int -10)))"));
+		assertEquals("(10 9 8 7 6 5 4 3 2 1 0 -1 -2 -3 -4 -5 -6 -7 -8 -9)", venice.eval("(str (range (int 10) (int -10) (int -1)))"));
+
 		// Long
+		assertEquals("()", venice.eval("(str (range 10 10))"));
 		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(str (range 1 10))"));
 		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(str (range 1 10 1))"));
 		assertEquals("(-5 -4 -3 -2 -1 0 1 2 3 4)", venice.eval("(str (range -5 5))"));
@@ -446,11 +509,13 @@ public class MathFunctionsTest {
 		assertEquals("(10 9 8 7 6 5 4 3 2 1 0 -1 -2 -3 -4 -5 -6 -7 -8 -9)", venice.eval("(str (range 10 -10 -1))"));
 		
 		// Double
+		assertEquals("()", venice.eval("(str (range 6.0 6.0))"));
 		assertEquals("(1.0 2.0 3.0 4.0 5.0)", venice.eval("(str (range 1.0 6.0))"));
 		assertEquals("(1.0 2.0 3.0 4.0 5.0)", venice.eval("(str (range 1.0 6.0 1.0))"));
 		assertEquals("(1.0 1.5 2.0 2.5 3.0)", venice.eval("(str (range 1.0 3.1 0.5))"));
 		
 		// Decimal
+		assertEquals("()", venice.eval("(str (range 6.0M 6.0M))"));
 		assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(str (range 1.0M 6.0M))"));
 		assertEquals("(1.0M 2.0M 3.0M 4.0M 5.0M)", venice.eval("(str (range 1.0M 6.0M 1.0M))"));
 		assertEquals("(1.0M 1.5M 2.0M 2.5M 3.0M)", venice.eval("(str (range 1.0M 3.1M 0.5M))"));
@@ -465,6 +530,11 @@ public class MathFunctionsTest {
 	@Test
 	public void test_zero_Q() {
 		final Venice venice = new Venice();
+
+		// Integer
+		assertFalse((Boolean)venice.eval("(zero? (int -3))"));
+		assertTrue((Boolean)venice.eval("(zero? (int 0))"));
+		assertFalse((Boolean)venice.eval("(zero? (int 3))"));
 
 		// Long
 		assertFalse((Boolean)venice.eval("(zero? -3)"));

@@ -202,21 +202,40 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("mod", args, 2);
 	
-				if (!Types.isVncLong(args.first())) {
+				final VncVal n = args.first();
+				final VncVal d = args.second();
+
+				if (Types.isVncLong(n)) {
+					if (Types.isVncLong(d)) {
+						return new VncLong(
+								((VncLong)n).getValue().longValue() 
+								% 
+								((VncLong)d).getValue().longValue());
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'mod' does not allow %s as denominator if nominator is a long", 
+								Types.getType(args.second())));
+					}					
+				}
+				else if (Types.isVncInteger(n)) {
+					if (Types.isVncInteger(d)) {
+						return new VncInteger(
+								((VncInteger)n).getValue().intValue() 
+								% 
+								((VncInteger)d).getValue().intValue());
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'mod' does not allow %s as denominator if nominator is an int", 
+								Types.getType(args.second())));
+					}
+				}
+				else {
 					throw new VncException(String.format(
 							"Function 'mod' does not allow %s as numerator", 
 							Types.getType(args.first())));
 				}
-				if (!Types.isVncLong(args.second())) {
-					throw new VncException(String.format(
-							"Function 'mod' does not allow %s as denominator", 
-							Types.getType(args.second())));
-				}
-				
-				return new VncLong(
-							((VncLong)args.first()).getValue().longValue() 
-							% 
-							((VncLong)args.second()).getValue().longValue());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -914,17 +933,20 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("range", args, 1, 2, 3);
 	
-				VncVal start = new VncLong(0);
-				VncVal end = new VncLong(0);
-				VncVal step = new VncLong(1);
+				VncVal start = null;
+				VncVal end = null;
+				VncVal step = null;
 	
 				switch(args.size()) {
 					case 1:
+						start = new VncLong(0);
 						end = args.first();
+						step = new VncLong(1);
 						break;
 					case 2:
 						start = args.first();
 						end = args.second();
+						step = Types.isVncInteger(start) ? new VncInteger(1) : new VncLong(1);
 						break;
 					case 3:
 						start = args.first();
