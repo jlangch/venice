@@ -1148,6 +1148,9 @@ public class CoreFunctions {
 				else if (op1 == True) {
 					return new VncDouble(1.0);
 				}
+				else if (Types.isVncInteger(op1)) {
+					return Numeric.intToDouble((VncInteger)op1);
+				}
 				else if (Types.isVncLong(op1)) {
 					return Numeric.longToDouble((VncLong)op1);
 				}

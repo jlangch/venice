@@ -37,6 +37,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -93,6 +94,9 @@ public class MathFunctions {
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
 							return new VncLong(((VncLong)first).getValue() * -1L);
+						}
+						else if (Types.isVncInteger(first)) {
+							return new VncInteger(((VncInteger)first).getValue() * -1);
 						}
 						else if (Types.isVncDouble(first)) {
 							return new VncDouble(((VncDouble)first).getValue() * -1D);
@@ -160,6 +164,9 @@ public class MathFunctions {
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
 							return Numeric.calc(MathOp.DIV, new VncLong(1L), first);
+						}
+						else if (Types.isVncInteger(first)) {
+							return Numeric.calc(MathOp.DIV, new VncInteger(1), first);
 						}
 						else if (Types.isVncDouble(first)) {
 							return Numeric.calc(MathOp.DIV, new VncDouble(1D), first);
@@ -232,6 +239,9 @@ public class MathFunctions {
 				if (Types.isVncLong(arg)) {
 					return new VncLong(((VncLong)arg).getValue() + 1L);
 				}
+				else if (Types.isVncInteger(arg)) {
+					return new VncInteger(((VncInteger)arg).getValue() + 1);
+				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(((VncDouble)arg).getValue() + 1D);
 				}
@@ -264,6 +274,9 @@ public class MathFunctions {
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
 					return new VncLong(((VncLong)arg).getValue() - 1L);
+				}
+				else if (Types.isVncInteger(arg)) {
+					return new VncInteger(((VncInteger)arg).getValue() - 1);
 				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(((VncDouble)arg).getValue() - 1D);
@@ -377,6 +390,9 @@ public class MathFunctions {
 				if (Types.isVncLong(arg)) {
 					return new VncLong(Math.abs(((VncLong)arg).getValue().longValue()));
 				}
+				else if (Types.isVncInteger(arg)) {
+					return new VncInteger(Math.abs(((VncInteger)arg).getValue().intValue()));
+				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(Math.abs(((VncDouble)arg).getValue().doubleValue()));
 				}
@@ -411,6 +427,9 @@ public class MathFunctions {
 				if (Types.isVncLong(arg)) {
 					return new VncLong(Math.negateExact(((VncLong)arg).getValue().longValue()));
 				}
+				else if (Types.isVncInteger(arg)) {
+					return new VncInteger(Math.negateExact(((VncInteger)arg).getValue().intValue()));
+				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(((VncDouble)arg).getValue().doubleValue() * -1D);
 				}
@@ -444,6 +463,9 @@ public class MathFunctions {
 				
 				if (Types.isVncLong(arg)) {
 					return new VncDouble(Math.sqrt(((VncLong)arg).getValue().doubleValue()));
+				}
+				else if (Types.isVncInteger(arg)) {
+					return new VncDouble(Math.sqrt(((VncInteger)arg).getValue().doubleValue()));
 				}
 				else if (Types.isVncDouble(arg)) {
 					return new VncDouble(Math.sqrt(((VncDouble)arg).getValue()));
@@ -572,10 +594,13 @@ public class MathFunctions {
 				
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() == 0 ? True : False;
+					return ((VncLong)op1).getValue() == 0L ? True : False;
+				}
+				else if (Types.isVncInteger(op1)) {
+					return ((VncInteger)op1).getValue() == 0 ? True : False;
 				}
 				else if (Types.isVncDouble(op1)) {
-					return ((VncDouble)op1).getValue() == 0.0 ? True : False;
+					return ((VncDouble)op1).getValue() == 0D ? True : False;
 				}
 				else if (Types.isVncBigDecimal(op1)) {
 					return ((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0 ? True : False;
@@ -605,10 +630,13 @@ public class MathFunctions {
 				
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() > 0 ? True : False;
+					return ((VncLong)op1).getValue() > 0L ? True : False;
+				}
+				else if (Types.isVncInteger(op1)) {
+					return ((VncInteger)op1).getValue() > 0 ? True : False;
 				}
 				else if (Types.isVncDouble(op1)) {
-					return ((VncDouble)op1).getValue() > 0 ? True : False;
+					return ((VncDouble)op1).getValue() > 0D ? True : False;
 				}
 				else if (Types.isVncBigDecimal(op1)) {
 					return ((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0 ? True : False;
@@ -638,10 +666,13 @@ public class MathFunctions {
 				
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() < 0 ? True : False;
+					return ((VncLong)op1).getValue() < 0L ? True : False;
+				}
+				else if (Types.isVncInteger(op1)) {
+					return ((VncInteger)op1).getValue() < 0 ? True : False;
 				}
 				else if (Types.isVncDouble(op1)) {
-					return ((VncDouble)op1).getValue() < 0 ? True : False;
+					return ((VncDouble)op1).getValue() < 0D ? True : False;
 				}
 				else if (Types.isVncBigDecimal(op1)) {
 					return ((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0 ? True : False;
@@ -673,6 +704,9 @@ public class MathFunctions {
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() % 2L == 0L ? True : False;
 				}
+				else if (Types.isVncInteger(op1)) {
+					return ((VncInteger)op1).getValue() % 2 == 0 ? True : False;
+				}
 				else {
 					throw new VncException(String.format(
 											"Function 'even?' does not allow %s as operand.", 
@@ -699,6 +733,9 @@ public class MathFunctions {
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() % 2L == 1L ? True : False;
+				}
+				else if (Types.isVncInteger(op1)) {
+					return ((VncInteger)op1).getValue() % 2 == 1 ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
