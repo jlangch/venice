@@ -377,11 +377,12 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(number? n)")		
-					.doc("Returns true if n is a number (long, double, or decimal)")
+					.doc("Returns true if n is a number (int, long, double, or decimal)")
 					.examples(
+						"(number? 4)",
 						"(number? 4.0M)",
 						"(number? 4.0)",
-						"(number? 3)",
+						"(number? (int 3)",
 						"(number? true)",
 						"(number? \"a\")")
 					.build()

@@ -178,24 +178,157 @@ IntStream.range(0, 100).forEach(
 ```
 
 
-### Stack traces
 
-Venice generates user friendly stack traces
+## Datatype
+
+Venice has a rich set of data types
+
+
+### nil
+
+_nil_ can be used for any data type in Venice. _nil_ has the same value as _null_ in Java.
 
 ```clojure
-(do
-   (defn fn1 [x] (fn2 x))
-   (defn fn2 [x] (fn3 x))
-   (defn fn3 [x] (/ 1 x))
-   (fn1 0))
-   
-=>
-Exception in thread "main" VncException: / by zero
-    at: / (script: line 4, col 19)
-    at: fn3 (script: line 3, col 19)
-    at: fn2 (script: line 2, col 19)
-    at: fn1 (script: line 5, col 5)
-Caused by: java.lang.ArithmeticException: / by zero
+(def x nil)
+```
+
+
+### Booleans
+
+Booleans are defined by constants _true_ and _false_.
+
+```clojure
+(and true (== 1 1))
+```
+
+
+### Strings
+
+```clojure
+(println "abcd")
+(println "ab\"cd")
+(println "PI: \u03C0")
+(println """{ "age": 42 }""")
+```
+
+### Numbers
+
+#### long
+
+Based on the Java type _Long_.
+
+```clojure
+(+ 1 2)
+```
+
+#### int
+
+Based on the Java type _Integer_.
+
+```clojure
+(+ (int 1) (int 2))
+```
+
+#### double
+
+Based on the Java type _Double_.
+
+```clojure
+(+ 1.0 2.0)
+```
+
+#### decimal
+
+Based on the Java type _BigDecimal_.
+
+```clojure
+(+ 1.0M 2.0M)
+```
+
+### Keywords
+
+Keywords are symbolic identifiers.
+
+```clojure
+(:a {:a 100})
+```
+
+### Symbols
+
+Symbols are identifiers that are normally used to refer to something else. They can be used in program forms to refer to function parameters, let bindings, class names and global vars.
+
+```clojure
+(def x 100)
+```
+
+### Collections
+
+#### list
+
+Immutable persistent list.
+
+```clojure
+(count '(1 2 3))
+(count (list 1 2 (+ 1 2)))
+```
+
+#### vector
+
+Immutable persistent vector.
+
+```clojure
+(count [1 2 3])
+(count [vector 1 2 (+ 1 2)])
+```
+
+#### hash-set
+
+Immutable persistent hash set.
+
+```clojure
+(count #{1 2 3})
+(count (set 1 2 3))
+```
+
+#### sorted-set
+
+Immutable persistent sorted set.
+
+```clojure
+(count (sorted-set 2 3 1))
+```
+
+#### hash-map
+
+Immutable persistent hash map.
+
+```clojure
+(count {:a 100 :b 200})
+(count (hash-map :a 100 :b 200))
+```
+
+#### ordered-map
+
+Immutable persistent ordered map.
+
+```clojure
+(count (ordered-map :a 100 :b 200))
+```
+
+#### sorted-map
+
+Immutable persistent sorted map.
+
+```clojure
+(count (sorted-map :a 100 :b 200))
+```
+
+#### mutable-map
+
+Mutable map based on Java type _ConcurrentHashMap_.
+
+```clojure
+(count (mutable-map :a 100 :b 200))
 ```
 
 
@@ -268,6 +401,27 @@ Caused by: java.lang.ArithmeticException: / by zero
    ; maps/keys work as functions
    ({:a 1 :b 2} :b)
    (:b {:a 1 :b 2}))
+```
+
+
+### Stack traces
+
+Venice generates user friendly stack traces
+
+```clojure
+(do
+   (defn fn1 [x] (fn2 x))
+   (defn fn2 [x] (fn3 x))
+   (defn fn3 [x] (/ 1 x))
+   (fn1 0))
+   
+=>
+Exception in thread "main" VncException: / by zero
+    at: / (script: line 4, col 19)
+    at: fn3 (script: line 3, col 19)
+    at: fn2 (script: line 2, col 19)
+    at: fn1 (script: line 5, col 5)
+Caused by: java.lang.ArithmeticException: / by zero
 ```
 
 
