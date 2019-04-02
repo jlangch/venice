@@ -182,7 +182,7 @@ IntStream.range(0, 100).forEach(
 ## Datatypes
 
 Venice has a rich set of data types (boolean, string, int, long, double, decimal, list, 
-vector, set, and map). All data types share the features:
+vector, set, and map). All data types share common features:
 
 - they are immutable
 - they support equals semantics
@@ -277,8 +277,8 @@ Symbols are identifiers that are normally used to refer to something else. They 
 Immutable persistent list.
 
 ```clojure
-(count '(1 2 3))
-(count (list 1 2 (+ 1 2)))
+'(1 2 3)
+(list 1 2 (+ 1 2))
 ```
 
 #### vector
@@ -286,8 +286,8 @@ Immutable persistent list.
 Immutable persistent vector.
 
 ```clojure
-(count [1 2 3])
-(count (vector 1 2 (+ 1 2)))
+[1 2 3]
+(vector 1 2 (+ 1 2))
 ```
 
 #### hash-set
@@ -295,8 +295,8 @@ Immutable persistent vector.
 Immutable persistent hash set.
 
 ```clojure
-(count #{1 2 3})
-(count (set 1 2 3))
+#{1 2 3}
+(set 1 2 3)
 ```
 
 #### sorted-set
@@ -304,7 +304,7 @@ Immutable persistent hash set.
 Immutable persistent sorted set.
 
 ```clojure
-(count (sorted-set 2 3 1))
+(sorted-set 2 3 1)
 ```
 
 #### hash-map
@@ -312,8 +312,8 @@ Immutable persistent sorted set.
 Immutable persistent hash map.
 
 ```clojure
-(count {:a 100 :b 200})
-(count (hash-map :a 100 :b 200))
+{:a 100 :b 200}
+(hash-map :a 100 :b 200)
 ```
 
 #### ordered-map
@@ -321,7 +321,7 @@ Immutable persistent hash map.
 Immutable persistent ordered map.
 
 ```clojure
-(count (ordered-map :a 100 :b 200))
+(ordered-map :a 100 :b 200)
 ```
 
 #### sorted-map
@@ -329,7 +329,7 @@ Immutable persistent ordered map.
 Immutable persistent sorted map.
 
 ```clojure
-(count (sorted-map :a 100 :b 200))
+(sorted-map :a 100 :b 200)
 ```
 
 
