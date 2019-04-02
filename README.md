@@ -158,7 +158,7 @@ System.out.println(ps.getOutput());
 
 Precompiling Venice speeds up evaluation significantly when calling an expression 
 multiple times with different parameters. Running precompiled scripts is threadsafe. 
-Every evaluation gets its own private Venice context. In a WebApp 
+Every evaluation gets its own private Venice context.
 
 If required precompiled scripts can be serialized/deserialized.
 
