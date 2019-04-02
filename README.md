@@ -144,8 +144,8 @@ System.out.println(
    venice.eval(
       "(do (with-out-str (println [1 2])))"));
 
-// capturing stdout preserving the script result
-final CapturingPrintStream ps = CapturingPrintStream.create();
+// capturing stdout preserving the script result (limit to 1MB)
+final CapturingPrintStream ps = CapturingPrintStream.create(1_485_760);
 System.out.println(
    venice.eval(
       "(do (println [1 2]) 100)", 
