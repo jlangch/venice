@@ -418,7 +418,7 @@ public class CoreFunctions {
 				if (args.first() instanceof VncKeyword) { 
 					return False; 
 				}
-				if (args.first() instanceof VncString) { 
+				else if (args.first() instanceof VncString) { 
 					return True; 
 				}
 				else {
