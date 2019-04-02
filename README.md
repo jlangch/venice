@@ -198,6 +198,7 @@ _nil_ can be used for any data type in Venice. _nil_ has the same value as _null
 
 ```clojure
 (def x nil)
+(nil? x)
 ```
 
 
@@ -207,6 +208,7 @@ Booleans are defined by constants _true_ and _false_.
 
 ```clojure
 (and true (== 1 1))
+(and false (== 1 1))
 ```
 
 
@@ -263,7 +265,8 @@ Keywords (e.g. `:a`) are symbolic identifiers.
 
 ### Symbols
 
-Symbols are identifiers that are normally used to refer to something else. They can be used in program forms to refer to function parameters, let bindings, and global vars.
+Symbols are identifiers that are normally used to refer to function parameters, 
+let bindings, and global vars.
 
 ```clojure
 (def x 100)
