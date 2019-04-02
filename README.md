@@ -287,7 +287,7 @@ Immutable persistent vector.
 
 ```clojure
 (count [1 2 3])
-(count [vector 1 2 (+ 1 2)])
+(count (vector 1 2 (+ 1 2)))
 ```
 
 #### hash-set
