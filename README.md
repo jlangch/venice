@@ -179,9 +179,17 @@ IntStream.range(0, 100).forEach(
 
 
 
-## Datatype
+## Datatypes
 
-Venice has a rich set of data types
+Venice has a rich set of data types (boolean, string, int, long, double, decimal, list, 
+vector, set, and map). All data type share the features:
+
+- they are immutable
+- they support equals semantics
+- they provide hash values
+- they are comparable (lower, equal, greater)
+- collections support persistent manipulation
+- they support meta data
 
 
 ### nil
