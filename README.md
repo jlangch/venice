@@ -157,9 +157,10 @@ System.out.println(ps.getOutput());
 ### Precompiling Venice
 
 Precompiling Venice speeds up evaluation significantly when calling an expression 
-multiple times with different parameters. If required precompiled scripts can be
-serialized/deserialized. Running precompiled scripts is threadsafe, so they can easily 
-be used in WebApp servers.
+multiple times with different parameters. Running precompiled scripts is threadsafe. 
+Every evaluation gets its own private Venice context. In a WebApp 
+
+If required precompiled scripts can be serialized/deserialized.
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -170,11 +171,20 @@ final Venice venice = new Venice();
 
 final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 
-IntStream.range(0, 100).forEach(
+// single-threaded
+IntStream.range(0, 100).sequential().forEach(
   ii -> System.out.println(
           venice.eval(
              precompiled, 
              Parameters.of("x", ii))));
+             
+// multi-threaded
+IntStream.range(0, 100).parallel().forEach(
+  ii -> System.out.println(
+          venice.eval(
+             precompiled, 
+             Parameters.of("x", ii))));
+
 ```
 
 
@@ -1064,11 +1074,11 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 Alternative to UNIX shell scripts:
 
 ```clojure
-;; ----------------------------------------------------------------------------------
+;; -------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
 ;; > java -jar venice-1.4.1.jar -file zip-tomcat-logs.venice ./logs
-;; ----------------------------------------------------------------------------------
+;; -------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
          (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]

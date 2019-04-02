@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.examples;
 
+import java.util.stream.IntStream;
+
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
@@ -33,10 +35,21 @@ public class PrecompiledExample {
 		
 		final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 		
-		for(int ii=0; ii<100; ii++) {
-			System.out.println(
-					venice.eval(precompiled, Parameters.of("x", ii)));
-		}
+		// single-threaded
+		System.out.println("single-threaded");
+		IntStream.range(0, 100).sequential().forEach(
+		  ii -> System.out.println(
+		          venice.eval(
+		             precompiled, 
+		             Parameters.of("x", ii))));
+		             
+		// multi-threaded
+		System.out.println("multi-threaded");
+		IntStream.range(0, 100).parallel().forEach(
+		  ii -> System.out.println(
+		          venice.eval(
+		             precompiled, 
+		             Parameters.of("x", ii))));
 	}
 	
 }
