@@ -296,7 +296,7 @@ public class SpecialForms {
 				.meta()
 				.arglists("(dorun count expr)")		
 				.doc("Runs the expr count times in the most effective way. It's main purpose is supporting performance test.")
-				.examples("(do (dorun 10 (+ 1 1)))")
+				.examples("(dorun 10 (+ 1 1))")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;
