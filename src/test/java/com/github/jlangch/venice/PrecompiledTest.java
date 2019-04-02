@@ -30,12 +30,37 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class PrecompiledTest {
+
+	@Test
+	@Disabled
+	public void test_stdout() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(do (print 23))");
+		
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+
+		assertEquals("23", venice.eval(precomp, Parameters.of("*out*", ps)));
+	}
+	
+	@Test
+	public void test_with_stdout_str() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(do (with-out-str (print 23)))");
+		
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+
+		assertEquals("23", venice.eval(precomp, Parameters.of("*out*", ps)));
+	}
 
 	@Test
 	public void test_simple() {
@@ -138,6 +163,38 @@ public class PrecompiledTest {
 		final PreCompiled precomp = venice.precompile(
 										"test", 
 										"(do (defn sum[a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
+		
+		final List<Callable<Object>> tasks = new ArrayList<>();
+		for(long ii=0; ii<2000; ii++) {
+			final long count = ii;
+			tasks.add(new Callable<Object>() {
+				public Object call() throws Exception {
+					return venice.eval(precomp, Parameters.of("x", 100L, "y", 0L, "z", count));
+				}
+			});
+		}
+		
+		final List<Future<Object>> results = es.invokeAll(tasks);
+
+		assertEquals(2000, results.size());
+		
+		long resVal = 100L;
+		for(Future<Object> result : results) {
+			assertEquals(resVal++, result.get());		
+		}
+		
+		es.shutdown();
+	}
+
+	@Test
+	public void test_multi_threaded_2() throws Exception {
+		final ExecutorService es = Executors.newFixedThreadPool(10);
+
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile(
+										"test", 
+										"(do (defn sum[a b] (+ a b z)) (long (with-out-str (do (sleep (rand-long 50)) (print (sum x y))))))");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
 		for(long ii=0; ii<2000; ii++) {

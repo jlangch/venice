@@ -106,6 +106,21 @@ public class VeniceTest {
 		
 		final Venice venice = new Venice();
 		
+		venice.eval("(print 10)", Parameters.of("*out*", ps));
+		assertEquals("10", ps.getOutput());
+		
+		ps.reset();
+		
+		venice.eval("(print 10)", Parameters.of("*out*", null));
+		assertEquals("", ps.getOutput());
+	}
+
+	@Test
+	public void test_CapturingPrintStream_BelowLimit() {
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+		
+		final Venice venice = new Venice();
+		
 		venice.eval("(range 1 10000)", Parameters.of("*out*", ps));
 		assertNotNull(ps.getOutput());
 	}
