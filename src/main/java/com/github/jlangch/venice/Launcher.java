@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
+import java.io.PrintStream;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
@@ -39,7 +40,8 @@ public class Launcher {
 		if (cli.switchPresent("-file")) {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 			final Env env = venice.createEnv()
-								  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()));
+								  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+								  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 			final String file = cli.switchValue("-file");
 			final String script = new String(FileUtil.load(new File(file)));
@@ -50,7 +52,8 @@ public class Launcher {
 		else if (cli.switchPresent("-script")) {
 			final VeniceInterpreter venice = new VeniceInterpreter();
 			final Env env = venice.createEnv()
-					  			  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()));
+					  			  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+					  			  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 			final String script = cli.switchValue("-script");
 			

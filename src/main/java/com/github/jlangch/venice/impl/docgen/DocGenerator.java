@@ -54,7 +54,9 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class DocGenerator {
 
 	public DocGenerator() {
-		this.env = new VeniceInterpreter().createEnv(Arrays.asList("json"));
+		this.env = new VeniceInterpreter()
+							.createEnv(Arrays.asList("json"))
+							.setStdoutPrintStream(null);
 	}
 
 	public static void main(final String[] args) {

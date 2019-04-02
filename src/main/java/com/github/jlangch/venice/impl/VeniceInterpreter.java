@@ -26,7 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.Closeable;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,7 +128,7 @@ public class VeniceInterpreter implements Serializable  {
 		return result;
 	}
 	
-	public Env createEnv() {
+	public Env createEnv() {  
 		return createEnv(null);
 	}
 
@@ -150,9 +149,6 @@ public class VeniceInterpreter implements Serializable  {
 
 		// set system newline
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
-
-		// set system stdout (dynamic)
-		env.setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(new PrintStream(System.out, true))));
 
 		// load modules
 		final List<String> modules = new ArrayList<>();

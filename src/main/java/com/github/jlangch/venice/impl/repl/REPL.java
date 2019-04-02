@@ -38,13 +38,11 @@ import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -256,7 +254,7 @@ public class REPL {
 	) {
 		return venice.createEnv()
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
-					 .setGlobal(new DynamicVar(new VncSymbol("*out*"), new VncJavaObject(ps)));
+					 .setStdoutPrintStream(ps);
 	}
 	
 	private void print(

@@ -34,14 +34,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.github.jlangch.venice.impl.DynamicVar;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -259,6 +257,8 @@ public class Venice {
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
+		env.setStdoutPrintStream(stdout);
+		
 		if (params != null) {
 			for(Map.Entry<String,Object> entry : params.entrySet()) {
 				final String key = entry.getKey();
@@ -267,7 +267,7 @@ public class Venice {
 				final VncSymbol symbol = new VncSymbol(key);
 
 				if (key.equals("*out*")) {
-					env.setGlobal(new DynamicVar(symbol, new VncJavaObject(buildStdOutPrintStream(val))));
+					env.setStdoutPrintStream(buildStdOutPrintStream(val));
 				}
 				else {
 					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));
@@ -357,4 +357,5 @@ public class Venice {
 	private final IInterceptor interceptor;
 	private final MeterRegistry meterRegistry = new MeterRegistry(false);
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
+	private final PrintStream stdout = new PrintStream(System.out, true);
 }

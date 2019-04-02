@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +32,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.WithCallStack;
+import com.github.jlangch.venice.util.NullOutputStream;
 
 
 public class Env implements Serializable {
@@ -224,6 +227,17 @@ public class Env implements Serializable {
 		return new StringBuilder()
 					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   "))
 					.toString();
+	}
+	
+	public Env setStdoutPrintStream(final PrintStream ps) {
+		setGlobal(
+			new DynamicVar(
+					new VncSymbol("*out*"), 
+					new VncJavaObject(
+							ps != null 
+								? ps 
+								: new PrintStream(new NullOutputStream(), true))));
+		return this;
 	}
 	
 	private String toString(final Map<VncSymbol,Var> vars, final String indent) {
