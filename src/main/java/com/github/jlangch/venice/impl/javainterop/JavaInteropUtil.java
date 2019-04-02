@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.javainterop;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -166,20 +167,30 @@ public class JavaInteropUtil {
 			}
 		}
 		catch(JavaMethodInvocationException ex) {
-			if (ex.getCause() != null && ex.getCause() instanceof SecurityException) {
+			Throwable cause = ex.getCause();
+			if (cause != null && cause instanceof SecurityException) {
 				throw new SecurityException(String.format(
 						"%s. %s", 
-						ex.getMessage(),
+						cause.getMessage(),
 						ErrorMessage.buildErrLocation(args)));
 			}
-			else {
-				throw new JavaMethodInvocationException(
-						String.format(
+			if (cause != null && cause instanceof InvocationTargetException) {
+				cause = cause.getCause();
+				if (cause != null && cause instanceof SecurityException) {
+					throw new SecurityException(String.format(
 							"%s. %s", 
-							ex.getMessage(),
-							ErrorMessage.buildErrLocation(args)),
-						ex);
+							cause.getMessage(),
+							ErrorMessage.buildErrLocation(args)));
+				}
 			}
+			
+			// else
+			throw new JavaMethodInvocationException(
+					String.format(
+						"%s. %s", 
+						ex.getMessage(),
+						ErrorMessage.buildErrLocation(args)),
+					ex);
 		}
 		catch(SecurityException ex) {
 			throw new SecurityException(String.format(

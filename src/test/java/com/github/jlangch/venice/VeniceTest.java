@@ -22,6 +22,8 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.support.AuditEvent;
 import com.github.jlangch.venice.support.AuditEventType;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class VeniceTest {
@@ -95,5 +98,26 @@ public class VeniceTest {
 		assertEquals(Boolean.TRUE, (Boolean)venice.eval(script, Parameters.of("event", event1)));
 
 		assertEquals(Boolean.FALSE, (Boolean)venice.eval(script, Parameters.of("event", event2)));
+	}
+
+	@Test
+	public void test_CapturingPrintStream() {
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+		
+		final Venice venice = new Venice();
+		
+		venice.eval("(range 1 10000)", Parameters.of("*out*", ps));
+		assertNotNull(ps.getOutput());
+	}
+
+	@Test
+	public void test_CapturingPrintStream_Limit() {
+		final CapturingPrintStream ps = CapturingPrintStream.create(10000);
+		
+		final Venice venice = new Venice();
+
+		assertThrows(SecurityException.class, () -> {
+			venice.eval("(map #(print %) (range 1 10000))", Parameters.of("*out*", ps));
+		});
 	}
 }

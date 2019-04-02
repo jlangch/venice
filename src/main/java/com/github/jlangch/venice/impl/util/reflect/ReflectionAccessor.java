@@ -477,6 +477,9 @@ public class ReflectionAccessor {
 				return method.invoke(target, args);
 			}
 		} 
+		catch (SecurityException ex) {
+			throw ex;
+		}
 		catch (Exception ex) {
 			throw new JavaMethodInvocationException(
 					target == null
