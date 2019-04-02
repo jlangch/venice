@@ -36,7 +36,7 @@ public class CapturingPrintStream extends PrintStream {
 
 	private CapturingPrintStream(
 			final String encoding,
-			final ByteArrayOutputStream boas
+			final LimitedByteArrayOutputStream boas
 	) throws UnsupportedEncodingException {
 		super(boas, true, encoding);
 		this.encoding = encoding;
@@ -186,5 +186,5 @@ public class CapturingPrintStream extends PrintStream {
 	public static final int DEFAULT_LIMIT = 1024 * 1024 * 10;
 	
 	private final String encoding;
-	private final ByteArrayOutputStream boas;
+	private final LimitedByteArrayOutputStream boas;
 }
