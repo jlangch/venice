@@ -332,14 +332,6 @@ Immutable persistent sorted map.
 (count (sorted-map :a 100 :b 200))
 ```
 
-#### mutable-map
-
-Mutable map based on the Java type _ConcurrentHashMap_.
-
-```clojure
-(count (mutable-map :a 100 :b 200))
-```
-
 
 ## Functions
 
