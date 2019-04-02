@@ -255,19 +255,20 @@ Based on the Java type _BigDecimal_.
 
 ### Keywords
 
-Keywords are symbolic identifiers.
+Keywords (e.g. `:a`) are symbolic identifiers.
 
 ```clojure
-(:a {:a 100})
+{:a 100, :b 200}
 ```
 
 ### Symbols
 
-Symbols are identifiers that are normally used to refer to something else. They can be used in program forms to refer to function parameters, let bindings, class names and global vars.
+Symbols are identifiers that are normally used to refer to something else. They can be used in program forms to refer to function parameters, let bindings, and global vars.
 
 ```clojure
 (def x 100)
 ```
+
 
 ### Collections
 
@@ -333,7 +334,7 @@ Immutable persistent sorted map.
 
 #### mutable-map
 
-Mutable map based on Java type _ConcurrentHashMap_.
+Mutable map based on the Java type _ConcurrentHashMap_.
 
 ```clojure
 (count (mutable-map :a 100 :b 200))
