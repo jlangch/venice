@@ -70,7 +70,7 @@ public class VncLong extends VncVal {
 			return value.compareTo(((VncLong)o).getValue());
 		}
 		else if (Types.isVncInteger(o)) {
-			return value.compareTo(Numeric.intToLong((VncInteger)o).getValue());
+			return value.compareTo(((VncInteger)o).getLongValue());
 		}
 		else if (Types.isVncDouble(o)) {
 			return value.compareTo(Numeric.doubleToLong((VncDouble)o).getValue());
