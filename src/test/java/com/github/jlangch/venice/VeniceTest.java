@@ -117,7 +117,7 @@ public class VeniceTest {
 		final Venice venice = new Venice();
 
 		assertThrows(SecurityException.class, () -> {
-			venice.eval("(map #(print %) (range 1 10000))", Parameters.of("*out*", ps));
+			venice.eval("(map print (range 1 10000))", Parameters.of("*out*", ps));
 		});
 	}
 }
