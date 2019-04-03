@@ -484,16 +484,16 @@ public class MathFunctionsTest {
 
 		// Integer
 		assertEquals("()", venice.eval("(str (range (int 10) (int 10)))"));
-		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(str (range (int 1) (int 10)))"));
-		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(str (range (int 1) (int 10) (int 1)))"));
-		assertEquals("(-5 -4 -3 -2 -1 0 1 2 3 4)", venice.eval("(str (range (int -5) (int 5)))"));
-		assertEquals("(-100 -90 -80 -70 -60 -50 -40 -30 -20 -10 0 10 20 30 40 50 60 70 80 90)", venice.eval("(str (range (int -100) (int 100) (int 10)))"));
-		assertEquals("(0 2)", venice.eval("(str (range (int 0) (int 4) (int 2)))"));
-		assertEquals("(0 2 4)", venice.eval("(str (range (int 0) (int 5) (int 2)))"));
-		assertEquals("(0 2 4)", venice.eval("(str (range (int 0) (int 6) (int 2)))"));
-		assertEquals("(0 2 4 6)", venice.eval("(str (range (int 0) (int 7) (int 2)))"));
-		assertEquals("(100 90 80 70 60 50 40 30 20 10)", venice.eval("(str (range (int 100) (int 0) (int -10)))"));
-		assertEquals("(10 9 8 7 6 5 4 3 2 1 0 -1 -2 -3 -4 -5 -6 -7 -8 -9)", venice.eval("(str (range (int 10) (int -10) (int -1)))"));
+		assertEquals("(1I 2I 3I 4I 5I 6I 7I 8I 9I)", venice.eval("(str (range (int 1) (int 10)))"));
+		assertEquals("(1I 2I 3I 4I 5I 6I 7I 8I 9I)", venice.eval("(str (range (int 1) (int 10) (int 1)))"));
+		assertEquals("(-5I -4I -3I -2I -1I 0I 1I 2I 3I 4I)", venice.eval("(str (range (int -5) (int 5)))"));
+		assertEquals("(-100I -90I -80I -70I -60I -50I -40I -30I -20I -10I 0I 10I 20I 30I 40I 50I 60I 70I 80I 90I)", venice.eval("(str (range (int -100) (int 100) (int 10)))"));
+		assertEquals("(0I 2I)", venice.eval("(str (range (int 0) (int 4) (int 2)))"));
+		assertEquals("(0I 2I 4I)", venice.eval("(str (range (int 0) (int 5) (int 2)))"));
+		assertEquals("(0I 2I 4I)", venice.eval("(str (range (int 0) (int 6) (int 2)))"));
+		assertEquals("(0I 2I 4I 6I)", venice.eval("(str (range (int 0) (int 7) (int 2)))"));
+		assertEquals("(100I 90I 80I 70I 60I 50I 40I 30I 20I 10I)", venice.eval("(str (range (int 100) (int 0) (int -10)))"));
+		assertEquals("(10I 9I 8I 7I 6I 5I 4I 3I 2I 1I 0I -1I -2I -3I -4I -5I -6I -7I -8I -9I)", venice.eval("(str (range (int 10) (int -10) (int -1)))"));
 
 		// Long
 		assertEquals("()", venice.eval("(str (range 10 10))"));
