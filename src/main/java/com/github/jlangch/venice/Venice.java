@@ -257,7 +257,7 @@ public class Venice {
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
-		env.setStdoutPrintStream(stdout);
+		boolean stdoutAdded = false;
 		
 		if (params != null) {
 			for(Map.Entry<String,Object> entry : params.entrySet()) {
@@ -268,11 +268,17 @@ public class Venice {
 
 				if (key.equals("*out*")) {
 					env.setStdoutPrintStream(buildStdOutPrintStream(val));
+					
+					stdoutAdded = true;
 				}
 				else {
 					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));
 				}
 			}
+		}
+		
+		if (!stdoutAdded) {
+			env.setStdoutPrintStream(stdout);
 		}
 		
 		return env;

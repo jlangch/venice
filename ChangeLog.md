@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
   by a Venice script to prevent buggy or malicious scripts to overrun the memory.
   Defaults to 10MB.
 
+### fixed
+
+- fixed a problem with the `*out*` dynamic var not beeing visible to precompiled 
+  scripts
+
 
 
 ## [1.4.1] - 2019-03-31

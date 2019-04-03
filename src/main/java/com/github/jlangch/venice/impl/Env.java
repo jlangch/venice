@@ -135,22 +135,22 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public Env pushGlobalDynamic(final Var val) {
-		final Var dv = getGlobalVar(val.getName());
+	public Env pushGlobalDynamic(final VncSymbol sym, final VncVal val) {
+		final Var dv = getGlobalVar(sym);
 		if (dv != null) {
 			if (dv instanceof DynamicVar) {
-				((DynamicVar)dv).pushVal(val.getVal());
+				((DynamicVar)dv).pushVal(val);
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(val.getName()))) {
-					throw new VncException(String.format("The var '%s' is not defined as dynamic", val.getName()));
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym));
 				}
 			}
 		}
 		else {
-			final DynamicVar nv = new DynamicVar(val.getName(), Nil);
-			setGlobalVar(val.getName(), nv);
-			nv.pushVal(val.getVal());
+			final DynamicVar nv = new DynamicVar(sym, Nil);
+			setGlobalVar(sym, nv);
+			nv.pushVal(val);
 		}
 		return this;
 	}
@@ -230,13 +230,15 @@ public class Env implements Serializable {
 	}
 	
 	public Env setStdoutPrintStream(final PrintStream ps) {
-		setGlobal(
-			new DynamicVar(
-					new VncSymbol("*out*"), 
-					new VncJavaObject(
-							ps != null 
-								? ps 
-								: new PrintStream(new NullOutputStream(), true))));
+		final VncSymbol sym = new VncSymbol("*out*");
+		final VncVal val = new VncJavaObject(
+									ps != null 
+										? ps 
+										: new PrintStream(new NullOutputStream(), true));
+		final DynamicVar var = new DynamicVar(sym, val);
+		setGlobal(var);
+		var.pushVal(val);
+		
 		return this;
 	}
 	

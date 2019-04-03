@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StopWatch;
@@ -40,22 +39,23 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class PrecompiledTest {
 
 	@Test
-	@Disabled
 	public void test_stdout() {
 		final Venice venice = new Venice();
 		
-		final PreCompiled precomp = venice.precompile("test", "(do (print 23))");
+		final PreCompiled precomp = venice.precompile("test", "(print 23)");
 		
 		final CapturingPrintStream ps = CapturingPrintStream.create();
 
-		assertEquals("23", venice.eval(precomp, Parameters.of("*out*", ps)));
+		venice.eval(precomp, Parameters.of("*out*", ps));
+		
+		assertEquals("23", ps.getOutput());
 	}
 	
 	@Test
 	public void test_with_stdout_str() {
 		final Venice venice = new Venice();
 		
-		final PreCompiled precomp = venice.precompile("test", "(do (with-out-str (print 23)))");
+		final PreCompiled precomp = venice.precompile("test", "(with-out-str (print 23))");
 		
 		final CapturingPrintStream ps = CapturingPrintStream.create();
 

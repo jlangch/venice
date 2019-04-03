@@ -773,12 +773,12 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal val = evaluate(bindings.nth(i+1), env);
 	
 			for(Binding b : Destructuring.destructure(sym, val)) {
-				vars.add(new DynamicVar(b.sym, b.val));
+				vars.add(new Var(b.sym, b.val));
 			}
 		}
 			
 		try {
-			vars.forEach(v -> env.pushGlobalDynamic(v));
+			vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
 			
 			if (expressions.isEmpty()) {
 				return Constants.Nil;
