@@ -21,15 +21,20 @@
  */
  
 // -----------------------------------------------------------------------------
-// Build the Venice jar for testing
-//   $> ./gradlew shadowJar
+// Build commands
 //
-// Build the Venice cheatsheet (HTML & PDF)
-//   $> ./gradlew cheatsheet
+//   - Build the Venice jar for testing
+//     $> ./gradlew shadowJar
 //
-// Build the Venice bundle for uploading to Maven
-//   $> ./gradlew bundle
+//   - Build the Venice cheatsheet (HTML & PDF)
+//     $> ./gradlew cheatsheet
 //
+//   - Build the Venice bundle for uploading to Maven
+//     $> ./gradlew bundle
+//
+//   - Run the unit tests
+//     $> ./gradlew test
+// -----------------------------------------------------------------------------
 // Modify the Venice version:
 //   - gradle.properties
 //   - pom.xml
