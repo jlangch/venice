@@ -382,7 +382,7 @@ public class CoreFunctions {
 						"(number? 4)",
 						"(number? 4.0M)",
 						"(number? 4.0)",
-						"(number? (int 3)",
+						"(number? (int 3))",
 						"(number? true)",
 						"(number? \"a\")")
 					.build()
