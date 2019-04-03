@@ -83,7 +83,7 @@ public class VncException extends RuntimeException {
 	}
 	
 	public void printVeniceStackTrace() {
-		printVeniceStackTrace(System.out);
+		printVeniceStackTrace(System.err);
 	}
 
 	public void printVeniceStackTrace(final PrintStream ps) {
