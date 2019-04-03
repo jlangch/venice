@@ -139,6 +139,7 @@ public class DocGenerator {
 		lit.addSection(literals);
 
 		literals.addItem(new DocItem("Nil: nil", null));
+		literals.addItem(new DocItem("Integer: 150I", null));
 		literals.addItem(new DocItem("Long: 1500", null));
 		literals.addItem(new DocItem("Double: 3.569", null));
 		literals.addItem(new DocItem("Boolean: true, false", null));

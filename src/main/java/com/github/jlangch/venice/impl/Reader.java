@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -154,45 +155,51 @@ public class Reader {
 			// 1: long
 			return new VncLong(Long.parseLong(matcher.group(1)), MetaUtil.toMeta(token));
 		} 
-		else if (matcher.group(2) != null) {
-			// 2: double
-			return new VncDouble(Double.parseDouble(matcher.group(2)), MetaUtil.toMeta(token));
+		if (matcher.group(2) != null) {
+			// 2: int
+			String intVal = matcher.group(2);
+			intVal = intVal.substring(0, intVal.length()-1);
+			return new VncInteger(Integer.parseInt(intVal), MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(3) != null) {
-			// 3: bigdecimal
-			String dec = matcher.group(3);
+			// 3: double
+			return new VncDouble(Double.parseDouble(matcher.group(3)), MetaUtil.toMeta(token));
+		} 
+		else if (matcher.group(4) != null) {
+			// 4: bigdecimal
+			String dec = matcher.group(4);
 			dec = dec.substring(0, dec.length()-1);
 			return new VncBigDecimal(new BigDecimal(dec), MetaUtil.toMeta(token));
 		} 
-		else if (matcher.group(4) != null) {
-			// 4: nil
+		else if (matcher.group(5) != null) {
+			// 5: nil
 			return Constants.Nil;
 		} 
-		else if (matcher.group(5) != null) {
-			// 5: true
+		else if (matcher.group(6) != null) {
+			// 6: true
 			return Constants.True;
 		} 
-		else if (matcher.group(6) != null) {
-			// 6: false
+		else if (matcher.group(7) != null) {
+			// 7: false
 			return Constants.False;
 		} 
-		else if (matcher.group(7) != null) {
-			// 7: string """
-			final String s = unescapeAndDecodeUnicode(matcher.group(7));			
-			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
-		} 
 		else if (matcher.group(8) != null) {
-			// 8: string "
+			// 8: string """
 			final String s = unescapeAndDecodeUnicode(matcher.group(8));			
 			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(9) != null) {
-			// 9: keyword
-			return new VncKeyword(matcher.group(9), MetaUtil.toMeta(token));
+			// 9: string "
+			final String s = unescapeAndDecodeUnicode(matcher.group(9));			
+			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(10) != null) {
-			// 10: symbol
-			final VncSymbol sym = new VncSymbol(matcher.group(10));
+			// 10: keyword
+			return new VncKeyword(matcher.group(10), MetaUtil.toMeta(token));
+		} 
+		else if (matcher.group(11) != null) {
+			// 11: symbol
+			final VncSymbol sym = new VncSymbol(matcher.group(11));
 			rdr.anonymousFnArgs.addSymbol(sym);
 			return sym.withMeta(MetaUtil.toMeta(token));
 		} 
@@ -455,19 +462,21 @@ public class Reader {
 	// (?s) makes the dot match all characters, including line breaks.
 	//
 	// groups:
-	//    1: long => (^-?[0-9]+$)
-	//    2: double => (^-?[0-9]+[.][0-9]*$)
-	//    3: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
-	//    4: nil => (^nil$)
-	//    5: true => (^true$)
-	//    6: false => (^false$)
-	//    7: string => ^"""(.*)"""$
-	//    8: string => ^"(.*)"$
-	//    9: keyword => :(.*)
-	//    10: symbol => (^[^"]*$)
+	//     1: long => (^-?[0-9]+$)
+	//     2: int => (^-?[0-9]+I$)
+	//     3: double => (^-?[0-9]+[.][0-9]*$)
+	//     4: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
+	//     5: nil => (^nil$)
+	//     6: true => (^true$)
+	//     7: false => (^false$)
+	//     8: string => ^"""(.*)"""$
+	//     9: string => ^"(.*)"$
+	//    10: keyword => :(.*)
+	//    11: symbol => (^[^"]*$)
 	private static final Pattern atom_pattern = Pattern.compile(
 													"(?s)"  
 													+ "(^-?[0-9]+$)"
+													+ "|(^-?[0-9]+I$)"
 													+ "|(^-?[0-9][0-9.]*$)"
 													+ "|(^-?[0-9][0-9.]*M$)"
 													+ "|(^nil$)"

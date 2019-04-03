@@ -284,7 +284,7 @@ public class CoreFunctions {
 					.arglists("(int? n)")		
 					.doc("Returns true if n is an int")
 					.examples(
-						"(int? (int 4))",
+						"(int? 4I)",
 						"(int? 4)",
 						"(int? 3.1)",
 						"(int? true)",
@@ -310,6 +310,7 @@ public class CoreFunctions {
 					.doc("Returns true if n is a long")
 					.examples(
 						"(long? 4)",
+						"(long? 4I)",
 						"(long? 3.1)",
 						"(long? true)",
 						"(long? nil)",
@@ -335,6 +336,8 @@ public class CoreFunctions {
 					.examples(
 						"(double? 4.0)",
 						"(double? 3)",
+						"(double? 3I)",
+						"(double? 3.0M)",
 						"(double? true)",
 						"(double? nil)",
 						"(double? {})")
@@ -359,7 +362,8 @@ public class CoreFunctions {
 					.examples(
 						"(decimal? 4.0M)",
 						"(decimal? 4.0)",
-						"(decimal? 3)")
+						"(decimal? 3)",
+						"(decimal? 3I)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -379,10 +383,10 @@ public class CoreFunctions {
 					.arglists("(number? n)")		
 					.doc("Returns true if n is a number (int, long, double, or decimal)")
 					.examples(
+						"(number? 4I))",
 						"(number? 4)",
 						"(number? 4.0M)",
 						"(number? 4.0)",
-						"(number? (int 3))",
 						"(number? true)",
 						"(number? \"a\")")
 					.build()
@@ -1078,13 +1082,13 @@ public class CoreFunctions {
 
 			final VncVal op1 = args.first();
 			if (op1 == Nil) {
-				return new VncLong(0);
+				return new VncInteger(0);
 			}
 			else if (op1 == False) {
-				return new VncLong(0);
+				return new VncInteger(0);
 			}
 			else if (op1 == True) {
-				return new VncLong(1);
+				return new VncInteger(1);
 			}
 			else if (Types.isVncInteger(op1)) {
 				return op1;

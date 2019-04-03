@@ -91,8 +91,7 @@ import com.github.jlangch.venice.VncException;
 try {
    final Venice venice = new Venice();
   
-   System.out.println(
-      venice.eval("(+ 1 1)"));
+   System.out.println(venice.eval("(+ 1 1)"));
 } 
 catch(VncException ex) {
    ex.printVeniceStackTrace();
@@ -142,7 +141,7 @@ venice.eval(
 // capture stdout within the script and return it as the result
 System.out.println(
    venice.eval(
-      "(do (with-out-str (println [1 2])))"));
+      "(with-out-str (println [1 2]))"));
 
 // capturing stdout preserving the script result
 final CapturingPrintStream ps = CapturingPrintStream.create();

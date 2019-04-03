@@ -1274,6 +1274,38 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_int() {
+		final Venice venice = new Venice();
+
+		assertEquals(Integer.valueOf(0), venice.eval("(int nil)"));
+		assertEquals(Integer.valueOf(0), venice.eval("(int false)"));
+		assertEquals(Integer.valueOf(1), venice.eval("(int true)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(int 3)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(int 3I)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(int 3.1)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(int 3.0M)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(int \"3\")"));
+	}
+
+	@Test
+	public void test_int_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(int? nil)"));	
+		assertFalse((Boolean)venice.eval("(int? true)"));	
+		assertFalse((Boolean)venice.eval("(int? 1)"));	
+		assertTrue((Boolean)venice.eval("(int? 3I)"));
+		assertFalse((Boolean)venice.eval("(int? -3.0)"));
+		assertFalse((Boolean)venice.eval("(int? -3.0M)"));
+		assertFalse((Boolean)venice.eval("(int? \"ABC\")"));
+		assertFalse((Boolean)venice.eval("(int? :a)"));
+		assertFalse((Boolean)venice.eval("(int? (symbol :a))"));
+		assertFalse((Boolean)venice.eval("(int? '())"));
+		assertFalse((Boolean)venice.eval("(int? [])"));
+		assertFalse((Boolean)venice.eval("(int? {})"));
+	}
+
+	@Test
 	public void test_interleave() {
 		final Venice venice = new Venice();
 		
@@ -1573,6 +1605,7 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(0), venice.eval("(long false)"));
 		assertEquals(Long.valueOf(1), venice.eval("(long true)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3)"));
+		assertEquals(Long.valueOf(3), venice.eval("(long 3I)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3.1)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3.0M)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long \"3\")"));
@@ -1585,6 +1618,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(long? nil)"));	
 		assertFalse((Boolean)venice.eval("(long? true)"));	
 		assertTrue((Boolean)venice.eval("(long? 1)"));	
+		assertFalse((Boolean)venice.eval("(long? 3I)"));
 		assertFalse((Boolean)venice.eval("(long? -3.0)"));
 		assertFalse((Boolean)venice.eval("(long? -3.0M)"));
 		assertFalse((Boolean)venice.eval("(long? \"ABC\")"));
