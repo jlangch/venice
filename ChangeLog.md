@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### fixed
 
-- fixed a problem with the `*out*` dynamic var not beeing visible to precompiled 
+- fixed a problem with the `*out*` dynamic var not being visible to precompiled 
   scripts
 
 
