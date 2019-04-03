@@ -64,6 +64,10 @@ public class Env implements Serializable {
 	}
 
 	public Env makeCoreOnlyGlobalEnv() {
+		// Used for precompiled scripts. 
+		// Move the global symbols to core global symbols so they remain untouched
+		// while running the precompiled script and thus can be reused by subsequent
+		// precompiled script invocations
 		return new Env(this.globalSymbols);
 	}
 
@@ -230,14 +234,13 @@ public class Env implements Serializable {
 	}
 	
 	public Env setStdoutPrintStream(final PrintStream ps) {
-		final VncSymbol sym = new VncSymbol("*out*");
-		final VncVal val = new VncJavaObject(
-									ps != null 
-										? ps 
-										: new PrintStream(new NullOutputStream(), true));
-		final DynamicVar var = new DynamicVar(sym, val);
+		final VncVal psVal = new VncJavaObject(ps != null ? ps : nullPrintStream());
+		final DynamicVar var = new DynamicVar(new VncSymbol("*out*"), psVal);
+		
 		setGlobal(var);
-		var.pushVal(val);
+		
+		// push it to the current thread so running precompiled scripts see it
+		var.pushVal(psVal);  
 		
 		return this;
 	}
@@ -322,6 +325,10 @@ public class Env implements Serializable {
 		}
 		all.putAll(globalSymbols);
 		return all;
+	}
+	
+	private PrintStream nullPrintStream() {
+		return new PrintStream(new NullOutputStream(), true);
 	}
 
 	
