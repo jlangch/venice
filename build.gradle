@@ -174,9 +174,9 @@ dependencies {
     compileOnly 'org.antlr:ST4:4.0.8'
     compileOnly 'org.apache.commons:commons-text:1.2'
     compileOnly 'org.apache.commons:commons-lang3:3.7'
-    compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.16'
-    compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.16'
-    compileOnly 'com.github.librepdf:openpdf:1.2.10'
+    compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.18'
+    compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18'
+    compileOnly 'com.github.librepdf:openpdf:1.2.14'
 
     // runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
