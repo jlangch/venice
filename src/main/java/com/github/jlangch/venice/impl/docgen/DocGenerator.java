@@ -667,7 +667,7 @@ public class DocGenerator {
 		final DocSection profil = new DocSection("Profiling");
 		all.addSection(profil);
 		profil.addItem(getDocItem("time"));
-		profil.addItem(getDocItem("perf"));
+		profil.addItem(getDocItem("perf", false, false));
 		
 		return section;
 	}
