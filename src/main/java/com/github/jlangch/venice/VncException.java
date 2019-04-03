@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.StackFrame;
 
 
@@ -78,7 +79,7 @@ public class VncException extends RuntimeException {
 		return callstack
 					.callstack()
 					.stream()
-					.map(v -> (indent == null ? "" : indent) + callFrameToString(v))
+					.map(v -> StringUtil.nullToEmpty(indent) + callFrameToString(v))
 					.collect(Collectors.joining("\n"));
 	}
 	

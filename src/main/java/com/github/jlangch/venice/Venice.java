@@ -252,8 +252,7 @@ public class Venice {
 	
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		final Env env = venice.createEnv();		
-		return addParams(env, params);
+		return addParams(venice.createEnv(), params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
@@ -264,15 +263,16 @@ public class Venice {
 				final String key = entry.getKey();
 				final Object val = entry.getValue();
 
-				final VncSymbol symbol = new VncSymbol(key);
-
 				if (key.equals("*out*")) {
 					env.setStdoutPrintStream(buildStdOutPrintStream(val));
 					
 					stdoutAdded = true;
 				}
 				else {
-					env.setGlobal(new Var(symbol, JavaInteropUtil.convertToVncVal(val)));
+					env.setGlobal(
+						new Var(
+							new VncSymbol(key), 
+							JavaInteropUtil.convertToVncVal(val)));
 				}
 			}
 		}

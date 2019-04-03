@@ -214,6 +214,10 @@ public class StringUtil {
 		return s == null || s.isEmpty() ? null : s;
 	}
 	
+	public static String nullToEmpty(final String s) {
+		return s == null ? "" : s;
+	}
+	
 	public static String trimToEmpty(final String str) {
 		return str == null ? "" : str.trim();
 	}

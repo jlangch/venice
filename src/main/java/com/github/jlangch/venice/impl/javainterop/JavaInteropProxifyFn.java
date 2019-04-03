@@ -67,8 +67,8 @@ public class JavaInteropProxifyFn extends VncFunction {
 
 		final VncVal clazzVal = args.first();
 		final String className = Types.isVncKeyword(clazzVal)
-				? Coerce.toVncKeyword(clazzVal).getValue()
-				: Coerce.toVncString(clazzVal).getValue();
+									? Coerce.toVncKeyword(clazzVal).getValue()
+									: Coerce.toVncString(clazzVal).getValue();
 
 		final Class<?> clazz = ReflectionUtil.classForName(javaImports.resolveClassName(className));
 

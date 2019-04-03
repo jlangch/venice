@@ -37,34 +37,47 @@ public class Launcher {
 	
 	public static void main(final String[] args) {
 		final CommandLineArgs cli = new CommandLineArgs(args);
-		if (cli.switchPresent("-file")) {
-			final VeniceInterpreter venice = new VeniceInterpreter();
-			final Env env = venice.createEnv()
-								  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
-								  .setStdoutPrintStream(new PrintStream(System.out, true));
-
-			final String file = cli.switchValue("-file");
-			final String script = new String(FileUtil.load(new File(file)));
+		
+		try {
+			if (cli.switchPresent("-file")) {
+				final VeniceInterpreter venice = new VeniceInterpreter();
+				final Env env = createEnv(venice, cli);
+	
+				final String file = cli.switchValue("-file");
+				final String script = new String(FileUtil.load(new File(file)));
+				
+				System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
+			}
+			else if (cli.switchPresent("-script")) {
+				final VeniceInterpreter venice = new VeniceInterpreter();
+				final Env env = createEnv(venice, cli);
+	
+				final String script = cli.switchValue("-script");
+				
+				System.out.println(venice.PRINT(venice.RE(script, "script", env)));
+			}
+			else if (cli.switchPresent("-repl")) {
+				new REPL().run(args);
+			}
+			else {
+				new REPL().run(args);
+			}
 			
-			System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
 			System.exit(0);
 		}
-		else if (cli.switchPresent("-script")) {
-			final VeniceInterpreter venice = new VeniceInterpreter();
-			final Env env = venice.createEnv()
-					  			  .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
-					  			  .setStdoutPrintStream(new PrintStream(System.out, true));
-
-			final String script = cli.switchValue("-script");
-			
-			System.out.println(venice.PRINT(venice.RE(script, "script", env)));
-			System.exit(0);
-		}
-		else if (cli.switchPresent("-repl")) {
-			new REPL().run(args);
-		}
-		else {
-			new REPL().run(args);
-		}
+		catch (VncException ex) {
+			ex.printVeniceStackTrace();
+			System.exit(1);
+		}	
+		catch (Exception ex) {
+			ex.printStackTrace();
+			System.exit(1);
+		}	
+	}
+	
+	private static Env createEnv(final VeniceInterpreter venice, final CommandLineArgs cli) {
+		return venice.createEnv()
+					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}
 }
