@@ -104,12 +104,11 @@ catch(RuntimeException ex) {
 
 ### Passing parameters to Venice
 
-Venice expects Java data types (Long, Double, String, List, Map, ...) as 
-parameters and returns Java data types as the expression result. It coerces 
-Java to/from Venice data types implicitly.
-
-Java bean parameters expose its getters as Map keys in Venice, so the 
-getters can be accessed simply through `(:getterName bean)`
+Venice expects Java objects as parameters and returns Java objects as the expression result. It coerces 
+Java data types to/from Venice data types implicitly. Basic types as Boolean, Long, Double, String, 
+BigDecimal, List, Map, ... are coerced to Venice types like long, double, decimal, string, list, ... 
+All other types can be accessed through Java interop. Java bean parameters expose its getters as Map 
+keys in Venice, so the getters can be accessed simply through `(:getterName bean)`
 
 ```java
 import com.github.jlangch.venice.Venice;
