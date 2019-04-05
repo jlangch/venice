@@ -233,7 +233,7 @@ Booleans are defined by constants _true_ and _false_.
 
 #### long
 
-Based on the Java type _Long_.
+Based on the Java type _Long_. long is Venice's standard integer type.
 
 ```clojure
 (+ 1 2)
@@ -244,7 +244,7 @@ Based on the Java type _Long_.
 Based on the Java type _Integer_.
 
 ```clojure
-(+ (int 1) (int 2))
+(+ 2I 3I)
 ```
 
 #### double
@@ -277,6 +277,7 @@ Symbols are identifiers that are normally used to refer to function parameters,
 let bindings, and global vars.
 
 ```clojure
+(defn sum [x y] (+ x y))
 (def x 100)
 ```
 
