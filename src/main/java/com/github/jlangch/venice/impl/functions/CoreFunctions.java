@@ -4669,6 +4669,33 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction map_invert = 
+		new VncFunction(
+				"map-invert", 
+				VncFunction
+					.meta()
+					.arglists("(map-invert m)")		
+					.doc(
+						"Returns the map with the vals mapped to the keys.")
+					.examples(
+						"(map-invert {:a 1 :b 2 :c 3})")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {			
+				assertArity("map-invert", args, 1);
+
+				final VncMap m = Coerce.toVncMap(args.first());
+				
+				final Map<VncVal,VncVal> inverted = new HashMap<>();
+				for(VncMapEntry e : m.entries()) {
+					inverted.put(e.getValue(), e.getKey());
+				}
+				return m.withValues(inverted, m.getMeta());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction filter = 
 		new VncFunction(
 				"filter", 
@@ -5442,6 +5469,7 @@ public class CoreFunctions {
 				.put("interpose",			interpose)
 				.put("interleave",			interleave)
 				.put("mapcat",				mapcat)
+				.put("map-invert",			map_invert)
 				.put("keep",				keep)
 				.put("docoll",				docoll)
 				.put("nth",					nth)
