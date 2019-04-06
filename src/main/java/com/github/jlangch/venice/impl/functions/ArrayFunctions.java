@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class ArrayFunctions {
 					.doc(
 						"Sets the value at the index of an array")
 					.examples(
-						"(aset (to-array '(1 2 3 4 5)) 1 20)")
+						"(aset (long-array '(1 2 3 4 5)) 1 20)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -109,7 +110,7 @@ public class ArrayFunctions {
 						.doc(
 							"Returns the value at the index of an array of Java Objects")
 						.examples(
-							"(aget (to-array '(1 2 3 4 5)) 1)")
+							"(aget (long-array '(1 2 3 4 5)) 1)")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -154,14 +155,14 @@ public class ArrayFunctions {
 			
 	public static VncFunction alength = 
 			new VncFunction(
-					"aget", 
+					"alength", 
 					VncFunction
 						.meta()
 						.arglists("(alength array)")		
 						.doc(
 							"Returns the length of an array")
 						.examples(
-							"(alength (to-array '(1 2 3 4 5)))")
+							"(alength (long-array '(1 2 3 4 5)))")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -203,6 +204,129 @@ public class ArrayFunctions {
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 			
+	public static VncFunction asub = 
+			new VncFunction(
+					"asub", 
+					VncFunction
+						.meta()
+						.arglists("(asub array start len)")		
+						.doc(
+							"Returns a sub array")
+						.examples(
+							"(asub (long-array '(1 2 3 4 5)) 2 3)")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {			
+					assertArity("asub", args, 3);
+	
+					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
+					final int start = Coerce.toVncLong(args.second()).getIntValue();
+					final int len = Coerce.toVncLong(args.third()).getIntValue();
+	
+					final Object delegate = jo.getDelegate();
+					final Class<?> delegateClass = delegate.getClass();
+					
+					if (!ReflectionTypes.isArrayType(delegateClass)) {
+						throw new VncException(String.format(
+								"The array argument (%s) is not an array",
+								Types.getType(jo)));
+					}
+	
+					final Class<?> componentType = delegateClass.getComponentType();
+	
+					if (componentType == String.class) {
+						return new VncJavaObject(Arrays.copyOfRange((String[])delegate, start, start + len));
+					}
+					else if (componentType == int.class) {
+						return new VncJavaObject(Arrays.copyOfRange((int[])delegate, start, start + len));
+					}
+					else if (componentType == long.class) {
+						return new VncJavaObject(Arrays.copyOfRange((long[])delegate, start, start + len));
+					}
+					else if (componentType == float.class) {
+						return new VncJavaObject(Arrays.copyOfRange((float[])delegate, start, start + len));
+					}
+					else if (componentType == double.class) {
+						return new VncJavaObject(Arrays.copyOfRange((double[])delegate, start, start + len));
+					}
+					else {
+						return new VncJavaObject(Arrays.copyOfRange((Object[])delegate, start, start + len));
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
+	public static VncFunction acopy = 
+		new VncFunction(
+				"acopy", 
+				VncFunction
+					.meta()
+					.arglists("(acopy src src-pos dest dest-pos dest-len)")		
+					.doc(
+						"Copies an array from the src array, beginning at the" + 
+						"specified position, to the specified position of the dst array.")
+					.examples(
+						"(acopy (long-array '(1 2 3 4 5)) 2 (long-array 20) 10 3)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {			
+				assertArity("acopy", args, 5);
+	
+				final VncJavaObject joSrc = Coerce.toVncJavaObject(args.nth(0));
+				final int srcPos = Coerce.toVncLong(args.nth(1)).getIntValue();
+				final VncJavaObject joDst = Coerce.toVncJavaObject(args.nth(2));
+				final int dstPos = Coerce.toVncLong(args.nth(3)).getIntValue();
+				final int dstLen = Coerce.toVncLong(args.nth(4)).getIntValue();
+	
+				final Object delegateSrc = joSrc.getDelegate();
+				final Class<?> delegateSrcClass = delegateSrc.getClass();
+				final Object delegateDst = joDst.getDelegate();
+				final Class<?> delegateDstClass = delegateDst.getClass();
+				
+				if (!ReflectionTypes.isArrayType(delegateSrcClass)) {
+					throw new VncException(String.format(
+							"The source array argument (%s) is not an array",
+							Types.getType(joSrc)));
+				}
+				if (!ReflectionTypes.isArrayType(delegateDstClass)) {
+					throw new VncException(String.format(
+							"The destination array argument (%s) is not an array",
+							Types.getType(joDst)));
+				}
+	
+				final Class<?> srcCcomponentType = delegateSrcClass.getComponentType();
+				final Class<?> dstCcomponentType = delegateDstClass.getComponentType();
+
+				if (srcCcomponentType != dstCcomponentType) {
+					throw new VncException("Source and destination array are not from the sane type");
+				}
+
+				if (srcCcomponentType == String.class) {
+					System.arraycopy((String[])delegateSrc, srcPos, (String[])delegateDst, dstPos, dstLen);
+				}
+				else if (srcCcomponentType == int.class) {
+					System.arraycopy((int[])delegateSrc, srcPos, (int[])delegateDst, dstPos, dstLen);
+				}
+				else if (srcCcomponentType == long.class) {
+					System.arraycopy((long[])delegateSrc, srcPos, (long[])delegateDst, dstPos, dstLen);
+				}
+				else if (srcCcomponentType == float.class) {
+					System.arraycopy((float[])delegateSrc, srcPos, (float[])delegateDst, dstPos, dstLen);
+				}
+				else if (srcCcomponentType == double.class) {
+					System.arraycopy((double[])delegateSrc, srcPos, (double[])delegateDst, dstPos, dstLen);
+				}
+				else {
+					System.arraycopy((Object[])delegateSrc, srcPos, (Object[])delegateDst, dstPos, dstLen);
+				}
+				
+				return Nil;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction object_array = 
 		new VncFunction(
 				"object-array", 
@@ -299,7 +423,7 @@ public class ArrayFunctions {
 					.examples(
 						"(int-array '(1I 2I 3I))",
 						"(int-array '(1I 2 3.2 3.56M))",
-						"(int-array 10") 
+						"(int-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -344,7 +468,7 @@ public class ArrayFunctions {
 					.examples(
 						"(long-array '(1 2 3))",
 						"(long-array '(1I 2 3.2 3.56M))",
-						"(long-array 10") 
+						"(long-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -477,6 +601,8 @@ public class ArrayFunctions {
 					.put("aget",			aget)
 					.put("aset",			aset)
 					.put("alength",			alength)
+					.put("asub",			asub)
+					.put("acopy",			acopy)
 					.put("object-array",	object_array)
 					.put("string-array",	string_array)
 					.put("int-array",		int_array)
