@@ -107,6 +107,7 @@ public class DocGenerator {
 	private List<DocSection> getRightSections() {
 		return Arrays.asList(
 				getCollectionsSection(),
+				getArraysSection(),
 				getConcurrencySection(),
 				getSystemSection(),
 				getJavaInteropSection(),
@@ -523,6 +524,30 @@ public class DocGenerator {
 		return section;
 	}		
 
+	private DocSection getArraysSection() {
+		final DocSection section = new DocSection("Arrays");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection create = new DocSection("Create");
+		all.addSection(create);
+		create.addItem(getDocItem("object-array"));
+		create.addItem(getDocItem("string-array"));
+		create.addItem(getDocItem("int-array"));
+		create.addItem(getDocItem("long-array"));
+		create.addItem(getDocItem("float-array"));
+		create.addItem(getDocItem("double-array"));
+
+		final DocSection use = new DocSection("Use");
+		all.addSection(use);
+		use.addItem(getDocItem("aget"));
+		use.addItem(getDocItem("aset"));
+		use.addItem(getDocItem("alength"));
+
+		return section;
+	}
+	
 	private DocSection getFunctionsSection() {
 		final DocSection section = new DocSection("Functions");
 

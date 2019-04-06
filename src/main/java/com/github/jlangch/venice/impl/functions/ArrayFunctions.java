@@ -54,7 +54,7 @@ public class ArrayFunctions {
 					.doc(
 						"Sets the value at the index of an array")
 					.examples(
-						"(aset (to-array '(1 2 3 4 5)) 1 20)")
+						"(aset (long-array '(1 2 3 4 5)) 1 20)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -109,7 +109,7 @@ public class ArrayFunctions {
 						.doc(
 							"Returns the value at the index of an array of Java Objects")
 						.examples(
-							"(aget (to-array '(1 2 3 4 5)) 1)")
+							"(aget (long-array '(1 2 3 4 5)) 1)")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -161,7 +161,7 @@ public class ArrayFunctions {
 						.doc(
 							"Returns the length of an array")
 						.examples(
-							"(alength (to-array '(1 2 3 4 5)))")
+							"(alength (long-array '(1 2 3 4 5)))")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -299,7 +299,7 @@ public class ArrayFunctions {
 					.examples(
 						"(int-array '(1I 2I 3I))",
 						"(int-array '(1I 2 3.2 3.56M))",
-						"(int-array 10") 
+						"(int-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -344,7 +344,7 @@ public class ArrayFunctions {
 					.examples(
 						"(long-array '(1 2 3))",
 						"(long-array '(1I 2 3.2 3.56M))",
-						"(long-array 10") 
+						"(long-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
