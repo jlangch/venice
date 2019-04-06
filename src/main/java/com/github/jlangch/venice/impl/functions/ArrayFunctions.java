@@ -332,23 +332,31 @@ public class ArrayFunctions {
 				"object-array", 
 				VncFunction
 					.meta()
-					.arglists("(object-array coll)", "(object-array len)")		
+					.arglists(
+						"(object-array coll)", 
+						"(object-array len)", 
+						"(object-array len init-val)")		
 					.doc(
 						"Returns an array of Java Objects containing the contents of coll "
 								+ "or returns an array with the given length")
 					.examples(
 						"(object-array '(1 2 3 4 5))",
 						"(object-array '(1 2.0 3.45M \"4\" true))",
-						"(object-array 10)")
+						"(object-array 10)",
+						"(object-array 10 42)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("object-array", args, 1);
+				assertArity("object-array", args, 1, 2);
 
 				final VncVal arg = args.first();
 				
 				if (Types.isVncLong(arg)) {
-					return new VncJavaObject(new Object[((VncLong)arg).getIntValue()]);
+					final Object[] arr = new Object[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, args.second().convertToJavaObject());
+					}
+					return new VncJavaObject(arr);
 				}
 				else {
 					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
@@ -372,22 +380,30 @@ public class ArrayFunctions {
 				"string-array", 
 				VncFunction
 					.meta()
-					.arglists("(string-array coll)", "(string-array len)")		
+					.arglists(
+						"(string-array coll)", 
+						"(string-array len)", 
+						"(string-array len init-val)")		
 					.doc(
 						"Returns an array of Java strings containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(string-array '(\"1\" \"2\" \"3\"))",
-						"(string-array 10)") 
+						"(string-array 10)",
+						"(string-array 10 \"42\")") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("string-array", args, 1);
+				assertArity("string-array", args, 1, 2);
 
 				final VncVal arg = args.first();
 				
 				if (Types.isVncLong(arg)) {
-					return new VncJavaObject(new String[((VncLong)arg).getIntValue()]);
+					final String[] arr = new String[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, Coerce.toVncString(args.second()).getValue());
+					}
+					return new VncJavaObject(arr);
 				}
 				else {
 					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
@@ -416,23 +432,31 @@ public class ArrayFunctions {
 				"int-array", 
 				VncFunction
 					.meta()
-					.arglists("(int-array coll)", "(int-array len)")		
+					.arglists(
+						"(int-array coll)", 
+						"(int-array len)", 
+						"(int-array len init-val)")		
 					.doc(
 						"Returns an array of Java ints containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(int-array '(1I 2I 3I))",
 						"(int-array '(1I 2 3.2 3.56M))",
-						"(int-array 10)") 
+						"(int-array 10)",
+						"(int-array 10 42I)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("int-array", args, 1);
+				assertArity("int-array", args, 1, 2);
 
 				final VncVal arg = args.first();
 				
 				if (Types.isVncLong(arg)) {
-					return new VncJavaObject(new int[((VncLong)arg).getIntValue()]);
+					final int[] arr = new int[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, Coerce.toVncInteger(args.second()).getValue());
+					}
+					return new VncJavaObject(arr);
 				}
 				else {
 					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
@@ -461,23 +485,31 @@ public class ArrayFunctions {
 				"long-array", 
 				VncFunction
 					.meta()
-					.arglists("(long-array coll)", "(long-array len)")		
+					.arglists(
+						"(long-array coll)", 
+						"(long-array len)", 
+						"(long-array len init-val)")		
 					.doc(
 						"Returns an array of Java longs containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(long-array '(1 2 3))",
 						"(long-array '(1I 2 3.2 3.56M))",
-						"(long-array 10)") 
+						"(long-array 10)",
+						"(long-array 10 42)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("long-array", args, 1);
+				assertArity("long-array", args, 1, 2);
 
 				final VncVal arg = args.first();
 				
 				if (Types.isVncLong(arg)) {
-					return new VncJavaObject(new long[((VncLong)arg).getIntValue()]);
+					final long[] arr = new long[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, Coerce.toVncLong(args.second()).getValue());
+					}
+					return new VncJavaObject(arr);
 				}
 				else {
 					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
@@ -506,23 +538,31 @@ public class ArrayFunctions {
 				"float-array", 
 				VncFunction
 					.meta()
-					.arglists("(float-array coll)", "(float-array len)")		
+					.arglists(
+						"(float-array coll)", 
+						"(float-array len)", 
+						"(float-array len init-val)")		
 					.doc(
 						"Returns an array of Java floats containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(float-array '(1.0 2.0 3.0))",
 						"(float-array '(1I 2 3.2 3.56M))",
-						"(float-array 10)") 
+						"(float-array 10)",
+						"(float-array 10 42.0)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("float-array", args, 1);
+				assertArity("float-array", args, 1, 2);
 
 				final VncVal arg = args.first();
 				
 				if (Types.isVncLong(arg)) {
-					return new VncJavaObject(new float[((VncLong)arg).getIntValue()]);
+					final float[] arr = new float[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, Coerce.toVncDouble(args.second()).getValue().floatValue());
+					}
+					return new VncJavaObject(arr);
 				}
 				else {
 					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
@@ -551,23 +591,31 @@ public class ArrayFunctions {
 				"double-array", 
 				VncFunction
 					.meta()
-					.arglists("(double-array coll)", "(double-array len)")		
+					.arglists(
+						"(double-array coll)", 
+						"(double-array len)", 
+						"(double-array len init-val)")		
 					.doc(
 						"Returns an array of Java doubles containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(double-array '(1.0 2.0 3.0))",
 						"(double-array '(1I 2 3.2 3.56M))",
-						"(double-array 10)") 
+						"(double-array 10)",
+						"(float-array 10 42.0)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("double-array", args, 1);
+				assertArity("double-array", args, 1, 2);
 
 				final VncVal arg = args.first();
 				
 				if (Types.isVncLong(arg)) {
-					return new VncJavaObject(new double[((VncLong)arg).getIntValue()]);
+					final double[] arr = new double[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, Coerce.toVncDouble(args.second()).getValue());
+					}
+					return new VncJavaObject(arr);
 				}
 				else {
 					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
