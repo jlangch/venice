@@ -52,7 +52,7 @@ public class ArrayFunctions {
 					.meta()
 					.arglists("(aset array idx val)")		
 					.doc(
-						"Sets the value at the index of an array of Java Objects")
+						"Sets the value at the index of an array")
 					.examples(
 						"(aset (to-array '(1 2 3 4 5)) 1 20)")
 					.build()
@@ -63,150 +63,37 @@ public class ArrayFunctions {
 				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 				final VncInteger idx = Numeric.toInteger(args.second());
 				final VncVal val = args.third();
-				
-				final Object[] array = (Object[])jo.getDelegate();
-				
-				array[idx.getValue().intValue()] = val.convertToJavaObject();
-				return jo;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction aset_string = 
-		new VncFunction(
-				"aset-string", 
-				VncFunction
-					.meta()
-					.arglists("(aset-string array idx val)")		
-					.doc(
-						"Sets the value at the index of an array of Java strings")
-					.examples(
-						"(aset-string (string-array '(\"1\" \"2\" \"3\") 1 \"20\")")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
-				assertArity("aset-string", args, 3);
 
-				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-				final VncInteger idx = Numeric.toInteger(args.second());
-				final VncString val = Coerce.toVncString(args.third());
+				final Object delegate = jo.getDelegate();
+				final Class<?> delegateClass = delegate.getClass();
 				
-				final String[] array = (String[])jo.getDelegate();
-				
-				array[idx.getValue().intValue()] = val.getValue();
-				return jo;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction aset_int = 
-		new VncFunction(
-				"aset-int", 
-				VncFunction
-					.meta()
-					.arglists("(aset-int array idx val)")		
-					.doc(
-						"Sets the value at the index of an array of Java ints")
-					.examples(
-						"(aset-int (int-array '(1I 2I 3I 4I 5I)) 1 20I)")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
-				assertArity("aset-int", args, 3);
+				if (!ReflectionTypes.isArrayType(delegateClass)) {
+					throw new VncException(String.format(
+							"The array argument (%s) is not an array",
+							Types.getType(jo)));
+				}
 
-				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-				final VncInteger idx = Numeric.toInteger(args.second());
-				final VncVal val = args.third();
-				
-				final int[] array = (int[])jo.getDelegate();
-				
-				array[idx.getValue().intValue()] = Numeric.toInteger(val).getValue();
-				return jo;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction aset_long = 
-		new VncFunction(
-				"aset-long", 
-				VncFunction
-					.meta()
-					.arglists("(aset-long array idx val)")		
-					.doc(
-						"Sets the value at the index of an array of Java longs")
-					.examples(
-						"(aset-long (long-array '(1 2 3 4 5)) 1 20)")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
-				assertArity("aset-long", args, 3);
+				final Class<?> componentType = delegateClass.getComponentType();
 
-				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-				final VncInteger idx = Numeric.toInteger(args.second());
-				final VncVal val = args.third();
+				if (componentType == String.class) {
+					((String[])delegate)[idx.getValue()] = Coerce.toVncString(val).getValue();
+				}
+				else if (componentType == int.class) {
+					((int[])delegate)[idx.getValue()] = Numeric.toInteger(val).getValue();
+				}
+				else if (componentType == long.class) {
+					((long[])delegate)[idx.getValue()] = Numeric.toLong(val).getValue();
+				}
+				else if (componentType == float.class) {
+					((float[])delegate)[idx.getValue()] = Numeric.toDouble(val).getValue().floatValue();
+				}
+				else if (componentType == double.class) {
+					((double[])delegate)[idx.getValue()] = Numeric.toDouble(val).getValue();
+				}
+				else {
+					((Object[])delegate)[idx.getValue()] = val.convertToJavaObject();
+				}
 				
-				final long[] array = (long[])jo.getDelegate();
-				
-				array[idx.getValue().intValue()] = Numeric.toLong(val).getValue();
-				return jo;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction aset_float = 
-		new VncFunction(
-				"aset-float", 
-				VncFunction
-					.meta()
-					.arglists("(aset-float array idx val)")		
-					.doc(
-						"Sets the value at the index of an array of Java floats")
-					.examples(
-						"(aset-float (float-array '(1.0 2.0 3.0 4.0 5.0)) 1 20.0)")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
-				assertArity("aset-float", args, 3);
-
-				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-				final VncInteger idx = Numeric.toInteger(args.second());
-				final VncVal val = args.third();
-				
-				final float[] array = (float[])jo.getDelegate();
-				
-				array[idx.getValue().intValue()] = Numeric.toDouble(val).getValue().floatValue();
-				return jo;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction aset_double = 
-		new VncFunction(
-				"aset-double", 
-				VncFunction
-					.meta()
-					.arglists("(aset-double array idx val)")		
-					.doc(
-						"Sets the value at the index of an array of Java doubles")
-					.examples(
-						"(aset-double (double-array '(1.0 2.0 3.0 4.0 5.0)) 1 20.0)")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
-				assertArity("aset-double", args, 3);
-
-				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-				final VncInteger idx = Numeric.toInteger(args.second());
-				final VncVal val = args.third();
-				
-				final double[] array = (double[])jo.getDelegate();
-				
-				array[idx.getValue().intValue()] = Numeric.toDouble(val).getValue();
 				return jo;
 			}
 	
@@ -265,32 +152,92 @@ public class ArrayFunctions {
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 			
-	public static VncFunction to_array = 
+	public static VncFunction alength = 
+			new VncFunction(
+					"aget", 
+					VncFunction
+						.meta()
+						.arglists("(alength array)")		
+						.doc(
+							"Returns the length of an array")
+						.examples(
+							"(alength (to-array '(1 2 3 4 5)))")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {			
+					assertArity("alength", args, 1);
+
+					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
+	
+					final Object delegate = jo.getDelegate();
+					final Class<?> delegateClass = delegate.getClass();
+					
+					if (!ReflectionTypes.isArrayType(delegateClass)) {
+						throw new VncException(String.format(
+								"The array argument (%s) is not an array",
+								Types.getType(jo)));
+					}
+
+					final Class<?> componentType = delegateClass.getComponentType();
+
+					if (componentType == String.class) {
+						return new VncLong(((String[])delegate).length);
+					}
+					else if (componentType == int.class) {
+						return new VncLong(((int[])delegate).length);
+					}
+					else if (componentType == long.class) {
+						return new VncLong(((long[])delegate).length);
+					}
+					else if (componentType == float.class) {
+						return new VncLong(((float[])delegate).length);
+					}
+					else if (componentType == double.class) {
+						return new VncLong(((double[])delegate).length);
+					}
+					else {
+						return new VncLong(((Object[])delegate).length);
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+			
+	public static VncFunction object_array = 
 		new VncFunction(
-				"to-array", 
+				"object-array", 
 				VncFunction
 					.meta()
-					.arglists("(to-array coll)")		
+					.arglists("(object-array coll)", "(object-array len)")		
 					.doc(
-						"Returns an array of Java Objects containing the contents of coll")
+						"Returns an array of Java Objects containing the contents of coll "
+								+ "or returns an array with the given length")
 					.examples(
-						"(to-array '(1 2 3 4 5))",
-						"(to-array '(1 2.0 3.45M \"4\" true))")
+						"(object-array '(1 2 3 4 5))",
+						"(object-array '(1 2.0 3.45M \"4\" true))",
+						"(object-array 10)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("to-array", args, 1);
+				assertArity("object-array", args, 1);
 
-				final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+				final VncVal arg = args.first();
 				
-				final Object[] arr = new Object[list.size()];
-			
-				int ii=0;
-				for(VncVal v : list) {
-					arr[ii++] = v.convertToJavaObject();
+				if (Types.isVncLong(arg)) {
+					return new VncJavaObject(new Object[((VncLong)arg).getIntValue()]);
 				}
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final Object[] arr = new Object[list.size()];
+				
+					int ii=0;
+					for(VncVal v : list) {
+						arr[ii++] = v.convertToJavaObject();
+					}
 
-				return new VncJavaObject(arr);
+					return new VncJavaObject(arr);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -301,31 +248,40 @@ public class ArrayFunctions {
 				"string-array", 
 				VncFunction
 					.meta()
-					.arglists("(string-array coll)")		
+					.arglists("(string-array coll)", "(string-array len)")		
 					.doc(
-						"Returns an array of Java strings containing the contents of coll")
+						"Returns an array of Java strings containing the contents of coll"
+							+ "or returns an array with the given length")
 					.examples(
-						"(string-array '(\"1\" \"2\" \"3\"))") 
+						"(string-array '(\"1\" \"2\" \"3\"))",
+						"(string-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
 				assertArity("string-array", args, 1);
 
-				final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+				final VncVal arg = args.first();
 				
-				final String[] arr = new String[list.size()];
-				
-				int ii=0;
-				for(VncVal v : list) {
-					if (!Types.isVncString(v)) {
-						throw new VncException(String.format(
-								"The value at pos %d in the collection is not a string",
-								ii));
-					}
-					arr[ii++] = ((VncString)v).getValue();
+				if (Types.isVncLong(arg)) {
+					return new VncJavaObject(new String[((VncLong)arg).getIntValue()]);
 				}
-				
-				return new VncJavaObject(arr);
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final String[] arr = new String[list.size()];
+					
+					int ii=0;
+					for(VncVal v : list) {
+						if (!Types.isVncString(v)) {
+							throw new VncException(String.format(
+									"The value at pos %d in the collection is not a string",
+									ii));
+						}
+						arr[ii++] = ((VncString)v).getValue();
+					}
+					
+					return new VncJavaObject(arr);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -336,32 +292,41 @@ public class ArrayFunctions {
 				"int-array", 
 				VncFunction
 					.meta()
-					.arglists("(int-array coll)")		
+					.arglists("(int-array coll)", "(int-array len)")		
 					.doc(
-						"Returns an array of Java ints containing the contents of coll")
+						"Returns an array of Java ints containing the contents of coll"
+							+ "or returns an array with the given length")
 					.examples(
 						"(int-array '(1I 2I 3I))",
-						"(int-array '(1I 2 3.2 3.56M))") 
+						"(int-array '(1I 2 3.2 3.56M))",
+						"(int-array 10") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
 				assertArity("int-array", args, 1);
 
-				final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+				final VncVal arg = args.first();
 				
-				final int[] arr = new int[list.size()];
-				
-				int ii=0;
-				for(VncVal v : list) {
-					if (v == Nil || !Types.isVncNumber(v)) {
-						throw new VncException(String.format(
-								"The value at pos %d in the collection is not a number",
-								ii));
-					}
-					arr[ii++] = Numeric.toInteger(v).getValue().intValue();
+				if (Types.isVncLong(arg)) {
+					return new VncJavaObject(new int[((VncLong)arg).getIntValue()]);
 				}
-				
-				return new VncJavaObject(arr);
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final int[] arr = new int[list.size()];
+					
+					int ii=0;
+					for(VncVal v : list) {
+						if (v == Nil || !Types.isVncNumber(v)) {
+							throw new VncException(String.format(
+									"The value at pos %d in the collection is not a number",
+									ii));
+						}
+						arr[ii++] = Numeric.toInteger(v).getValue().intValue();
+					}
+					
+					return new VncJavaObject(arr);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -372,32 +337,41 @@ public class ArrayFunctions {
 				"long-array", 
 				VncFunction
 					.meta()
-					.arglists("(long-array coll)")		
+					.arglists("(long-array coll)", "(long-array len)")		
 					.doc(
-						"Returns an array of Java longs containing the contents of coll")
+						"Returns an array of Java longs containing the contents of coll"
+							+ "or returns an array with the given length")
 					.examples(
 						"(long-array '(1 2 3))",
-						"(long-array '(1I 2 3.2 3.56M))") 
+						"(long-array '(1I 2 3.2 3.56M))",
+						"(long-array 10") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
 				assertArity("long-array", args, 1);
 
-				final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+				final VncVal arg = args.first();
 				
-				final long[] arr = new long[list.size()];
-				
-				int ii=0;
-				for(VncVal v : list) {
-					if (v == Nil || !Types.isVncNumber(v)) {
-						throw new VncException(String.format(
-								"The value at pos %d in the collection is not a number",
-								ii));
-					}
-					arr[ii++] = Numeric.toLong(v).getValue().longValue();
+				if (Types.isVncLong(arg)) {
+					return new VncJavaObject(new long[((VncLong)arg).getIntValue()]);
 				}
-				
-				return new VncJavaObject(arr);
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final long[] arr = new long[list.size()];
+					
+					int ii=0;
+					for(VncVal v : list) {
+						if (v == Nil || !Types.isVncNumber(v)) {
+							throw new VncException(String.format(
+									"The value at pos %d in the collection is not a number",
+									ii));
+						}
+						arr[ii++] = Numeric.toLong(v).getValue().longValue();
+					}
+					
+					return new VncJavaObject(arr);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -408,32 +382,41 @@ public class ArrayFunctions {
 				"float-array", 
 				VncFunction
 					.meta()
-					.arglists("(float-array coll)")		
+					.arglists("(float-array coll)", "(float-array len)")		
 					.doc(
-						"Returns an array of Java floats containing the contents of coll")
+						"Returns an array of Java floats containing the contents of coll"
+							+ "or returns an array with the given length")
 					.examples(
 						"(float-array '(1.0 2.0 3.0))",
-						"(float-array '(1I 2 3.2 3.56M))") 
+						"(float-array '(1I 2 3.2 3.56M))",
+						"(float-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
 				assertArity("float-array", args, 1);
-	
-				final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+
+				final VncVal arg = args.first();
 				
-				final float[] arr = new float[list.size()];
-				
-				int ii=0;
-				for(VncVal v : list) {
-					if (v == Nil || !Types.isVncNumber(v)) {
-						throw new VncException(String.format(
-								"The value at pos %d in the collection is not a number",
-								ii));
-					}
-					arr[ii++] = Numeric.toDouble(v).getValue().floatValue();
+				if (Types.isVncLong(arg)) {
+					return new VncJavaObject(new float[((VncLong)arg).getIntValue()]);
 				}
-				
-				return new VncJavaObject(arr);
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final float[] arr = new float[list.size()];
+					
+					int ii=0;
+					for(VncVal v : list) {
+						if (v == Nil || !Types.isVncNumber(v)) {
+							throw new VncException(String.format(
+									"The value at pos %d in the collection is not a number",
+									ii));
+						}
+						arr[ii++] = Numeric.toDouble(v).getValue().floatValue();
+					}
+					
+					return new VncJavaObject(arr);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -444,32 +427,41 @@ public class ArrayFunctions {
 				"double-array", 
 				VncFunction
 					.meta()
-					.arglists("(double-array coll)")		
+					.arglists("(double-array coll)", "(double-array len)")		
 					.doc(
-						"Returns an array of Java doubles containing the contents of coll")
+						"Returns an array of Java doubles containing the contents of coll"
+							+ "or returns an array with the given length")
 					.examples(
 						"(double-array '(1.0 2.0 3.0))",
-						"(double-array '(1I 2 3.2 3.56M))") 
+						"(double-array '(1I 2 3.2 3.56M))",
+						"(double-array 10)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
 				assertArity("double-array", args, 1);
-	
-				final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+
+				final VncVal arg = args.first();
 				
-				final double[] arr = new double[list.size()];
-				
-				int ii=0;
-				for(VncVal v : list) {
-					if (v == Nil || !Types.isVncNumber(v)) {
-						throw new VncException(String.format(
-								"The value at pos %d in the collection is not a number",
-								ii));
-					}
-					arr[ii++] = Numeric.toDouble(v).getValue().doubleValue();
+				if (Types.isVncLong(arg)) {
+					return new VncJavaObject(new double[((VncLong)arg).getIntValue()]);
 				}
-				
-				return new VncJavaObject(arr);
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final double[] arr = new double[list.size()];
+					
+					int ii=0;
+					for(VncVal v : list) {
+						if (v == Nil || !Types.isVncNumber(v)) {
+							throw new VncException(String.format(
+									"The value at pos %d in the collection is not a number",
+									ii));
+						}
+						arr[ii++] = Numeric.toDouble(v).getValue().doubleValue();
+					}
+					
+					return new VncJavaObject(arr);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -484,12 +476,8 @@ public class ArrayFunctions {
 			new VncHashMap.Builder()
 					.put("aget",			aget)
 					.put("aset",			aset)
-					.put("aset-string",		aset_string)
-					.put("aset-int",		aset_int)
-					.put("aset-long",		aset_long)
-					.put("aset-float",		aset_float)
-					.put("aset-double",		aset_double)
-					.put("to-array",		to_array)
+					.put("alength",			alength)
+					.put("object-array",	object_array)
 					.put("string-array",	string_array)
 					.put("int-array",		int_array)
 					.put("long-array",		long_array)

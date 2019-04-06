@@ -176,7 +176,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public int size() {
-		return ReflectionAccessor.getBeanGetterProperties(delegate).size();
+		return 0;
 	}
 
 	@Override
