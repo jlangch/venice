@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -115,5 +117,34 @@ public class ArrayFunctionsTest {
 		assertEquals(0L, venice.eval("(alength (object-array '()))"));
 		assertEquals(1L, venice.eval("(alength (object-array '(\"1\")))"));
 		assertEquals(5L, venice.eval("(alength (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
+	}
+
+	@Test
+	public void test_asub() {
+		final Venice venice = new Venice();
+
+		assertEquals("[3]",       Arrays.toString(((int[])venice.eval("(asub (int-array '(1I 2I 3I 4I 5I)) 2 1)"))));
+		assertEquals("[3, 4]",    Arrays.toString(((int[])venice.eval("(asub (int-array '(1I 2I 3I 4I 5I)) 2 2)"))));
+		assertEquals("[3, 4, 5]", Arrays.toString(((int[])venice.eval("(asub (int-array '(1I 2I 3I 4I 5I)) 2 3)"))));
+
+		assertEquals("[3]",       Arrays.toString(((long[])venice.eval("(asub (long-array '(1 2 3 4 5)) 2 1)"))));
+		assertEquals("[3, 4]",    Arrays.toString(((long[])venice.eval("(asub (long-array '(1 2 3 4 5)) 2 2)"))));
+		assertEquals("[3, 4, 5]", Arrays.toString(((long[])venice.eval("(asub (long-array '(1 2 3 4 5)) 2 3)"))));
+
+		assertEquals("[3.0]",           Arrays.toString(((float[])venice.eval("(asub (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 1)"))));
+		assertEquals("[3.0, 4.0]",      Arrays.toString(((float[])venice.eval("(asub (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 2)"))));
+		assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((float[])venice.eval("(asub (float-array '(1.0 2.0 3.0 4.0 5.0)) 2 3)"))));
+
+		assertEquals("[3.0]",           Arrays.toString(((double[])venice.eval("(asub (double-array '(1.0 2.0 3.0 4.0 5.0)) 2 1)"))));
+		assertEquals("[3.0, 4.0]",      Arrays.toString(((double[])venice.eval("(asub (double-array '(1.0 2.0 3.0 4.0 5.0)) 2 2)"))));
+		assertEquals("[3.0, 4.0, 5.0]", Arrays.toString(((double[])venice.eval("(asub (double-array '(1.0 2.0 3.0 4.0 5.0)) 2 3)"))));
+
+		assertEquals("[c]",       Arrays.toString(((String[])venice.eval("(asub (string-array '(\"a\" \"b\" \"c\" \"d\" \"e\")) 2 1)"))));
+		assertEquals("[c, d]",    Arrays.toString(((String[])venice.eval("(asub (string-array '(\"a\" \"b\" \"c\" \"d\" \"e\")) 2 2)"))));
+		assertEquals("[c, d, e]", Arrays.toString(((String[])venice.eval("(asub (string-array '(\"a\" \"b\" \"c\" \"d\" \"e\")) 2 3)"))));
+
+		assertEquals("[c]",       Arrays.toString(((Object[])venice.eval("(asub (object-array '(\"a\" \"b\" \"c\" \"d\" \"e\")) 2 1)"))));
+		assertEquals("[c, d]",    Arrays.toString(((Object[])venice.eval("(asub (object-array '(\"a\" \"b\" \"c\" \"d\" \"e\")) 2 2)"))));
+		assertEquals("[c, d, e]", Arrays.toString(((Object[])venice.eval("(asub (object-array '(\"a\" \"b\" \"c\" \"d\" \"e\")) 2 3)"))));
 	}
 }

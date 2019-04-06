@@ -649,9 +649,14 @@ public class ArrayFunctions {
 			final Class<?> componentType = delegateClass.getComponentType();
 
 			if (componentType == String.class) {
-				final String[] arr = (String[])delegate;				
+				final int[] arr = (int[])delegate;				
 				for(int ii=0; ii<arr.length; ii++) {
-				
+					if (ii>=MAX_TO_STRING_ITEMS) {
+						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
+						break;
+					}
+					if (ii>0) sb.append(", ");
+					sb.append("\"").append(arr[ii]).append("\"");
 				}
 			}
 			else if (componentType == int.class) {
