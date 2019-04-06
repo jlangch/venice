@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.functions.ArrayFunctions;
 import com.github.jlangch.venice.impl.javainterop.Invoker;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
@@ -42,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.IInvoker;
 
@@ -239,14 +241,20 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	@Override 
 	public String toString() {
-		return "Java object: " + delegate.toString();
+		return (isArray()) 
+					? ArrayFunctions.arrayToString(this)
+					: delegate.toString();
 	}
 
 	@Override
 	public String toString(final boolean print_readably) {
-		return delegate.toString();
+		return toString();
 	}
-	
+
+	public boolean isArray() {
+		return ReflectionTypes.isArrayType(delegate.getClass());
+	}
+
 
 	private VncHashMap convertBean() {
 		final VncHashMap.Builder builder = new VncHashMap.Builder();

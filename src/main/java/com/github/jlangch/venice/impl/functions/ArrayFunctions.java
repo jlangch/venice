@@ -638,7 +638,89 @@ public class ArrayFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static String arrayToString(final VncJavaObject val) {
+		if (val.isArray()) {
+			final StringBuilder sb = new StringBuilder("[");
 			
+			final Object delegate = val.getDelegate();
+			final Class<?> delegateClass = delegate.getClass();
+
+			final Class<?> componentType = delegateClass.getComponentType();
+
+			if (componentType == String.class) {
+				final String[] arr = (String[])delegate;				
+				for(int ii=0; ii<arr.length; ii++) {
+				
+				}
+			}
+			else if (componentType == int.class) {
+				final int[] arr = (int[])delegate;				
+				for(int ii=0; ii<arr.length; ii++) {
+					if (ii>=MAX_TO_STRING_ITEMS) {
+						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
+						break;
+					}
+					if (ii>0) sb.append(", ");
+					sb.append(arr[ii]);
+				}
+			}
+			else if (componentType == long.class) {
+				final long[] arr = (long[])delegate;				
+				for(int ii=0; ii<arr.length; ii++) {
+					if (ii>=MAX_TO_STRING_ITEMS) {
+						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
+						break;
+					}
+					if (ii>0) sb.append(", ");
+					sb.append(arr[ii]);
+				}
+			}
+			else if (componentType == float.class) {
+				final float[] arr = (float[])delegate;				
+				for(int ii=0; ii<arr.length; ii++) {
+					if (ii>=MAX_TO_STRING_ITEMS) {
+						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
+						break;
+					}
+					if (ii>0) sb.append(", ");
+					sb.append(arr[ii]);
+				}
+			}
+			else if (componentType == double.class) {
+				final double[] arr = (double[])delegate;				
+				for(int ii=0; ii<arr.length; ii++) {
+					if (ii>=MAX_TO_STRING_ITEMS) {
+						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
+						break;
+					}
+					if (ii>0) sb.append(", ");
+					sb.append(arr[ii]);
+				}
+			}
+			else {
+				final Object[] arr = (Object[])delegate;				
+				for(int ii=0; ii<arr.length; ii++) {
+					if (ii>=MAX_TO_STRING_ITEMS) {
+						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
+						break;
+					}
+					if (ii>0) sb.append(", ");
+					sb.append(arr[ii]);
+				}
+			}
+			
+			sb.append("]");
+			return sb.toString();
+		}
+		else {
+			throw new VncException(String.format("Not an array. Got %s", Types.getType(val)));
+		}
+	}
+	
+	
+	private static int MAX_TO_STRING_ITEMS = 20;
+	
 			
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
