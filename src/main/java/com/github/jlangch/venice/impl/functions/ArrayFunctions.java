@@ -262,7 +262,7 @@ public class ArrayFunctions {
 						"Returns an array of the given type and length")
 					.examples(
 						"(make-array :java.lang.Long 5)",
-						"(aset (make-array :java.lang.Integer 5) 3 9999)")
+						"(aset (make-array :java.lang.Long 5) 3 9999)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
