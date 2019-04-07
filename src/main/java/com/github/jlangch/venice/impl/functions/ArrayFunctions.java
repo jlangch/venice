@@ -76,22 +76,22 @@ public class ArrayFunctions {
 				final Class<?> componentType = delegateClass.getComponentType();
 
 				if (componentType == String.class) {
-					((String[])delegate)[idx.getValue()] = Coerce.toVncString(val).getValue();
+					Array.set(delegate, idx.getValue(), Coerce.toVncString(val).getValue());
 				}
 				else if (componentType == int.class) {
-					((int[])delegate)[idx.getValue()] = Numeric.toInteger(val).getValue();
+					Array.setInt(delegate, idx.getValue(), Numeric.toInteger(val).getValue());
 				}
 				else if (componentType == long.class) {
-					((long[])delegate)[idx.getValue()] = Numeric.toLong(val).getValue();
+					Array.setLong(delegate, idx.getValue(), Numeric.toLong(val).getValue());
 				}
 				else if (componentType == float.class) {
-					((float[])delegate)[idx.getValue()] = Numeric.toDouble(val).getValue().floatValue();
+					Array.setFloat(delegate, idx.getValue(), Numeric.toDouble(val).getValue().floatValue());
 				}
 				else if (componentType == double.class) {
-					((double[])delegate)[idx.getValue()] = Numeric.toDouble(val).getValue();
+					Array.setDouble(delegate, idx.getValue(), Numeric.toDouble(val).getValue());
 				}
 				else {
-					((Object[])delegate)[idx.getValue()] = val.convertToJavaObject();
+					Array.set(delegate, idx.getValue(), val.convertToJavaObject());
 				}
 				
 				return jo;
