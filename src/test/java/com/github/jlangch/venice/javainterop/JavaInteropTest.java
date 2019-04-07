@@ -63,7 +63,6 @@ public class JavaInteropTest {
 		assertTrue(Types.isVncJavaObject(val));
 		
 		final VncJavaObject javaObj = (VncJavaObject)val;
-		assertEquals(7, javaObj.size());
 		assertEquals("su", ((VncString)javaObj.get(new VncKeyword("principal"))).getValue());
 		assertEquals(2000L, ((VncLong)javaObj.get(new VncKeyword("elapsedTimeMillis"))).getValue().longValue());
 		assertEquals("ALERT", ((VncString)javaObj.get(new VncKeyword("eventType"))).getValue());

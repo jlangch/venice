@@ -265,7 +265,8 @@ public class ArrayFunctions {
 					.arglists("(acopy src src-pos dest dest-pos dest-len)")		
 					.doc(
 						"Copies an array from the src array, beginning at the" + 
-						"specified position, to the specified position of the dst array.")
+						"specified position, to the specified position of the dst array. " +
+						"Returns the modified desitination array")
 					.examples(
 						"(acopy (long-array '(1 2 3 4 5)) 2 (long-array 20) 10 3)")
 					.build()
@@ -321,7 +322,7 @@ public class ArrayFunctions {
 					System.arraycopy((Object[])delegateSrc, srcPos, (Object[])delegateDst, dstPos, dstLen);
 				}
 				
-				return Nil;
+				return args.nth(2);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -454,7 +455,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final int[] arr = new int[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Coerce.toVncInteger(args.second()).getValue());
+						Arrays.fill(arr, Numeric.toInteger(args.second()).getValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -507,7 +508,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final long[] arr = new long[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Coerce.toVncLong(args.second()).getValue());
+						Arrays.fill(arr, Numeric.toLong(args.second()).getValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -560,7 +561,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final float[] arr = new float[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Coerce.toVncDouble(args.second()).getValue().floatValue());
+						Arrays.fill(arr, Numeric.toDouble(args.second()).getValue().floatValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -613,7 +614,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final double[] arr = new double[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Coerce.toVncDouble(args.second()).getValue());
+						Arrays.fill(arr, Numeric.toDouble(args.second()).getValue());
 					}
 					return new VncJavaObject(arr);
 				}
