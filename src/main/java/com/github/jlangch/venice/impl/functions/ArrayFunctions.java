@@ -31,7 +31,6 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
-import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -54,10 +53,8 @@ public class ArrayFunctions {
 				VncFunction
 					.meta()
 					.arglists("(aset array idx val)")		
-					.doc(
-						"Sets the value at the index of an array")
-					.examples(
-						"(aset (long-array '(1 2 3 4 5)) 1 20)")
+					.doc("Sets the value at the index of an array")
+					.examples("(aset (long-array '(1 2 3 4 5)) 1 20)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -109,10 +106,8 @@ public class ArrayFunctions {
 					VncFunction
 						.meta()
 						.arglists("(aget array idx)")		
-						.doc(
-							"Returns the value at the index of an array of Java Objects")
-						.examples(
-							"(aget (long-array '(1 2 3 4 5)) 1)")
+						.doc("Returns the value at the index of an array of Java Objects")
+						.examples("(aget (long-array '(1 2 3 4 5)) 1)")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -122,34 +117,14 @@ public class ArrayFunctions {
 					final VncInteger idx = Numeric.toInteger(args.second());
 
 					final Object delegate = jo.getDelegate();
-					final Class<?> delegateClass = delegate.getClass();
 					
-					if (!ReflectionTypes.isArrayType(delegateClass)) {
+					if (!ReflectionTypes.isArrayType(delegate.getClass())) {
 						throw new VncException(String.format(
 								"The array argument (%s) is not an array",
 								Types.getType(jo)));
 					}
 
-					final Class<?> componentType = delegateClass.getComponentType();
-
-					if (componentType == String.class) {
-						return new VncString(((String[])delegate)[idx.getValue()]);
-					}
-					else if (componentType == int.class) {
-						return new VncInteger(((int[])delegate)[idx.getValue()]);
-					}
-					else if (componentType == long.class) {
-						return new VncLong(((long[])delegate)[idx.getValue()]);
-					}
-					else if (componentType == float.class) {
-						return new VncDouble(((float[])delegate)[idx.getValue()]);
-					}
-					else if (componentType == double.class) {
-						return new VncDouble(((double[])delegate)[idx.getValue()]);
-					}
-					else {
-						return JavaInteropUtil.convertToVncVal((((Object[])delegate)[idx.getValue()]));
-					}
+					return JavaInteropUtil.convertToVncVal(Array.get(delegate, idx.getValue()));
 				}
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
@@ -161,10 +136,8 @@ public class ArrayFunctions {
 					VncFunction
 						.meta()
 						.arglists("(alength array)")		
-						.doc(
-							"Returns the length of an array")
-						.examples(
-							"(alength (long-array '(1 2 3 4 5)))")
+						.doc("Returns the length of an array")
+						.examples("(alength (long-array '(1 2 3 4 5)))")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -173,34 +146,14 @@ public class ArrayFunctions {
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 	
 					final Object delegate = jo.getDelegate();
-					final Class<?> delegateClass = delegate.getClass();
 					
-					if (!ReflectionTypes.isArrayType(delegateClass)) {
+					if (!ReflectionTypes.isArrayType(delegate.getClass())) {
 						throw new VncException(String.format(
 								"The array argument (%s) is not an array",
 								Types.getType(jo)));
 					}
 
-					final Class<?> componentType = delegateClass.getComponentType();
-
-					if (componentType == String.class) {
-						return new VncLong(((String[])delegate).length);
-					}
-					else if (componentType == int.class) {
-						return new VncLong(((int[])delegate).length);
-					}
-					else if (componentType == long.class) {
-						return new VncLong(((long[])delegate).length);
-					}
-					else if (componentType == float.class) {
-						return new VncLong(((float[])delegate).length);
-					}
-					else if (componentType == double.class) {
-						return new VncLong(((double[])delegate).length);
-					}
-					else {
-						return new VncLong(((Object[])delegate).length);
-					}
+					return new VncLong(Array.getLength(delegate));
 				}
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
@@ -212,10 +165,8 @@ public class ArrayFunctions {
 					VncFunction
 						.meta()
 						.arglists("(asub array start len)")		
-						.doc(
-							"Returns a sub array")
-						.examples(
-							"(asub (long-array '(1 2 3 4 5)) 2 3)")
+						.doc("Returns a sub array")
+						.examples("(asub (long-array '(1 2 3 4 5)) 2 3)")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
@@ -236,24 +187,10 @@ public class ArrayFunctions {
 	
 					final Class<?> componentType = delegateClass.getComponentType();
 	
-					if (componentType == String.class) {
-						return new VncJavaObject(Arrays.copyOfRange((String[])delegate, start, start + len));
-					}
-					else if (componentType == int.class) {
-						return new VncJavaObject(Arrays.copyOfRange((int[])delegate, start, start + len));
-					}
-					else if (componentType == long.class) {
-						return new VncJavaObject(Arrays.copyOfRange((long[])delegate, start, start + len));
-					}
-					else if (componentType == float.class) {
-						return new VncJavaObject(Arrays.copyOfRange((float[])delegate, start, start + len));
-					}
-					else if (componentType == double.class) {
-						return new VncJavaObject(Arrays.copyOfRange((double[])delegate, start, start + len));
-					}
-					else {
-						return new VncJavaObject(Arrays.copyOfRange((Object[])delegate, start, start + len));
-					}
+					
+					final Object arr = Array.newInstance(componentType, len);
+					System.arraycopy(delegate, start, arr, 0, len);
+					return new VncJavaObject(arr);
 				}
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
@@ -264,7 +201,8 @@ public class ArrayFunctions {
 				"acopy", 
 				VncFunction
 					.meta()
-					.arglists("(acopy src src-pos dest dest-pos dest-len)")		
+					.arglists(
+						"(acopy src src-pos dest dest-pos dest-len)")		
 					.doc(
 						"Copies an array from the src array, beginning at the" + 
 						"specified position, to the specified position of the dst array. " +
@@ -305,24 +243,7 @@ public class ArrayFunctions {
 					throw new VncException("Source and destination array are not from the sane type");
 				}
 
-				if (srcCcomponentType == String.class) {
-					System.arraycopy((String[])delegateSrc, srcPos, (String[])delegateDst, dstPos, dstLen);
-				}
-				else if (srcCcomponentType == int.class) {
-					System.arraycopy((int[])delegateSrc, srcPos, (int[])delegateDst, dstPos, dstLen);
-				}
-				else if (srcCcomponentType == long.class) {
-					System.arraycopy((long[])delegateSrc, srcPos, (long[])delegateDst, dstPos, dstLen);
-				}
-				else if (srcCcomponentType == float.class) {
-					System.arraycopy((float[])delegateSrc, srcPos, (float[])delegateDst, dstPos, dstLen);
-				}
-				else if (srcCcomponentType == double.class) {
-					System.arraycopy((double[])delegateSrc, srcPos, (double[])delegateDst, dstPos, dstLen);
-				}
-				else {
-					System.arraycopy((Object[])delegateSrc, srcPos, (Object[])delegateDst, dstPos, dstLen);
-				}
+				System.arraycopy(delegateSrc, srcPos, delegateDst, dstPos, dstLen);
 				
 				return args.nth(2);
 			}
@@ -338,10 +259,10 @@ public class ArrayFunctions {
 					.arglists(
 						"(make-array type len)")		
 					.doc(
-						"Returns an array ")
+						"Returns an array of the given type and length")
 					.examples(
-						"(make-array :java.lang.Integer 5)",
-						"(aset (make-array :java.lang.Integer 5) 3 99I)")
+						"(make-array :java.lang.Long 5)",
+						"(aset (make-array :java.lang.Integer 5) 3 9999)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -349,6 +270,10 @@ public class ArrayFunctions {
 
 				final String className = Coerce.toVncKeyword(args.first()).getValue();
 				final int len = Numeric.toInteger(args.second()).getValue();
+
+				if (className.startsWith("venice.")) {
+					throw new VncException("make-array does not support Venice data types");
+				}
 
 				return new VncJavaObject(
 								Array.newInstance(
@@ -370,7 +295,7 @@ public class ArrayFunctions {
 						"(object-array len init-val)")		
 					.doc(
 						"Returns an array of Java Objects containing the contents of coll "
-								+ "or returns an array with the given length")
+							+ "or returns an array with the given length")
 					.examples(
 						"(object-array '(1 2 3 4 5))",
 						"(object-array '(1 2.0 3.45M \"4\" true))",
@@ -469,7 +394,7 @@ public class ArrayFunctions {
 						"(int-array len)", 
 						"(int-array len init-val)")		
 					.doc(
-						"Returns an array of Java ints containing the contents of coll"
+						"Returns an array of Java primitive ints containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(int-array '(1I 2I 3I))",
@@ -522,7 +447,7 @@ public class ArrayFunctions {
 						"(long-array len)", 
 						"(long-array len init-val)")		
 					.doc(
-						"Returns an array of Java longs containing the contents of coll"
+						"Returns an array of Java primitive longs containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(long-array '(1 2 3))",
@@ -575,7 +500,7 @@ public class ArrayFunctions {
 						"(float-array len)", 
 						"(float-array len init-val)")		
 					.doc(
-						"Returns an array of Java floats containing the contents of coll"
+						"Returns an array of Java primitive floats containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(float-array '(1.0 2.0 3.0))",
@@ -628,13 +553,13 @@ public class ArrayFunctions {
 						"(double-array len)", 
 						"(double-array len init-val)")		
 					.doc(
-						"Returns an array of Java doubles containing the contents of coll"
+						"Returns an array of Java primitive doubles containing the contents of coll"
 							+ "or returns an array with the given length")
 					.examples(
 						"(double-array '(1.0 2.0 3.0))",
 						"(double-array '(1I 2 3.2 3.56M))",
 						"(double-array 10)",
-						"(float-array 10 42.0)") 
+						"(double-array 10 42.0)") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
@@ -676,75 +601,15 @@ public class ArrayFunctions {
 			final StringBuilder sb = new StringBuilder("[");
 			
 			final Object delegate = val.getDelegate();
-			final Class<?> delegateClass = delegate.getClass();
 
-			final Class<?> componentType = delegateClass.getComponentType();
-
-			if (componentType == String.class) {
-				final String[] arr = (String[])delegate;				
-				for(int ii=0; ii<arr.length; ii++) {
-					if (ii>=MAX_TO_STRING_ITEMS) {
-						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
-						break;
-					}
-					if (ii>0) sb.append(", ");
-					sb.append("\"").append(arr[ii]).append("\"");
+			final int length = Array.getLength(delegate);
+			for(int ii=0; ii<length; ii++) {
+				if (ii>=MAX_TO_STRING_ITEMS) {
+					sb.append(String.format(", ... (%d more)", length - MAX_TO_STRING_ITEMS));
+					break;
 				}
-			}
-			else if (componentType == int.class) {
-				final int[] arr = (int[])delegate;				
-				for(int ii=0; ii<arr.length; ii++) {
-					if (ii>=MAX_TO_STRING_ITEMS) {
-						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
-						break;
-					}
-					if (ii>0) sb.append(", ");
-					sb.append(arr[ii]);
-				}
-			}
-			else if (componentType == long.class) {
-				final long[] arr = (long[])delegate;				
-				for(int ii=0; ii<arr.length; ii++) {
-					if (ii>=MAX_TO_STRING_ITEMS) {
-						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
-						break;
-					}
-					if (ii>0) sb.append(", ");
-					sb.append(arr[ii]);
-				}
-			}
-			else if (componentType == float.class) {
-				final float[] arr = (float[])delegate;				
-				for(int ii=0; ii<arr.length; ii++) {
-					if (ii>=MAX_TO_STRING_ITEMS) {
-						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
-						break;
-					}
-					if (ii>0) sb.append(", ");
-					sb.append(arr[ii]);
-				}
-			}
-			else if (componentType == double.class) {
-				final double[] arr = (double[])delegate;				
-				for(int ii=0; ii<arr.length; ii++) {
-					if (ii>=MAX_TO_STRING_ITEMS) {
-						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
-						break;
-					}
-					if (ii>0) sb.append(", ");
-					sb.append(arr[ii]);
-				}
-			}
-			else {
-				final Object[] arr = (Object[])delegate;				
-				for(int ii=0; ii<arr.length; ii++) {
-					if (ii>=MAX_TO_STRING_ITEMS) {
-						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
-						break;
-					}
-					if (ii>0) sb.append(", ");
-					sb.append(arr[ii]);
-				}
+				if (ii>0) sb.append(", ");
+				sb.append(JavaInteropUtil.convertToVncVal(Array.get(delegate,ii)));
 			}
 			
 			sb.append("]");

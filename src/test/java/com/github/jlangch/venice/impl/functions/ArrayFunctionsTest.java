@@ -304,4 +304,35 @@ public class ArrayFunctionsTest {
 		assertEquals("[]",              Arrays.toString(((Object[])venice.eval("(object-array 0 \"-\")"))));
 		assertEquals("[-, -, -, -, -]", Arrays.toString(((Object[])venice.eval("(object-array 5 \"-\")"))));
 	}
+	
+	@Test
+	public void test_str() {
+		final Venice venice = new Venice();
+
+		assertEquals("[]", venice.eval("(str (int-array '()))"));
+		assertEquals("[1I]", venice.eval("(str (int-array '(1I)))"));
+		assertEquals("[1I, 2I, 3I, 4I, 5I]", venice.eval("(str (int-array '(1I 2I 3I 4I 5I)))"));
+
+		assertEquals("[]", venice.eval("(str (long-array '()))"));
+		assertEquals("[1]", venice.eval("(str (long-array '(1)))"));
+		assertEquals("[1, 2, 3, 4, 5]", venice.eval("(str (long-array '(1 2 3 4 5)))"));
+
+		assertEquals("[]", venice.eval("(str (float-array '()))"));
+		assertEquals("[1.0]", venice.eval("(str (float-array '(1.0)))"));
+		assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0]", venice.eval("(str (float-array '(1.0 2.0 3.0 4.0 5.0)))"));
+
+		assertEquals("[]", venice.eval("(str (double-array '()))"));
+		assertEquals("[1.0]", venice.eval("(str (double-array '(1.0)))"));
+		assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0]", venice.eval("(str (double-array '(1.0 2.0 3.0 4.0 5.0)))"));
+
+		assertEquals("[]", venice.eval("(str (string-array '()))"));
+		assertEquals("[\"1\"]", venice.eval("(str (string-array '(\"1\")))"));
+		assertEquals("[\"1\", \"2\", \"3\", \"4\", \"5\"]", venice.eval("(str (string-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
+
+		assertEquals("[]", venice.eval("(str (object-array '()))"));
+		assertEquals("[\"1\"]", venice.eval("(str (object-array '(\"1\")))"));
+		assertEquals("[\"1\", \"2\", \"3\", \"4\", \"5\"]", venice.eval("(str (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
+
+		assertEquals("[nil, nil, nil, nil, nil]", venice.eval("(str (make-array :java.lang.Integer 5))"));
+	}
 }

@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ...
+- added support for raw Java array data types. E.g.: `(long-array '(1 2 3))`
 
 
 
