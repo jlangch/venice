@@ -59,6 +59,10 @@ public class ArrayFunctionsTest {
 		assertEquals("20", ((Object[])venice.eval("(aset (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")) 0 \"20\")"))[0]);
 		assertEquals("20", ((Object[])venice.eval("(aset (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")) 1 \"20\")"))[1]);
 		assertEquals("20", ((Object[])venice.eval("(aset (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")) 4 \"20\")"))[4]);
+
+		assertEquals(99, ((Integer[])venice.eval("(aset (make-array :java.lang.Integer 5) 3 99I)"))[3]);
+		assertEquals(99.0D, ((Double[])venice.eval("(aset (make-array :java.lang.Double 5) 3 99.0)"))[3]);
+		assertEquals("99", ((String[])venice.eval("(aset (make-array :java.lang.String 5) 3 \"99\")"))[3]);
 	}
 
 	@Test
@@ -88,6 +92,8 @@ public class ArrayFunctionsTest {
 		assertEquals("1", venice.eval("(aget (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")) 0)"));
 		assertEquals("2", venice.eval("(aget (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")) 1)"));
 		assertEquals("5", venice.eval("(aget (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")) 4)"));
+
+		assertEquals(null, venice.eval("(aget (make-array :java.lang.Integer 5) 0)"));
 	}
 
 	@Test
@@ -117,6 +123,8 @@ public class ArrayFunctionsTest {
 		assertEquals(0L, venice.eval("(alength (object-array '()))"));
 		assertEquals(1L, venice.eval("(alength (object-array '(\"1\")))"));
 		assertEquals(5L, venice.eval("(alength (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
+
+		assertEquals(5L, venice.eval("(alength (make-array :java.lang.Integer 5))"));
 	}
 
 	@Test

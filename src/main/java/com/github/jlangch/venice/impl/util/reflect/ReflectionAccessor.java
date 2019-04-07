@@ -844,6 +844,15 @@ public class ReflectionAccessor {
 				return ((ByteBuffer)arg).array();
 			}
 		}
+		else {
+			if (ReflectionTypes.isArrayType(arg.getClass())) {
+				final Class<?> argComponentType = arg.getClass().getComponentType();
+			
+				if (componentType == argComponentType) {	
+					return arg;
+				}
+			}
+		}
 		
 		if (ReflectionTypes.isListOrSet(arg.getClass())) {
 			final int size = ((Collection<?>)arg).size();

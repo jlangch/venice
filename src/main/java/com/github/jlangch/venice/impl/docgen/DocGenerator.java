@@ -532,6 +532,7 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
+		create.addItem(getDocItem("make-array"));
 		create.addItem(getDocItem("object-array"));
 		create.addItem(getDocItem("string-array"));
 		create.addItem(getDocItem("int-array"));

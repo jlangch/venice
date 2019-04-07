@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 public class ArrayFunctions {
@@ -323,6 +325,35 @@ public class ArrayFunctions {
 				}
 				
 				return args.nth(2);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction make_array = 
+		new VncFunction(
+				"make-array", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(make-array type len)")		
+					.doc(
+						"Returns an array ")
+					.examples(
+						"(make-array :java.lang.Integer 5)",
+						"(aset (make-array :java.lang.Integer 5) 3 99I)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {			
+				assertArity("make-array", args, 2);
+
+				final String className = Coerce.toVncKeyword(args.first()).getValue();
+				final int len = Numeric.toInteger(args.second()).getValue();
+
+				return new VncJavaObject(
+								Array.newInstance(
+										ReflectionUtil.classForName(className), 
+										len));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -650,7 +681,7 @@ public class ArrayFunctions {
 			final Class<?> componentType = delegateClass.getComponentType();
 
 			if (componentType == String.class) {
-				final int[] arr = (int[])delegate;				
+				final String[] arr = (String[])delegate;				
 				for(int ii=0; ii<arr.length; ii++) {
 					if (ii>=MAX_TO_STRING_ITEMS) {
 						sb.append(String.format(", ... (%d more)", arr.length - MAX_TO_STRING_ITEMS));
@@ -739,6 +770,7 @@ public class ArrayFunctions {
 					.put("alength",			alength)
 					.put("asub",			asub)
 					.put("acopy",			acopy)
+					.put("make-array",		make_array)
 					.put("object-array",	object_array)
 					.put("string-array",	string_array)
 					.put("int-array",		int_array)
