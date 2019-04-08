@@ -204,9 +204,9 @@ public class ArrayFunctions {
 					.arglists(
 						"(acopy src src-pos dest dest-pos dest-len)")		
 					.doc(
-						"Copies an array from the src array, beginning at the" + 
-						"specified position, to the specified position of the dst array. " +
-						"Returns the modified desitination array")
+						"Copies an array from the src array, beginning at the " + 
+						"specified position, to the specified position of the dest array. " +
+						"Returns the modified destination array")
 					.examples(
 						"(acopy (long-array '(1 2 3 4 5)) 2 (long-array 20) 10 3)")
 					.build()
@@ -295,7 +295,7 @@ public class ArrayFunctions {
 						"(object-array len init-val)")		
 					.doc(
 						"Returns an array of Java Objects containing the contents of coll "
-							+ "or returns an array with the given length")
+							+ "or returns an array with the given length and optional init value")
 					.examples(
 						"(object-array '(1 2 3 4 5))",
 						"(object-array '(1 2.0 3.45M \"4\" true))",
@@ -342,8 +342,8 @@ public class ArrayFunctions {
 						"(string-array len)", 
 						"(string-array len init-val)")		
 					.doc(
-						"Returns an array of Java strings containing the contents of coll"
-							+ "or returns an array with the given length")
+						"Returns an array of Java strings containing the contents of coll "
+							+ "or returns an array with the given length and optional init value")
 					.examples(
 						"(string-array '(\"1\" \"2\" \"3\"))",
 						"(string-array 10)",
@@ -394,8 +394,8 @@ public class ArrayFunctions {
 						"(int-array len)", 
 						"(int-array len init-val)")		
 					.doc(
-						"Returns an array of Java primitive ints containing the contents of coll"
-							+ "or returns an array with the given length")
+						"Returns an array of Java primitive ints containing the contents of coll "
+							+ "or returns an array with the given length and optional init value")
 					.examples(
 						"(int-array '(1I 2I 3I))",
 						"(int-array '(1I 2 3.2 3.56M))",
@@ -447,8 +447,8 @@ public class ArrayFunctions {
 						"(long-array len)", 
 						"(long-array len init-val)")		
 					.doc(
-						"Returns an array of Java primitive longs containing the contents of coll"
-							+ "or returns an array with the given length")
+						"Returns an array of Java primitive longs containing the contents of coll "
+							+ "or returns an array with the given length and optional init value")
 					.examples(
 						"(long-array '(1 2 3))",
 						"(long-array '(1I 2 3.2 3.56M))",
@@ -500,8 +500,8 @@ public class ArrayFunctions {
 						"(float-array len)", 
 						"(float-array len init-val)")		
 					.doc(
-						"Returns an array of Java primitive floats containing the contents of coll"
-							+ "or returns an array with the given length")
+						"Returns an array of Java primitive floats containing the contents of coll "
+							+ "or returns an array with the given length and optional init value")
 					.examples(
 						"(float-array '(1.0 2.0 3.0))",
 						"(float-array '(1I 2 3.2 3.56M))",
@@ -553,8 +553,8 @@ public class ArrayFunctions {
 						"(double-array len)", 
 						"(double-array len init-val)")		
 					.doc(
-						"Returns an array of Java primitive doubles containing the contents of coll"
-							+ "or returns an array with the given length")
+						"Returns an array of Java primitive doubles containing the contents of coll "
+							+ "or returns an array with the given length and optional init value")
 					.examples(
 						"(double-array '(1.0 2.0 3.0))",
 						"(double-array '(1I 2 3.2 3.56M))",
