@@ -22,12 +22,14 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
@@ -257,28 +259,44 @@ public class ArrayFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(make-array type len)")		
+						"(make-array type len)",		
+						"(make-array type dim &more-dims)")		
 					.doc(
 						"Returns an array of the given type and length")
 					.examples(
-						"(make-array :java.lang.Long 5)",
+						"(str (make-array :long 5))",
+						"(str (make-array :java.lang.Long 5))",
+						"(str (make-array :long 2 3))",
 						"(aset (make-array :java.lang.Long 5) 3 9999)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("make-array", args, 2);
+				assertMinArity("make-array", args, 2);
 
 				final String className = Coerce.toVncKeyword(args.first()).getValue();
-				final int len = Numeric.toInteger(args.second()).getValue();
-
+				
 				if (className.startsWith("venice.")) {
 					throw new VncException("make-array does not support Venice data types");
 				}
+				
+				if (args.size() == 2) {
+					final int len = Numeric.toInteger(args.second()).getValue();
 
-				return new VncJavaObject(
-								Array.newInstance(
-										ReflectionUtil.classForName(className), 
-										len));
+					return new VncJavaObject(Array.newInstance(classForName(className), len));
+				}
+				else {
+					final List<Integer> dimensions = args.slice(1)
+														 .getList()
+														 .stream()
+														 .map(v -> Numeric.toInteger(v).getValue())
+														 .collect(Collectors.toList());
+					
+					final int[] dim = new int[dimensions.size()];
+					for(int ii=0; ii<dimensions.size(); ii++) {
+						dim[ii] = dimensions.get(ii);
+					}
+					return new VncJavaObject(Array.newInstance(classForName(className), dim));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -617,6 +635,18 @@ public class ArrayFunctions {
 		}
 		else {
 			throw new VncException(String.format("Not an array. Got %s", Types.getType(val)));
+		}
+	}
+	
+	private static Class<?> classForName(final String className) {
+		switch(className) {
+			case "byte": return byte.class;
+			case "short": return short.class;
+			case "int": return int.class;
+			case "long": return long.class;
+			case "float": return float.class;
+			case "double": return double.class;
+			default: return ReflectionUtil.classForName(className);
 		}
 	}
 	
