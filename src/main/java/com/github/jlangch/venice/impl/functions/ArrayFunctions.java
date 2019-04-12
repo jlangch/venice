@@ -126,7 +126,13 @@ public class ArrayFunctions {
 								Types.getType(jo)));
 					}
 
-					return JavaInteropUtil.convertToVncVal(Array.get(delegate, idx.getValue()));
+					final Object val = Array.get(delegate, idx.getValue());
+					if (val != null && ReflectionTypes.isArrayType(val.getClass())) {
+						return new VncJavaObject(val);
+					}
+					else {
+						return JavaInteropUtil.convertToVncVal(val);
+					}
 				}
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
@@ -640,13 +646,15 @@ public class ArrayFunctions {
 	
 	private static Class<?> classForName(final String className) {
 		switch(className) {
-			case "byte": return byte.class;
-			case "short": return short.class;
-			case "int": return int.class;
-			case "long": return long.class;
-			case "float": return float.class;
-			case "double": return double.class;
-			default: return ReflectionUtil.classForName(className);
+			case "byte":	return byte.class;
+			case "char":	return char.class;
+			case "boolean":	return boolean.class;
+			case "short":	return short.class;
+			case "int":		return int.class;
+			case "long":	return long.class;
+			case "float":	return float.class;
+			case "double":	return double.class;
+			default:		return ReflectionUtil.classForName(className);
 		}
 	}
 	

@@ -312,6 +312,7 @@ public class ArrayFunctionsTest {
 		assertEquals("[0, 0, 0, 0, 0]", Arrays.toString((long[])venice.eval("(make-array :long 5)")));
 		assertEquals("[null, null, null, null, null]", Arrays.toString((Long[])venice.eval("(make-array :java.lang.Long 5)")));
 		assertEquals("[[0 0 0], [0 0 0]]", venice.eval("(str (make-array :long 2 3))"));
+		assertEquals("[[0 0 0], [0 9 0]]", venice.eval("(str (let [arr (make-array :long 2 3)] (aset (aget arr 1) 1 9) arr))"));
 	}
 	
 	@Test
