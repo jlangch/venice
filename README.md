@@ -686,6 +686,8 @@ object types byte, short, int, long, float, double, Byte, Short, Integer, Long,
 Float, Double, and BigDecimal.
 
 
+### Calling Java
+
 ```clojure
 (do
    (import :java.math.BigInteger)
@@ -741,14 +743,16 @@ can be sorted and java types can be used with sets and maps.
 ```
 
 
-Java VarArgs:
+### Java VarArgs
 
 ```clojure
 (. :java.lang.String :format "%s: %d" ["abc" 100])
 ```
 
 
-Exception handling
+### Exception handling
+
+try - catch - finally
 
 ```clojure
 (do
@@ -770,7 +774,7 @@ Exception handling
 ```
 
 
-Try with resources
+try with resources
 
 ```clojure
 (do
@@ -782,7 +786,7 @@ Try with resources
         (io/slurp-stream is :binary false))))
 ```
 
-Java Callbacks:
+### Java Callbacks
 
 ```clojure
 ;; File filter
@@ -825,7 +829,7 @@ Java Callbacks:
 ```
 
 
-Mixing Venice functions with Java streams:
+### Mixing Venice functions with Java streams:
 
 ```clojure
 (do
