@@ -419,8 +419,7 @@ Immutable persistent sorted map.
 
 ### Multimethods
 
-Multimethods are a simple yet powerful mechanism for runtime polymorphism.
-They allow simple strategy pattern implementations as an example.
+Multimethods are a powerful mechanism for runtime polymorphism.
 
 ```clojure
 (do
