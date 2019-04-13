@@ -774,7 +774,7 @@ try - catch - finally
 ```
 
 
-try with resources
+try-with resources
 
 ```clojure
 (do
