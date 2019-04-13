@@ -417,6 +417,27 @@ Immutable persistent sorted map.
 ```
 
 
+### Multimethods
+
+Multimethods are a simple yet powerful mechanism for runtime polymorphism.
+They allow simple strategy pattern implementations as an example.
+
+```clojure
+(do
+  ; defmulti with dispatch function 
+  (defmulti math-strategy (fn [s] (:op s)))
+
+  ; defmethod provides a function implementation for a particular dispatch value 
+  (defmethod math-strategy "add" [s] (+ (:op1 s) (:op2 s)))
+  (defmethod math-strategy "subtract" [s] (- (:op1 s) (:op2 s)))
+  (defmethod math-strategy :default [s] 0)
+
+  [ (math-strategy {:op "add"      :op1 1 :op2 5}) 
+    (math-strategy {:op "subtract" :op1 1 :op2 5}) 
+    (math-strategy {:op "bogus"    :op1 1 :op2 5}) ] )
+```
+
+
 ### Stack traces
 
 Venice generates user friendly stack traces
