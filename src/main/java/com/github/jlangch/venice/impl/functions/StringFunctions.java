@@ -28,10 +28,12 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -591,21 +593,27 @@ public class StringFunctions {
 				"str/format", 
 				VncFunction
 					.meta()
-					.arglists("(str/format format args*)")		
+					.arglists(
+						"(str/format format args*)",
+						"(str/format locale format args*)")		
 					.doc("Returns a formatted string using the specified format string and arguments.")
-					.examples("(str/format \"%s: %d\" \"abc\" 100)")
+					.examples(
+						"(str/format \"value: %.4f\" 1.45)",
+						"(str/format (. :java.util.Locale :new \"de\" \"DE\") \"value: %.4f\" 1.45)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				final VncString fmt = (VncString)args.first();
-				final List<Object> fmtArgs = args
-											.rest()
-											.getList()
-											.stream()
-											.map(v -> v.convertToJavaObject())
-											.collect(Collectors.toList());
-				
-				return new VncString(String.format(fmt.getValue(), fmtArgs.toArray()));
+				if (Types.isVncJavaObject(args.first(), Locale.class)) {
+					final Locale locale = (Locale)((VncJavaObject)args.first()).getDelegate();
+					final VncString fmt = (VncString)args.second();
+					final VncList fmtArgs = args.slice(2);
+					return new VncString(String.format(locale, fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
+				}
+				else {
+					final VncString fmt = (VncString)args.first();
+					final VncList fmtArgs = args.rest();
+					return new VncString(String.format(fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
+				}			
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -811,7 +819,15 @@ public class StringFunctions {
 		};
 
 	
+	private static List<Object> toJavaObjects(final VncList list) {
+		return list
+				.getList()
+				.stream()
+				.map(v -> v.convertToJavaObject())
+				.collect(Collectors.toList());
+	}
 	
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
