@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added support for raw Java array data types. E.g.: `(long-array '(1 2 3))`
 - added locale support for `str/format` function
 
+### fixed
+
+- fixed unit tests for Java 11
+
 
 
 ## [1.4.2] - 2019-04-04
