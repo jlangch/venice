@@ -47,12 +47,14 @@ public class CodeSnippetReader {
 			for(int ii=0; ii<snippetStartLines.size()-1; ii++) {
 				snippets.add(
 						new CodeSnippet(
-								lines.get(snippetStartLines.get(ii)).substring(2),
-								lines
-									.subList(snippetStartLines.get(ii)+1, snippetStartLines.get(ii+1))
-									.stream()
-									.collect(Collectors.joining("\n"))
-									.trim()));
+								lines.get(snippetStartLines.get(ii))
+								     .substring(2),
+								lines.subList(
+										snippetStartLines.get(ii)+1, 
+										snippetStartLines.get(ii+1))
+									 .stream()
+									 .collect(Collectors.joining("\n"))
+									 .trim()));
 			}
 
 			return snippets;
