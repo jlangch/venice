@@ -1,5 +1,12 @@
 ;; Venice core macros & functions
 
+(import :java.lang.RuntimeException)
+(import :com.github.jlangch.venice.VncException)
+(import :com.github.jlangch.venice.AssertionException)
+(import :com.github.jlangch.venice.ShellException)
+(import :com.github.jlangch.venice.impl.types.concurrent.Delay)
+(import :com.github.jlangch.venice.util.CapturingPrintStream)
+
 (defmacro
    ^{ :arglists '("(comment & body)")
       :doc "Ignores body, yields nil"
@@ -19,11 +26,11 @@
 
    `(if ~message
        (when-not ~expr
-           (throw (. :com.github.jlangch.venice.AssertionException
+           (throw (. :AssertionException
                      :new
                      (str "Assert failed (" ~message "): " (pr-str '~expr)))))
        (when-not ~expr
-           (throw (. :com.github.jlangch.venice.AssertionException
+           (throw (. :AssertionException
                      :new
                      (str "Assert failed: " (pr-str '~expr)))))))
 
@@ -267,7 +274,7 @@
               (map? form) (count-pos (mapcat concat form))
               :otherwise 0)]
       (cond
-         (not (== c 1))   (throw (. :com.github.jlangch.venice.VncException :new "-<> macro: one position per form is required."))
+         (not (== c 1))   (throw (. :VncException :new "-<> macro: one position per form is required."))
          (symbol? form)   `(~form ~x)
          (vector? form)   (substitute-pos form)
          (map? form)      (apply hash-map (mapcat substitute-pos form))
@@ -427,7 +434,7 @@
 
    `(do
       (when-not (io/exists-dir? (io/file ~dir))
-         (throw (. :com.github.jlangch.venice.ShellException
+         (throw (. :ShellException
                    :new
                    (str/format "The dir '%s' does not exist" ~dir))))
       (binding [*sh-dir* ~dir] (do ~@forms))))
@@ -461,7 +468,7 @@
    with-out-str [& forms]
 
    `(do
-      (binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
+      (binding [*out* (. :CapturingPrintStream :create)]
          (do ~@forms)
          (. *out* :getOutput))))
 
@@ -473,7 +480,7 @@
 
    delay [& body]
 
-   `(. :com.github.jlangch.venice.impl.types.concurrent.Delay :new (fn [] (do ~@body))))
+   `(. :Delay :new (fn [] (do ~@body))))
 
 
 (defn
@@ -595,3 +602,25 @@
                (let [ret (apply f args)]
                   (swap! mem_ assoc args ret)
                   ret)))))
+
+
+(defn
+  ^{ :arglists '("(runtime-exception msg)" "(runtime-exception msg ex)")
+     :doc "Creates a java.lang.RuntimeException"
+     :examples '("""(throw (runtime-exception "test"))""") }
+
+   runtime-exception
+
+   ([msg] (. :RuntimeException :new msg))
+   ([msg ex] (. :RuntimeException :new msg ex)))
+
+
+(defn
+  ^{ :arglists '("(venice-exception msg)" "(venice-exception msg ex)")
+     :doc "Creates a com.github.jlangch.venice.VncException"
+     :examples '("""(throw (venice-exception "test"))""") }
+
+   venice-exception
+
+   ([msg] (. :VncException :new msg))
+   ([msg ex] (. :VncException :new msg ex)))
