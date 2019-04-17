@@ -599,7 +599,10 @@ public class StringFunctions {
 					.doc("Returns a formatted string using the specified format string and arguments.")
 					.examples(
 						"(str/format \"value: %.4f\" 1.45)",
-						"(str/format (. :java.util.Locale :new \"de\" \"DE\") \"value: %.4f\" 1.45)")
+						"(str/format (. :java.util.Locale :new \"de\" \"DE\") \"value: %.4f\" 1.45)",
+						"(str/format (. :java.util.Locale :GERMANY) \"value: %.4f\" 1.45)",
+						"(str/format [ \"de\"] \"value: %.4f\" 1.45)",
+						"(str/format [ \"de\" \"DE\"] \"value: %.4f\" 1.45)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -608,6 +611,33 @@ public class StringFunctions {
 					final VncString fmt = (VncString)args.second();
 					final VncList fmtArgs = args.slice(2);
 					return new VncString(String.format(locale, fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
+				}
+				else if (Types.isVncSequence(args.first())) {
+					final VncSequence localeSeq = (VncSequence)args.first();
+					final String fmt = Coerce.toVncString(args.second()).getValue();
+					final Object[] fmtArgs = toJavaObjects(args.slice(2)).toArray();
+					switch (localeSeq.size()) {
+						case 0:
+							return new VncString(String.format(fmt, fmtArgs));
+						case 1:
+							// language
+							final Locale locale1 = new Locale(
+														Coerce.toVncString(localeSeq.first()).getValue());
+							return new VncString(String.format(locale1, fmt, fmtArgs));
+						case 2:
+							// language, country
+							final Locale locale2 = new Locale(
+														Coerce.toVncString(localeSeq.first()).getValue(),
+														Coerce.toVncString(localeSeq.second()).getValue());
+							return new VncString(String.format(locale2, fmt, fmtArgs));
+						default:
+							// language, country, variant
+							final Locale locale3 = new Locale(
+														Coerce.toVncString(localeSeq.first()).getValue(),
+														Coerce.toVncString(localeSeq.second()).getValue(),
+														Coerce.toVncString(localeSeq.third()).getValue());
+							return new VncString(String.format(locale3, fmt, fmtArgs));
+					}
 				}
 				else {
 					final VncString fmt = (VncString)args.first();
