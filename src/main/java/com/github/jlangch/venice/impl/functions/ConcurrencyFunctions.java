@@ -74,6 +74,7 @@ public class ConcurrencyFunctions {
 				"deref", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(deref x)", "(deref x timeout-ms timeout-val)")		
 					.doc(
 						"Dereferences an atom or a Future object. When applied to an " + 
@@ -169,6 +170,7 @@ public class ConcurrencyFunctions {
 				"realized?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(realized? x)")		
 					.doc("Returns true if a value has been produced for a promise, delay, or future.")
 					.examples(
@@ -226,6 +228,7 @@ public class ConcurrencyFunctions {
 				"add-watch", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(add-watch ref key fn)")		
 					.doc(
 						"Adds a watch function to an agent/atom reference. The watch fn must " + 
@@ -271,6 +274,7 @@ public class ConcurrencyFunctions {
 				"remove-watch", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(remove-watch ref key)")		
 					.doc( "Removes a watch function from an agent/atom reference.")
 					.examples(
@@ -318,6 +322,7 @@ public class ConcurrencyFunctions {
 				"atom", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(atom x)")		
 					.doc("Creates an atom with the initial value x")
 					.examples("(do\n   (def counter (atom 0))\n   (deref counter))")
@@ -337,6 +342,7 @@ public class ConcurrencyFunctions {
 				"atom?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(atom? x)")		
 					.doc("Returns true if x is an atom, otherwise false")
 					.examples("(do\n   (def counter (atom 0))\n   (atom? counter))")
@@ -356,6 +362,7 @@ public class ConcurrencyFunctions {
 				"reset!", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(reset! atom newval)")		
 					.doc(
 						"Sets the value of atom to newval without regard for the " + 
@@ -378,6 +385,7 @@ public class ConcurrencyFunctions {
 				"swap!", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(swap! atom f & args)")		
 					.doc(
 						"Atomically swaps the value of atom to be: " + 
@@ -405,6 +413,7 @@ public class ConcurrencyFunctions {
 				"compare-and-set!", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(compare-and-set! atom oldval newval)")		
 					.doc(
 						"Atomically sets the value of atom to newval if and only if the " + 
@@ -435,6 +444,7 @@ public class ConcurrencyFunctions {
 				"agent", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(agent state options)")		
 					.doc(
 						"Creates and returns an agent with an initial value of state and " +
@@ -466,6 +476,7 @@ public class ConcurrencyFunctions {
 				"send", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(send agent action-fn args)")		
 					.doc(
 						"Dispatch an action to an agent. Returns the agent immediately." +
@@ -505,6 +516,7 @@ public class ConcurrencyFunctions {
 				"send-off", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(send-off agent fn args)")		
 					.doc(
 						"Dispatch a potentially blocking action to an agent. Returns " +
@@ -545,6 +557,7 @@ public class ConcurrencyFunctions {
 				"restart-agent", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(restart-agent agent state)")		
 					.doc(
 						"When an agent is failed, changes the agent state to new-state and " + 
@@ -581,6 +594,7 @@ public class ConcurrencyFunctions {
 				"set-error-handler!", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(set-error-handler! agent handler-fn)")		
 					.doc(
 						"Sets the error-handler of an agent to handler-fn. If an action " + 
@@ -621,6 +635,7 @@ public class ConcurrencyFunctions {
 				"agent-error", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(agent-error agent)")		
 					.doc(
 						"Returns the exception thrown during an asynchronous action of the " + 
@@ -658,6 +673,7 @@ public class ConcurrencyFunctions {
 				"agent-error-mode", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(agent-error-mode agent)")		
 					.doc( "Returns the agent's error mode")
 					.examples(
@@ -688,6 +704,7 @@ public class ConcurrencyFunctions {
 				"await", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(await agents)")		
 					.doc(
 						"Blocks the current thread (indefinitely) until all actions dispatched " + 
@@ -720,6 +737,7 @@ public class ConcurrencyFunctions {
 				"await-for", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(await-for timeout-ms agents)")		
 					.doc(
 						"Blocks the current thread until all actions dispatched thus " + 
@@ -756,6 +774,7 @@ public class ConcurrencyFunctions {
 				"shutdown-agents", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(shutdown-agents )")		
 					.doc(
 						"Initiates a shutdown of the thread pools that back the agent " + 
@@ -784,6 +803,7 @@ public class ConcurrencyFunctions {
 				"shutdown-agents?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(shutdown-agents?)")		
 					.doc("Returns true if the thread-pool that backs the agents is shut down")
 					.examples(
@@ -809,6 +829,7 @@ public class ConcurrencyFunctions {
 				"await-termination-agents", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(shutdown-agents )")		
 					.doc(
 						"Blocks until all actions have completed execution after a shutdown " +
@@ -840,6 +861,7 @@ public class ConcurrencyFunctions {
 				"await-termination-agents?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(await-termination-agents?)")		
 					.doc( "Returns true if all tasks have been completed following agent shut down")
 					.examples(
@@ -872,6 +894,7 @@ public class ConcurrencyFunctions {
 				"deliver", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(deliver ref value)")		
 					.doc(
 						"Delivers the supplied value to the promise, releasing any pending " + 
@@ -908,6 +931,7 @@ public class ConcurrencyFunctions {
 				"promise", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(promise)")		
 					.doc(
 						"Returns a promise object that can be read with deref, and set, " + 
@@ -941,6 +965,7 @@ public class ConcurrencyFunctions {
 				"promise?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(promise? p)")		
 					.doc("Returns true if f is a Promise otherwise false")
 					.examples("(promise? (promise)))")
@@ -966,6 +991,7 @@ public class ConcurrencyFunctions {
 				"future", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(future fn)")		
 					.doc(
 						"Takes a function and yields a future object that will " + 
@@ -1034,6 +1060,7 @@ public class ConcurrencyFunctions {
 				"future?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(future? f)")		
 					.doc( "Returns true if f is a Future otherwise false")
 					.examples("(future? (future (fn [] 100)))")
@@ -1053,6 +1080,7 @@ public class ConcurrencyFunctions {
 				"future-done?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(future-done? f)")		
 					.doc( "Returns true if f is a Future is done otherwise false")
 					.examples("(future-done? (future (fn [] 100)))")
@@ -1085,6 +1113,7 @@ public class ConcurrencyFunctions {
 				"future-cancel", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(future-cancel f)")		
 					.doc("Cancels the future")
 					.examples("(future-cancel (future (fn [] 100)))")
@@ -1119,6 +1148,7 @@ public class ConcurrencyFunctions {
 				"future-cancelled?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(future-cancelled? f)")		
 					.doc("Returns true if f is a Future is cancelled otherwise false")
 					.examples("(future-cancelled? (future (fn [] 100)))")
@@ -1157,6 +1187,7 @@ public class ConcurrencyFunctions {
 				"delay?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(delay? x)")		
 					.doc("Returns true if x is a Delay created with delay")
 					.examples(
@@ -1179,6 +1210,7 @@ public class ConcurrencyFunctions {
 				"force", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(force x)")		
 					.doc("If x is a Delay, returns its value, else returns x")
 					.examples(
@@ -1213,6 +1245,7 @@ public class ConcurrencyFunctions {
 				"thread-local", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(thread-local)")		
 					.doc("Creates a new thread-local accessor")
 					.examples(
@@ -1243,6 +1276,7 @@ public class ConcurrencyFunctions {
 				"thread-local?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(thread-local? x)")		
 					.doc("Returns true if x is a thread-local, otherwise false")
 					.examples("(do\n   (def x (thread-local))\n   (thread-local? x))")
@@ -1262,6 +1296,7 @@ public class ConcurrencyFunctions {
 				"thread-local-clear", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(thread-local-clear)")		
 					.doc("Removes all thread local vars")
 					.examples("(thread-local-clear)")
@@ -1288,6 +1323,7 @@ public class ConcurrencyFunctions {
 				"thread-id", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(thread-id)")		
 					.doc(
 						"Returns the identifier of this Thread. The thread ID is a " +
@@ -1311,6 +1347,7 @@ public class ConcurrencyFunctions {
 				"thread-name", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(thread-name)")		
 					.doc("Returns this thread's name.")
 					.examples("(thread-name)")

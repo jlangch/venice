@@ -98,7 +98,7 @@ public class MetaUtil {
 			return false;
 		}
 		else if (meta instanceof VncHashMap) {
-			return ((VncHashMap)meta).get(MetaUtil.PRIVATE) == True;
+			return ((VncHashMap)meta).get(PRIVATE) == True;
 		}
 		else {
 			return false;
@@ -110,7 +110,7 @@ public class MetaUtil {
 			return null;
 		}
 		else if (meta instanceof VncHashMap) {
-			final VncVal file = ((VncHashMap)meta).get(MetaUtil.FILE);
+			final VncVal file = ((VncHashMap)meta).get(FILE);
 			return file == Nil ? null : ((VncString)file).getValue();
 		}
 		else {

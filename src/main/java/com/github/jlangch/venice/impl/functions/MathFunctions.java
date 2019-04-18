@@ -54,6 +54,7 @@ public class MathFunctions {
 				"+", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(+)", "(+ x)", "(+ x y)", "(+ x y & more)")		
 					.doc("Returns the sum of the numbers. (+) returns 0.")
 					.examples("(+)", "(+ 1)", "(+ 1 2)", "(+ 1 2 3 4)", "(+ (int 1) (int 2))", "(+ 1 2.5)", "(+ 1 2.5M)")
@@ -79,6 +80,7 @@ public class MathFunctions {
 				"-", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(- x)", "(- x y)", "(- x y & more)")		
 					.doc(
 						"If one number is supplied, returns the negation, else subtracts " +
@@ -124,6 +126,7 @@ public class MathFunctions {
 				"*", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(*)", "(* x)", "(* x y)", "(* x y & more)")		
 					.doc("Returns the product of numbers. (*) returns 1")
 					.examples("(*)", "(* 4)", "(* 4 3)", "(* 4 3 2)", "(* (int 4) (int 3))", "(* 6.0 2)", "(* 6 1.5M)")
@@ -149,6 +152,7 @@ public class MathFunctions {
 				"/", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(/ x)", "(/ x y)", "(/ x y & more)")		
 					.doc(
 						"If no denominators are supplied, returns 1/numerator, " + 
@@ -194,6 +198,7 @@ public class MathFunctions {
 				"mod", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(mod n d)")		
 					.doc("Modulus of n and d.")
 					.examples("(mod 10 4)", "(mod (int 10) (int 4))")
@@ -246,6 +251,7 @@ public class MathFunctions {
 				"inc", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(inc x)")		
 					.doc("Increments the number x")
 					.examples("(inc 10)", "(inc (int 10))", "(inc 10.1)", "(inc 10.12M)")
@@ -282,6 +288,7 @@ public class MathFunctions {
 				"dec", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(dec x)")		
 					.doc("Decrements the number x")
 					.examples("(dec 10)", "(dec (int 10))", "(dec 10.1)", "(dec 10.12M)")
@@ -318,6 +325,7 @@ public class MathFunctions {
 				"max", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(max x)", "(max x y)", "(max x y & more)")		
 					.doc("Returns the greatest of the values")
 					.examples(
@@ -358,6 +366,7 @@ public class MathFunctions {
 				"min", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(min x)", "(min x y)", "(min x y & more)")		
 					.doc("Returns the smallest of the values")
 					.examples(
@@ -398,6 +407,7 @@ public class MathFunctions {
 				"abs", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(abs x)")		
 					.doc("Returns the absolute value of the number")
 					.examples("(abs 10)", "(abs -10)", "(abs (int -10))", "(abs -10.1)", "(abs -10.12M)")
@@ -435,6 +445,7 @@ public class MathFunctions {
 				"negate", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(negate x)")		
 					.doc("Negates x")
 					.examples("(negate 10)", "(negate (int 10))", "(negate 1.23)", "(negate 1.23M)")
@@ -472,6 +483,7 @@ public class MathFunctions {
 				"sqrt", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(sqrt x)")		
 					.doc("Square root of x")
 					.examples("(sqrt 10)", "(sqrt (int 10))", "(sqrt 10.23)", "(sqrt 10.23M)")
@@ -512,6 +524,7 @@ public class MathFunctions {
 				"rand-long", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(rand-long)", "(rand-long max)")		
 					.doc(
 						"Without argument returns a random long between 0 and MAX_LONG. " +
@@ -543,6 +556,7 @@ public class MathFunctions {
 				"rand-double", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(rand-double)", "(rand-double max)")		
 					.doc(
 						"Without argument returns a double between 0.0 and 1.0. " +
@@ -575,6 +589,7 @@ public class MathFunctions {
 				"rand-gaussian", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(rand-gaussian)", "(rand-gaussian mean stddev)")		
 					.doc(
 						"Without argument returns a Gaussion distributed double value with " +
@@ -605,6 +620,7 @@ public class MathFunctions {
 				"zero?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(zero? x)")		
 					.doc("Returns true if x zero else false")
 					.examples("(zero? 0)", "(zero? 2)", "(zero? (int 0))", "(zero? 0.0)", "(zero? 0.0M)")
@@ -641,6 +657,7 @@ public class MathFunctions {
 				"pos?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(pos? x)")		
 					.doc("Returns true if x greater than zero else false")
 					.examples("(pos? 3)", "(pos? -3)", "(pos? (int 3))", "(pos? 3.2)", "(pos? 3.2M)")
@@ -677,6 +694,7 @@ public class MathFunctions {
 				"neg?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(neg? x)")		
 					.doc("Returns true if x smaller than zero else false")
 					.examples("(neg? -3)", "(neg? 3)", "(neg? (int -3))", "(neg? -3.2)", "(neg? -3.2M)")
@@ -713,6 +731,7 @@ public class MathFunctions {
 				"even?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(even? n)")		
 					.doc("Returns true if n is even, throws an exception if n is not an integer")
 					.examples("(even? 4)", "(even? 3)", "(even? (int 3))")
@@ -743,6 +762,7 @@ public class MathFunctions {
 				"odd?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(odd? n)")		
 					.doc("Returns true if n is odd, throws an exception if n is not an integer")
 					.examples("(odd? 3)", "(odd? 4)", "(odd? (int 4))")
@@ -774,6 +794,7 @@ public class MathFunctions {
 				"dec/add", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(dec/add x y scale rounding-mode)")		
 					.doc(
 						"Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -802,6 +823,7 @@ public class MathFunctions {
 				"dec/sub", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(dec/sub x y scale rounding-mode)")		
 					.doc(
 						"Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -828,6 +850,7 @@ public class MathFunctions {
 				"dec/mul", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(dec/mul x y scale rounding-mode)")		
 					.doc(
 						"Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -854,6 +877,7 @@ public class MathFunctions {
 				"dec/div", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(dec/div x y scale rounding-mode)")		
 					.doc(
 						"Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -880,6 +904,7 @@ public class MathFunctions {
 				"dec/scale", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(dec/scale x scale rounding-mode)")		
 					.doc(
 						"Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -919,6 +944,7 @@ public class MathFunctions {
 				"range", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(range end)", "(range start end)", "(range start end step)")		
 					.doc(
 						"Returns a collection of numbers from start (inclusive) to end " + 

@@ -58,6 +58,7 @@ public class SystemFunctions {
 				"version", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(version)")		
 					.doc("Returns the version.")
 					.examples("(version )")
@@ -78,6 +79,7 @@ public class SystemFunctions {
 				"uuid", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(uuid)")		
 					.doc("Generates a UUID.")
 					.examples("(uuid )")
@@ -97,6 +99,7 @@ public class SystemFunctions {
 				"oobjid", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(objid)")		
 					.doc("Returns the original unique hash code for the given object.")
 					.examples("(objid x)")
@@ -116,6 +119,7 @@ public class SystemFunctions {
 				"current-time-millis", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(current-time-millis)")		
 					.doc("Returns the current time in milliseconds.")
 					.examples("(current-time-millis)")
@@ -135,6 +139,7 @@ public class SystemFunctions {
 				"nano-time", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(nano-time)")		
 					.doc(
 						"Returns the current value of the running Java Virtual Machine's " +
@@ -156,6 +161,7 @@ public class SystemFunctions {
 				"sleep", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(sleep n)")		
 					.doc("Sleep for n milliseconds.")
 					.examples("(sleep 30)")
@@ -182,6 +188,7 @@ public class SystemFunctions {
 				"gc", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(gc)")		
 					.doc("Run the Java garbage collector. Runs the finalization methods of any objects pending finalization prior to the GC.")
 					.examples("(gc)")
@@ -204,6 +211,7 @@ public class SystemFunctions {
 				"callstack", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(callstack )")		
 					.doc("Returns the current callstack.")
 					.examples(
@@ -242,6 +250,7 @@ public class SystemFunctions {
 				"os-type", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(os-type)")		
 					.doc("Returns the OS type")
 					.examples("(os-type)")
@@ -273,6 +282,7 @@ public class SystemFunctions {
 				"os-type?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(os-type? type)")		
 					.doc(
 						"Returns true if the OS id of the type otherwise false. Type is one " +
@@ -301,6 +311,7 @@ public class SystemFunctions {
 				"sandboxed?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(sandboxed? )")		
 					.doc("Returns true if there is a sandbox otherwise false")
 					.examples("(sandboxed? )")
@@ -320,6 +331,7 @@ public class SystemFunctions {
 				"system-prop", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(system-prop name default-val)")		
 					.doc(
 						"Returns the system property with the given name. Returns " +
@@ -347,23 +359,24 @@ public class SystemFunctions {
 		};
 
 	public static VncFunction java_version = 
-			new VncFunction(
-					"java-version", 
-					VncFunction
-						.meta()
-						.arglists("(java-version)")		
-						.doc("Returns the Jvav VM version.")
-						.examples("(java-version)")
-						.build()
-			) {		
-				public VncVal apply(final VncList args) {
-					assertArity("java-version", args, 0);
-					
-					return new VncString(System.getProperty("java.version"));
-				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
+		new VncFunction(
+				"java-version", 
+				VncFunction
+					.meta()
+					.namespace("core.venice")
+					.arglists("(java-version)")		
+					.doc("Returns the Jvav VM version.")
+					.examples("(java-version)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("java-version", args, 0);
+				
+				return new VncString(System.getProperty("java.version"));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
 	
 	///////////////////////////////////////////////////////////////////////////

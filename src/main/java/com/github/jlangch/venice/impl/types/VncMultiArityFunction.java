@@ -78,10 +78,11 @@ public class VncMultiArityFunction extends VncFunction {
 	@Override 
 	public String toString() {
 		return String.format(
-				"%s %s %s", 
+				"%s %s %s %s", 
 				isPrivate() ? "private" : "public", 
 				isMacro() ? "macro" : "function", 
-				getName());
+				getName(),
+				ns() == null ? "{:ns nil}" : "{:ns " + ns() + "}");
 	}
 	
 	private VncFunction findFunction(final int arity) {

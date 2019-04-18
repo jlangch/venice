@@ -72,6 +72,7 @@ public class IOFunctions {
 				"io/file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/file path) (io/file parent child)")		
 					.doc(
 						"Returns a java.io.File. path, parent, and child can be a string " +
@@ -136,6 +137,7 @@ public class IOFunctions {
 				"io/file-size", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/file-size f)")		
 					.doc("Returns the size of the file f. f must be a java.io.File.")
 					.examples("(io/file-size (io/file \"/bin/sh\"))")
@@ -162,6 +164,7 @@ public class IOFunctions {
 				"io/file-path", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/file-path f)")		
 					.doc("Returns the path of the file f. f must be a java.io.File.")
 					.examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
@@ -188,6 +191,7 @@ public class IOFunctions {
 				"io/file-parent", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/file-parent f)")		
 					.doc("Returns the parent file of the file f. f must be a java.io.File.")
 					.examples("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))")
@@ -214,6 +218,7 @@ public class IOFunctions {
 				"io/file-name", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/file-name f)")		
 					.doc("Returns the name of the file f. f must be a java.io.File.")
 					.examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
@@ -240,6 +245,7 @@ public class IOFunctions {
 				"io/file?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/file? x)")		
 					.doc("Returns true if x is a java.io.File.")
 					.examples("(io/file? (io/file \"/temp/test.txt\"))")
@@ -260,6 +266,7 @@ public class IOFunctions {
 				"io/exists-file?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/exists-file? x)")		
 					.doc("Returns true if the file x exists. x must be a java.io.File.")
 					.examples("(io/exists-file? (io/file \"/temp/test.txt\"))")
@@ -286,6 +293,7 @@ public class IOFunctions {
 				"io/exists-dir?", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/exists-dir? x)")		
 					.doc("Returns true if the file x exists and is a directory. x must be a java.io.File.")
 					.examples("(io/exists-dir? (io/file \"/temp\"))")
@@ -312,6 +320,7 @@ public class IOFunctions {
 				"io/delete-file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/delete-file f & files)")		
 					.doc("Deletes one or multiple files. f must be a java.io.File.")
 					.build()
@@ -348,6 +357,7 @@ public class IOFunctions {
 				"io/delete-file-on-exit", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/delete-file-on-exit x)")		
 					.doc("Deletes a file on JVM exit. x must be a string or java.io.File.")
 					.build()
@@ -388,6 +398,7 @@ public class IOFunctions {
 				"io/list-files", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/list-files dir filterFn?)")		
 					.doc(
 						"Lists files in a directory. dir must be a java.io.File. filterFn " +
@@ -435,6 +446,7 @@ public class IOFunctions {
 				"io/copy-file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/copy-file input output)")		
 					.doc(
 						"Copies input to output. Returns nil or throws IOException. " + 
@@ -482,6 +494,7 @@ public class IOFunctions {
 				"io/move-file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/move-file source target)")		
 					.doc(
 						"Moves source to target. Returns nil or throws IOException. " + 
@@ -529,6 +542,7 @@ public class IOFunctions {
 				"io/mkdir", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/mkdir dir)")		
 					.doc("Creates the directory. dir must be a java.io.File.")
 					.build()
@@ -565,6 +579,7 @@ public class IOFunctions {
 				"io/mkdir", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/mkdirs dir)")		
 					.doc(
 						"Creates the directory including any necessary but nonexistent " +
@@ -603,6 +618,7 @@ public class IOFunctions {
 				"io/tmp-dir", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/tmp-dir)")		
 					.doc("Returns the tmp dir as a java.io.File.")
 					.examples("(io/tmp-dir )")
@@ -622,6 +638,7 @@ public class IOFunctions {
 				"io/user-dir", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/user-dir)")		
 					.doc("Returns the user dir (current working dir) as a java.io.File.")
 					.build()
@@ -640,6 +657,7 @@ public class IOFunctions {
 				"io/slurp-lines", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/slurp-lines file & options)")		
 					.doc(
 						"Read all lines from a text file. \n" +
@@ -693,6 +711,7 @@ public class IOFunctions {
 				"io/slurp", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/slurp file & options)")		
 					.doc(
 						"Returns the file's content as text (string) or binary (bytebuf). \n" +
@@ -751,6 +770,7 @@ public class IOFunctions {
 				"io/spit", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/spit f content & options)")		
 					.doc(
 						"Opens f, writes content, and then closes f. \n" +
@@ -831,6 +851,7 @@ public class IOFunctions {
 				"io/slurp-stream", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/slurp-stream is & options)")		
 					.doc(
 						"Slurps binary or string data from an input stream. " +
@@ -886,6 +907,7 @@ public class IOFunctions {
 				"spit-stream", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/spit-stream os content & options)")		
 					.doc(
 						"Writes content (string or bytebuf) to the output stream os. " +
@@ -954,6 +976,7 @@ public class IOFunctions {
 				"io/mime-type", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/mime-type file)")		
 					.doc("Returns the mime-type for the file if available else nil")
 					.examples(
@@ -994,6 +1017,7 @@ public class IOFunctions {
 				"io/temp-file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/temp-file prefix suffix)")		
 					.doc(
 						"Creates an empty temp file with prefix and suffix. \n" +
@@ -1031,6 +1055,7 @@ public class IOFunctions {
 				"io/slurp-temp-file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/slurp-temp-file file & options)")		
 					.doc(
 						"Slurps binary or string data from a previously created temp file. " +
@@ -1121,6 +1146,7 @@ public class IOFunctions {
 				"io/spit-temp-file", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/spit-temp-file f content & options)")		
 					.doc(
 						"Spits binary or string data from to previously created temp file. \n" +
@@ -1210,6 +1236,7 @@ public class IOFunctions {
 				"io/load-classpath-resource", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/load-classpath-resource name)")		
 					.doc("Loads a classpath resource.")
 					.build()
@@ -1255,6 +1282,7 @@ public class IOFunctions {
 				"io/default-charset", 
 				VncFunction
 					.meta()
+					.namespace("core.venice")
 					.arglists("(io/default-charset)")		
 					.doc("Returns the default charset.")
 					.build()
