@@ -21,19 +21,24 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.io.Serializable;
 
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 
 
 abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	public VncVal() {
-		this(Constants.Nil);
+		this(Nil);
 	}
 
 	public VncVal(final VncVal meta) {	
 		this.meta = meta;
+		this._private = MetaUtil.isPrivate(meta);
+		this._ns =  MetaUtil.getNamespace(meta);
 	}
 	
 	abstract public VncVal withMeta(final VncVal meta);
@@ -49,20 +54,28 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	
 	public VncVal getMetaVal(final VncString key) {
 		final VncVal meta_ = getMeta();
-		if (meta_ == Constants.Nil) {
-			return Constants.Nil;
+		if (meta_ == Nil) {
+			return Nil;
 		}
 		else if (meta_ instanceof VncHashMap) {
 			return ((VncHashMap)meta_).get(key);
 		}
 		else {
-			return Constants.Nil; // not a map
+			return Nil; // not a map
 		}
 	}
 
 	public VncVal getMetaVal(final VncString key, final VncVal defaultValue) {
 		final VncVal val = getMetaVal(key);
-		return val == Constants.Nil ? defaultValue : val;
+		return val == Nil ? defaultValue : val;
+	}
+
+	public boolean isPrivate() {
+		return _private;
+	}
+
+	public String ns() {
+		return _ns;
 	}
 
 	@Override
@@ -86,8 +99,11 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return true;
 	}
 	
+    
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private VncVal meta;
+	private final VncVal meta;
+	private final boolean _private;
+	private final String _ns;
 }

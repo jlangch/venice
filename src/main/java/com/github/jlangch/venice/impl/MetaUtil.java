@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +92,31 @@ public class MetaUtil {
 					Types.getType(meta2)));
 		}
 	}
+
+	public static boolean isPrivate(final VncVal meta) {
+		if (meta == Nil) {
+			return false;
+		}
+		else if (meta instanceof VncHashMap) {
+			return ((VncHashMap)meta).get(MetaUtil.PRIVATE) == True;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static String getNamespace(final VncVal meta) {
+		if (meta == Nil) {
+			return null;
+		}
+		else if (meta instanceof VncHashMap) {
+			final VncVal file = ((VncHashMap)meta).get(MetaUtil.FILE);
+			return file == Nil ? null : ((VncString)file).getValue();
+		}
+		else {
+			return null;
+		}
+	}
 	
 	
 	// Var definition
@@ -98,8 +124,10 @@ public class MetaUtil {
 	public static final VncKeyword DOC = new VncKeyword(":doc"); 
 	public static final VncKeyword EXAMPLES = new VncKeyword(":examples"); 
 	
-	// File error location
+	// File location
 	public static final VncKeyword FILE = new VncKeyword(":file"); 
 	public static final VncKeyword LINE = new VncKeyword(":line"); 
 	public static final VncKeyword COLUMN = new VncKeyword(":column"); 
+	
+    public static final VncKeyword PRIVATE = new VncKeyword(":private");
 }

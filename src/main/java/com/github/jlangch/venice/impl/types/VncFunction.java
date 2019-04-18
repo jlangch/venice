@@ -63,8 +63,10 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		this.ast = ast;
 		this.env = env;
 		this.params = params;
-		
+	
 		this.fnMeta.set(meta);
+		this._private = MetaUtil.isPrivate(meta);
+		this._ns =  MetaUtil.getNamespace(meta);
 	}
 
 	
@@ -131,11 +133,23 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	@Override 
 	public String toString() {
-		return macro ? "macro "+ name : "fn "+ name;
+		return String.format(
+				"%s %s %s", 
+				isPrivate() ? "private" : "public", 
+				macro ? "macro" : "function", 
+				name);
 	}
 
 	public VncVal getMeta() { 
 		return fnMeta.get(); 
+	}
+	
+	public boolean isPrivate() {
+		return _private;
+	}
+
+	public String ns() {
+		return _ns;
 	}
 
 	public static MetaBuilder meta() {
@@ -183,6 +197,8 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	private volatile boolean macro = false;
 	private final String name;
 	
-	// Functions handle its meta data localy (functions cannot be copied)
+	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
+	private final boolean _private;
+	private final String _ns;
 }

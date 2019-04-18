@@ -258,6 +258,23 @@ public class VeniceInterpreter implements Serializable  {
 					return res;
 				}
 
+			case "defmacro":
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {
+					return defmacro_(ast, env);
+				}
+
+			case "macroexpand": 
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
+					return macroexpand(ast.second(), env);
+				}
+				
+			case "quote":
+				return ast.second();
+				
+			case "quasiquote":
+				orig_ast = quasiquote(ast.second());
+				break;
+
 				case "doc":
 					final String name = ((VncString)CoreFunctions.name.apply(ast.rest())).getValue();
 					VncVal docVal = SpecialForms.ns.get(new VncSymbol(name));
@@ -373,23 +390,6 @@ public class VeniceInterpreter implements Serializable  {
 					env = recur_env;
 					break;
 				}
-					
-				case "quote":
-					return ast.second();
-					
-				case "quasiquote":
-					orig_ast = quasiquote(ast.second());
-					break;
-	
-				case "defmacro":
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {
-						return defmacro_(ast, env);
-					}
-
-				case "macroexpand": 
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
-						return macroexpand(ast.second(), env);
-					}
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try", ast))) {
