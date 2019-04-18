@@ -42,6 +42,10 @@ public class CallStack {
 		return queue.poll();
 	}
 	
+	public CallFrame peek() {
+		return queue.peek();
+	}
+	
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}

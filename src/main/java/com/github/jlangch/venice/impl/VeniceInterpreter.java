@@ -61,6 +61,7 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -453,15 +454,33 @@ public class VeniceInterpreter implements Serializable  {
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
-						// validate that the function allowed by the sandox
-						interceptor.validateVeniceFunction(fn.getName());					
+						// validate that the function allowed by the sandbox
+						interceptor.validateVeniceFunction(fn.getName());	
+
+						final CallStack callStack = ThreadLocalMap.getCallStack();
+						
+						// check private function call
+						if (fn.isPrivate()) {
+							final String ns = fn.ns();
+							if (ns != null) {
+								final CallFrame caller = callStack.peek();
+								if (caller.getFnNamespace() != null) {
+									if (ns.equals(caller.getFnNamespace())) {
+										try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+											throw new VncException(String.format(
+													"Illegal call of private function %s", 
+													caller.getFnName()));
+										}
+									}
+								}
+							}
+						}
 						
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
 
 						// invoke function with call frame
-						final CallFrame frame = CallFrame.fromFunction(fn, a0);
-						ThreadLocalMap.getCallStack().push(frame);
+						callStack.push(CallFrame.fromFunction(fn, a0));
 						try {
 							final VncVal val = fn.apply(el.rest());
 							
@@ -472,7 +491,7 @@ public class VeniceInterpreter implements Serializable  {
 							return val;
 						}
 						finally {
-							ThreadLocalMap.getCallStack().pop();
+							callStack.pop();
 							sandboxMaxExecutionTimeChecker.check();
 							checkInterrupted();
 						}

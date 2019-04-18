@@ -35,26 +35,35 @@ import com.github.jlangch.venice.util.StackFrame;
 
 public class CallFrame {
 
-	private CallFrame(final String fnName, final VncVal meta) {
+	private CallFrame(final String fnName, final String fnNamespace, final VncVal meta) {
 		this.fnName = fnName;
+		this.fnNamespace = fnNamespace;
 		this.meta = meta;
 	}
 
 	public static CallFrame fromVal(final String fnName, final VncVal val) {
-		return new CallFrame(fnName, val.getMeta());
+		return new CallFrame(fnName, null, val.getMeta());
 	}
 	
 	public static CallFrame fromVal(final VncVal val) {
-		return new CallFrame(null, val.getMeta());
+		return new CallFrame(null, null, val.getMeta());
 	}
 
 	public static CallFrame fromFunction(final VncFunction fn, final VncVal fnSym) {
-		return new CallFrame(fn.getName(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
+		return new CallFrame(fn.getName(), fn.ns(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
 	}
 
 	
+	public CallFrame withFnNamespace(final String fnNamespace) {
+		return new CallFrame(this.fnName, fnNamespace, this.meta);
+	}
+	
 	public String getFnName() {
 		return fnName;
+	}
+	
+	public String getFnNamespace() {
+		return fnNamespace;
 	}
 	
 	public String getFile() {
@@ -90,5 +99,6 @@ public class CallFrame {
 
 	
 	private final String fnName;
+	private final String fnNamespace;
 	private final VncVal meta; 
 }
