@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.docgen;
 
+import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
+
 import java.util.Map;
 
 import org.stringtemplate.v4.ST;
@@ -52,7 +54,7 @@ public class HtmlRenderer {
 	}
 	
 	private static String loadCheatSheetTemplate() {
-		return new ClassPathResource("com/github/jlangch/venice/impl/docgen/cheatsheet.html")
+		return new ClassPathResource(getVeniceBasePath() + "impl/docgen/cheatsheet.html")
 						.getResourceAsString("UTF-8");
 	}
 }

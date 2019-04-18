@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.Venice;
+
 
 /**
  * Defines the Venice's sandbox rules.
@@ -428,19 +430,21 @@ public class SandboxRules {
 					.collect(Collectors.joining("\n"));
 	}
 		
+	private static String BASE = Venice.class.getPackage().getName();
+			
 	private static final List<String> DEFAULT_CLASS_RULES = 
 			Arrays.asList(
 				// Dynamic proxies based on venice' DynamicInvocationHandler
-				"com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler*:*",
+				BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
 				
-				"com.github.jlangch.venice.util.CapturingPrintStream:*",
+				BASE + ".util.CapturingPrintStream:*",
 				
-				"com.github.jlangch.venice.impl.VeniceInterpreter$1",
-				"com.github.jlangch.venice.impl.ValueException:*",
-				"com.github.jlangch.venice.impl.types.collections.VncVector",
+				BASE + ".impl.VeniceInterpreter$1",
+				BASE + ".impl.ValueException:*",
+				BASE + ".impl.types.collections.VncVector",
 
-				"com.github.jlangch.venice.impl.types.concurrent.Delay:*",
-				"com.github.jlangch.venice.impl.types.concurrent.Agent:*",
+				BASE + ".impl.types.concurrent.Delay:*",
+				BASE + ".impl.types.concurrent.Agent:*",
 
 				// Venice dynamic proxies
 				"com.sun.proxy.$Proxy*:*",

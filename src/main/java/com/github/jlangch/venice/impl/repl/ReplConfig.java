@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.Arrays;
@@ -108,7 +110,7 @@ public class ReplConfig {
 	}
 	
 	public static String getRawClasspathConfig() {
-		return new ClassPathResource("com/github/jlangch/venice/repl.json")
+		return new ClassPathResource(getVeniceBasePath() + "repl.json")
 						.getResourceAsString("UTF-8");
 	}
 

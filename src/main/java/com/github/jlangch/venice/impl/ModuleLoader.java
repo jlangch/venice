@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +48,7 @@ public class ModuleLoader {
 		try {
 			return modules.computeIfAbsent(
 					name, 
-					k -> new ClassPathResource("com/github/jlangch/venice/" + k)
+					k -> new ClassPathResource(getVeniceBasePath() + k)
 								.getResourceAsString("UTF-8"));
 		}
 		catch(Exception ex) {

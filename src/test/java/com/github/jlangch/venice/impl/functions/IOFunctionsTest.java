@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class IOFunctionsTest {
@@ -371,12 +373,14 @@ public class IOFunctionsTest {
 	public void test_io_load_classpath_resource() {
 		final Venice venice = new Venice();
 
+		final String resource = getVeniceBasePath() + "test.venice";
+		
 		final String script =
-				"(do                                                                  \n" +
-				"   (-<> (identity \"com/github/jlangch/venice/test.venice\")         \n" +
-				"        (io/load-classpath-resource <>)                              \n" +
-				"        (bytebuf-to-string <> :UTF-8)                                \n" +
-				"        (str/contains? <> \"(defn test/println \"))))                  ";
+				"(do                                                     \n" +
+				"   (-<> (identity \"" + resource + "\")                 \n" +
+				"        (io/load-classpath-resource <>)                 \n" +
+				"        (bytebuf-to-string <> :UTF-8)                   \n" +
+				"        (str/contains? <> \"(defn test/println \"))))     ";
 		
 		assertTrue((Boolean)venice.eval(script));	
 	}
@@ -392,10 +396,10 @@ public class IOFunctionsTest {
 	@Test
 	public void test_shell_with_out_str() {
 		final Venice venice = new Venice();
-		
+				 
 		final String script =
 				"(do                                                                   " +
-				"   (import :com.github.jlangch.venice.util.CapturingPrintStream)      " +
+				"   (import :" + CapturingPrintStream.class.getPackage().getName() + ")" +
 				"   (binding [*out* (. :CapturingPrintStream :create)]                 " +
 				"        (print \"hello\")                                             " +
 				"        (. *out* :getOutput)))                                        ";
