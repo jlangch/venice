@@ -54,7 +54,7 @@ public class ArrayFunctions {
 				"aset", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists("(aset array idx val)")		
 					.doc("Sets the value at the index of an array")
 					.examples("(aset (long-array '(1 2 3 4 5)) 1 20)")
@@ -108,7 +108,7 @@ public class ArrayFunctions {
 					"aget", 
 					VncFunction
 						.meta()
-						.namespace("core.venice")
+						.namespace("core")
 						.arglists("(aget array idx)")		
 						.doc("Returns the value at the index of an array of Java Objects")
 						.examples("(aget (long-array '(1 2 3 4 5)) 1)")
@@ -145,7 +145,7 @@ public class ArrayFunctions {
 					"alength", 
 					VncFunction
 						.meta()
-						.namespace("core.venice")
+						.namespace("core")
 						.arglists("(alength array)")		
 						.doc("Returns the length of an array")
 						.examples("(alength (long-array '(1 2 3 4 5)))")
@@ -175,7 +175,7 @@ public class ArrayFunctions {
 					"asub", 
 					VncFunction
 						.meta()
-						.namespace("core.venice")
+						.namespace("core")
 						.arglists("(asub array start len)")		
 						.doc("Returns a sub array")
 						.examples("(asub (long-array '(1 2 3 4 5)) 2 3)")
@@ -213,7 +213,7 @@ public class ArrayFunctions {
 				"acopy", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(acopy src src-pos dest dest-pos dest-len)")		
 					.doc(
@@ -269,7 +269,7 @@ public class ArrayFunctions {
 				"make-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(make-array type len)",		
 						"(make-array type dim &more-dims)")		
@@ -319,7 +319,7 @@ public class ArrayFunctions {
 				"object-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(object-array coll)", 
 						"(object-array len)", 
@@ -368,7 +368,7 @@ public class ArrayFunctions {
 				"string-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(string-array coll)", 
 						"(string-array len)", 
@@ -421,7 +421,7 @@ public class ArrayFunctions {
 				"int-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(int-array coll)", 
 						"(int-array len)", 
@@ -475,7 +475,7 @@ public class ArrayFunctions {
 				"long-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(long-array coll)", 
 						"(long-array len)", 
@@ -529,7 +529,7 @@ public class ArrayFunctions {
 				"float-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(float-array coll)", 
 						"(float-array len)", 
@@ -583,7 +583,7 @@ public class ArrayFunctions {
 				"double-array", 
 				VncFunction
 					.meta()
-					.namespace("core.venice")
+					.namespace("core")
 					.arglists(
 						"(double-array coll)", 
 						"(double-array len)", 

@@ -49,7 +49,7 @@ public class ModuleLoadFunctions {
 					"load-core-module", 
 					VncFunction
 						.meta()
-						.namespace("core.venice")
+						.namespace("core")
 						.arglists("(load-core-module name)")		
 						.doc("Loads a Venice extension module.")
 						.build()
@@ -82,7 +82,13 @@ public class ModuleLoadFunctions {
 
 	
 	public static VncFunction loadClasspathVenice = 
-		new VncFunction("load-classpath-venice") {
+		new VncFunction(
+				"load-classpath-venice",
+				VncFunction
+					.meta()
+					.namespace("core")
+					.build()
+		) {
 			public VncVal apply(final VncList args) {
 				try {	
 					assertArity("load-classpath-venice", args, 1);

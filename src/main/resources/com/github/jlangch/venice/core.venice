@@ -410,7 +410,7 @@
 
    load-classpath-file [f]
 
-   `(eval (read-string (str "(do " (load-classpath-venice ~f) ")"))))
+   `(eval (read-string (str "(do " (load-classpath-venice ~f) ")") ~f)))
 
 
 (defmacro
@@ -422,7 +422,7 @@
 
    load-module [s]
 
-   `(eval (read-string (str "(do " (load-core-module ~s) ")"))))
+   `(eval (read-string (str "(do " (load-core-module ~s) ")") ~s)))
 
 
 (defmacro

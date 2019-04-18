@@ -157,7 +157,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		modules.forEach(m -> {
 			final long nanos = System.nanoTime();
-			RE("(eval " + ModuleLoader.load(m) + ")", m + ".venice", env);
+			RE("(eval " + ModuleLoader.load(m) + ")", m, env);
 			meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos);
 		});
 		
