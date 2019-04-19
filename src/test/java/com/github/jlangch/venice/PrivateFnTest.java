@@ -45,7 +45,7 @@ public class PrivateFnTest {
 		final String s = 
 				"(do                                             \n" +
 				"   (load-module :test)                          \n" +
-				"   (let [x (fn [m] (test/println-private m))]  \n" +
+				"   (let [x (fn [m] (test/println-private m))]   \n" +
 				"       (x 100)))                                 ";
 
 		assertThrows(VncException.class, () -> {
@@ -55,6 +55,19 @@ public class PrivateFnTest {
 
 	@Test
 	public void test_private_fn_3() {
+		final String s = 
+				"(do                                             \n" +
+				"   (load-module :test)                          \n" +
+				"   (let [f \"test/println-private\"]            \n" +
+				"         ((resolve (symbol f)) 100)))             ";
+
+		assertThrows(VncException.class, () -> {
+			new Venice().eval(s);
+		});
+	}
+
+	@Test
+	public void test_private_fn_4() {
 		final String s = 
 				"(do                                             \n" +
 				"   (load-module :test)                          \n" +
