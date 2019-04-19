@@ -269,6 +269,11 @@ public class VeniceInterpreter implements Serializable  {
 					env.setGlobal(new DynamicVar(defName, res));
 					return res;
 				}
+				
+				case "resolve": { // (resolve sym)
+					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return env.getOrNil(sym);
+				}
 
 				case "defmacro":
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {

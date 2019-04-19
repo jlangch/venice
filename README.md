@@ -417,6 +417,15 @@ Immutable persistent sorted map.
 ```
 
 
+### Function reolved from string
+
+```clojure
+(do
+   (let [fn-name "+"]
+      ((resolve (symbol fn-name)) 2 5)))
+```
+
+
 ### Multimethods
 
 Multimethods are a powerful mechanism for runtime polymorphism.

@@ -1,3 +1,5 @@
 ;; Test Venice classpath script
 
 (defn test/println [x] (println (str "test: " x)))
+
+(defn ^:private test/println-private [x] (println (str "test: " x)))

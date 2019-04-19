@@ -5481,8 +5481,7 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
-		
-		
+			
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncSequence(value)) {
 			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));

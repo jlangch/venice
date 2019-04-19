@@ -102,6 +102,19 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction resolve = 
+		new SpecialFormsDocFunction(
+				"resolve",
+				VncFunction
+				.meta()
+				.arglists("")		
+				.doc("Resolves a symbiol.")
+				.examples("(resolve '+)", "(resolve (symbol \"+\"))")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction fn = 
 		new SpecialFormsDocFunction(
 				"fn",
@@ -543,6 +556,7 @@ public class SpecialForms {
 					.put("{}", 			map)
 					.put("fn", 			fn)
 					.put("eval",		eval)
+					.put("resolve",		resolve)				
 					.put("def",			def)
 					.put("defonce",		defonce)
 					.put("defmulti",	defmulti)

@@ -589,6 +589,8 @@ public class DocGenerator {
 		misc.addItem(getDocItem("instance?"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
+		misc.addItem(getDocItem("module"));
+		misc.addItem(getDocItem("resolve"));
 		misc.addItem(getDocItem("callstack"));
 
 
