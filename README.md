@@ -417,7 +417,7 @@ Immutable persistent sorted map.
 ```
 
 
-### Function reolved from string
+### Function resolved from a string
 
 ```clojure
 (do
