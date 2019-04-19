@@ -435,6 +435,19 @@ public class MacroTest {
 	}
 
 	@Test
+	public void test_defn_private() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                            \n" +
+				"   (defn- sum [x y] (+ x y))   \n" + 
+				"   (sum 2 5)                   \n" + 
+				") ";
+
+		assertEquals(Long.valueOf(7), venice.eval(script1));
+	}
+
+	@Test
 	public void test_dotimes() {
 		final Venice venice = new Venice();
 

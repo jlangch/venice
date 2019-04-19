@@ -561,6 +561,7 @@ public class DocGenerator {
 		all.addSection(create);
 		create.addItem(getDocItem("fn"));
 		create.addItem(getDocItem("defn"));
+		create.addItem(getDocItem("defn-"));
 		create.addItem(getDocItem("identity"));
 		create.addItem(getDocItem("comp"));
 		create.addItem(getDocItem("partial"));

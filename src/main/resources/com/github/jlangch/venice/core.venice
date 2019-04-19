@@ -48,6 +48,16 @@
 
 
 (defmacro
+  ^{ :arglists '("(defn- name [args*] condition-map? expr*)" "(defn- name ([args*] condition-map? expr*)+)")
+     :doc "Same as defn, yielding non-public def"
+     :examples '("(defn- sum [x y] (+ x y))") }
+
+   defn- [name & forms]
+
+   (list* `defn (with-meta name (assoc (meta name) :private true)) forms))
+
+
+(defmacro
    ^{ :arglists '("(and x)" "(and x & next)")
       :doc "Ands the predicate forms"
       :examples '("(and true true)", "(and true false)") }
