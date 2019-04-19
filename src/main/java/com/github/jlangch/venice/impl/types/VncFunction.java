@@ -136,17 +136,17 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	@Override 
 	public String toString() {
-		final StringBuilder meta = new StringBuilder();
-		meta.append("{");
-		meta.append("visibility: ").append(StringUtil.quote(isPrivate() ? "private" : "public", '\"')); 
-		meta.append(", module: ").append(StringUtil.quote(module() == null ? "" : module(), '\"')); 
-		meta.append("}");
-		
 		return String.format(
 				"%s %s %s", 
 				isMacro() ? "macro" : "function", 
 				getName(),
-				meta);
+				new StringBuilder()
+					.append("{")
+					.append("visibility: ")
+					.append(StringUtil.quote(isPrivate() ? "private" : "public", '\"'))
+					.append(", module: ")
+					.append(StringUtil.quote(module() == null ? "" : module(), '\"'))
+					.append("}"));
 	}
 
 	public VncVal getMeta() { 
