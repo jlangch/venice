@@ -420,8 +420,8 @@ Immutable persistent sorted map.
 ### Function resolved from a string
 
 ```clojure
-(let [plus (resolve (symbol "+"))]
-   (plus 2 5)
+(let [add (resolve (symbol "+"))]
+   (add 2 5)
 ```
 
 
