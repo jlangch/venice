@@ -123,6 +123,7 @@ public class MetaUtil {
 		return file.endsWith(".venice") ? file.substring(0, file.length() - 7) : file;
 	}
 	
+	
 	// Var definition
 	public static final VncKeyword ARGLIST = new VncKeyword(":arglists"); 
 	public static final VncKeyword DOC = new VncKeyword(":doc"); 
