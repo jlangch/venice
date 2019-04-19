@@ -250,30 +250,30 @@ public class ArrayFunctions {
 				}
 				else if (componentType == int.class) {
 					for(int ii=0; ii<len; ii++) {
-						final Integer valS = (Integer)Array.get(arr, ii);
-						final Integer valD = Coerce.toVncInteger(fn.apply(VncList.of(new VncInteger(valS)))).getValue();					
-						Array.set(retArr, ii, valD);
+						final int valS = Array.getInt(arr, ii);
+						final int valD = Coerce.toVncInteger(fn.apply(VncList.of(new VncInteger(valS)))).getValue().intValue();					
+						Array.setInt(retArr, ii, valD);
 					}
 				}
 				else if (componentType == long.class) {
 					for(int ii=0; ii<len; ii++) {
-						final Long valS = (Long)Array.get(arr, ii);
-						final Long valD = Coerce.toVncLong(fn.apply(VncList.of(new VncLong(valS)))).getValue();					
-						Array.set(retArr, ii, valD);
+						final long valS = Array.getLong(arr, ii);
+						final long valD = Coerce.toVncLong(fn.apply(VncList.of(new VncLong(valS)))).getValue().longValue();					
+						Array.setLong(retArr, ii, valD);
 					}
 				}
 				else if (componentType == float.class) {
 					for(int ii=0; ii<len; ii++) {
-						final Float valS = (Float)Array.get(arr, ii);
-						final Double valD = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(valS)))).getValue();					
-						Array.set(retArr, ii, valD.floatValue());
+						final float valS = Array.getFloat(arr, ii);
+						final float valD = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(valS)))).getValue().floatValue();					
+						Array.setFloat(retArr, ii, valD);
 					}
 				}
 				else if (componentType == double.class) {
 					for(int ii=0; ii<len; ii++) {
-						final Double valS = (Double)Array.get(arr, ii);
-						final Double valD = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(valS)))).getValue();					
-						Array.set(retArr, ii, valD);
+						final double valS = Array.getDouble(arr, ii);
+						final double valD = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(valS)))).getValue().doubleValue();					
+						Array.setDouble(retArr, ii, valD);
 					}
 				}
 				else {
