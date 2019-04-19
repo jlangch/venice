@@ -25,13 +25,31 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.jlangch.venice.VncException;
 
-public class ReservedModules {
+
+public class Modules {
 
 	public static boolean isReserved(final String moduleName) {
 		return moduleName != null && reserved.contains(moduleName);
 	}
 	
+	public static void validateModuleName(final String moduleName) {
+//		if (isReserved(moduleName)) {
+//			throw new VncException(String.format("Reserved module name '%s'", moduleName));
+//		}
+	}
+	
+	public static void validateFileName(final String fileName) {
+		validateModuleName(fileNameToModule(fileName));
+	}
+
+	public static String fileNameToModule(final String fileName) {
+		return fileName != null && fileName.endsWith(".venice") 
+					? fileName.substring(0, fileName.length() - 7) 
+					: fileName;
+	}
+
 	private static final Set<String> reserved = 
 			new HashSet<>(Arrays.asList("core", "time", "str", "io", "shell", "system", "venice"));
 }

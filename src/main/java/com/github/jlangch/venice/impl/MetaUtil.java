@@ -55,7 +55,7 @@ public class MetaUtil {
 	
 	public static VncVal toMeta(final Token token) {
 		return VncHashMap.of(
-					MODULE, new VncString(toModule(token.getFile())),
+					MODULE, new VncString(Modules.fileNameToModule(token.getFile())),
 					FILE, new VncString(token.getFile()),
 					LINE, new VncLong(token.getLine()),
 					COLUMN, new VncLong(token.getColumn()));
@@ -117,10 +117,6 @@ public class MetaUtil {
 		else {
 			return null;
 		}
-	}
-	
-	private static String toModule(final String file) {
-		return file.endsWith(".venice") ? file.substring(0, file.length() - 7) : file;
 	}
 	
 	
