@@ -245,4 +245,8 @@ public class StringUtil {
 		}
 		return working;
 	}	
+	
+	public static String quote(final String str, final char quote) {
+		return new StringBuilder().append(quote).append(str).append(quote).toString();
+	}
 }
