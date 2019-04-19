@@ -35,9 +35,9 @@ import com.github.jlangch.venice.util.StackFrame;
 
 public class CallFrame {
 
-	private CallFrame(final String fnName, final String fnNamespace, final VncVal meta) {
+	private CallFrame(final String fnName, final String module, final VncVal meta) {
 		this.fnName = fnName;
-		this.fnNamespace = fnNamespace;
+		this.module = module;
 		this.meta = meta;
 	}
 
@@ -62,8 +62,8 @@ public class CallFrame {
 		return fnName;
 	}
 	
-	public String getFnNamespace() {
-		return fnNamespace;
+	public String getModule() {
+		return module;
 	}
 	
 	public String getFile() {
@@ -99,6 +99,6 @@ public class CallFrame {
 
 	
 	private final String fnName;
-	private final String fnNamespace;
+	private final String module;
 	private final VncVal meta; 
 }

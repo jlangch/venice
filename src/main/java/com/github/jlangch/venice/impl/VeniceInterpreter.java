@@ -454,22 +454,23 @@ public class VeniceInterpreter implements Serializable  {
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
-						// validate that the function allowed by the sandbox
+						// validate function call allowed by sandbox
 						interceptor.validateVeniceFunction(fn.getName());	
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						// check access to private
+						// validate private function call
 						if (fn.isPrivate()) {
-							final String ns = fn.module();
-							if (ns != null) {
+							final String module = fn.getModule();
+							if (module != null) {
 								final CallFrame caller = callStack.peek();
-								if (caller.getFnNamespace() != null) {
-									if (ns.equals(caller.getFnNamespace())) {
+								if (caller.getModule() != null) {
+									if (module.equals(caller.getModule())) {
 										try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
 											throw new VncException(String.format(
-													"Illegal call of private function %s", 
-													caller.getFnName()));
+													"Illegal call of private function %s (module %s)", 
+													fn.getName(),
+													fn.getModule()));
 										}
 									}
 								}

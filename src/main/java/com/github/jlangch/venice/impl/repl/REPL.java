@@ -194,7 +194,7 @@ public class REPL {
 			
 			try {				
 				ThreadLocalMap.clearCallStack();
-				final VncVal result = venice.RE(line, "repl", env);
+				final VncVal result = venice.RE(line, "user", env);
 				resultHistory.add(result);
 				println(terminal, "result", resultPrefix + venice.PRINT(result));
 			} 

@@ -706,7 +706,7 @@ public class CoreFunctions {
 	
 					return Reader.read_str(
 							Coerce.toVncString(args.first()).getValue(), 
-							args.size() == 2 ? Coerce.toVncString(args.second()).getValue() : null);
+							args.size() == 2 ? Coerce.toVncString(args.second()).getValue() : "user");
 				} 
 				catch (ContinueException c) {
 					return Nil;

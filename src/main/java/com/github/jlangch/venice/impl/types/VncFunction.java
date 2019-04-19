@@ -157,7 +157,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return _private;
 	}
 
-	public String module() {
+	public String getModule() {
 		return _module;
 	}
 
