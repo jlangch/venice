@@ -55,6 +55,7 @@ public class MetaUtil {
 	
 	public static VncVal toMeta(final Token token) {
 		return VncHashMap.of(
+					MODULE, new VncString(toModule(token.getFile())),
 					FILE, new VncString(token.getFile()),
 					LINE, new VncLong(token.getLine()),
 					COLUMN, new VncLong(token.getColumn()));
@@ -105,12 +106,12 @@ public class MetaUtil {
 		}
 	}
 
-	public static String getNamespace(final VncVal meta) {
+	public static String getModule(final VncVal meta) {
 		if (meta == Nil) {
 			return null;
 		}
 		else if (meta instanceof VncHashMap) {
-			final VncVal file = ((VncHashMap)meta).get(FILE);
+			final VncVal file = ((VncHashMap)meta).get(MODULE);
 			return file == Nil ? null : ((VncString)file).getValue();
 		}
 		else {
@@ -118,6 +119,9 @@ public class MetaUtil {
 		}
 	}
 	
+	private static String toModule(final String file) {
+		return file.endsWith(".venice") ? file.substring(0, file.length() - 7) : file;
+	}
 	
 	// Var definition
 	public static final VncKeyword ARGLIST = new VncKeyword(":arglists"); 
@@ -129,5 +133,6 @@ public class MetaUtil {
 	public static final VncKeyword LINE = new VncKeyword(":line"); 
 	public static final VncKeyword COLUMN = new VncKeyword(":column"); 
 	
+	public static final VncKeyword MODULE = new VncKeyword(":module"); 
     public static final VncKeyword PRIVATE = new VncKeyword(":private");
 }

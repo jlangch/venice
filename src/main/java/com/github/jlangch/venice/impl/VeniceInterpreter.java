@@ -459,9 +459,9 @@ public class VeniceInterpreter implements Serializable  {
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						// check private function call
+						// check access to private
 						if (fn.isPrivate()) {
-							final String ns = fn.ns();
+							final String ns = fn.module();
 							if (ns != null) {
 								final CallFrame caller = callStack.peek();
 								if (caller.getFnNamespace() != null) {

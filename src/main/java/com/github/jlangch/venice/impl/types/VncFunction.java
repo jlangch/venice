@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public abstract class VncFunction extends VncVal implements IVncFunction {
@@ -66,7 +67,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 		this.fnMeta.set(meta);
 		this._private = MetaUtil.isPrivate(meta);
-		this._ns =  MetaUtil.getNamespace(meta);
+		this._module =  MetaUtil.getModule(meta);
 	}
 
 	
@@ -74,7 +75,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	public VncFunction withMeta(final VncVal meta) {
 		this.fnMeta.set(meta);
 		this._private = MetaUtil.isPrivate(meta);
-		this._ns =  MetaUtil.getNamespace(meta);
+		this._module =  MetaUtil.getModule(meta);
 		return this;
 	}
 
@@ -135,12 +136,17 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	@Override 
 	public String toString() {
+		final StringBuilder meta = new StringBuilder();
+		meta.append("{");
+		meta.append("visibility: ").append(StringUtil.quote(isPrivate() ? "private" : "public", '\"')); 
+		meta.append(", module: ").append(StringUtil.quote(module() == null ? "" : module(), '\"')); 
+		meta.append("}");
+		
 		return String.format(
-				"%s %s %s %s", 
-				isPrivate() ? "private" : "public", 
+				"%s %s %s", 
 				isMacro() ? "macro" : "function", 
 				getName(),
-				ns() == null ? "{:ns nil}" : "{:ns " + ns() + "}");
+				meta);
 	}
 
 	public VncVal getMeta() { 
@@ -151,8 +157,8 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return _private;
 	}
 
-	public String ns() {
-		return _ns;
+	public String module() {
+		return _module;
 	}
 
 	public static MetaBuilder meta() {
@@ -184,10 +190,10 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 			return this;
 		}
 		
-		public MetaBuilder namespace(final String file) { 
+		public MetaBuilder module(final String module) { 
 			meta.put(
-				MetaUtil.FILE, 
-				new VncString(file));
+				MetaUtil.MODULE, 
+				new VncString(module));
 			return this;
 		}
 		
@@ -210,5 +216,5 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
 	private volatile boolean _private;
-	private volatile String _ns;
+	private volatile String _module;
 }

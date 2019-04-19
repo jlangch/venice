@@ -49,7 +49,7 @@ public class ModuleLoadFunctions {
 					"load-core-module", 
 					VncFunction
 						.meta()
-						.namespace("core")
+						.module("core")
 						.arglists("(load-core-module name)")		
 						.doc("Loads a Venice extension module.")
 						.build()
@@ -86,7 +86,7 @@ public class ModuleLoadFunctions {
 				"load-classpath-venice",
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

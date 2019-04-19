@@ -95,7 +95,7 @@ public class CoreFunctions {
 				"throw", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(throw)", "(throw x)")		
 					.doc("Throws exception with passed value x")
 					.examples(
@@ -164,7 +164,7 @@ public class CoreFunctions {
 				"nil?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(nil? x)")		
 					.doc("Returns true if x is nil, false otherwise")
 					.examples(
@@ -187,7 +187,7 @@ public class CoreFunctions {
 				"some?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(some? x)")		
 					.doc("Returns true if x is not nil, false otherwise")
 					.examples(
@@ -213,7 +213,7 @@ public class CoreFunctions {
 				"true?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(true? x)")		
 					.doc("Returns true if x is true, false otherwise")
 					.examples(
@@ -238,7 +238,7 @@ public class CoreFunctions {
 				"false?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(false? x)")		
 					.doc("Returns true if x is false, false otherwise")
 					.examples(
@@ -263,7 +263,7 @@ public class CoreFunctions {
 				"boolean?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(boolean? n)")		
 					.doc("Returns true if n is a boolean")
 					.examples(
@@ -287,7 +287,7 @@ public class CoreFunctions {
 				"int?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(int? n)")		
 					.doc("Returns true if n is an int")
 					.examples(
@@ -313,7 +313,7 @@ public class CoreFunctions {
 				"long?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(long? n)")		
 					.doc("Returns true if n is a long")
 					.examples(
@@ -339,7 +339,7 @@ public class CoreFunctions {
 				"double?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(double? n)")		
 					.doc("Returns true if n is a double")
 					.examples(
@@ -366,7 +366,7 @@ public class CoreFunctions {
 				"decimal?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(decimal? n)")		
 					.doc("Returns true if n is a decimal")
 					.examples(
@@ -390,7 +390,7 @@ public class CoreFunctions {
 				"number?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(number? n)")		
 					.doc("Returns true if n is a number (int, long, double, or decimal)")
 					.examples(
@@ -419,7 +419,7 @@ public class CoreFunctions {
 				"string?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(string? x)")		
 					.doc("Returns true if x is a string")
 					.examples(
@@ -450,7 +450,7 @@ public class CoreFunctions {
 				"symbol", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(symbol name)")		
 					.doc("Returns a symbol from the given name")
 					.examples(
@@ -482,7 +482,7 @@ public class CoreFunctions {
 				"symbol?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(symbol? x)")		
 					.doc("Returns true if x is a symbol")
 					.examples(
@@ -506,7 +506,7 @@ public class CoreFunctions {
 				"keyword", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(keyword name)")		
 					.doc("Returns a keyword from the given name")
 					.examples(
@@ -538,7 +538,7 @@ public class CoreFunctions {
 				"keyword?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(keyword? x)")		
 					.doc("Returns true if x is a keyword")
 					.examples(
@@ -562,7 +562,7 @@ public class CoreFunctions {
 				"fn?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(fn? x)")		
 					.doc("Returns true if x is a function")
 					.examples("(do \n   (def sum (fn [x] (+ 1 x)))\n   (fn? sum))")
@@ -585,7 +585,7 @@ public class CoreFunctions {
 				"macro?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(macro? x)")		
 					.doc("Returns true if x is a macro")
 					.examples("(macro? and)")
@@ -613,7 +613,7 @@ public class CoreFunctions {
 				"pr-str", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(pr-str & xs)")		
 					.doc(
 						"With no args, returns the empty string. With one arg x, returns " + 
@@ -640,7 +640,7 @@ public class CoreFunctions {
 				"str", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str & xs)")		
 					.doc(
 						"With no args, returns the empty string. With one arg x, returns " + 
@@ -667,7 +667,7 @@ public class CoreFunctions {
 				"readline", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(readline prompt)")		
 					.doc("Reads the next line from stdin. The function is sandboxed")
 					.build()
@@ -695,7 +695,7 @@ public class CoreFunctions {
 				"read-string", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(read-string x)")		
 					.doc("Reads from x")
 					.build()
@@ -726,7 +726,7 @@ public class CoreFunctions {
 				"==", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(== x y)")		
 					.doc("Returns true if both operands have the equivalent type")
 					.examples("(== 0 0)", "(== 0 1)", "(== 0 0.0)")
@@ -746,7 +746,7 @@ public class CoreFunctions {
 				"!=", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(!= x y)")		
 					.doc("Returns true if both operands do not have the equivalent type")
 					.examples("(!= 0 1)", "(!= 0 0)", "(!= 0 0.0)")
@@ -766,7 +766,7 @@ public class CoreFunctions {
 				"match", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(match s regex)")		
 					.doc("Returns true if the string s matches the regular expression regex")
 					.examples("(match \"1234\" \"[0-9]+\")", "(match \"1234ss\" \"[0-9]+\")")
@@ -797,7 +797,7 @@ public class CoreFunctions {
 				"match-not", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(match-not s regex)")		
 					.doc("Returns true if the string s does not match the regular expression regex")
 					.examples("(match-not \"1234\" \"[0-9]+\")", "(match-not \"1234ss\" \"[0-9]+\")")
@@ -828,7 +828,7 @@ public class CoreFunctions {
 				"<", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(< x y)")		
 					.doc("Returns true if x is smaller than y")
 					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)")
@@ -870,7 +870,7 @@ public class CoreFunctions {
 				"<=", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(<= x y)")		
 					.doc("Returns true if x is smaller or equal to y")
 					.examples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)")
@@ -912,7 +912,7 @@ public class CoreFunctions {
 				">", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(> x y)")		
 					.doc("Returns true if x is greater than y")
 					.examples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)")
@@ -954,7 +954,7 @@ public class CoreFunctions {
 				">=", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(>= x y)")		
 					.doc("Returns true if x is greater or equal to y")
 					.examples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)")
@@ -1003,7 +1003,7 @@ public class CoreFunctions {
 				"boolean", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(boolean x)")		
 					.doc("Converts to boolean. Everything except 'false' and 'nil' is true in boolean context.")
 					.examples(
@@ -1035,7 +1035,7 @@ public class CoreFunctions {
 				"long", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(long x)")		
 					.doc("Converts to long")
 					.examples(
@@ -1162,7 +1162,7 @@ public class CoreFunctions {
 				"double", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(double x)")		
 					.doc("Converts to double")
 					.examples(
@@ -1226,7 +1226,7 @@ public class CoreFunctions {
 				"decimal", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(decimal x) (decimal x scale rounding-mode)")		
 					.doc(
 						"Converts to decimal. rounding-mode is one of (:CEILING, :DOWN, " +
@@ -1292,7 +1292,7 @@ public class CoreFunctions {
 				"list", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(list & items)")		
 					.doc("Creates a new list containing the items.")
 					.examples("(list )", "(list 1 2 3)", "(list 1 2 3 [:a :b])")
@@ -1310,7 +1310,7 @@ public class CoreFunctions {
 				"list*", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists(	
 				    	"(list* args)",
 				    	"(list* a args)",
@@ -1362,7 +1362,7 @@ public class CoreFunctions {
 				"list?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(list? obj)")		
 					.doc("Returns true if obj is a list")
 					.examples("(list? (list 1 2))", "(list? '(1 2))")
@@ -1387,7 +1387,7 @@ public class CoreFunctions {
 				"vector", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(vector & items)")		
 					.doc("Creates a new vector containing the items.")
 					.examples(
@@ -1412,7 +1412,7 @@ public class CoreFunctions {
 				"vector?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(vector? obj)")		
 					.doc("Returns true if obj is a vector")
 					.examples(
@@ -1434,7 +1434,7 @@ public class CoreFunctions {
 				"subvec", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(subvec v start) (subvec v start end)")		
 					.doc(
 						"Returns a vector of the items in vector from start (inclusive) "+
@@ -1466,7 +1466,7 @@ public class CoreFunctions {
 				"replace", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(replace smap coll)")		
 					.doc(
 						"Given a map of replacement pairs and a collection, returns a\n" + 
@@ -1544,7 +1544,7 @@ public class CoreFunctions {
 				"bytebuf?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(bytebuf? x)")		
 					.doc("Returns true if x is a bytebuf")
 					.examples(
@@ -1567,7 +1567,7 @@ public class CoreFunctions {
 				"bytebuf", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(bytebuf x)")		
 					.doc( "Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string")
 					.examples("(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
@@ -1634,7 +1634,7 @@ public class CoreFunctions {
 				"bytebuf-from-string", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(bytebuf-from-string s encoding)")		
 					.doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to UTF-8")
 					.examples("(bytebuf-from-string \"abcdef\" :UTF-8)")
@@ -1669,7 +1669,7 @@ public class CoreFunctions {
 				"bytebuf-to-string", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(bytebuf-to-string buf encoding)")		
 					.doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to UTF-8")
 					.examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
@@ -1704,7 +1704,7 @@ public class CoreFunctions {
 				"bytebuf-sub", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(bytebuf-sub x start) (bytebuf-sub x start end)")		
 					.doc(
 						"Returns a byte buffer of the items in buffer from start (inclusive) "+
@@ -1750,7 +1750,7 @@ public class CoreFunctions {
 				"set", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(set & items)")		
 					.doc("Creates a new set containing the items.")
 					.examples("(set )", "(set nil)", "(set 1)", "(set 1 2 3)", "(set [1 2] 3)")
@@ -1768,7 +1768,7 @@ public class CoreFunctions {
 				"sorted-set", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sorted-set & items)")		
 					.doc("Creates a new sorted-set containing the items.")
 					.examples("(sorted-set )", "(sorted-set nil)", "(sorted-set 1)", "(sorted-set 6 2 4)", "(str (sorted-set [2 3] [1 2]))")
@@ -1786,7 +1786,7 @@ public class CoreFunctions {
 				"set?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(set? obj)")		
 					.doc("Returns true if obj is a set")
 					.examples("(set? (set 1))")
@@ -1806,7 +1806,7 @@ public class CoreFunctions {
 				"sorted-set?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sorted-set? obj)")		
 					.doc("Returns true if obj is a sorted-set")
 					.examples("(sorted-set? (set 1))")
@@ -1826,7 +1826,7 @@ public class CoreFunctions {
 				"difference", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(difference s1)", "(difference s1 s2)", "(difference s1 s2 & sets)")		
 					.doc("Return a set that is the first set without elements of the remaining sets")
 					.examples(
@@ -1855,7 +1855,7 @@ public class CoreFunctions {
 				"union", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(union s1)", "(union s1 s2)", "(union s1 s2 & sets)")		
 					.doc("Return a set that is the union of the input sets")
 					.examples(
@@ -1884,7 +1884,7 @@ public class CoreFunctions {
 				"intersection", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(intersection s1)", "(intersection s1 s2)", "(intersection s1 s2 & sets)")		
 					.doc("Return a set that is the intersection of the input sets")
 					.examples(
@@ -1931,7 +1931,7 @@ public class CoreFunctions {
 				"hash-map", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(hash-map & keyvals)", "(hash-map map)")		
 					.doc("Creates a new hash map containing the items.")
 					.examples(
@@ -1959,7 +1959,7 @@ public class CoreFunctions {
 				"ordered-map", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(ordered-map & keyvals)", "(ordered-map map)")		
 					.doc("Creates a new ordered map containing the items.")
 					.examples(
@@ -1984,7 +1984,7 @@ public class CoreFunctions {
 				"sorted-map", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sorted-map & keyvals)", "(sorted-map map)")		
 					.doc("Creates a new sorted map containing the items.")
 					.examples(
@@ -2010,7 +2010,7 @@ public class CoreFunctions {
 				"mutable-map", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(mutable-map & keyvals)", "(mutable-map map)")		
 					.doc("Creates a new mutable threadsafe map containing the items.")
 					.examples(
@@ -2032,7 +2032,7 @@ public class CoreFunctions {
 				"map?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(map? obj)")		
 					.doc("Returns true if obj is a map")
 					.examples("(map? {:a 1 :b 2})")
@@ -2052,7 +2052,7 @@ public class CoreFunctions {
 				"hash-map?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(hash-map? obj)")		
 					.doc("Returns true if obj is a hash map")
 					.examples("(hash-map? (hash-map :a 1 :b 2))")
@@ -2072,7 +2072,7 @@ public class CoreFunctions {
 				"ordered-map?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(ordered-map? obj)")		
 					.doc("Returns true if obj is an ordered map")
 					.examples("(ordered-map? (ordered-map :a 1 :b 2))")
@@ -2092,7 +2092,7 @@ public class CoreFunctions {
 				"sorted-map?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sorted-map? obj)")		
 					.doc("Returns true if obj is a sorted map")
 					.examples("(sorted-map? (sorted-map :a 1 :b 2))")
@@ -2112,7 +2112,7 @@ public class CoreFunctions {
 				"mutable-map?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(mutable-map? obj)")		
 					.doc("Returns true if obj is a mutable map")
 					.examples("(mutable-map? (mutable-map :a 1 :b 2))")
@@ -2132,7 +2132,7 @@ public class CoreFunctions {
 				"contains?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(contains? coll key)")		
 					.doc(
 						"Returns true if key is present in the given collection, otherwise " + 
@@ -2183,7 +2183,7 @@ public class CoreFunctions {
 				"assoc", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(assoc coll key val)", "(assoc coll key val & kvs)")		
 					.doc(
 						"When applied to a map, returns a new map of the " + 
@@ -2270,7 +2270,7 @@ public class CoreFunctions {
 				"assoc!", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(assoc! coll key val)", "(assoc! coll key val & kvs)")		
 					.doc("Associates key/vals with a mutable map, returns the map")
 					.examples(
@@ -2301,7 +2301,7 @@ public class CoreFunctions {
 				"assoc-in", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(assoc-in m ks v)")		
 					.doc(
 						"Associates a value in a nested associative structure, where ks is a " + 
@@ -2343,7 +2343,7 @@ public class CoreFunctions {
 				"dissoc", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(dissoc coll key)", "(dissoc coll key & ks)")		
 					.doc(
 						"Returns a new coll of the same type, " + 
@@ -2417,7 +2417,7 @@ public class CoreFunctions {
 				"dissoc!", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(dissoc! coll key)", "(dissoc! coll key & ks)")		
 					.doc("Dissociates keys from a mutable map, returns the map")
 					.examples(
@@ -2448,7 +2448,7 @@ public class CoreFunctions {
 				"get", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(get map key)", "(get map key not-found)")		
 					.doc("Returns the value mapped to key, not-found or nil if key not present.")
 					.examples(
@@ -2502,7 +2502,7 @@ public class CoreFunctions {
 				"get-in", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(get-in m ks)", "(get-in m ks not-found)")		
 					.doc(
 						"Returns the value in a nested associative structure, " + 
@@ -2575,7 +2575,7 @@ public class CoreFunctions {
 				"find", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(find map key)")		
 					.doc("Returns the map entry for key, or nil if key not present.")
 					.examples("(find {:a 1 :b 2} :b)", "(find {:a 1 :b 2} :z)")
@@ -2604,7 +2604,7 @@ public class CoreFunctions {
 				"key", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(key e)")		
 					.doc("Returns the key of the map entry.")
 					.examples("(key (find {:a 1 :b 2} :b))")
@@ -2625,7 +2625,7 @@ public class CoreFunctions {
 				"keys", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(keys map)")		
 					.doc("Returns a collection of the map's keys.")
 					.examples("(keys {:a 1 :b 2 :c 3})")
@@ -2645,7 +2645,7 @@ public class CoreFunctions {
 				"val", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(val e)")		
 					.doc("Returns the val of the map entry.")
 					.examples("(val (find {:a 1 :b 2} :b))")
@@ -2666,7 +2666,7 @@ public class CoreFunctions {
 				"vals", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(vals map)")		
 					.doc("Returns a collection of the map's values.")
 					.examples("(vals {:a 1 :b 2 :c 3})")
@@ -2687,7 +2687,7 @@ public class CoreFunctions {
 				"update", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(update m k f)")		
 					.doc(
 						"Updates a value in an associative structure, where k is a " + 
@@ -2743,7 +2743,7 @@ public class CoreFunctions {
 				"update!", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(update! m k f)")		
 					.doc(
 						"Updates a value in a mutable map, where k is a " + 
@@ -2785,7 +2785,7 @@ public class CoreFunctions {
 				"split-with", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(split-with pred coll)")		
 					.doc("Splits the collection at the first false/nil predicate result in a vector with two lists")
 					.examples(
@@ -2838,7 +2838,7 @@ public class CoreFunctions {
 				"into", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(into to-coll from-coll)")		
 					.doc(
 						"Returns a new coll consisting of to-coll with all of the items of" + 
@@ -2986,7 +2986,7 @@ public class CoreFunctions {
 				"sequential?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sequential? obj)")		
 					.doc("Returns true if obj is a sequential collection")
 					.examples("(sequential? '(1))", 
@@ -3010,7 +3010,7 @@ public class CoreFunctions {
 				"coll?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(coll? obj)")		
 					.doc("Returns true if obj is a collection")
 					.examples("(coll? {:a 1})", "(coll? [1 2])")
@@ -3030,7 +3030,7 @@ public class CoreFunctions {
 				"every?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(every? pred coll)")		
 					.doc(
 						"Returns true if the predicate is true for all collection items, " +
@@ -3072,7 +3072,7 @@ public class CoreFunctions {
 				"not-every?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(not-every? pred coll)")		
 					.doc(
 						"Returns false if the predicate is true for all collection items, " +
@@ -3099,7 +3099,7 @@ public class CoreFunctions {
 				"any?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(any? pred coll)")		
 					.doc(
 						"Returns true if the predicate is true for at least one collection item, " +
@@ -3141,7 +3141,7 @@ public class CoreFunctions {
 				"not-any?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(not-any? pred coll)")		
 					.doc(
 						"Returns false if the predicate is true for at least one collection item, " +
@@ -3169,7 +3169,7 @@ public class CoreFunctions {
 				"count", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(count coll)")		
 					.doc(
 						"Returns the number of items in the collection. (count nil) returns " + 
@@ -3217,7 +3217,7 @@ public class CoreFunctions {
 				"empty", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(empty coll)")		
 					.doc("Returns an empty collection of the same category as coll, or nil")
 					.examples("(empty {:a 1})", "(empty [1 2])", "(empty '(1 2))")
@@ -3251,7 +3251,7 @@ public class CoreFunctions {
 				"empty?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(empty? x)")		
 					.doc("Returns true if x is empty")
 					.examples("(empty? {})", "(empty? [])", "(empty? '())")
@@ -3286,7 +3286,7 @@ public class CoreFunctions {
 				"not-empty?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(not-empty? x)")		
 					.doc("Returns true if x is not empty")
 					.examples("(empty? {:a 1})", "(empty? [1 2])", "(empty? '(1 2))")
@@ -3321,7 +3321,7 @@ public class CoreFunctions {
 				"cons", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(cons x coll)")		
 					.doc(
 						"Returns a new collection where x is the first element and coll is\n" + 
@@ -3364,7 +3364,7 @@ public class CoreFunctions {
 				"concat", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(concat coll)", "(concat coll & colls)")		
 					.doc( "Returns a collection of the concatenation of the elements " +
 					"in the supplied colls.")
@@ -3419,7 +3419,7 @@ public class CoreFunctions {
 				"interleave", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(interleave c1 c2)", "(interleave c1 c2 & colls)")		
 					.doc("Returns a collection of the first item in each coll, then the second etc.")
 					.examples("(interleave [:a :b :c] [1 2])")
@@ -3455,7 +3455,7 @@ public class CoreFunctions {
 				"interpose", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(interpose sep coll)")		
 					.doc("Returns a collection of the elements of coll separated by sep.")						
 					.examples("(interpose \", \" [1 2 3])", "(apply str (interpose \", \" [1 2 3]))")
@@ -3488,7 +3488,7 @@ public class CoreFunctions {
 				"first", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(first coll)")		
 					.doc("Returns the first element of coll.")
 					.examples(
@@ -3528,7 +3528,7 @@ public class CoreFunctions {
 				"second", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(second coll)")		
 					.doc("Returns the second element of coll.")
 					.examples(
@@ -3569,7 +3569,7 @@ public class CoreFunctions {
 				"nth", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(nth coll idx)")		
 					.doc("Returns the nth element of coll.")
 					.examples(
@@ -3609,7 +3609,7 @@ public class CoreFunctions {
 				"last", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(last coll)")		
 					.doc("Returns the last element of coll.")
 					.examples(
@@ -3649,7 +3649,7 @@ public class CoreFunctions {
 				"rest", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(rest coll)")		
 					.doc("Returns a collection with second to list element")
 					.examples(
@@ -3693,7 +3693,7 @@ public class CoreFunctions {
 				"butlast", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(butlast coll)")		
 					.doc("Returns a collection with all but the last list element")
 					.examples(
@@ -3740,7 +3740,7 @@ public class CoreFunctions {
 				"nfirst", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(nfirst coll n)")		
 					.doc("Returns a collection of the first n items")
 					.examples(
@@ -3788,7 +3788,7 @@ public class CoreFunctions {
 				"nlast", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(nlast coll n)")		
 					.doc("Returns a collection of the last n items")
 					.examples(
@@ -3836,7 +3836,7 @@ public class CoreFunctions {
 				"distinct", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(distinct coll)")		
 					.doc("Returns a collection with all duplicates removed")
 					.examples(
@@ -3868,7 +3868,7 @@ public class CoreFunctions {
 				"dedupe", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(dedupe coll)")		
 					.doc("Returns a collection with all consecutive duplicates removed")
 					.examples(
@@ -3905,7 +3905,7 @@ public class CoreFunctions {
 				"partition", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(partition n coll)", "(partition n step coll)", "(partition n step padcoll coll)")		
 					.doc(
 						"Returns a collection of lists of n items each, at offsets step " + 
@@ -3970,7 +3970,7 @@ public class CoreFunctions {
 				"coalesce", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(coalesce args*)")		
 					.doc("Returns the first non nil arg")
 					.examples(
@@ -3995,7 +3995,7 @@ public class CoreFunctions {
 				"empty-to-nil", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(empty-to-nil x)")		
 					.doc("Returns nil if x is empty")
 					.examples(
@@ -4034,7 +4034,7 @@ public class CoreFunctions {
 					"instance?", 
 					VncFunction
 						.meta()
-					.namespace("core")
+					.module("core")
 						.arglists("(instance? type x)")		
 						.doc("Returns true if x is an instance of the given type")
 						.examples(
@@ -4059,7 +4059,7 @@ public class CoreFunctions {
 				"pop", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(pop coll)")		
 					.doc(
 						"For a list, returns a new list without the first item, " + 
@@ -4094,7 +4094,7 @@ public class CoreFunctions {
 				"peek", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(peek coll)")		
 					.doc("For a list, same as first, for a vector, same as last")
 					.examples(
@@ -4127,7 +4127,7 @@ public class CoreFunctions {
 				"take-while", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(take-while predicate coll)")		
 					.doc(
 						"Returns a list of successive items from coll while " + 
@@ -4158,7 +4158,7 @@ public class CoreFunctions {
 				"take", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(take n coll)")		
 					.doc(
 						"Returns a collection of the first n items in coll, or all items if " + 
@@ -4185,7 +4185,7 @@ public class CoreFunctions {
 				"drop-while", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(drop-while predicate coll)")		
 					.doc(
 						"Returns a list of the items in coll starting from the " + 
@@ -4216,7 +4216,7 @@ public class CoreFunctions {
 				"drop", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(drop n coll)")		
 					.doc("Returns a collection of all but the first n items in coll")
 					.examples("(drop 3 [1 2 3 4 5])", "(drop 10 [1 2 3 4 5])")
@@ -4239,7 +4239,7 @@ public class CoreFunctions {
 				"flatten", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(flatten coll)")		
 					.doc(
 						"Takes any nested combination of collections (lists, vectors, " + 
@@ -4266,7 +4266,7 @@ public class CoreFunctions {
 				"reverse", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(reverse coll)")		
 					.doc("Returns a collection of the items in coll in reverse order")
 					.examples("(reverse [1 2 3 4 5 6])")
@@ -4293,7 +4293,7 @@ public class CoreFunctions {
 				"sort", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sort coll)", "(sort comparefn coll)")		
 					.doc(
 						"Returns a sorted list of the items in coll. If no compare function " + 
@@ -4340,7 +4340,7 @@ public class CoreFunctions {
 				"sort-by", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)")		
 					.doc(
 						"Returns a sorted sequence of the items in coll, where the sort " + 
@@ -4404,7 +4404,7 @@ public class CoreFunctions {
 				"group-by", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(group-by f coll)")		
 					.doc(
 						"Returns a map of the elements of coll keyed by the result of " + 
@@ -4446,7 +4446,7 @@ public class CoreFunctions {
 				"apply", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(apply f args* coll)")		
 					.doc("Applies f to all arguments composed of args and coll")
 					.examples(
@@ -4477,7 +4477,7 @@ public class CoreFunctions {
 				"comp", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(comp f*)")		
 					.doc(
 						"Takes a set of functions and returns a fn that is the composition " + 
@@ -4527,7 +4527,7 @@ public class CoreFunctions {
 				"compare", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(compare x y)")		
 					.doc(
 						"Comparator. Returns -1, 0, or 1 when x is logically 'less than', " +
@@ -4564,7 +4564,7 @@ public class CoreFunctions {
 				"partial", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(partial f args*)")		
 					.doc(
 						"Takes a function f and fewer than the normal arguments to f, and " + 
@@ -4601,7 +4601,7 @@ public class CoreFunctions {
 				"map", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(map f coll colls*)")		
 					.doc(
 						"Applys f to the set of first items of each coll, followed by applying " + 
@@ -4657,7 +4657,7 @@ public class CoreFunctions {
 				"mapv", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(mapv f coll colls*)")		
 					.doc(
 						"Returns a vector consisting of the result of applying f " +
@@ -4709,7 +4709,7 @@ public class CoreFunctions {
 				"keep", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(keep f coll)")		
 					.doc(
 						"Returns a sequence of the non-nil results of (f item). Note, " + 
@@ -4738,7 +4738,7 @@ public class CoreFunctions {
 				"docoll", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(docoll f coll)")		
 					.doc(
 						"Applies f to the items of the collection presumably for side effects. " +
@@ -4782,7 +4782,7 @@ public class CoreFunctions {
 				"mapcat", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(mapcat fn & colls)")		
 					.doc(
 						"Returns the result of applying concat to the result of applying map " + 
@@ -4803,7 +4803,7 @@ public class CoreFunctions {
 				"map-invert", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(map-invert m)")		
 					.doc(
 						"Returns the map with the vals mapped to the keys.")
@@ -4831,7 +4831,7 @@ public class CoreFunctions {
 				"filter", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(filter predicate coll)")		
 					.doc(
 						"Returns a collection of the items in coll for which " + 
@@ -4867,7 +4867,7 @@ public class CoreFunctions {
 				"remove", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(remove predicate coll)")		
 					.doc(
 						"Returns a collection of the items in coll for which " + 
@@ -4902,7 +4902,7 @@ public class CoreFunctions {
 				"reduce", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(reduce f coll)", "(reduce f val coll)")		
 					.doc(
 						"f should be a function of 2 arguments. If val is not supplied, " + 
@@ -4992,7 +4992,7 @@ public class CoreFunctions {
 				"reduce-kv", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(reduce-kv f init coll))")		
 					.doc(
 						"Reduces an associative collection. f should be a function of 3 " + 
@@ -5036,7 +5036,7 @@ public class CoreFunctions {
 				"merge", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(merge & maps)")		
 					.doc(
 						"Returns a map that consists of the rest of the maps conj-ed onto " +
@@ -5075,7 +5075,7 @@ public class CoreFunctions {
 				"conj", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(conj coll x)", "(conj coll x & xs)")		
 					.doc(
 						"Returns a new collection with the x, xs " + 
@@ -5134,7 +5134,7 @@ public class CoreFunctions {
 				"disj", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(disj coll x)", "(disj coll x & xs)")		
 					.doc( "Returns a new set with the x, xs removed.")
 					.examples("(disj (set 1 2 3) 3)")
@@ -5161,7 +5161,7 @@ public class CoreFunctions {
 				"seq", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(seq coll)")		
 					.doc(
 						"Returns a seq on the collection. If the collection is " + 
@@ -5224,7 +5224,7 @@ public class CoreFunctions {
 				"repeat", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(repeat n x)")		
 					.doc("Returns a collection with the value x repeated n times")
 					.examples("(repeat 5 [1 2])")
@@ -5254,7 +5254,7 @@ public class CoreFunctions {
 				"repeatedly", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(repeatedly n fn)")		
 					.doc(
 						"Takes a function of no args, presumably with side effects, and " + 
@@ -5298,7 +5298,7 @@ public class CoreFunctions {
 				"meta", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(meta obj)")		
 					.doc("Returns the metadata of obj, returns nil if there is no metadata.")
 					.build()
@@ -5317,7 +5317,7 @@ public class CoreFunctions {
 				"with-meta", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(with-meta obj m)")		
 					.doc("Returns a copy of the object obj, with a map m as its metadata.")
 					.build()
@@ -5336,7 +5336,7 @@ public class CoreFunctions {
 				"vary-meta", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(vary-meta obj f & args)")		
 					.doc("Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.")
 					.build()
@@ -5368,7 +5368,7 @@ public class CoreFunctions {
 				"gensym", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(gensym)", "(gensym prefix)")		
 					.doc("Generates a symbol.")
 					.examples("(gensym )", "(gensym \"prefix_\")")
@@ -5394,7 +5394,7 @@ public class CoreFunctions {
 				"name", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(name x)")		
 					.doc("Returns the name String of a string, symbol or keyword.")
 					.examples(
@@ -5432,7 +5432,7 @@ public class CoreFunctions {
 				"type", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(type x)")		
 					.doc("Returns the type of x.")
 					.examples(

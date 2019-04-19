@@ -50,7 +50,7 @@ public class CallFrame {
 	}
 
 	public static CallFrame fromFunction(final VncFunction fn, final VncVal fnSym) {
-		return new CallFrame(fn.getName(), fn.ns(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
+		return new CallFrame(fn.getName(), fn.module(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
 	}
 
 	

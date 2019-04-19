@@ -75,15 +75,6 @@ public class VncMultiArityFunction extends VncFunction {
 	@Override public int typeRank() {
 		return 101;
 	}
-	@Override 
-	public String toString() {
-		return String.format(
-				"%s %s %s %s", 
-				isPrivate() ? "private" : "public", 
-				isMacro() ? "macro" : "function", 
-				getName(),
-				ns() == null ? "{:ns nil}" : "{:ns " + ns() + "}");
-	}
 	
 	private VncFunction findFunction(final int arity) {
 		int fixedArgs = -1;

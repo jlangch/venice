@@ -56,7 +56,7 @@ public class StringFunctions {
 				"str/blank?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/blank? s)")		
 					.doc("True if s is blank.")
 					.examples(
@@ -86,7 +86,7 @@ public class StringFunctions {
 				"str/char", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/char n)")		
 					.doc("Converts a number to a single char string.")
 					.examples("(str/char 65)")
@@ -112,7 +112,7 @@ public class StringFunctions {
 				"str/starts-with?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/starts-with? s substr)")		
 					.doc("True if s starts with substr.")
 					.examples("(str/starts-with? \"abc\"  \"ab\")")
@@ -139,7 +139,7 @@ public class StringFunctions {
 				"str/ends-with?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/ends-with? s substr)")		
 					.doc("True if s ends with substr.")
 					.examples("(str/starts-with? \"abc\"  \"bc\")")
@@ -166,7 +166,7 @@ public class StringFunctions {
 				"str/contains?", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/contains? s substr)")		
 					.doc("True if s contains with substr.")
 					.examples("(str/contains? \"abc\"  \"ab\")")
@@ -193,7 +193,7 @@ public class StringFunctions {
 				"str/trim", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/trim s substr)")		
 					.doc("Trims leading and trailing spaces from s.")
 					.examples("(str/trim \" abc  \")")
@@ -217,7 +217,7 @@ public class StringFunctions {
 				"str/trim-to-nil", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/trim-to-nil s substr)")		
 					.doc(
 						"Trims leading and trailing spaces from s. " +
@@ -248,7 +248,7 @@ public class StringFunctions {
 				"str/index-of", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/index-of s value)", "(str/index-of s value from-index)")		
 					.doc(
 						"Return index of value (string or char) in s, optionally searching " + 
@@ -282,7 +282,7 @@ public class StringFunctions {
 				"str/last-index-of", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/last-index-of s value)", "(str/last-index-of s value from-index)")		
 					.doc(
 						"Return last index of value (string or char) in s, optionally\n" + 
@@ -320,7 +320,7 @@ public class StringFunctions {
 				"str/replace-first", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/replace-first s search replacement)")		
 					.doc("Replaces the first occurrance of search in s")
 					.examples("(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")")
@@ -358,7 +358,7 @@ public class StringFunctions {
 				"str/replace-last", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/replace-last s search replacement)")		
 					.doc("Replaces the last occurrance of search in s")
 					.examples("(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")")
@@ -396,7 +396,7 @@ public class StringFunctions {
 				"str/replace-all", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/replace-all s search replacement)")		
 					.doc("Replaces the all occurrances of search in s")
 					.examples("(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")")
@@ -441,7 +441,7 @@ public class StringFunctions {
 				"str/lower-case", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/lower-case s)")		
 					.doc("Converts s to lowercase")
 					.examples("(str/lower-case \"aBcDeF\")")
@@ -467,7 +467,7 @@ public class StringFunctions {
 				"str/upper-case", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/upper-case s)")		
 					.doc("Converts s to uppercase")
 					.examples("(str/upper-case \"aBcDeF\")")
@@ -493,7 +493,7 @@ public class StringFunctions {
 				"str/join", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/join coll)", "(str/join separator coll)")		
 					.doc("Joins all elements in coll separated by an optional separator.")
 					.examples(
@@ -525,7 +525,7 @@ public class StringFunctions {
 				"str/subs", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/subs s start)", "(str/subs s start end)")		
 					.doc(
 						"Returns the substring of s beginning at start inclusive, and ending " + 
@@ -556,7 +556,7 @@ public class StringFunctions {
 				"str/split", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/split s regex)")		
 					.doc("Splits string on a regular expression.")
 					.examples("(str/split \"abc , def , ghi\" \"[ *],[ *]\")")
@@ -584,7 +584,7 @@ public class StringFunctions {
 				"str/split-lines", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/split-lines s)")		
 					.doc("Splits s into lines.")
 					.examples("(str/split-lines \"line1\nline2\nline3\")")
@@ -611,7 +611,7 @@ public class StringFunctions {
 				"str/format", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists(
 						"(str/format format args*)",
 						"(str/format locale format args*)")		
@@ -673,7 +673,7 @@ public class StringFunctions {
 				"str/quote", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/quote str q)", "(str/quote str start end)")		
 					.doc("Quotes a string.")
 					.examples(
@@ -701,7 +701,7 @@ public class StringFunctions {
 				"str/truncate", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/truncate s maxlen marker)")		
 					.doc(
 						"Truncates a string to the max lenght maxlen and adds the " +
@@ -734,7 +734,7 @@ public class StringFunctions {
 				"str/strip-start", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/strip-start s substr)")		
 					.doc("Removes a substr only if it is at the beginning of a s, otherwise returns s.")
 					.examples(
@@ -763,7 +763,7 @@ public class StringFunctions {
 				"str/strip-end", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/strip-end s substr)")		
 					.doc("Removes a substr only if it is at the end of a s, otherwise returns s.")
 					.examples(
@@ -792,7 +792,7 @@ public class StringFunctions {
 				"str/strip-indent", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/strip-indent s)")		
 					.doc("Strip the indent of a multi-line string. The first line's leading whitespaces define the indent.")
 					.examples("(str/strip-indent \"  line1\n    line2\n    line3\")")
@@ -816,7 +816,7 @@ public class StringFunctions {
 				"str/strip-margin", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/strip-margin s)")		
 					.doc(
 						"Strips leading whitespaces upto and including the margin '|' " +
@@ -843,7 +843,7 @@ public class StringFunctions {
 				"str/repeat", 
 				VncFunction
 					.meta()
-					.namespace("core")
+					.module("core")
 					.arglists("(str/repeat s n)", "(str/repeat s n sep)")		
 					.doc("Repeats s n times with an optional separator.")
 					.examples(

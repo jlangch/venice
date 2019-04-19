@@ -33,7 +33,7 @@ public class JavaInteropFn extends VncFunction {
 			".", 
 			VncFunction
 				.meta()
-				.namespace("core")
+				.module("core")
 				.arglists(
 					"(. classname :new args)", 
 					"(. classname method-name args)",
