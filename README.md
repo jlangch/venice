@@ -421,7 +421,7 @@ Immutable persistent sorted map.
 
 ```clojure
 (let [add (resolve (symbol "+"))]
-   (add 2 5)
+   (add 2 5))
 ```
 
 
