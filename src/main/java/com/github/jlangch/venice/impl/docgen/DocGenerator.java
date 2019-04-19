@@ -647,7 +647,8 @@ public class DocGenerator {
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);		
-		create.addItem(getDocItem("defn", false, false));
+		create.addItem(getDocItem("defn"));
+		create.addItem(getDocItem("defn-"));
 		create.addItem(getDocItem("defmacro"));
 		create.addItem(getDocItem("macroexpand"));
 
