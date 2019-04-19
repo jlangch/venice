@@ -189,7 +189,18 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal a0 = ast.first();		
 			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
-			switch (a0sym) {			
+			switch (a0sym) {		
+				case "do":
+					if (ast.size() < 2) {
+						orig_ast = Constants.Nil;
+					}
+					else {
+						final VncList head_exprs = ast.slice(1, ast.size()-1);
+						eval_ast(head_exprs, env);
+						orig_ast = ast.last();
+					}
+					break;
+					
 				case "def": { // (def name value)
 					VncSymbol defName = Coerce.toVncSymbol(ast.second());
 					defName = defName.withMeta(evaluate(defName.getMeta(), env));
@@ -259,23 +270,23 @@ public class VeniceInterpreter implements Serializable  {
 					return res;
 				}
 
-			case "defmacro":
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {
-					return defmacro_(ast, env);
-				}
-
-			case "macroexpand": 
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
-					return macroexpand(ast.second(), env);
-				}
-				
-			case "quote":
-				return ast.second();
-				
-			case "quasiquote":
-				orig_ast = quasiquote(ast.second());
-				break;
-
+				case "defmacro":
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {
+						return defmacro_(ast, env);
+					}
+	
+				case "macroexpand": 
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
+						return macroexpand(ast.second(), env);
+					}
+					
+				case "quote":
+					return ast.second();
+					
+				case "quasiquote":
+					orig_ast = quasiquote(ast.second());
+					break;
+	
 				case "doc":
 					final String name = ((VncString)CoreFunctions.name.apply(ast.rest())).getValue();
 					VncVal docVal = SpecialForms.ns.get(new VncSymbol(name));
@@ -284,21 +295,21 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					orig_ast = VncList.of(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
-
+	
 				case "eval":
 					orig_ast = Coerce.toVncSequence(eval_ast(ast.rest(), env)).last();
 					break;
 					
 				case "let":  { // (let [bindings*] exprs*)
 					env = new Env(env);
-
+	
 					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncList expressions = ast.slice(2);
 				
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = evaluate(bindings.nth(i+1), env);
-
+	
 						for(Binding b : Destructuring.destructure(sym, val)) {
 							env.set(b.sym, b.val);
 						}
@@ -319,7 +330,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "loop": { // (loop [bindings*] exprs*)
 					env = new Env(env);					
-
+	
 					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncVal expressions = ast.nth(2);
 					
@@ -327,10 +338,10 @@ public class VeniceInterpreter implements Serializable  {
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = evaluate(bindings.nth(i+1), env);
-
+	
 						env.set((VncSymbol)sym, val);
 						bindingNames.add((VncSymbol)sym);
-
+	
 						//for(Binding b : Destructuring.destructure(sym, val)) {
 						//	env.set(b.sym, b.val);
 						//	bindingNames.add(b.sym);
@@ -341,7 +352,7 @@ public class VeniceInterpreter implements Serializable  {
 					orig_ast = expressions;
 					break;
 				}
-
+	
 				case "recur":  { // (recur exprs*)
 					// +----------------+-------------------------------------------+---------------+
 					// | Form           | Tail Position                             | recur target? |
@@ -356,10 +367,10 @@ public class VeniceInterpreter implements Serializable  {
 					// | case           | (case const const tail ... default tail)  | No            |
 					// | or, and        | (or test test ... tail)                   | No            |
 					// +----------------+-------------------------------------------+---------------+
-
+	
 					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();
 					final Env recur_env = recursionPoint.getLoopEnv();
-
+	
 					if (ast.size() == 2) {
 						// [1][2] calculate and bind the single new value
 						recur_env.set(bindingNames.get(0), evaluate(ast.second(), env));
@@ -401,23 +412,12 @@ public class VeniceInterpreter implements Serializable  {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
 						return try_with_(ast, new Env(env));
 					}
-
+	
 				case "import":
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
 						ast.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
 						return Nil;
 					}
-					
-				case "do":
-					if (ast.size() < 2) {
-						orig_ast = Constants.Nil;
-					}
-					else {
-						final VncList head_exprs = ast.slice(1, ast.size()-1);
-						eval_ast(head_exprs, env);
-						orig_ast = ast.last();
-					}
-					break;
 					
 				case "dorun":
 					return dorun_(ast, env);
@@ -445,7 +445,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "prof":
 					return prof_(ast, env);
-
+	
 				default:
 					final long nanos = System.nanoTime();
 					
@@ -456,10 +456,10 @@ public class VeniceInterpreter implements Serializable  {
 						
 						// validate function call allowed by sandbox
 						interceptor.validateVeniceFunction(fn.getName());	
-
+	
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						// validate private function call
+						// TODO: validate private function call
 						if (fn.isPrivate()) {
 							final String module = fn.getModule();
 							if (module != null) {
@@ -479,7 +479,7 @@ public class VeniceInterpreter implements Serializable  {
 						
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
-
+	
 						// invoke function with call frame
 						callStack.push(CallFrame.fromFunction(fn, a0));
 						try {

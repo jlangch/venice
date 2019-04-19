@@ -54,8 +54,8 @@ public class CallFrame {
 	}
 
 	
-	public CallFrame withFnNamespace(final String fnNamespace) {
-		return new CallFrame(this.fnName, fnNamespace, this.meta);
+	public CallFrame withModule(final String module) {
+		return new CallFrame(this.fnName, module, this.meta);
 	}
 	
 	public String getFnName() {
