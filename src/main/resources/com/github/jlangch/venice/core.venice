@@ -428,7 +428,7 @@
       :doc "Loads a Venice predefined extension module."
       :examples (list (str/strip-margin
                         "(do
-                        |   (load-module :xchart))" )) }
+                        |   (load-module :math))" )) }
 
    load-module [s]
 
