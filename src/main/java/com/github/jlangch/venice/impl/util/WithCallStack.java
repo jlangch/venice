@@ -49,14 +49,7 @@ public class WithCallStack implements AutoCloseable {
 			throw new IllegalArgumentException("A 'callFrame' must not be null");
 		}
 
-		final CallStack callStack = ThreadLocalMap.getCallStack();
-		if (!callStack.isEmpty() && callFrame.getModule() == null) {
-			// inherit module
-			callStack.push(callFrame.withModule(callStack.peek().getModule()));
-		}
-		else {
-			callStack.push(callFrame);
-		}
+		ThreadLocalMap.getCallStack().push(callFrame);
 	}
 
 	@Override

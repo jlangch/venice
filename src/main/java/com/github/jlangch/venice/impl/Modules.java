@@ -34,14 +34,14 @@ public class Modules {
 		return moduleName != null && reserved.contains(moduleName);
 	}
 	
-	public static void validateModuleName(final String moduleName) {
-//		if (isReserved(moduleName)) {
-//			throw new VncException(String.format("Reserved module name '%s'", moduleName));
-//		}
+	public static void validateReservedModuleName(final String moduleName) {
+		if (isReserved(moduleName)) {
+			throw new VncException(String.format("Reserved module name '%s'", moduleName));
+		}
 	}
 	
 	public static void validateFileName(final String fileName) {
-		validateModuleName(fileNameToModule(fileName));
+		validateReservedModuleName(fileNameToModule(fileName));
 	}
 
 	public static String fileNameToModule(final String fileName) {

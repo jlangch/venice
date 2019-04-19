@@ -33,6 +33,8 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
@@ -1896,12 +1898,61 @@ public class CoreFunctionsTest {
 	public void test_meta() {
 		final Venice venice = new Venice();
 
-		assertNotNull(venice.eval("(meta 3)"));
-		assertNotNull(venice.eval("(meta '(1 2 3))"));
-		assertNotNull(venice.eval("(meta [1 2 3])"));
-		assertNotNull(venice.eval("(meta { :a 1 })"));
+		assertEquals(
+				"{column=7, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta 3)")).toString());
+		
+		assertEquals(
+				"{column=8, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta '(1 2 3))")).toString());
+		
+		assertEquals(
+				"{column=7, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta [1 2 3])")).toString());
+		
+		assertEquals(
+				"{column=7, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta { :a 1 })")).toString());
+	
+		
+		assertEquals(
+				"{column=11, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (defn x [] 100) (meta x)))")).toString());
+		
+		assertEquals(
+				"{column=7, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(let [x (fn [] 100)] (meta x))")).toString());
+		
+		assertEquals(
+				"{column=11, file=unknown, line=1, module=user}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (let [x (fn [] 100)] (meta x)))")).toString());
+
 		
 		assertEquals("{:a 1}", venice.eval("(str (meta (with-meta [1 2 3] { :a 1 })))"));
+	}
+	
+	@Test
+	public void test_module() {
+		final Venice venice = new Venice();
+
+		assertEquals("core", venice.eval("(module +)"));	
+		assertEquals("io",   venice.eval("(module io/file)"));	
+		assertEquals("str",  venice.eval("(module str/blank?)"));	
+		assertEquals("time", venice.eval("(module time/date)"));	
+		assertEquals("user", venice.eval("(do (defn x [] 100) (module x)))"));	
+		assertEquals("user", venice.eval("(let [x (fn [] 100)] (module x))"));	
+		assertEquals("user", venice.eval("(do (let [x (fn [] 100)] (module x)))"));	
+	}
+
+	@Test
+	public void test_name() {
+		final Venice venice = new Venice();
+
+		assertEquals("alpha", venice.eval("(name :alpha)"));	
+		assertEquals("alpha", venice.eval("(name 'alpha)"));	
+		assertEquals("alpha", venice.eval("(name \"alpha\")"));	
+		assertEquals("alpha", venice.eval("(do (defn alpha [] 100) (name alpha)))"));	
+		assertEquals("alpha", venice.eval("(do (let [x (fn alpha [] 100)] (name x)))"));	
 	}
 	
 	@Test

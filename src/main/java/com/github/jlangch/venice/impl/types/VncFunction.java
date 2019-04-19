@@ -60,14 +60,14 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
-		this.name = name == null ? createAnonymousFuncName() : name;
+		this.name = name != null ? name : createAnonymousFuncName();
 		this.ast = ast;
 		this.env = env;
 		this.params = params;
 	
 		this.fnMeta.set(meta);
 		this._private = MetaUtil.isPrivate(meta);
-		this.module =  MetaUtil.getModule(meta);
+		this.module = MetaUtil.getModule(meta);
 	}
 
 	

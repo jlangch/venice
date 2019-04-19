@@ -65,8 +65,7 @@ public class Reader {
 	}
 	
 	public static Reader reader(final String str, final String filename) {
-		Modules.validateFileName(filename);
-		
+		// Modules.validateFileName(filename);		
 		return new Reader(filename, str, tokenize(str, filename));
 	}
 

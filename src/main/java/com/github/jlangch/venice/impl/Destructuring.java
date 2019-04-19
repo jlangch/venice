@@ -80,7 +80,7 @@ public class Destructuring {
 		if (Types.isVncSymbol(symVal)) {
 			// scalar value binding [n 10]
 			
-			bindings.add(new Binding((VncSymbol)symVal, bindVal));
+			bindings.add(new Binding((VncSymbol)symVal, bindVal.withMeta(symVal.getMeta())));
 		}
 		else if (Types.isVncSequence(symVal)) {
 			// sequential destructuring	
