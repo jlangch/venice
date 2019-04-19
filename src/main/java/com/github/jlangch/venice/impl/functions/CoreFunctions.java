@@ -646,7 +646,11 @@ public class CoreFunctions {
 						"With no args, returns the empty string. With one arg x, returns " + 
 						"x.toString(). (str nil) returns the empty string. With more than " + 
 						"one arg, returns the concatenation of the str values of the args.")
-					.examples("(str )", "(str 1 2 3)")
+					.examples(
+						"(str )", 
+						"(str 1 2 3)", 
+						"(str +)", 
+						"(str [1 2 3])")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -5396,7 +5400,7 @@ public class CoreFunctions {
 					.meta()
 					.module("core")
 					.arglists("(name x)")		
-					.doc("Returns the name String of a string, symbol or keyword.")
+					.doc("Returns the name String of a string, symbol, keyword, or function/macro.")
 					.examples(
 						"(name :x)",
 						"(name 'x)",
