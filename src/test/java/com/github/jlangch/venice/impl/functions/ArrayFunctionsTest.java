@@ -186,6 +186,18 @@ public class ArrayFunctionsTest {
 	}
 
 	@Test
+	public void test_amap() {
+		final Venice venice = new Venice();
+
+		assertEquals("[2, 3, 4, 5, 6]", Arrays.toString((int[])venice.eval("(amap (fn [x] (+ 1I x)) (int-array '(1I 2I 3I 4I 5I)))")));
+		assertEquals("[2, 3, 4, 5, 6]", Arrays.toString((long[])venice.eval("(amap (fn [x] (+ 1 x)) (long-array '(1 2 3 4 5)))")));
+		assertEquals("[2.0, 3.0, 4.0, 5.0, 6.0]", Arrays.toString((float[])venice.eval("(amap (fn [x] (+ 1.0 x)) (float-array '(1.0 2.0 3.0 4.0 5.0))))")));
+		assertEquals("[2.0, 3.0, 4.0, 5.0, 6.0]", Arrays.toString((double[])venice.eval("(amap (fn [x] (+ 1.0 x)) (double-array '(1.0 2.0 3.0 4.0 5.0))))")));
+		assertEquals("[>a, >b, >c, >d, >e]", Arrays.toString((String[])venice.eval("(amap (fn [x] (str \">\" x)) (string-array '(\"a\" \"b\" \"c\" \"d\" \"e\")))")));
+		assertEquals("[>a, >b, >c, >d, >e]", Arrays.toString((Object[])venice.eval("(amap (fn [x] (str \">\" x)) (object-array '(\"a\" \"b\" \"c\" \"d\" \"e\")))")));
+	}
+
+	@Test
 	public void test_int_array() {
 		final Venice venice = new Venice();
 

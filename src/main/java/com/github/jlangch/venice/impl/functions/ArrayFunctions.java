@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -207,6 +208,88 @@ public class ArrayFunctions {
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
+
+	public static VncFunction amap = 
+		new VncFunction(
+				"amap", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(amap f arr)")		
+					.doc(
+						"Applys f to each item in the array arr. Returns a new array with " + 
+						"the mapped values.")
+					.examples(
+						"(str (amap (fn [x] (+ 1 x)) (long-array 6 0)))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {			
+				assertArity("amap", args, 2);
+	
+				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final VncJavaObject joArr = Coerce.toVncJavaObject(args.second());
+
+				final Object arr = joArr.getDelegate();
+				if (!ReflectionTypes.isArrayType(arr.getClass())) {
+					throw new VncException(String.format(
+							"The array argument (%s) is not an array",
+							Types.getType(joArr)));
+				}
+
+				final Class<?> componentType = arr.getClass().getComponentType();
+				final int len = Array.getLength(arr);
+				
+				final Object retArr = Array.newInstance(componentType, len);
+
+				if (componentType == String.class) {
+					for(int ii=0; ii<len; ii++) {
+						final String valS = (String)Array.get(arr, ii);
+						final String valD = Coerce.toVncString(fn.apply(VncList.of(new VncString(valS)))).getValue();					
+						Array.set(retArr, ii, valD);
+					}
+				}
+				else if (componentType == int.class) {
+					for(int ii=0; ii<len; ii++) {
+						final Integer valS = (Integer)Array.get(arr, ii);
+						final Integer valD = Coerce.toVncInteger(fn.apply(VncList.of(new VncInteger(valS)))).getValue();					
+						Array.set(retArr, ii, valD);
+					}
+				}
+				else if (componentType == long.class) {
+					for(int ii=0; ii<len; ii++) {
+						final Long valS = (Long)Array.get(arr, ii);
+						final Long valD = Coerce.toVncLong(fn.apply(VncList.of(new VncLong(valS)))).getValue();					
+						Array.set(retArr, ii, valD);
+					}
+				}
+				else if (componentType == float.class) {
+					for(int ii=0; ii<len; ii++) {
+						final Float valS = (Float)Array.get(arr, ii);
+						final Double valD = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(valS)))).getValue();					
+						Array.set(retArr, ii, valD.floatValue());
+					}
+				}
+				else if (componentType == double.class) {
+					for(int ii=0; ii<len; ii++) {
+						final Double valS = (Double)Array.get(arr, ii);
+						final Double valD = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(valS)))).getValue();					
+						Array.set(retArr, ii, valD);
+					}
+				}
+				else {
+					for(int ii=0; ii<len; ii++) {
+						final Object valS = Array.get(arr, ii);
+						final Object valD = fn.apply(VncList.of(JavaInteropUtil.convertToVncVal(valS)))
+											  .convertToJavaObject();					
+						Array.set(retArr, ii, valD);
+					}
+				}
+
+				return new VncJavaObject(retArr);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction acopy = 
 		new VncFunction(
@@ -685,6 +768,7 @@ public class ArrayFunctions {
 					.put("alength",			alength)
 					.put("asub",			asub)
 					.put("acopy",			acopy)
+					.put("amap",			amap)
 					.put("make-array",		make_array)
 					.put("object-array",	object_array)
 					.put("string-array",	string_array)

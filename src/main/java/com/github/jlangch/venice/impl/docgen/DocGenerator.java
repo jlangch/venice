@@ -547,6 +547,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("alength"));
 		use.addItem(getDocItem("asub"));
 		use.addItem(getDocItem("acopy"));
+		use.addItem(getDocItem("amap"));
 
 		return section;
 	}
