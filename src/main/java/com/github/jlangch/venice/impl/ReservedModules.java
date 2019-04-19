@@ -33,5 +33,5 @@ public class ReservedModules {
 	}
 	
 	private static final Set<String> reserved = 
-			new HashSet<>(Arrays.asList("core", "time", "str", "io"));
+			new HashSet<>(Arrays.asList("core", "time", "str", "io", "shell", "system", "venice"));
 }
