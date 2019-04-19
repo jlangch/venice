@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
-public class ModuleLoadFunctions {
+public class ModuleFunctions {
 
 	///////////////////////////////////////////////////////////////////////////
 	// Module load functions

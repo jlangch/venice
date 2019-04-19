@@ -72,7 +72,7 @@ public class TimeFunctions {
 				"time/date", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/date)", "(time/date x)")		
 					.doc("Creates a new date. A date is represented by 'java.util.Date'")
 					.examples("(time/date)")
@@ -130,7 +130,7 @@ public class TimeFunctions {
 				"time/date?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/date? date)")		
 					.doc("Returns true if date is a date else false")
 					.examples("(time/date? (time/date))")
@@ -156,7 +156,7 @@ public class TimeFunctions {
 				"time/local-date", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/local-date)", "(time/local-date year month day)", "(time/local-date date)")		
 					.doc("Creates a new local-date. A local-date is represented by 'java.time.LocalDate'")
 					.examples(
@@ -234,7 +234,7 @@ public class TimeFunctions {
 				"time/local-date?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/local-date? date)")		
 					.doc("Returns true if date is a locale date else false")
 					.examples("(time/local-date? (time/local-date))")
@@ -254,7 +254,7 @@ public class TimeFunctions {
 				"time/local-date-parse", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/local-date-parse str format locale?")		
 					.doc("Parses a local-date.")
 					.examples("(time/local-date-parse \"2018-08-01\" \"yyyy-MM-dd\")")
@@ -284,7 +284,7 @@ public class TimeFunctions {
 				"time/local-date-time",
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists(
 						"(time/local-date-time)", 
 						"(time/local-date-time year month day)", 
@@ -392,7 +392,7 @@ public class TimeFunctions {
 				"time/local-date-time?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/local-date-time? date)")		
 					.doc("Returns true if date is a local-date-time else false")
 					.examples("(time/local-date-time? (time/local-date-time))")
@@ -412,7 +412,7 @@ public class TimeFunctions {
 				"time/local-date-time-parse", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/local-date-time-parse str format locale?")		
 					.doc("Parses a local-date-time.")
 					.examples(
@@ -444,7 +444,7 @@ public class TimeFunctions {
 				"time/zoned-date-time", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists(
 						"(time/zoned-date-time )", 
 						"(time/zoned-date-time year month day)", 
@@ -577,7 +577,7 @@ public class TimeFunctions {
 				"time/zoned-date-time?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/zoned-date-time? date)")		
 					.doc("Returns true if date is a zoned-date-time else false")
 					.examples("(time/zoned-date-time? (time/zoned-date-time))")
@@ -598,7 +598,7 @@ public class TimeFunctions {
 				"time/zoned-date-time-parse", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/zoned-date-time-parse str format locale?")		
 					.doc("Parses a zoned-date-time.")
 					.examples(
@@ -632,7 +632,7 @@ public class TimeFunctions {
 				"time/after?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/after? date1 date2)")		
 					.doc("Returns true if date1 is after date2 else false")
 					.examples(
@@ -670,7 +670,7 @@ public class TimeFunctions {
 				"time/not-after?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/not-after? date1 date2)")		
 					.doc("Returns true if date1 is not-after date2 else false")
 					.examples(
@@ -708,7 +708,7 @@ public class TimeFunctions {
 				"time/before?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/before? date1 date2)")		
 					.doc("Returns true if date1 is before date2 else false")
 					.examples(
@@ -746,7 +746,7 @@ public class TimeFunctions {
 				"time/not-before?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/not-before? date1 date2)")		
 					.doc("Returns true if date1 is not-before date2 else false")
 					.examples(
@@ -789,7 +789,7 @@ public class TimeFunctions {
 				"time/plus", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/plus date unit n)")		
 					.doc("Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}")
 					.examples(
@@ -835,7 +835,7 @@ public class TimeFunctions {
 				"time/minus", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/minus date unit n)")		
 					.doc("Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}")
 					.examples(
@@ -882,7 +882,7 @@ public class TimeFunctions {
 				"time/period", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/period from to unit)")		
 					.doc(
 						"Returns the period interval of two dates in the specified unit. " +
@@ -936,7 +936,7 @@ public class TimeFunctions {
 				"time/year", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/year date)")		
 					.doc("Returns the year of the date")
 					.examples(
@@ -974,7 +974,7 @@ public class TimeFunctions {
 				"time/month", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/month date)")		
 					.doc("Returns the month of the date 1..12")
 					.examples(
@@ -1012,7 +1012,7 @@ public class TimeFunctions {
 				"time/day-of-week", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/day-of-week date)")		
 					.doc("Returns the day of the week (:MONDAY ... :SUNDAY)")
 					.examples(
@@ -1050,7 +1050,7 @@ public class TimeFunctions {
 				"time/day-of-month", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/day-of-month date)")		
 					.doc("Returns the day of the month (1..31)")
 					.examples(
@@ -1088,7 +1088,7 @@ public class TimeFunctions {
 				"time/day-of-year", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/day-of-year date)")		
 					.doc("Returns the day of the year (1..366)")
 					.examples(
@@ -1126,7 +1126,7 @@ public class TimeFunctions {
 				"time/first-day-of-month", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/first-day-of-month date)")		
 					.doc("Returns the first day of a month as a local-date.")
 					.examples(
@@ -1167,7 +1167,7 @@ public class TimeFunctions {
 				"time/last-day-of-month", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/last-day-of-month date)")		
 					.doc("Returns the last day of a month as a local-date.")
 					.examples(
@@ -1208,7 +1208,7 @@ public class TimeFunctions {
 				"time/hour", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/hour date)")		
 					.doc("Returns the hour of the date 1..24")
 					.examples(
@@ -1246,7 +1246,7 @@ public class TimeFunctions {
 				"time/minute", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/minute date)")		
 					.doc("Returns the minute of the date 0..59")
 					.examples(
@@ -1284,7 +1284,7 @@ public class TimeFunctions {
 				"time/second", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/second date)")		
 					.doc("Returns the second of the date 0..59")
 					.examples(
@@ -1322,7 +1322,7 @@ public class TimeFunctions {
 				"time/length-of-year", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/length-of-year date)")		
 					.doc("Returns the length of the year represented by this date.")
 					.examples(
@@ -1362,7 +1362,7 @@ public class TimeFunctions {
 				"time/length-of-month", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/length-of-month date)")		
 					.doc("Returns the length of the month represented by this date.")
 					.examples(
@@ -1402,7 +1402,7 @@ public class TimeFunctions {
 				"time/leap-year?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/leap-year? date)")		
 					.doc("Checks if the year is a leap year.")
 					.examples(
@@ -1451,7 +1451,7 @@ public class TimeFunctions {
 				"time/with-time", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists(
 						"(time/with-time date hour minute second)", 
 						"(time/with-time date hour minute second millis)")		
@@ -1508,7 +1508,7 @@ public class TimeFunctions {
 				"time/latest", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/latest coll)")		
 					.doc(
 						"Returns the latest date from a collection of dates. " + 
@@ -1548,7 +1548,7 @@ public class TimeFunctions {
 				"time/earliest", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/earliest coll)")		
 					.doc(
 						"Returns the earliest date from a collection of dates. " +
@@ -1588,7 +1588,7 @@ public class TimeFunctions {
 				"time/within?", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/within? date start end)")		
 					.doc(
 						"Returns true if the date is after or equal to the start and is before or equal to the end. " +
@@ -1629,7 +1629,7 @@ public class TimeFunctions {
 				"time/zone", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/zone date)")		
 					.doc("Returns the zone of the date")
 					.examples("(time/zone (time/zoned-date-time))")
@@ -1664,7 +1664,7 @@ public class TimeFunctions {
 				"time/zone-offset", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/zone-offset date)")		
 					.doc("Returns the zone-offset of the date in minutes")
 					.examples("(time/zone-offset (time/zoned-date-time))")
@@ -1705,7 +1705,7 @@ public class TimeFunctions {
 				"time/formatter", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/formatter format locale?)")		
 					.doc("Creates a formatter")
 					.examples(
@@ -1734,7 +1734,7 @@ public class TimeFunctions {
 				"time/format", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists(
 						"(time/format date format locale?)",
 					    "(time/format date formatter locale?)")		
@@ -1799,7 +1799,7 @@ public class TimeFunctions {
 				"time/zone-ids", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/zone-ids)")		
 					.doc("Returns all available zone ids with time offset")
 					.examples("(nfirst (seq (time/zone-ids)) 10)")
@@ -1836,7 +1836,7 @@ public class TimeFunctions {
 				"time/to-millis", 
 				VncFunction
 					.meta()
-					.module("core")
+					.module("time")
 					.arglists("(time/to-millis date)")		
 					.doc("Converts the passed date to milliseconds since epoch")
 					.examples("(time/to-millis (time/local-date))")
