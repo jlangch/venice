@@ -45,9 +45,17 @@ public class Modules {
 	}
 
 	public static String fileNameToModule(final String fileName) {
-		return fileName != null && fileName.endsWith(".venice") 
-					? fileName.substring(0, fileName.length() - 7) 
-					: fileName;
+		if (fileName == null) {
+			return null;
+		}
+		else if (fileName == "unknown") {
+			return "user";
+		}
+		else {
+			return fileName.endsWith(".venice") 
+						? fileName.substring(0, fileName.length() - 7) 
+						: fileName;
+		}
 	}
 
 	private static final Set<String> reserved = 
