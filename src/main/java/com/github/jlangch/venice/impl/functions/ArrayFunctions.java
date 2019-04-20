@@ -239,7 +239,7 @@ public class ArrayFunctions {
 
 				final Class<?> componentType = arr.getClass().getComponentType();
 				final int len = Array.getLength(arr);
-				
+
 				final Object retArr = Array.newInstance(componentType, len);
 
 				if (componentType == int.class) {

@@ -201,17 +201,17 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncVal first() {
-		return len > 0 ? first : Constants.Nil;
+		return len >= 1 ? first : Constants.Nil;
 	}
 
 	@Override
 	public VncVal second() {
-		return len > 1 ? second : Constants.Nil;
+		return len >= 2 ? second : Constants.Nil;
 	}
 
 	@Override
 	public VncVal third() {
-		return len > 2 ? third : Constants.Nil;
+		return len >= 3 ? third : Constants.Nil;
 	}
 
 	@Override

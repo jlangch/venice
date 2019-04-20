@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -321,7 +322,7 @@ public class Reader {
 				break;
 			
 			case '(': 
-				form = read_list(rdr, new VncList(), '(' , ')'); 
+				form = read_list(rdr, new VncTinyList(), '(' , ')'); 
 				break;
 			
 			case ')': 

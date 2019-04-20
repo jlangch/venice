@@ -198,6 +198,25 @@ public class ArrayFunctionsTest {
 	}
 
 	@Test
+	public void test_amap_native() {
+		new Venice().eval(
+			"(do " +
+			"  (perf (amap (fn [x] (+ 200 x)) (long-array 25000)) 200 100) " +
+			"  (println (prof :data-formatted)))");
+		
+		
+		final long start = System.nanoTime();
+		
+		final long[] arrSrc = new long[25000];
+		final long[] arrDst = new long[25000];		
+		for(int ii=0; ii<arrSrc.length; ii++) {
+			arrDst[ii] = arrSrc[ii] + 200; 
+		}
+		
+		System.out.println("amap native: " + ((System.nanoTime() - start) / 1000) + "us");
+	}
+
+	@Test
 	public void test_int_array() {
 		final Venice venice = new Venice();
 
