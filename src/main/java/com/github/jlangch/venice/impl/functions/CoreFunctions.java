@@ -1358,7 +1358,7 @@ public class CoreFunctions {
 		};
 
 	static public boolean list_Q(VncVal mv) {
-		return mv.getClass().equals(VncList.class);
+		return Types.isVncList(mv);
 	}
 	
 	public static VncFunction list_Q = 
@@ -1408,7 +1408,7 @@ public class CoreFunctions {
 		};
 
 	static public boolean vector_Q(VncVal mv) {
-		return mv.getClass().equals(VncVector.class);
+		return Types.isVncVector(mv);
 	}
 	
 	public static VncFunction vector_Q = 

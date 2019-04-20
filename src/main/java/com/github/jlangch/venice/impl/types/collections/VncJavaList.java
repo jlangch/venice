@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -71,12 +70,12 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
-	public VncList withValues(final Collection<? extends VncVal> vals) {
+	public VncList withValues(final List<? extends VncVal> vals) {
 		return new VncList(vals, getMeta());
 	}
 
 	@Override
-	public VncList withValues(final Collection<? extends VncVal> vals, final VncVal meta) {
+	public VncList withValues(final List<? extends VncVal> vals, final VncVal meta) {
 		return new VncList(vals, meta);
 	}
 

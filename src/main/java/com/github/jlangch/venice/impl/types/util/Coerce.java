@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.util;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -55,10 +54,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 public class Coerce {
 
 	public static VncAtom toVncAtom(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncAtom(val)) {
+		if (val == null || Types.isVncAtom(val)) {
 			return (VncAtom)val;
 		}
 		else {
@@ -70,10 +66,7 @@ public class Coerce {
 	}
 	
 	public static VncThreadLocal toVncThreadLocal(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncThreadLocal(val)) {
+		if (val == null || Types.isVncThreadLocal(val)) {
 			return (VncThreadLocal)val;
 		}
 		else {
@@ -85,10 +78,7 @@ public class Coerce {
 	}
 	
 	public static VncKeyword toVncKeyword(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncKeyword(val)) {
+		if (val == null || Types.isVncKeyword(val)) {
 			return (VncKeyword)val;
 		}
 		else {
@@ -100,10 +90,7 @@ public class Coerce {
 	}
 
 	public static VncSymbol toVncSymbol(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncSymbol(val)) {
+		if (val == null || Types.isVncSymbol(val)) {
 			return (VncSymbol)val;
 		}
 		else {
@@ -115,10 +102,7 @@ public class Coerce {
 	}
 
 	public static VncFunction toVncFunction(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncFunction(val)) {
+		if (val == null || Types.isVncFunction(val)) {
 			return (VncFunction)val;
 		}
 		else {
@@ -130,10 +114,7 @@ public class Coerce {
 	}
 
 	public static VncMultiFunction toVncMultiFunction(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncMultiFunction(val)) {
+		if (val == null || Types.isVncMultiFunction(val)) {
 			return (VncMultiFunction)val;
 		}
 		else {
@@ -145,10 +126,7 @@ public class Coerce {
 	}
 
 	public static VncString toVncString(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncString(val)) {
+		if (val == null || Types.isVncString(val)) {
 			return (VncString)val;
 		}
 		else {
@@ -160,10 +138,7 @@ public class Coerce {
 	}
 	
 	public static VncConstant toVncBoolean(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (val == Constants.False || val == Constants.True) {
+		if (val == null || Types.isVncBoolean(val)) {
 			return (VncConstant)val;
 		}
 		else {
@@ -175,10 +150,7 @@ public class Coerce {
 	}
 	
 	public static VncInteger toVncInteger(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncInteger(val)) {
+		if (val == null || Types.isVncInteger(val)) {
 			return (VncInteger)val;
 		}
 		else {
@@ -190,10 +162,7 @@ public class Coerce {
 	}
 	
 	public static VncLong toVncLong(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncLong(val)) {
+		if (val == null || Types.isVncLong(val)) {
 			return (VncLong)val;
 		}
 		else {
@@ -205,10 +174,7 @@ public class Coerce {
 	}
 	
 	public static VncDouble toVncDouble(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncDouble(val)) {
+		if (val == null || Types.isVncDouble(val)) {
 			return (VncDouble)val;
 		}
 		else {
@@ -220,10 +186,7 @@ public class Coerce {
 	}
 	
 	public static VncBigDecimal toVncBigDecimal(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncBigDecimal(val)) {
+		if (val == null || Types.isVncBigDecimal(val)) {
 			return (VncBigDecimal)val;
 		}
 		else {
@@ -235,10 +198,7 @@ public class Coerce {
 	}
 	
 	public static VncByteBuffer toVncByteBuffer(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncByteBuffer(val)) {
+		if (val == null || Types.isVncByteBuffer(val)) {
 			return (VncByteBuffer)val;
 		}
 		else {
@@ -250,10 +210,7 @@ public class Coerce {
 	}
 	
 	public static VncCollection toVncCollection(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncCollection(val)) {
+		if (val == null || Types.isVncCollection(val)) {
 			return (VncCollection)val;
 		}
 		else {
@@ -265,10 +222,7 @@ public class Coerce {
 	}
 	
 	public static VncSequence toVncSequence(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncSequence(val)) {
+		if (val == null || Types.isVncSequence(val)) {
 			return (VncSequence)val;
 		}
 		else {
@@ -280,14 +234,11 @@ public class Coerce {
 	}
 	
 	public static VncList toVncList(final VncVal val) {
-		if (val == null) {
-			return null;
+		if (val == null || Types.isVncList(val)) {
+			return (VncList)val;
 		}
 		else if (Types.isVncVector(val)) {
 			return ((VncVector)val).toVncList();
-		}
-		else if (Types.isVncList(val)) {
-			return (VncList)val;
 		}
 		else if (val instanceof VncJavaList) {
 			return ((VncJavaList)val).toVncList();
@@ -301,10 +252,7 @@ public class Coerce {
 	}
 	
 	public static VncVector toVncVector(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncVector(val)) {
+		if (val == null || Types.isVncVector(val)) {
 			return (VncVector)val;
 		}
 		else if (Types.isVncList(val)) {
@@ -322,10 +270,7 @@ public class Coerce {
 	}
 	
 	public static VncMap toVncMap(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncMap(val)) {
+		if (val == null || Types.isVncMap(val)) {
 			return (VncMap)val;
 		}
 		else {
@@ -337,10 +282,7 @@ public class Coerce {
 	}
 	
 	public static VncHashMap toVncHashMap(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (val instanceof VncHashMap) {
+		if (val == null || val instanceof VncHashMap) {
 			return (VncHashMap)val;
 		}
 		else if (Types.isVncMap(val)) {
@@ -355,10 +297,7 @@ public class Coerce {
 	}
 	
 	public static VncMutableMap toVncMutableMapMap(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (val instanceof VncMutableMap) {
+		if (val == null || val instanceof VncMutableMap) {
 			return (VncMutableMap)val;
 		}
 		else if (Types.isVncMap(val)) {
@@ -373,10 +312,7 @@ public class Coerce {
 	}
 	
 	public static VncSet toVncSet(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncSet(val)) {
+		if (val == null || Types.isVncSet(val)) {
 			return (VncSet)val;
 		}
 		else {
@@ -388,10 +324,7 @@ public class Coerce {
 	}
 
 	public static VncHashSet toVncHashSet(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncHashSet(val)) {
+		if (val == null || Types.isVncHashSet(val)) {
 			return (VncHashSet)val;
 		}
 		else {
@@ -403,10 +336,7 @@ public class Coerce {
 	}
 
 	public static VncSortedSet toVncSortedSet(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncSortedSet(val)) {
+		if (val == null || Types.isVncSortedSet(val)) {
 			return (VncSortedSet)val;
 		}
 		else {
@@ -418,10 +348,7 @@ public class Coerce {
 	}
 	
 	public static VncJavaObject toVncJavaObject(final VncVal val) {
-		if (val == null) {
-			return null;
-		}
-		else if (Types.isVncJavaObject(val)) {
+		if (val == null || Types.isVncJavaObject(val)) {
 			return (VncJavaObject)val;
 		}
 		else {
