@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added function `defn-` to simply private function definition
-- added inheritance of thread-locals vars to child threads used by futures
+- added inheritance of thread-locals vars for child threads used by futures
 
 
 
