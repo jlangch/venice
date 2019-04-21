@@ -331,7 +331,7 @@ public class SpecialForms {
 					"  (prof :status)   ; returns the profiler on/off staus  \n" +
 					"  (prof :clear)   ; clear profiler data captured so far  \n" +
 					"  (prof :data)   ; returns the profiler data as map  \n" +
-					"  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
+					"  (prof :data-formatted title?)   ; returns the profiler data as formatted text with an optional title  \n" +
 					"  nil)  ")
 				.build()
 	) {

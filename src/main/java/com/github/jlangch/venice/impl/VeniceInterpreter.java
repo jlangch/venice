@@ -771,7 +771,8 @@ public class VeniceInterpreter implements Serializable  {
 				case "data":
 					return meterRegistry.getVncTimerData();
 				case "data-formatted":
-					return new VncString(meterRegistry.getTimerDataFormatted("Metrics"));
+					final String title = ast.size() == 3 ? Coerce.toVncString(ast.third()).getValue() : "Metrics";
+					return new VncString(meterRegistry.getTimerDataFormatted(title));
 			}
 		}
 

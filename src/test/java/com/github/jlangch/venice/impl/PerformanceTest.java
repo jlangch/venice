@@ -140,9 +140,9 @@ public class PerformanceTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                        \n" +
-				"   (perf (* (+ 1 2) 3) 12000 1000)         \n" +
-				"	(println (prof :data-formatted)))         ";
+				"(do                                                           \n" +
+				"   (perf (* (+ 1 2) 3) 12000 1000)                            \n" +
+				"	(println (prof :data-formatted \"Metrics (* (+ 1 2) 3)\")))  ";
 		
 		venice.eval(script);
 	}
@@ -159,7 +159,7 @@ public class PerformanceTest {
 				"	            acc                                      \n" +
 				"	            (recur (dec cnt) (+ acc cnt)))))         \n" +
 				"   (perf (sum 300) 2000 1000)                           \n" +
-				"	(println (prof :data-formatted)))                      ";
+				"	(println (prof :data-formatted \"Metrics loop\")))     ";
 		
 		venice.eval(script);
 	}
