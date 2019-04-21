@@ -195,6 +195,8 @@ public class ArrayFunctionsTest {
 		assertEquals("[2.0, 3.0, 4.0, 5.0, 6.0]", Arrays.toString((double[])venice.eval("(amap (fn [x] (+ 1.0 x)) (double-array '(1.0 2.0 3.0 4.0 5.0))))")));
 		assertEquals("[>a, >b, >c, >d, >e]", Arrays.toString((String[])venice.eval("(amap (fn [x] (str \">\" x)) (string-array '(\"a\" \"b\" \"c\" \"d\" \"e\")))")));
 		assertEquals("[>a, >b, >c, >d, >e]", Arrays.toString((Object[])venice.eval("(amap (fn [x] (str \">\" x)) (object-array '(\"a\" \"b\" \"c\" \"d\" \"e\")))")));
+
+		assertEquals("[2, 3, 4, 5, 6]", Arrays.toString((long[])venice.eval("(amap (partial + 1) (long-array '(1 2 3 4 5)))")));
 	}
 
 	@Test
@@ -202,7 +204,7 @@ public class ArrayFunctionsTest {
 		new Venice().eval(
 			"(do " +
 			"  (perf (amap (fn [x] (+ 200 x)) (long-array 25000)) 200 100) " +
-			"  (println (prof :data-formatted)))");
+			"  (println (prof :data-formatted \"Metrics amap native: (fn [x] (+ 200 x))\")))");
 		
 		
 		final long start = System.nanoTime();
@@ -213,7 +215,26 @@ public class ArrayFunctionsTest {
 			arrDst[ii] = arrSrc[ii] + 200; 
 		}
 		
-		System.out.println("amap native: " + ((System.nanoTime() - start) / 1000) + "us");
+		System.out.println("amap native: " + ((System.nanoTime() - start) / 1000) + " us");
+	}
+
+	@Test
+	public void test_amap_native_2() {
+		new Venice().eval(
+			"(do " +
+			"  (perf (amap (partial + 200) (long-array 25000)) 500 300) " +
+			"  (println (prof :data-formatted \"Metrics amap native: (partial + 200)\")))");
+		
+		
+		final long start = System.nanoTime();
+		
+		final long[] arrSrc = new long[25000];
+		final long[] arrDst = new long[25000];		
+		for(int ii=0; ii<arrSrc.length; ii++) {
+			arrDst[ii] = arrSrc[ii] + 200; 
+		}
+		
+		System.out.println("amap native: " + ((System.nanoTime() - start) / 1000) + " us");
 	}
 
 	@Test
