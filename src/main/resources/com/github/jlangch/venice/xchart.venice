@@ -119,7 +119,7 @@
       (try-with [os (. :FileOutputStream :new file)]
          (. :XChartEncoder :exportToBitmapStreamWithDPI chart os type dpi)))
 
-(defn ^:private xchart/swing-open-window [chart title]
+(defn xchart/swing-open-window [chart title]
       (let [frame (. :JFrame :new title)
             closeOP (. :JFrame :EXIT_ON_CLOSE)]
          (. frame :setDefaultCloseOperation closeOP)
@@ -128,8 +128,8 @@
          (. frame :setVisible true)))
 
 (defn xchart/swing-view-chart [chart title]
-      (. :SwingUtilities :invokeLater
-         (proxify :Runnable { :run (fn [] (xchart/swing-open-window chart title)) })))
+      (let [open-win (fn [] (xchart/swing-open-window chart title))]
+         (. :SwingUtilities :invokeLater (proxify :Runnable { :run open-win }))))
 
 
 
