@@ -1003,12 +1003,18 @@ public class ConcurrencyFunctions {
 						"Thread local vars will be inherited by the future child thread. Changes " +
 						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
-						"(do                                         \n" + 
-						"   (def wait (fn [] (do (sleep 500) 100)))  \n" + 
-						"                                            \n" + 
-						"   (let [f (future wait)]                   \n" + 
-						"        (deref f))                          \n" + 
-						")")
+						"(do                                          \n" + 
+						"   (def wait (fn [] (do (sleep 500) 100)))   \n" + 
+						"   (let [f (future wait)]                    \n" + 
+						"        (deref f)))                            ",
+					
+						"(do                                                           \n" +
+						"   (defn th-get [n] (get (thread-local) n))                   \n" +
+						"   (defn th-map [] (hash-map :a (th-get :a) :b (th-get :b)))  \n" +
+						"   (defn test [] (assoc (thread-local) :b 90) (th-map))       \n" +
+						"   (assoc (thread-local) :a 10 :b 20)                         \n" +
+						"   (let [f (future test)]                                     \n" +
+						"      { :child @f :parent (th-map) }))                          ")
 					.build()
 		) {		
 			@SuppressWarnings("unchecked")
