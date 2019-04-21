@@ -999,7 +999,9 @@ public class ConcurrencyFunctions {
 						"invoke the function in another thread, and will cache the result and " + 
 						"return it on all subsequent calls to deref. If the computation has " + 
 						"not yet finished, calls to deref will block, unless the variant of " + 
-						"deref with timeout is used.")
+						"deref with timeout is used. \n" +
+						"Thread local vars will be inherited by the future child thread. Changes " +
+						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
 						"(do                                         \n" + 
 						"   (def wait (fn [] (do (sleep 500) 100)))  \n" + 
