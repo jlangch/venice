@@ -56,11 +56,11 @@ public class VncHashMap extends VncMap {
 		this(val, null);
 	}
 
-	public VncHashMap(final Map<VncVal,VncVal> vals) {
+	public VncHashMap(final Map<? extends VncVal, ? extends VncVal> vals) {
 		this(vals, null);
 	}
 
-	public VncHashMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+	public VncHashMap(final Map<? extends VncVal,? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.HashMap.ofAll(vals), meta);
 	}
 

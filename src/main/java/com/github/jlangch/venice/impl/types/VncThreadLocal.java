@@ -26,7 +26,9 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 
@@ -112,6 +114,10 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal clear() {
 		ThreadLocalMap.clearValues();
 		return this;
+	}
+
+	public static VncMap toMap() {
+		return new VncHashMap(ThreadLocalMap.getValues());
 	}
 	
 	@Override 

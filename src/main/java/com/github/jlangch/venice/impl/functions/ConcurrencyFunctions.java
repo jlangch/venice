@@ -1008,13 +1008,15 @@ public class ConcurrencyFunctions {
 						"   (let [f (future wait)]                    \n" + 
 						"        (deref f)))                            ",
 					
-						"(do                                                           \n" +
-						"   (defn th-get [n] (get (thread-local) n))                   \n" +
-						"   (defn th-map [] (hash-map :a (th-get :a) :b (th-get :b)))  \n" +
-						"   (defn test [] (assoc (thread-local) :b 90) (th-map))       \n" +
-						"   (assoc (thread-local) :a 10 :b 20)                         \n" +
-						"   (let [f (future test)]                                     \n" +
-						"      { :child @f :parent (th-map) }))                          ")
+						";; demonstrates the use of thread locals with futures              \n" +
+						"(do                                                                \n" +
+						"   (defn th-get [n] (get (thread-local) n))                        \n" +
+						"   (defn th-map [] (hash-map :a (th-get :a) :b (th-get :b)))       \n" +
+						"   ;; parent thread locals                                         \n" +
+						"   (assoc (thread-local) :a 10 :b 20)                              \n" +
+						"   ;; future with child thread locals                              \n" +
+						"   (let [f (future (fn [] (assoc (thread-local) :b 90) (th-map)))] \n" +
+						"      { :child @f :parent (th-map) }))                               ")
 					.build()
 		) {		
 			@SuppressWarnings("unchecked")
@@ -1326,6 +1328,25 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction thread_local_map = 
+		new VncFunction(
+				"thread-local-map", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(thread-local-map)")		
+					.doc("Returns the thread local vars as a map")
+					.examples("(do (thread-local :a 1 :b 2) (thread-local-map))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("thread-local-map", args, 0);
+				return VncThreadLocal.toMap();
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -1436,6 +1457,7 @@ public class ConcurrencyFunctions {
 					.put("thread-local",		new_thread_local)
 					.put("thread-local?",		thread_local_Q)
 					.put("thread-local-clear",	thread_local_clear)
+					.put("thread-local-map",	thread_local_map)
 					.toMap();	
 	
 	
