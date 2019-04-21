@@ -38,6 +38,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -1033,8 +1034,14 @@ public class ConcurrencyFunctions {
 	
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
+				// thread local values from the parent thread
+				final AtomicReference<Map<VncKeyword,VncVal>> threadLocalValues = 
+						new AtomicReference<>(ThreadLocalMap.getValues());
+				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
+						// inherit thread local values to the child thread
+						ThreadLocalMap.setValues(threadLocalValues.get());
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						

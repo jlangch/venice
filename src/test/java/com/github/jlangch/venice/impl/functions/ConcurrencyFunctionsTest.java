@@ -525,6 +525,39 @@ public class ConcurrencyFunctionsTest {
 		final File file = (File)venice.eval(script);
 		assertEquals("a.txt", file.getName());
 	}
+
+	@Test
+	public void test_future_thread_local_inherited() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                      \n" +
+				"   (assoc (thread-local) :a 10 :b 20)                    \n" +
+				"   (assoc (thread-local) :a 11)                          \n" +
+				"   (let [f (future (fn [] (get (thread-local) :a)))]     \n" +
+				"        @f)                                              \n" +
+				") ";
+
+		assertEquals(11L, venice.eval(script));
+	}
+
+	@Test
+	public void test_future_thread_local_parent_untouched() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                        \n" +
+				"   (assoc (thread-local) :a 10 :b 20)                      \n" +
+				"   (assoc (thread-local) :a 11)                            \n" +
+				"   [ (let [f (future (fn []                                \n" +
+				"                         (assoc (thread-local) :a 90)      \n" +
+				"                         (get (thread-local) :a)))]        \n" +
+				"          @f)                                              \n" +
+				"     (get (thread-local) :a) ]                             \n" +
+				") ";
+
+		assertEquals("[90 11]", venice.eval("(str " + script + ")"));
+	}
 	
 	@Test
 	public void test_thread_id() {

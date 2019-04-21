@@ -29,6 +29,7 @@ import java.util.Map;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.util.CallStack;
 
@@ -67,6 +68,11 @@ public class ThreadLocalMap {
 				// TODO: maybe it's better to throw an exception to prevent
 				//       uncontrolled stack growing
 				((VncStack)v).push(val == null ? Nil : val);
+			}
+			else if (val instanceof VncMutableMap) {
+				throw new VncException(String.format(
+						"VncMutableMap is not permitted for thread-local values",
+						key.getValue()));
 			}
 			else {
 				get().values.put(key, val);
@@ -151,9 +157,26 @@ public class ThreadLocalMap {
 	public static CallStack getCallStack() {
 		return  get().callStack;
 	}
-	
-	private static ThreadLocalMap get() {
-		return ThreadLocalMap.context.get();
+
+	public static Map<VncKeyword,VncVal> getValues() {
+		final Map<VncKeyword,VncVal> copy = new HashMap<>();
+		
+		copyValues(get().values, copy);
+		
+		return copy;  // return a copy of the values
+	}
+
+	public static void setValues(final Map<VncKeyword,VncVal> newValues) {
+		copyValues(newValues, get().values);
+	}
+
+	public static void clearValues() {
+		try {
+			get().values.clear();
+		}
+		catch(Exception ex) {
+			// do not care
+		}
 	}
 
 	public static void clear() {
@@ -177,11 +200,35 @@ public class ThreadLocalMap {
 			// do not care
 		}
 	}
+	
+	private static ThreadLocalMap get() {
+		return ThreadLocalMap.context.get();
+	}
+	
+	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
+		to.clear();
+		
+		for(Map.Entry<VncKeyword,VncVal> e : from.entrySet()) {
+			final VncVal val = e.getValue();
+			if (val instanceof VncStack) {
+				final VncStack copyStack = new VncStack();
+				if (!((VncStack)val).isEmpty()) {
+					copyStack.push(((VncStack)val).peek());
+				}
+				to.put(e.getKey(), copyStack);
+			}
+			else {
+				to.put(e.getKey(), val);
+			}
+		}
+	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
 	
+	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
+	//       to work in all cases!
 	private static ThreadLocal<ThreadLocalMap> context = 
-			InheritableThreadLocal.withInitial(() -> new ThreadLocalMap()); 
+			ThreadLocal.withInitial(() -> new ThreadLocalMap()); 
 }

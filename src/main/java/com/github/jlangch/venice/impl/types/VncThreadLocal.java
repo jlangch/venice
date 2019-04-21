@@ -110,7 +110,7 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public VncThreadLocal clear() {
-		ThreadLocalMap.clear();
+		ThreadLocalMap.clearValues();
 		return this;
 	}
 	
