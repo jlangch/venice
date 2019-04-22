@@ -1010,13 +1010,11 @@ public class ConcurrencyFunctions {
 					
 						";; demonstrates the use of thread locals with futures              \n" +
 						"(do                                                                \n" +
-						"   (defn th-get [n] (get (thread-local) n))                        \n" +
-						"   (defn th-map [] (hash-map :a (th-get :a) :b (th-get :b)))       \n" +
 						"   ;; parent thread locals                                         \n" +
-						"   (assoc (thread-local) :a 10 :b 20)                              \n" +
-						"   ;; future with child thread locals                              \n" +
-						"   (let [f (future (fn [] (assoc (thread-local) :b 90) (th-map)))] \n" +
-						"      { :child @f :parent (th-map) }))                               ")
+						"   (binding [a 10 b 20]                                            \n" +
+						"      ;; future with child thread locals                           \n" +
+						"      (let [f (future (fn [] (binding [b 90] {:a a :b b}))))]      \n" +
+						"      { :child @f :parent {:a a :b b}))                              ")
 					.build()
 		) {		
 			@SuppressWarnings("unchecked")
