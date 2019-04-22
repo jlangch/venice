@@ -754,8 +754,8 @@ Java enum values can be passed as simple or scoped keywords:
 ```
 
 
-Java types support hash codes, equals, and compare. Thereby sequences with java types
-can be sorted and java types can be used with sets and maps.
+Java types support hash codes, equals, and compare. Thereby sequences with Java types
+can be sorted and Java types can be used with sets and maps.
 
 ```clojure
 (do
@@ -977,7 +977,7 @@ actors accept data to be processed by the actor's function
 
 ### Thread local vars
 
-Thread local var bindings are managed by a stack
+Thread local var bindings can be nested
 
 ```clojure
 (do
