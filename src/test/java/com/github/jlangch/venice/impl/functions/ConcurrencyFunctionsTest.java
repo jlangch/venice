@@ -313,6 +313,61 @@ public class ConcurrencyFunctionsTest {
 
 		venice.eval(script);
 	}
+	
+	@Test
+	public void test_agent_thread_local() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                             \n" +
+				"   (defn add [a b] (io/file \"zz\") (+ a b z))  \n" +
+				"   (binding [z 10]                              \n" +
+				"     (def x (agent 100))                        \n" +
+				"     (send x add 5)                             \n" +
+				"     (sleep 200)                                \n" +
+				"     (deref x)))                                  ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(115), result);
+	}
+	
+	@Test
+	public void test_agent_sandbox_ok() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                             \n" +
+				"   (defn add [a b] (io/file \"zz\") (+ a b 10)) \n" +
+				"   (def x (agent 100))                          \n" +
+				"   (send x add 5)                               \n" +
+				"   (sleep 200)                                  \n" +
+				"   (deref x))                                     ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(Long.valueOf(115), result);
+	}
+	
+	@Test
+	public void test_agent_sandbox_violation() {
+		// all venice 'file' function blacklisted
+		final Interceptor interceptor = 
+				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
+
+		final Venice venice = new Venice(interceptor);
+
+		final String script = 
+				"(do                                             \n" +
+				"   (defn add [a b] (io/file \"zz\") (+ a b 10)) \n" +
+				"   (def x (agent 100 :error-mode :fail))        \n" +
+				"   (send x add 5)                               \n" +
+				"   (sleep 200)                                  \n" +
+				"   (agent-error x))                               ";
+
+		final SecurityException ex = (SecurityException)venice.eval(script);
+		assertEquals("Venice Sandbox: Access denied to function io/file", ex.getMessage());
+	}
 
 	@Test
 	public void test_delay() {
