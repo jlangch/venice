@@ -1013,8 +1013,8 @@ public class ConcurrencyFunctions {
 						"   ;; parent thread locals                                         \n" +
 						"   (binding [a 10 b 20]                                            \n" +
 						"      ;; future with child thread locals                           \n" +
-						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]      \n" +
-						"         { :child @f :parent {:a a :b b})))                          ")
+						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]       \n" +
+						"         {:child @f :parent {:a a :b b}})))                          ")
 					.build()
 		) {		
 			@SuppressWarnings("unchecked")

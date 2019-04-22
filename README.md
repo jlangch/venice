@@ -975,6 +975,33 @@ actors accept data to be processed by the actor's function
 ```
 
 
+### Thread local vars
+
+Thread local var bindings are managed by a stack
+
+```clojure
+(do
+  (binding [x 100]
+     (println x)       ; x level 1 => 100
+     (binding [x 200]
+        (println x))   ; x level 2 => 200
+     (println x)))     ; x level 1 => 100
+```
+
+Thread local vars get inherited by child threads
+
+```clojure
+(do
+  ;; parent thread locals
+  (binding [a 10 b 20]
+      ;; future with child thread locals
+      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]
+         {:child @f :parent {:a a :b b}})))
+         
+;; => {:parent {:a 10 :b 20} :child {:a 10 :b 90}}
+```
+
+
 ## Sandbox
 
 The Venice sandbox allows a program to execute _Venice_ in a restricted sandbox 
