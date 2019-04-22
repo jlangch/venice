@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.concurrent;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -44,6 +46,7 @@ import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.Watchable;
 import com.github.jlangch.venice.impl.util.concurrent.StripedExecutorService;
 import com.github.jlangch.venice.impl.util.concurrent.StripedRunnable;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class Agent {
@@ -72,11 +75,23 @@ public class Agent {
 	}
 
 	public void send(final VncFunction fn, final VncList args) {
-		sendExecutor.execute(new Action(this, fn, args));
+		sendExecutor.execute(
+				new Action(
+						this, 
+						fn, 
+						args, 
+						JavaInterop.getInterceptor(), 
+						ThreadLocalMap.getValues()));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
-		sendOffExecutor.execute(new Action(this, fn, args));
+		sendOffExecutor.execute(
+				new Action(
+						this, 
+						fn, 
+						args, 
+						JavaInterop.getInterceptor(),
+						ThreadLocalMap.getValues()));
 	}
 
 	public void restart(final VncVal state) {
@@ -203,10 +218,18 @@ public class Agent {
 			
 	private static class Action implements StripedRunnable {
 
-		public Action(final Agent agent, final VncFunction fn, final VncList fnArgs) {
+		public Action(
+				final Agent agent, 
+				final VncFunction fn, 
+				final VncList fnArgs,
+				final IInterceptor interceptor,
+				final Map<VncKeyword,VncVal> threadLocalValues
+		) {
 			this.agent = agent;
 			this.fn = fn;
 			this.fnArgs = fnArgs;
+			this.interceptor = interceptor;
+			this.threadLocalValues.set(threadLocalValues);
 		}
 		
 		@Override
@@ -217,7 +240,11 @@ public class Agent {
 		@Override
 		public void run() {
 			try {
+				// inherit thread local values to the child thread
+				ThreadLocalMap.setValues(threadLocalValues.get());
 				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
+				ThreadLocalMap.clearCallStack();
+				JavaInterop.register(interceptor);	
 				
 				if (agent.getError() == null || agent.continueOnError) {
 					final VncVal oldVal = agent.value.get().val;
@@ -244,13 +271,17 @@ public class Agent {
 				}
 			}
 			finally {
-				ThreadLocalMap.pop(new VncKeyword("*agent*"));
+				// clean up
+				JavaInterop.unregister();
+				ThreadLocalMap.remove();
 			}
 		}
 		
 		private final Agent agent;
 		private final VncFunction fn; 
 		private final VncList fnArgs;
+		private final IInterceptor interceptor;
+		private final AtomicReference<Map<VncKeyword,VncVal>> threadLocalValues = new AtomicReference<>();
 	}
 	
 	private static class Value {
