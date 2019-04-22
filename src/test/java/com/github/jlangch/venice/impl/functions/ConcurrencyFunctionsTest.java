@@ -319,13 +319,13 @@ public class ConcurrencyFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                             \n" +
-				"   (defn add [a b] (io/file \"zz\") (+ a b z))  \n" +
-				"   (binding [z 10]                              \n" +
-				"     (def x (agent 100))                        \n" +
-				"     (send x add 5)                             \n" +
-				"     (sleep 200)                                \n" +
-				"     (deref x)))                                  ";
+				"(do                            \n" +
+				"   (defn add [a b] (+ a b z))  \n" +
+				"   (def x (agent 100))         \n" +
+				"   (binding [z 10]             \n" +
+				"     (send x add 5)            \n" +
+				"     (sleep 200)               \n" +
+				"     (deref x)))                 ";
 
 		final Object result = venice.eval(script);
 		
