@@ -882,7 +882,9 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/digit? s)")		
-					.doc("True if s single char string and the char is a digit.")
+					.doc(
+						"True if s is a single char string and the char is a digit. " +
+						"Defined by Java Character.isDigit(ch).")
 					.examples("(str/digit? \"8\")")
 					.build()
 		) {		
@@ -908,7 +910,9 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/letter? s)")		
-					.doc("True if s single char string and the char is a letter.")
+					.doc(
+						"True if s is a single char string and the char is a letter. " + 
+						"Defined by Java Character.isLetter(ch).")
 					.examples("(str/letter? \"x\")")
 					.build()
 		) {		
@@ -935,7 +939,7 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/linefeed? s)")		
-					.doc("True if s single char string and the char is a linefeed.")
+					.doc("True if s is a single char string and the char is a linefeed.")
 					.examples("(str/linefeed? \"\n\")")
 					.build()
 		) {		
@@ -961,7 +965,9 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/whitespace? s)")		
-					.doc("True if s single char string and the char is a whitespace.")
+					.doc(
+						"True if s is a single char string and the char is a whitespace. " +
+						"Defined by Java Character.isWhitespace(ch).")
 					.examples("(str/whitespace? \" \")")
 					.build()
 		) {		
