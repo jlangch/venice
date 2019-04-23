@@ -425,6 +425,21 @@ Immutable persistent sorted map.
 ```
 
 
+### Function composition
+
+
+```clojure
+(filter (comp not zero?) [0 1 0 2 0 3 0 4])  ;; => [1 2 3 4]
+```
+
+
+### Partial functions
+
+```clojure
+(map (partial * 2) [1 2 3 4])   ;; => (2 4 6 8)
+```
+
+
 ### Multimethods
 
 Multimethods are a powerful mechanism for runtime polymorphism.
