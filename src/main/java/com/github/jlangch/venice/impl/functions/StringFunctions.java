@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -51,7 +52,7 @@ public class StringFunctions {
 	// String
 	///////////////////////////////////////////////////////////////////////////
 	
-	public static VncFunction str_blank = 
+	public static VncFunction str_blank_Q = 
 		new VncFunction(
 				"str/blank?", 
 				VncFunction
@@ -107,7 +108,7 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction str_starts_with = 
+	public static VncFunction str_starts_with_Q = 
 		new VncFunction(
 				"str/starts-with?", 
 				VncFunction
@@ -134,7 +135,7 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
-	public static VncFunction str_ends_with = 
+	public static VncFunction str_ends_with_Q = 
 		new VncFunction(
 				"str/ends-with?", 
 				VncFunction
@@ -161,7 +162,7 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
-	public static VncFunction str_contains = 
+	public static VncFunction str_contains_Q = 
 		new VncFunction(
 				"str/contains?", 
 				VncFunction
@@ -874,7 +875,112 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_digit_Q = 
+		new VncFunction(
+				"str/digit?", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/digit? s)")		
+					.doc("True if s single char string and the char is a digit.")
+					.examples("(str/digit? \"8\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/digit?", args, 1);
 	
+				final String str = Coerce.toVncString(args.first()).getValue();
+				if (str.length() != 1) {
+					throw new VncException(String.format(
+							"Function 'str/digit?' expects a single char string",
+							Types.getType(args.first())));
+				}
+				return Character.isDigit(str.charAt(0)) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction str_letter_Q = 
+		new VncFunction(
+				"str/letter?", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/letter? s)")		
+					.doc("True if s single char string and the char is a letter.")
+					.examples("(str/letter? \"x\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/letter?", args, 1);
+				
+				final String str = Coerce.toVncString(args.first()).getValue();
+				if (str.length() != 1) {
+					throw new VncException(String.format(
+							"Function 'str/letter?' expects a single char string",
+							Types.getType(args.first())));
+				}
+				return Character.isLetter(str.charAt(0)) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
+	public static VncFunction str_linefeed_Q = 
+		new VncFunction(
+				"str/linefeed?", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/linefeed? s)")		
+					.doc("True if s single char string and the char is a linefeed.")
+					.examples("(str/linefeed? \"\n\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/linefeed?", args, 1);
+				
+				final String str = Coerce.toVncString(args.first()).getValue();
+				if (str.length() != 1) {
+					throw new VncException(String.format(
+							"Function 'str/linefeed?' expects a single char string",
+							Types.getType(args.first())));
+				}
+				return str.charAt(0) == '\n' ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_whitespace_Q = 
+		new VncFunction(
+				"str/whitespace?", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/whitespace? s)")		
+					.doc("True if s single char string and the char is a whitespace.")
+					.examples("(str/whitespace? \" \")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/whitespace?", args, 1);
+					
+				final String str = Coerce.toVncString(args.first()).getValue();
+				if (str.length() != 1) {
+					throw new VncException(String.format(
+							"Function 'str/whitespace?' expects a single char string",
+							Types.getType(args.first())));
+				}
+				return Character.isWhitespace(str.charAt(0)) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
 	private static List<Object> toJavaObjects(final VncList list) {
 		return list
 				.getList()
@@ -890,10 +996,14 @@ public class StringFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-					.put("str/blank?",			str_blank)
-					.put("str/starts-with?",	str_starts_with)
-					.put("str/ends-with?",		str_ends_with)
-					.put("str/contains?",		str_contains)
+					.put("str/blank?",			str_blank_Q)
+					.put("str/starts-with?",	str_starts_with_Q)
+					.put("str/ends-with?",		str_ends_with_Q)
+					.put("str/contains?",		str_contains_Q)
+					.put("str/digit?",			str_digit_Q)
+					.put("str/letter?",			str_letter_Q)
+					.put("str/linefeed?",		str_linefeed_Q)
+					.put("str/whitespace?",		str_whitespace_Q)
 					.put("str/trim",			str_trim)
 					.put("str/trim-to-nil",		str_trim_to_nil)
 					.put("str/index-of",		str_index_of)

@@ -49,6 +49,14 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_digit_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/digit? \"8\")"));
+		assertFalse((Boolean)venice.eval("(str/digit? \"a\")"));
+	}
+
+	@Test
 	public void test_str_ends_with() {
 		final Venice venice = new Venice();
 		
@@ -124,6 +132,22 @@ public class StringFunctionsTest {
 		assertEquals(null, venice.eval("(str/last-index-of \"ab:ab:ef\" \"ef\" 3)"));
 		assertEquals(null, venice.eval("(str/last-index-of \"ab:cd:ef\" \"xy\" 5)"));
 		assertEquals(null, venice.eval("(str/last-index-of \"ab:cd:ef\" \"xy\" 99)"));
+	}
+
+	@Test
+	public void test_str_letter_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/letter? \"x\")"));
+		assertFalse((Boolean)venice.eval("(str/letter? \"8\")"));
+	}
+
+	@Test
+	public void test_str_linefeed_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/linefeed? \"\n\")"));
+		assertFalse((Boolean)venice.eval("(str/linefeed? \"8\")"));
 	}
 
 	@Test
@@ -294,6 +318,16 @@ public class StringFunctionsTest {
 		
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"abcdef\")"));
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"aBcDeF\")"));
+	}
+
+	@Test
+	public void test_str_whitespace_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/whitespace? \" \")"));
+		assertTrue((Boolean)venice.eval("(str/whitespace? \"\n\")"));
+		assertTrue((Boolean)venice.eval("(str/whitespace? \"\r\")"));
+		assertFalse((Boolean)venice.eval("(str/whitespace? \"8\")"));
 	}
 	
 }

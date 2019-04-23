@@ -265,6 +265,10 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
+		str_test.addItem(getDocItem("str/digit?"));
+		str_test.addItem(getDocItem("str/letter?"));
+		str_test.addItem(getDocItem("str/whitespace?"));
+		str_test.addItem(getDocItem("str/linefeed?"));
 
 		
 		final DocSection other = new DocSection("Other");
