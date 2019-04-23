@@ -3500,7 +3500,8 @@ public class CoreFunctions {
 						"(first [])",
 						"(first [1 2 3])",
 						"(first '())",
-						"(first '(1 2 3))")
+						"(first '(1 2 3))",
+						"(first \"abc\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -3579,7 +3580,8 @@ public class CoreFunctions {
 					.examples(
 						"(nth nil 1)",
 						"(nth [1 2 3] 1)",
-						"(nth '(1 2 3) 1)")
+						"(nth '(1 2 3) 1)",
+						"(nth \"abc\" 2)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -3621,7 +3623,8 @@ public class CoreFunctions {
 						"(last [])",
 						"(last [1 2 3])",
 						"(last '())",
-						"(last '(1 2 3))")
+						"(last '(1 2 3))",
+						"(last \"abc\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

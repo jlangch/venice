@@ -225,6 +225,9 @@ public class DocGenerator {
 		use.addItem(getDocItem("count"));
 		use.addItem(getDocItem("compare"));
 		use.addItem(getDocItem("empty-to-nil"));
+		use.addItem(getDocItem("first"));
+		use.addItem(getDocItem("last"));
+		use.addItem(getDocItem("nth"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
 		use.addItem(getDocItem("str/replace-first"));
