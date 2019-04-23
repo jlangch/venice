@@ -2527,7 +2527,15 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(sorted-set? (set 1 2))"));	
 		assertTrue((Boolean)venice.eval("(sorted-set? (sorted-set 1 2))"));	
 	}
-	
+
+	@Test
+	public void test_some() {
+		final Venice venice = new Venice();
+
+		assertEquals(Boolean.TRUE, venice.eval("(some even? '(1 2 3 4))"));	
+		assertEquals(null, venice.eval("(some even? '(1 3 5 7))"));	
+	}
+
 	@Test
 	public void test_some_Q() {
 		final Venice venice = new Venice();
@@ -2711,6 +2719,28 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(string? '())"));
 		assertFalse((Boolean)venice.eval("(string? [])"));
 		assertFalse((Boolean)venice.eval("(string? {})"));
+	}
+	
+	@Test
+	public void test_split_at() {
+		final Venice venice = new Venice();
+
+		assertEquals("[() (1 2 3 4 5)]", venice.eval("(str (split-at 0 [1 2 3 4 5]))"));	
+		assertEquals("[(1) (2 3 4 5)]", venice.eval("(str (split-at 1 [1 2 3 4 5]))"));	
+		assertEquals("[(1 2) (3 4 5)]", venice.eval("(str (split-at 2 [1 2 3 4 5]))"));	
+		assertEquals("[(1 2 3) (4 5)]", venice.eval("(str (split-at 3 [1 2 3 4 5]))"));	
+		assertEquals("[(1 2 3 4) (5)]", venice.eval("(str (split-at 4 [1 2 3 4 5]))"));	
+		assertEquals("[(1 2 3 4 5) ()]", venice.eval("(str (split-at 5 [1 2 3 4 5]))"));	
+		assertEquals("[(1 2 3 4 5) ()]", venice.eval("(str (split-at 6 [1 2 3 4 5]))"));	
+	}
+	
+	@Test
+	public void test_split_with() {
+		final Venice venice = new Venice();
+
+		assertEquals("[(1 3 5) (6 7 9)]", venice.eval("(str (split-with odd? [1 3 5 6 7 9]))"));	
+		assertEquals("[(1 3 5) ()]", venice.eval("(str (split-with odd? [1 3 5]))"));	
+		assertEquals("[() (2 4 6)]", venice.eval("(str (split-with odd? [2 4 6]))"));	
 	}
 	
 	@Test

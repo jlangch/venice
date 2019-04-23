@@ -387,6 +387,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("take-while"));
 		list_modify.addItem(getDocItem("drop"));
 		list_modify.addItem(getDocItem("drop-while"));
+		list_modify.addItem(getDocItem("split-at"));
 		list_modify.addItem(getDocItem("split-with"));
 	
 		final DocSection list_test = new DocSection("Test");

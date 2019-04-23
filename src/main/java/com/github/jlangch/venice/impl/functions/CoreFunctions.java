@@ -2783,6 +2783,40 @@ public class CoreFunctions {
 	// Sequence functions
 	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction split_at = 
+		new VncFunction(
+				"split-at", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(split-at n coll)")		
+					.doc("Returns a vector of [(take n coll) (drop n coll)]")
+					.examples(
+						"(split-at 2 [1 2 3 4 5])",
+						"(split-at 3 [1 2])")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("split-at", args, 2);
+				
+				if (args.second() == Nil) {
+					return VncVector.of(new VncList(), new VncList());
+				}
+				
+				final List<VncVal> items = Coerce.toVncSequence(args.second()).getList();
+				final int n = Math.min(
+								items.size(), 
+								Math.max(
+									0, 
+									Coerce.toVncLong(args.first()).getValue().intValue()));
+				
+				return VncVector.of(
+						new VncList(items.subList(0, n)), 
+						new VncList(items.subList(n, items.size())));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction split_with = 
 		new VncFunction(
@@ -3167,6 +3201,44 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction some = 
+		new VncFunction(
+				"some", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(some? pred coll)")		
+					.doc(
+						"Returns the first logical true value of (pred x) for any x in coll, " + 
+						"else nil.")
+					.examples(
+						"(some even? '(1 2 3 4))",
+						"(some even? '(1 3 5 7))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("some?", args, 2);
+				
+				if (args.second() == Nil) {
+					return Nil;
+				}
+				else {
+					final VncFunction pred = Coerce.toVncFunction(args.first());
+					final VncCollection coll = Coerce.toVncCollection(args.second());
+					
+					if (coll.isEmpty()) {
+						return Nil;
+					}
+									
+					return coll.toVncList()
+							   .getList()
+							   .stream()
+							   .anyMatch(v -> pred.apply(VncList.of(v)) == True) ? True : Nil;
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction count = 
 		new VncFunction(
@@ -5643,6 +5715,7 @@ public class CoreFunctions {
 				.put("union",				union)
 				.put("intersection",		intersection)
 
+				.put("split-at",			split_at)
 				.put("split-with",			split_with)
 				.put("into",				into)
 				.put("sequential?",			sequential_Q)
@@ -5697,6 +5770,7 @@ public class CoreFunctions {
 				.put("group-by",			group_by)
 				.put("sort",				sort)
 				.put("sort-by",				sort_by)
+				.put("some",				some)
 		
 				.put("merge",				merge)
 				.put("conj",				conj)
