@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
 
@@ -38,20 +38,20 @@ public class CallStack {
 		if (frame.getModule() == null) {
 			if (queue.isEmpty()) {
 				// default to "user"
-				queue.offer(frame.withModule("user"));
+				queue.push(frame.withModule("user"));
 			}
 			else {
 				// inherit module
-				queue.offer(frame.withModule(queue.peek().getModule()));
+				queue.push(frame.withModule(queue.peek().getModule()));
 			}
 		}
 		else {
-			queue.offer(frame);
+			queue.push(frame);
 		}
 	}
 	
 	public CallFrame pop() {
-		return queue.poll();
+		return queue.pop();
 	}
 	
 	public CallFrame peek() {
@@ -105,5 +105,5 @@ public class CallStack {
 
 	
 	
-	private final ConcurrentLinkedQueue<CallFrame> queue = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedDeque<CallFrame> queue = new ConcurrentLinkedDeque<>();
 }

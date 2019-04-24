@@ -79,6 +79,16 @@ public class PrivateFnTest {
 			new Venice().eval(s);
 		});
 	}
+	
+	@Test
+	public void test_private_fn_5() {
+		final String s = 
+				"(do                                             \n" +
+				"   (load-module :test)                          \n" +
+				"   (test/unexpected-error \"sdgh\"))              ";
+
+		new Venice().eval(s);
+	}
 
 	@Test
 	public void test_public_fn() {

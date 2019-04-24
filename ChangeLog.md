@@ -15,12 +15,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added regular expression functions: `regex/pattern`, `regex/matcher`, `regex/find?`, `regex/group`, ...
 
 
+
 ## [1.4.4] - 2019-04-22
 
 ### added
 
 - added function `defn-` to simply private function definition
 - added inheritance of thread-local vars for child threads used by futures and agents
+
+### fixed
+
+- fixed a problem with detecting unauthorized private function calls
 
 
 
