@@ -45,7 +45,7 @@ public class Sandbox_JavaClasspathResource_Test {
 				"   (-<> \""+ resource + "\"                                \n" +
 				"        (io/load-classpath-resource <>)                    \n" +
 				"        (bytebuf-to-string <> :UTF-8)                      \n" +
-				"        (str/contains? <> \"(defn test/println \"))))        ";
+				"        (str/contains? <> \"(defn test/test-fn \"))))        ";
 
 		// [1] OK
 		assertTrue((Boolean)new Venice().eval(script));	

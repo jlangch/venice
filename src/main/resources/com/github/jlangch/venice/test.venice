@@ -1,10 +1,10 @@
 ;; Test Venice classpath script
 
-(defn test/println [x]
-  (println (str "test: " x)))
+(defn test/test-fn [x]
+  (str "test: " x))
 
-(defn- test/println-private [x]
-  (println (str "test: " x)))
+(defn- test/test-fn-private [x]
+  (str "test: " x))
 
 (defn- test/error [msg]
   msg)

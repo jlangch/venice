@@ -31,9 +31,9 @@ public class PrivateFnTest {
 	@Test
 	public void test_private_fn_1() {
 		final String s = 
-				"(do                                  \n" +
-				"   (load-module :test)               \n" +
-				"   (test/println-private 100))         ";
+				"(do                               \n" +
+				"   (load-module :test)            \n" +
+				"   (test/test-fn-private 100))      ";
 
 		assertThrows(VncException.class, () -> {
 			new Venice().eval(s);
@@ -45,8 +45,8 @@ public class PrivateFnTest {
 		final String s = 
 				"(do                                             \n" +
 				"   (load-module :test)                          \n" +
-				"   (let [x (fn [m] (test/println-private m))]   \n" +
-				"       (x 100)))                                 ";
+				"   (let [x (fn [m] (test/test-fn-private m))]   \n" +
+				"       (x 100)))                                  ";
 
 		assertThrows(VncException.class, () -> {
 			new Venice().eval(s);
@@ -56,10 +56,10 @@ public class PrivateFnTest {
 	@Test
 	public void test_private_fn_3() {
 		final String s = 
-				"(do                                             \n" +
-				"   (load-module :test)                          \n" +
-				"   (let [f \"test/println-private\"]            \n" +
-				"         ((resolve (symbol f)) 100)))             ";
+				"(do                                          \n" +
+				"   (load-module :test)                       \n" +
+				"   (let [f \"test/test-fn-private\"]         \n" +
+				"         ((resolve (symbol f)) 100)))          ";
 
 		assertThrows(VncException.class, () -> {
 			new Venice().eval(s);
@@ -71,7 +71,7 @@ public class PrivateFnTest {
 		final String s = 
 				"(do                                             \n" +
 				"   (load-module :test)                          \n" +
-				"   (let [f \"test/println-private\"             \n" +
+				"   (let [f \"test/test-fn-private\"             \n" +
 				"         x (fn [m] ((resolve (symbol f)) m))]   \n" +
 				"       (x 100)))                                 ";
 
@@ -87,15 +87,16 @@ public class PrivateFnTest {
 				"   (load-module :test)                          \n" +
 				"   (test/unexpected-error \"sdgh\"))              ";
 
+		// no exception private fn call is ok
 		new Venice().eval(s);
 	}
 
 	@Test
 	public void test_public_fn() {
 		final String s = 
-				"(do                                  \n" +
-				"   (load-module :test)               \n" +
-				"   (test/println 100))                 ";
+				"(do                               \n" +
+				"   (load-module :test)            \n" +
+				"   (test/test-fn 100))              ";
 
 		new Venice().eval(s);
 	}
