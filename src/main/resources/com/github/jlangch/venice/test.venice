@@ -1,5 +1,13 @@
 ;; Test Venice classpath script
 
-(defn test/println [x] (println (str "test: " x)))
+(defn test/println [x]
+  (println (str "test: " x)))
 
-(defn- test/println-private [x] (println (str "test: " x)))
+(defn- test/println-private [x]
+  (println (str "test: " x)))
+
+(defn- test/error [msg]
+  msg)
+
+(defn test/unexpected-error [msg]
+  (test/error (str "Unexpected " msg)))
