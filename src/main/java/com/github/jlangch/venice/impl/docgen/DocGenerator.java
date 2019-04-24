@@ -108,6 +108,7 @@ public class DocGenerator {
 		return Arrays.asList(
 				getCollectionsSection(),
 				getArraysSection(),
+				getRegexSection(),
 				getConcurrencySection(),
 				getSystemSection(),
 				getJavaInteropSection(),
@@ -556,6 +557,25 @@ public class DocGenerator {
 		use.addItem(getDocItem("asub"));
 		use.addItem(getDocItem("acopy"));
 		use.addItem(getDocItem("amap"));
+
+		return section;
+	}
+
+	private DocSection getRegexSection() {
+		final DocSection section = new DocSection("Regex");
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection general = new DocSection("General");
+		all.addSection(general);
+		general.addItem(getDocItem("regex/pattern"));
+		general.addItem(getDocItem("regex/matcher"));
+		general.addItem(getDocItem("regex/reset"));
+		general.addItem(getDocItem("regex/find?"));
+		general.addItem(getDocItem("regex/matches?"));
+		general.addItem(getDocItem("regex/group"));
+		general.addItem(getDocItem("regex/groupcount"));
 
 		return section;
 	}

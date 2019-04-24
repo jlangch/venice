@@ -77,7 +77,7 @@ public class RegexFunctions {
 					.arglists("(regex/matcher pattern str)")		
 					.doc("Returns an instance of java.util.regex.Matcher.")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\"]) \n" +
+						"(let [p (regex/pattern \"[0-9]+\")] \n" +
 						"   (regex/matcher p \"100\"))")
 					.build()
 		) {		
@@ -105,7 +105,7 @@ public class RegexFunctions {
 						"If the match succeeds then more information can be obtained via " +
 						"the regex/group function")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\"   \n" +
+						"(let [p (regex/pattern \"[0-9]+\")  \n" +
 						"      m (regex/matcher p \"100\")]  \n" +
 						"   (regex/find? m))")
 					.build()
@@ -133,7 +133,7 @@ public class RegexFunctions {
 						"If the match succeeds then more information can be obtained " +
 						"via the regex/group function")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\"   \n" +
+						"(let [p (regex/pattern \"[0-9]+\")  \n" +
 						"      m (regex/matcher p \"100\")]  \n" +
 						"   (regex/matches? m))")
 					.build()
@@ -159,10 +159,10 @@ public class RegexFunctions {
 					.doc(
 						"Resets the matcher with a new string")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\"   \n" +
-						"      m1 (regex/matcher p \"100\")] \n" +
-						"      m2 (regex/reset m \"200\")]   \n" +
-						"   (regex/find? m2))")
+						"(let [p (regex/pattern \"[0-9]+\")  \n" +
+						"      m1 (regex/matcher p \"100\")  \n" +
+						"      m2 (regex/reset m1 \"200\")]  \n" +
+						"   (regex/find? m2))                  ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
