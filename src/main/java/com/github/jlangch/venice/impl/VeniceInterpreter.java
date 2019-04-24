@@ -466,20 +466,7 @@ public class VeniceInterpreter implements Serializable  {
 						
 						// private functions may be called from the same module only
 						if (fn.isPrivate()) {
-							final String callerModule = callStack.peekModule();
-							if (callerModule == null || !callerModule.equals(fn.getModule())) {
-								final CallFrame callFrame = callStack.peek();
-								final String callerFnName = callFrame == null ? null : callFrame.getFnName();								
-								try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fn.getName(), ast))) {
-									throw new VncException(String.format(
-											"Illegal call of private function %s (module %s). Called by %s (module %s).\n%s", 
-											fn.getName(),
-											fn.getModule(),
-											callerFnName,
-											callerModule,
-											callStack.toString()));
-								}
-							}
+							validatePrivateFnCall(fn, ast, callStack);
 						}
 						
 						sandboxMaxExecutionTimeChecker.check();
@@ -1058,6 +1045,27 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				}
  			}
+		}
+	}
+	
+	private void validatePrivateFnCall(
+			final VncFunction fn, 
+			final VncVal fnAst, 
+			final CallStack callStack
+	) {
+		final String callerModule = callStack.peekModule();
+		if (callerModule == null || !callerModule.equals(fn.getModule())) {
+			final CallFrame callFrame = callStack.peek();
+			final String callerFnName = callFrame == null ? null : callFrame.getFnName();								
+			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fn.getName(), fnAst))) {
+				throw new VncException(String.format(
+						"Illegal call of private function %s (module %s). Called by %s (module %s).\n%s", 
+						fn.getName(),
+						fn.getModule(),
+						callerFnName,
+						callerModule,
+						callStack.toString()));
+			}
 		}
 	}
 
