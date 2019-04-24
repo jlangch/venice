@@ -48,10 +48,12 @@ public class RegexFunctionsTest {
 	public void test_regex_matcher() {
 		final Venice venice = new Venice();
 		
-		final Matcher m = (Matcher)venice.eval(
-							"(let [p (regex/pattern \"[0-9]+\")]    \n" +
-							"   (regex/matcher p \"100\"))            ");
-		assertNotNull(m);
+		assertNotNull((Matcher)venice.eval(
+				"(regex/matcher \"[0-9]+\" \"100\")"));
+
+		assertNotNull((Matcher)venice.eval(
+				"(let [p (regex/pattern \"[0-9]+\")]    \n" +
+				"   (regex/matcher p \"100\"))            "));
 	}
 
 	@Test

@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class RegexFunctions {
@@ -75,18 +76,23 @@ public class RegexFunctions {
 					.meta()
 					.module("regex")
 					.arglists("(regex/matcher pattern str)")		
-					.doc("Returns an instance of java.util.regex.Matcher.")
+					.doc(
+						"Returns an instance of java.util.regex.Matcher. The pattern can be " +
+						"either a string or a pattern created by (regex/pattern s)")
 					.examples(
+						"(regex/matcher \"[0-9]+\" \"100\")",
 						"(let [p (regex/pattern \"[0-9]+\")] \n" +
 						"   (regex/matcher p \"100\"))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("regex/matcher", args, 2);
-	
-				final Pattern p = (Pattern)Coerce.toVncJavaObject(args.first()).getDelegate();		
-				final String s = Coerce.toVncString(args.second()).getValue();		
-	
+
+				final VncVal pattern = args.first();
+				final Pattern p = Types.isVncString(pattern)
+									? Pattern.compile(((VncString)pattern).getValue())	
+									: (Pattern)Coerce.toVncJavaObject(args.first()).getDelegate();		
+				final String s = Coerce.toVncString(args.second()).getValue();	
 				return new VncJavaObject(p.matcher(s));
 			}
 	
