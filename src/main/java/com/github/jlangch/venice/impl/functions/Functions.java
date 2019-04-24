@@ -20,6 +20,7 @@ public class Functions {
 		functions.putAll(CoreFunctions.ns);
 		functions.putAll(ModuleFunctions.ns);
 		functions.putAll(StringFunctions.ns);
+		functions.putAll(RegexFunctions.ns);
 		functions.putAll(ArrayFunctions.ns);
 		functions.putAll(MathFunctions.ns);
 		functions.putAll(IOFunctions.ns);
