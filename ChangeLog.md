@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added functions `str/letter?`, `str/digit?`, `str/whitespace?`, `str/linefeed?`
-
+- added regular expression functions: `regex/pattern`, `regex/matcher`, `regex/find?`, `regex/group`, ...
 
 
 ## [1.4.4] - 2019-04-22
