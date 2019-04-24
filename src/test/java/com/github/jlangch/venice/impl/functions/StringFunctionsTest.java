@@ -146,6 +146,7 @@ public class StringFunctionsTest {
 	public void test_str_linefeed_Q() {
 		final Venice venice = new Venice();
 		
+		assertEquals("\n", venice.eval("(first \"\n----\")"));
 		assertTrue((Boolean)venice.eval("(str/linefeed? \"\n\")"));
 		assertFalse((Boolean)venice.eval("(str/linefeed? \"8\")"));
 	}
