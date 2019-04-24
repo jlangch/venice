@@ -380,7 +380,7 @@ public class IOFunctionsTest {
 				"   (-<> (identity \"" + resource + "\")                 \n" +
 				"        (io/load-classpath-resource <>)                 \n" +
 				"        (bytebuf-to-string <> :UTF-8)                   \n" +
-				"        (str/contains? <> \"(defn test/println \"))))     ";
+				"        (str/contains? <> \"(defn test/test-fn \"))))     ";
 		
 		assertTrue((Boolean)venice.eval(script));	
 	}
