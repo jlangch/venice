@@ -470,7 +470,7 @@ public class VeniceInterpreter implements Serializable  {
 							if (callerModule == null || !callerModule.equals(fn.getModule())) {
 								final CallFrame callFrame = callStack.peek();
 								final String callerFnName = callFrame == null ? null : callFrame.getFnName();								
-								try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+								try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fn.getName(), ast))) {
 									throw new VncException(String.format(
 											"Illegal call of private function %s (module %s). Called by %s (module %s).\n%s", 
 											fn.getName(),
@@ -486,8 +486,9 @@ public class VeniceInterpreter implements Serializable  {
 						checkInterrupted();
 	
 						// invoke function with call frame
-						callStack.push(CallFrame.fromFunction(fn, a0));
 						try {
+							callStack.push(CallFrame.fromFunction(fn, a0));
+
 							final VncVal val = fn.apply(el.rest());
 							
 							if (meterRegistry.enabled) {
@@ -498,8 +499,8 @@ public class VeniceInterpreter implements Serializable  {
 						}
 						finally {
 							callStack.pop();
-							sandboxMaxExecutionTimeChecker.check();
 							checkInterrupted();
+							sandboxMaxExecutionTimeChecker.check();
 						}
 					}
 					else if (Types.isIVncFunction(elFirst)) {
