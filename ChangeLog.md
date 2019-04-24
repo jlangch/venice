@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added functions `str/letter?`, `str/digit?`, `str/whitespace?`, `str/linefeed?`
 - added regular expression functions: `regex/pattern`, `regex/matcher`, `regex/find?`, `regex/group`, ...
 
+### fixed
+
+- fixed a problem with detecting unauthorized private function calls
+
 
 
 ## [1.4.4] - 2019-04-22
@@ -22,10 +26,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added function `defn-` to simply private function definition
 - added inheritance of thread-local vars for child threads used by futures and agents
-
-### fixed
-
-- fixed a problem with detecting unauthorized private function calls
 
 
 
