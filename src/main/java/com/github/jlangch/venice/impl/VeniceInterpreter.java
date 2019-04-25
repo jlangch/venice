@@ -77,6 +77,10 @@ public class VeniceInterpreter implements Serializable  {
 		this(new MeterRegistry(false), new AcceptAllInterceptor());
 	}
 
+	public VeniceInterpreter(final IInterceptor interceptor) {
+		this(new MeterRegistry(false), interceptor);
+	}
+
 	public VeniceInterpreter(
 			final MeterRegistry perfmeter, 
 			final IInterceptor interceptor

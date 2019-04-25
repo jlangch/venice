@@ -48,11 +48,13 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class REPL {
 	
-	public REPL() {
+	public REPL(final IInterceptor interceptor) {
+		this.interceptor = interceptor;
 	}
 	
 	public void run(final String[] args) {
@@ -103,7 +105,7 @@ public class REPL {
 											config.getColor("colors.stdout"))
 									: System.out;
 		
-		final VeniceInterpreter venice = new VeniceInterpreter();
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		final ReplParser parser = new ReplParser(venice);
 		
@@ -332,4 +334,6 @@ public class REPL {
 			"  ctrl-_   undo\n";
 
 	private ReplConfig config;
+	private final IInterceptor interceptor;
+
 }

@@ -27,20 +27,25 @@ import java.io.PrintStream;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class Launcher {
 	
 	public static void main(final String[] args) {
 		final CommandLineArgs cli = new CommandLineArgs(args);
+		final IInterceptor interceptor = new AcceptAllInterceptor();
+		JavaInterop.register(interceptor);
 		
 		try {
 			if (cli.switchPresent("-file")) {
-				final VeniceInterpreter venice = new VeniceInterpreter();
+				final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 				final Env env = createEnv(venice, cli);
 	
 				final String file = cli.switchValue("-file");
@@ -49,7 +54,7 @@ public class Launcher {
 				System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
 			}
 			else if (cli.switchPresent("-script")) {
-				final VeniceInterpreter venice = new VeniceInterpreter();
+				final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 				final Env env = createEnv(venice, cli);
 	
 				final String script = cli.switchValue("-script");
@@ -57,10 +62,10 @@ public class Launcher {
 				System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 			}
 			else if (cli.switchPresent("-repl")) {
-				new REPL().run(args);
+				new REPL(interceptor).run(args);
 			}
 			else {
-				new REPL().run(args);
+				new REPL(interceptor).run(args);
 			}
 			
 			System.exit(0);
