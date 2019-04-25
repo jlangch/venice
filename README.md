@@ -522,7 +522,7 @@ embed the results of arbitrary function invocation into the produced
 string.
 
 _Interpolation is implemented as a reader macro. It's parsed at read time and turned into a_ 
-`(str args)` _function._
+`(str args)` expression.
 
 ```clojure
 (do
