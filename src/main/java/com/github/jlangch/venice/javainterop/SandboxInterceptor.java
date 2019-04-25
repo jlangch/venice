@@ -28,9 +28,13 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class SandboxInterceptor extends ValueFilterInterceptor {
 	
 	public SandboxInterceptor(final SandboxRules rules) {
+		this.sandboxRulesOrg = rules;
 		this.sandboxRules = CompiledSandboxRules.compile(rules);
 	}
 	
+	public SandboxRules getRules() {
+		return sandboxRulesOrg;
+	}
 
 	@Override
 	public Object onInvokeInstanceMethod(
@@ -211,5 +215,6 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	}
 	
 	
+	private final SandboxRules sandboxRulesOrg;
 	private final CompiledSandboxRules sandboxRules;
 }

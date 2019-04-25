@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
@@ -28,6 +31,12 @@ import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 
 public class RejectAllInterceptor extends Interceptor {
 
+	public List<String> getBlacklistedVeniceFunctions() {
+		final List<String> list = new ArrayList<>(blacklistedVeniceFunctions);
+		Collections.sort(list);
+		return list;
+	}
+	
 	@Override
 	public Object onInvokeInstanceMethod(
 			final IInvoker invoker, 

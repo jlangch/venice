@@ -427,7 +427,8 @@ public class SandboxRules {
 		return new ArrayList<String>(rules)
 					.stream()
 					.sorted()
-					.collect(Collectors.joining("\n"));
+					.collect(Collectors.joining("\n"))
+				+ "\nmaxExecTimeSeconds:" + (maxExecTimeSeconds == null ? "no-limit" : maxExecTimeSeconds.toString());
 	}
 		
 	private static String BASE = Venice.class.getPackage().getName();

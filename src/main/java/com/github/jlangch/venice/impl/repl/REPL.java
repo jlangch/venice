@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -43,6 +44,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -52,6 +54,7 @@ import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class REPL {
@@ -84,7 +87,6 @@ public class REPL {
 		
 		final Thread mainThread = Thread.currentThread();
 		
-
 		final Terminal terminal = builder
 									.encoding("UTF-8")
 									.type("xterm-256color")
@@ -108,7 +110,7 @@ public class REPL {
 											config.getColor("colors.stdout"))
 									: System.out;
 		
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+		venice = new VeniceInterpreter(interceptor);
 
 		final ReplParser parser = new ReplParser(venice);
 		
@@ -124,7 +126,7 @@ public class REPL {
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
 		
-		Env env = loadEnv(venice, cli, ps);
+		Env env = loadEnv(cli, ps);
 
 		// REPL loop
 		while (true) {
@@ -142,7 +144,7 @@ public class REPL {
 				if (line.startsWith("!")) {
 					final String cmd = StringUtil.trimToEmpty(line.substring(1));				
 					if (cmd.equals("reload")) {
-						env = loadEnv(venice, cli, ps);
+						env = loadEnv(cli, ps);
 						println(terminal, "system", "reloaded");					
 						continue;
 					}
@@ -155,21 +157,21 @@ public class REPL {
 						continue;
 					}
 					else if (cmd.equals("env")) {
-						handleEnvCommand(new String[0], terminal, venice, env);
+						handleEnvCommand(new String[0], terminal, env);
 						continue;
 					}
 					else if (cmd.startsWith("env ")) {
 						final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
-						handleEnvCommand(params, terminal, venice, env);
+						handleEnvCommand(params, terminal, env);
 						continue;
 					}
 					else if (cmd.equals("sandbox")) {
-						handleSandboxCommand(new String[0], terminal, venice, env);
+						handleSandboxCommand(new String[0], terminal, env);
 						continue;
 					}
 					else if (cmd.startsWith("sandbox ")) {
 						final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
-						handleSandboxCommand(params, terminal, venice, env);
+						handleSandboxCommand(params, terminal, env);
 						continue;
 					}
 					else if (cmd.equals("exit")) {
@@ -236,7 +238,6 @@ public class REPL {
 	private void handleEnvCommand(
 			final String[] params,
 			final Terminal terminal,
-			final VeniceInterpreter venice,
 			final Env env
 	) {
 		if (params.length == 0) {
@@ -245,23 +246,23 @@ public class REPL {
 		}
 		else if (params.length == 1) {
 			if (params[0].equals("levels")) {
-				terminal.writer().println("Levels: " + (env.level() + 1));
+				println(terminal, "stdout", "Levels: " + (env.level() + 1));
 				return;
 			}
 			else if (params[0].equals("global")) {
-				terminal.writer().println(env.globalsToString());
+				println(terminal, "stdout", env.globalsToString());
 				return;
 			}
 		}
 		else if (params.length == 2) {
 			if (params[0].equals("print")) {
 				final VncVal val = env.get(new VncSymbol(params[1]));
-				terminal.writer().println(venice.PRINT(val));
+				println(terminal, "stdout", venice.PRINT(val));
 				return;
 			}
 			else if (params[0].equals("local")) {
 				final int level = Integer.valueOf(params[1]);
-				terminal.writer().println(env.getLevelEnv(level).localsToString());
+				println(terminal, "stdout", env.getLevelEnv(level).localsToString());
 				return;
 			}
 		}
@@ -272,37 +273,95 @@ public class REPL {
 	private void handleSandboxCommand(
 			final String[] params,
 			final Terminal terminal,
-			final VeniceInterpreter venice,
 			final Env env
 	) {
 		if (params.length == 0) {
-			final String interceptorName = interceptor.getClass().getSimpleName();
+			terminal.writer().println(HELP_STATUS);
+			return;
+		}
+
+		final String interceptorName = interceptor.getClass().getSimpleName();
 			
-			if (interceptor instanceof AcceptAllInterceptor) {
-				terminal.writer().println("No sandbox active (" + interceptorName +")");
+		if (params.length == 1) {
+			if (params[0].equals("status")) {
+				if (interceptor instanceof AcceptAllInterceptor) {
+					println(terminal, "stdout", "No sandbox active (" + interceptorName +")");
+					return;
+				}
+				else if (interceptor instanceof RejectAllInterceptor) {
+					println(
+						terminal, 
+						"stdout", 
+						"Sandbox active (" + interceptorName + "). "
+							+ "Rejects all Java calls and default "
+							+ "blacklisted Venice functions");
+					return;
+				}
+				else if (interceptor instanceof SandboxInterceptor) {
+					println(terminal, "stdout", "Customized sandbox active (" + interceptorName + ")");
+					return;
+				}
+				else {
+					println(terminal, "stdout", "Sandbox: " + interceptorName);
+					return;
+				}
+			}
+			else if (params[0].equals("accept-all")) {
+				interceptor = new AcceptAllInterceptor();
+				venice = new VeniceInterpreter(interceptor);
+				JavaInterop.register(interceptor);
 				return;
 			}
-			else if (interceptor instanceof RejectAllInterceptor) {
-				terminal.writer().println("Sandbox active (" + interceptorName + "). "
-											+ "Rejects all Java calls and default "
-											+ "blacklisted Venice functions");
-				return;
+			else if (params[0].equals("reject-all")) {
+				interceptor = new RejectAllInterceptor();
+				venice = new VeniceInterpreter(interceptor);
+				JavaInterop.register(interceptor);
+				return;			
 			}
-			else if (interceptor instanceof SandboxInterceptor) {
-				terminal.writer().println("Customized sandbox active (" + interceptorName + ")");
-				return;
+			else if (params[0].equals("customized")) {
+				interceptor = new SandboxInterceptor(new SandboxRules());
+				venice = new VeniceInterpreter(interceptor);
+				JavaInterop.register(interceptor);
+				return;			
 			}
-			else {
-				terminal.writer().println("Sandbox: " + interceptorName);
-				return;
+			else if (params[0].equals("config")) {
+				if (interceptor instanceof AcceptAllInterceptor) {
+					println(terminal, "stdout", "[accept-all]");
+					println(terminal, "stdout", "All Java calls accepted no Venice calls rejected");
+					return;
+				}
+				else if (interceptor instanceof RejectAllInterceptor) {
+					println(terminal, "stdout", "[reject-all]");
+					println(
+						terminal,
+						"stdout", 
+						"Black listed Venice functions:\n" 
+							+ ((RejectAllInterceptor)interceptor)
+									.getBlacklistedVeniceFunctions()
+									.stream()
+									.collect(Collectors.joining("\n")));
+					return;
+				}
+				else if (interceptor instanceof SandboxInterceptor) {
+					println(terminal, "stdout", "[customized]");
+					println(
+						terminal, 
+						"stdout", 
+						"Sandbox rules:\n" + ((SandboxInterceptor)interceptor).getRules().toString());
+						return;
+				}
+				else {
+					println(terminal, "stdout", "[" + interceptorName + "]");
+					println(terminal, "stdout", "no info");
+					return;
+				}
 			}
 		}
-		
+	
 		println(terminal, "system", "invalid sandbox command");					
 	}
 
 	private Env loadEnv(
-			final VeniceInterpreter venice,
 			final CommandLineArgs cli,
 			final PrintStream ps
 	) {
@@ -369,7 +428,12 @@ public class REPL {
 			"                !env global\n" +	
 			"                !env local {level}\n" +	
 			"                !env levels\n" +	
-			"  !sandbox    print sandbox status\n" +	
+			"  !sandbox    sandbox\n" +	
+			"                !sandbox status\n" +	
+			"                !sandbox config\n" +	
+			"                !sandbox accept-all\n" +	
+			"                !sandbox reject-all\n" +	
+			"                !sandbox customized\n" +	
 			"  !exit       quit the REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
@@ -393,8 +457,16 @@ public class REPL {
 			"   !env local {level}\n" +	
 			"   !env levels\n";
 
+	private final static String HELP_STATUS =
+			"Please choose from:\n" +	
+			"   !sandbox status\n" +	
+			"   !sandbox config\n" +	
+			"   !sandbox accept-all\n" +	
+			"   !sandbox reject-all\n" +	
+			"   !sandbox customized\n";	
+
 	
 	private ReplConfig config;
-	private final IInterceptor interceptor;
-
+	private IInterceptor interceptor;
+	private VeniceInterpreter venice;
 }
