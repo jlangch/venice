@@ -86,16 +86,16 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 			}
 			else {
-				// the callback function run's in another thread
-				ThreadLocalMap.clearCallStack();
-				
+				// the callback function run's in another thread				
 				try {
+					ThreadLocalMap.clear();
 					JavaInterop.register(parentInterceptor);
 					
 					return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 				}
 				finally {
 					JavaInterop.unregister();
+					ThreadLocalMap.remove();
 				}
 			}
 		}

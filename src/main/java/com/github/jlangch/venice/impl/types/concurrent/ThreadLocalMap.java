@@ -192,6 +192,7 @@ public class ThreadLocalMap {
 	public static void remove() {
 		try {
 			get().values.clear();
+			get().callStack.clear();
 			
 			ThreadLocalMap.context.set(null);
 			ThreadLocalMap.context.remove();
