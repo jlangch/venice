@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -96,7 +97,7 @@ public class Sandbox_MaxExecTime_Test {
 			final Interceptor interceptor = 
 					new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 		
-			new Venice(interceptor).eval("(do (+ 1 1) (sleep 1000) (+ 1 2))");
+			assertDoesNotThrow(() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 1000) (+ 1 2))"));
 		}
 		finally {
 			Thread.interrupted();

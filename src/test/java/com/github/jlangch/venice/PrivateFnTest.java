@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,9 +35,7 @@ public class PrivateFnTest {
 				"   (load-module :test)            \n" +
 				"   (test/test-fn-private 100))      ";
 
-		assertThrows(VncException.class, () -> {
-			new Venice().eval(s);
-		});
+		assertThrows(VncException.class, () -> new Venice().eval(s));
 	}
 
 	@Test
@@ -48,9 +46,7 @@ public class PrivateFnTest {
 				"   (let [x (fn [m] (test/test-fn-private m))]   \n" +
 				"       (x 100)))                                  ";
 
-		assertThrows(VncException.class, () -> {
-			new Venice().eval(s);
-		});
+		assertThrows(VncException.class, () -> new Venice().eval(s));
 	}
 
 	@Test
@@ -61,9 +57,7 @@ public class PrivateFnTest {
 				"   (let [f \"test/test-fn-private\"]         \n" +
 				"         ((resolve (symbol f)) 100)))          ";
 
-		assertThrows(VncException.class, () -> {
-			new Venice().eval(s);
-		});
+		assertThrows(VncException.class, () -> new Venice().eval(s));
 	}
 
 	@Test
@@ -75,9 +69,7 @@ public class PrivateFnTest {
 				"         x (fn [m] ((resolve (symbol f)) m))]   \n" +
 				"       (x 100)))                                 ";
 
-		assertThrows(VncException.class, () -> {
-			new Venice().eval(s);
-		});
+		assertThrows(VncException.class, () -> new Venice().eval(s));
 	}
 	
 	@Test
@@ -88,7 +80,7 @@ public class PrivateFnTest {
 				"   (test/unexpected-error \"sdgh\"))              ";
 
 		// no exception private fn call is ok
-		new Venice().eval(s);
+		assertDoesNotThrow(() -> new Venice().eval(s));
 	}
 
 	@Test
@@ -98,6 +90,6 @@ public class PrivateFnTest {
 				"   (load-module :test)            \n" +
 				"   (test/test-fn 100))              ";
 
-		new Venice().eval(s);
+		assertDoesNotThrow(() -> new Venice().eval(s));
 	}
 }

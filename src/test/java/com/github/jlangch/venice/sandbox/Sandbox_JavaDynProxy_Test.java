@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ public class Sandbox_JavaDynProxy_Test {
 										"java.util.function.*:*",
 										"java.util.stream.*:*"));				
 
-		new Venice(interceptor).eval(script);
+		assertDoesNotThrow(() -> new Venice(interceptor).eval(script));
 	}
 	
 	@Test
@@ -87,9 +88,7 @@ public class Sandbox_JavaDynProxy_Test {
 										"java.util.stream.*:*"));				
 
 		// (. :java.lang.System :currentTimeMillis) causes a Security exception
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval(script);
-		});
+		assertThrows(SecurityException.class, () -> new Venice(interceptor).eval(script));
 	}
 	
 	@Test
@@ -124,7 +123,7 @@ public class Sandbox_JavaDynProxy_Test {
 										"java.util.stream.*:*"));				
 
 		// (. :java.lang.System :currentTimeMillis) does NOT cause a Security exception
-		new Venice(interceptor).eval(script);
+		assertDoesNotThrow(() -> new Venice(interceptor).eval(script));
 	}
 
 }
