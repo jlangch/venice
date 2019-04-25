@@ -347,7 +347,7 @@ public class REPL {
 					println(
 						terminal, 
 						"stdout", 
-						"Sandbox rules:\n" + ((SandboxInterceptor)interceptor).getRules().toString());
+						"Sandbox rules (whitelist):\n" + ((SandboxInterceptor)interceptor).getRules().toString());
 						return;
 				}
 				else {
