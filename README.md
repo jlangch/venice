@@ -31,14 +31,14 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/423ec4f/cheatsheet.html)
+[Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/a92c38e/cheatsheet.html)
 
-[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/423ec4f/cheatsheet.pdf)
+[Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/a92c38e/cheatsheet.pdf)
 
 
 ## REPL
 
-Start the REPL with `java -jar venice-1.4.4.jar -colors`
+Start the REPL with `java -jar venice-1.4.5.jar -colors`
 
 ```text
 venice> (+ 1 1)
@@ -72,13 +72,13 @@ a sample 'repl.json' that can be modified.
 ## Executing scripts
 
 ```text
-foo> java -jar venice-1.4.4.jar -script "(+ 1 1)"
+foo> java -jar venice-1.4.5.jar -script "(+ 1 1)"
 => 2
 ```
 
 ```text
 foo> echo "(+ 1 1)" > script.venice
-foo> java -jar venice-1.4.4.jar -file script.venice
+foo> java -jar venice-1.4.5.jar -file script.venice
 => 2
 ```
 
@@ -1269,7 +1269,7 @@ Alternative to UNIX shell scripts:
 ;; -------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
-;; > java -jar venice-1.4.4.jar -file zip-tomcat-logs.venice ./logs
+;; > java -jar venice-1.4.5.jar -file zip-tomcat-logs.venice ./logs
 ;; -------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
@@ -1574,7 +1574,7 @@ transitive dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:1.4.4'
+    compile 'com.github.jlangch:venice:1.4.5'
 }
 ```
 
@@ -1586,7 +1586,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>1.4.4</version>
+        <version>1.4.5</version>
     </dependency>
 </dependencies>
 ```
