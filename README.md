@@ -39,6 +39,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/a92c38e/cheatsheet.htm
 ## Documentation
 
 * [REPL](doc/readme/repl.md)
+* [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
