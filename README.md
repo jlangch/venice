@@ -1215,8 +1215,6 @@ Test
 
 Enable the _customized_ sandbox.
 
-*Note*: As of now the sandbox can not be customized further from the REPL
-
 ```
 venice> !sandbox customized
 ```
@@ -1232,6 +1230,16 @@ Test
 ; Java calls matching the default rules are accepted
 (. :java.util.Date :new)
 ```
+
+```clojure
+; Java calls not matching the default rules are rejected
+(. :java.lang.Math :min 2 3)
+```
+
+Customize (enable calls to _java.lang.Math_)
+
+```
+venice> !sandbox add-rule class::java.lang.Math:*
 
 ```clojure
 ; Java calls not matching the default rules are rejected
