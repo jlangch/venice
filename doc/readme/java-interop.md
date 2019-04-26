@@ -115,7 +115,7 @@ can be sorted and Java types can be used with sets and maps.
 ```
 
 
-## Mixing Venice functions with Java streams:
+## Mixing Venice functions with Java streams
 
 ```clojure
 (do
@@ -127,8 +127,10 @@ can be sorted and Java types can be used with sets and maps.
         (. :collect (. :Collectors :toList))))
 ```
 
+_Note:_ this is not the fastest way to filter collections
 
-Another example:
+
+## Filtering Java objects:
 
 ```clojure
 (do
