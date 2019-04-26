@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.repl;
 
 import java.io.PrintStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -276,7 +277,7 @@ public class REPL {
 			final Env env
 	) {
 		if (params.length == 0) {
-			terminal.writer().println(HELP_STATUS);
+			terminal.writer().println(HELP_SANDBOX);
 			return;
 		}
 
@@ -307,21 +308,15 @@ public class REPL {
 				}
 			}
 			else if (params[0].equals("accept-all")) {
-				interceptor = new AcceptAllInterceptor();
-				venice = new VeniceInterpreter(interceptor);
-				JavaInterop.register(interceptor);
+				activate(new AcceptAllInterceptor());
 				return;
 			}
 			else if (params[0].equals("reject-all")) {
-				interceptor = new RejectAllInterceptor();
-				venice = new VeniceInterpreter(interceptor);
-				JavaInterop.register(interceptor);
+				activate(new RejectAllInterceptor());
 				return;			
 			}
 			else if (params[0].equals("customized")) {
-				interceptor = new SandboxInterceptor(new SandboxRules());
-				venice = new VeniceInterpreter(interceptor);
-				JavaInterop.register(interceptor);
+				activate(new SandboxInterceptor(new SandboxRules()));
 				return;			
 			}
 			else if (params[0].equals("config")) {
@@ -360,8 +355,36 @@ public class REPL {
 				}
 			}
 		}
-	
-		println(terminal, "system", "invalid sandbox command");					
+		else if (params.length == 2) {
+			if (params[0].equals("add-rule")) {
+				final String rule = params[1];
+				if (!(interceptor instanceof SandboxInterceptor)) {
+					println(terminal, "system", "rules can only be added to a customized sandbox");
+					return;
+				}
+				
+				final SandboxRules rules = ((SandboxInterceptor)interceptor).getRules();
+				if (rule.startsWith("class:")) {
+					rules.withClasses(rule);
+				}
+				else if (rule.startsWith("system.property:")) {
+					rules.withSystemProperties(rule);
+				}
+				else if (rule.startsWith("blacklist:venice:")) {
+					rules.rejectVeniceFunctions(rule);
+				}
+				else {
+					terminal.writer().println(HELP_SANDBOX);
+					return;
+				}
+				
+				// activate the change
+				activate(new SandboxInterceptor(rules));
+				return;
+			}
+		}
+		
+		println(terminal, "system", "invalid sandbox command: " + Arrays.asList(params));
 	}
 
 	private Env loadEnv(
@@ -418,6 +441,12 @@ public class REPL {
 			print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
 		}
 	}
+	
+	private void activate(final IInterceptor interceptor) {
+		this.interceptor = interceptor; 
+		this.venice = new VeniceInterpreter(interceptor);
+		JavaInterop.register(interceptor);			
+	}
 
 	
 	private final static String HELP =
@@ -437,6 +466,7 @@ public class REPL {
 			"                !sandbox accept-all\n" +	
 			"                !sandbox reject-all\n" +	
 			"                !sandbox customized\n" +	
+			"                !sandbox add-rule rule\n" +
 			"  !exit       quit the REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
@@ -460,13 +490,16 @@ public class REPL {
 			"   !env local {level}\n" +	
 			"   !env levels\n";
 
-	private final static String HELP_STATUS =
+	private final static String HELP_SANDBOX =
 			"Please choose from:\n" +	
 			"   !sandbox status\n" +	
 			"   !sandbox config\n" +	
 			"   !sandbox accept-all\n" +	
 			"   !sandbox reject-all\n" +	
-			"   !sandbox customized\n";	
+			"   !sandbox customized\n" +
+			"   !sandbox add-rule class:java.lang.Math:*\n" +
+			"   !sandbox add-rule system.property:os.name\n" +
+			"   !sandbox add-rule blacklist:venice:io/exists-dir?\n";	
 
 	
 	private ReplConfig config;
