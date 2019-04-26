@@ -339,6 +339,7 @@ public class REPL {
 							+ ((RejectAllInterceptor)interceptor)
 									.getBlacklistedVeniceFunctions()
 									.stream()
+									.map(s -> "   " + s)
 									.collect(Collectors.joining("\n")));
 					return;
 				}
@@ -347,7 +348,9 @@ public class REPL {
 					println(
 						terminal, 
 						"stdout", 
-						"Sandbox rules (whitelist):\n" + ((SandboxInterceptor)interceptor).getRules().toString());
+						"Sandbox rules (whitelist):\n" 
+								+ ((SandboxInterceptor)interceptor)
+										.getRules().toString());
 						return;
 				}
 				else {

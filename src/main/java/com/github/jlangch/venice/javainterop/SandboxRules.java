@@ -112,7 +112,9 @@ public class SandboxRules {
 	public SandboxRules withClasses(final List<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(
-				rules.stream().map(r -> "class:" + r).collect(Collectors.toList()));
+				rules.stream()
+					 .map(r -> r.startsWith("class:") ? r : "class:" + r)
+					 .collect(Collectors.toList()));
 		}
 		return this;
 	}
@@ -150,6 +152,7 @@ public class SandboxRules {
 	}
 	
 	public SandboxRules withDefaultClasses() {
+		withClasses(SYSTEM_CLASS_RULES);
 		withClasses(DEFAULT_CLASS_RULES);
 		return this;
 	}
@@ -192,7 +195,9 @@ public class SandboxRules {
 	public SandboxRules withClasspathResources(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(
-				rules.stream().map(r -> "classpath:" + r).collect(Collectors.toList()));
+				rules.stream()
+					 .map(r -> r.startsWith("classpath:") ? r : "classpath:" + r)
+					 .collect(Collectors.toList()));
 		}
 		return this;
 	}
@@ -233,7 +238,9 @@ public class SandboxRules {
 	public SandboxRules withSystemProperties(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(
-				rules.stream().map(r -> "system.property:" + r).collect(Collectors.toList()));
+				rules.stream()
+					 .map(r -> r.startsWith("system.property:") ? r : "system.property:" + r)
+					 .collect(Collectors.toList()));
 		}
 		return this;
 	}
@@ -259,11 +266,6 @@ public class SandboxRules {
 		return this;
 	}
 	
-	@Deprecated
-	public SandboxRules withBlacklistedVeniceFn(final String... rules) {
-		return rejectVeniceFunctions(rules);
-	}
-	
 	/**
 	 * Reject Venice function rules to the sandbox.
 	 * 
@@ -281,16 +283,13 @@ public class SandboxRules {
 	public SandboxRules rejectVeniceFunctions(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(
-				rules.stream().map(r -> "blacklist:venice:" + r).collect(Collectors.toList()));
+				rules.stream()
+				 	 .map(r -> r.startsWith("blacklist:venice:") ? r : "blacklist:venice:" + r)
+					 .collect(Collectors.toList()));
 		}
 		return this;
 	}
-	
-	@Deprecated
-	public SandboxRules withBlacklistedVeniceFn(final Collection<String> rules) {
-		return rejectVeniceFunctions(rules);
-	}
-	
+		
 	/**
 	 * Sets the max execution time in seconds a Venice script under this 
 	 * <code>SandboxRules</code> is allowed to run.
@@ -424,72 +423,81 @@ public class SandboxRules {
 
 	@Override
 	public String toString() {
-		return new ArrayList<String>(rules)
+		return toString("");
+	}
+
+	public String toString(final String prefix) {
+		final Set<String> items = new HashSet<>(rules);
+		items.removeAll(SYSTEM_CLASS_RULES);
+		items.add("maxExecTimeSeconds:" + (maxExecTimeSeconds == null ? "no-limit" : maxExecTimeSeconds.toString()));
+		return new ArrayList<String>(items)
 					.stream()
 					.sorted()
-					.collect(Collectors.joining("\n"))
-				+ "\nmaxExecTimeSeconds:" + (maxExecTimeSeconds == null ? "no-limit" : maxExecTimeSeconds.toString());
+					.map(s -> "   " + s)
+					.collect(Collectors.joining("\n"));
 	}
-		
+
 	private static String BASE = Venice.class.getPackage().getName();
 			
-	private static final List<String> DEFAULT_CLASS_RULES = 
+	private static final List<String> SYSTEM_CLASS_RULES = 
 			Arrays.asList(
 				// Dynamic proxies based on venice' DynamicInvocationHandler
-				BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
+				"class:" + BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
 				
-				BASE + ".util.CapturingPrintStream:*",
+				"class:" + BASE + ".util.CapturingPrintStream:*",
 				
-				BASE + ".impl.VeniceInterpreter$1",
-				BASE + ".impl.ValueException:*",
-				BASE + ".impl.types.collections.VncVector",
+				"class:" + BASE + ".impl.VeniceInterpreter$1",
+				"class:" + BASE + ".impl.ValueException:*",
+				"class:" + BASE + ".impl.types.collections.VncVector",
 
-				BASE + ".impl.types.concurrent.Delay:*",
-				BASE + ".impl.types.concurrent.Agent:*",
+				"class:" + BASE + ".impl.types.concurrent.Delay:*",
+				"class:" + BASE + ".impl.types.concurrent.Agent:*",
 
 				// Venice dynamic proxies
-				"com.sun.proxy.$Proxy*:*",
-				
-				"java.lang.IllegalArgumentException:*",
-				"java.lang.RuntimeException:*",
-				"java.lang.Exception:*",
-				"java.lang.SecurityException:*",
-				"java.io.IOException:*",
-				
-				"java.io.PrintStream:append",
-				"java.io.InputStream",
-				"java.io.OutputStream",
-
-				"java.lang.Object",
-				"java.lang.Object:class",
+				"class:com.sun.proxy.$Proxy*:*");
 	
-				"java.lang.Character",
-				"java.lang.String",
-				"java.lang.Boolean",
-				"java.lang.Integer",
-				"java.lang.Long",
-				"java.lang.Float",
-				"java.lang.Double",
-				"java.lang.Byte",
-				"java.lang.StringBuffer",
-				"java.lang.StringBuilder",
+	private static final List<String> DEFAULT_CLASS_RULES = 
+			Arrays.asList(
+				"class:java.lang.IllegalArgumentException:*",
+				"class:java.lang.RuntimeException:*",
+				"class:java.lang.Exception:*",
+				"class:java.lang.SecurityException:*",
+				"class:java.io.IOException:*",
+			
+				"class:java.io.PrintStream:append",
+				"class:java.io.InputStream",
+				"class:java.io.OutputStream",
+
+				"class:java.lang.Object",
+				"class:java.lang.Object:class",
+	
+				"class:java.lang.Character",
+				"class:java.lang.String",
+				"class:java.lang.Boolean",
+				"class:java.lang.Integer",
+				"class:java.lang.Long",
+				"class:java.lang.Float",
+				"class:java.lang.Double",
+				"class:java.lang.Byte",
+				"class:java.lang.StringBuffer",
+				"class:java.lang.StringBuilder",
 				
-				"java.time.ZonedDateTime:*",
-				"java.time.LocalDateTime:*",
-				"java.time.LocalDate:*",
+				"class:java.time.ZonedDateTime:*",
+				"class:java.time.LocalDateTime:*",
+				"class:java.time.LocalDate:*",
 							
-				"java.math.BigInteger",
-				"java.math.BigDecimal",
+				"class:java.math.BigInteger",
+				"class:java.math.BigDecimal",
 				
-				"java.nio.ByteBuffer",
-				"java.nio.HeapByteBuffer:*",
+				"class:java.nio.ByteBuffer",
+				"class:java.nio.HeapByteBuffer:*",
 				
-				"java.util.Date:*",
-				"java.util.ArrayList:*",
-				"java.util.HashSet:*",
-				"java.util.HashMap:*",
-				"java.util.LinkedHashMap:*",
-				"java.util.Locale:*");
+				"class:java.util.Date:*",
+				"class:java.util.ArrayList:*",
+				"class:java.util.HashSet:*",
+				"class:java.util.HashMap:*",
+				"class:java.util.LinkedHashMap:*",
+				"class:java.util.Locale:*");
 
 	public static final Set<String> DEFAULT_SYSTEM_PROPERTIES = 
 			Collections.unmodifiableSet(

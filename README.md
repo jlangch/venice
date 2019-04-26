@@ -1146,7 +1146,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 The initial REPL sandbox accepts all Java calls and Venice functions
 
-```sh
+```
 venice> !sandbox status
 No sandbox active (AcceptAllInterceptor)
 venice> 
@@ -1154,7 +1154,7 @@ venice>
 
 Change to a restricted reject-all sandbox
 
-```sh
+```
 venice> !sandbox reject-all
 venice> !sandbox status
 Sandbox active (RejectAllInterceptor). Rejects all Java calls and default blacklisted Venice functions
@@ -1170,25 +1170,23 @@ venice>
 
 Change to a customized sandbox
 
-```sh
+```
 venice> !sandbox customized
 venice> !sandbox status
 Customized sandbox active (SandboxInterceptor)
 venice> !sandbox config
 [customized]
 Sandbox rules (whitelist):
-   class:com.github.jlangch.venice.impl.ValueException:*
-   class:com.github.jlangch.venice.impl.VeniceInterpreter$1
-   class:com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler*:*
-   class:com.github.jlangch.venice.impl.types.collections.VncVector
-   class:com.github.jlangch.venice.impl.types.concurrent.Agent:*
-   class:com.github.jlangch.venice.impl.types.concurrent.Delay:*
-   class:com.github.jlangch.venice.util.CapturingPrintStream:*
-   class:com.sun.proxy.$Proxy*:*
    class:java.io.IOException:*
    class:java.io.InputStream
    class:java.io.OutputStream
    class:java.io.PrintStream:append
+   class:java.lang.Boolean
+   class:java.lang.Byte
+   class:java.lang.Character
+   class:java.lang.Double
+   class:java.lang.Exception:*
+   class:java.lang.Float
      :
 venice> 
 ```
