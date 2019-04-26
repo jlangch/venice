@@ -1142,7 +1142,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 ```
  
 
-#### Sandbox with the REPL
+### Sandbox with the REPL
 
 The initial REPL sandbox accepts all Java calls and Venice functions without any restrictions
 
