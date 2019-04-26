@@ -335,7 +335,7 @@ public class REPL {
 					println(
 						terminal,
 						"stdout", 
-						"Black listed Venice functions:\n" 
+						"Blacklisted Venice functions:\n" 
 							+ ((RejectAllInterceptor)interceptor)
 									.getBlacklistedVeniceFunctions()
 									.stream()
