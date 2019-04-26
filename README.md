@@ -1213,7 +1213,9 @@ Test
 
 #### Testing the _customized_ sandbox in the REPL
 
-Enable the _customized_ sandbox
+Enable the _customized_ sandbox.
+
+*Note*: As of now the sandbox can not be customized further from the REPL
 
 ```
 venice> !sandbox customized
