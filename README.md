@@ -1191,9 +1191,15 @@ Sandbox rules (whitelist):
 venice> 
 ```
 
-#### Testing the sandbox in the REPL
+#### Testing the _reject-all_ sandbox in the REPL
 
-Testing the _reject-all_ sandbox
+Enable the _reject-all_ sandbox
+
+```
+venice> !sandbox reject-all
+```
+
+Test
 
 ```clojure
 ; all Venice I/O functions are rejected
@@ -1205,8 +1211,15 @@ Testing the _reject-all_ sandbox
 (. :java.lang.Math :min 2 3)
 ```
 
+#### Testing the _customized_ sandbox in the REPL
 
-Testing the _customized_ sandbox
+Enable the _customized_ sandbox
+
+```
+venice> !sandbox customized
+```
+
+Test
 
 ```clojure
 ; Venice I/O functions are accepted
