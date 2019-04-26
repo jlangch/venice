@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added functions `str/letter?`, `str/digit?`, `str/whitespace?`, `str/linefeed?`
 - added regular expression functions: `regex/pattern`, `regex/matcher`, `regex/find?`, `regex/group`, ...
-- enhanced REPL to change the sandbox
+- enhanced REPL to change and manage the sandbox. Type `!sandbox` in the REPL.
 
 ### fixed
 
