@@ -499,7 +499,8 @@ public class REPL {
 			"   !sandbox customized\n" +
 			"   !sandbox add-rule class:java.lang.Math:*\n" +
 			"   !sandbox add-rule system.property:os.name\n" +
-			"   !sandbox add-rule blacklist:venice:io/exists-dir?\n";	
+			"   !sandbox add-rule blacklist:venice:io/exists-dir?\n" +
+			"   !sandbox add-rule blacklist:venice:*io*\n";	
 
 	
 	private ReplConfig config;

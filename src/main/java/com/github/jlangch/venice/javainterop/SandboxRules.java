@@ -353,12 +353,6 @@ public class SandboxRules {
 		return this;
 	}
 	
-	@Deprecated
-	public SandboxRules allowAccessToStandardSystemProperties() {
-		return withStandardSystemProperties();
-	}
-	
-	
 	/**
 	 * Allow access to all Java system properties
 	 * 

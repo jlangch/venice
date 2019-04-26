@@ -1241,10 +1241,23 @@ Customize (enable calls to _java.lang.Math_)
 ```
 venice> !sandbox customized
 venice> !sandbox add-rule class:java.lang.Math:*
+venice> !sandbox add-rule blacklist:venice:*io*
+venice> !sandbox add-rule blacklist:venice:count
+```
 
 ```clojure
-; Java calls not matching the default rules are rejected
+; Java calls not java.lang.Math are accepted
 (. :java.lang.Math :min 2 3)
+```
+
+```clojure
+; all Venice I/O functions are rejected
+(io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; the Venice function 'count' is rejected
+(count [1 2 3])
 ```
 
 
