@@ -50,30 +50,5 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/a92c38e/cheatsheet.htm
 * [Sandbox](doc/readme/sandbox.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * See a larger [example](doc/readme/large-example.md)
-
-
-
-## Build Dependencies
-
-
-#### Gradle
-
-```groovy
-dependencies {
-    compile 'com.github.jlangch:venice:1.4.5'
-}
-```
-
-#### Maven
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.github.jlangch</groupId>
-        <artifactId>venice</artifactId>
-        <version>1.4.5</version>
-    </dependency>
-</dependencies>
-```
-
+* [Build dependencies](doc/readme/build-dependencies.md)
 
