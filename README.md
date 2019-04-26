@@ -29,6 +29,7 @@ can easily add it as standalone .jar to your classpath.
 Venice requires Java 8 or newer.
 
  
+ 
 ## Cheat Sheet
 
 [Cheat Sheet HTML](https://cdn.rawgit.com/jlangch/venice/a92c38e/cheatsheet.html)
@@ -36,54 +37,21 @@ Venice requires Java 8 or newer.
 [Cheat Sheet PDF](https://cdn.rawgit.com/jlangch/venice/a92c38e/cheatsheet.pdf)
 
 
-## REPL
-
-Start the REPL with `java -jar venice-1.4.5.jar -colors`
-
-```text
-venice> (+ 1 1)
-=> 2
-venice>
-```
-
-Type `!` from the REPL to get the help. Browse through the history expressions 
-with the up/down arrows.
-
-A history of the last three result values is kept by the REPL, accessible through 
-the symbols `*1`, `*2`, `*3`, `**`.
-
-The REPL supports multi-line editing:
-
-```text
-venice> (defn sum [x y]
-      |    (+ x y))
-venice> (sum 1 4)
-=> 5
-venice>
-```
-
-If the REPL colors don't harmonize well with your terminal color schema 
-omit the '-colors' option or place a 'repl.json' config file with customized 
-ANSI escape code colors on the working dir. The REPL command `!config` shows
-a sample 'repl.json' that can be modified.
-
-
 
 ## Documentation
 
-* [Running Venice scripts](doc/readme/execute-scripts.md)
+* [REPL](doc/readme/repl.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
 * [Destructuring](doc/readme/destructuring.md)
-* [Advanced String Features](doc/readme/advanced-strings.md)
+* [Advanced string features](doc/readme/advanced-strings.md)
 * [Concurrency](doc/readme/concurrency.md)
-* [Java Interop](doc/readme/java-interop.md)
-* [Exception Handling](doc/readme/exceptions.md)
+* [Java interoperability](doc/readme/java-interop.md)
+* [Exception handling](doc/readme/exceptions.md)
 * [Sandbox](doc/readme/sandbox.md)
 * [Extension modules](doc/readme/extension-modules.md)
-* [A larger example](doc/readme/large-example.md)
-
+* See a larger [example](doc/readme/large-example.md)
 
 
 
@@ -97,7 +65,6 @@ dependencies {
     compile 'com.github.jlangch:venice:1.4.5'
 }
 ```
-
 
 #### Maven
 
