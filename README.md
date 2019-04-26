@@ -1239,7 +1239,7 @@ Test
 Customize (enable calls to _java.lang.Math_)
 
 ```
-venice> !sandbox add-rule class::java.lang.Math:*
+venice> !sandbox add-rule class:java.lang.Math:*
 
 ```clojure
 ; Java calls not matching the default rules are rejected
