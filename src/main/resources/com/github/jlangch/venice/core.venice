@@ -416,7 +416,7 @@
       :examples (list (str/strip-margin
                         """(do
                           |   (load-classpath-file "com/github/jlangch/venice/test.venice")
-                          |   (test/println "hello"))""" )) }
+                          |   (test/test-fn "hello"))""" )) }
 
    load-classpath-file [f]
 
