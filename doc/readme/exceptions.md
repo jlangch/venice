@@ -1,0 +1,61 @@
+# Exception Handling
+
+
+## Exceptions
+
+try - catch - finally
+
+```clojure
+(do
+   (import :java.lang.RuntimeException)
+   (import :java.io.IOException)
+  
+   (try
+      (throw (. :RuntimeException :new "a message"))
+      (catch :IOException ex (:message ex))
+      (catch :RuntimeException ex (:message ex))
+      (finally (println "... finally."))))
+```
+
+```clojure
+(do
+   (try
+      (throw [1 2 3])  ; ValueException
+      (catch :ValueException ex (pr-str (:value ex)))))
+```
+
+
+try-with resources
+
+```clojure
+(do
+   (import :java.io.FileInputStream)
+   
+   (let [file (io/temp-file "test-", ".txt")]
+      (io/spit file "123456789" :append true)
+      (try-with [is (. :FileInputStream :new file)]
+        (io/slurp-stream is :binary false))))
+```
+
+
+## Stack traces
+
+Venice generates user friendly stack traces
+
+```clojure
+(do
+   (defn fn1 [x] (fn2 x))
+   (defn fn2 [x] (fn3 x))
+   (defn fn3 [x] (/ 1 x))
+   (fn1 0))
+   
+=>
+Exception in thread "main" VncException: / by zero
+    at: / (script: line 4, col 19)
+    at: fn3 (script: line 3, col 19)
+    at: fn2 (script: line 2, col 19)
+    at: fn1 (script: line 5, col 5)
+Caused by: java.lang.ArithmeticException: / by zero
+```
+
+
