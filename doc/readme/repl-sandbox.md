@@ -1,0 +1,117 @@
+# Sandbox with the REPL
+
+The initial REPL sandbox accepts all Java calls and Venice functions without any restrictions
+
+```
+venice> !sandbox status
+No sandbox active (AcceptAllInterceptor)
+venice> 
+```
+
+Change to a restricted _reject-all_ sandbox
+
+```
+venice> !sandbox reject-all
+venice> !sandbox status
+Sandbox active (RejectAllInterceptor). Rejects all Java calls and default blacklisted Venice functions
+venice> !sandbox config
+[reject-all]
+Blacklisted Venice functions:
+   agent
+   agent-error
+   agent-error-mode
+     :
+venice> 
+```
+
+Change to a _customized_ sandbox
+
+```
+venice> !sandbox customized
+venice> !sandbox status
+Customized sandbox active (SandboxInterceptor)
+venice> !sandbox config
+[customized]
+Sandbox rules (whitelist):
+   class:java.io.IOException:*
+   class:java.io.InputStream
+   class:java.io.OutputStream
+   class:java.io.PrintStream:append
+   class:java.lang.Boolean
+   class:java.lang.Byte
+   class:java.lang.Character
+   class:java.lang.Double
+   class:java.lang.Exception:*
+   class:java.lang.Float
+     :
+venice> 
+```
+
+## Testing the _reject-all_ sandbox in the REPL
+
+Enable the _reject-all_ sandbox
+
+```
+venice> !sandbox reject-all
+```
+
+Test
+
+```clojure
+; all Venice I/O functions are rejected
+(io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; all Java calls are rejected
+(. :java.lang.Math :min 2 3)
+```
+
+## Testing the _customized_ sandbox in the REPL
+
+Enable the _customized_ sandbox.
+
+```
+venice> !sandbox customized
+```
+
+Test
+
+```clojure
+; Venice I/O functions are accepted
+(io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; Java calls matching the default rules are accepted
+(. :java.util.Date :new)
+```
+
+```clojure
+; Java calls not matching the default rules are rejected
+(. :java.lang.Math :min 2 3)
+```
+
+Customize (enable calls to _java.lang.Math_)
+
+```
+venice> !sandbox customized
+venice> !sandbox add-rule class:java.lang.Math:*
+venice> !sandbox add-rule blacklist:venice:*io*
+venice> !sandbox add-rule blacklist:venice:count
+```
+
+```clojure
+; Java calls to java.lang.Math are accepted
+(. :java.lang.Math :min 2 3)
+```
+
+```clojure
+; all Venice I/O functions are rejected
+(io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; the Venice function 'count' is rejected
+(count [1 2 3])
+```
