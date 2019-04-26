@@ -1144,7 +1144,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 #### Sandbox with the REPL
 
-The initial REPL sandbox accepts all Java calls and Venice functions
+The initial REPL sandbox accepts all Java calls and Venice functions without any restrictions
 
 ```
 venice> !sandbox status
@@ -1152,7 +1152,7 @@ No sandbox active (AcceptAllInterceptor)
 venice> 
 ```
 
-Change to a restricted reject-all sandbox
+Change to a restricted _reject-all_ sandbox
 
 ```
 venice> !sandbox reject-all
@@ -1168,7 +1168,7 @@ Blacklisted Venice functions:
 venice> 
 ```
 
-Change to a customized sandbox
+Change to a _customized_ sandbox
 
 ```
 venice> !sandbox customized
@@ -1190,6 +1190,39 @@ Sandbox rules (whitelist):
      :
 venice> 
 ```
+
+#### Testing the sandbox in the REPL
+
+Testing the _reject-all_ sandbox
+
+```clojure
+; all Venice I/O functions are rejected
+(io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; all Java calls are rejected
+(. :java.lang.Math :min 2 3)
+```
+
+
+Testing the _customized_ sandbox
+
+```clojure
+; Venice I/O functions are accepted
+(io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; Java calls matching the default rules are accepted
+(. :java.util.Date :new)
+```
+
+```clojure
+; Java calls not matching the default rules are rejected
+(. :java.lang.Math :min 2 3)
+```
+
 
 ## A larger sample
 
