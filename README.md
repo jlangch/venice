@@ -1246,7 +1246,7 @@ venice> !sandbox add-rule blacklist:venice:count
 ```
 
 ```clojure
-; Java calls not java.lang.Math are accepted
+; Java calls to java.lang.Math are accepted
 (. :java.lang.Math :min 2 3)
 ```
 
