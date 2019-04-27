@@ -327,6 +327,7 @@ public class REPL {
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
 					println(terminal, "stdout", "[reject-all]");
+					println(terminal, "stdout", "Java calls:\n   All rejected!");
 					println(
 						terminal,
 						"stdout", 
@@ -343,9 +344,7 @@ public class REPL {
 					println(
 						terminal, 
 						"stdout", 
-						"Sandbox rules (whitelist):\n" 
-								+ ((SandboxInterceptor)interceptor)
-										.getRules().toString());
+						"Sandbox rules:\n" + ((SandboxInterceptor)interceptor).getRules().toString());
 						return;
 				}
 				else {
