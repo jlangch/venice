@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed the order of the stack trace frames (reversed it)
+- fixed dereferencing a future when the future has thrown an exception
 
 
 

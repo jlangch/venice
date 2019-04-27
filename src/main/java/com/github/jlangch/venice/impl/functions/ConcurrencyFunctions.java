@@ -142,9 +142,16 @@ public class ConcurrencyFunctions {
 							}
 						}
 						catch(ExecutionException ex) {
-							if (ex.getCause() != null && (ex.getCause() instanceof SecurityException)) {
-								throw (SecurityException)ex.getCause();
+							if (ex.getCause() != null) {
+								if (ex.getCause() instanceof SecurityException) {
+									throw (SecurityException)ex.getCause();
+								}
+								else if (ex.getCause() instanceof VncException) {
+									throw (VncException)ex.getCause();
+								}
 							}
+							
+							throw new VncException("Failed to deref future", ex);
 						}
 						catch(Exception ex) {
 							throw new VncException("Failed to deref future", ex);

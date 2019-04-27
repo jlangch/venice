@@ -24,10 +24,12 @@ package com.github.jlangch.venice.impl.functions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.JavaValueException;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.util.CapturingPrintStream;
@@ -446,6 +448,21 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
+	}
+
+	@Test
+	public void test_future_exception() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                              \n" +
+				"   (def wait (fn [] (do (sleep 500) (throw 1)))) \n" +
+				"                                                 \n" +
+				"   (let [f (future wait)]                        \n" +
+				"        (deref f))                               \n" +
+				") ";
+
+		assertThrows(JavaValueException.class, () -> venice.eval(script));
 	}
 
 	@Test
