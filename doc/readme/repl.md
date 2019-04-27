@@ -39,27 +39,6 @@ venice> !reload
 ```
 
 
-Sometimes it is necessary to reload an extension module
-
-```text
-venice> (load-module :xchart)
-venice> ... do something ...
-venice> (load-module :xchart)
-venice> ... do something ...
-```
-This can result in an error message
-
-`The existing global var 'xchart/doto-cond' must not be overwritten!`
-
-Reloading the Venice context solves the problem without restarting the REPL:
-
-```text
-venice> (load-module :xchart)
-venice> !reload
-venice> (load-module :xchart)
-```
-
-
 ## Display global symbols
 
 ```text
