@@ -853,17 +853,12 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/spit"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
+		io.addItem(getDocItem("io/temp-file"));
 
 		final DocSection stream = new DocSection("stream-io");
 		all.addSection(stream);
 		stream.addItem(getDocItem("io/slurp-stream"));
 		stream.addItem(getDocItem("io/spit-stream"));
-
-		final DocSection io_tmp = new DocSection("file-io temp");
-		all.addSection(io_tmp);
-		io_tmp.addItem(getDocItem("io/temp-file"));
-		io_tmp.addItem(getDocItem("io/slurp-temp-file"));
-		io_tmp.addItem(getDocItem("io/spit-temp-file"));
 
 		final DocSection other = new DocSection("other");
 		all.addSection(other);

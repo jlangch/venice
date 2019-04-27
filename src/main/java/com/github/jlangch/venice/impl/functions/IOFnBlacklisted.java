@@ -64,12 +64,12 @@ public class IOFnBlacklisted {
 								"await-termination-agents?",
 
 								// I/O
-								"io/file-size",
 								"io/copy-file",
 								"io/delete-file",
 								"io/delete-file-on-exit",
 								"io/exists-dir?",
 								"io/exists-file?",
+								"io/file-size",
 								"io/list-files",
 								"io/move-file",
 								"io/mkdir",
@@ -77,6 +77,7 @@ public class IOFnBlacklisted {
 								"io/slurp",
 								"io/slurp-lines",
 								"io/spit",
+								"io/temp-file",
 								"io/tmp-dir",
 								"io/user-dir",
 								"io/load-classpath-resource"));

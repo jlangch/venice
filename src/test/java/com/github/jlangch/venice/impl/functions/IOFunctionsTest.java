@@ -196,35 +196,7 @@ public class IOFunctionsTest {
 		assertTrue((Boolean)venice.eval("(not-empty? (io/tmp-dir))"));	
 		assertTrue((Boolean)venice.eval("(io/file? (io/tmp-dir))"));	
 	}
-	
-	@Test
-	public void test_io_spit_temp_file() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                             " +
-				"   (let [file (io/temp-file \"xchart-\", \".chart\")]           " +
-				"        (io/spit-temp-file file \"123456789\" :append true)     " +
-				"        (io/slurp file :binary false :remove true))             " +
-				") ";
-				
-				assertEquals("123456789",venice.eval(script));					
-	}	
-	
-	@Test
-	public void test_io_slurp_temp_file() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                             " +
-				"   (let [file (io/temp-file \"xchart-\", \".chart\")]           " +
-				"        (io/spit file \"123456789\" :append true)               " +
-				"        (io/slurp-temp-file file :binary false :remove true))   " +
-				") ";
-				
-				assertEquals("123456789",venice.eval(script));					
-	}	
-	
+			
 	@Test
 	public void test_io_spit() {
 		final Venice venice = new Venice();
@@ -347,7 +319,7 @@ public class IOFunctionsTest {
 				"        (io/delete-file-on-exit file)                         " +
 				"        (try-with [is (. :FileOutputStream :new file)]        " +
 				"           (io/spit-stream is \"123456789\" :flush true))     " +
-				"        (io/slurp-temp-file file :binary false))              " +
+				"        (io/slurp file :binary false))                         " +
 				")";
 				
 		assertEquals("123456789",venice.eval(script));					
