@@ -16,6 +16,8 @@ venice> !sandbox status
 Sandbox active (RejectAllInterceptor). Rejects all Java calls and default blacklisted Venice functions
 venice> !sandbox config
 [reject-all]
+Java calls:
+   All rejected!
 Blacklisted Venice functions:
    agent
    agent-error
@@ -32,7 +34,7 @@ venice> !sandbox status
 Customized sandbox active (SandboxInterceptor)
 venice> !sandbox config
 [customized]
-Sandbox rules (whitelist):
+Sandbox rules:
    class:java.io.IOException:*
    class:java.io.InputStream
    class:java.io.OutputStream
