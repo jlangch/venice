@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
@@ -73,23 +72,14 @@ public class CallStack {
 	}
 
 	public List<String> toList() {
-		final List<String> callstack =
-				Arrays
-					.stream(queue.toArray(new CallFrame[] {}))
-					.map(f -> f.toString())
-					.collect(Collectors.toList());
-		
-		Collections.reverse(callstack); 
-
-		return callstack;
+		return Arrays
+				.stream(queue.toArray(new CallFrame[] {}))
+				.map(f -> f.toString())
+				.collect(Collectors.toList());
 	}
 
 	public List<CallFrame> callstack() {
-		final List<CallFrame> callstack = Arrays.asList(queue.toArray(new CallFrame[] {}));
-		
-		Collections.reverse(callstack); 
-
-		return callstack;
+		return Arrays.asList(queue.toArray(new CallFrame[] {}));
 	}
 	
 	public String peekModule() {

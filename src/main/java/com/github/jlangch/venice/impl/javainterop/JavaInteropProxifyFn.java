@@ -75,7 +75,7 @@ public class JavaInteropProxifyFn extends VncFunction {
 
 		return new VncJavaObject(
 					DynamicInvocationHandler.proxify(
-							CallFrame.fromVal("proxify", args),
+							CallFrame.fromVal("proxify(:" + clazz.getName() +")", args),
 							clazz, 
 							Coerce.toVncMap(args.second())));
 	}

@@ -306,14 +306,15 @@ public class Reader {
 					form = VncHashSet.ofAll(read_list(rdr, new VncList(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
+					final VncVal meta = MetaUtil.toMeta(t);
 					// anonymous function literal #(> % 2)
 					if (rdr.anonymousFnArgs.isCapturing()) {
 						throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
 					}
 					rdr.anonymousFnArgs.startCapture();
-					final VncVal body = read_list(rdr, new VncList(), '(' , ')');
-					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef();
-					form = VncList.of(new VncSymbol("fn"), argsDef, body);
+					final VncVal body = read_list(rdr, new VncList(), '(' , ')').withMeta(meta);
+					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
+					form = VncList.of(new VncSymbol("fn", meta), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
 				}
 				else {

@@ -57,10 +57,10 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 public class DynamicInvocationHandler implements InvocationHandler {
 	
 	public DynamicInvocationHandler(
-			final CallFrame callFrame,
+			final CallFrame callFrameProxy,
 			final Map<String, VncFunction> methods
 	) {
-		this.callFrame = callFrame;
+		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;
 		this.parentInterceptor = JavaInterop.getInterceptor();
 	}
@@ -81,6 +81,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			}
 				
 			final CallStack callStack = ThreadLocalMap.getCallStack();
+			final CallFrame callFrameMethod = CallFrame.fromVal(
+													"proxy->" + method.getName(),
+													fn.getMeta());
 			
 			// [SECURITY]
 			//
@@ -91,12 +94,14 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
 			if (proxyInterceptor == parentInterceptor) {
 				try {
-					callStack.push(callFrame);
+					callStack.push(callFrameProxy);
+					callStack.push(callFrameMethod);
 					
 					// we run in the same thread
 					return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 				}
 				finally {
+					callStack.pop();
 					callStack.pop();
 				}
 			}
@@ -105,11 +110,13 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				try {
 					ThreadLocalMap.clear();
 					JavaInterop.register(parentInterceptor);
-					callStack.push(callFrame);
+					callStack.push(callFrameProxy);
+					callStack.push(callFrameMethod);
 					
 					return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 				}
 				finally {
+					callStack.pop();
 					callStack.pop();
 					JavaInterop.unregister();
 					ThreadLocalMap.remove();
@@ -154,7 +161,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	}
 	
 	
-	final CallFrame callFrame;
+	final CallFrame callFrameProxy;
 	final Map<String, VncFunction> methods;
 	final IInterceptor parentInterceptor;
 }
