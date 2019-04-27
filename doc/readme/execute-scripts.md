@@ -15,7 +15,7 @@ foo> java -jar venice-1.4.5.jar -file script.venice
 => 2
 ```
 
-Venice passes the command line args as `*ARGS*` vector:
+Venice passes the command line args as `*ARGV*` vector:
 
 ```text
 foo> echo "(+ 1 (long (nth *ARGV* 2)))" > script.venice
