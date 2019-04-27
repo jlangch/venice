@@ -57,7 +57,7 @@ venice>
 venice> !sandbox reject-all
 ```
 
-#### Test
+#### Test the sandbox
 
 ```clojure
 ; all Venice I/O functions are rejected
