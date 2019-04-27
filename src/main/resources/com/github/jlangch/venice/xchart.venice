@@ -119,7 +119,6 @@
       (try-with [os (. :FileOutputStream :new file)]
          (. :XChartEncoder :exportToBitmapStreamWithDPI chart os type dpi)))
 
-;; DO_NOTHING_ON_CLOSE, DO_NOTHING_ON_CLOSE, DISPOSE_ON_CLOSE, EXIT_ON_CLOSE
 (defn xchart/swing-open-window [chart title]
       (let [frame (. :JFrame :new title)
             closeOP (. :JFrame :DISPOSE_ON_CLOSE)]
