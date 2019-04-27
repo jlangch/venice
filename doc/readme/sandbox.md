@@ -119,7 +119,6 @@ import com.github.jlangch.venice.javainterop.*;
 final Venice venice = new Venice(new RejectAllInterceptor());
 
 ...
-
 ```
  
 

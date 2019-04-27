@@ -321,12 +321,12 @@ public class REPL {
 			}
 			else if (params[0].equals("config")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
-					println(terminal, "stdout", "[accept-all]");
+					println(terminal, "stdout", "[accept-all] NO sandbox active");
 					println(terminal, "stdout", "All Java calls accepted no Venice calls rejected");
 					return;
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
-					println(terminal, "stdout", "[reject-all]");
+					println(terminal, "stdout", "[reject-all] SAFE restricted all sandbox");
 					println(terminal, "stdout", "Java calls:\n   All rejected!");
 					println(
 						terminal,
@@ -340,7 +340,7 @@ public class REPL {
 					return;
 				}
 				else if (interceptor instanceof SandboxInterceptor) {
-					println(terminal, "stdout", "[customized]");
+					println(terminal, "stdout", "[customized] Customized sandbox");
 					println(
 						terminal, 
 						"stdout", 
