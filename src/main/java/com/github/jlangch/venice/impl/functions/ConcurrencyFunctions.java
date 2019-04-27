@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -1037,6 +1038,7 @@ public class ConcurrencyFunctions {
 				};
 				
 				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
+													CallFrame.fromVal("future", args),
 													Callable.class, 
 													VncHashMap.of(new VncKeyword("call"), wrapped));
 	

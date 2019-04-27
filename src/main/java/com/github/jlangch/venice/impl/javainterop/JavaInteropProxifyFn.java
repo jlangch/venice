@@ -28,6 +28,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
@@ -74,6 +75,7 @@ public class JavaInteropProxifyFn extends VncFunction {
 
 		return new VncJavaObject(
 					DynamicInvocationHandler.proxify(
+							CallFrame.fromVal("proxify", args),
 							clazz, 
 							Coerce.toVncMap(args.second())));
 	}

@@ -42,6 +42,8 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.Watchable;
 import com.github.jlangch.venice.impl.util.concurrent.StripedExecutorService;
@@ -239,11 +241,14 @@ public class Agent {
 	
 		@Override
 		public void run() {
-			try {
+			final CallStack callStack = ThreadLocalMap.getCallStack();
+
+			try {				
 				// inherit thread local values to the child thread
 				ThreadLocalMap.setValues(threadLocalValues.get());
 				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				ThreadLocalMap.clearCallStack();
+				callStack.push(CallFrame.fromVal("agent->" + fn.getName(), fnArgs));
 				JavaInterop.register(interceptor);	
 				
 				if (agent.getError() == null || agent.continueOnError) {
@@ -272,6 +277,7 @@ public class Agent {
 			}
 			finally {
 				// clean up
+				callStack.pop();
 				JavaInterop.unregister();
 				ThreadLocalMap.remove();
 			}

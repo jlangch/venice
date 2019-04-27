@@ -37,6 +37,8 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -54,7 +56,11 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  */
 public class DynamicInvocationHandler implements InvocationHandler {
 	
-	public DynamicInvocationHandler(final Map<String, VncFunction> methods) {
+	public DynamicInvocationHandler(
+			final CallFrame callFrame,
+			final Map<String, VncFunction> methods
+	) {
+		this.callFrame = callFrame;
 		this.methods = methods;
 		this.parentInterceptor = JavaInterop.getInterceptor();
 	}
@@ -74,6 +80,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				}
 			}
 				
+			final CallStack callStack = ThreadLocalMap.getCallStack();
+			
 			// [SECURITY]
 			//
 			// Ensure that the Venice callback function is running in the Venice's 
@@ -82,18 +90,27 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			
 			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
 			if (proxyInterceptor == parentInterceptor) {
-				// we run in the same thread
-				return fn.apply(new VncList(vncArgs)).convertToJavaObject();
+				try {
+					callStack.push(callFrame);
+					
+					// we run in the same thread
+					return fn.apply(new VncList(vncArgs)).convertToJavaObject();
+				}
+				finally {
+					callStack.pop();
+				}
 			}
 			else {
 				// the callback function run's in another thread				
 				try {
 					ThreadLocalMap.clear();
 					JavaInterop.register(parentInterceptor);
+					callStack.push(callFrame);
 					
 					return fn.apply(new VncList(vncArgs)).convertToJavaObject();
 				}
 				finally {
+					callStack.pop();
 					JavaInterop.unregister();
 					ThreadLocalMap.remove();
 				}
@@ -106,16 +123,18 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	}
 	
 	public static Object proxify(
+			final CallFrame callFrame,
 			final Class<?> clazz, 
 			final Map<String, VncFunction> handlers
 	) {
 		return Proxy.newProxyInstance(
 				DynamicInvocationHandler.class.getClassLoader(), 
 				new Class[] { clazz }, 
-				new DynamicInvocationHandler(handlers));
+				new DynamicInvocationHandler(callFrame, handlers));
 	}
 	
 	public static Object proxify(
+			final CallFrame callFrame,
 			final Class<?> clazz, 
 			final VncMap handlers
 	) {
@@ -131,10 +150,11 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		return Proxy.newProxyInstance(
 				DynamicInvocationHandler.class.getClassLoader(), 
 				new Class[] { clazz }, 
-				new DynamicInvocationHandler(handlerMap));
+				new DynamicInvocationHandler(callFrame, handlerMap));
 	}
 	
 	
+	final CallFrame callFrame;
 	final Map<String, VncFunction> methods;
 	final IInterceptor parentInterceptor;
 }
