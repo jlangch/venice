@@ -15,7 +15,7 @@ venice> !sandbox reject-all
 venice> !sandbox status
 Sandbox active (RejectAllInterceptor). Rejects all Java calls and default blacklisted Venice functions
 venice> !sandbox config
-[reject-all] SAFE restricted all sandbox
+[reject-all] SAFE restricted sandbox
 Java calls:
    All rejected!
 Blacklisted Venice functions:

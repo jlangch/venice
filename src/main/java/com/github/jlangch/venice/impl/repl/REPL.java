@@ -326,7 +326,7 @@ public class REPL {
 					return;
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
-					println(terminal, "stdout", "[reject-all] SAFE restricted all sandbox");
+					println(terminal, "stdout", "[reject-all] SAFE restricted sandbox");
 					println(terminal, "stdout", "Java calls:\n   All rejected!");
 					println(
 						terminal,
