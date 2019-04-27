@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added ...
 
+### fixed
+
+- fixed the order of the stack trace frames (reversed it)
+
 
 
 ## [1.4.5] - 2019-04-26
