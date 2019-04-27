@@ -15,7 +15,7 @@
 ```clojure
 (do
    (defn task [] (sleep 1000) 200)
-   (deref (future task))        
+   (deref (future task)))
 ```
 
 ```clojure
