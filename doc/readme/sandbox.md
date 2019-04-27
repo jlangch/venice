@@ -120,6 +120,17 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 ...
 ```
+
+
+Run Venice scripts with no restrictions:
+
+```java
+import com.github.jlangch.venice.Venice;
+
+final Venice venice = new Venice();
+
+...
+```
  
 
 ## Sandbox with the REPL
