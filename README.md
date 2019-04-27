@@ -51,5 +51,5 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/c0dac83/cheatsheet.htm
 * [Sandbox](doc/readme/sandbox.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * See a larger [example](doc/readme/large-example.md)
+* [Change Log](ChangeLog.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
-

@@ -42,9 +42,9 @@ venice> !reload
 Sometimes it is necessary to reload an extension module
 
 ```text
-venice> (load-module :chart)
+venice> (load-module :xchart)
 venice> ... do something ...
-venice> (load-module :chart)
+venice> (load-module :xchart)
 venice> ... do something ...
 ```
 This can result in an error message
@@ -54,9 +54,9 @@ This can result in an error message
 Reloading the Venice context solves the problem without restarting the REPL:
 
 ```text
-venice> (load-module :chart)
+venice> (load-module :xchart)
 venice> !reload
-venice> (load-module :chart)
+venice> (load-module :xchart)
 ```
 
 
