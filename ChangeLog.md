@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.4.6] - 2019-05-xx
+## [1.5.0] - 2019-05-xx
 
 ### added
 
@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - fixed the order of the stacktrace frames (reversed it)
 - fixed dereferencing a future when the future has thrown an exception
+
+### incompatible changes
+
+- removed 'io/spit-temp-file', replace with 'io/spit'
+- removed 'io/slurp-temp-file', replace with 'io/slurp'
 
 
 
