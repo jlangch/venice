@@ -60,7 +60,6 @@ import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -117,13 +116,15 @@ public class ConcurrencyFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("deref", args, 1, 3);
-				
-				if (Types.isVncAtom(args.first())) {
+
+				final VncVal first = args.first();
+
+				if (Types.isVncAtom(first)) {
 					final VncAtom atm = (VncAtom)args.first();
 					return atm.deref();
 				}
-				else if (Types.isVncJavaObject(args.first())) {
-					final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+				else if (Types.isVncJavaObject(first)) {
+					final Object delegate = ((VncJavaObject)first).getDelegate();
 					if (delegate instanceof Future) {
 						try {
 							@SuppressWarnings("unchecked")
@@ -167,7 +168,7 @@ public class ConcurrencyFunctions {
 	
 				throw new VncException(String.format(
 						"Function 'deref' does not allow type %s as parameter.",
-						Types.getType(args.first())));
+						Types.getType(first)));
 		
 			}
 			
@@ -1045,7 +1046,7 @@ public class ConcurrencyFunctions {
 				};
 				
 				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
-													CallFrame.fromVal("future", args),
+													ThreadLocalMap.getCallStack().peek(),
 													Callable.class, 
 													VncHashMap.of(new VncKeyword("call"), wrapped));
 	

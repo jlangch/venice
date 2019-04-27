@@ -81,7 +81,8 @@ public class Agent {
 				new Action(
 						this, 
 						fn, 
-						args, 
+						args,
+						SendType.SEND,
 						JavaInterop.getInterceptor(), 
 						ThreadLocalMap.getValues()));
 	}
@@ -92,6 +93,7 @@ public class Agent {
 						this, 
 						fn, 
 						args, 
+						SendType.SEND_OFF,
 						JavaInterop.getInterceptor(),
 						ThreadLocalMap.getValues()));
 	}
@@ -224,12 +226,14 @@ public class Agent {
 				final Agent agent, 
 				final VncFunction fn, 
 				final VncList fnArgs,
+				final SendType sendType,
 				final IInterceptor interceptor,
 				final Map<VncKeyword,VncVal> threadLocalValues
 		) {
 			this.agent = agent;
 			this.fn = fn;
 			this.fnArgs = fnArgs;
+			this.sendType = sendType;
 			this.interceptor = interceptor;
 			this.threadLocalValues.set(threadLocalValues);
 		}
@@ -248,7 +252,12 @@ public class Agent {
 				ThreadLocalMap.setValues(threadLocalValues.get());
 				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				ThreadLocalMap.clearCallStack();
-				callStack.push(CallFrame.fromVal("agent->" + fn.getName(), fnArgs));
+				callStack.push(CallFrame.fromVal(
+									String.format(
+											"agent->%s->%s", 
+											sendType.toString().toLowerCase(), 
+											fn.getName()),
+									fnArgs));
 				JavaInterop.register(interceptor);	
 				
 				if (agent.getError() == null || agent.continueOnError) {
@@ -286,6 +295,7 @@ public class Agent {
 		private final Agent agent;
 		private final VncFunction fn; 
 		private final VncList fnArgs;
+		private final SendType sendType;
 		private final IInterceptor interceptor;
 		private final AtomicReference<Map<VncKeyword,VncVal>> threadLocalValues = new AtomicReference<>();
 	}
@@ -314,7 +324,10 @@ public class Agent {
 		private final RuntimeException ex;
 	}
 	
-	
+	private enum SendType { 
+		SEND, 
+		SEND_OFF;
+	};
 	
 	private final static VncKeyword ERROR_HANDLER = new VncKeyword("error-handler");
 	private final static VncKeyword ERROR_MODE = new VncKeyword("error-mode");
