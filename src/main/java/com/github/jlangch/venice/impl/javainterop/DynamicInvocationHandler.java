@@ -82,7 +82,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				
 			final CallStack callStack = ThreadLocalMap.getCallStack();
 			final CallFrame callFrameMethod = CallFrame.fromVal(
-													"proxy->" + method.getName(),
+													"proxy(:" + method.getName() + ")->" + fn.getName(),
 													fn.getMeta());
 			
 			// [SECURITY]
@@ -128,18 +128,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					String.format("ProxyMethod %s", method.getName()));
 		}
 	}
-	
-	public static Object proxify(
-			final CallFrame callFrame,
-			final Class<?> clazz, 
-			final Map<String, VncFunction> handlers
-	) {
-		return Proxy.newProxyInstance(
-				DynamicInvocationHandler.class.getClassLoader(), 
-				new Class[] { clazz }, 
-				new DynamicInvocationHandler(callFrame, handlers));
-	}
-	
+		
 	public static Object proxify(
 			final CallFrame callFrame,
 			final Class<?> clazz, 
