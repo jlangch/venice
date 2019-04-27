@@ -94,7 +94,7 @@ venice> !sandbox customized
 (. :java.lang.Math :min 2 3)
 ```
 
-#### Customize the sandbox
+#### Customize the sandbox...
 * enable calls to _java.lang.Math_
 * blacklist all Venice I/O functions
 * blacklist the Venice 'count' function
@@ -105,6 +105,8 @@ venice> !sandbox add-rule class:java.lang.Math:*
 venice> !sandbox add-rule blacklist:venice:*io*
 venice> !sandbox add-rule blacklist:venice:count
 ```
+
+#### ...and test it
 
 ```clojure
 ; Java calls to java.lang.Math are accepted
