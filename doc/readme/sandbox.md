@@ -125,4 +125,4 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 
 ## Sandbox with the REPL
 
-The sandbox can be managed from within the REPL: [managing the sandbox](repl-sandbox.md)
+The sandbox can be managed and tested from within the REPL: [managing the sandbox](repl-sandbox.md)
