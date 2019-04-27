@@ -8,7 +8,7 @@ No sandbox active (AcceptAllInterceptor)
 venice> 
 ```
 
-Change to a restricted _reject-all_ sandbox
+#### Change to a restricted _reject-all_ sandbox
 
 ```
 venice> !sandbox reject-all
@@ -26,7 +26,7 @@ Blacklisted Venice functions:
 venice> 
 ```
 
-Change to a _customized_ sandbox
+#### Change to a _customized_ sandbox
 
 ```
 venice> !sandbox customized
@@ -51,13 +51,13 @@ venice>
 
 ## Testing the _reject-all_ sandbox in the REPL
 
-Enable the _reject-all_ sandbox
+#### Enable the _reject-all_ sandbox
 
 ```
 venice> !sandbox reject-all
 ```
 
-Test
+#### Test
 
 ```clojure
 ; all Venice I/O functions are rejected
@@ -71,13 +71,13 @@ Test
 
 ## Testing the _customized_ sandbox in the REPL
 
-Enable the _customized_ sandbox.
+#### Enable the _customized_ sandbox.
 
 ```
 venice> !sandbox customized
 ```
 
-Test
+#### Test the sandbox
 
 ```clojure
 ; Venice I/O functions are accepted
@@ -94,7 +94,10 @@ Test
 (. :java.lang.Math :min 2 3)
 ```
 
-Customize (enable calls to _java.lang.Math_)
+#### Customize the sandbox
+* enable calls to _java.lang.Math_
+* blacklist all Venice I/O functions
+* blacklist the Venice 'count' function
 
 ```
 venice> !sandbox customized
