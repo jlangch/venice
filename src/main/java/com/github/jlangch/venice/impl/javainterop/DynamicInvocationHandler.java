@@ -25,15 +25,17 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -56,7 +58,7 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  */
 public class DynamicInvocationHandler implements InvocationHandler {
 	
-	public DynamicInvocationHandler(
+	private DynamicInvocationHandler(
 			final CallFrame callFrameProxy,
 			final Map<String, VncFunction> methods
 	) {
@@ -134,21 +136,33 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final Class<?> clazz, 
 			final VncMap handlers
 	) {
-		final Map<String, VncFunction> handlerMap = new HashMap<>();
-		for(VncMapEntry entry : handlers.entries()) {
-			handlerMap.put(
-					Types.isVncKeyword(entry.getKey())
-						? Coerce.toVncKeyword(entry.getKey()).getValue()
-						: Coerce.toVncString(entry.getKey()).getValue(), 
-					Coerce.toVncFunction(entry.getValue()));
-		}
-		
 		return Proxy.newProxyInstance(
 				DynamicInvocationHandler.class.getClassLoader(), 
 				new Class[] { clazz }, 
-				new DynamicInvocationHandler(callFrame, handlerMap));
+				new DynamicInvocationHandler(callFrame, handlerMap(handlers)));
 	}
 	
+	private static String name(final VncVal val) {
+		if (Types.isVncKeyword(val)) {
+			return ((VncKeyword)val).getValue();
+		}
+		else if (Types.isVncString(val)) {
+			return ((VncString)val).getValue();
+		}
+		else {
+			throw new VncException("A proxy handler map key must be of type VncKeyword or VncString");
+		}
+	}
+
+	private static Map<String, VncFunction> handlerMap(final VncMap handlers) {
+		return handlers
+					.entries()
+					.stream()
+					.collect(Collectors.toMap(
+						e -> name(e.getKey()), 
+						e -> Coerce.toVncFunction(e.getValue())));
+	}
+
 	
 	final CallFrame callFrameProxy;
 	final Map<String, VncFunction> methods;
