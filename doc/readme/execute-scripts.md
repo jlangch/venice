@@ -24,6 +24,6 @@ foo> java -jar venice-1.4.5.jar -file script.venice 3
 ```
 
 *Note:* the command line args are only available when executing a script 
-in the ways shown above. For security reasons the command line args are 
-not available in the REPL and with embedding Venice in Java! 
+in the ways shown above. The command line args are not available in the REPL
+and for security reasons they are not available with embedding Venice in Java! 
 
