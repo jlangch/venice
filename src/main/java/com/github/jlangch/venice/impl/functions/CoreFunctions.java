@@ -3269,14 +3269,8 @@ public class CoreFunctions {
 				else if (Types.isVncByteBuffer(arg)) {
 					return new VncLong(((VncByteBuffer)arg).size());
 				}
-				else if (Types.isVncSequence(arg)) {
-					return new VncLong(((VncSequence)arg).size());
-				}
-				else if (Types.isVncSet(arg)) {
-					return new VncLong(((VncSet)arg).size());
-				}
-				else if (Types.isVncMap(arg)) {
-					return new VncLong(((VncMap)arg).size());
+				else if (Types.isVncCollection(arg)) {
+					return new VncLong(((VncCollection)arg).size());
 				}
 				else {
 					throw new VncException(String.format(
@@ -3336,18 +3330,18 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("empty?", args, 1);
 	
-				final VncVal exp = args.first();
-				if (exp == Nil) {
+				final VncVal val = args.first();
+				if (val == Nil) {
 					return True;
 				} 
-				else if (exp instanceof VncString && ((VncString)exp).getValue().isEmpty()) {
-					return True;
+				else if (Types.isVncString(val)) {
+					return ((VncString)val).getValue().isEmpty() ? True : False;
 				} 
-				else if (exp instanceof VncCollection && ((VncCollection)exp).isEmpty()) {
-					return True;
+				else if (Types.isVncCollection(val)) {
+					return ((VncCollection)val).isEmpty() ? True : False;
 				} 
-				else if (exp instanceof VncByteBuffer && ((VncByteBuffer)exp).size() == 0) {
-					return True;
+				else if (Types.isVncByteBuffer(val)) {
+					return ((VncByteBuffer)val).size() == 0 ? True : False;
 				} 
 				else {
 					return False;
@@ -3371,18 +3365,18 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("not-empty?", args, 1);
 	
-				final VncVal exp = args.first();
-				if (exp == Nil) {
+				final VncVal val = args.first();
+				if (val == Nil) {
 					return False;
 				} 
-				else if (exp instanceof VncString && ((VncString)exp).getValue().isEmpty()) {
-					return False;
+				else if (Types.isVncString(val)) {
+					return ((VncString)val).getValue().isEmpty() ? False : True;
 				} 
-				else if (exp instanceof VncCollection && ((VncCollection)exp).isEmpty()) {
-					return False;
-				}
-				else if (exp instanceof VncByteBuffer && ((VncByteBuffer)exp).size() != 0) {
-					return True;
+				else if (Types.isVncCollection(val)) {
+					return ((VncCollection)val).isEmpty() ? False : True;
+				} 
+				else if (Types.isVncByteBuffer(val)) {
+					return ((VncByteBuffer)val).size() == 0 ? False : True;
 				} 
 				else {
 					return True;
