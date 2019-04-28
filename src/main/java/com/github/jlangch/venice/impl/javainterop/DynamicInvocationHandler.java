@@ -24,8 +24,6 @@ package com.github.jlangch.venice.impl.javainterop;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -159,13 +157,16 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	}
 	
 	private static VncList toVncArgs(final Object[] args) {
-		final List<VncVal> vncArgs = new ArrayList<>();
-		if (args != null) {
-			for(Object arg : args) {
-				vncArgs.add(JavaInteropUtil.convertToVncVal(arg));
-			}
+		if (args == null || args.length == 0) {
+			return new VncList();
 		}
-		return new VncList(vncArgs);
+		else {
+			final VncVal[] vncArgs = new VncVal[args.length];		
+			for(int ii=0; ii<args.length; ii++) {
+				vncArgs[ii] = JavaInteropUtil.convertToVncVal(args[ii]);
+			}
+			return VncList.of(vncArgs);
+		}
 	}
 
 	
