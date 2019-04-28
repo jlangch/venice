@@ -75,7 +75,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	) throws Throwable { 
 		final VncFunction fn = methods.get(method.getName());
 		if (fn != null) {
-			final List<VncVal> fnArgs = toVncArgs(args);
+			final VncList fnArgs = toVncArgs(args);
 				
 			final CallStack callStack = ThreadLocalMap.getCallStack();
 			final CallFrame callFrameMethod = CallFrame.fromVal(
@@ -95,7 +95,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
 					
-					return fn.apply(new VncList(fnArgs)).convertToJavaObject();
+					return fn.apply(fnArgs).convertToJavaObject();
 				}
 				finally {
 					callStack.pop();
@@ -110,7 +110,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
 					
-					return fn.apply(new VncList(fnArgs)).convertToJavaObject();
+					return fn.apply(fnArgs).convertToJavaObject();
 				}
 				finally {
 					callStack.pop();
@@ -158,14 +158,14 @@ public class DynamicInvocationHandler implements InvocationHandler {
 						e -> Coerce.toVncFunction(e.getValue())));
 	}
 	
-	private static List<VncVal> toVncArgs(final Object[] args) {
+	private static VncList toVncArgs(final Object[] args) {
 		final List<VncVal> vncArgs = new ArrayList<>();
 		if (args != null) {
 			for(Object arg : args) {
 				vncArgs.add(JavaInteropUtil.convertToVncVal(arg));
 			}
 		}
-		return vncArgs;
+		return new VncList(vncArgs);
 	}
 
 	
