@@ -49,7 +49,7 @@ Sandbox rules:
 venice> 
 ```
 
-## Testing the _reject-all_ sandbox in the REPL
+## Testing the _reject-all_ sandbox
 
 #### Enable the _reject-all_ sandbox
 
@@ -69,7 +69,7 @@ venice> !sandbox reject-all
 (. :java.lang.Math :min 2 3)
 ```
 
-## Testing the _customized_ sandbox in the REPL
+## Testing the _customized_ sandbox
 
 #### Enable the _customized_ sandbox.
 
