@@ -178,6 +178,9 @@ dependencies {
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18'
     compileOnly 'com.github.librepdf:openpdf:1.2.14'
 
+    // WebApp support
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+ 
     // runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'

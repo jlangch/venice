@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/eclipse/jackson-databind-2.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/jackson-datatype-jdk8-2.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/jackson-annotations-2.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/javax.servlet-api-4.0.1.jar" sourcepath="lib/eclipse/javax.servlet-api-4.0.1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
