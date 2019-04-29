@@ -44,7 +44,6 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
-import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
@@ -356,18 +355,6 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to stack. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
-		}
-	}
-	
-	public static VncQueue toVncQueue(final VncVal val) {
-		if (val == null || val instanceof VncQueue) {
-			return (VncQueue)val;
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to queue. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

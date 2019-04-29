@@ -73,7 +73,6 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
-import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
@@ -2052,26 +2051,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_queue = 
-			new VncFunction(
-					"queue", 
-					VncFunction
-						.meta()
-						.module("core")
-						.arglists("(stack )")		
-						.doc("Creates a new queue.")
-						.examples("(queue )")
-						.build()
-			) {		
-				public VncVal apply(final VncList args) {
-					assertArity("queue", args, 0);
-					
-					return new VncQueue();
-				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
-
 	public static VncFunction map_Q = 
 		new VncFunction(
 				"map?", 
@@ -2187,26 +2166,6 @@ public class CoreFunctions {
 					assertArity("stack?", args, 1);
 					
 					return Types.isVncStack(args.first()) ? True : False;
-				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
-
-	public static VncFunction queue_Q = 
-			new VncFunction(
-					"queue?", 
-					VncFunction
-						.meta()
-						.module("core")
-						.arglists("(queue? obj)")		
-						.doc("Returns true if obj is a queue")
-						.examples("(queue? (queue))")
-						.build()
-			) {	
-				public VncVal apply(final VncList args) {
-					assertArity("queue?", args, 1);
-					
-					return Types.isVncQueue(args.first()) ? True : False;
 				}
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
@@ -4252,74 +4211,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction poll = 
-			new VncFunction(
-					"poll", 
-					VncFunction
-						.meta()
-						.module("core")
-						.arglists("(poll queue)")		
-						.doc(
-							"Polls the next item from a queue. Returns nil if the queue is empty.")
-						.examples(
-							"(poll (queue))")
-						.build()
-			) {		
-				public VncVal apply(final VncList args) {
-					assertArity("poll", args, 1);
-
-					final VncVal val = args.first();
-					if (val == Nil) {
-						return Nil;
-					}
-		
-					if (Types.isVncQueue(val)) {
-						return ((VncQueue)val).poll();
-					}
-					else {
-						throw new VncException(String.format(
-								"poll: type %s not supported",
-								Types.getType(args.first())));
-					}
-				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
-			
-		public static VncFunction offer = 
-				new VncFunction(
-						"offer", 
-						VncFunction
-							.meta()
-							.module("core")
-							.arglists("(offer queue val)")		
-							.doc(
-								"Inserts the value at the tail of the queue.")
-							.examples(
-								"(offer (queue) 1)")
-							.build()
-				) {		
-					public VncVal apply(final VncList args) {
-						assertArity("offer", args, 2);
-
-						final VncVal val = args.first();
-						if (val == Nil) {
-							return Nil;
-						}
-			
-						if (Types.isVncQueue(val)) {
-							return ((VncQueue)val).offer(args.second());
-						}
-						else {
-							throw new VncException(String.format(
-									"offer: type %s not supported",
-									Types.getType(args.first())));
-						}
-					}
-			
-				    private static final long serialVersionUID = -1848883965231344442L;
-				};
-
 	public static VncFunction peek = 
 		new VncFunction(
 				"peek", 
@@ -4351,9 +4242,6 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncStack(val)) {
 					return ((VncStack)val).peek();
-				}
-				else if (Types.isVncQueue(val)) {
-					return ((VncQueue)val).peek();
 				}
 				else {
 					throw new VncException(String.format(
@@ -5849,13 +5737,11 @@ public class CoreFunctions {
 				.put("sorted-map?",			sorted_map_Q)
 				.put("mutable-map?",		mutable_map_Q)
 				.put("stack?",				stack_Q)
-				.put("queue?",				queue_Q)
 				.put("hash-map",			new_hash_map)
 				.put("ordered-map",			new_ordered_map)
 				.put("sorted-map",			new_sorted_map)
 				.put("mutable-map",			new_mutable_map)
 				.put("stack",				new_stack)
-				.put("queue",				new_queue)
 				.put("assoc",				assoc)
 				.put("assoc!",				assoc_BANG)
 				.put("assoc-in",			assoc_in)
@@ -5907,8 +5793,6 @@ public class CoreFunctions {
 				.put("nlast",				nlast)
 				.put("empty-to-nil",		emptyToNil)
 				.put("pop",					pop)
-				.put("poll",				poll)
-				.put("offer",				offer)
 				.put("peek",				peek)
 				.put("empty?",				empty_Q)
 				.put("not-empty?",			not_empty_Q)
