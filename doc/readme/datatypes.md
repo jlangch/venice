@@ -154,3 +154,11 @@ Immutable persistent sorted map.
 ```clojure
 (sorted-map :a 100 :b 200)
 ```
+
+### stack
+
+Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
+
+```clojure
+(stack )
+```
