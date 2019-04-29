@@ -4198,9 +4198,6 @@ public class CoreFunctions {
 					final VncSequence seq = (VncSequence)val;
 					return seq.isEmpty() ? new VncList() : seq.rest();
 				}
-				else if (Types.isVncStack(val)) {
-					return ((VncStack)val).pop();
-				}
 				else {
 					throw new VncException(String.format(
 							"pop: type %s not supported",
@@ -4210,6 +4207,70 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction pop_BANG = 
+		new VncFunction(
+				"pop!", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(pop! stack)")		
+					.doc("Pops an item from a stack.")
+					.examples("(pop! (stack))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("pop!", args, 1);
+
+				final VncVal val = args.first();
+				if (val == Nil) {
+					return Nil;
+				}
+	
+				if (Types.isVncStack(val)) {
+					return ((VncStack)val).pop();
+				}
+				else {
+					throw new VncException(String.format(
+							"pop!: type %s not supported",
+							Types.getType(args.first())));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction push_BANG = 
+			new VncFunction(
+					"push!", 
+					VncFunction
+						.meta()
+						.module("core")
+						.arglists("(push! stack)")		
+						.doc("Pushes an item to a stack.")
+						.examples("(push! (stack))")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertArity("push!", args, 2);
+
+					final VncVal val = args.first();
+					if (val == Nil) {
+						return Nil;
+					}
+		
+					if (Types.isVncStack(val)) {
+						return ((VncStack)val).push(args.second());
+					}
+					else {
+						throw new VncException(String.format(
+								"push!: type %s not supported",
+								Types.getType(args.first())));
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
 
 	public static VncFunction peek = 
 		new VncFunction(
@@ -5793,6 +5854,8 @@ public class CoreFunctions {
 				.put("nlast",				nlast)
 				.put("empty-to-nil",		emptyToNil)
 				.put("pop",					pop)
+				.put("pop!",				pop_BANG)
+				.put("push!",				push_BANG)
 				.put("peek",				peek)
 				.put("empty?",				empty_Q)
 				.put("not-empty?",			not_empty_Q)
