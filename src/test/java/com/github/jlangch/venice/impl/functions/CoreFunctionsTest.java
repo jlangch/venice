@@ -477,6 +477,8 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(0L),venice.eval("(count (bytebuf))"));		
 		assertEquals(Long.valueOf(3L),venice.eval("(count (bytebuf [0 1 2]))"));		
 
+		assertEquals(Long.valueOf(0), venice.eval("(count (stack))"));
+		assertEquals(Long.valueOf(1), venice.eval("(count (push! (stack) 1))"));
 
 		// Java Interop
 		
@@ -822,11 +824,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(empty? '())"));	
 		assertTrue((Boolean)venice.eval("(empty? [])"));	
 		assertTrue((Boolean)venice.eval("(empty? {})"));	
+		assertTrue((Boolean)venice.eval("(empty? (stack))"));	
 
 		assertFalse((Boolean)venice.eval("(empty? \"a\")"));	
 		assertFalse((Boolean)venice.eval("(empty? '(1))"));	
 		assertFalse((Boolean)venice.eval("(empty? [1])"));	
-		assertFalse((Boolean)venice.eval("(empty? {:a 1})"));	
+		assertFalse((Boolean)venice.eval("(empty? (push! (stack) 1))"));	
 	}
 	
 	@Test
@@ -2205,16 +2208,19 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(peek nil)"));
+		
 		assertEquals(null, venice.eval("(peek '())"));
 		assertEquals(Long.valueOf(1L), venice.eval("(peek '(1))"));
 		assertEquals(Long.valueOf(1L), venice.eval("(peek '(1 2))"));
 		assertEquals(Long.valueOf(1L), venice.eval("(peek '(1 2 3))"));
 
-		assertEquals(null, venice.eval("(peek nil)"));
 		assertEquals(null, venice.eval("(peek [])"));
 		assertEquals(Long.valueOf(1L), venice.eval("(peek [1])"));
 		assertEquals(Long.valueOf(2L), venice.eval("(peek [1 2])"));
 		assertEquals(Long.valueOf(3L), venice.eval("(peek [1 2 3])"));
+
+		assertEquals(null, venice.eval("(peek (stack))"));
+		assertEquals(Long.valueOf(1L), venice.eval("(peek (push! (stack) 1))"));
 	}
 	
 	@Test
@@ -2230,6 +2236,14 @@ public class CoreFunctionsTest {
 		assertEquals("[]", venice.eval("(str (pop [1]))"));
 		assertEquals("[1]", venice.eval("(str (pop [1 2]))"));
 		assertEquals("[1 2]", venice.eval("(str (pop [1 2 3]))"));
+	}
+	
+	@Test
+	public void test_pop_BANG() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(pop! (stack))"));
+		assertEquals(Long.valueOf(1L), venice.eval("(pop! (push! (stack) 1))"));
 	}
 
 	@Test
@@ -2297,6 +2311,14 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("abc: 100", venice.eval("(with-out-str (printf \"%s: %d\" \"abc\" 100))"));	
+	}
+	
+	@Test
+	public void test_push_BANG() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(peek (stack))"));
+		assertEquals(2L, venice.eval("(count (push! (push! (stack) 1) 2))"));
 	}
 	
 	@Test
