@@ -2039,7 +2039,7 @@ public class CoreFunctions {
 					.module("core")
 					.arglists("(stack )")		
 					.doc("Creates a new mutable threadsafe stack.")
-					.examples("(stack )")
+					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -4216,7 +4216,7 @@ public class CoreFunctions {
 					.module("core")
 					.arglists("(pop! stack)")		
 					.doc("Pops an item from a stack.")
-					.examples("(pop! (stack))")
+					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -4248,7 +4248,7 @@ public class CoreFunctions {
 						.module("core")
 						.arglists("(push! stack)")		
 						.doc("Pushes an item to a stack.")
-						.examples("(push! (stack))")
+						.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
@@ -4279,10 +4279,11 @@ public class CoreFunctions {
 					.meta()
 					.module("core")
 					.arglists("(peek coll)")		
-					.doc("For a list, same as first, for a vector, same as last")
+					.doc("For a list, same as first, for a vector, same as last, for a stack the top element")
 					.examples(
 						"(peek '(1 2 3 4))",
-						"(peek [1 2 3 4])")
+						"(peek [1 2 3 4])",
+						"(let [s (stack)]\n   (push! s 4)\n  (peek s))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

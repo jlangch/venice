@@ -530,6 +530,28 @@ public class DocGenerator {
 		maps.addSection(map_test);
 		map_test.addItem(getDocItem("contains?"));
 
+		
+		final DocSection stacks = new DocSection("Stack");
+		section.addSection(stacks);
+
+		final DocSection stacks_create = new DocSection("Create");
+		stacks.addSection(stacks_create);
+		stacks_create.addItem(getDocItem("stack"));
+		
+
+		final DocSection stacks_access = new DocSection("Access");
+		stacks.addSection(stacks_access);
+		stacks_access.addItem(getDocItem("peek"));
+		stacks_access.addItem(getDocItem("pop!"));
+		stacks_access.addItem(getDocItem("push!"));
+		stacks_access.addItem(getDocItem("count"));
+
+		
+		final DocSection stacks_test = new DocSection("Test");
+		stacks.addSection(stacks_test);
+		stacks_test.addItem(getDocItem("empty?"));
+		stacks_test.addItem(getDocItem("stack?"));
+
 		return section;
 	}		
 
