@@ -272,10 +272,10 @@ public class JavaInteropTest {
 	public void testOverloadedMethod2() {
 		final Venice venice = new Venice();
 
-		assertEquals("", venice.eval("(. jobj :_String)", symbols()));
-		assertEquals("a", venice.eval("(. jobj :_String \"a\")", symbols()));
-		assertEquals("a,b", venice.eval("(. jobj :_String \"a\" \"b\")", symbols()));
-		assertEquals("a,b,c", venice.eval("(. jobj :_String \"a\" \"b\" \"c\")", symbols()));
+		assertEquals("", venice.eval("(. jobj :_Overloaded)", symbols()));
+		assertEquals("a", venice.eval("(. jobj :_Overloaded \"a\")", symbols()));
+		assertEquals("a,b", venice.eval("(. jobj :_Overloaded \"a\" \"b\")", symbols()));
+		assertEquals("a,b,c", venice.eval("(. jobj :_Overloaded \"a\" \"b\" \"c\")", symbols()));
 	}
 
 	@Test

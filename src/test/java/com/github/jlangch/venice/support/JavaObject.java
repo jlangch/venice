@@ -174,18 +174,18 @@ public class JavaObject {
 	public void _void() {
 	}
 
-	public String _String() {
+	public String _Overloaded() {
 		return "";
 	}
 
-	public String _String(String s1) {
+	public String _Overloaded(String s1) {
 		return s1;
 	}
-	public String _String(String s1, String s2) {
+	public String _Overloaded(String s1, String s2) {
 		return "" + s1 + "," + s2;
 	}
 
-	public String _String(String s1, String s2, String s3) {
+	public String _Overloaded(String s1, String s2, String s3) {
 		return "" + s1 + "," + s2 + "," + s3;
 	}
 
