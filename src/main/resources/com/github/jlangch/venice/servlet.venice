@@ -59,7 +59,8 @@
   (doto (. res :getWriter)
         (. :println "<html><body><p>Not Found</p></body></html>")))
 
-(defn servlet/create-servlet []
+(defn servlet/create-servlet
+  []
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
       {
