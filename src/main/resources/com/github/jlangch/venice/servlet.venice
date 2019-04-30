@@ -1,10 +1,5 @@
 ;; J2EE Servlet
 
-;; start a Tomcat server:
-;;   (load-module "tomcat.venice")
-;;   (load-module "servlet.venice")
-;;   (tc/run-tomcat-9 (servlet/create-servlet) {})
-
 (import :com.github.jlangch.venice.impl.servlet.http.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.http.VeniceServlet
         :javax.servlet.ServletConfig
