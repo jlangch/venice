@@ -38,6 +38,11 @@ To start the REPL with additional 3rdParty .jar files
 > java -server -cp "*" com.github.jlangch.venice.Launcher -colors
 ```
 
+or
+
+```text
+> java -server -cp "./libs/*" com.github.jlangch.venice.Launcher -colors
+```
 
 ## Reload Venice context
 

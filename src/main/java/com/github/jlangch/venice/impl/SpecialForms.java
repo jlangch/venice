@@ -533,6 +533,19 @@ public class SpecialForms {
 	) {
 	    private static final long serialVersionUID = -1;
 	};
+
+	public static VncFunction import_ = 
+		new SpecialFormsDocFunction(
+				"import",
+				VncFunction
+				.meta()
+				.arglists("(import class)")		
+				.doc("Imports a Java class")
+				.examples("(do\n   (import :java.lang.Long)\n   (. :Long :new 10))")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
 	
 	
 	private static class SpecialFormsDocFunction extends VncFunction {
@@ -573,6 +586,7 @@ public class SpecialForms {
 					.put("try-with",	try_with)
 					.put("defmacro",	defmacro)
 					.put("macroexpand",	macroexpand)
+					.put("import",		import_)
 					.put("dorun",		dorun)
 					.put("prof",		prof)
 					.toMap();
