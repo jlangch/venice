@@ -269,6 +269,16 @@ public class JavaInteropTest {
 	}
 
 	@Test
+	public void testOverloadedMethod2() {
+		final Venice venice = new Venice();
+
+		assertEquals("", venice.eval("(. jobj :_String)", symbols()));
+		assertEquals("a", venice.eval("(. jobj :_String \"a\")", symbols()));
+		assertEquals("a,b", venice.eval("(. jobj :_String \"a\" \"b\")", symbols()));
+		assertEquals("a,b,c", venice.eval("(. jobj :_String \"a\" \"b\" \"c\")", symbols()));
+	}
+
+	@Test
 	public void testStaticMethod() {
 		final Venice venice = new Venice();
 				
