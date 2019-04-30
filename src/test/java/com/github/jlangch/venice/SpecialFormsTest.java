@@ -779,6 +779,14 @@ public class SpecialFormsTest {
 	}	
 	
 	@Test
+	public void test_keyword_as_function_default() {
+		final Venice venice = new Venice();
+	
+		assertEquals(null,   venice.eval("(:c {:a 1 :b 2})"));
+		assertEquals("none", venice.eval("(:c {:a 1 :b 2} :none)"));
+	}	
+	
+	@Test
 	public void test_map_as_function() {
 		final Venice venice = new Venice();
 	

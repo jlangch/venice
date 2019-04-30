@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### added
 
 - added stack datatype
+- keyword as function supports optional defaults: `(:c {:a 1 :b 2} :none))`
 
 ### fixed
 

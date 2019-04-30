@@ -40,14 +40,22 @@ public class VncKeyword extends VncString implements IVncFunction {
 
 	
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("keyword", args, 1);
+		FunctionsUtil.assertArity("keyword", args, 1, 2);
 		
 		if (args.first() == Constants.Nil) {
 			return Constants.Nil;
 		}
 		else {
 			final VncMap map = Coerce.toVncMap(args.first());
-			return map.get(this);
+			if (args.size() == 1) {
+				return map.get(this);
+			}
+			else if (map.containsKey(this) == Constants.True) {
+				return map.get(this);
+			}
+			else {
+				return args.second();
+			}
 		}
 	}
 	
