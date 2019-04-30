@@ -30,6 +30,15 @@ ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
 
 
+## REPL with 3rdParty jars
+
+To start the REPL with additional 3rdParty .jar files
+
+```text
+> java -server -cp "*" com.github.jlangch.venice.Launcher -colors
+```
+
+
 ## Reload Venice context
 
 Reload the Venice context without restarting the REPL
@@ -49,3 +58,4 @@ venice> !env global
 ## Sandbox with the REPL
 
 The Venice sandbox can be managed from within the REPL: [managing the sandbox](repl-sandbox.md)
+

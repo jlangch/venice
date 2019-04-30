@@ -21,30 +21,33 @@
  */
 package com.github.jlangch.venice.impl.servlet.http;
 
+import java.io.IOException;
+
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
 public interface IVeniceServlet {
 
-	void init(ServletConfig config);
+	void init(ServletConfig config) throws ServletException;
 
 	void destroy();
 
-	void doGet(HttpServletRequest req, HttpServletResponse resp);
+	void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 
-	void doHead(HttpServletRequest req, HttpServletResponse resp);
+	void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 	
-	void doPost(HttpServletRequest req, HttpServletResponse resp);
+	void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 	
-	void doPut(HttpServletRequest req, HttpServletResponse resp);
+	void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 	
-	void doDelete(HttpServletRequest req, HttpServletResponse resp);
+	void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 	
-	void doOptions(HttpServletRequest req, HttpServletResponse resp);
+	void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 	
-	void doTrace(HttpServletRequest req, HttpServletResponse resp);
+	void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException;
 
 	long getLastModified(HttpServletRequest req);
 }
