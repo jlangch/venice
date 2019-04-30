@@ -1,0 +1,190 @@
+;; Tomcat
+
+;; Thanks to Clojure ring Tomcat adapter. Venice's tomcat
+;; builds heavily on this work.
+;; https://github.com/marchrock/ring-tomcat-adapter/blob/master/src/ring/adapter/tomcat.clj
+
+(import :java.lang.RuntimeException
+        :org.apache.catalina.startup.Tomcat
+        :org.apache.catalina.core.JreMemoryLeakPreventionListener
+        :org.apache.catalina.core.StandardThreadExecutor
+        :org.apache.catalina.connector.Connector
+        :org.apache.catalina.Server.Service
+        :org.apache.coyote.AbstractProtocol
+        :org.apache.coyote.http11.Http11NioProtocol
+        :org.apache.tomcat.util.net.SSLHostConfig)
+
+(def tc/default-http-port 8080)
+
+(def tc/default-https-port 8443)
+
+(def tc/default-base-dir ".")
+
+(def tc/http-connector "org.apache.coyote.http11.Http11NioProtocol")
+
+(def tc/https-ciphers
+  (str "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,"
+       "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,"
+       "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,"
+       "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,"
+       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,"
+       "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,"
+       "TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,"
+       "TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,"
+       "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,"
+       "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,"
+       "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,"
+       "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,"
+       "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,"
+       "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,"
+       "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,"
+       "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,"
+       "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,"
+       "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,"
+       "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,"
+       "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,"
+       "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,"
+       "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,"
+       "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,"
+       "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA"))
+
+(defn tc/create-executor [options]
+  (let [executor (. :StandardThreadExecutor :new)]
+    (doto executor
+      (. :setName (:executor-name options "tc-executor"))
+      (. :setNamePrefix (str (:executor-name options "tc-executor") "-"))
+      (. :setMaxThreads (:max-threads options 200))
+      (. :setMinSpareThreads (:min-spare-threads options 25))
+      (. :setMaxIdleTime (:max-idle-time options 60000)))))
+
+(defn tc/create-ssl-host-config [options]
+  (let [ssl-host-config (. :SSLHostConfig :new)]
+    (doto ssl-host-config
+      (. :setHostName (:tls-hostname options "_default_"))
+      (. :setCertificateKeystoreFile (:keystore options nil))
+      (. :setCertificateKeystorePassword (:key-password options nil))
+      (. :setCiphers (:tls-ciphers options tc/https-ciphers))
+      (. :setSslProtocol (:tls-protocol options "TLS")))
+    ssl-host-config))
+
+(defmacro tc/create-executored-connector
+  [connector-generator executor options]
+  `(let [connector# (~connector-generator ~options)]
+     (. (. connector# :getProtocolHandler) :setExecutor ~executor)
+     connector#))
+
+(defn tc/create-http-connector [options]
+  (let [connector (. :Connector :new tc/http-connector)]
+    (doto connector
+      (. :setPort (:port options tc/default-http-port)))
+    (when (:https? options false)
+      (. connector :setRedirectPort (:https-port options tc/default-https-port)))
+    connector))
+
+(defn tc/create-https-connector
+  [options]
+  (let [connector (. :Connector :new tc/http-connector)
+        ssl-config (tc/create-ssl-host-config options)
+        protocol-handler (. connector :getProtocolHandler)]
+    (doto connector
+      (. :setScheme "https")
+      (. :setSecure true)
+      (. :addSslHostConfig ssl-config)
+      (. :setPort (:https-port options tc/default-https-port)))
+    (. (. connector :getProtocolHandler) :setSSLEnabled  true)
+    connector))
+
+(defmacro tc/create-executored-connectors
+  [body service options]
+  `(let [executor# (tc/create-executor ~options)]
+     (. ~service :addExecutor executor#)
+     (~body ~service ~options executor#)
+     ~service))
+
+(defmacro tc/create-connector-fn
+  [create-fn service options & executor]
+  `(. ~service :addConnector (if (:executor? ~options true)
+                               (tc/create-executored-connector ~create-fn (first ~@executor) ~options)
+                               (~create-fn ~options))))
+
+(defn tc/create-connector
+  [service options & executor]
+  (when (:http? options true)
+    (tc/create-connector-fn tc/create-http-connector service options executor))
+  (when (:https? options false)
+    (tc/create-connector-fn tc/create-https-connector service options executor))
+  service)
+
+(defn tc/create-server [options]
+  (let [base-dir (:base-dir options tc/default-base-dir)
+        resources-dir (io/file base-dir "resources")
+        tomcat (doto (. :Tomcat :new)
+                     (. :setBaseDir base-dir))
+        service (. tomcat :getService)]
+    (when-not (io/exists-dir? resources-dir)
+      (throw (. :RuntimeException :new
+                (str "The resources dir " base-dir " does not exist"))))
+    (if (:executor? options true)
+      (tc/create-executored-connectors tc/create-connector service options)
+      (tc/create-connector service options))
+    (. (. tomcat :getServer) :addLifecycleListener (. :JreMemoryLeakPreventionListener :new))
+    (. (. tomcat :getHost) :setAppBase  "resources")
+    tomcat))
+
+(defn tc/run-tomcat-8
+  ^{ :doc (str/strip-indent """\
+        Start a Tomcat to serve given servlet with supplied options
+        :base-dir - the server's base directory (default: ".")
+        :await? - block the thread until server get shutdown command (default: true)
+        :http? - create http connector (default: true)
+        :port - the port to listen on http connector (default: 8080)
+        :https? - create https connector (default: false)
+        :https-port - the port to listen on https connector (default: 8443)
+        :keystore - path to keystore file include server certificate
+        :key-pass - password of keystore file
+        :tls-hostname - hostname to listen for https connector (default: _default_)
+        :tls-protocol - list of SSL/TLS protocol to support for https connector (default: TLS)
+        :tls-ciphers - list of SSL/TLS ciphers to support for https connector (default: too long. ECDHE-ECDSA and ECDHE-RSA ciphers)
+        :executor? - use executor (default: true)
+        :executor-name - name of executor (default: tc-executor)
+        :max-threads - max number of threads in executor (default: 200)
+        :min-spare-threads - minimum number of spare threads in executor (default: 25)
+        :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)""" ) }
+  [servlet options]
+  (let [server (tc/create-server options)
+        context (. server :addContext "" ".")]
+    (. server :addServlet "" "venice-servlet" servlet)
+    (. context :addServletMapping "/*" "venice-servlet") ;
+    (. server :start)
+    (when (:await? options true)
+      (. (. server :getServer) :await ))
+  server))
+
+(defn tc/run-tomcat-9
+  ^{ :doc (str/strip-indent """\
+        Start a Tomcat to serve given servlet with supplied options
+        :base-dir - the server's base directory (default: ".")
+        :await? - block the thread until server get shutdown command (default: true)
+        :http? - create http connector (default: true)
+        :port - the port to listen on http connector (default: 8080)
+        :https? - create https connector (default: false)
+        :https-port - the port to listen on https connector (default: 8443)
+        :keystore - path to keystore file include server certificate
+        :key-pass - password of keystore file
+        :tls-hostname - hostname to listen for https connector (default: _default_)
+        :tls-protocol - list of SSL/TLS protocol to support for https connector (default: TLS)
+        :tls-ciphers - list of SSL/TLS ciphers to support for https connector (default: too long. ECDHE-ECDSA and ECDHE-RSA ciphers)
+        :executor? - use executor (default: true)
+        :executor-name - name of executor (default: tc-executor)
+        :max-threads - max number of threads in executor (default: 200)
+        :min-spare-threads - minimum number of spare threads in executor (default: 25)
+        :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)""" ) }
+  [servlet options]
+  (let [server (tc/create-server options)
+        context (. server :addContext "" ".")]
+    (. server :addServlet "" "venice-servlet" servlet)
+    (. context :addServletMappingDecoded "/*" "venice-servlet" false) ;
+    (. server :start)
+    (when (:await? options true)
+      (. (. server :getServer) :await ))
+  server))
