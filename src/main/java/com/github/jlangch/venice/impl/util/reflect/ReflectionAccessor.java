@@ -100,7 +100,7 @@ public class ReflectionAccessor {
 		try {
 			final List<Constructor<?>> ctors = memoizedPublicConstructors(clazz, args.length);
 			if (ctors.isEmpty()) {
-				throw new JavaMethodInvocationException(noMatchingMConstructorErrMsg(clazz));
+				throw new JavaMethodInvocationException(noMatchingConstructorErrMsg(clazz));
 			} 
 			else if (ctors.size() == 1) {
 				final Constructor<?> ctor = (Constructor<?>)ctors.get(0);
@@ -129,7 +129,7 @@ public class ReflectionAccessor {
 					}
 				}
 
-				throw new JavaMethodInvocationException(noMatchingMConstructorErrMsg(clazz));
+				throw new JavaMethodInvocationException(noMatchingConstructorErrMsg(clazz));
 			}
 		} 
 		catch (JavaMethodInvocationException ex) {
@@ -901,7 +901,7 @@ public class ReflectionAccessor {
 				target == null ? "<null>" : target.getClass().getName());
 	}
 
-	private static String noMatchingMConstructorErrMsg(final Class<?> clazz) {
+	private static String noMatchingConstructorErrMsg(final Class<?> clazz) {
 		return String.format(
 				"No matching public constructor found: '%s'",
 				clazz.getName());
@@ -998,8 +998,7 @@ public class ReflectionAccessor {
 	private static String formatArgTypes(final Object[] args) {
 		return Arrays
 				.stream(args)
-				.map(o -> o.getClass())
-				.map(c -> c.getSimpleName())
+				.map(o -> o.getClass().getSimpleName())
 				.collect(Collectors.joining(", "));
 	}
 
