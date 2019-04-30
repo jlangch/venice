@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -99,9 +100,9 @@ public class JavaInteropUtil {
 				}
 			}
 			else {
-				if (Types.isVncString(arg0)) {
+				if (Types.isVncKeyword(arg0)) {
 					// static method / field:   (. :org.foo.Foo :getLastName)
-					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
+					final String className = javaImports.resolveClassName(((VncKeyword)arg0).getValue());
 					final Class<?> targetClass = ReflectionAccessor.classForName(className);
 
 					
