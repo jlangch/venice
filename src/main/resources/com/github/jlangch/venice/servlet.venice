@@ -60,6 +60,11 @@
       :SC_HTTP_VERSION_NOT_SUPPORTED        505 })
 
 
+
+;; -----------------------------------------------------------------------------
+;; Java Interop
+;; -----------------------------------------------------------------------------
+
 (defn- servlet/java-enumeration-to-list
   ^{ :doc "Converts a :java.util.Enumeration to a list" }
   [enumeration]
@@ -69,6 +74,12 @@
   ^{ :doc "Converts a Java OutputStream to a BufferedWriter" }
   [stream encoding]
   (. :BufferedWriter :new (. :OutputStreamWriter :new stream encoding)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Request/Response utils
+;; -----------------------------------------------------------------------------
 
 (defn- servlet/get-headers
   ^{ :doc "Creates a name/value map of all the request headers." }
@@ -125,6 +136,31 @@
          (servlet/merge-servlet-keys <> servlet request response)
          (handler <>)
          (servlet/update-servlet-response response <>))))
+
+(defn- servlet/make-async-service-method [handler]
+  (fn [servlet request response]
+    (let [async-context (. request :startAsync )]
+      (handler
+       (-> request
+           (servlet/build-request-map)
+           (servlet/merge-servlet-keys servlet request response))
+       (fn [response-map]
+         (servlet/update-servlet-response response async-context response-map))
+       (fn [exception]
+         (. response :sendError  500 (. exception :getMessage))
+         (. async-context :complete ))))))
+
+(defn servlet/make-service-method
+  ^{ :doc (str/strip-indent """\
+        Turns a handler into a function that takes the same arguments
+        and has the same return value as the service method in the
+        HttpServlet class.""") }
+  ([handler]
+   (servlet/make-service-method handler {}))
+  ([handler options]
+   (if (:async? options)
+     (servlet/make-async-service-method handler)
+     (servlet/make-blocking-service-method handler))))
 
 (defn- servlet/response-writer [response output-stream]
   (if-let [charset (response/get-charset response)]
@@ -190,6 +226,11 @@
            :servlet-context      (. servlet :getServletContext)
            :servlet-context-path (. request :getContextPath)}))
 
+
+
+;; -----------------------------------------------------------------------------
+;; Servlet
+;; -----------------------------------------------------------------------------
 
 (defn servlet/reply-not-found [req res]
   (. res :setStatus (:SC_NOT_FOUND servlet/response-codes))
