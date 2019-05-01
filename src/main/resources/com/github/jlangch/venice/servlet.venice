@@ -65,15 +65,60 @@
 ;; Java Interop
 ;; -----------------------------------------------------------------------------
 
-(defn- servlet/java-enumeration-to-list
+(defn servlet/java-enumeration-to-list
   ^{ :doc "Converts a :java.util.Enumeration to a list" }
   [enumeration]
   (into '() (. :Collections :list enumeration)))
 
-(defn- servlet/java-stream-to-writer
+(defn servlet/java-stream-to-writer
   ^{ :doc "Converts a Java OutputStream to a BufferedWriter" }
   [stream encoding]
   (. :BufferedWriter :new (. :OutputStreamWriter :new stream encoding)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Header utils
+;; -----------------------------------------------------------------------------
+(def ^{:doc "HTTP token: 1*<any CHAR except CTLs or tspecials>. See RFC2068" }
+  servlet/regex-token
+  (regex/pattern "[!#$%&'*\-+.0-9A-Z\^_`a-z\|~]+"))
+
+(def ^{:doc "HTTP quoted-string: <\"> *<any TEXT except \"> <\">. See RFC2068." }
+  servlet/regex-quoted
+  (regex/pattern "\"(\\\"|[^\"])*\""))
+
+(def ^{:doc "HTTP value: token | quoted-string. See RFC2109" }
+  servlet/regex-value
+  (str servlet/regex-token "|" servlet/regex-quoted))
+
+(def ^{:doc "Pattern for pulling the charset out of the content-type header" }
+  servlet/regex-charset
+  (regex/pattern (str ";(?:.*\\s)?(?i:charset)=(" servlet/regex-value ")\\s*(?:;|$)")))
+
+(defn servlet/ring-find-header
+  ^{ :doc (str/strip-indent """\
+        Looks up a header in a Ring response (or request) case insensitively,
+        returning the header map entry, or nil if not present.""" ) }
+  [resp header-name]
+  (->> (:headers resp)
+       (filter #(str/equals-ignore-case? header-name (key %)))
+       (first)))
+
+(defn servlet/ring-get-header
+  ^{ :doc (str/strip-indent """\
+         Looks up a header in a Ring response (or request) case insensitively,
+         returning the value of the header, or nil if not present.""") }
+  [resp header-name]
+  (some-> resp (servlet/ring-find-header header-name) val))
+
+(defn servlet/ring-get-charset
+  ^{ :doc (str/strip-indent """\
+        Gets the character encoding of a Ring response.
+        E.g.: Content-Type: text/html; charset=utf-8 """ }
+  [res]
+  (if-let [content-type (servlet/ring-get-header res "Content-Type")]
+    (second (regex/find servlet/regex-charset content-type))))
 
 
 
@@ -88,22 +133,22 @@
     (fn [headers name]
       (assoc headers
         (str/lower-case name)
-        (->> (. request getHeaders name)
+        (->> (. request :getHeaders name)
              (servlet/java-enumeration-to-list) ;
              (str/join ","))))
     {}
-    (servlet/java-enumeration-to-list (. request getHeaderNames))))
+    (servlet/java-enumeration-to-list (. request :getHeaderNames))))
 
 (defn- servlet/get-content-length
   ^{ :doc "Returns the content length, or nil if there is no content." }
   [request]
-  (let [length (. request getContentLength)]
+  (let [length (. request :getContentLength)]
     (if (>= length 0) length)))
 
 (defn- servlet/get-client-cert
   ^{ :doc "Returns the SSL client certificate of the request, if one exists." }
   [request]
-  (first (. request getAttribute "javax.servlet.request.X509Certificate")))
+  (first (. request :getAttribute "javax.servlet.request.X509Certificate")))
 
 (defn- servlet/set-response-headers
   ^{ :doc "Update a HttpServletResponse with a map of headers." }
@@ -111,13 +156,13 @@
   (docoll
     (fn [[key val-or-vals]]
         (if (string? val-or-vals)
-           (. response setHeader key val-or-vals)
-           (docoll (fn [val] (. response setHeader key val-or-vals)) val)))
+           (. response :setHeader key val-or-vals)
+           (docoll (fn [val] (. response :setHeader key val-or-vals)) val)))
     headers)
   ; Some headers must be set through specific methods
   (let [content-type (get headers "Content-Type")]
      (when content-type
-        (. response setContentType content-type))))
+        (. response :setContentType content-type))))
 
 (defn- servlet/make-output-stream
   [response  async-context]
@@ -163,7 +208,7 @@
      (servlet/make-blocking-service-method handler))))
 
 (defn- servlet/response-writer [response output-stream]
-  (if-let [charset (response/get-charset response)]
+  (if-let [charset (servlet/response-get-charset response)]
     (io/writer output-stream :encoding charset)
     (io/writer output-stream)))
 
@@ -223,7 +268,7 @@
           {:servlet              servlet
            :servlet-request      request
            :servlet-response     response
-           :servlet-context      (. servlet :getServletContext)
+;           :servlet-context      (. servlet :getServletContext)
            :servlet-context-path (. request :getContextPath)}))
 
 
@@ -244,28 +289,28 @@
   (let [w (. res :getWriter)]
         (. w :println html)))
 
+(defn servlet/handle
+  [method req res handler]
+  (let [h_req (-> req
+                  (servlet/build-request-map)
+                  (servlet/merge-servlet-keys nil req res)
+                  (assoc :method method))
+        h_res (handler h_req)
+        h_header (dissoc (:headers h_res))]
+    (servlet/set-response-headers res h_header)
+    (servlet/write-body-to-stream (:body h_res) res (. res :getOutputStream))))
+
 (defn servlet/create-servlet
-  []
+  [handler]
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
-      {
-        :init (fn [config] nil)
-
-      	:destroy (fn [] nil)
-
-      	:doGet (fn [req res] (servlet/reply-html req res "Hello World"))
-
-      	:doHead (fn [req res] (rservlet/eply-not-found req res))
-
-      	:doPost (fn [req res] (servlet/reply-not-found req res))
-
-      	:doPut (fn [req res] (servlet/reply-not-found req res))
-
-      	:doDelete (fn [req res] (servlet/reply-not-found req res))
-
-      	:doOptions (fn [req res] (servlet/reply-not-found req res))
-
-      	:doTrace (fn [req res] (servlet/reply-not-found req res))
-
-      	:getLastModified (fn [] -1)
-      })))
+      { :init (fn [config] nil)
+        :destroy (fn [] nil)
+        :doGet (fn [req res] (servlet/handle :get req res handler))
+        :doHead (fn [req res] (servlet/handle :head req res handler))
+        :doPost (fn [req res] (servlet/handle :post req res handler))
+        :doPut (fn [req res] (servlet/handle :put req res handler))
+        :doDelete (fn [req res] (servlet/handle :delete req res handler))
+        :doOptions (fn [req res] (servlet/handle :options req res handler))
+        :doTrace (fn [req res] (servlet/handle :trace req res handler))
+        :getLastModified (fn [] -1) })))
