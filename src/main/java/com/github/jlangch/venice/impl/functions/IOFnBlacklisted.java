@@ -65,6 +65,7 @@ public class IOFnBlacklisted {
 
 								// I/O
 								"io/copy-file",
+								"io/copy-stream",
 								"io/delete-file",
 								"io/delete-file-on-exit",
 								"io/exists-dir?",
@@ -75,8 +76,10 @@ public class IOFnBlacklisted {
 								"io/mkdir",
 								"io/mkdirs",
 								"io/slurp",
+								"io/slurp-stream",
 								"io/slurp-lines",
 								"io/spit",
+								"io/spit-stream",
 								"io/temp-file",
 								"io/tmp-dir",
 								"io/user-dir",
