@@ -3,6 +3,9 @@
 (import :com.github.jlangch.venice.impl.servlet.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.VeniceServlet
         :com.github.jlangch.venice.impl.servlet.FilterOutputStreamCloseCB
+        :java.io.BufferedWriter
+        :java.io.OutputStreamWriter
+        :java.lang.RuntimeException
         :java.lang.NullPointerException
         :java.util.Collections
         :javax.servlet.ServletConfig
@@ -62,6 +65,11 @@
   [enumeration]
   (into '() (. :Collections :list enumeration)))
 
+(defn- servlet/java-stream-to-writer
+  ^{ :doc "Converts a Java OutputStream to a BufferedWriter" }
+  [stream encoding]
+  (. :BufferedWriter :new (. :OutputStreamWriter :new stream encoding)))
+
 (defn- servlet/get-headers
   ^{ :doc "Creates a name/value map of all the request headers." }
   [request]
@@ -118,10 +126,30 @@
          (handler <>)
          (servlet/update-servlet-response response <>))))
 
+(defn- response-writer [response output-stream]
+  (if-let [charset (response/get-charset response)]
+    (io/writer output-stream :encoding charset)
+    (io/writer output-stream)))
+
+(defn- write-body-to-stream [body response output-stream]
+  (case (type body)
+    :venice.String        (try-with [wr (servlet/response-writer response output-stream)]
+                            (. wr :write body))
+    :venice.ByteBuffer    (try-with [os output-stream]
+                            (. os :write body))
+    :java.io.InputStream  (try-with [os output-stream]
+                            (io/copy-stream body os))
+    :java.io.File         (try-with [os output-stream]
+                            (io/copy-file body os))
+    :default              (. :RuntimeException :new
+                              (str
+                                "Response stream supported for body type "
+                                (type body)))))
+
 (defn servlet/update-servlet-response
-  ^{ :doc "Update the HttpServletResponse using a response map."
+  ^{ :doc "Update the HttpServletResponse using a response map." }
   ([response response-map]
-   (update-servlet-response response nil response-map))
+   (servlet/update-servlet-response response nil response-map))
   ([response async-context response-map]
    (let [{:keys [status headers body]} response-map]
      (when (nil? response)
@@ -131,8 +159,8 @@
      (when status
        (. response setStatus status))
      (set-headers response headers)
-     (let [output-stream (make-output-stream response async-context)]
-       (protocols/write-body-to-stream body response-map output-stream)))))
+     (let [output-stream (servlet/make-output-stream response async-context)]
+       (servlet/write-body-to-stream body response-map output-stream)))))
 
 (defn servlet/build-request-map
   ^{ :doc "Create the request map from the HttpServletRequest object." }
