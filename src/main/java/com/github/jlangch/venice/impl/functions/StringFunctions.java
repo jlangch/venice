@@ -188,6 +188,40 @@ public class StringFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+	public static VncFunction str_equals_ignore_case_Q = 
+		new VncFunction(
+				"str/equals-ignore-case?", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/equals-ignore-case? s1 s2)")		
+					.doc("Compares two strings ignoring case.  True if both are equal.")
+					.examples("(str/equals-ignore-case? \"abc\"  \"abC\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/equals-ignore-case?", args, 2);
+	
+				final VncVal v1 = args.first();
+				final VncVal v2 = args.second();
+			
+				if (v1 == Nil || v2 == Nil) {
+					return True;
+				}
+				else if (v1 != Nil || v2 != Nil) {
+					final String s1 = Coerce.toVncString(args.first()).getValue();
+					final String s2 = Coerce.toVncString(args.second()).getValue();
+					
+					return s1.equalsIgnoreCase(s2) ? True : False;
+				}
+				else {
+					return False;
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
 	public static VncFunction str_trim = 
 		new VncFunction(
@@ -1002,35 +1036,36 @@ public class StringFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-					.put("str/blank?",			str_blank_Q)
-					.put("str/starts-with?",	str_starts_with_Q)
-					.put("str/ends-with?",		str_ends_with_Q)
-					.put("str/contains?",		str_contains_Q)
-					.put("str/digit?",			str_digit_Q)
-					.put("str/letter?",			str_letter_Q)
-					.put("str/linefeed?",		str_linefeed_Q)
-					.put("str/whitespace?",		str_whitespace_Q)
-					.put("str/trim",			str_trim)
-					.put("str/trim-to-nil",		str_trim_to_nil)
-					.put("str/index-of",		str_index_of)
-					.put("str/last-index-of",	str_last_index_of)
-					.put("str/replace-first",	str_replace_first)
-					.put("str/replace-last",	str_replace_last)
-					.put("str/replace-all",		str_replace_all)
-					.put("str/lower-case",		str_lower_case)
-					.put("str/upper-case",		str_upper_case)
-					.put("str/join",			str_join)
-					.put("str/subs",			str_subs)
-					.put("str/split",			str_split)
-					.put("str/split-lines",		str_split_lines)
-					.put("str/format",			str_format)
-					.put("str/quote",			str_quote)
-					.put("str/truncate",		str_truncate)
-					.put("str/strip-start",		str_strip_start)
-					.put("str/strip-end",		str_strip_end)
-					.put("str/strip-indent",	str_strip_indent)
-					.put("str/strip-margin",	str_strip_margin)
-					.put("str/repeat",			str_repeat)
-					.put("str/char",			str_char)
+					.put("str/blank?",				str_blank_Q)
+					.put("str/starts-with?",		str_starts_with_Q)
+					.put("str/ends-with?",			str_ends_with_Q)
+					.put("str/contains?",			str_contains_Q)
+					.put("str/equals-ignore-case?",	str_equals_ignore_case_Q)			
+					.put("str/digit?",				str_digit_Q)
+					.put("str/letter?",				str_letter_Q)
+					.put("str/linefeed?",			str_linefeed_Q)
+					.put("str/whitespace?",			str_whitespace_Q)
+					.put("str/trim",				str_trim)
+					.put("str/trim-to-nil",			str_trim_to_nil)
+					.put("str/index-of",			str_index_of)
+					.put("str/last-index-of",		str_last_index_of)
+					.put("str/replace-first",		str_replace_first)
+					.put("str/replace-last",		str_replace_last)
+					.put("str/replace-all",			str_replace_all)
+					.put("str/lower-case",			str_lower_case)
+					.put("str/upper-case",			str_upper_case)
+					.put("str/join",				str_join)
+					.put("str/subs",				str_subs)
+					.put("str/split",				str_split)
+					.put("str/split-lines",			str_split_lines)
+					.put("str/format",				str_format)
+					.put("str/quote",				str_quote)
+					.put("str/truncate",			str_truncate)
+					.put("str/strip-start",			str_strip_start)
+					.put("str/strip-end",			str_strip_end)
+					.put("str/strip-indent",		str_strip_indent)
+					.put("str/strip-margin",		str_strip_margin)
+					.put("str/repeat",				str_repeat)
+					.put("str/char",				str_char)
 					.toMap();	
 }
