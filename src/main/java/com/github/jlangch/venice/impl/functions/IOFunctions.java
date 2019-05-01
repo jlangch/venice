@@ -450,38 +450,56 @@ public class IOFunctions {
 					.arglists("(io/copy-file input output)")		
 					.doc(
 						"Copies input to output. Returns nil or throws IOException. " + 
-						"Input and output must be a java.io.File.")
+						"Input must be a java.io.File, output must be a java.io.File or java.io.OutputStream.")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("io/copy-file", args, 2);
 	
-				if (!isJavaIoFile(args.first()) ) {
+				if (!isJavaIoFile(args.first())) {
 					throw new VncException(String.format(
 							"Function 'io/copy-file' does not allow %s as input",
 							Types.getType(args.first())));
 				}
-				if (!isJavaIoFile(args.second()) ) {
+
+				
+				final File from = (File)((VncJavaObject)args.first()).getDelegate();
+
+				if (isJavaIoFile(args.second())) {
+					final File to = (File)((VncJavaObject)args.second()).getDelegate();
+					
+					try {
+						Files.copy(from.toPath(), to.toPath());
+					}
+					catch(Exception ex) {
+						throw new VncException(
+								String.format(
+										"Failed to copy file %s to %s", 
+										from.getPath(), 
+										to.getPath()),
+								ex);
+					}
+				}
+				else if (Types.isVncJavaObject(args.second(), OutputStream.class)) {
+					final Object os = Coerce.toVncJavaObject(args.second());
+					try {
+						IOStreamUtil.copyFileToOS(from, (OutputStream)os);
+					}
+					catch(Exception ex) {
+						throw new VncException(
+								String.format(
+										"Failed to copy file %s to stream", 
+										from.getPath()),
+								ex);
+					}
+				}
+				else {
 					throw new VncException(String.format(
 							"Function 'io/copy-file' does not allow %s as output",
 							Types.getType(args.second())));
 				}
 	
 	
-				final File from = (File)((VncJavaObject)args.first()).getDelegate();
-				final File to = (File)((VncJavaObject)args.second()).getDelegate();
-				
-				try {
-					Files.copy(from.toPath(), to.toPath());
-				}
-				catch(Exception ex) {
-					throw new VncException(
-							String.format(
-									"Failed to copy file %s to %s", 
-									from.getPath(), 
-									to.getPath()),
-							ex);
-				}
 				
 				return Nil;
 			}
@@ -846,6 +864,49 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	
+	public static VncFunction io_copy_stream = 
+		new VncFunction(
+				"io/copy-stream", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/copy-file in-stream out-stream)")		
+					.doc(
+						"Copies input stream to an output stream. Returns nil or throws IOException. " + 
+						"Input and output must be a java.io.InputStream and java.io.OutputStream.")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/copy-stream", args, 2);
+	
+				final Object is = Coerce.toVncJavaObject(args.first());
+				final Object os = Coerce.toVncJavaObject(args.second());
+			
+				if (!(is instanceof InputStream) ) {
+					throw new VncException(String.format(
+							"Function 'io/copy-stream' does not allow %s as in-stream",
+							Types.getType(args.first())));
+				}
+				if (!(os instanceof OutputStream) ) {
+					throw new VncException(String.format(
+							"Function 'io/copy-stream' does not allow %s as out-stream",
+							Types.getType(args.second())));
+				}
+	
+				try {
+					IOStreamUtil.copy((InputStream)is, (OutputStream)os);
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed to copy stream");
+				}
+				
+				return Nil;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_slurp_stream = 
 		new VncFunction(
 				"io/slurp-stream", 
@@ -1141,6 +1202,7 @@ public class IOFunctions {
 					.put("io/slurp",					io_slurp)
 					.put("io/slurp-lines",				io_slurp_lines)
 					.put("io/spit",						io_spit)
+					.put("io/copy-stream",				io_copy_stream)
 					.put("io/slurp-stream",				io_slurp_stream)
 					.put("io/spit-stream",				io_spit_stream)
 					.put("io/mime-type",				io_mime_type)
