@@ -126,12 +126,12 @@
          (handler <>)
          (servlet/update-servlet-response response <>))))
 
-(defn- response-writer [response output-stream]
+(defn- servlet/response-writer [response output-stream]
   (if-let [charset (response/get-charset response)]
     (io/writer output-stream :encoding charset)
     (io/writer output-stream)))
 
-(defn- write-body-to-stream [body response output-stream]
+(defn- servlet/write-body-to-stream [body response output-stream]
   (case (type body)
     :venice.String        (try-with [wr (servlet/response-writer response output-stream)]
                             (. wr :write body))
@@ -158,7 +158,7 @@
        (throw (. :NullPointerException :new "Response map is nil")))
      (when status
        (. response setStatus status))
-     (set-headers response headers)
+     (servlet/set-response-headers response headers)
      (let [output-stream (servlet/make-output-stream response async-context)]
        (servlet/write-body-to-stream body response-map output-stream)))))
 
@@ -178,7 +178,7 @@
    :content-length     (servlet/get-content-length request)
    :character-encoding (. request :getCharacterEncoding)
    :ssl-client-cert    (servlet/get-client-cert request)
-   :body (. request :getInputStream)})
+   :body               (. request :getInputStream)})
 
  (defn servlet/merge-servlet-keys
    ^{ :doc "Associate servlet-specific keys with the request map." }
