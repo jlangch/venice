@@ -3,7 +3,7 @@
 ;; start a Tomcat server:
 ;;   (load-module :tomcat)
 ;;   (load-module :servlet)
-;;   (tc/run-tomcat-9 (servlet/create-servlet) "" "." {:await? false})
+;;   (tc/run-tomcat (servlet/create-servlet) {:await? false})
 ;;
 ;; required JARs on the classpath:
 ;;   - javax.annotation-api-1.3.2.jar
@@ -29,6 +29,10 @@
 (def tc/default-https-port 8443)
 
 (def tc/default-base-dir ".")
+
+(def tc/default-context-path "") ; root
+
+(def tc/default-context-doc-base ".")
 
 (def tc/http-connector "org.apache.coyote.http11.Http11NioProtocol")
 
@@ -141,10 +145,9 @@
     (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat))
 
-(defn tc/run-tomcat-8
+(defn tc/run-tomcat
   ^{ :doc (str/strip-indent """\
-        Start a Tomcat to serve given servlet with a context-path (use "" for
-        the root context) and a doc-base (defaults to ".") with supplied options
+        Start a Tomcat to serve given servlet with supplied options
         :base-dir - the server's base directory (default: ".")
         :await? - block the thread until server get shutdown command (default: true)
         :http? - create http connector (default: true)
@@ -161,42 +164,17 @@
         :max-threads - max number of threads in executor (default: 200)
         :min-spare-threads - minimum number of spare threads in executor (default: 25)
         :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)""" ) }
-  [servlet context-path doc-base options]
-  (let [server (tc/create-server options)
-        context (. server :addContext (coalesce context-path "") (coalesce doc-base "."))]
-    (. server :addServlet "" "venice-servlet" servlet)
-    (. context :addServletMapping "/*" "venice-servlet") ;
-    (. server :start)
-    (when (:await? options true)
-      (. (. server :getServer) :await ))
-  server))
+  ([servlet options]
+    (tc/run-tomcat servlet nil nil options))
 
-(defn tc/run-tomcat-9
-  ^{ :doc (str/strip-indent """\
-        Start a Tomcat to serve given servlet with a context-path (use "" for
-        the root context) and a doc-base (defaults to ".") with supplied options
-        :base-dir - the server's base directory (default: ".")
-        :await? - block the thread until server get shutdown command (default: true)
-        :http? - create http connector (default: true)
-        :port - the port to listen on http connector (default: 8080)
-        :https? - create https connector (default: false)
-        :https-port - the port to listen on https connector (default: 8443)
-        :keystore - path to keystore file include server certificate
-        :key-pass - password of keystore file
-        :tls-hostname - hostname to listen for https connector (default: _default_)
-        :tls-protocol - list of SSL/TLS protocol to support for https connector (default: TLS)
-        :tls-ciphers - list of SSL/TLS ciphers to support for https connector (default: too long. ECDHE-ECDSA and ECDHE-RSA ciphers)
-        :executor? - use executor (default: true)
-        :executor-name - name of executor (default: tc-executor)
-        :max-threads - max number of threads in executor (default: 200)
-        :min-spare-threads - minimum number of spare threads in executor (default: 25)
-        :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)""" ) }
-  [servlet context-path doc-base options]
-  (let [server (tc/create-server options)
-        context (. server :addContext (coalesce context-path "") (coalesce doc-base "."))]
-    (. server :addServlet "" "venice-servlet" servlet)
-    (. context :addServletMappingDecoded "/*" "venice-servlet" false) ;
-    (. server :start)
-    (when (:await? options true)
-      (. (. server :getServer) :await ))
-  server))
+  ([servlet context-path context-doc-base options]
+    (let [server (tc/create-server options)
+          context (. server :addContext
+                            (coalesce context-path tc/default-context-path)
+                            (coalesce context-doc-base tc/default-context-doc-base))]
+      (. server :addServlet "" "venice-servlet" servlet)
+      (. context :addServletMappingDecoded "/*" "venice-servlet" false) ;
+      (. server :start)
+      (when (:await? options true)
+        (. (. server :getServer) :await))
+    server)))

@@ -56,8 +56,14 @@
 (defn servlet/reply-not-found [req res]
   (. res :setStatus (:SC_NOT_FOUND servlet/response-codes))
   (. res :setContentType "text/html")
-  (doto (. res :getWriter)
-        (. :println "<html><body><p>Not Found</p></body></html>")))
+  (let [w (. res :getWriter)]
+        (. w :println "<html><body><p>Not Found</p></body></html>")))
+
+(defn servlet/reply-html [req res html]
+  (. res :setStatus (:SC_OK servlet/response-codes))
+  (. res :setContentType "text/html")
+  (let [w (. res :getWriter)]
+        (. w :println html)))
 
 (defn servlet/create-servlet
   []
@@ -68,7 +74,7 @@
 
       	:destroy (fn [] nil)
 
-      	:doGet (fn [req res] (servlet/reply-not-found req res))
+      	:doGet (fn [req res] (servlet/reply-html req res "Hello World"))
 
       	:doHead (fn [req res] (rservlet/eply-not-found req res))
 

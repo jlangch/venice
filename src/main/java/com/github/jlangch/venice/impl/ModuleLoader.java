@@ -58,6 +58,10 @@ public class ModuleLoader {
 		}
 	}
 
+	public static boolean loaded(final String module) {
+		return modules.containsKey(module);
+	}
+
 	public static String loadVeniceResource(final String resource) {
 		// For security reasons just allow to load venice scripts!
 		if (!resource.endsWith(".venice")) {
