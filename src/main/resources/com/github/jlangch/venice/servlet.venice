@@ -208,7 +208,7 @@
      (servlet/make-blocking-service-method handler))))
 
 (defn- servlet/response-writer [response output-stream]
-  (if-let [charset (servlet/response-get-charset response)]
+  (if-let [charset (servlet/ring-get-charset response)]
     (io/writer output-stream :encoding charset)
     (io/writer output-stream)))
 
