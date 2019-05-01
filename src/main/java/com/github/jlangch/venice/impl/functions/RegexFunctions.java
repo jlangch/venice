@@ -155,6 +155,38 @@ public class RegexFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction find = 
+			new VncFunction(
+					"regex/find", 
+					VncFunction
+						.meta()
+						.module("regex")
+						.arglists("(regex/find matcher)")		
+						.doc("Returns the next regex match")
+						.examples(
+							"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+							"   (println (regex/find m))                               \n" +
+							"   (println (regex/find m))                               \n" +
+							"   (println (regex/find m))                               \n" +
+							"   (println (regex/find m))                               \n" +
+							"   (println (regex/find m)))                              \n")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertArity("regex/find", args, 1);
+		
+					final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
+					if (m.find()) {
+						return new VncString(m.group());
+					}
+					else {
+						return Nil;
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction reset = 
 		new VncFunction(
 				"regex/reset", 
@@ -248,6 +280,7 @@ public class RegexFunctions {
 			new VncHashMap.Builder()
 					.put("regex/pattern",		pattern)
 					.put("regex/matcher",		matcher)
+					.put("regex/find",			find)
 					.put("regex/reset",			reset)
 					.put("regex/find?",			find_Q)
 					.put("regex/matches?",		matches_Q)

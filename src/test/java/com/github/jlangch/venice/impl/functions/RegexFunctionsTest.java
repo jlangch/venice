@@ -81,6 +81,21 @@ public class RegexFunctionsTest {
 	}
 
 	@Test
+	public void test_regex_find() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+				"   [ (regex/find m)                                       \n" +
+				"     (regex/find m)                                       \n" +
+				"     (regex/find m)                                       \n" +
+				"     (regex/find m)                                       \n" +
+				"     (regex/find m) ] )                                     ";
+		
+		assertEquals("[672, 345, 456, 3212, null]", venice.eval(script).toString());
+	}
+
+	@Test
 	public void test_regex_group() {
 		final Venice venice = new Venice();
 		
