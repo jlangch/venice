@@ -174,7 +174,8 @@
         (proxify :Runnable
                  {:run (fn [] (. context :complete))} )))))
 
-(defn- ring/make-blocking-service-method [handler]
+(defn- ring/make-blocking-service-method
+  [handler]
   (fn [servlet request response]
     (-<> request
          (ring/build-request-map <>)
@@ -182,7 +183,8 @@
          (handler <>)
          (ring/update-servlet-response response <>))))
 
-(defn- ring/make-async-service-method [handler]
+(defn- ring/make-async-service-method
+  handler]
   (fn [servlet request response]
     (let [async-context (. request :startAsync )]
       (handler
@@ -207,7 +209,8 @@
      (ring/make-async-service-method handler)
      (ring/make-blocking-service-method handler))))
 
-(defn- ring/write-body-to-stream [body response output-stream]
+(defn- ring/write-body-to-stream
+  [body response output-stream]
   (case (type body)
     :venice.String        (try-with [os output-stream]
                             (if-let [charset (ring/get-charset response)]
