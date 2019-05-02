@@ -11,6 +11,7 @@ Venice supports
 
 * [JSON](ext-json.md)
 * [Charts](ext-charts.md)
+* [Tomcat WEB Server](ext-tomcat.md)
 * [WebDAV](ext-webdav.md)
 
 through extension modules
