@@ -55,7 +55,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doGet(req, resp);
+		delegate.doGet(req, resp, this);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doHead(req, resp);
+		delegate.doHead(req, resp, this);
 	}
 	
 	@Override
@@ -71,7 +71,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doPost(req, resp);
+		delegate.doPost(req, resp, this);
 	}
 	
 	@Override
@@ -79,7 +79,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doPut(req, resp);
+		delegate.doPut(req, resp, this);
 	}
 	
 	@Override
@@ -87,7 +87,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doDelete(req, resp);
+		delegate.doDelete(req, resp, this);
 	}
 	
 	@Override
@@ -95,7 +95,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doOptions(req, resp);
+		delegate.doOptions(req, resp, this);
 	}
 	
 	@Override
@@ -103,7 +103,7 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
-		delegate.doTrace(req, resp);
+		delegate.doTrace(req, resp, this);
 	}
 
 	@Override

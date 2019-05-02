@@ -115,7 +115,7 @@
 (defn servlet/ring-get-charset
   ^{ :doc (str/strip-indent """\
         Gets the character encoding of a Ring response.
-        E.g.: Content-Type: text/html; charset=utf-8 """ }
+        E.g.: Content-Type: text/html; charset=utf-8 """ ) }
   [res]
   (if-let [content-type (servlet/ring-get-header res "Content-Type")]
     (second (regex/find servlet/regex-charset content-type))))
@@ -268,7 +268,7 @@
           {:servlet              servlet
            :servlet-request      request
            :servlet-response     response
-;           :servlet-context      (. servlet :getServletContext)
+           :servlet-context      (. servlet :getServletContext)
            :servlet-context-path (. request :getContextPath)}))
 
 
@@ -290,10 +290,10 @@
         (. w :println html)))
 
 (defn servlet/handle
-  [method req res handler]
+  [method req res servlet handler]
   (let [h_req (-> req
                   (servlet/build-request-map)
-                  (servlet/merge-servlet-keys nil req res)
+                  (servlet/merge-servlet-keys servlet req res)
                   (assoc :method method))
         h_res (handler h_req)
         h_header (dissoc (:headers h_res))]
@@ -306,11 +306,11 @@
     (proxify :IVeniceServlet
       { :init (fn [config] nil)
         :destroy (fn [] nil)
-        :doGet (fn [req res] (servlet/handle :get req res handler))
-        :doHead (fn [req res] (servlet/handle :head req res handler))
-        :doPost (fn [req res] (servlet/handle :post req res handler))
-        :doPut (fn [req res] (servlet/handle :put req res handler))
-        :doDelete (fn [req res] (servlet/handle :delete req res handler))
-        :doOptions (fn [req res] (servlet/handle :options req res handler))
-        :doTrace (fn [req res] (servlet/handle :trace req res handler))
+        :doGet (fn [req res servlet] (servlet/handle :get req res servlet handler))
+        :doHead (fn [req res servlet] (servlet/handle :head req res servlet handler))
+        :doPost (fn [req res servlet] (servlet/handle :post req res servlet handler))
+        :doPut (fn [req res servlet] (servlet/handle :put req res servlet handler))
+        :doDelete (fn [req res servlet] (servlet/handle :delete req res servlet handler))
+        :doOptions (fn [req res servlet] (servlet/handle :options req res servlet handler))
+        :doTrace (fn [req res servlet] (servlet/handle :trace req res servlet handler))
         :getLastModified (fn [] -1) })))
