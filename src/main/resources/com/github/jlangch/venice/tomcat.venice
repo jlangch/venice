@@ -146,7 +146,7 @@
     (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat))
 
-(defn reply-text[res status text]
+(defn tc/reply-text[res status text]
   (. res :setStatus status)
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
