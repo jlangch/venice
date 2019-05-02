@@ -5674,6 +5674,25 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+	public static VncFunction java_obj_Q = 
+		new VncFunction(
+				"java-obj?", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(java-obj? obj)")		
+					.doc("Returns true if obj is a Java object")
+					.examples("(java-obj? (. :java.math.BigInteger :new \"0\"))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("map?", args, 1);
+				
+				return Types.isVncJavaObject(args.first()) ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 			
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncSequence(value)) {
@@ -5909,6 +5928,8 @@ public class CoreFunctions {
 				.put("type",				type)
 				.put("instance?",			instance_Q)	
 
+				.put("java-obj?",			java_obj_Q)	
+				
 				.toMap();
 
 	

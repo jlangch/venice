@@ -23,7 +23,8 @@ Type `ctrl-c` in the REPL to shutdown the server.
 ## Define a servlet
 
 ```clojure
-(defn reply-text[res status text]
+(defn send-text
+  [res status text]
   (. res :setStatus status)
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
@@ -35,12 +36,12 @@ Type `ctrl-c` in the REPL to shutdown the server.
     (proxify :IVeniceServlet
       { :init (fn [config] nil)
         :destroy (fn [] nil)
-        :doGet (fn [req res servlet] (reply-text res 200 "Hello World"))
-        :doHead (fn [req res servlet] (reply-text res 404 "Not Found"))
-        :doPost (fn [req res servlet] (reply-text res 404 "Not Found"))
-        :doPut (fn [req res servlet] (reply-text res 404 "Not Found"))
-        :doDelete (fn [req res servlet] (reply-text res 404 "Not Found"))
-        :doOptions (fn [req res servlet] (reply-text res 404 "Not Found"))
-        :doTrace (fn [req res servlet] (reply-text res 404 "Not Found"))
+        :doGet (fn [req res servlet] (send-text res 200 "Hello World"))
+        :doHead (fn [req res servlet] (send-text res 404 "Not Found"))
+        :doPost (fn [req res servlet] (send-text res 404 "Not Found"))
+        :doPut (fn [req res servlet] (send-text res 404 "Not Found"))
+        :doDelete (fn [req res servlet] (send-text res 404 "Not Found"))
+        :doOptions (fn [req res servlet] (send-text res 404 "Not Found"))
+        :doTrace (fn [req res servlet] (send-text res 404 "Not Found"))
         :getLastModified (fn [] -1) })))
 ```
