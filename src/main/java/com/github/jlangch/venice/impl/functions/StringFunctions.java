@@ -594,7 +594,10 @@ public class StringFunctions {
 					.module("str")
 					.arglists("(str/split s regex)")		
 					.doc("Splits string on a regular expression.")
-					.examples("(str/split \"abc , def , ghi\" \"[ *],[ *]\")")
+					.examples(
+						"(str/split \"abc,def,ghi\" \",\")",
+						"(str/split \"abc , def , ghi\" \"[ *],[ *]\")",
+						"(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

@@ -3675,6 +3675,47 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction third = 
+		new VncFunction(
+				"third", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(third coll)")		
+					.doc("Returns the third element of coll.")
+					.examples(
+						"(third nil)",
+						"(third [])",
+						"(second [1 2 3])",
+						"(third '())",
+						"(third '(1 2 3))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("third", args, 1);
+	
+	
+				final VncVal val = args.first();
+				if (val == Nil) {
+					return Nil;
+				}
+				
+				if (Types.isVncSequence(val)) {
+					return ((VncSequence)val).third();
+				}
+				else if (Types.isVncString(val)) {
+					return ((VncString)val).nth(2);
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'third'",
+							Types.getType(val)));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction nth = 
 		new VncFunction(
 				"nth", 
@@ -4800,7 +4841,9 @@ public class CoreFunctions {
 						"Applys f to the set of first items of each coll, followed by applying " + 
 						"f to the set of second items in each coll, until any one of the colls " + 
 						"is exhausted.  Any remaining items in other colls are ignored. ")
-					.examples("(map inc [1 2 3 4])")
+					.examples(
+						"(map inc [1 2 3 4])",
+						"(map + [1 2 3 4] [10 20 30 40])")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -4857,7 +4900,9 @@ public class CoreFunctions {
 						"to the set of first items of each coll, followed by applying " + 
 						"f to the set of second items in each coll, until any one of the colls " + 
 						"is exhausted.  Any remaining items in other colls are ignored. ")
-					.examples("(mapv inc [1 2 3 4])")
+					.examples(
+						"(mapv inc [1 2 3 4])",
+						"(mapv + [1 2 3 4] [10 20 30 40])")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -5867,6 +5912,7 @@ public class CoreFunctions {
 				.put("nth",					nth)
 				.put("first",				first)
 				.put("second",				second)
+				.put("third",				third)
 				.put("last",				last)
 				.put("rest",				rest)
 				.put("butlast",				butlast)
