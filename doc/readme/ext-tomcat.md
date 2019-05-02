@@ -1,4 +1,4 @@
-# WebDAV
+# Apache Tomcat
 
 The Apache Tomcat extension module provides starting an embedded Tomcat server.
 
