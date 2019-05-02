@@ -11,7 +11,7 @@
 ;; (defn hello-world-handler [request]
 ;;   { :status 200
 ;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
-;;     :body "Hello world" })
+;;     :body "Hello World" })
 ;;
 ;; (tc/run-tomcat (ring/create-servlet hello-world-handler) {:await? false})
 
@@ -219,10 +219,13 @@
                             (io/copy-stream body os))
     :java.io.File         (try-with [os output-stream]
                             (io/copy-file body os))
-    :default              (. :RuntimeException :new
-                              (str
-                                "Response stream not supported for body type "
-                                (type body)))))
+    :default              (try
+                            (. output-stream :close)
+                            (finally
+                              (. :RuntimeException :new
+                                (str
+                                  "Response stream not supported for body type "
+                                  (type body)))))))
 
 (defn ring/update-servlet-response
   ^{ :doc "Update the HttpServletResponse using a response map." }
@@ -274,15 +277,25 @@
 ;; Servlet
 ;; -----------------------------------------------------------------------------
 
+(defn- tc/send-not-found
+  [res]
+  (. res :setStatus 404)
+  (. res :setContentType "text/html")
+  (-> (. res :getWriter)
+      (. :println (str "<html><body><p>Not Found</p></body></html>"))))
+
+
 (defn ring/handle
   [req res servlet handler]
   (let [h_req (-> req
                   (ring/build-request-map)
                   (ring/merge-servlet-keys servlet req res))
-        h_res (handler h_req)
-        h_header (dissoc (:headers h_res))]
-    (ring/set-response-headers res h_header)
-    (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream))))
+        h_res (handler h_req)]
+    (when-not h_res
+      (tc/send-not-found res))
+    (when h_res
+      (ring/set-response-headers res (dissoc (:headers h_res)))
+      (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream)))))
 
 (defn ring/create-servlet
   [handler]
