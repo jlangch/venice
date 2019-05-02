@@ -15,8 +15,3 @@ Venice supports
 * [WebDAV](ext-webdav.md)
 
 through extension modules
-  
-
-
-
-
