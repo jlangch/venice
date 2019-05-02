@@ -1,4 +1,20 @@
-;; J2EE Servlet
+;; Venice ring
+;;
+;; Venice Ring is a port of Clojure's Ring web applications library.
+;;
+;; -----------------------------------------------------------------------------
+;; Example
+;; -----------------------------------------------------------------------------
+;; (load-module :tomcat)
+;; (load-module :ring)
+;;
+;; (defn hello-world-handler [request]
+;;   { :status 200
+;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
+;;     :body "Hello world" })
+;;
+;; (tc/run-tomcat (ring/create-servlet hello-world-handler) {:await? false})
+
 
 (import :com.github.jlangch.venice.impl.servlet.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.VeniceServlet
@@ -13,7 +29,7 @@
         :javax.servlet.http.HttpServletRequest
         :javax.servlet.http.HttpServletResponse)
 
-(def servlet/response-codes
+(def ring/response-codes
    {  :SC_CONTINUE                          100
 
       :SC_OK                                200
@@ -65,12 +81,12 @@
 ;; Java Interop
 ;; -----------------------------------------------------------------------------
 
-(defn servlet/java-enumeration-to-list
+(defn ring/java-enumeration-to-list
   ^{ :doc "Converts a :java.util.Enumeration to a list" }
   [enumeration]
   (into '() (. :Collections :list enumeration)))
 
-(defn servlet/java-stream-to-writer
+(defn ring/java-stream-to-writer
   ^{ :doc "Converts a Java OutputStream to a BufferedWriter" }
   [stream encoding]
   (. :BufferedWriter :new (. :OutputStreamWriter :new stream encoding)))
@@ -81,10 +97,10 @@
 ;; Header utils
 ;; -----------------------------------------------------------------------------
 (def ^{:doc "Pattern for pulling the charset out of the content-type header" }
-  servlet/regex-charset
+  ring/regex-charset
   (regex/pattern ".*charset=([^\\s;]+).*"))
 
-(defn servlet/ring-find-header
+(defn ring/find-header
   ^{ :doc (str/strip-indent """\
         Looks up a header in a Ring response (or request) case insensitively,
         returning the header map entry, or nil if not present.""" ) }
@@ -95,13 +111,13 @@
          (filter #(str/equals-ignore-case? header-name (key %)))
          (first))))
 
-(defn servlet/ring-get-charset
+(defn ring/get-charset
   ^{ :doc (str/strip-indent """\
         Gets the character encoding of a Ring response.
         E.g.: Content-Type: text/html; charset=utf-8""" ) }
   [res]
-  (if-let [content-type (servlet/ring-find-header res "Content-Type")]
-    (let [m (regex/matcher servlet/regex-charset content-type)]
+  (if-let [content-type (ring/find-header res "Content-Type")]
+    (let [m (regex/matcher ring/regex-charset content-type)]
       (when (regex/matches? m)
         (regex/group m 1)))))
 
@@ -111,7 +127,7 @@
 ;; Request/Response utils
 ;; -----------------------------------------------------------------------------
 
-(defn- servlet/get-headers
+(defn- ring/get-headers
   ^{ :doc "Creates a name/value map of all the request headers." }
   [request]
   (reduce
@@ -119,23 +135,23 @@
       (assoc headers
         (str/lower-case name)
         (->> (. request :getHeaders name)
-             (servlet/java-enumeration-to-list) ;
+             (ring/java-enumeration-to-list) ;
              (str/join ","))))
     {}
-    (servlet/java-enumeration-to-list (. request :getHeaderNames))))
+    (ring/java-enumeration-to-list (. request :getHeaderNames))))
 
-(defn- servlet/get-content-length
+(defn- ring/get-content-length
   ^{ :doc "Returns the content length, or nil if there is no content." }
   [request]
   (let [length (. request :getContentLength)]
     (if (>= length 0) length nil)))
 
-(defn- servlet/get-client-cert
+(defn- ring/get-client-cert
   ^{ :doc "Returns the SSL client certificate of the request, if one exists." }
   [request]
   (first (. request :getAttribute "javax.servlet.request.X509Certificate")))
 
-(defn- servlet/set-response-headers
+(defn- ring/set-response-headers
   ^{ :doc "Update a HttpServletResponse with a map of headers." }
   [response headers]
   (docoll
@@ -148,7 +164,7 @@
   (if-let [content-type (get headers "Content-Type")]
     (. response :setContentType content-type)))
 
-(defn- servlet/make-output-stream
+(defn- ring/make-output-stream
   [response  async-context]
   (let [os (. response :getOutputStream)]
     (if (nil? async-context)
@@ -158,63 +174,60 @@
         (proxify :Runnable
                  {:run (fn [] (. context :complete))} )))))
 
-(defn- servlet/make-blocking-service-method [handler]
+(defn- ring/make-blocking-service-method [handler]
   (fn [servlet request response]
     (-<> request
-         (servlet/build-request-map <>)
-         (servlet/merge-servlet-keys <> servlet request response)
+         (ring/build-request-map <>)
+         (ring/merge-servlet-keys <> servlet request response)
          (handler <>)
-         (servlet/update-servlet-response response <>))))
+         (ring/update-servlet-response response <>))))
 
-(defn- servlet/make-async-service-method [handler]
+(defn- ring/make-async-service-method [handler]
   (fn [servlet request response]
     (let [async-context (. request :startAsync )]
       (handler
        (-> request
-           (servlet/build-request-map)
-           (servlet/merge-servlet-keys servlet request response))
+           (ring/build-request-map)
+           (ring/merge-servlet-keys servlet request response))
        (fn [response-map]
-         (servlet/update-servlet-response response async-context response-map))
+         (ring/update-servlet-response response async-context response-map))
        (fn [exception]
          (. response :sendError  500 (. exception :getMessage))
          (. async-context :complete ))))))
 
-(defn servlet/make-service-method
+(defn ring/make-service-method
   ^{ :doc (str/strip-indent """\
         Turns a handler into a function that takes the same arguments
         and has the same return value as the service method in the
         HttpServlet class.""") }
   ([handler]
-   (servlet/make-service-method handler {}))
+   (ring/make-service-method handler {}))
   ([handler options]
    (if (:async? options)
-     (servlet/make-async-service-method handler)
-     (servlet/make-blocking-service-method handler))))
+     (ring/make-async-service-method handler)
+     (ring/make-blocking-service-method handler))))
 
-(defn- servlet/response-writer [response output-stream]
-  (if-let [charset (servlet/ring-get-charset response)]
-    (io/writer output-stream :encoding charset)
-    (io/writer output-stream)))
-
-(defn- servlet/write-body-to-stream [body response output-stream]
+(defn- ring/write-body-to-stream [body response output-stream]
   (case (type body)
-    :venice.String        (try-with [wr (servlet/response-writer response output-stream)]
-                            (. wr :write body))
+    :venice.String        (try-with [os output-stream]
+                            (if-let [charset (ring/get-charset response)]
+                              (io/spit-stream os body :flush true :encoding charset)
+                              (io/spit-stream os body :flush true)))
     :venice.ByteBuffer    (try-with [os output-stream]
-                            (. os :write body))
+                            (io/spit-stream os body :flush true))
     :java.io.InputStream  (try-with [os output-stream]
                             (io/copy-stream body os))
     :java.io.File         (try-with [os output-stream]
                             (io/copy-file body os))
     :default              (. :RuntimeException :new
                               (str
-                                "Response stream supported for body type "
+                                "Response stream not supported for body type "
                                 (type body)))))
 
-(defn servlet/update-servlet-response
+(defn ring/update-servlet-response
   ^{ :doc "Update the HttpServletResponse using a response map." }
   ([response response-map]
-   (servlet/update-servlet-response response nil response-map))
+   (ring/update-servlet-response response nil response-map))
   ([response async-context response-map]
    (let [{:keys [status headers body]} response-map]
      (when (nil? response)
@@ -223,11 +236,11 @@
        (throw (. :NullPointerException :new "Response map is nil")))
      (when status
        (. response setStatus status))
-     (servlet/set-response-headers response headers)
-     (let [output-stream (servlet/make-output-stream response async-context)]
-       (servlet/write-body-to-stream body response-map output-stream)))))
+     (ring/set-response-headers response headers)
+     (let [output-stream (ring/make-output-stream response async-context)]
+       (ring/write-body-to-stream body response-map output-stream)))))
 
-(defn servlet/build-request-map
+(defn ring/build-request-map
   ^{ :doc "Create the request map from the HttpServletRequest object." }
   [request]
   {:server-port        (. request :getServerPort)
@@ -238,14 +251,14 @@
    :scheme             (keyword (. request :getScheme))
    :request-method     (keyword (str/lower-case (. request :getMethod)))
    :protocol           (. request :getProtocol)
-   :headers            (servlet/get-headers request)
+   :headers            (ring/get-headers request)
    :content-type       (. request :getContentType)
-   :content-length     (servlet/get-content-length request)
+   :content-length     (ring/get-content-length request)
    :character-encoding (. request :getCharacterEncoding)
-   :ssl-client-cert    (servlet/get-client-cert request)
+   :ssl-client-cert    (ring/get-client-cert request)
    :body               (. request :getInputStream)})
 
- (defn servlet/merge-servlet-keys
+ (defn ring/merge-servlet-keys
    ^{ :doc "Associate servlet-specific keys with the request map." }
    [request-map servlet request response]
    (merge request-map
@@ -261,27 +274,27 @@
 ;; Servlet
 ;; -----------------------------------------------------------------------------
 
-(defn servlet/handle
+(defn ring/handle
   [req res servlet handler]
   (let [h_req (-> req
-                  (servlet/build-request-map)
-                  (servlet/merge-servlet-keys servlet req res))
+                  (ring/build-request-map)
+                  (ring/merge-servlet-keys servlet req res))
         h_res (handler h_req)
         h_header (dissoc (:headers h_res))]
-    (servlet/set-response-headers res h_header)
-    (servlet/write-body-to-stream (:body h_res) res (. res :getOutputStream))))
+    (ring/set-response-headers res h_header)
+    (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream))))
 
-(defn servlet/create-servlet
+(defn ring/create-servlet
   [handler]
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
       { :init (fn [config] nil)
         :destroy (fn [] nil)
-        :doGet (fn [req res servlet] (servlet/handle req res servlet handler))
-        :doHead (fn [req res servlet] (servlet/handle req res servlet handler))
-        :doPost (fn [req res servlet] (servlet/handle req res servlet handler))
-        :doPut (fn [req res servlet] (servlet/handle req res servlet handler))
-        :doDelete (fn [req res servlet] (servlet/handle req res servlet handler))
-        :doOptions (fn [req res servlet] (servlet/handle req res servlet handler))
-        :doTrace (fn [req res servlet] (servlet/handle req res servlet handler))
+        :doGet (fn [req res servlet] (ring/handle req res servlet handler))
+        :doHead (fn [req res servlet] (ring/handle req res servlet handler))
+        :doPost (fn [req res servlet] (ring/handle req res servlet handler))
+        :doPut (fn [req res servlet] (ring/handle req res servlet handler))
+        :doDelete (fn [req res servlet] (ring/handle req res servlet handler))
+        :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
+        :doTrace (fn [req res servlet] (ring/handle req res servlet handler))
         :getLastModified (fn [] -1) })))
