@@ -884,6 +884,9 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/copy-stream"));
 		stream.addItem(getDocItem("io/slurp-stream"));
 		stream.addItem(getDocItem("io/spit-stream"));
+		stream.addItem(getDocItem("io/wrap-os-with-buffered-writer"));
+		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
+		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
 
 		final DocSection other = new DocSection("other");
 		all.addSection(other);

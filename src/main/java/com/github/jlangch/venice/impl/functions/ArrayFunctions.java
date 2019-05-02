@@ -509,7 +509,60 @@ public class ArrayFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
+
+	public static VncFunction byte_array = 
+		new VncFunction(
+				"byte-array", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(byte-array coll)", 
+						"(byte-array len)", 
+						"(byte-array len byte-val)")		
+					.doc(
+						"Returns an array of Java primitive bytes containing the contents of coll "
+							+ "or returns an array with the given length and optional init value")
+					.examples(
+						"(byte-array '(1 2 3))",
+						"(byte-array 10)",
+						"(byte-array 10 42)") 
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {			
+				assertArity("byte-array", args, 1, 2);
+
+				final VncVal arg = args.first();
+				
+				if (Types.isVncLong(arg)) {
+					final byte[] arr = new byte[((VncLong)arg).getIntValue()];
+					if (args.size() == 2) {
+						Arrays.fill(arr, Numeric.toLong(args.second()).getValue().byteValue());
+					}
+					return new VncJavaObject(arr);
+				}
+				else {
+					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					
+					final byte[] arr = new byte[list.size()];
+					
+					int ii=0;
+					for(VncVal v : list) {
+						if (v == Nil || !Types.isVncNumber(v)) {
+							throw new VncException(String.format(
+									"The value at pos %d in the collection is not a number",
+									ii));
+						}
+						arr[ii++] = Numeric.toLong(v).getValue().byteValue();
+					}
+					
+					return new VncJavaObject(arr);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction int_array = 
 		new VncFunction(
 				"int-array", 
@@ -783,6 +836,7 @@ public class ArrayFunctions {
 					.put("make-array",		make_array)
 					.put("object-array",	object_array)
 					.put("string-array",	string_array)
+					.put("byte-array",		byte_array)
 					.put("int-array",		int_array)
 					.put("long-array",		long_array)
 					.put("float-array",		float_array)

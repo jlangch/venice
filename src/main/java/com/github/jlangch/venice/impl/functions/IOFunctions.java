@@ -28,9 +28,14 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -965,7 +970,7 @@ public class IOFunctions {
 
 	public static VncFunction io_spit_stream = 
 		new VncFunction(
-				"spit-stream", 
+				"io/spit-stream", 
 				VncFunction
 					.meta()
 					.module("io")
@@ -1032,6 +1037,114 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_wrap_os_with_buffered_writer = 
+		new VncFunction(
+				"io/wrap-os-with-buffered-writer", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")		
+					.doc("Wraps an OutputStream with a BufferedWriter using an optional encoding (defaults to UTF-8).")
+					.examples(
+						"(do                                                         \n" +
+						"   (import :java.io.ByteArrayOutputStream)                  \n" +
+						"   (let [os (. :ByteArrayOutputStream :new)                 \n" +
+						"         wr (io/wrap-os-with-buffered-writer os \"utf-8\")] \n" +
+						"      (. wr :write \"line 1\")                              \n" +
+						"      (. wr :newLine)                                       \n" +
+						"      (. wr :write \"line 2\")                              \n" +
+						"      (. wr :flush)                                         \n" +
+						"      (. os :toByteArray)))                                   ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/wrap-os-with-buffered-writer", args, 1, 2);
+	
+				try {
+					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+						
+					return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, encoding)));
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_wrap_os_with_print_writer = 
+		new VncFunction(
+				"io/wrap-os-with-printwriter", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/wrap-os-with-print-writer os encoding?)")		
+					.doc("Wraps an OutputStream with a PrintWriter using an optional encoding (defaults to UTF-8).")
+					.examples(
+						"(do                                                      \n" +
+						"   (import :java.io.ByteArrayOutputStream)               \n" +
+						"   (let [os (. :ByteArrayOutputStream :new)              \n" +
+						"         wr (io/wrap-os-with-print-writer os \"utf-8\")] \n" +
+						"      (. wr :println \"line 1\")                         \n" +
+						"      (. wr :println \"line 2\")                         \n" +
+						"      (. wr :flush)                                      \n" +
+						"      (. os :toByteArray)))                                ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/wrap-os-with-print-writer", args, 1, 2);
+	
+				try {
+					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+						
+					return new VncJavaObject(new PrintWriter(new OutputStreamWriter(os, encoding)));
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_wrap_is_with_buffered_reader = 
+			new VncFunction(
+					"io/wrap-is-with-buffered-reader", 
+					VncFunction
+						.meta()
+						.module("io")
+						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")		
+						.doc("Wraps an InputStream with a BufferedReader using an optional encoding (defaults to UTF-8).")
+						.examples(
+							"(do                                                                          \n" +
+							"   (import :java.io.ByteArrayInputStream)                                    \n" +						
+							"   (let [data (byte-array [108 105 110 101 32 49 10 108 105 110 101 32 50])  \n" +
+							"         is (. :ByteArrayInputStream :new data)                              \n" +
+							"         rd (io/wrap-is-with-buffered-reader is \"utf-8\")]                  \n" +
+							"      (println (. rd :readLine))                                             \n" +
+							"      (println (. rd :readLine))))                                             ")
+						.build()
+			) {	
+				public VncVal apply(final VncList args) {
+					assertArity("io/wrap-is-with-buffered-reader", args, 1, 2);
+		
+					try {
+						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+							
+						return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
+					} 
+					catch (Exception ex) {
+						throw new VncException(ex.getMessage(), ex);
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+		
 	public static VncFunction io_mime_type = 
 		new VncFunction(
 				"io/mime-type", 
@@ -1181,33 +1294,36 @@ public class IOFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-					.put("io/file",						io_file)
-					.put("io/file?",					io_file_Q)
-					.put("io/file-path",				io_file_path)
-					.put("io/file-parent",				io_file_parent)
-					.put("io/file-name",				io_file_name)
-					.put("io/file-size",				io_file_size)
-					.put("io/exists-file?",				io_exists_file_Q)
-					.put("io/exists-dir?",				io_exists_dir_Q)
-					.put("io/list-files",				io_list_files)
-					.put("io/delete-file",				io_delete_file)
-					.put("io/delete-file-on-exit",		io_delete_file_on_exit)
-					.put("io/copy-file",				io_copy_file)
-					.put("io/move-file",				io_move_file)
-					.put("io/mkdir",					io_mkdir)
-					.put("io/mkdirs",					io_mkdirs)
-					.put("io/temp-file",				io_temp_file)
-					.put("io/tmp-dir",					io_tmp_dir)
-					.put("io/user-dir",					io_user_dir)
-					.put("io/slurp",					io_slurp)
-					.put("io/slurp-lines",				io_slurp_lines)
-					.put("io/spit",						io_spit)
-					.put("io/copy-stream",				io_copy_stream)
-					.put("io/slurp-stream",				io_slurp_stream)
-					.put("io/spit-stream",				io_spit_stream)
-					.put("io/mime-type",				io_mime_type)
-					.put("io/default-charset",			io_default_charset)
-					.put("io/load-classpath-resource",	io_load_classpath_resource)
+					.put("io/file",							io_file)
+					.put("io/file?",						io_file_Q)
+					.put("io/file-path",					io_file_path)
+					.put("io/file-parent",					io_file_parent)
+					.put("io/file-name",					io_file_name)
+					.put("io/file-size",					io_file_size)
+					.put("io/exists-file?",					io_exists_file_Q)
+					.put("io/exists-dir?",					io_exists_dir_Q)
+					.put("io/list-files",					io_list_files)
+					.put("io/delete-file",					io_delete_file)
+					.put("io/delete-file-on-exit",			io_delete_file_on_exit)
+					.put("io/copy-file",					io_copy_file)
+					.put("io/move-file",					io_move_file)
+					.put("io/mkdir",						io_mkdir)
+					.put("io/mkdirs",						io_mkdirs)
+					.put("io/temp-file",					io_temp_file)
+					.put("io/tmp-dir",						io_tmp_dir)
+					.put("io/user-dir",						io_user_dir)
+					.put("io/slurp",						io_slurp)
+					.put("io/slurp-lines",					io_slurp_lines)
+					.put("io/spit",							io_spit)
+					.put("io/copy-stream",					io_copy_stream)
+					.put("io/slurp-stream",					io_slurp_stream)
+					.put("io/spit-stream",					io_spit_stream)
+					.put("io/wrap-os-with-buffered-writer",	io_wrap_os_with_buffered_writer)					
+					.put("io/wrap-os-with-print-writer",	io_wrap_os_with_print_writer)					
+					.put("io/wrap-is-with-buffered-reader",	io_wrap_is_with_buffered_reader)					
+					.put("io/mime-type",					io_mime_type)
+					.put("io/default-charset",				io_default_charset)
+					.put("io/load-classpath-resource",		io_load_classpath_resource)
 					.toMap();
 
 	
