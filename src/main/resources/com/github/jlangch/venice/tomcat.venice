@@ -157,15 +157,15 @@
   []
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
-      { :init (fn [config] nil)
-        :destroy (fn [] nil)
-        :doGet (fn [req res servlet] (tc/reply-text res 200 "Hello World"))
-        :doHead (fn [req res servlet] (tc/reply-text res 404 "Not Found"))
-        :doPost (fn [req res servlet] (tc/reply-text res 404 "Not Found"))
-        :doPut (fn [req res servlet] (tc/reply-text res 404 "Not Found"))
-        :doDelete (fn [req res servlet] (tc/reply-text res 404 "Not Found"))
-        :doOptions (fn [req res servlet] (tc/reply-text res 404 "Not Found"))
-        :doTrace (fn [req res servlet] (tc/reply-text res 404 "Not Found"))
+      { :init            (fn [config] nil)
+        :destroy         (fn [] nil)
+        :doGet           (fn [req res _] (tc/reply-text res 200 "Hello World"))
+        :doHead          (fn [req res _] (tc/reply-text res 404 "Not Found"))
+        :doPost          (fn [req res _] (tc/reply-text res 404 "Not Found"))
+        :doPut           (fn [req res _] (tc/reply-text res 404 "Not Found"))
+        :doDelete        (fn [req res _] (tc/reply-text res 404 "Not Found"))
+        :doOptions       (fn [req res _] (tc/reply-text res 404 "Not Found"))
+        :doTrace         (fn [req res _] (tc/reply-text res 404 "Not Found"))
         :getLastModified (fn [] -1) })))
 
 (defn tc/run-tomcat
