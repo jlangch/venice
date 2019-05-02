@@ -15,7 +15,7 @@ venice> (load-module :tomcat)
 venice> (tc/run-tomcat (tc/hello-world-servlet) {:await? false})
 ```
 
-Open a browser with URL `http://localhost:8080`
+Open a browser with the URL `http://localhost:8080`
 
 Type `Ctrl-c` in the REPL to shutdown the server.
 
