@@ -146,11 +146,11 @@
     (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat))
 
-(defn tc/reply-text[res status text]
+(defn reply-text[res status text]
   (. res :setStatus status)
   (. res :setContentType "text/html")
-  (let [w (. res :getWriter)]
-        (. w :println (str "<html><body><p>" text "</p></body></html>"))))
+  (-> (. res :getWriter)
+      (. :println (str "<html><body><p>" text "</p></body></html>"))))
 
 (defn tc/hello-world-servlet
   ^{ :doc "'Hello World' demo servlet" }

@@ -26,8 +26,8 @@ Type `ctrl-c` in the REPL to shutdown the server.
 (defn reply-text[res status text]
   (. res :setStatus status)
   (. res :setContentType "text/html")
-  (let [w (. res :getWriter)]
-    (. w :println (str "<html><body><p>" text "</p></body></html>"))))
+  (-> (. res :getWriter)
+      (. :println (str "<html><body><p>" text "</p></body></html>"))))
 
 (defn hello-world-servlet
   []

@@ -277,18 +277,6 @@
 ;; Servlet
 ;; -----------------------------------------------------------------------------
 
-(defn servlet/reply-not-found [req res]
-  (. res :setStatus (:SC_NOT_FOUND servlet/response-codes))
-  (. res :setContentType "text/html")
-  (let [w (. res :getWriter)]
-        (. w :println "<html><body><p>Not Found</p></body></html>")))
-
-(defn servlet/reply-html [req res html]
-  (. res :setStatus (:SC_OK servlet/response-codes))
-  (. res :setContentType "text/html")
-  (let [w (. res :getWriter)]
-        (. w :println html)))
-
 (defn servlet/handle
   [method req res servlet handler]
   (let [h_req (-> req
