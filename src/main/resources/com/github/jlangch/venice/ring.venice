@@ -86,11 +86,6 @@
   [enumeration]
   (into '() (. :Collections :list enumeration)))
 
-(defn ring/java-stream-to-writer
-  ^{ :doc "Converts a Java OutputStream to a BufferedWriter" }
-  [stream encoding]
-  (. :BufferedWriter :new (. :OutputStreamWriter :new stream encoding)))
-
 
 
 ;; -----------------------------------------------------------------------------
@@ -184,7 +179,7 @@
          (ring/update-servlet-response response <>))))
 
 (defn- ring/make-async-service-method
-  handler]
+  [handler]
   (fn [servlet request response]
     (let [async-context (. request :startAsync )]
       (handler
@@ -277,6 +272,16 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Routing
+;; -----------------------------------------------------------------------------
+
+(defn ring/match-route
+  [handler]
+  handler)
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Servlet
 ;; -----------------------------------------------------------------------------
 
@@ -286,7 +291,6 @@
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
       (. :println (str "<html><body><p>Not Found</p></body></html>"))))
-
 
 (defn ring/handle
   [req res servlet handler]
