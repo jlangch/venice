@@ -320,28 +320,27 @@
 
 (defn ring/priority-route
   [routes]
-  (println (str "priority-route:  " (count routes)))
-  (println routes)
   (case (count routes)
     0      nil
     1      (:handler (first routes))
     (:handler (last (sort #(compare (:len %1) (:len %2)) routes)))))
 
 (defn ring/get-route-handler
-  [uri routes]
+  [verb uri routes]
   (ring/priority-route
-    ; TODO handle HTTP verb
     (filter (fn [route]
-              (-> (regex/matcher (:uri-regex route) uri)
-                  (regex/matches?)))
+              (and (== verb (:verb route))
+                   (-> (regex/matcher (:uri-regex route) uri)
+                       (regex/matches?))))
       routes)))
 
 (defn ring/match-routes
   [routes]
   (let [compiled (ring/compile-routes routes)]
      (fn [req]
-       (let [uri (:uri req)
-             handler (ring/get-route-handler uri compiled)]
+       (let [verb (:request-method req)
+             uri (:uri req)
+             handler (ring/get-route-handler verb uri compiled)]
          ;(println (str "route: \"" uri "\" -> " handler))
          (handler req)))))
 
