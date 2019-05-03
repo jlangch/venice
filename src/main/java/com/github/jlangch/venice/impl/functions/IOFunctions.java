@@ -486,7 +486,7 @@ public class IOFunctions {
 					}
 				}
 				else if (Types.isVncJavaObject(args.second(), OutputStream.class)) {
-					final Object os = Coerce.toVncJavaObject(args.second());
+					final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
 					try {
 						IOStreamUtil.copyFileToOS(from, (OutputStream)os);
 					}
@@ -503,8 +503,6 @@ public class IOFunctions {
 							"Function 'io/copy-file' does not allow %s as output",
 							Types.getType(args.second())));
 				}
-	
-	
 				
 				return Nil;
 			}
@@ -885,8 +883,8 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("io/copy-stream", args, 2);
 	
-				final Object is = Coerce.toVncJavaObject(args.first());
-				final Object os = Coerce.toVncJavaObject(args.second());
+				final Object is = Coerce.toVncJavaObject(args.first()).getDelegate();
+				final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
 			
 				if (!(is instanceof InputStream) ) {
 					throw new VncException(String.format(

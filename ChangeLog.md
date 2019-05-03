@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - fixed the order of the stacktrace frames (reversed it)
 - fixed dereferencing a future when the future has thrown an exception
+- fixed `io/copy-stream`
 
 ### incompatible changes
 
