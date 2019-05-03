@@ -32,7 +32,7 @@ Venice requires Java 8 or newer.
  
 ## Cheat Sheet
 
-Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/c0dac83/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/c0dac83/cheatsheet.pdf)
+Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/259d54e/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/259d54e/cheatsheet.pdf)
 
 
 
