@@ -7,7 +7,7 @@ Dependencies:
  - tomcat-embed-core-9.0.19.jar
  - javax.annotation-api-1.3.2.ja
 
-To simplify things there is 
+To simplify things there is a 
 [Ring style WEB App module](ext-ring.md) available.
  
  
