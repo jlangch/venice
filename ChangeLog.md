@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added stack datatype
 - added defaults for keyword as function: `(:c {:a 1 :b 2} :none))`
 - added an embedded [Apache Tomcat WEB Server](doc/readme/ext-tomcat.md) launcher 
+- handle REPL parse errors gracefully, allow to get the incorrect expression
+  from the history
 
 ### fixed
 

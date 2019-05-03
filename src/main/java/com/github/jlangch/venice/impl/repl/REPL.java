@@ -28,16 +28,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.jline.reader.EndOfFileException;
+import org.jline.reader.History;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
 import org.jline.reader.UserInterruptException;
+import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
 import org.jline.terminal.TerminalBuilder;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Env;
@@ -115,10 +118,13 @@ public class REPL {
 
 		final ReplParser parser = new ReplParser(venice);
 		
+		final History history = new DefaultHistory();
+		
 		final LineReader reader = LineReaderBuilder
 									.builder()
 									.appName("Venice")
 									.terminal(terminal)
+									.history(history)
 									//.completer(completer)
 									.parser(parser)
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
@@ -208,6 +214,12 @@ public class REPL {
 			catch (EofException | EndOfFileException ex) {
 				break;
 			} 
+			catch (ParseError ex) {
+				// put the script to the history to allow to fix it
+				history.add(reader.getBuffer().toString());
+				printex(terminal, "error", ex);
+				continue;
+			}
 			catch (Exception ex) {
 				printex(terminal, "error", ex);
 				continue;
