@@ -5,7 +5,10 @@ The Apache Tomcat extension module provides starting an embedded Tomcat server a
 Dependencies:
 
  - tomcat-embed-core-9.0.19.jar
- - javax.annotation-api-1.3.2.jar
+ - javax.annotation-api-1.3.2.ja
+
+To simplify things there is 
+[Ring style WEB App library](ext-ring.md) available.
  
  
 ## Start Tomcat with the 'HelloWorld' demo 
