@@ -8,7 +8,9 @@ Dependencies:
  - javax.annotation-api-1.3.2.jar
  
  
-## Start Tomcat with the 'HelloWorld' demo servlet
+## Start Tomcat with the 'HelloWorld' demo 
+
+Start a REPL:
 
 ```text
 venice> (load-module :tomcat)
