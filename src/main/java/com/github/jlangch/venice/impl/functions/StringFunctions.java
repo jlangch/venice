@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -357,8 +359,12 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/replace-first s search replacement)")		
-					.doc("Replaces the first occurrance of search in s")
-					.examples("(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")")
+					.doc(
+						"Replaces the first occurrance of search in s. " +
+						"The search arg may be a string or a regex pattern")
+					.examples(
+						"(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")",
+						"(str/replace-first \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -369,20 +375,35 @@ public class StringFunctions {
 				}
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.second()).getValue();
+				final VncVal search = args.second();		
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
-	
-				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-					return args.first();
+
+				if (Types.isVncString(search)) {
+					final String searchString = Coerce.toVncString(args.second()).getValue();		
+
+					if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
+						return args.first();
+					}
+		
+					int pos = text.indexOf(searchString);
+					return pos >= 0
+						? new VncString(
+								text.substring(0, pos) + 
+								replacement + 
+								text.substring(pos + replacement.length()))
+					 	: args.first();
 				}
-	
-				int pos = text.indexOf(searchString);
-				return pos >= 0
-					? new VncString(
-							text.substring(0, pos) + 
-							replacement + 
-							text.substring(pos + replacement.length()))
-				 	: args.first();
+				else if (Types.isVncJavaObject(search, Pattern.class)) {
+					final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
+					
+					final Matcher m = p.matcher(text);
+					return new VncString(m.replaceFirst(replacement));
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'str/replace-first' does not allow %s as search argument.", 
+							Types.getType(search)));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -433,8 +454,12 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/replace-all s search replacement)")		
-					.doc("Replaces the all occurrances of search in s")
-					.examples("(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")")
+					.doc(
+						"Replaces the all occurrances of search in s. " +
+						"The search arg may be a string or a regex pattern")
+					.examples(
+						"(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")",
+						"(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -445,27 +470,42 @@ public class StringFunctions {
 				}
 	
 				final String text = Coerce.toVncString(args.first()).getValue();	
-				final String searchString = Coerce.toVncString(args.second()).getValue();		
+				final VncVal search = args.second();		
 				final String replacement = Coerce.toVncString(args.nth(2)).getValue();		
-				
-				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-					return args.first();
+
+				if (Types.isVncString(search)) {
+					final String searchString = Coerce.toVncString(args.second()).getValue();		
+
+					if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
+						return args.first();
+					}
+
+					int start = 0;
+					int end = text.indexOf(searchString, start);
+					if (end == -1) {
+						return args.first();
+					}
+					final int replLength = searchString.length();
+					final StringBuilder buf = new StringBuilder();
+					while (end != -1) {
+						buf.append(text, start, end).append(replacement);
+						start = end + replLength;
+						end = text.indexOf(searchString, start);
+					}
+					buf.append(text, start, text.length());
+					return new VncString(buf.toString());
 				}
-	
-				int start = 0;
-				int end = text.indexOf(searchString, start);
-				if (end == -1) {
-					return args.first();
+				else if (Types.isVncJavaObject(search, Pattern.class)) {
+					final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
+					
+					final Matcher m = p.matcher(text);
+					return new VncString(m.replaceAll(replacement));
 				}
-				final int replLength = searchString.length();
-				final StringBuilder buf = new StringBuilder();
-				while (end != -1) {
-					buf.append(text, start, end).append(replacement);
-					start = end + replLength;
-					end = text.indexOf(searchString, start);
+				else {
+					throw new VncException(String.format(
+							"Function 'str/replace-all' does not allow %s as search argument.", 
+							Types.getType(search)));
 				}
-				buf.append(text, start, text.length());
-				return new VncString(buf.toString());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;

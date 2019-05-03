@@ -188,6 +188,15 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_replace_all_regex() {
+		final Venice venice = new Venice();
+
+		assertEquals("ab:_:ef", venice.eval("(str (str/replace-all \"ab:0:ef\" (regex/pattern \"[0-9]+\") \"_\"))"));
+		assertEquals("ab:_:ef", venice.eval("(str (str/replace-all \"ab:00:ef\" (regex/pattern \"[0-9]+\") \"_\"))"));
+		assertEquals("ab:_:ef", venice.eval("(str (str/replace-all \"ab:000:ef\" (regex/pattern \"[0-9]+\") \"_\"))"));
+	}
+
+	@Test
 	public void test_str_replace_first() {
 		final Venice venice = new Venice();
 
