@@ -19,10 +19,16 @@ Venice Ring is a port of Clojure's Ring web applications library.
     :headers { "Content-Type" "text/plain; charset=utf-8" }
     :body "Test" })
 
+(defn image-handler [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Image" })
+
 (def routes [
-  [:get "/**"       hello-world-handler]
-  [:get "/test"     test-handler]
-  [:get "/test/**"  test-handler]
+  [:get "/**"                   hello-world-handler]
+  [:get "/test"                 test-handler]
+  [:get "/test/**"              test-handler]
+  [:get "/static/images/*.png"  image-handler]
 ])
 
 (tc/run-tomcat
