@@ -8,7 +8,7 @@ Dependencies:
  - javax.annotation-api-1.3.2.ja
 
 To simplify things there is 
-[Ring style WEB App library](ext-ring.md) available.
+[Ring style WEB App module](ext-ring.md) available.
  
  
 ## Start Tomcat with the 'HelloWorld' demo 
