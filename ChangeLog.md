@@ -22,8 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added stack datatype
 - added defaults for keyword as function: `(:c {:a 1 :b 2} :none))`
 - added an embedded [Apache Tomcat WEB Server](doc/readme/ext-tomcat.md) launcher 
-- handle REPL parse errors gracefully, allow to get the incorrect expression
-  from the history
+- handle REPL parse errors gracefully, allow to get the incorrect expression from the history to fix it
 
 ### fixed
 
@@ -31,7 +30,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - fixed dereferencing a `future` when the future has thrown an exception
 - fixed `io/copy-stream`
 
-### incompatible changes
+### incompatible changesi
 
 - removed 'io/spit-temp-file', replace with 'io/spit'
 - removed 'io/slurp-temp-file', replace with 'io/slurp'
