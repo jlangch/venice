@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
+import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -1468,28 +1469,6 @@ public class ConcurrencyFunctions {
 					.put("thread-local-map",	thread_local_map)
 					.toMap();	
 	
-	
-	private static class VncTunnelAsJavaObject extends VncJavaObject {
-		public VncTunnelAsJavaObject(final VncVal val) {
-			super(null);
-			this.val = val;
-		}
-		
-		@Override
-		public VncVal getDelegate() {
-			return val;
-		}
-		
-		@Override
-		public VncVal convertToJavaObject() {
-			return val;
-		}
-				
-	    private static final long serialVersionUID = -1848883965231344442L;
-	    
-	    private final VncVal val;
-	}
-
 	
 	private final static AtomicLong futureThreadPoolCounter = new AtomicLong(0);
 

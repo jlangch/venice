@@ -65,6 +65,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
+import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -5805,6 +5806,57 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction java_wrap = 
+		new VncFunction(
+				"java-wrap", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(java-wrap val)")		
+					.doc("Wraps a venice value")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("java-wrap", args, 1);
+				
+				if (args.first() instanceof VncTunnelAsJavaObject) {
+					return args.first();
+				}
+				else {
+					return new VncTunnelAsJavaObject(args.first());
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction java_unwrap = 
+		new VncFunction(
+				"java-unwrap", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(java-unwrap val)")		
+					.doc("Unwraps a venice value")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("java-unwrap", args, 1);
+				
+				if (args.first() instanceof VncTunnelAsJavaObject) {
+					return ((VncTunnelAsJavaObject)args.first()).getDelegate();
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'java-unwrap' does not allow %s as parameter", 
+							Types.getType(args.first())));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncSequence(value)) {
 			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
@@ -6043,6 +6095,8 @@ public class CoreFunctions {
 				.put("java-obj?",					java_obj_Q)	
 				.put("java-iterator-to-list",		java_iterator_to_list)	
 				.put("java-enumeration-to-list",	java_enumeration_to_list)	
+				.put("java-wrap",					java_wrap)	
+				.put("java-unwrap",					java_unwrap)	
 					
 				.toMap();
 
