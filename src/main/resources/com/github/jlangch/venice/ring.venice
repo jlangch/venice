@@ -367,7 +367,7 @@
 (defn ring/mw-print-uri
   ^{ :doc "Prints the URI." }
   [handler]
-  (fn [req] (println "URI: " (:uri req)) (handler req)))
+  (fn [req] (println (str "URI: " (:uri req))) (handler req)))
 
 (defn ring/mw-request-counter
   ^{ :doc "Counts the requests and stores the value in the session." }
@@ -375,11 +375,11 @@
   (fn [req]
     (let [id (ring/session-id req)
           counter (ring/session-get-value req "request-counter")]
-      (when-not counter
-        (ring/session-set-value req "request-counter" (. :AtomicLong :new 1) )
-        (println "Session " id ", request #: " 1))
-      (when counter
-        (println "Session " id ", request #: " (. counter :incrementAndGet)))
+      (if counter
+        (println (str "Session " id ", request #: " (. counter :incrementAndGet)))
+        (do
+          (ring/session-set-value req "request-counter" (. :AtomicLong :new 1) )
+          (println (str "Session " id ", request #: " 1))))
     (handler req))))
 
 (defn
