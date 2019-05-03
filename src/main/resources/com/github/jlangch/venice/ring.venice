@@ -145,10 +145,10 @@
       (assoc headers
         (str/lower-case name)
         (->> (. request :getHeaders name)
-             (ring/java-enumeration-to-list) ;
+             (java-enumeration-to-list) ;
              (str/join ","))))
     {}
-    (ring/java-enumeration-to-list (. request :getHeaderNames))))
+    (java-enumeration-to-list (. request :getHeaderNames))))
 
 (defn- ring/get-content-length
   ^{ :doc "Returns the content length, or nil if there is no content." }
