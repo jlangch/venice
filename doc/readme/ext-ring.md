@@ -24,6 +24,10 @@ Venice Ring is a port of Clojure's Ring web applications library.
     :headers { "Content-Type" "text/plain; charset=utf-8" }
     :body "Image" })
 
+; A route is defined by a HTTP verb, a URI filter and
+; a handler function.
+; If multiple routes match the one with the longest URI
+; filter will be chosen
 (def routes [
   [:get "/**"                   hello-world-handler]
   [:get "/test"                 test-handler]
