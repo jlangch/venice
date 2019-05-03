@@ -76,6 +76,8 @@
       :SC_HTTP_VERSION_NOT_SUPPORTED        505 })
 
 
+(def ring/verbs #{ :get :head :post :put :delete :options :trace })
+
 
 ;; -----------------------------------------------------------------------------
 ;; Java Interop
@@ -275,9 +277,47 @@
 ;; Routing
 ;; -----------------------------------------------------------------------------
 
-(defn ring/match-route
-  [handler]
-  handler)
+(def ring/routes-sample [
+  [:get "/**"                  nil]
+  [:get "/app/**"              nil]
+  [:get "/static/images/*.png" nil]
+])
+
+(defn ring/uri-regex
+  [uri]
+  (-> uri
+      (str/replace-all "?" "[?]")
+      (str/replace-all "(" "[(]")
+      (str/replace-all ")" "[)]")
+      (str/replace-all "+" "[+]")
+      (str/replace-all "." "[.]")
+      (str/replace-all "**" "[@@]")
+      (str/replace-all "*" "[^/]+")
+      (str/replace-all "[@@]" ".*")
+      (regex/pattern)))
+
+(defn ring/compile-routes
+  [routes]
+  (map
+    (fn [r] { :verb (first r)
+              :uri (second r)
+              :uri-regex (ring/uri-regex (second r))
+              :len (count (second r))
+              :handler (third r) })
+    routes))
+
+(defn ring/get-route-handler
+  [uri routes]
+  (filter
+    (fn [route]
+      (-> (regex/matcher (:uri-regex route) uri)
+          (regex/matches?)))
+    routes))
+
+(defn ring/match-routes
+  [routes]
+  (let [compiled (ring/compile-routes routes)]
+     (fn [req] (ring/get-route-handler (:uri req)))))
 
 
 
@@ -285,7 +325,14 @@
 ;; Servlet
 ;; -----------------------------------------------------------------------------
 
-(defn- tc/send-not-found
+(defn- ring/send-text
+  [res text]
+  (. res :setStatus 200)
+  (. res :setContentType "text/html")
+  (-> (. res :getWriter)
+      (. :println (str "<html><body><p>" text "</p></body></html>"))))
+
+(defn- ring/send-not-found
   [res]
   (. res :setStatus 404)
   (. res :setContentType "text/html")
@@ -299,7 +346,7 @@
                   (ring/merge-servlet-keys servlet req res))
         h_res (handler h_req)]
     (when-not h_res
-      (tc/send-not-found res))
+      (ring/send-not-found res))
     (when h_res
       (ring/set-response-headers res (dissoc (:headers h_res)))
       (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream)))))
