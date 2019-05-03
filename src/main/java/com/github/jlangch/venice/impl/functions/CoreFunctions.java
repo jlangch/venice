@@ -5819,12 +5819,11 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("java-wrap", args, 1);
 				
-				if (args.first() instanceof VncTunnelAsJavaObject) {
-					return args.first();
-				}
-				else {
-					return new VncTunnelAsJavaObject(args.first());
-				}
+				final VncVal arg = args.first();
+				
+				return arg instanceof VncTunnelAsJavaObject 
+						? arg 
+						: new VncTunnelAsJavaObject(arg);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5843,14 +5842,11 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("java-unwrap", args, 1);
 				
-				if (args.first() instanceof VncTunnelAsJavaObject) {
-					return ((VncTunnelAsJavaObject)args.first()).getDelegate();
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'java-unwrap' does not allow %s as parameter", 
-							Types.getType(args.first())));
-				}
+				final VncVal arg = args.first();
+				
+				return arg instanceof VncTunnelAsJavaObject
+						? ((VncTunnelAsJavaObject)arg).getDelegate()
+						: arg;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
