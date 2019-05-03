@@ -6,6 +6,8 @@ Venice Ring is a port of Clojure's Ring web applications library.
 ## Sample WEB App
 
 ```clojure
+(import :java.io.FileInputStream)
+
 (load-module :tomcat)
 (load-module :ring)
 
@@ -20,14 +22,20 @@ Venice Ring is a port of Clojure's Ring web applications library.
     :body "Test" })
 
 (defn image-handler [request]
-  { :status 200
-    :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body "Image" })
+  (let [name (last (str/split (:uri request) "/"))
+        file (io/file (io/user-dir) name)]
+    (if (io/exists-file? file)
+      { :status 200
+        :headers { "Content-Type" "image/png" }
+        :body (. :FileInputStream :new file) }
+      { :status 404
+        :headers { "Content-Type" "text/plain; charset=utf-8" }
+        :body "File not found" } )))
 
-; A route is defined by a HTTP verb, a URI filter and
-; a handler function.
-; If multiple routes match the one with the longest URI
-; filter will be chosen
+; A route is defined by a HTTP verb, a URI filter and a handle
+; function.
+; If multiple routes match the route with the longest URI filter 
+; will be chosen
 (def routes [
   [:get "/**"                   hello-world-handler]
   [:get "/test"                 test-handler]
