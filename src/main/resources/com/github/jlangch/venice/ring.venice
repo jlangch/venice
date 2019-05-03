@@ -50,6 +50,7 @@
         :java.lang.RuntimeException
         :java.lang.NullPointerException
         :java.util.Collections
+        :java.util.concurrent.atomic.AtomicLong
         :javax.servlet.ServletConfig
         :javax.servlet.ServletException
         :javax.servlet.http.HttpServletRequest
@@ -106,14 +107,16 @@
 ;; -----------------------------------------------------------------------------
 ;; Header utils
 ;; -----------------------------------------------------------------------------
-(def ^{:doc "Pattern for pulling the charset out of the content-type header" }
+(def
+  ^{:doc "Pattern for pulling the charset out of the content-type header" }
   ring/regex-charset
   (regex/pattern ".*charset=([^\\s;]+).*"))
 
-(defn ring/find-header
+(defn
   ^{ :doc (str/strip-indent """\
         Looks up a header in a Ring response (or request) case insensitively,
         returning the header map entry, or nil if not present.""" ) }
+  ring/find-header
   [resp header-name]
   (if (java-obj? resp)
     (. resp :getHeader header-name)
@@ -121,16 +124,66 @@
          (filter #(str/equals-ignore-case? header-name (key %)))
          (first))))
 
-(defn ring/get-charset
+(defn
   ^{ :doc (str/strip-indent """\
         Gets the character encoding of a Ring response.
         E.g.: Content-Type: text/html; charset=utf-8""" ) }
+  ring/get-charset
   [res]
   (if-let [content-type (ring/find-header res "Content-Type")]
     (let [m (regex/matcher ring/regex-charset content-type)]
       (when (regex/matches? m)
         (regex/group m 1)))))
 
+(defn
+  ^{:doc "Return the HttpServletRequest cookies as a map" }
+  ring/get-cookies
+  [req]
+  (let [cookies (. req :getCookies)]
+    (if cookies
+      (reduce (fn [m c] (assoc m (. c :getName) c)) {} cookies)
+      {})))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Session utils
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{:doc "Invalidate the session" }
+  ring/session-invalidate
+  [req]
+  (if-let [session (:session req)]
+    (. session :invalidate)))
+
+(defn
+  ^{:doc "Get the session ID" }
+  ring/session-id
+  [req]
+  (if-let [session (:session req)]
+    (. session :getId)))
+
+  (defn
+    ^{:doc "Sets a value on the session" }
+    ring/session-set-value
+    [req name value]
+    (if-let [session (:session req)]
+      (. session :putValue name value)))
+
+  (defn
+    ^{:doc "Get a value from the session" }
+    ring/session-get-value
+    [req name]
+    (if-let [session (:session req)]
+      (. session :getValue name)))
+
+  (defn
+    ^{:doc "Remove a value from the session" }
+    ring/session-remove-value
+    [req name]
+    (if-let [session (:session req)]
+      (. session :removeValue name)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -150,19 +203,22 @@
     {}
     (java-enumeration-to-list (. request :getHeaderNames))))
 
-(defn- ring/get-content-length
+(defn-
   ^{ :doc "Returns the content length, or nil if there is no content." }
+  ring/get-content-length
   [request]
   (let [length (. request :getContentLength)]
     (if (>= length 0) length nil)))
 
-(defn- ring/get-client-cert
+(defn-
   ^{ :doc "Returns the SSL client certificate of the request, if one exists." }
+  ring/get-client-cert
   [request]
   (first (. request :getAttribute "javax.servlet.request.X509Certificate")))
 
-(defn- ring/set-response-headers
+(defn-
   ^{ :doc "Update a HttpServletResponse with a map of headers." }
+  ring/set-response-headers
   [response headers]
   (docoll
     (fn [[key val-or-vals]]
@@ -207,11 +263,12 @@
          (. response :sendError  500 (. exception :getMessage))
          (. async-context :complete ))))))
 
-(defn ring/make-service-method
+(defn
   ^{ :doc (str/strip-indent """\
         Turns a handler into a function that takes the same arguments
         and has the same return value as the service method in the
         HttpServlet class.""") }
+  ring/make-service-method
   ([handler]
    (ring/make-service-method handler {}))
   ([handler options]
@@ -249,8 +306,9 @@
                 "Response stream not supported for body type "
                                   (type body)))))))
 
-(defn ring/update-servlet-response
+(defn
   ^{ :doc "Update the HttpServletResponse using a response map." }
+  ring/update-servlet-response
   ([response response-map]
    (ring/update-servlet-response response nil response-map))
   ([response async-context response-map]
@@ -265,8 +323,9 @@
      (let [output-stream (ring/make-output-stream response async-context)]
        (ring/write-body-to-stream body response-map output-stream)))))
 
-(defn ring/build-request-map
+(defn
   ^{ :doc "Create the request map from the HttpServletRequest object." }
+  ring/build-request-map
   [request]
   {:server-port        (. request :getServerPort)
    :server-name        (. request :getServerName)
@@ -277,21 +336,64 @@
    :request-method     (keyword (str/lower-case (. request :getMethod)))
    :protocol           (. request :getProtocol)
    :headers            (ring/get-headers request)
+   :cookies            (ring/get-cookies request)
    :content-type       (. request :getContentType)
    :content-length     (ring/get-content-length request)
    :character-encoding (. request :getCharacterEncoding)
    :ssl-client-cert    (ring/get-client-cert request)
    :body               (. request :getInputStream)})
 
- (defn ring/merge-servlet-keys
+ (defn
    ^{ :doc "Associate servlet-specific keys with the request map." }
+   ring/merge-servlet-keys
    [request-map servlet request response]
    (merge request-map
           {:servlet              servlet
            :servlet-request      request
            :servlet-response     response
            :servlet-context      (. servlet :getServletContext)
-           :servlet-context-path (. request :getContextPath)}))
+           :servlet-context-path (. request :getContextPath) }))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Middleware
+;; -----------------------------------------------------------------------------
+
+(defn ring/mw-identity
+  [handler]
+  (fn [req] (handler req)))
+
+(defn ring/mw-print-uri
+  ^{ :doc "Prints the URI." }
+  [handler]
+  (fn [req] (println "URI: " (:uri req)) (handler req)))
+
+(defn ring/mw-request-counter
+  ^{ :doc "Counts the requests and stores the value in the session." }
+  [handler]
+  (fn [req]
+    (let [id (ring/session-id req)
+          counter (ring/session-get-value req "request-counter")]
+      (when-not counter
+        (ring/session-set-value req "request-counter" (. :AtomicLong :new 1) )
+        (println "Session " id ", request #: " 1))
+      (when counter
+        (println "Session " id ", request #: " (. counter :incrementAndGet)))
+    (handler req))))
+
+(defn
+  ^{ :doc (str/strip-indent """\
+        Adds the session to the request. If a new session is created
+        the given timeout is set as the MaxInactiveInterval. If a
+        timeout is not given the session will never timeout.""" ) }
+  ring/mw-add-session
+  [handler timeout]
+  (fn [req]
+    (let [session (. (:servlet-request req) :getSession)]
+      (when (. session :isNew)
+        (. session :setMaxInactiveInterval (coalesce timeout -1)))
+      (handler (assoc req :session session)))))
 
 
 

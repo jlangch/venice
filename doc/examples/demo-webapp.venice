@@ -1,0 +1,39 @@
+(import :java.io.FileInputStream)
+
+(load-module :tomcat)
+(load-module :ring)
+
+(defn hello-world-handler [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Hello World" })
+
+(defn test-handler [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Test" })
+
+(defn image-handler [request]
+  (let [name (last (str/split (:uri request) "/"))
+        file (io/file (io/user-dir) name)]
+    (if (io/exists-file? file)
+      { :status 200
+        :headers { "Content-Type" "image/png" }
+        :body (. :FileInputStream :new file) }
+      { :status 404
+        :headers { "Content-Type" "text/plain; charset=utf-8" }
+        :body "File not found" } )))
+
+(def routes [
+  [:get "/**"                   hello-world-handler]
+  [:get "/test"                 test-handler]
+  [:get "/test/**"              test-handler]
+  [:get "/static/images/*.png"  image-handler]
+])
+
+(tc/run-tomcat
+  (ring/create-servlet (-> (ring/match-routes routes)
+                           (ring/mw-request-counter)
+                           (ring/mw-add-session 3600)
+                           (ring/mw-print-uri)))
+  {:await? false})

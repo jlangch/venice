@@ -37,6 +37,9 @@
 
 (def tc/http-connector "org.apache.coyote.http11.Http11NioProtocol")
 
+(def tc/session-id "JSESSIONID")
+
+
 (def tc/https-ciphers
   (str "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:"
        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:"
