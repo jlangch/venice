@@ -1,4 +1,4 @@
-# Ring WEB applications library
+# Ring WEB applications module
 
 Venice Ring is a port of Clojure's Ring web applications library.
 
