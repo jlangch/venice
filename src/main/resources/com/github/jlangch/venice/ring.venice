@@ -13,7 +13,14 @@
 ;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
 ;;     :body "Hello World" })
 ;;
-;; (tc/run-tomcat (ring/create-servlet hello-world-handler) {:await? false})
+;; (def routes [
+;;   [:get "/**"  hello-world-handler]
+;; ])
+;;
+;; (tc/run-tomcat
+;;   (ring/create-servlet (ring/match-routes routes))
+;;   {:await? false})
+
 
 
 (import :com.github.jlangch.venice.impl.servlet.IVeniceServlet
@@ -306,13 +313,22 @@
               :handler (third r) })
     routes))
 
+(defn ring/priority-route
+  [routes]
+  (case count
+    0      nil
+    1      (first found)
+    :else  (first (sort
+                    (comp (partial * -1) #(compare (:len %1) (:len %2)))
+                    routes))))
+
 (defn ring/get-route-handler
   [uri routes]
-  (filter
-    (fn [route]
-      (-> (regex/matcher (:uri-regex route) uri)
-          (regex/matches?)))
-    routes))
+  (ring/priority-route
+    (filter (fn [route]
+              (-> (regex/matcher (:uri-regex route) uri)
+                  (regex/matches?)))
+      routes)))
 
 (defn ring/match-routes
   [routes]
