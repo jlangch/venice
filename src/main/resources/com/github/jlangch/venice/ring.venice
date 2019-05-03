@@ -5,16 +5,20 @@
 ;; -----------------------------------------------------------------------------
 ;; Example
 ;; -----------------------------------------------------------------------------
-;; (load-module :tomcat)
-;; (load-module :ring)
-;;
 ;; (defn hello-world-handler [request]
 ;;   { :status 200
 ;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
 ;;     :body "Hello World" })
 ;;
+;; (defn test-handler [request]
+;;   { :status 200
+;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
+;;     :body "Test" })
+;;
 ;; (def routes [
-;;   [:get "/**"  hello-world-handler]
+;;   [:get "/**"       hello-world-handler]
+;;   [:get "/test"     test-handler]
+;;   [:get "/test/**"  test-handler]
 ;; ])
 ;;
 ;; (tc/run-tomcat
@@ -285,9 +289,10 @@
 ;; -----------------------------------------------------------------------------
 
 (def ring/routes-sample [
-  [:get "/**"                  nil]
-  [:get "/app/**"              nil]
-  [:get "/static/images/*.png" nil]
+  [:get "/**"                     nil]
+  [:get "/app/**"                 nil]
+  [:get "/static/images/*.png"    nil]
+  [:get "/static/**/*.png"        nil]
 ])
 
 (defn ring/uri-regex
@@ -315,16 +320,17 @@
 
 (defn ring/priority-route
   [routes]
-  (case count
+  (println (str "priority-route:  " (count routes)))
+  (println routes)
+  (case (count routes)
     0      nil
-    1      (first found)
-    :else  (first (sort
-                    (comp (partial * -1) #(compare (:len %1) (:len %2)))
-                    routes))))
+    1      (:handler (first routes))
+    (:handler (last (sort #(compare (:len %1) (:len %2)) routes)))))
 
 (defn ring/get-route-handler
   [uri routes]
   (ring/priority-route
+    ; TODO handle HTTP verb
     (filter (fn [route]
               (-> (regex/matcher (:uri-regex route) uri)
                   (regex/matches?)))
@@ -333,7 +339,11 @@
 (defn ring/match-routes
   [routes]
   (let [compiled (ring/compile-routes routes)]
-     (fn [req] (ring/get-route-handler (:uri req)))))
+     (fn [req]
+       (let [uri (:uri req)
+             handler (ring/get-route-handler uri compiled)]
+         ;(println (str "route: \"" uri "\" -> " handler))
+         (handler req)))))
 
 
 
@@ -361,11 +371,10 @@
                   (ring/build-request-map)
                   (ring/merge-servlet-keys servlet req res))
         h_res (handler h_req)]
-    (when-not h_res
-      (ring/send-not-found res))
-    (when h_res
-      (ring/set-response-headers res (dissoc (:headers h_res)))
-      (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream)))))
+    (if h_res
+      (do (ring/set-response-headers res (dissoc (:headers h_res)))
+          (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream)))
+      (ring/send-not-found res))))
 
 (defn ring/create-servlet
   [handler]
