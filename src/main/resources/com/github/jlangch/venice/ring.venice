@@ -5,6 +5,11 @@
 ;; -----------------------------------------------------------------------------
 ;; Example
 ;; -----------------------------------------------------------------------------
+;; (import :java.io.FileInputStream)
+;;
+;; (load-module :tomcat)
+;; (load-module :ring)
+;;
 ;; (defn hello-world-handler [request]
 ;;   { :status 200
 ;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
@@ -15,11 +20,17 @@
 ;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
 ;;     :body "Test" })
 ;;
+;; (defn image-handler [request]
+;;   { :status 200
+;;     :headers { "Content-Type" "image/png" }
+;;     :body (. :FileInputStream :new (io/file (io/user-dir) "pie.png")) })
+;;
 ;; (def routes [
-;;   [:get "/**"       hello-world-handler]
-;;   [:get "/test"     test-handler]
-;;   [:get "/test/**"  test-handler]
-;; ])
+;;   [:get "/**"                   hello-world-handler]
+;;   [:get "/test"                 test-handler]
+;;   [:get "/test/**"              test-handler]
+;;   [:get "/static/images/*.png"  image-handler]
+; ])
 ;;
 ;; (tc/run-tomcat
 ;;   (ring/create-servlet (ring/match-routes routes))
@@ -219,23 +230,32 @@
 
 (defn- ring/write-body-to-stream
   [body response output-stream]
-  (case (type body)
-    :venice.String        (try-with [os output-stream]
-                            (if-let [charset (ring/get-charset response)]
-                              (io/spit-stream os body :flush true :encoding charset)
-                              (io/spit-stream os body :flush true)))
-    :venice.ByteBuffer    (try-with [os output-stream]
-                            (io/spit-stream os body :flush true))
-    :java.io.InputStream  (try-with [os output-stream]
-                            (io/copy-stream body os))
-    :java.io.File         (try-with [os output-stream]
-                            (io/copy-file body os))
-    :default              (try
-                            (. output-stream :close)
-                            (finally
-                              (. :RuntimeException :new
-                                (str
-                                  "Response stream not supported for body type "
+  (cond
+    (instance? :venice.String body)
+        (try-with [os output-stream]
+          (if-let [charset (ring/get-charset response)]
+            (io/spit-stream os body :flush true :encoding charset)
+                            (io/spit-stream os body :flush true)))
+
+    (instance? :venice.ByteBuffer body)
+        (try-with [os output-stream]
+          (io/spit-stream os body :flush true))
+
+    (instance? :java.io.InputStream body)
+        (try-with [os output-stream]
+          (io/copy-stream body os))
+
+    (instance? :java.io.File body)
+        (try-with [os output-stream]
+          (io/copy-file body os))
+
+    :else
+        (try
+          (. output-stream :close)
+          (finally
+            (. :RuntimeException :new
+              (str
+                "Response stream not supported for body type "
                                   (type body)))))))
 
 (defn ring/update-servlet-response
