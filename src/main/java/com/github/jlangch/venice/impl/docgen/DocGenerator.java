@@ -1065,6 +1065,8 @@ public class DocGenerator {
 						idgen.id()));
 		general.addItem(getDocItem("import"));
 		general.addItem(getDocItem("java-obj?"));
+		general.addItem(getDocItem("java-iterator-to-list"));
+		general.addItem(getDocItem("java-enumeration-to-list"));
 		general.addItem(new DocItem(" ", null));
 		general.addItem(new DocItem("Invoke constructors", null));
 		general.addItem(new DocItem("Invoke static or instance methods", null));

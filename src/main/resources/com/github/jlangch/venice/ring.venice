@@ -25,6 +25,10 @@
 ;;     :headers { "Content-Type" "image/png" }
 ;;     :body (. :FileInputStream :new (io/file (io/user-dir) "pie.png")) })
 ;;
+;; A route is defined by a HTTP verb, a URI filter and a handle
+;; function.
+;; If multiple routes match the route with the longest URI filter
+;; will be chosen
 ;; (def routes [
 ;;   [:get "/**"                   hello-world-handler]
 ;;   [:get "/test"                 test-handler]
@@ -96,19 +100,6 @@
       :SC_SERVICE_UNAVAILABLE               503
       :SC_GATEWAY_TIMEOUT                   504
       :SC_HTTP_VERSION_NOT_SUPPORTED        505 })
-
-
-(def ring/verbs #{ :get :head :post :put :delete :options :trace })
-
-
-;; -----------------------------------------------------------------------------
-;; Java Interop
-;; -----------------------------------------------------------------------------
-
-(defn ring/java-enumeration-to-list
-  ^{ :doc "Converts a :java.util.Enumeration to a list" }
-  [enumeration]
-  (into '() (. :Collections :list enumeration)))
 
 
 
@@ -308,12 +299,22 @@
 ;; Routing
 ;; -----------------------------------------------------------------------------
 
-(def ring/routes-sample [
-  [:get "/**"                     nil]
-  [:get "/app/**"                 nil]
-  [:get "/static/images/*.png"    nil]
-  [:get "/static/**/*.png"        nil]
-])
+;; A route is defined by a HTTP verb, a URI filter and a handle
+;; function. If multiple routes match the route with the longest
+;; URI filter will be chosen.
+;;
+;;    (def routes [
+;;      [:get "/**"                   hello-world-handler]
+;;      [:get "/test/**"              test-handler]
+;;      [:get "/static/images/*.png"  image-handler]
+;;    ])
+;;
+;; Routing URI filters:
+;;    "/**"
+;;    "/app/**"
+;;    "/static/images/chart.png"
+;;    "/static/images/*.png"
+;;    "/static/**/*.png"
 
 (defn ring/uri-regex
   [uri]

@@ -43,6 +43,21 @@ public class StreamUtil {
 	}
 
 	/**
+	 * Returns a <tt>Stream</tt> from an <tt>Iterator</tt>
+	 * 
+	 * @param <T> the type of the stream elements
+	 * @param in An iterator
+	 * @return A stream
+	 */
+	public static <T> Stream<T> stream(final Iterator<T> in) {
+		return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(
+				in,
+				Spliterator.ORDERED), 
+				false);
+	}
+
+	/**
 	 * Returns a <tt>Stream</tt> from an <tt>Enumeration</tt>
 	 * 
 	 * @param <T> the type of the stream elements

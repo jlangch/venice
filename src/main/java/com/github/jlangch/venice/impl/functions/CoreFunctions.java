@@ -35,8 +35,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +52,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -82,6 +85,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
@@ -5731,14 +5735,76 @@ public class CoreFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("map?", args, 1);
+				assertArity("java-obj?", args, 1);
 				
 				return Types.isVncJavaObject(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-			
+		
+	public static VncFunction java_enumeration_to_list = 
+		new VncFunction(
+				"java-enumeration-to-list", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(java-enumeration-to-list e)")		
+					.doc("Converts a Java enumeration to a list")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("java-enumeration-to-list", args, 1);
+				
+				if (Types.isVncJavaObject(args.first(), Enumeration.class)) {
+					final Enumeration<?> e = (Enumeration<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
+					final List<VncVal> list = StreamUtil
+													 .stream(e)
+													 .map(v -> JavaInteropUtil.convertToVncVal(v))
+													 .collect(Collectors.toList());
+					return new VncList(list); 
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'java-enumeration-to-list' does not allow %s as parameter", 
+							Types.getType(args.first())));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction java_iterator_to_list = 
+		new VncFunction(
+				"java-iterator-to-list", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(java-iterator-to-list e)")		
+					.doc("Converts a Java iterator to a list")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("java-iterator-to-list", args, 1);
+				
+				if (Types.isVncJavaObject(args.first(), Iterator.class)) {
+					final Iterator<?> i = (Iterator<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
+					final List<VncVal> list = StreamUtil
+													.stream(i)
+													.map(v -> JavaInteropUtil.convertToVncVal(v))
+													.collect(Collectors.toList());
+					return new VncList(list); 
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'java-iterator-to-list' does not allow %s as parameter", 
+							Types.getType(args.first())));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncSequence(value)) {
 			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
@@ -5974,8 +6040,10 @@ public class CoreFunctions {
 				.put("type",				type)
 				.put("instance?",			instance_Q)	
 
-				.put("java-obj?",			java_obj_Q)	
-				
+				.put("java-obj?",					java_obj_Q)	
+				.put("java-iterator-to-list",		java_iterator_to_list)	
+				.put("java-enumeration-to-list",	java_enumeration_to_list)	
+					
 				.toMap();
 
 	
