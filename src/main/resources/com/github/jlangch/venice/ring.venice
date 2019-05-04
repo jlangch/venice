@@ -393,9 +393,8 @@
 
 (defn ring/priority-route
   [routes]
-  (case (count routes)
-    0      nil
-    1      (:handler (first routes))
+  (if (empty? routes)
+    nil
     (:handler (last (sort #(compare (:len %1) (:len %2)) routes)))))
 
 (defn ring/get-route-handler
