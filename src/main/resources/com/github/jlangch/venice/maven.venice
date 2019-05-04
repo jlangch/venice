@@ -1,7 +1,5 @@
 ;; Maven utilities
 
-(def maven/repo "https://repo1.maven.org/maven2")
-
 (defn-
   maven/download-artefact
   [uri target-dir target-file]
@@ -13,22 +11,31 @@
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
   maven/parse
-  [artefact sources]
+  [artefact sources repo]
   (let [elements (str/split artefact ":")
         group-id (first elements)
         artefact-id (second elements)
         version (third elements)
-        file-name (str name "-" version (if sources "-sources" "") ".jar")
-        uri (str/join "/" [maven/repo group-id artefact-id version file-name])]
+        file-name (str artefact-id "-" version (if sources "-sources" "") ".jar")
+        uri (str/join "/" [repo group-id artefact-id version file-name])]
     [uri file-name]))
 
 (defn
-  ^{ :arglists '("(maven/download artefact sources)")
-     :doc "Downloads an artefact from the Maven repository"
-     :examples "(maven/download \"com/vaadin:vaadin-client:8.7.2\" false)"  }
+  ^{ :arglists '("(maven/download artefact options*)")
+     :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from the Maven repository. "
+     :examples '(
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\")"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :sources true)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources false)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
   maven/download
-  [artefact sources download-dir]
-  (let [elements (maven/parse artefact sources)
+  [artefact & options]
+  (let [opts (apply hash-map options)
+        sources (:sources opts false)
+        dir (:dir opts ".")
+        repo (:repo opts "https://repo1.maven.org/maven2")
+        elements (maven/parse artefact sources repo)
         uri (first elements)
         target-file (second elements)]
-    (maven/download-artefact uri download-dir target-file)))
+    (maven/download-artefact uri dir target-file)))
