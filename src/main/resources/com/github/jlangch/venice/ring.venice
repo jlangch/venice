@@ -122,6 +122,11 @@
     {}
     (java-enumeration-to-list (. request :getHeaderNames))))
 
+(defn- ring/get-parameters
+  ^{ :doc "Creates a name/value map of the request parameters." }
+  [request]
+  {})
+
 (defn-
   ^{ :doc "Returns the content length, or nil if there is no content." }
   ring/get-content-length
@@ -255,6 +260,7 @@
    :request-method     (keyword (str/lower-case (. request :getMethod)))
    :protocol           (. request :getProtocol)
    :headers            (ring/get-headers request)
+   :parameters         (ring/get-parameters request)
    :cookies            (ring/get-cookies request)
    :content-type       (. request :getContentType)
    :content-length     (ring/get-content-length request)
@@ -271,6 +277,7 @@
            :servlet-request      request
            :servlet-response     response
            :servlet-context      (. servlet :getServletContext)
+           :servlet-path         (. request :getServletPath)
            :servlet-context-path (. request :getContextPath) }))
 
 
@@ -339,7 +346,12 @@
           (println "   method:       " (:request-method req))
           (println "   content-type: " (:content-type req))
           (println "   encoding:     " (:character-encoding req))
-          (println "   content-type: " (:content-type req)))
+          (println "   content-type: " (:content-type req))
+          (println "   context-path: " (:servlet-context-path req))
+          (println "   servlet-path: " (:servlet-path req))
+          (println "   headers:      " (:headers req))
+          (println "   parameters:   " (:parameters req))
+          (println "   cookies:      " ))
     (handler req)))
 
 
