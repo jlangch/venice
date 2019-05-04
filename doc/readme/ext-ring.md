@@ -24,7 +24,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
         file (io/file (io/user-dir) name)]
     (if (io/exists-file? file)
       { :status 200
-        :headers { "Content-Type" (io/mimetype file) }
+        :headers { "Content-Type" (io/mime-type file) }
         :body file }
       { :status 404
         :headers { "Content-Type" "text/plain; charset=utf-8" }
