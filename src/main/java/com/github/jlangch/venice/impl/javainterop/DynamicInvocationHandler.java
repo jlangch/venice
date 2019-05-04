@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -62,7 +63,10 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	) {
 		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;
+		
 		this.parentInterceptor = JavaInterop.getInterceptor();
+		this.parentThreadLocals = new AtomicReference<>(ThreadLocalMap.getValues());
+
 	}
 		 
 	@Override
@@ -101,10 +105,13 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				}
 			}
 			else {
-				// the callback function run's in another thread				
+				// The callback function runs in another thread.	
+				// Inherit sandbox and thread local vars
 				try {
 					ThreadLocalMap.clear();
+					ThreadLocalMap.setValues(parentThreadLocals.get());
 					JavaInterop.register(parentInterceptor);
+					
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
 					
@@ -113,6 +120,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				finally {
 					callStack.pop();
 					callStack.pop();
+					
 					JavaInterop.unregister();
 					ThreadLocalMap.remove();
 				}
@@ -170,7 +178,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	}
 
 	
-	final CallFrame callFrameProxy;
-	final Map<String, VncFunction> methods;
-	final IInterceptor parentInterceptor;
+	private final CallFrame callFrameProxy;
+	private final Map<String, VncFunction> methods;
+	private final IInterceptor parentInterceptor;
+	private final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals;
 }

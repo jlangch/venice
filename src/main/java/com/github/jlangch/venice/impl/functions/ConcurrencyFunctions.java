@@ -1054,13 +1054,13 @@ public class ConcurrencyFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<Map<VncKeyword,VncVal>> threadLocalValues = 
+				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
 						new AtomicReference<>(ThreadLocalMap.getValues());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.setValues(threadLocalValues.get());
+						ThreadLocalMap.setValues(parentThreadLocals.get());
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
