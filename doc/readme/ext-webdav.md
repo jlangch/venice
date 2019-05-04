@@ -2,7 +2,7 @@
 
 Venice supports WebDAV if the [Sardine](https://github.com/lookfirst/sardine) libs are on the runtime classpath:
 
- - sardine-5.9.jar
+ - com.github.lookfirst:sardine:5.8
  
 transitive dependencies:
  

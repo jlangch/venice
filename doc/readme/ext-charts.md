@@ -1,9 +1,8 @@
 # Charts
 
-Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime 
-classpath:
+Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
- - xchart-3.5.x.jar
+ - org.knowm.xchart:xchart:3.5.4
  
 
 #### Line Chart Example

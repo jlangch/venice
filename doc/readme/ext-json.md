@@ -2,9 +2,10 @@
 
 Venice supports JSON if the [Jackson](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
 
- - jackson-core-2.9.x.jar
- - jackson-databind-2.9.x.jar
- - jackson-datatype-jdk8-2.9.x.jar (optional Jdk8 module)
+ - com.fasterxml.jackson.core:jackson-core:2.9.8
+ - com.fasterxml.jackson.core:jackson-databind:2.9.8
+ - com.fasterxml.jackson.core:jackson-core:2.9.8
+ - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8 (optional Jdk8 module)
  
 The Jackson _jdk8_ module is loaded automatically if it is available
  
