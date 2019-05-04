@@ -48,7 +48,6 @@
         :java.lang.RuntimeException
         :java.lang.NullPointerException
         :java.util.Collections
-        :java.util.concurrent.atomic.AtomicLong
         :javax.servlet.ServletConfig
         :javax.servlet.ServletException
         :javax.servlet.http.HttpServletRequest
