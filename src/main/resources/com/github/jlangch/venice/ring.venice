@@ -3,7 +3,8 @@
 ;; Venice Ring is a port of Clojure's Ring web applications library.
 ;;
 
-(import :com.github.jlangch.venice.impl.servlet.IVeniceServlet
+(import :com.github.jlangch.venice.RingRedirectException
+        :com.github.jlangch.venice.impl.servlet.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.VeniceServlet
         :com.github.jlangch.venice.impl.servlet.FilterOutputStreamCloseCB
         :java.io.BufferedWriter
@@ -406,16 +407,32 @@
   (-> (. res :getWriter)
       (. :println (str "<html><body><p>Not Found</p></body></html>"))))
 
+(defn- ring/send-redirect
+  [req res redirect-uri]
+  (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
+
+(defn- ring/send-error
+  [res]
+  (. res :setStatus 500)
+  (. res :setContentType "text/html")
+  (-> (. res :getWriter)
+      (. :println (str "<html><body><p>Internal Error</p></body></html>"))))
+
 (defn ring/handle
   [req res servlet handler]
-  (let [ring_req (-> req
-                     (ring/build-request-map)
-                     (ring/merge-servlet-keys servlet req res))
-        ring_res (handler ring_req)]
-    (if ring_res
-      (do (ring/set-response-headers res (dissoc (:headers ring_res)))
-          (ring/write-body-to-stream (:body ring_res) res (. res :getOutputStream)))
-      (ring/send-not-found res))))
+  (try
+    (let [ring_req (-> req
+                       (ring/build-request-map)
+                       (ring/merge-servlet-keys servlet req res))
+          ring_res (handler ring_req)]
+      (if ring_res
+        (do (ring/set-response-headers res (dissoc (:headers ring_res)))
+            (ring/write-body-to-stream (:body ring_res) res (. res :getOutputStream)))
+        (ring/send-not-found res)))
+    (catch :RingRedirectException ex
+      (ring/send-redirect res (:redirectUri ex)))
+    (catch :Exception ex
+      (ring/send-error res))))
 
 (defn ring/create-servlet
   [handler]
