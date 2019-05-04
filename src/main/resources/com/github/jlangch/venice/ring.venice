@@ -2,43 +2,6 @@
 ;;
 ;; Venice Ring is a port of Clojure's Ring web applications library.
 ;;
-;; -----------------------------------------------------------------------------
-;; Example
-;; -----------------------------------------------------------------------------
-;; (import :java.io.FileInputStream)
-;;
-;; (load-module :tomcat)
-;; (load-module :ring)
-;;
-;; (defn hello-world-handler [request]
-;;   { :status 200
-;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
-;;     :body "Hello World" })
-;;
-;; (defn test-handler [request]
-;;   { :status 200
-;;     :headers { "Content-Type" "text/plain; charset=utf-8" }
-;;     :body "Test" })
-;;
-;; (defn image-handler [request]
-;;   { :status 200
-;;     :headers { "Content-Type" "image/png" }
-;;     :body (. :FileInputStream :new (io/file (io/user-dir) "pie.png")) })
-;;
-;; A route is defined by a HTTP verb, a URI filter and a handle
-;; function.
-;; If multiple routes match the route with the longest URI filter
-;; will be chosen
-;; (def routes [
-;;   [:get "/**"                   hello-world-handler]
-;;   [:get "/test"                 test-handler]
-;;   [:get "/test/**"              test-handler]
-;;   [:get "/static/images/*.png"  image-handler]
-;; ])
-;;
-;; (tc/run-tomcat
-;;   (ring/create-servlet (ring/match-routes routes))
-;;   {:await? false})
 
 (import :com.github.jlangch.venice.impl.servlet.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.VeniceServlet
@@ -317,10 +280,20 @@
   [handler]
   (fn [req] (handler req)))
 
+(defn ring/mw-debug
+  ^{ :doc "Turns debugging on/off" }
+  [handler option]
+  (let [on (or (nil? option) (== option :on))]
+    (fn [req]
+      (handler (assoc req :debug on)))))
+
 (defn ring/mw-print-uri
   ^{ :doc "Prints the URI." }
   [handler]
-  (fn [req] (println (str "URI: " (:uri req))) (handler req)))
+  (fn [req]
+    (when (:debug req false)
+          (println (str "URI: " (:uri req))))
+    (handler req)))
 
 (defn ring/mw-request-counter
   ^{ :doc "Counts the requests and stores the value in the session." }
@@ -328,8 +301,9 @@
   (fn [req]
     (let [id (ring/session-id req)
           counter (inc (coalesce (ring/session-get-value req "request-counter") 0))]
-      (ring/session-set-value req "request-counter" counter )
-      (println (str "Session " id ", request #: " counter)))
+      (ring/session-set-value req "request-counter" counter)
+      (when (:debug req false)
+            (println (str "Session " id ", request #: " counter))))
     (handler req)))
 
 (defn
@@ -342,6 +316,8 @@
   (fn [req]
     (let [session (. (:servlet-request req) :getSession)]
       (when (. session :isNew)
+        (when (:debug req false)
+              (println (str "Session " (. session :getId) " created")))
         (. session :setMaxInactiveInterval (coalesce timeout -1)))
       (handler (assoc req :session session)))))
 
@@ -413,7 +389,8 @@
        (let [verb (:request-method req)
              uri (:uri req)
              handler (ring/get-route-handler verb uri compiled)]
-         ;(println (str "route: \"" uri "\" -> " handler))
+         (when (:debug req false)
+               (println (str "Route: \"" uri "\" -> " (name handler))))
          (handler req)))))
 
 
@@ -421,13 +398,6 @@
 ;; -----------------------------------------------------------------------------
 ;; Servlet
 ;; -----------------------------------------------------------------------------
-
-(defn- ring/send-text
-  [res text]
-  (. res :setStatus 200)
-  (. res :setContentType "text/html")
-  (-> (. res :getWriter)
-      (. :println (str "<html><body><p>" text "</p></body></html>"))))
 
 (defn- ring/send-not-found
   [res]
@@ -438,13 +408,13 @@
 
 (defn ring/handle
   [req res servlet handler]
-  (let [h_req (-> req
-                  (ring/build-request-map)
-                  (ring/merge-servlet-keys servlet req res))
-        h_res (handler h_req)]
-    (if h_res
-      (do (ring/set-response-headers res (dissoc (:headers h_res)))
-          (ring/write-body-to-stream (:body h_res) res (. res :getOutputStream)))
+  (let [ring_req (-> req
+                     (ring/build-request-map)
+                     (ring/merge-servlet-keys servlet req res))
+        ring_res (handler ring_req)]
+    (if ring_res
+      (do (ring/set-response-headers res (dissoc (:headers ring_res)))
+          (ring/write-body-to-stream (:body ring_res) res (. res :getOutputStream)))
       (ring/send-not-found res))))
 
 (defn ring/create-servlet
@@ -460,4 +430,4 @@
         :doDelete (fn [req res servlet] (ring/handle req res servlet handler))
         :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
         :doTrace (fn [req res servlet] (ring/handle req res servlet handler))
-        :getLastModified (fn [] -1) })))
+        :getLastModified (fn [req] -1) })))
