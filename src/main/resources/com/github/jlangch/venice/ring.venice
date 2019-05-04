@@ -34,13 +34,11 @@
 ;;   [:get "/test"                 test-handler]
 ;;   [:get "/test/**"              test-handler]
 ;;   [:get "/static/images/*.png"  image-handler]
-; ])
+;; ])
 ;;
 ;; (tc/run-tomcat
 ;;   (ring/create-servlet (ring/match-routes routes))
 ;;   {:await? false})
-
-
 
 (import :com.github.jlangch.venice.impl.servlet.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.VeniceServlet
