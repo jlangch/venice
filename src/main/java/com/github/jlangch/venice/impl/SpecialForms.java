@@ -162,8 +162,10 @@ public class SpecialForms {
 				.arglists("(eval form)")	
 				.doc("Evaluates the form data structure (not text!) and returns the result.")
 				.examples(
-					 "(eval '(let [a 10] (+ 3 4 a)))",
-					 "(eval (list + 1 2 3))")
+					"(eval '(let [a 10] (+ 3 4 a)))",
+					"(eval (list + 1 2 3))",
+				 	"(let [s \"(+ 2 x)\" x 10]     \n" +
+				 	"   (eval (read-string s))))     ")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;
