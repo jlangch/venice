@@ -349,9 +349,12 @@
           (println "   content-type: " (:content-type req))
           (println "   context-path: " (:servlet-context-path req))
           (println "   servlet-path: " (:servlet-path req))
-          (println "   headers:      " (:headers req))
-          (println "   parameters:   " (:parameters req))
-          (println "   cookies:      " ))
+          (println "   headers:      ")
+          (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers req)))
+          (println "   parameters:   ")
+          (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:parameters req)))
+          (println "   cookies:      ")
+          (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies req))))
     (handler req)))
 
 
