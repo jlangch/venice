@@ -26,6 +26,8 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -122,6 +124,43 @@ public class RegexFunctions {
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
 				return m.find() ? True : False;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction matches = 
+		new VncFunction(
+				"regex/matches", 
+				VncFunction
+					.meta()
+					.module("regex")
+					.arglists("(regex/matches pattern str)")		
+					.doc(
+						"Returns the match, if any, of string to pattern, using " + 
+						"java.util.regex.Matcher.matches(). Returns the " + 
+						"groups.")
+					.examples(
+						"(regex/matches \"hello, (.*)\" \"hello, world\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("regex/matches", args, 2);
+	
+				final VncVal pattern = args.first();
+				final Pattern p = Types.isVncString(pattern)
+									? Pattern.compile(((VncString)pattern).getValue())	
+									: (Pattern)Coerce.toVncJavaObject(args.first()).getDelegate();		
+				final String s = Coerce.toVncString(args.second()).getValue();	
+				final Matcher m = p.matcher(s);
+
+				final List<VncVal> groups = new ArrayList<>();
+				if (m.matches()) {
+					for(int ii=0; ii<=m.groupCount(); ii++) {
+						groups.add(new VncString(m.group(ii)));
+					}
+				}
+				return new VncList(groups);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -283,6 +322,7 @@ public class RegexFunctions {
 					.put("regex/find",			find)
 					.put("regex/reset",			reset)
 					.put("regex/find?",			find_Q)
+					.put("regex/matches",		matches)
 					.put("regex/matches?",		matches_Q)
 					.put("regex/group",			group)
 					.put("regex/groupcount",	groupcount)

@@ -600,6 +600,7 @@ public class DocGenerator {
 		general.addItem(getDocItem("regex/find"));
 		general.addItem(getDocItem("regex/reset"));
 		general.addItem(getDocItem("regex/find?"));
+		general.addItem(getDocItem("regex/matches"));
 		general.addItem(getDocItem("regex/matches?"));
 		general.addItem(getDocItem("regex/group"));
 		general.addItem(getDocItem("regex/groupcount"));
