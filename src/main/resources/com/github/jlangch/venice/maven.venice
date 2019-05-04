@@ -5,33 +5,30 @@
 (defn-
   maven/download-artefact
   [uri target-dir target-file]
-  (let [url (str/join "/" [maven/repo uri]])
-        target (str target-dir "/" target-file)]
-     (println (str "Downloading " url))
+  (let [target (str target-dir "/" target-file)]
+     (println (str "Downloading " uri))
      (println (str "         to " target "..."))
-     (sh "curl" url "--output" target)))
+     (sh "curl" uri "--output" target)))
 
 (defn-
-  ^{ :doc (str/strip-indent """\
-        Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'
-        for download.""" ) }
-  maven/parse-artefact
-  [artefact sources?]
-  (let [elements (str/split ":" artefact)
+  ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
+  maven/parse
+  [artefact sources]
+  (let [elements (str/split artefact ":")
         group-id (first elements)
         artefact-id (second elements)
         version (third elements)
-        file-name (str name "-" version (if sources? "-sources" "") ".jar")
-        uri (str/join "/" [mvn-repo group-id artefact-id version file-name]
-    [uri file])))
+        file-name (str name "-" version (if sources "-sources" "") ".jar")
+        uri (str/join "/" [maven/repo group-id artefact-id version file-name])]
+    [uri file-name]))
 
 (defn
-  ^{ :arglists '("(maven/download artefact sources?)")
+  ^{ :arglists '("(maven/download artefact sources)")
      :doc "Downloads an artefact from the Maven repository"
      :examples "(maven/download \"com/vaadin:vaadin-client:8.7.2\" false)"  }
   maven/download
-  [artefact sources? download-dir]
-  (let [elements (parse-artefact artefact sources?)
+  [artefact sources download-dir]
+  (let [elements (maven/parse artefact sources)
         uri (first elements)
         target-file (second elements)]
-    (download-artefact uri download-dir target-file)))
+    (maven/download-artefact uri download-dir target-file)))
