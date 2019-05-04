@@ -6,8 +6,6 @@ Venice Ring is a port of Clojure's Ring web applications library.
 ## Sample WEB App
 
 ```clojure
-(import :java.io.FileInputStream)
-
 (load-module :tomcat)
 (load-module :ring)
 
@@ -26,8 +24,8 @@ Venice Ring is a port of Clojure's Ring web applications library.
         file (io/file (io/user-dir) name)]
     (if (io/exists-file? file)
       { :status 200
-        :headers { "Content-Type" "image/png" }
-        :body (. :FileInputStream :new file) }
+        :headers { "Content-Type" (io/mimetype file) }
+        :body file }
       { :status 404
         :headers { "Content-Type" "text/plain; charset=utf-8" }
         :body "File not found" } )))
