@@ -48,5 +48,5 @@ Type `ctrl-c` in the REPL to shutdown the server.
         :doDelete (fn [req res servlet] (send-text res 404 "Not Found"))
         :doOptions (fn [req res servlet] (send-text res 404 "Not Found"))
         :doTrace (fn [req res servlet] (send-text res 404 "Not Found"))
-        :getLastModified (fn [] -1) })))
+        :getLastModified (fn [req] -1) })))
 ```
