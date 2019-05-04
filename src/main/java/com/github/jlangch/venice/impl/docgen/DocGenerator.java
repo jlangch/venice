@@ -220,6 +220,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("str"));
 		create.addItem(getDocItem("str/format"));
 		create.addItem(getDocItem("str/quote"));
+		create.addItem(getDocItem("str/double-quote"));
 
 		final DocSection use = new DocSection("Use");
 		strings.addSection(use);

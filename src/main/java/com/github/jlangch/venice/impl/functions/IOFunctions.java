@@ -1159,20 +1159,22 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/mime-type", args, 1);
 	
-				if (Types.isVncString(args.first()) ) {
+				final VncVal file = args.first();
+				
+				if (Types.isVncString(file) ) {
 					return new VncString(
 								MimeTypes.getMimeTypeFromFileName(
-										((VncString)args.first()).getValue()));
+										((VncString)file).getValue()));
 				}
-				else if (isJavaIoFile(args.first()) ) {
+				else if (isJavaIoFile(file) ) {
 					return new VncString(
 							MimeTypes.getMimeTypeFromFile(
-									(File)(Coerce.toVncJavaObject(args.first()).getDelegate())));
+									(File)(Coerce.toVncJavaObject(file).getDelegate())));
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'io/mime-type' does not allow %s as fs",
-							Types.getType(args.first())));
+							Types.getType(file)));
 				}
 			}
 	

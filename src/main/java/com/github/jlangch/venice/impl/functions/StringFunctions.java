@@ -774,6 +774,30 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+	public static VncFunction str_double_quote = 
+			new VncFunction(
+					"str/double-quote", 
+					VncFunction
+						.meta()
+						.module("str")
+						.arglists("(str/double-quote str)")		
+						.doc("Double quotes a string.")
+						.examples(
+							"(str/double-quote \"abc\")",
+							"(str/double-quote \"\")")
+						.build()
+			) {	
+				public VncVal apply(final VncList args) {
+					assertArity("str/double-quote", args, 1);
+		
+					final String s = Coerce.toVncString(args.first()).getValue();
+		
+					return new VncString("\"" + s + "\"");
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction str_truncate = 
 		new VncFunction(
 				"str/truncate", 
@@ -1103,6 +1127,7 @@ public class StringFunctions {
 					.put("str/split-lines",			str_split_lines)
 					.put("str/format",				str_format)
 					.put("str/quote",				str_quote)
+					.put("str/double-quote",		str_double_quote)
 					.put("str/truncate",			str_truncate)
 					.put("str/strip-start",			str_strip_start)
 					.put("str/strip-end",			str_strip_end)
