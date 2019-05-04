@@ -24,16 +24,16 @@ Venice Ring is a port of Clojure's Ring web applications library.
         file (io/file (io/user-dir) name)]
     (if (io/exists-file? file)
       { :status 200
-        :headers { "Content-Type" (io/mime-type file) }
+        :headers { "Content-Type" (io/mime-type name) }
         :body file }
       { :status 404
         :headers { "Content-Type" "text/plain; charset=utf-8" }
         :body "File not found" } )))
 
-; A route is defined by a HTTP verb, a URI filter and a handle
-; function.
-; If multiple routes match the route with the longest URI filter 
-; will be chosen
+;; A route is defined by a HTTP verb, a URI filter and a handle
+;; function.
+;; If multiple routes match the route with the longest URI filter
+;; will be chosen
 (def routes [
   [:get "/**"                   hello-world-handler]
   [:get "/test"                 test-handler]
@@ -42,6 +42,10 @@ Venice Ring is a port of Clojure's Ring web applications library.
 ])
 
 (tc/run-tomcat
-  (ring/create-servlet (ring/match-routes routes))
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-request-counter)   ; ^  |
+                           (ring/mw-add-session 3600)  ; |  |
+                           (ring/mw-print-uri)))       ; +--+
   {:await? false})
 ```
