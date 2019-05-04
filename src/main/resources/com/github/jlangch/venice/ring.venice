@@ -168,8 +168,11 @@
     ^{:doc "Sets a value on the session" }
     ring/session-set-value
     [req name value]
+    ; wrap the Venice datatypes to prevent Java object
+    ; conversions by Java Interop. We want the Venice
+    ; datatype in the session
     (if-let [session (:session req)]
-      (. session :putValue name value)))
+      (. session :putValue name (java-wrap value)))) ;
 
   (defn
     ^{:doc "Get a value from the session" }
@@ -374,13 +377,10 @@
   [handler]
   (fn [req]
     (let [id (ring/session-id req)
-          counter (ring/session-get-value req "request-counter")]
-      (if counter
-        (println (str "Session " id ", request #: " (. counter :incrementAndGet)))
-        (do
-          (ring/session-set-value req "request-counter" (. :AtomicLong :new 1) )
-          (println (str "Session " id ", request #: " 1))))
-    (handler req))))
+          counter (inc (coalesce (ring/session-get-value req "request-counter") 0))]
+      (ring/session-set-value req "request-counter" counter )
+      (println (str "Session " id ", request #: " counter)))
+    (handler req)))
 
 (defn
   ^{ :doc (str/strip-indent """\
