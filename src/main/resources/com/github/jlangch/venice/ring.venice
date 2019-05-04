@@ -125,7 +125,7 @@
 (defn- ring/get-parameters
   ^{ :doc "Creates a name/value map of the request parameters." }
   [request]
-  {})
+  (. request :getParameterMap))
 
 (defn-
   ^{ :doc "Returns the content length, or nil if there is no content." }
