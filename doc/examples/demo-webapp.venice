@@ -38,5 +38,6 @@
                                                        ;    |
                            (ring/mw-request-counter)   ; ^  |
                            (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)))       ; +--+
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on)))       ; +--+
   {:await? false})
