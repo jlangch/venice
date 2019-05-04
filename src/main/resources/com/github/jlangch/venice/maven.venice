@@ -11,31 +11,41 @@
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
   maven/parse
-  [artefact sources repo]
+  [artefact repo]
   (let [elements (str/split artefact ":")
         group-id (first elements)
         artefact-id (second elements)
         version (third elements)
-        file-name (str artefact-id "-" version (if sources "-sources" "") ".jar")
-        uri (str/join "/" [repo group-id artefact-id version file-name])]
-    [uri file-name]))
+        file-name-base (str artefact-id "-" version)
+        uri (str/join "/" [repo group-id artefact-id version file-name-base])]
+    [uri file-name-base]))
+
+
+(defn-
+  maven/download-by-type
+  [artefact repo dir file-suffix]
+  (let [elements (maven/parse artefact repo)
+        uri (str (first elements) file-suffix)
+        target-file (str (second elements) file-suffix)]
+    (maven/download-artefact uri dir target-file)))
 
 (defn
   ^{ :arglists '("(maven/download artefact options*)")
      :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from the Maven repository. "
      :examples '(
        "(maven/download \"com/vaadin:vaadin-client:8.7.2\")"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :sources true)"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources false)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\")"
        "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
        "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
   maven/download
   [artefact & options]
   (let [opts (apply hash-map options)
+        binary (:binary opts true)
         sources (:sources opts false)
+        pom (:pom opts false)
         dir (:dir opts ".")
-        repo (:repo opts "https://repo1.maven.org/maven2")
-        elements (maven/parse artefact sources repo)
-        uri (first elements)
-        target-file (second elements)]
-    (maven/download-artefact uri dir target-file)))
+        repo (:repo opts "https://repo1.maven.org/maven2")]
+    (when binary (maven/download-by-type artefact repo dir ".jar"))
+    (when sources (maven/download-by-type artefact repo dir "-sources.jar"))
+    (when pom (maven/download-by-type artefact repo dir ".pom"))))

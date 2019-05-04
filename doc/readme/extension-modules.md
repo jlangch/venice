@@ -14,5 +14,6 @@ Venice supports
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)
+* [Maven](ext-maven.md)
 
 through extension modules
