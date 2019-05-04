@@ -4,11 +4,13 @@
 ;;
 
 (import :com.github.jlangch.venice.RingRedirectException
+        :com.github.jlangch.venice.VncException
         :com.github.jlangch.venice.impl.servlet.IVeniceServlet
         :com.github.jlangch.venice.impl.servlet.VeniceServlet
         :com.github.jlangch.venice.impl.servlet.FilterOutputStreamCloseCB
         :java.io.BufferedWriter
         :java.io.OutputStreamWriter
+        :java.lang.Exception
         :java.lang.RuntimeException
         :java.lang.NullPointerException
         :java.util.Collections
@@ -431,6 +433,8 @@
         (ring/send-not-found res)))
     (catch :RingRedirectException ex
       (ring/send-redirect res (:redirectUri ex)))
+    (catch :VncException ex
+      (ring/send-error res))
     (catch :Exception ex
       (ring/send-error res))))
 
