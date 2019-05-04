@@ -324,6 +324,24 @@
         (. session :setMaxInactiveInterval (coalesce timeout -1)))
       (handler (assoc req :session session)))))
 
+(defn ring/mw-dump
+  ^{ :doc "Dumps the request." }
+  [handler]
+  (fn [req]
+    (when (:debug req false)
+          (println "Dump request:")
+          (println "   server-port:  " (long (:server-port req)))
+          (println "   server-name:  " (:server-name req))
+          (println "   remote-addr:  " (:remote-addr req))
+          (println "   scheme:       " (:scheme req))
+          (println "   uri:          " (:uri req))
+          (println "   query-string: " (:query-string req))
+          (println "   method:       " (:request-method req))
+          (println "   content-type: " (:content-type req))
+          (println "   encoding:     " (:character-encoding req))
+          (println "   content-type: " (:content-type req)))
+    (handler req)))
+
 
 
 ;; -----------------------------------------------------------------------------
