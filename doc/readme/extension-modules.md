@@ -15,5 +15,6 @@ Venice supports
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)
 * [Maven](ext-maven.md)
+* [Kira Template](ext-kira.md)
 
 through extension modules
