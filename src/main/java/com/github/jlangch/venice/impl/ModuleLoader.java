@@ -91,5 +91,5 @@ public class ModuleLoader {
 					Arrays.asList(
 							"core", "http", "json", "logger", 
 							"math", "webdav", "xchart", "test",
-							"tomcat", "ring", "maven")));
+							"tomcat", "ring", "maven" , "kira")));
 }
