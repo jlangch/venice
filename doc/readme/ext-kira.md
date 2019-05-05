@@ -42,6 +42,7 @@ The delimiters can be customized:
 ```clojure
 (kira/eval source)
 (kira/eval source bindings)
+(kira/eval source delimiters bindings)
 ```
 
 Evaluate a template source using an optional map of bindings. The template source can be a string, or any I/O source understood by the standard slurp function.
@@ -50,12 +51,14 @@ Example of use:
 
 ```clojure
 (kira/eval "Hello <%= name %>" {:name "Bob"})
+(kira/eval "Hello $= name $" ["$" "$"] {:name "Bob"})
 ```
 
 ### kira/fn
 
 ```clojure
 (kira/fn args source)
+(kira/fn args source delimiters)
 ```
 
 Compile a template source into a anonymous function. This is a lot faster than `kira/eval` for repeated calls, as the template source is only parsed when the function is created.
