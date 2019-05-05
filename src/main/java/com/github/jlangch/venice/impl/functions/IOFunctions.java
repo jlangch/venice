@@ -682,7 +682,8 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/slurp-lines file & options)")		
 					.doc(
-						"Read all lines from a text file. \n" +
+						"Read all lines from f. f may be a file, a string file path " +
+						"a Java InputStream, or a Java Reader. \n" + 
 						"Defaults encoding=UTF-8. \n" +
 						"Options: :encoding \"UTF-8")
 					.build()
@@ -691,34 +692,46 @@ public class IOFunctions {
 				assertMinArity("io/slurp-lines", args, 1);
 	
 				try {	
-					File file;
+					final VncVal arg = args.first();
+
+					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					
-					if (Types.isVncString(args.first()) ) {
-						file = new File(((VncString)args.first()).getValue());
+					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
+						final File file = Types.isVncString(arg) 
+											? new File(((VncString)arg).getValue())
+											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						final VncVal encVal = options.get(new VncKeyword("encoding")); 					
+						final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+
+						final List<VncString> lines = 
+								Files.readAllLines(file.toPath(), Charset.forName(encoding))
+									 .stream()
+									 .map(s -> new VncString(s))
+									 .collect(Collectors.toList());
+						
+						return new VncList(lines);
 					}
-					else if (isJavaIoFile(args.first()) ) {
-						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					else if (Types.isVncJavaObject(arg, InputStream.class)) {
+						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						final VncVal encVal = options.get(new VncKeyword("encoding")); 					
+						final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+
+						final BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding));
+						return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+					}
+					else if (Types.isVncJavaObject(arg, Reader.class)) {
+						final BufferedReader rd = new BufferedReader(
+														(Reader)(Coerce.toVncJavaObject(args.first()).getDelegate()));
+						
+						return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp-lines' does not allow %s as f",
 								Types.getType(args.first())));
 					}
-	
-					
-					final VncHashMap options = VncHashMap.ofAll(args.rest());
-	
-					final VncVal encVal = options.get(new VncKeyword("encoding")); 
-					
-					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-
-					final List<VncString> lines = 
-							Files.readAllLines(file.toPath(), Charset.forName(encoding))
-								 .stream()
-								 .map(s -> new VncString(s))
-								 .collect(Collectors.toList());
-					
-					return new VncList(lines);
 				} 
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -948,7 +961,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/slurp-stream is & options)")		
 					.doc(
-						"Slurps binary or string data from an input stream. " +
+						"Slurps binary or string data from a Java InputStream. " +
 						"Supports the option :binary to either slurp binary or string data. " +
 						"For string data an optional encoding can be specified.\n" +
 						"Options: :encoding \"UTF-8\" :binary true/false. ")
@@ -1004,7 +1017,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/spit-stream os content & options)")		
 					.doc(
-						"Writes content (string or bytebuf) to the output stream os. " +
+						"Writes content (string or bytebuf) to the Java OutputStream os. " +
 						"If content is of type string an optional encoding (defaults to " +
 						"UTF-8) is supported. The stream can optionally be flushed after " +
 						"the operation.\n" +
