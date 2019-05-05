@@ -1,6 +1,6 @@
 # Kira Templating
 
-Kira is a simple templating library for Venice.
+Kira is a simple templating module for Venice.
 
 
 ## Syntax
@@ -11,8 +11,8 @@ For example:
 
 ```clojure
 (load-module :kira)
-(kira/eval "<% (dotimes [x 3] %>foo<% ) %>")
-=> "foofoofoo"
+(kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" {:xs [1 2 3]})
+=> "foo1 foo2 foo3 "
 ```
 
 The `<%= %>` tags will be substituted for the value of the expression within them. This is used for inserting values into a template.
@@ -33,4 +33,38 @@ The delimiters can be customized:
 (load-module :kira)
 (kira/eval """Hello $${= name }$$""" ["$${" "}$$"] {:name "Alice"})
 => "Hello Alice"
+```
+
+## API Documentation
+
+### kira/eval
+
+```clojure
+(kira/eval source)
+(kira/eval source bindings)
+```
+
+Evaluate a template source using an optional map of bindings. The template source can be a string, or any I/O source understood by the standard slurp function.
+
+Example of use:
+
+```clojure
+(kira/eval "Hello <%= name %>" {:name "Bob"})
+```
+
+### kira/fn
+
+```clojure
+(kira/fn args source)
+```
+
+Compile a template source into a anonymous function. This is a lot faster than `kira/eval` for repeated calls, as the template source is only parsed when the function is created.
+
+Examples of use:
+
+```clojure
+(def hello
+  (kira/fn [name] "Hello <%= name %>"))
+
+(hello "Alice")
 ```

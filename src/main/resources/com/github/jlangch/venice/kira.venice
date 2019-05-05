@@ -1,5 +1,9 @@
 ;; Kira - a simple templating library
 
+;; Thanks to James Reeves and his clojure 'comb' project
+;; (https://github.com/weavejester/comb). Venice's Kira
+;; templating library builds on the ideas of 'comb'.
+
 (defn- kira/read-source [source]
   (if (string? source)
     source
