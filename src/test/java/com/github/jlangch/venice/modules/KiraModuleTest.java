@@ -39,7 +39,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                  \n" +
 				"                                        \n" +
 				"   (kira/eval \"foo\")                  \n" + 
-				") ";
+				")";
 
 		assertEquals("foo", venice.eval(script));
 	}
@@ -53,7 +53,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                  \n" +
 				"                                        \n" +
 				"   (kira/eval \"<%= 10 %>\")            \n" + 
-				") ";
+				")";
 
 		assertEquals("10", venice.eval(script));
 	}
@@ -67,7 +67,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                   \n" +
 				"                                         \n" +
 				"   (kira/eval \"<%= x %>\" {:x \"foo\"}) \n" + 
-				") ";
+				")";
 
 		assertEquals("foo", venice.eval(script));
 	}
@@ -81,7 +81,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                   \n" +
 				"                                         \n" +
 				"   (kira/eval \"<%=x%>\" {:x \"foo\"})   \n" + 
-				") ";
+				")";
 
 		assertEquals("foo", venice.eval(script));
 	}
@@ -101,7 +101,7 @@ public class KiraModuleTest {
 				"   (kira/eval                                                        \n" + 
 				"       \"\"\"<% (docoll #(print (str %>foo<% % \" \")) xs)%>\"\"\"   \n" + 
 				"      {:xs [1 2 3]})                                                 \n" + 
-				") ";
+				")";
 
 		assertEquals("foo1 foo2 foo3 ", venice.eval(script));
 	}
@@ -110,16 +110,14 @@ public class KiraModuleTest {
 	public void test_kira_6() {
 		final Venice venice = new Venice();
 
-		// (let [xs [1 2 3 4]] (docoll #(print (str "foo" % " ")) xs))
-		
 		// (let [func (kira/fn [x] "foo<%= x %>")] (func "bar"))
 		
 		final String script =
 				"(do                                                                  \n" +
 				"   (load-module :kira)                                               \n" +
 				"                                                                     \n" +
-				"   (let [func (kira/fn [x] \"foo<%= x %>\")] (func \"bar\"))           " +
-				") ";
+				"   (let [tf (kira/fn [x] \"foo<%= x %>\")] (tf \"bar\"))               " +
+				")";
 
 		assertEquals("foobar", venice.eval(script));
 	}
