@@ -734,9 +734,11 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/slurp file & options)")		
+					.arglists("(io/slurp f & options)")		
 					.doc(
-						"Returns the file's content as text (string) or binary (bytebuf). \n" +
+						"Reads the content of f as text (string) or binary (bytebuf). " +
+						"f may be a file, a string file path, a Java InputStream, " +
+						"or a Java Reader. \n" +
 						"Defaults to binary=false and encoding=UTF-8. \n" +
 						"Options: :encoding \"UTF-8\" :binary true/false.")
 					.build()
@@ -821,7 +823,8 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/spit f content & options)")		
 					.doc(
-						"Opens f, writes content, and then closes f. \n" +
+						"Opens f, writes content, and then closes f. " +
+						"f may be a file or a string file path. \n" +
 						"Options default to append=true and encoding=UTF-8. \n" +
 						"Options: :append true/false, :encoding \"UTF-8\"")
 					.build()
