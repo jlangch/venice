@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -744,38 +745,64 @@ public class IOFunctions {
 				assertMinArity("io/slurp", args, 1);
 	
 				try {	
-					File file;
+					final VncVal arg = args.first();
+
+					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					
-					if (Types.isVncString(args.first()) ) {
-						file = new File(((VncString)args.first()).getValue());
+					final VncVal binary = options.get(new VncKeyword("binary")); 
+
+
+					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
+						final File file = Types.isVncString(arg) 
+											? new File(((VncString)arg).getValue())
+											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						if (binary == True) {
+							final byte[] data = Files.readAllBytes(file.toPath());
+							return new VncByteBuffer(ByteBuffer.wrap(data));
+						}
+						else {
+							final VncVal encVal = options.get(new VncKeyword("encoding")); 						
+							final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+		
+							final byte[] data = Files.readAllBytes(file.toPath());
+							
+							return new VncString(new String(data, encoding));
+						}
 					}
-					else if (isJavaIoFile(args.first()) ) {
-						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					else if (Types.isVncJavaObject(arg, InputStream.class)) {
+						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						if (binary == True) {
+							final byte[] data = IOStreamUtil.copyIStoByteArray(is);
+							return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
+						}
+						else {
+							final VncVal encVal = options.get(new VncKeyword("encoding")); 							
+							final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+		
+							return new VncString(IOStreamUtil.copyIStoString(is, encoding));
+						}
+					}
+					else if (Types.isVncJavaObject(arg, Reader.class)) {
+						final BufferedReader rd = new BufferedReader(
+														(Reader)(Coerce.toVncJavaObject(args.first()).getDelegate()));
+						final String s = rd.lines().collect(Collectors.joining(System.lineSeparator()));
+						
+						if (binary == True) {
+							final VncVal encVal = options.get(new VncKeyword("encoding")); 						
+							final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+
+							return new VncByteBuffer(s.getBytes(encoding));
+						}
+						else {
+							return new VncString(s);
+						}			
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp' does not allow %s as f",
 								Types.getType(args.first())));
-					}
-	
-					
-					final VncHashMap options = VncHashMap.ofAll(args.rest());
-	
-					final VncVal binary = options.get(new VncKeyword("binary")); 
-					
-					if (binary == True) {
-						final byte[] data = Files.readAllBytes(file.toPath());
-						
-						return new VncByteBuffer(ByteBuffer.wrap(data));
-					}
-					else {
-						final VncVal encVal = options.get(new VncKeyword("encoding")); 
-						
-						final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-	
-						final byte[] data = Files.readAllBytes(file.toPath());
-						
-						return new VncString(new String(data, encoding));
 					}
 				} 
 				catch (Exception ex) {
