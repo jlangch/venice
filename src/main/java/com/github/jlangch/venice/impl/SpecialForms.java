@@ -108,7 +108,7 @@ public class SpecialForms {
 				VncFunction
 				.meta()
 				.arglists("")		
-				.doc("Resolves a symbiol.")
+				.doc("Resolves a symbol.")
 				.examples("(resolve '+)", "(resolve (symbol \"+\"))")
 				.build()
 	) {
