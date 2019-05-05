@@ -569,6 +569,36 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_defn_multi_arity() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                      \n" +
+				"   (defn arity    ([] 0)                                 \n" +
+				"                  ([a] 1)                                \n" +
+				"                  ([a b] 2)                              \n" +
+				"                  ([a b c] 3))                           \n" +
+				"   (str (arity ) (arity 1) (arity 1 2) (arity 1 2 3)))     ";
+		
+		assertEquals("0123", venice.eval(s));
+	}
+
+	@Test
+	public void test_defn_multi_arity_remaining() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                                      \n" +
+				"   (defn arity    ([] 0)                                                 \n" +
+				"                  ([a & z] 1)                                            \n" +
+				"                  ([a b & z] 2)                                          \n" +
+				"                  ([a b c & z] 3))                                       \n" +
+				"   (str (arity ) (arity 1) (arity 1 2) (arity 1 2 3) (arity 1 2 3 4)))     ";
+		
+		assertEquals("01233", venice.eval(s));
+	}
+
+	@Test
 	public void test_let() {
 		final Venice venice = new Venice();
 		
