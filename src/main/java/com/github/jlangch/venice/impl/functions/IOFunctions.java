@@ -682,7 +682,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/slurp-lines file & options)")		
 					.doc(
-						"Read all lines from f. f may be a file, a string file path " +
+						"Read all lines from f. f may be a file, a string file path, " +
 						"a Java InputStream, or a Java Reader. \n" + 
 						"Defaults encoding=UTF-8. \n" +
 						"Options: :encoding \"UTF-8")
