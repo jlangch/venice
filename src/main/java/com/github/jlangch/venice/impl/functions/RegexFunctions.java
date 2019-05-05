@@ -157,7 +157,8 @@ public class RegexFunctions {
 				final List<VncVal> groups = new ArrayList<>();
 				if (m.matches()) {
 					for(int ii=0; ii<=m.groupCount(); ii++) {
-						groups.add(new VncString(m.group(ii)));
+						final String group = m.group(ii);
+						groups.add(group == null ? Nil : new VncString(group));
 					}
 				}
 				return new VncList(groups);
@@ -278,7 +279,13 @@ public class RegexFunctions {
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				final int g = Coerce.toVncLong(args.second()).getValue().intValue();		
 					
-				return g >= 0 && g <= m.groupCount() ? new VncString(m.group(g)) : Nil;
+				if (g >= 0 && g <= m.groupCount()) {
+					final String group = m.group(g);
+					return group == null ? Nil : new VncString(group);
+				}
+				else {
+					return Nil;
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
