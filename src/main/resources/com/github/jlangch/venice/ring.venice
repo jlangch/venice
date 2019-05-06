@@ -431,7 +431,7 @@
              uri (:uri req)
              handler (ring/get-route-handler verb uri compiled)]
          (when (:debug req false)
-               (println (str "Route: \"" uri "\" -> " (name handler))))
+               (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
          (handler req)))))
 
 
