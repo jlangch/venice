@@ -88,7 +88,7 @@
     ; conversions by Java Interop. We want the Venice
     ; datatype in the session
     (if-let [session (:session req)]
-      (. session :putValue name (java-wrap value)))) ;
+      (. session :putValue name (java-wrap value))))
 
   (defn
     ^{:doc "Get a value from the session" }

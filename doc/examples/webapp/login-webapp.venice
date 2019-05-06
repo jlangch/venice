@@ -1,0 +1,222 @@
+;; Demo Web application with login/logout
+
+;; GUI state diagram
+;;
+;;                     [init]
+;;                        |
+;;                        |   +----------------+
+;;                        v   v                |
+;;                +---------------+  invalid   |
+;;                | not-logged-in |------------+
+;;                +---------------+            |
+;;                        | valid              |
+;;                        v                    |
+;;                +---------------+            | confirmed
+;;                |   logged-in   |            |
+;;                +---------------+            |
+;;                        | checkout           |
+;;                        v                    |
+;;                +---------------+            |
+;;                | checking-out  |------------+
+;;                +---------------+
+;;
+;; -----------------+-----------------------------------+-----------------------
+;; Event             Transitions                         Action
+;; -----------------+-----------------------------------+-----------------------
+;; NAVIGATE_TO_APP   [init] -> [not-logged-in]           display login screen
+;; LOGIN_FAILURE     [not-logged-in] -> [not-logged-in]  display login screen
+;; LOGIN_OK          [not-logged-in] -> [logged-in]      display main screen
+;; TO_CHECKOUT       [logged-in] -> [checking-out]       display checkout screen
+;; CHECKED_OUT       [checking-out] -> [not-logged-in]   display login screen
+;; SESSION_TIMEOUT   [*] -> [not-logged-in]              display login screen
+;; -----------------+-----------------------------------+-----------------------
+
+(load-module :tomcat)
+(load-module :ring)
+(load-module :kira)
+
+
+;; -----------------------------------------------------------------------------
+;; HTML templates
+;; -----------------------------------------------------------------------------
+
+(def tpl-login-screen (str/strip-indent """\
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  <html xmlns="//www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+  </head>
+  <body>
+    <form action="/login" method="post">
+      Username: <input type="text" name="user">
+      <br>
+      Password: <input type="password" name="pwd">
+      <br>
+      <input type="submit" value="Login">
+    </form>
+    <%(when (== type :failure) %>
+    <font color=red>Either user name or password is wrong.</font>
+    <%)%>
+    <%(when (== type :missing) %>
+    <font color=red>Either user name or password is missing.</font>
+    <%)%>
+  </body>
+  </html>"""))
+
+(def tpl-main-screen (str/strip-indent """\
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  <html xmlns="//www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+  </head>
+  <body>
+    <h3>Hi <%=username %>, Login successful. Your Session ID=<%=session-id %></h3>
+    <br>
+    <a href="/checkout">Checkout</a>
+    <form action="/logout" method="post">
+      <input type="submit" value="Logout" >
+    </form>
+  </body>
+  </html>"""))
+
+(def tpl-checkout-screen (str/strip-indent """\
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  <html xmlns="//www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+  </head>
+  <body>
+    <h3>Hi <%=username %>, do the checkout.</h3>
+    <br>
+    <form action="/logout" method="post">
+      <input type="submit" value="Logout">
+    </form>
+  </body>
+  </html>"""))
+
+(def style-css (str/strip-indent """\
+  body {
+  }
+
+  h1 {
+  }"""))
+
+
+;; -----------------------------------------------------------------------------
+;; HTML renderers
+;; -----------------------------------------------------------------------------
+
+(def render-login-screen (kira/fn [type] tpl-login-screen))
+
+(def render-checkout-screen (kira/fn [username] tpl-checkout-screen))
+
+(def render-main-screen (kira/fn [username session-id] tpl-main-screen))
+
+
+;; -----------------------------------------------------------------------------
+;; Logic
+;; -----------------------------------------------------------------------------
+
+(defn get-session-id [req]
+  (ring/session-id req))
+
+(defn get-username [req]
+  (ring/session-get-value req ":user-name"))
+
+(defn set-username [req username]
+  (ring/session-set-value req ":user-name" username))
+
+(defn remove-username [req]
+  (ring/session-remove-value req ":user-name"))
+
+(defn logged-in? [req]
+  (some? (get-username req)))
+
+(defn logout [req]
+  (ring/session-invalidate req))
+
+
+;; -----------------------------------------------------------------------------
+;; Handler
+;; -----------------------------------------------------------------------------
+
+(defn do-logout-handler [request]
+  (logout request)
+  (ring/redirect "/login"))
+
+(defn do-login-handler [request]
+  (let [user (first (get (:parameters request) "user"))
+        pwd (first (get (:parameters request) "pwd"))]
+    (if (or (empty? user) (empty? pwd))
+      (do
+        (remove-username request)
+        { :status 200
+          :headers { "Content-Type" "text/html; charset=utf-8" }
+          :body (render-login-screen :missing) })
+      (do
+        (set-username request user)
+        (ring/redirect "/main")))))
+
+(defn login-handler [request]
+  (if (logged-in? request)
+    (ring/redirect "/")
+    { :status 200
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (render-login-screen :ok)}))
+
+(defn main-handler [request]
+  (if (not (logged-in? request))
+    (ring/redirect "/login")
+    { :status 200
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (render-main-screen
+              (get-username request)
+              (get-session-id request))}))
+
+(defn checkout-handler [request]
+  (if (not (logged-in? request))
+    (ring/redirect "/login")
+    { :status 200
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (render-checkout-screen (get-username request)) }))
+
+(defn style-css-handler [request]
+    { :status 200
+      :headers { "Content-Type" "text/css; charset=utf-8" }
+      :body style-css })
+
+(defn not-found-handler [request]
+    { :status 404
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body "<html><body><p>Not Found</p></body></html>" })
+
+
+;; -----------------------------------------------------------------------------
+;; Main
+;; -----------------------------------------------------------------------------
+
+(def routes [
+  [:get  "/**"                main-handler       ]
+  [:get  "/login"             login-handler      ]
+  [:post "/login"             do-login-handler   ]
+  [:get  "/checkout"          checkout-handler   ]
+  [:post "/logout"            do-logout-handler  ]
+  [:get  "/favicon.ico"       not-found-handler  ]
+  [:get  "/static/style.css"  style-css-handler  ]
+])
+
+(tc/run-tomcat
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-dump)              ; ^  |
+                           (ring/mw-request-counter)   ; |  |
+                           (ring/mw-add-session 3600)  ; |  |
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on)))       ; +--+
+  {:await? false})

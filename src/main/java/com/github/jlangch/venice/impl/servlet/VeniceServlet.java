@@ -71,6 +71,10 @@ public class VeniceServlet extends HttpServlet {
 			final HttpServletRequest req, 
 			final HttpServletResponse resp
 	) throws ServletException, IOException {
+		// Triggers the lazy load of the parameter map for POST "application/x-www-form-urlencoded"
+		// requests. Accessing req.getParameterMap() via reflection does not seem to load
+		// the parameter map from x-www-form-urlencoded body.
+		req.getParameterMap();
 		delegate.doPost(req, resp, this);
 	}
 	

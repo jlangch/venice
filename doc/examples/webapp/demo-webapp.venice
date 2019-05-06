@@ -1,3 +1,5 @@
+;; Demo Web application
+
 (load-module :tomcat)
 (load-module :ring)
 
