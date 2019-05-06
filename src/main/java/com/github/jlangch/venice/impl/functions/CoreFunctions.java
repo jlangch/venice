@@ -5652,7 +5652,10 @@ public class CoreFunctions {
 				
 				final VncVal arg = args.first();
 				
-				if (Types.isVncKeyword(arg)) {
+				if (arg == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncKeyword(arg)) {
 					return new VncString(((VncKeyword)arg).getValue());
 				}
 				else if (Types.isVncSymbol(arg)) {
