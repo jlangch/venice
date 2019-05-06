@@ -186,6 +186,18 @@
           (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies req))))
     (handler req)))
 
+(defn
+  ^{ :doc "Dumps the response." }
+  ring/mw-dump-response
+  [res]
+  (println "Dump response:")
+  (println "   content-type: " (:content-type res))
+  (println "   encoding:     " (:character-encoding res))
+  (println "   headers:      ")
+  (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers res)))
+  (println "   cookies:      ")
+  (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies res))))
+
 
 ;; -----------------------------------------------------------------------------
 ;; Routing
@@ -207,6 +219,17 @@
 ;;    "/static/images/chart.png"
 ;;    "/static/images/*.png"
 ;;    "/static/**/*.png"
+;;
+;; Rigging up a Ring WEB App and starting Tomcat:
+;;    (tc/run-tomcat
+;;      (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+;;                                                           ;    |
+;;                               (ring/mw-dump)              ; ^  |
+;;                               (ring/mw-request-counter)   ; |  |
+;;                               (ring/mw-add-session 3600)  ; |  |
+;;                               (ring/mw-print-uri)         ; |  |
+;;                               (ring/mw-debug :on)))       ; +--+
+;;      {:await? false})
 
 (defn
   ^{ :doc "Compile the routes and provide the matching with the request URI" }
