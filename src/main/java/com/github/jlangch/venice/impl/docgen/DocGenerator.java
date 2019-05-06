@@ -259,6 +259,15 @@ public class DocGenerator {
 		trim.addItem(getDocItem("str/trim"));
 		trim.addItem(getDocItem("str/trim-to-nil"));
 
+		final DocSection encode = new DocSection("Encode/Decode");
+		strings.addSection(encode);
+		encode.addItem(getDocItem("str/encode-base64"));
+		encode.addItem(getDocItem("str/decode-base64"));
+		encode.addItem(getDocItem("str/encode-url"));
+		encode.addItem(getDocItem("str/decode-url"));
+		encode.addItem(getDocItem("str/escape-html"));
+		encode.addItem(getDocItem("str/escape-xml"));
+
 		final DocSection str_test = new DocSection("Test");
 		strings.addSection(str_test);
 		str_test.addItem(getDocItem("string?"));

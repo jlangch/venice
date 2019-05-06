@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added function `regex/matches`
 - added a simple templating module: [Kira](doc/readme/ext-kira.md)
+- added encoding/decoding functions for Base64 and URLs
+- added escape functions for HTML and XML
 
 ### fixed
 

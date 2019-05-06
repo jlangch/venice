@@ -26,7 +26,11 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +39,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -46,6 +51,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.Tuple2;
 
 
 public class StringFunctions {
@@ -1087,6 +1093,142 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_encode_base64 = 
+		new VncFunction(
+				"str/encode-base64", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/encode-base64 data)")		
+					.doc("Base64 encode.")
+					.examples("(str/encode-base64 (bytebuf [0 1 2 3 4 5 6]))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/encode-base64", args, 1);
+				
+				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();		
+				return new VncString(Base64.getEncoder().encodeToString(buf));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_decode_base64 = 
+		new VncFunction(
+				"str/decode-base64", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/decode-base64 s)")		
+					.doc("Base64 decode.")
+					.examples("(str/decode-base64 (str/encode-base64 (bytebuf [0 1 2 3 4 5 6])))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/decode-base64", args, 1);
+				
+				final String base64 = Coerce.toVncString(args.first()).getValue();		
+				return new VncByteBuffer(Base64.getDecoder().decode(base64));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_encode_url = 
+		new VncFunction(
+				"str/encode-url", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/encode-url s)")		
+					.doc("URL encode.")
+					.examples("(str/encode-url \"The string ü@foo-bar\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/encode-url", args, 1);
+				
+				try {
+					final String s = Coerce.toVncString(args.first()).getValue();		
+					return new VncString(URLEncoder.encode(s, "UTF-8"));
+				}
+				catch(UnsupportedEncodingException ex) {
+					throw new RuntimeException("Unsupported encoding", ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_decode_url = 
+		new VncFunction(
+				"str/decode-url", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/decode-url s)")		
+					.doc("URL decode.")
+					.examples("(str/decode-url \"The+string+%C3%BC%40foo-bar\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/decode-url", args, 1);
+				
+				try {
+					final String s = Coerce.toVncString(args.first()).getValue();		
+					return new VncString(URLDecoder.decode(s, "UTF-8"));
+				}
+				catch(UnsupportedEncodingException ex) {
+					throw new RuntimeException("Unsupported encoding", ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_escape_html = 
+		new VncFunction(
+				"str/escape-html", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/escape-html s)")		
+					.doc("HTML escape.")
+					.examples("(str/escape-html \"1 2 3 & < > \\\" '\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/escape-html", args, 1);
+				
+				final String s = Coerce.toVncString(args.first()).getValue();
+				return new VncString(replace(s, HTML_ESCAPES));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_escape_xml = 
+		new VncFunction(
+				"str/escape-xml", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/escape-xml s)")		
+					.doc("XML escape.")
+					.examples("(str/escape-xml \"1 2 3 & < > \\\" '\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/escape-xml", args, 1);
+				
+				final String s = Coerce.toVncString(args.first()).getValue();
+				return new VncString(replace(s, XML_ESCAPES));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 
 	private static List<Object> toJavaObjects(final VncList list) {
 		return list
@@ -1096,6 +1238,34 @@ public class StringFunctions {
 				.collect(Collectors.toList());
 	}
 	
+	private static String replace(final String str, final List<Tuple2<String,String>> replacements) {
+		if (str == null || str.isEmpty()) {
+			return str;
+		}
+		
+		String s = str;
+		for(Tuple2<String,String> r : replacements) {
+			s = s.replace(r._1, r._2);
+		}
+		return s;
+	}
+	
+	private static final List<Tuple2<String,String>> XML_ESCAPES =
+			Arrays.asList(
+					Tuple2.of("&", "&amp;"),
+					Tuple2.of("<", "&lt;"),
+					Tuple2.of(">", "&gt;"),
+					Tuple2.of("\"", "&quot;"),
+					Tuple2.of("'", "&apos;"));
+
+	private static final List<Tuple2<String,String>> HTML_ESCAPES =
+			Arrays.asList(
+					Tuple2.of("&", "&amp;"),
+					Tuple2.of("<", "&lt;"),
+					Tuple2.of(">", "&gt;"),
+					Tuple2.of("\"", "&quot;"),
+					Tuple2.of("'", "&apos;"),
+					Tuple2.of("\u00A0", "&nbsp;"));
 
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -1135,5 +1305,11 @@ public class StringFunctions {
 					.put("str/strip-margin",		str_strip_margin)
 					.put("str/repeat",				str_repeat)
 					.put("str/char",				str_char)
+					.put("str/encode-base64",		str_encode_base64)
+					.put("str/decode-base64",		str_decode_base64)
+					.put("str/encode-url",			str_encode_url)
+					.put("str/decode-url",			str_decode_url)
+					.put("str/escape-html",			str_escape_html)
+					.put("str/escape-xml",			str_escape_xml)
 					.toMap();	
 }
