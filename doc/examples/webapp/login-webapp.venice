@@ -170,36 +170,43 @@
 
 (defn login-handler [request]
   (if (logged-in? request)
-    (ring/redirect "/")
+    (ring/redirect "/main")
     { :status 200
       :headers { "Content-Type" "text/html; charset=utf-8" }
       :body (render-login-screen :ok)}))
 
 (defn main-handler [request]
-  (if (not (logged-in? request))
-    (ring/redirect "/login")
-    { :status 200
-      :headers { "Content-Type" "text/html; charset=utf-8" }
-      :body (render-main-screen
-              (get-username request)
-              (get-session-id request))}))
+  { :status 200
+    :headers { "Content-Type" "text/html; charset=utf-8" }
+    :body (render-main-screen
+            (get-username request)
+            (get-session-id request))})
 
 (defn checkout-handler [request]
-  (if (not (logged-in? request))
-    (ring/redirect "/login")
-    { :status 200
-      :headers { "Content-Type" "text/html; charset=utf-8" }
-      :body (render-checkout-screen (get-username request)) }))
+  { :status 200
+    :headers { "Content-Type" "text/html; charset=utf-8" }
+    :body (render-checkout-screen (get-username request)) })
 
 (defn style-css-handler [request]
-    { :status 200
-      :headers { "Content-Type" "text/css; charset=utf-8" }
-      :body style-css })
+  { :status 200
+    :headers { "Content-Type" "text/css; charset=utf-8" }
+    :body style-css })
 
 (defn not-found-handler [request]
-    { :status 404
-      :headers { "Content-Type" "text/html; charset=utf-8" }
-      :body "<html><body><p>Not Found</p></body></html>" })
+  { :status 404
+    :headers { "Content-Type" "text/html; charset=utf-8" }
+    :body "<html><body><p>Not Found</p></body></html>" })
+
+
+;; -----------------------------------------------------------------------------
+;; Filter
+;; -----------------------------------------------------------------------------
+
+(defn logged-in-filter [handler]
+  (fn [req]
+    (if (not (logged-in? req))
+      (ring/redirect "/login")
+      (handler req))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -207,13 +214,13 @@
 ;; -----------------------------------------------------------------------------
 
 (def routes [
-  [:get  "/**"                main-handler       ]
-  [:get  "/login"             login-handler      ]
-  [:post "/login"             do-login-handler   ]
-  [:get  "/checkout"          checkout-handler   ]
-  [:post "/logout"            do-logout-handler  ]
-  [:get  "/favicon.ico"       not-found-handler  ]
-  [:get  "/static/style.css"  style-css-handler  ]
+  [:get  "/**"                (logged-in-filter main-handler)      ]
+  [:get  "/login"             login-handler                        ]
+  [:post "/login"             do-login-handler                     ]
+  [:get  "/checkout"          (logged-in-filter checkout-handler)  ]
+  [:post "/logout"            do-logout-handler                    ]
+  [:get  "/favicon.ico"       not-found-handler                    ]
+  [:get  "/static/style.css"  style-css-handler                    ]
 ])
 
 (tc/run-tomcat
