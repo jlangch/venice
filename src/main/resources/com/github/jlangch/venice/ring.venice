@@ -248,6 +248,12 @@
        (ring/write-body-to-stream body response-map output-stream)))))
 
 (defn
+  ^{ :doc "Redirect to the given URL." }
+  ring/redirect
+  [url]
+  (throw (. :RingRedirectException :new url)))
+
+(defn
   ^{ :doc "Create the request map from the HttpServletRequest object." }
   ring/build-request-map
   [request]
@@ -465,10 +471,12 @@
             (ring/write-body-to-stream (:body ring_res) res (. res :getOutputStream)))
         (ring/send-not-found res)))
     (catch :RingRedirectException ex
-      (ring/send-redirect res (:redirectUri ex)))
+      (ring/send-redirect req res (:redirectUri ex)))
     (catch :VncException ex
+      (. ex :printVeniceStackTrace)
       (ring/send-error res))
     (catch :Exception ex
+      (. ex :printStackTrace)
       (ring/send-error res))))
 
 (defn ring/create-servlet
