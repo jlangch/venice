@@ -1,33 +1,38 @@
+;; -----------------------------------------------------------------------------
 ;; Demo Web application with login/logout
-
+;; -----------------------------------------------------------------------------
+;;
 ;; GUI state diagram
 ;;
 ;;                     [init]
 ;;                        |
-;;                        |   +----------------+
-;;                        v   v                |
-;;                +---------------+  invalid   |
-;;                | not-logged-in |------------+
-;;                +---------------+            |
-;;                        | valid              |
-;;                        v                    |
-;;                +---------------+            | confirmed
-;;                |   logged-in   |            |
-;;                +---------------+            |
-;;                        | checkout           |
-;;                        v                    |
-;;                +---------------+            |
-;;                | checking-out  |------------+
+;;                        |   +--------------------+
+;;                        v   v                    |
+;;                +---------------+  LOGIN_FAILED  |
+;;                | not-logged-in |--------------->+
+;;                +---------------+                |
+;;                        | LOGIN_OK               |
+;;                        v                        |
+;;                +---------------+  LOGGED_OUT    |
+;;                |   logged-in   |--------------->+
+;;                +---------------+                |
+;;                        | CHECKOUT_SELECTED      |
+;;                        v                        |
+;;                +---------------+  LOGGED_OUT    |
+;;                | checking-out  |--------------->+
 ;;                +---------------+
+;;
+;; State transitions:
 ;;
 ;; -----------------+-----------------------------------+-----------------------
 ;; Event             Transitions                         Action
 ;; -----------------+-----------------------------------+-----------------------
-;; NAVIGATE_TO_APP   [init] -> [not-logged-in]           display login screen
-;; LOGIN_FAILURE     [not-logged-in] -> [not-logged-in]  display login screen
+;; NAVIGATED_TO_APP  [init] -> [not-logged-in]           display login screen
+;; LOGIN_FAILED      [not-logged-in] -> [not-logged-in]  display login screen
 ;; LOGIN_OK          [not-logged-in] -> [logged-in]      display main screen
-;; TO_CHECKOUT       [logged-in] -> [checking-out]       display checkout screen
-;; CHECKED_OUT       [checking-out] -> [not-logged-in]   display login screen
+;; CHECKOUT_SELECTED [logged-in] -> [checking-out]       display checkout screen
+;; LOGGED_OUT        [logged-in] -> [not-logged-in]      display login screen
+;; LOGGED_OUT        [checking-out] -> [not-logged-in]   display login screen
 ;; SESSION_TIMEOUT   [*] -> [not-logged-in]              display login screen
 ;; -----------------+-----------------------------------+-----------------------
 

@@ -1,4 +1,7 @@
-;; Demo Web application
+;; -----------------------------------------------------------------------------
+;; Demo "Hello World" Web application
+;; -----------------------------------------------------------------------------
+;;
 
 (load-module :tomcat)
 (load-module :ring)
@@ -13,17 +16,6 @@
     :headers { "Content-Type" "text/plain; charset=utf-8" }
     :body "Test" })
 
-(defn image-handler [request]
-  (let [name (last (str/split (:uri request) "/"))
-        file (io/file (io/user-dir) name)]
-    (if (io/exists-file? file)
-      { :status 200
-        :headers { "Content-Type" (io/mime-type name) }
-        :body file }
-      { :status 404
-        :headers { "Content-Type" "text/plain; charset=utf-8" }
-        :body "File not found" } )))
-
 ;; A route is defined by a HTTP verb, a URI filter and a handle
 ;; function.
 ;; If multiple routes match the route with the longest URI filter
@@ -32,7 +24,6 @@
   [:get "/**"                   hello-world-handler]
   [:get "/test"                 test-handler]
   [:get "/test/**"              test-handler]
-  [:get "/static/images/*.png"  image-handler]
 ])
 
 (tc/run-tomcat
