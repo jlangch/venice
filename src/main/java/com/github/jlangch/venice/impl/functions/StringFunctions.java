@@ -1195,7 +1195,7 @@ public class StringFunctions {
 					.module("str")
 					.arglists("(str/escape-html s)")		
 					.doc("HTML escape. Escapes &, <, >, \", ', and the non blocking space U+00A0")
-					.examples("(str/escape-html \"1 2 3 & < > \\\" '\")")
+					.examples("(str/escape-html \"1 2 3 & < > \\\" ' \\u00A0\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
