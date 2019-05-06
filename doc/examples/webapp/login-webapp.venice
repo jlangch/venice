@@ -68,7 +68,8 @@
     <font color=red>Either user name or password is missing.</font>
     <%)%>
   </body>
-  </html>"""))
+  </html>
+  """))
 
 (def tpl-main-screen (str/strip-indent """\
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -86,7 +87,8 @@
       <input type="submit" value="Logout" >
     </form>
   </body>
-  </html>"""))
+  </html>
+  """))
 
 (def tpl-checkout-screen (str/strip-indent """\
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -103,14 +105,16 @@
       <input type="submit" value="Logout">
     </form>
   </body>
-  </html>"""))
+  </html>
+  """))
 
 (def style-css (str/strip-indent """\
   body {
   }
 
   h1 {
-  }"""))
+  }
+  """))
 
 
 ;; -----------------------------------------------------------------------------
