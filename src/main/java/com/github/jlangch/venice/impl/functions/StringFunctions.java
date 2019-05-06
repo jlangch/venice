@@ -1107,8 +1107,14 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/encode-base64", args, 1);
 				
-				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();		
-				return new VncString(Base64.getEncoder().encodeToString(buf));
+				final VncVal arg = args.first();
+				if (arg == Nil) {
+					return Nil;
+				}
+				else {
+					final byte[] buf = Coerce.toVncByteBuffer(arg).getValue().array();		
+					return new VncString(Base64.getEncoder().encodeToString(buf));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1128,8 +1134,14 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/decode-base64", args, 1);
 				
-				final String base64 = Coerce.toVncString(args.first()).getValue();		
-				return new VncByteBuffer(Base64.getDecoder().decode(base64));
+				final VncVal arg = args.first();
+				if (arg == Nil) {
+					return Nil;
+				}
+				else {
+					final String base64 = Coerce.toVncString(arg).getValue();		
+					return new VncByteBuffer(Base64.getDecoder().decode(base64));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1150,8 +1162,14 @@ public class StringFunctions {
 				assertArity("str/encode-url", args, 1);
 				
 				try {
-					final String s = Coerce.toVncString(args.first()).getValue();		
-					return new VncString(URLEncoder.encode(s, "UTF-8"));
+					final VncVal arg = args.first();
+					if (arg == Nil) {
+						return Nil;
+					}
+					else {
+						final String s = Coerce.toVncString(arg).getValue();		
+						return new VncString(URLEncoder.encode(s, "UTF-8"));
+					}
 				}
 				catch(UnsupportedEncodingException ex) {
 					throw new RuntimeException("Unsupported encoding", ex);
@@ -1176,8 +1194,14 @@ public class StringFunctions {
 				assertArity("str/decode-url", args, 1);
 				
 				try {
-					final String s = Coerce.toVncString(args.first()).getValue();		
-					return new VncString(URLDecoder.decode(s, "UTF-8"));
+					final VncVal arg = args.first();
+					if (arg == Nil) {
+						return Nil;
+					}
+					else {
+						final String s = Coerce.toVncString(arg).getValue();		
+						return new VncString(URLDecoder.decode(s, "UTF-8"));
+					}
 				}
 				catch(UnsupportedEncodingException ex) {
 					throw new RuntimeException("Unsupported encoding", ex);
@@ -1201,8 +1225,14 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/escape-html", args, 1);
 				
-				final String s = Coerce.toVncString(args.first()).getValue();
-				return new VncString(replace(s, HTML_ESCAPES));
+				final VncVal arg = args.first();
+				if (arg == Nil) {
+					return Nil;
+				}
+				else {
+					final String s = Coerce.toVncString(arg).getValue();
+					return new VncString(replace(s, HTML_ESCAPES));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1222,8 +1252,14 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/escape-xml", args, 1);
 				
-				final String s = Coerce.toVncString(args.first()).getValue();
-				return new VncString(replace(s, XML_ESCAPES));
+				final VncVal arg = args.first();
+				if (arg == Nil) {
+					return Nil;
+				}
+				else {
+					final String s = Coerce.toVncString(arg).getValue();
+					return new VncString(replace(s, XML_ESCAPES));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
