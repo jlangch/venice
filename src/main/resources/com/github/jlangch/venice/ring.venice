@@ -21,45 +21,46 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Header utils
+;; Utils
 ;; -----------------------------------------------------------------------------
-(def
-  ^{:doc "Pattern for pulling the charset out of the content-type header" }
-  ring/regex-charset
-  (regex/pattern ".*charset=([^\\s;]+).*"))
+
+(defn
+  ^{ :doc "Redirect to the given URL." }
+  ring/redirect
+  [url]
+  (throw (. :RingRedirectException :new url)))
 
 (defn
   ^{ :doc (str/strip-indent """\
-        Looks up a header in a Ring response (or request) case insensitively,
-        returning the header map entry, or nil if not present.""" ) }
-  ring/find-header
-  [resp header-name]
-  (if (java-obj? resp)
-    (. resp :getHeader header-name)
-    (->> (:headers resp)
-         (filter #(str/equals-ignore-case? header-name (key %)))
-         (first))))
+        Returns the value of the specified request parameter. If the request
+        did not include a parameter of the specified name, this method returns
+        nil. If there are multiple parameters with the same name, this method
+        returns the first parameter in the request.""" ) }
+  ring/get-request-parameter
+  [req name]
+  (first (get (:parameters req) name)))
+
+(defn
+  ^{ :doc "Returns all the values of the specified request parameter as a list" }
+  ring/get-request-parameters
+  [req name]
+  (get (:parameters req) name))
 
 (defn
   ^{ :doc (str/strip-indent """\
-        Gets the character encoding of a Ring response.
-        E.g.: Content-Type: text/html; charset=utf-8""" ) }
-  ring/get-charset
-  [res]
-  (if-let [content-type (ring/find-header res "Content-Type")]
-    (let [m (regex/matcher ring/regex-charset content-type)]
-      (when (regex/matches? m)
-        (regex/group m 1)))))
+        Returns the value of the specified request header. If the request
+        did not include a header of the specified name, this method returns
+        nil. If there are multiple header with the same name, this method
+        returns the first header in the request.""" ) }
+  ring/get-request-header
+  [req name]
+  (first (get (:headers req) name)))
 
 (defn
-  ^{:doc "Return the HttpServletRequest cookies as a map" }
-  ring/get-cookies
-  [req]
-  (let [cookies (. req :getCookies)]
-    (if cookies
-      (reduce (fn [m c] (assoc m (. c :getName) c)) {} cookies)
-      {})))
-
+  ^{ :doc "Returns all the values of the specified request header as a list" }
+  ring/get-request-headers
+  [req name]
+  (get (:headers req) name))
 
 
 ;; -----------------------------------------------------------------------------
@@ -106,7 +107,187 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Request/Response utils
+;; Middleware
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :doc "Identity, does effectively just delegate" }
+  ring/mw-identity
+  [handler]
+  (fn [req] (handler req)))
+
+(defn
+  ^{ :doc "Turns debugging on/off" }
+  ring/mw-debug
+  [handler option]
+  (let [on (or (nil? option) (== option :on))]
+    (fn [req]
+      (handler (assoc req :debug on)))))
+
+(defn
+  ^{ :doc "Prints the URI." }
+  ring/mw-print-uri
+  [handler]
+  (fn [req]
+    (when (:debug req false)
+          (println (str "URI: " (:uri req))))
+    (handler req)))
+
+(defn
+  ^{ :doc "Counts the requests and stores the value in the session." }
+  ring/mw-request-counter
+  [handler]
+  (fn [req]
+    (let [id (ring/session-id req)
+          counter (inc (coalesce (ring/session-get-value req "request-counter") 0))]
+      (ring/session-set-value req "request-counter" counter)
+      (when (:debug req false)
+            (println (str "Session " id ", request #: " counter))))
+    (handler req)))
+
+(defn
+  ^{ :doc (str/strip-indent """\
+        Adds the session to the request. If a new session is created
+        the given timeout is set as the MaxInactiveInterval. If a
+        timeout is not given the session will never timeout.""" ) }
+  ring/mw-add-session
+  [handler timeout]
+  (fn [req]
+    (let [session (. (:servlet-request req) :getSession)]
+      (when (. session :isNew)
+        (when (:debug req false)
+              (println (str "Session " (. session :getId) " created")))
+        (. session :setMaxInactiveInterval (coalesce timeout -1)))
+      (handler (assoc req :session session)))))
+
+(defn
+  ^{ :doc "Dumps the request." }
+  ring/mw-dump
+  [handler]
+  (fn [req]
+    (when (:debug req false)
+          (println "Dump request:")
+          (println "   server-port:  " (long (:server-port req)))
+          (println "   server-name:  " (:server-name req))
+          (println "   remote-addr:  " (:remote-addr req))
+          (println "   scheme:       " (:scheme req))
+          (println "   uri:          " (:uri req))
+          (println "   query-string: " (:query-string req))
+          (println "   method:       " (:request-method req))
+          (println "   content-type: " (:content-type req))
+          (println "   encoding:     " (:character-encoding req))
+          (println "   context-path: " (:servlet-context-path req))
+          (println "   servlet-path: " (:servlet-path req))
+          (println "   headers:      ")
+          (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers req)))
+          (println "   parameters:   ")
+          (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:parameters req)))
+          (println "   cookies:      ")
+          (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies req))))
+    (handler req)))
+
+
+;; -----------------------------------------------------------------------------
+;; Routing
+;; -----------------------------------------------------------------------------
+
+;; A route is defined by a HTTP verb, a URI filter and a handle
+;; function. If multiple routes match the route with the longest
+;; URI filter will be chosen.
+;;
+;;    (def routes [
+;;      [:get "/**"                   hello-world-handler]
+;;      [:get "/test/**"              test-handler]
+;;      [:get "/static/images/*.png"  image-handler]
+;;    ])
+;;
+;; Routing URI filters:
+;;    "/**"
+;;    "/app/**"
+;;    "/static/images/chart.png"
+;;    "/static/images/*.png"
+;;    "/static/**/*.png"
+
+(defn
+  ^{ :doc "Compile the routes and provide the matching with the request URI" }
+  ring/match-routes
+  [routes]
+  (let [compiled (ring/compile-routes routes)]
+     (fn [req]
+       (let [verb (:request-method req)
+             uri (:uri req)
+             handler (ring/get-route-handler verb uri compiled)]
+         (when (:debug req false)
+               (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
+         (handler req)))))
+
+
+;; -----------------------------------------------------------------------------
+;; Ring Servlet
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :doc "Create a ring servlet" }
+  ring/create-servlet
+ [handler]
+ (. :VeniceServlet :new
+   (proxify :IVeniceServlet
+     { :init (fn [config] nil)
+       :destroy (fn [] nil)
+       :doGet (fn [req res servlet] (ring/handle req res servlet handler))
+       :doHead (fn [req res servlet] (ring/handle req res servlet handler))
+       :doPost (fn [req res servlet] (ring/handle req res servlet handler))
+       :doPut (fn [req res servlet] (ring/handle req res servlet handler))
+       :doDelete (fn [req res servlet] (ring/handle req res servlet handler))
+       :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
+       :doTrace (fn [req res servlet] (ring/handle req res servlet handler))
+       :getLastModified (fn [req] -1) })))
+
+
+;; -----------------------------------------------------------------------------
+;; Header utils (internal)
+;; -----------------------------------------------------------------------------
+
+(def
+  ^{:doc "Pattern for pulling the charset out of the content-type header" }
+  ring/regex-charset
+  (regex/pattern ".*charset=([^\\s;]+).*"))
+
+(defn-
+  ^{ :doc (str/strip-indent """\
+        Looks up a header in a Ring response (or request) case insensitively,
+        returning the header map entry, or nil if not present.""" ) }
+  ring/find-header
+  [resp header-name]
+  (if (java-obj? resp)
+    (. resp :getHeader header-name)
+    (->> (:headers resp)
+         (filter #(str/equals-ignore-case? header-name (key %)))
+         (first))))
+
+(defn-
+  ^{ :doc (str/strip-indent """\
+        Gets the character encoding of a Ring response.
+        E.g.: Content-Type: text/html; charset=utf-8""" ) }
+  ring/get-charset
+  [res]
+  (if-let [content-type (ring/find-header res "Content-Type")]
+    (let [m (regex/matcher ring/regex-charset content-type)]
+      (when (regex/matches? m)
+        (regex/group m 1)))))
+
+(defn-
+  ^{:doc "Return the HttpServletRequest cookies as a map" }
+  ring/get-cookies
+  [req]
+  (let [cookies (. req :getCookies)]
+    (if cookies
+      (reduce (fn [m c] (assoc m (. c :getName) c)) {} cookies)
+      {})))
+
+
+;; -----------------------------------------------------------------------------
+;; Request/Response utils (internal)
 ;; -----------------------------------------------------------------------------
 
 (defn- ring/get-headers
@@ -230,7 +411,7 @@
                 "Response stream not supported for body type "
                                   (type body)))))))
 
-(defn
+(defn-
   ^{ :doc "Update the HttpServletResponse using a response map." }
   ring/update-servlet-response
   ([response response-map]
@@ -247,13 +428,7 @@
      (let [output-stream (ring/make-output-stream response async-context)]
        (ring/write-body-to-stream body response-map output-stream)))))
 
-(defn
-  ^{ :doc "Redirect to the given URL." }
-  ring/redirect
-  [url]
-  (throw (. :RingRedirectException :new url)))
-
-(defn
+(defn-
   ^{ :doc "Create the request map from the HttpServletRequest object." }
   ring/build-request-map
   [request]
@@ -274,7 +449,7 @@
    :ssl-client-cert    (ring/get-client-cert request)
    :body               (. request :getInputStream)})
 
- (defn
+ (defn-
    ^{ :doc "Associate servlet-specific keys with the request map." }
    ring/merge-servlet-keys
    [request-map servlet request response]
@@ -287,107 +462,14 @@
            :servlet-context-path (. request :getContextPath) }))
 
 
-
 ;; -----------------------------------------------------------------------------
-;; Middleware
-;; -----------------------------------------------------------------------------
-
-(defn ring/mw-identity
-  [handler]
-  (fn [req] (handler req)))
-
-(defn ring/mw-debug
-  ^{ :doc "Turns debugging on/off" }
-  [handler option]
-  (let [on (or (nil? option) (== option :on))]
-    (fn [req]
-      (handler (assoc req :debug on)))))
-
-(defn ring/mw-print-uri
-  ^{ :doc "Prints the URI." }
-  [handler]
-  (fn [req]
-    (when (:debug req false)
-          (println (str "URI: " (:uri req))))
-    (handler req)))
-
-(defn ring/mw-request-counter
-  ^{ :doc "Counts the requests and stores the value in the session." }
-  [handler]
-  (fn [req]
-    (let [id (ring/session-id req)
-          counter (inc (coalesce (ring/session-get-value req "request-counter") 0))]
-      (ring/session-set-value req "request-counter" counter)
-      (when (:debug req false)
-            (println (str "Session " id ", request #: " counter))))
-    (handler req)))
-
-(defn
-  ^{ :doc (str/strip-indent """\
-        Adds the session to the request. If a new session is created
-        the given timeout is set as the MaxInactiveInterval. If a
-        timeout is not given the session will never timeout.""" ) }
-  ring/mw-add-session
-  [handler timeout]
-  (fn [req]
-    (let [session (. (:servlet-request req) :getSession)]
-      (when (. session :isNew)
-        (when (:debug req false)
-              (println (str "Session " (. session :getId) " created")))
-        (. session :setMaxInactiveInterval (coalesce timeout -1)))
-      (handler (assoc req :session session)))))
-
-(defn ring/mw-dump
-  ^{ :doc "Dumps the request." }
-  [handler]
-  (fn [req]
-    (when (:debug req false)
-          (println "Dump request:")
-          (println "   server-port:  " (long (:server-port req)))
-          (println "   server-name:  " (:server-name req))
-          (println "   remote-addr:  " (:remote-addr req))
-          (println "   scheme:       " (:scheme req))
-          (println "   uri:          " (:uri req))
-          (println "   query-string: " (:query-string req))
-          (println "   method:       " (:request-method req))
-          (println "   content-type: " (:content-type req))
-          (println "   encoding:     " (:character-encoding req))
-          (println "   context-path: " (:servlet-context-path req))
-          (println "   servlet-path: " (:servlet-path req))
-          (println "   headers:      ")
-          (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers req)))
-          (println "   parameters:   ")
-          (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:parameters req)))
-          (println "   cookies:      ")
-          (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies req))))
-    (handler req)))
-
-
-
-;; -----------------------------------------------------------------------------
-;; Routing
+;; Routing (internal)
 ;; -----------------------------------------------------------------------------
 
-;; A route is defined by a HTTP verb, a URI filter and a handle
-;; function. If multiple routes match the route with the longest
-;; URI filter will be chosen.
-;;
-;;    (def routes [
-;;      [:get "/**"                   hello-world-handler]
-;;      [:get "/test/**"              test-handler]
-;;      [:get "/static/images/*.png"  image-handler]
-;;    ])
-;;
-;; Routing URI filters:
-;;    "/**"
-;;    "/app/**"
-;;    "/static/images/chart.png"
-;;    "/static/images/*.png"
-;;    "/static/**/*.png"
-
+; (str/split "/abc/**" "((?<=[*]{2})|(?=[*]{2}))")
 (defn ring/uri-regex
-  [uri]
-  (-> uri
+  [uri-filter]
+  (-> uri-filter
       (str/replace-all "?" "[?]")
       (str/replace-all "(" "[(]")
       (str/replace-all ")" "[)]")
@@ -398,7 +480,7 @@
       (str/replace-all "[@@]" ".*")
       (regex/pattern)))
 
-(defn ring/compile-routes
+(defn- ring/compile-routes
   [routes]
   (map
     (fn [r] { :verb (first r)
@@ -408,13 +490,13 @@
               :handler (third r) })
     routes))
 
-(defn ring/priority-route
+(defn- ring/priority-route
   [routes]
   (if (empty? routes)
     nil
     (:handler (last (sort #(compare (:len %1) (:len %2)) routes)))))
 
-(defn ring/get-route-handler
+(defn- ring/get-route-handler
   [verb uri routes]
   (ring/priority-route
     (filter (fn [route]
@@ -423,21 +505,9 @@
                        (regex/matches?))))
       routes)))
 
-(defn ring/match-routes
-  [routes]
-  (let [compiled (ring/compile-routes routes)]
-     (fn [req]
-       (let [verb (:request-method req)
-             uri (:uri req)
-             handler (ring/get-route-handler verb uri compiled)]
-         (when (:debug req false)
-               (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
-         (handler req)))))
-
-
 
 ;; -----------------------------------------------------------------------------
-;; Servlet
+;; Servlet (internal)
 ;; -----------------------------------------------------------------------------
 
 (defn- ring/send-not-found
@@ -477,18 +547,3 @@
     (catch :Exception ex
       (. ex :printStackTrace)
       (ring/send-error res))))
-
-(defn ring/create-servlet
-  [handler]
-  (. :VeniceServlet :new
-    (proxify :IVeniceServlet
-      { :init (fn [config] nil)
-        :destroy (fn [] nil)
-        :doGet (fn [req res servlet] (ring/handle req res servlet handler))
-        :doHead (fn [req res servlet] (ring/handle req res servlet handler))
-        :doPost (fn [req res servlet] (ring/handle req res servlet handler))
-        :doPut (fn [req res servlet] (ring/handle req res servlet handler))
-        :doDelete (fn [req res servlet] (ring/handle req res servlet handler))
-        :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
-        :doTrace (fn [req res servlet] (ring/handle req res servlet handler))
-        :getLastModified (fn [req] -1) })))
