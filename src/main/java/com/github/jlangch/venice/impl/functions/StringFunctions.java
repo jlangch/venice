@@ -1194,7 +1194,7 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/escape-html s)")		
-					.doc("HTML escape. Escapes &<>\"' and the non blocking space U+00A0")
+					.doc("HTML escape. Escapes &, <, >, \", ', and the non blocking space U+00A0")
 					.examples("(str/escape-html \"1 2 3 & < > \\\" '\")")
 					.build()
 		) {		
@@ -1215,7 +1215,7 @@ public class StringFunctions {
 					.meta()
 					.module("str")
 					.arglists("(str/escape-xml s)")		
-					.doc("XML escape. Escapes &<>\"'")
+					.doc("XML escape. Escapes &, <, >, \", '")
 					.examples("(str/escape-xml \"1 2 3 & < > \\\" '\")")
 					.build()
 		) {		
