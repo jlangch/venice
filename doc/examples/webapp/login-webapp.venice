@@ -161,8 +161,8 @@
   (ring/redirect "/login"))
 
 (defn do-login-handler [request]
-  (let [user (first (get (:parameters request) "user"))
-        pwd (first (get (:parameters request) "pwd"))]
+  (let [user (ring/get-request-parameter request "user")
+        pwd (ring/get-request-parameter request "pwd")]
     (if (or (empty? user) (empty? pwd))
       (do
         (remove-username request)
