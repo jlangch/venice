@@ -42,10 +42,11 @@ Venice Ring is a port of Clojure's Ring web applications library.
 ])
 
 (tc/run-tomcat
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           (ring/mw-request-counter)   ; ^  |
-                           (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)))       ; +--+
+  (ring/create-servlet (-> (ring/match-routes routes)  ;    >-+
+                                                       ; ^    |
+                           (ring/mw-request-counter)   ; |    |
+                           (ring/mw-add-session 3600)  ; |    |
+                           (ring/mw-print-uri)         ; |    |
+                           (ring/mw-debug :on)))       ; +----+
   {:await? false})
 ```
