@@ -45,6 +45,9 @@
 ;; HTML templates
 ;; -----------------------------------------------------------------------------
 
+;; The HTML templates are string based to have single file demo app.
+;; Templates can be loaded from classpath or filesystem if required so.
+
 (def tpl-login-screen (str/strip-indent """\
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html xmlns="//www.w3.org/1999/xhtml">
