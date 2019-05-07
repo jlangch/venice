@@ -96,6 +96,34 @@ public class RingModuleTest {
 		assertTrue(test("/a/a[3].png", "/a/a[3].png"));
 		assertTrue(test("/a/*.png", "/a/a[3].png"));
 	}
+
+	@Test
+	public void test_uri_filter_params() {
+		assertTrue(test("/a/:id", "/a/5000"));
+		assertTrue(test("/a/:id", "/a/XYZ"));
+		assertTrue(test("/a/:id", "/a/XYZ500_"));
+		
+		assertTrue(test("/a/b/:id", "/a/b/5000"));
+		assertTrue(test("/a/b/:id", "/a/b/XYZ"));
+		assertTrue(test("/a/b/:id", "/a/b/XYZ500_"));
+		
+		assertTrue(test("/a/b/:id/c", "/a/b/5000/c"));
+		assertTrue(test("/a/b/:id/c", "/a/b/XYZ/c"));
+		assertTrue(test("/a/b/:id/c", "/a/b/XYZ500_/c"));
+
+		
+		assertTrue(test("/a/:something_00", "/a/5000"));
+		assertTrue(test("/a/:something_00", "/a/XYZ"));
+		assertTrue(test("/a/:something_00", "/a/XYZ500_"));
+		
+		assertTrue(test("/a/b/:something_00", "/a/b/5000"));
+		assertTrue(test("/a/b/:something_00", "/a/b/XYZ"));
+		assertTrue(test("/a/b/:something_00", "/a/b/XYZ500_"));
+		
+		assertTrue(test("/a/b/:something_00/c", "/a/b/5000/c"));
+		assertTrue(test("/a/b/:something_00/c", "/a/b/XYZ/c"));
+		assertTrue(test("/a/b/:something_00/c", "/a/b/XYZ500_/c"));
+	}
 	
 	private static boolean test(
 			final String filter, 
@@ -108,7 +136,7 @@ public class RingModuleTest {
 				"   (load-module :ring)                             \n" +
 				"   (let [re (ring/uri-regex  \"" + filter + "\")]  \n" + 
 				"      (-> (regex/matcher re uri)                   \n" + 
-				"                       (regex/matches?)))          \n" + 
+				"          (regex/matches?)))                       \n" + 
 				")";
 
 		return (Boolean)venice.eval(script, Parameters.of("uri", uri));

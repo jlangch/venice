@@ -1824,19 +1824,19 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_match() {
+	public void test_match_Q() {
 		final Venice venice = new Venice();
 
-		assertTrue((Boolean)venice.eval("(match \"123\" \"[0-9]+\")"));
-		assertFalse((Boolean)venice.eval("(match \"123a\" \"[0-9]+\")"));
+		assertTrue((Boolean)venice.eval("(match? \"123\" \"[0-9]+\")"));
+		assertFalse((Boolean)venice.eval("(match? \"123a\" \"[0-9]+\")"));
 	}
 
 	@Test
-	public void test_match_not() {
+	public void test_match_not_Q() {
 		final Venice venice = new Venice();
 
-		assertFalse((Boolean)venice.eval("(match-not \"123\" \"[0-9]+\")"));
-		assertTrue((Boolean)venice.eval("(match-not \"123a\" \"[0-9]+\")"));
+		assertFalse((Boolean)venice.eval("(match-not? \"123\" \"[0-9]+\")"));
+		assertTrue((Boolean)venice.eval("(match-not? \"123a\" \"[0-9]+\")"));
 	}
 
 	@Test

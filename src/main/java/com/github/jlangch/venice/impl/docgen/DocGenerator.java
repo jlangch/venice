@@ -251,8 +251,8 @@ public class DocGenerator {
 
 		final DocSection regex = new DocSection("Regex");
 		strings.addSection(regex);
-		regex.addItem(getDocItem("match"));
-		regex.addItem(getDocItem("match-not"));
+		regex.addItem(getDocItem("match?"));
+		regex.addItem(getDocItem("match-not?"));
 
 		final DocSection trim = new DocSection("Trim");
 		strings.addSection(trim);
@@ -608,6 +608,7 @@ public class DocGenerator {
 		general.addItem(getDocItem("regex/matcher"));
 		general.addItem(getDocItem("regex/find"));
 		general.addItem(getDocItem("regex/find-group"));
+		general.addItem(getDocItem("regex/find-all-groups"));
 		general.addItem(getDocItem("regex/reset"));
 		general.addItem(getDocItem("regex/find?"));
 		general.addItem(getDocItem("regex/matches"));

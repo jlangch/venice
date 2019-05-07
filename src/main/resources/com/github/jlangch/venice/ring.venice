@@ -497,14 +497,22 @@
   ;;    5) compile pattern
   [uri-filter]
   (-<> uri-filter
+       (str/replace-all <> (regex/pattern ":[0-9a-zA-Z_]+") ":PARAM")
        (str/split <> "((?<=[*]{2})|(?=[*]{2}))")
        (map #(if (== "**" %) % (str/split % "((?<=[*])|(?=[*]))")) <>)
        (flatten <>)
-       (map #(if (or (== "**" %) (== "*" %)) % (str "\\Q" % "\\E")) <>)
+       (map #(if (== ":PARAM" %) % (str/split % "((?<=:PARAM)|(?=:PARAM))")) <>)
+       (flatten <>)
+       (map #(if (or (== "**" %) (== "*" %) (== ":PARAM" %)) % (str "\\Q" % "\\E")) <>)
        (map #(if (== "**" %) ".*" %) <>)
        (map #(if (== "*" %) "[^/]+" %) <>)
+       (map #(if (== ":PARAM" %) "[0-9a-zA-Z_]+" %) <>)
        (str/join "" <>)
        (regex/pattern <>)))
+
+(defn ring/uri-params
+  [uri-filter]
+  '())
 
 (defn- ring/compile-routes
   [routes]
@@ -512,6 +520,7 @@
     (fn [r] { :verb (first r)
               :uri (second r)
               :uri-regex (ring/uri-regex (second r))
+              :uri-params (ring/uri-params (second r))
               :len (count (second r))
               :handler (third r) })
     routes))

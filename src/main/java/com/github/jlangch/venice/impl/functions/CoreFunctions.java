@@ -773,26 +773,28 @@ public class CoreFunctions {
 
 	public static VncFunction match_Q = 
 		new VncFunction(
-				"match", 
+				"match?", 
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(match s regex)")		
+					.arglists("(match? s regex)")		
 					.doc("Returns true if the string s matches the regular expression regex")
-					.examples("(match \"1234\" \"[0-9]+\")", "(match \"1234ss\" \"[0-9]+\")")
+					.examples(
+							"(match? \"1234\" \"[0-9]+\")", 
+							"(match? \"1234ss\" \"[0-9]+\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("match", args, 2);
+				assertArity("match?", args, 2);
 				
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
-							"Invalid first argument type %s while calling function 'match'",
+							"Invalid first argument type %s while calling function 'match?'",
 							Types.getType(args.first())));
 				}
 				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
-							"Invalid second argument type %s while calling function 'match'",
+							"Invalid second argument type %s while calling function 'match?'",
 							Types.getType(args.second())));
 				}
 	
@@ -804,26 +806,28 @@ public class CoreFunctions {
 
 	public static VncFunction match_not_Q = 
 		new VncFunction(
-				"match-not", 
+				"match-not?", 
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(match-not s regex)")		
+					.arglists("(match-not? s regex)")		
 					.doc("Returns true if the string s does not match the regular expression regex")
-					.examples("(match-not \"1234\" \"[0-9]+\")", "(match-not \"1234ss\" \"[0-9]+\")")
+					.examples(
+						"(match-not? \"1234\" \"[0-9]+\")", 
+						"(match-not? \"1234ss\" \"[0-9]+\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("match-not", args, 2);
+				assertArity("match-not?", args, 2);
 				
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
-							"Invalid first argument type %s while calling function 'match-not'",
+							"Invalid first argument type %s while calling function 'match-not?'",
 							Types.getType(args.first())));
 				}
 				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
-							"Invalid second argument type %s while calling function 'match-not'",
+							"Invalid second argument type %s while calling function 'match-not?'",
 							Types.getType(args.second())));
 				}
 				
@@ -5958,8 +5962,8 @@ public class CoreFunctions {
 				.put(">",					gt)
 				.put(">=",					gte)
 
-				.put("match",				match_Q)
-				.put("match-not",			match_not_Q)
+				.put("match?",				match_Q)
+				.put("match-not?",			match_not_Q)
 				
 				.put("boolean",				boolean_cast)
 				.put("int",					int_cast)

@@ -464,7 +464,7 @@ public class StringFunctions {
 						"Replaces the all occurrances of search in s. " +
 						"The search arg may be a string or a regex pattern")
 					.examples(
-						"(str/replace-all \"abcdefabc\" \"ab\" \"XYZ\")",
+						"(str/replace-all \"abcdefabc\" \"ab\" \"__\")",
 						"(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
 					.build()
 		) {	

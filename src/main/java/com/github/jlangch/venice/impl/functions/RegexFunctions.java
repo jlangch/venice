@@ -264,6 +264,37 @@ public class RegexFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+		public static VncFunction find_all_groups = 
+			new VncFunction(
+					"regex/find-all-groups", 
+					VncFunction
+						.meta()
+						.module("regex")
+						.arglists("(regex/find-all-groups matcher)")		
+						.doc("Returns the all regex matchws and returns the groups")
+						.examples(
+							"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+							"  (regex/find-all-groups m))                              \n")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertArity("regex/find-all-groups", args, 1);
+		
+					final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+					final List<VncVal> groups = new ArrayList<>();
+					while (m.find()) {
+						groups.add(
+								VncHashMap.of(
+									new VncKeyword("start"), new VncLong(m.start()),
+									new VncKeyword("end"),  new VncLong(m.end()),
+									new VncKeyword("group"), new VncString(m.group())));
+					}
+					return new VncList(groups);
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction reset = 
 		new VncFunction(
 				"regex/reset", 
@@ -361,15 +392,16 @@ public class RegexFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-					.put("regex/pattern",		pattern)
-					.put("regex/matcher",		matcher)
-					.put("regex/find",			find)
-					.put("regex/find-group",	find_group)
-					.put("regex/reset",			reset)
-					.put("regex/find?",			find_Q)
-					.put("regex/matches",		matches)
-					.put("regex/matches?",		matches_Q)
-					.put("regex/group",			group)
-					.put("regex/groupcount",	groupcount)
+					.put("regex/pattern",			pattern)
+					.put("regex/matcher",			matcher)
+					.put("regex/find",				find)
+					.put("regex/find-group",		find_group)
+					.put("regex/find-all-groups",	find_all_groups)
+					.put("regex/reset",				reset)
+					.put("regex/find?",				find_Q)
+					.put("regex/matches",			matches)
+					.put("regex/matches?",			matches_Q)
+					.put("regex/group",				group)
+					.put("regex/groupcount",		groupcount)
 					.toMap();	
 }

@@ -11,7 +11,7 @@ Alternative to UNIX shell scripts:
 (do
    (defn tomcat-log-file-filter [prefix year month]
          (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]
-            (fn [dir name] (match name regex))))
+            (fn [dir name] (match? name regex))))
 
    (defn tomcat-log-file-zip [prefix dir year month]
          (io/file dir (str/format "%s.%d-%02d.zip" prefix year month)))
