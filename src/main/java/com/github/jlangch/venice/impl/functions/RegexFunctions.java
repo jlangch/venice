@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -141,7 +142,8 @@ public class RegexFunctions {
 						"java.util.regex.Matcher.matches(). Returns the " + 
 						"groups.")
 					.examples(
-						"(regex/matches \"hello, (.*)\" \"hello, world\")")
+						"(regex/matches \"hello, (.*)\" \"hello, world\")",
+						"(regex/matches \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\" \"672-345-456-212\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -226,6 +228,41 @@ public class RegexFunctions {
 		
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
+
+	public static VncFunction find_group = 
+		new VncFunction(
+				"regex/find-group", 
+				VncFunction
+					.meta()
+					.module("regex")
+					.arglists("(regex/find-group matcher)")		
+					.doc("Returns the next regex match and returns the group")
+					.examples(
+						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+						"   (println (regex/find-group m))                         \n" +
+						"   (println (regex/find-group m))                         \n" +
+						"   (println (regex/find-group m))                         \n" +
+						"   (println (regex/find-group m))                         \n" +
+						"   (println (regex/find-group m)))                        \n")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("regex/find-group", args, 1);
+	
+				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
+				if (m.find()) {
+					return VncHashMap.of(
+							new VncKeyword("start"), new VncLong(m.start()),
+							new VncKeyword("end"),  new VncLong(m.end()),
+							new VncKeyword("group"), new VncString(m.group()));
+				}
+				else {
+					return Nil;
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction reset = 
 		new VncFunction(
@@ -327,6 +364,7 @@ public class RegexFunctions {
 					.put("regex/pattern",		pattern)
 					.put("regex/matcher",		matcher)
 					.put("regex/find",			find)
+					.put("regex/find-group",	find_group)
 					.put("regex/reset",			reset)
 					.put("regex/find?",			find_Q)
 					.put("regex/matches",		matches)

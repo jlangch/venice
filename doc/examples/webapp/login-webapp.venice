@@ -120,9 +120,9 @@
   """))
 
 (def style-css (str/strip-indent """\
-  html, body {
+  html, body, button, input {
     font-family: Verdana,sans-serif;
-    font-size: 15px;
+    font-size: 20px;
     line-height: 1.5;
   }
 
@@ -144,7 +144,7 @@
     background-color: #4CAF50;
     color: white;
     padding: 14px 20px;
-    margin: 8px 0;
+    margin: 30px 0;
     border: none;
     cursor: pointer;
     width: 100%;
@@ -172,23 +172,11 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Logic
+;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn get-session-id [req]
-  (ring/session-id req))
-
-(defn get-username [req]
-  (ring/session-get-value req ":user-name"))
-
-(defn set-username [req username]
-  (ring/session-set-value req ":user-name" username))
-
-(defn remove-username [req]
-  (ring/session-remove-value req ":user-name"))
-
 (defn logged-in? [req]
-  (some? (get-username req)))
+  (some? (ring/session-get-value req ":user")))
 
 (defn logout [req]
   (ring/session-invalidate req))
@@ -207,12 +195,12 @@
         pwd (ring/get-request-parameter request "pwd")]
     (if (or (empty? user) (empty? pwd))
       (do
-        (remove-username request)
+        (ring/session-remove-value request ":user")
         { :status 200
           :headers { "Content-Type" "text/html; charset=utf-8" }
           :body (render-login-screen :missing) })
       (do
-        (set-username request user)
+        (ring/session-set-value request ":user" user)
         (ring/redirect "/main")))))
 
 (defn login-handler [request]
@@ -226,13 +214,14 @@
   { :status 200
     :headers { "Content-Type" "text/html; charset=utf-8" }
     :body (render-main-screen
-            (get-username request)
-            (get-session-id request))})
+            (ring/session-get-value request ":user")
+            (ring/session-id request))})
 
 (defn checkout-handler [request]
   { :status 200
     :headers { "Content-Type" "text/html; charset=utf-8" }
-    :body (render-checkout-screen (get-username request)) })
+    :body (render-checkout-screen
+            (ring/session-get-value request ":user")) })
 
 (defn style-css-handler [request]
   { :status 200

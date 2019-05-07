@@ -102,7 +102,7 @@ public class RegexFunctionsTest {
 		final String script =
 				"(let [p (regex/pattern \"([0-9]+)(.*)\")      \n" +
 				"      m (regex/matcher p \"100abc\")]         \n" +
-				"   (if (regex/matches? m)                      \n" +
+				"   (if (regex/matches? m)                     \n" +
 				"      [(regex/group m 1) (regex/group m 2)]   \n" +
 				"      []))                                      ";
 		
