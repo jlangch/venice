@@ -175,7 +175,7 @@ public class IOFunctionsTest {
 							"(count " +
 							"  (io/list-files " +
 							"         dir " +
-							"         (fn [f] (match (get f :name) \"spit-.*[.]txt\"))))", 
+							"         (fn [f] (match? (get f :name) \"spit-.*[.]txt\"))))", 
 							Parameters.of("dir", dir)));
 		}
 		catch(Exception ex) {

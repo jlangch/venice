@@ -54,13 +54,13 @@ public class VeniceElapsedTest {
 		final Venice venice = new Venice();
 		
 		final String script1 = 
-				"(or (match (get event :eventName) \"webapp[.](started|stopped)\") " +
+				"(or (match? (get event :eventName) \"webapp[.](started|stopped)\") " +
 				"    (== (get event :eventKey) \"superuser\") " +
 				"    (== (get event :eventType) \"ALERT\") " +
 				")";       
 
 		final String script2 = 
-				"(or (match eventName \"webapp[.](started|stopped)\") " +
+				"(or (match? eventName \"webapp[.](started|stopped)\") " +
 				"    (== eventKey \"superuser\") " +
 				"    (== eventType \"ALERT\") " +
 				")";       

@@ -7,16 +7,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.6.0] - 2019-05-xx
+## [1.5.2] - 2019-05-xx
 
 ### added
 
-- added functions `regex/find-group`, `regex/find-all-groups`
+- added functions `regex/find-group` and `regex/find-all-groups`
 
-### incompatible changes
+### changes
 
-- renamed function `match` to `match?` (`match` did not follow the naming conventions)
-- removed function `match-not` to `match-not?` (`match-not` did not follow the naming conventions)
+- added function `match?` that replaces `match`. `match` did not follow the naming conventions.
+- added function `match-not?` that replaces `match-not`. `match-not` did not follow the naming conventions.
+- function `match` is deprecated
+- function `match-not` is deprecated
 
 
 

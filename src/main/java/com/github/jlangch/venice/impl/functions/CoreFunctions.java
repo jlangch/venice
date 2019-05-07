@@ -5964,6 +5964,10 @@ public class CoreFunctions {
 
 				.put("match?",				match_Q)
 				.put("match-not?",			match_not_Q)
+
+				// deprecated (just for compatibility)
+				.put("match",				match_Q)
+				.put("match-not",			match_not_Q)
 				
 				.put("boolean",				boolean_cast)
 				.put("int",					int_cast)
