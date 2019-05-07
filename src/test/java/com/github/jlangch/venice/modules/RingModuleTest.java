@@ -97,7 +97,6 @@ public class RingModuleTest {
 		assertTrue(test("/a/*.png", "/a/a[3].png"));
 	}
 	
-
 	private static boolean test(
 			final String filter, 
 			final String uri
