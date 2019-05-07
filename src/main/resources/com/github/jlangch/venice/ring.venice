@@ -85,9 +85,8 @@
     ^{:doc "Sets a value on the session" }
     ring/session-set-value
     [req name value]
-    ; wrap the Venice datatypes to prevent Java object
-    ; conversions by Java Interop. We want the Venice
-    ; datatype in the session
+    ; wrap the Venice datatypes to prevent Java object conversions by
+    ; Java Interop. We want the Venice datatypes in the session
     (if-let [session (:session req)]
       (. session :putValue name (java-wrap value))))
 
@@ -489,19 +488,23 @@
 ;; Routing (internal)
 ;; -----------------------------------------------------------------------------
 
-; (str/split "/abc/**" "((?<=[*]{2})|(?=[*]{2}))")
 (defn ring/uri-regex
+  ;; "/abc/**/*.png"
+  ;;    1) split:     "/abc/" "**" "/" "*" ".png"
+  ;;    2) escape:    "\\Q/abc/\\E" "**" "\\Q/\\E" "*" "\\Q.png\\E"
+  ;;    3) translate: "\\Q/abc/\\E" ".*" "\\Q/\\E" "[^/]+" "\\Q.png\\E"
+  ;;    4) join
+  ;;    5) compile pattern
   [uri-filter]
-  (-> uri-filter
-      (str/replace-all "?" "[?]")
-      (str/replace-all "(" "[(]")
-      (str/replace-all ")" "[)]")
-      (str/replace-all "+" "[+]")
-      (str/replace-all "." "[.]")
-      (str/replace-all "**" "[@@]")
-      (str/replace-all "*" "[^/]+")
-      (str/replace-all "[@@]" ".*")
-      (regex/pattern)))
+  (-<> uri-filter
+       (str/split <> "((?<=[*]{2})|(?=[*]{2}))")
+       (map #(if (== "**" %) % (str/split % "((?<=[*])|(?=[*]))")) <>)
+       (flatten <>)
+       (map #(if (or (== "**" %) (== "*" %)) % (str "\\Q" % "\\E")) <>)
+       (map #(if (== "**" %) ".*" %) <>)
+       (map #(if (== "*" %) "[^/]+" %) <>)
+       (str/join "" <>)
+       (regex/pattern <>)))
 
 (defn- ring/compile-routes
   [routes]
