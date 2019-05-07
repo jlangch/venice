@@ -93,6 +93,8 @@ public class RingModuleTest {
 		assertTrue(test("/a/*.png", "/a/(x).png"));
 		assertTrue(test("/a/a{3}.png", "/a/a{3}.png"));
 		assertTrue(test("/a/*.png", "/a/a{3}.png"));
+		assertTrue(test("/a/a[3].png", "/a/a[3].png"));
+		assertTrue(test("/a/*.png", "/a/a[3].png"));
 	}
 	
 
