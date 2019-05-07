@@ -50,3 +50,8 @@ Venice Ring is a port of Clojure's Ring web applications library.
                            (ring/mw-debug :on)))       ; +----+
   {:await? false})
 ```
+
+
+## Demo WEB App with navigation and login/logout
+
+* [Demo WEB App](../examples/webapp/login-webapp.venice)
