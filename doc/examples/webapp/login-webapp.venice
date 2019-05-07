@@ -55,11 +55,15 @@
   </head>
   <body>
     <form action="/login" method="post">
-      Username: <input type="text" name="user">
-      <br>
-      Password: <input type="password" name="pwd">
-      <br>
-      <input type="submit" value="Login">
+      <div class="container">
+        <label for="user"><b>Username</b></label>
+        <input type="text" placeholder="Enter username" name="user" required>
+
+        <label for="pwd"><b>Password</b></label>
+        <input type="password" placeholder="Enter password" name="pwd" required>
+
+        <button type="submit">Login</button>
+      </div>
     </form>
     <%(when (== type :failure) %>
     <font color=red>Either user name or password is wrong.</font>
@@ -80,12 +84,14 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
   <body>
-    <h3>Hi <%=(str/escape-html username)%>, Login successful.
-        Your Session ID=<%=(str/escape-html session-id)%></h3>
-    <br>
+    <h3>Hi <%=(str/escape-html username)%></h3>
+    <p>Login successful</p>
+    <p>Your Session ID=<%=(str/escape-html session-id)%></p>
+    <p/>
     <a href="/checkout">Checkout</a>
+    <p/>
     <form action="/logout" method="post">
-      <input type="submit" value="Logout">
+      <button type="submit">Logout</button>
     </form>
   </body>
   </html>
@@ -100,20 +106,53 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
   <body>
-    <h3>Hi <%=(str/escape-html username)%>, do the checkout.</h3>
-    <br>
+    <h3>Hi <%=(str/escape-html username)%></h3>
+    <p>Please checkout.</p>
+    <p/>
     <form action="/logout" method="post">
-      <input type="submit" value="Logout">
+      <button type="submit">Logout</button>
     </form>
   </body>
   </html>
   """))
 
 (def style-css (str/strip-indent """\
-  body {
+  html, body {
+    font-family: Verdana,sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
   }
 
-  h1 {
+  form {
+    // border: 3px solid #f1f1f1;
+    width: 400px;
+  }
+
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .container {
+    padding: 16px;
   }
   """))
 
