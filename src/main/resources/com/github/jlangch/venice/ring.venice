@@ -83,6 +83,15 @@
     (. session :invalidate)))
 
 (defn
+  ^{:doc "Removes all attributes from the session" }
+  ring/session-clear
+  [req]
+  (if-let [session (:session req)]
+    (->> (. session :getAttributeNames)
+         (java-enumeration-to-list)
+         (docoll #(. session :removeAttribute %)))))
+
+(defn
   ^{:doc "Get the session ID" }
   ring/session-id
   [req]
@@ -199,7 +208,7 @@
           (println "   encoding:     " (:character-encoding req))
           (println "   context-path: " (:servlet-context-path req))
           (println "   servlet-path: " (:servlet-path req))
-          (println "   session:      " (:ring/session-id req))
+          (println "   session:      " (ring/session-id req))
           (println "   headers:      ")
           (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers req)))
           (println "   parameters:   ")

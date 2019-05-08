@@ -182,11 +182,8 @@
   (ring/session-set-value req ":user" user))
 
 (defn logout [req]
-  (clear-session req)
+  (ring/session-clear req)
   (ring/session-invalidate req))
-
-(defn clear-session [req]
-  (ring/session-remove-value req ":user"))
 
 
 ;; -----------------------------------------------------------------------------
@@ -202,7 +199,7 @@
         pwd (ring/get-request-parameter request "pwd")]
     (if (or (empty? user) (empty? pwd))
       (do
-        (clear-session request)
+        (ring/session-clear request)
         { :status 200
           :headers { "Content-Type" "text/html; charset=utf-8" }
           :body (render-login-screen :missing) })
