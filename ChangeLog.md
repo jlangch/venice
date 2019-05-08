@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added functions `regex/find-group` and `regex/find-all-groups`
+- added functions `regex/find-all`, `regex/find-group`, and `regex/find-all-groups`
 - added code completion for the REPL
 
 ### fixed
