@@ -48,7 +48,8 @@ public class ReplCompleter implements Completer {
     		final List<Candidate> candidates
     ) {
     	if (line.line().endsWith("(load-file ")) {
-       		listFileNames().forEach(f -> candidates.add(new Candidate("\"" + f + "\"")));
+       		listFileNames().forEach(f -> candidates.add(new Candidate(
+       										"\"" + f + "\"", f, null, null, null, null, true)));
     	}
     	else if (line.line().endsWith("(load-file \"")) {
     		listFileNames().forEach(f -> candidates.add(new Candidate(f)));
@@ -64,7 +65,8 @@ public class ReplCompleter implements Completer {
     		   .map(s -> s.getName())
     		   .filter(s -> (sym == null) || sym.isEmpty() || s.startsWith(sym))
     		   .sorted()
-    		   .forEach(s -> candidates.add(new Candidate("(" + s, s, null, null, null, null, true)));
+    		   .forEach(s -> candidates.add(new Candidate(
+    				   			"(" + s, s, null, null, null, null, true)));
      	}
     }
     

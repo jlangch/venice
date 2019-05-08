@@ -30,6 +30,54 @@ ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
 
 
+## Print documentation
+
+Print the documentation for a Venice function
+
+```clojure
+(doc zipmap)
+
+(doc +)
+```
+
+
+## Code Completion
+
+The REPL supports code completion. Completion is triggered by the `TAB` key.
+
+### Code completion for functions
+
+```text
+venice> (regex<TAB>
+regex/find              regex/matcher           regex/find-group
+regex/find?             regex/matches           regex/groupcount
+regex/group             regex/pattern           regex/find-all-groups
+regex/reset             regex/matches?
+```
+
+Cycle through the candidates with the `TAB` key or narrow the candidates by 
+typing more characters.
+
+
+### Code completion for loading a module
+
+```text
+venice> (load-module <TAB>
+:json     :kira     :math     :ring     :maven    :logger   :tomcat   :webdav   :xchart
+```
+
+
+### Code completion for loading a Venice file
+
+```text
+venice> (load-file <TAB>
+chart.venice             exception.venice         perf-test-1.venice
+indent.venice            parsatron.venice         perf-test-2.venice
+script.venice            chart-swing.venice       login-webapp.venice
+webdav.venice            demo-webapp.venice       vaadin-download.venice
+```
+
+
 ## REPL with 3rdParty jars
 
 To start the REPL with additional 3rdParty .jar files
