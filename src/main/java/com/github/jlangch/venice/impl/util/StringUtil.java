@@ -211,7 +211,7 @@ public class StringUtil {
 	}
 	
 	public static String emptyToNull(final String s) {
-		return s == null || s.isEmpty() ? null : s;
+		return isEmpty(s) ? null : s;
 	}
 	
 	public static String nullToEmpty(final String s) {

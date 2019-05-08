@@ -32,9 +32,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.WithCallStack;
@@ -326,11 +330,28 @@ public class Env implements Serializable {
 		all.putAll(globalSymbols);
 		return all;
 	}
-	
+
+	public List<VncSymbol> getAllGlobalFunctionSymbols() {
+		return getAllGlobalSymbols()
+				.entrySet()
+				.stream()
+				.filter(e -> e.getValue().getVal() instanceof VncFunction)
+				.map(e -> {
+					final VncFunction fn = (VncFunction)e.getValue().getVal();
+					return e.getKey()
+							.withMeta(VncHashMap.of(
+								new VncKeyword("group"), new VncString(fn.getModule()),
+								new VncKeyword("arglists"), fn.getArgLists(),
+								new VncKeyword("doc"), fn.getDoc()));
+				 })
+				.collect(Collectors.toList());
+	}
+
 	private PrintStream nullPrintStream() {
 		return new PrintStream(new NullOutputStream(), true);
 	}
 
+	
 	
 	private static final long serialVersionUID = 9002640180394221858L;
 

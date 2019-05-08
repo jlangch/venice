@@ -31,12 +31,15 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
+import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ReplCompleter implements Completer {
 	
-	public ReplCompleter(final VeniceInterpreter venice) {
+	public ReplCompleter(final VeniceInterpreter venice, final Env env) {
 		this.venice = venice;
+		this.env = env;
 	}
 
     public void complete(
@@ -45,28 +48,24 @@ public class ReplCompleter implements Completer {
     		final List<Candidate> candidates
     ) {
     	if (line.line().endsWith("(load-file ")) {
-    		for (String f : listFileNames()) {
-   		    	candidates.add(new Candidate("\"" + f + "\""));
-    		}
+       		listFileNames().forEach(f -> candidates.add(new Candidate("\"" + f + "\"")));
     	}
     	else if (line.line().endsWith("(load-file \"")) {
-    		for (String f : listFileNames()) {
-   		    	candidates.add(new Candidate(f));
-    		}
+    		listFileNames().forEach(f -> candidates.add(new Candidate(f)));
     	}
     	else if (line.line().endsWith("(load-module ")) {
-    		for (String m : venice.getAvailableModules()) {
-   		    	candidates.add(new Candidate(":" + m));
-    		}
-    	}
-
-    	
-//    	System.err.println("word(): " + line.word());
-//    	System.err.println("wordCursor(): " + line.wordCursor());
-//    	System.err.println("wordIndex(): " + line.wordIndex());
-//    	System.err.println("words(): " + line.words());
-//    	System.err.println("line(): " + line.line());
-//    	System.err.println("cursor(): " + line.cursor());
+    		venice.getAvailableModules()
+    			  .forEach(m -> candidates.add(new Candidate(":" + m)));
+     	}
+    	else if (line.word().startsWith("(")) {
+    		final String sym = StringUtil.trimToNull(line.word().substring(1));
+    		env.getAllGlobalFunctionSymbols()
+    		   .stream()
+    		   .map(s -> s.getName())
+    		   .filter(s -> (sym == null) || sym.isEmpty() || s.startsWith(sym))
+    		   .sorted()
+    		   .forEach(s -> candidates.add(new Candidate("(" + s, s, null, null, null, null, true)));
+     	}
     }
     
     private List<String> listFileNames() {
@@ -81,4 +80,5 @@ public class ReplCompleter implements Completer {
     
     
     private final VeniceInterpreter venice;
+	private final Env env;
 }

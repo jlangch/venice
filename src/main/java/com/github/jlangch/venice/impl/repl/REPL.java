@@ -115,10 +115,12 @@ public class REPL {
 									: System.out;
 		
 		venice = new VeniceInterpreter(interceptor);
+		
+		Env env = loadEnv(cli, ps);
 
 		final ReplParser parser = new ReplParser(venice);
 		
-		final ReplCompleter completer = new ReplCompleter(venice);
+		final ReplCompleter completer = new ReplCompleter(venice, env);
 		
 		final History history = new DefaultHistory();
 		
@@ -133,9 +135,6 @@ public class REPL {
 									.build();
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
-
-		
-		Env env = loadEnv(cli, ps);
 
 		// REPL loop
 		while (true) {
