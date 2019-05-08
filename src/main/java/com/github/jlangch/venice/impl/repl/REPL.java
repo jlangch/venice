@@ -118,6 +118,8 @@ public class REPL {
 
 		final ReplParser parser = new ReplParser(venice);
 		
+		final ReplCompleter completer = new ReplCompleter(venice);
+		
 		final History history = new DefaultHistory();
 		
 		final LineReader reader = LineReaderBuilder
@@ -125,7 +127,7 @@ public class REPL {
 									.appName("Venice")
 									.terminal(terminal)
 									.history(history)
-									//.completer(completer)
+									.completer(completer)
 									.parser(parser)
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.build();

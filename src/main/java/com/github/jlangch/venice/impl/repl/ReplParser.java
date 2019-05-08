@@ -42,8 +42,10 @@ public class ReplParser extends DefaultParser {
 			final ParseContext context
 	) throws SyntaxError {
 		try {
+			if (context != ParseContext.COMPLETE) {
+				venice.READ(line, "user");
+			}
 			eof = false;
-			venice.READ(line, "user");
 			return super.parse(line, cursor, context);
 		}
 		catch(EofException ex) {

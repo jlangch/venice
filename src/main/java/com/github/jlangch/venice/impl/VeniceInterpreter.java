@@ -168,6 +168,15 @@ public class VeniceInterpreter implements Serializable  {
 		
 		return env;
 	}
+	
+	public List<String> getAvailableModules() {
+		final List<String> modules = new ArrayList<>(ModuleLoader.VALID_MODULES);
+		modules.remove("core");
+		modules.remove("test");
+		modules.remove("http");
+		Collections.sort(modules);
+		return modules;
+	}
 
 
 	private VncVal evaluate(VncVal orig_ast, Env env) {
