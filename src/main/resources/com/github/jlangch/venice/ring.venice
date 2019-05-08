@@ -27,7 +27,9 @@
 (defn
   ^{ :doc "Redirect to the given URL." }
   ring/redirect
-  [url]
+  [request url]
+  (when (ring/debug? request)
+        (println (str "Redirect to: " url)))
   (throw (. :RingRedirectException :new url)))
 
 (defn
@@ -62,6 +64,10 @@
   [req name]
   (get (:headers req) name))
 
+(defn
+  ^{ :doc "Returns true if debugging is turned on else false" }
+  ring/debug? [req] (:debug req false))
+
 
 ;; -----------------------------------------------------------------------------
 ;; Session utils
@@ -72,6 +78,8 @@
   ring/session-invalidate
   [req]
   (if-let [session (:session req)]
+    (when (ring/debug? req)
+          (println (str "Session invalidated: " (. session :getId))))
     (. session :invalidate)))
 
 (defn
@@ -81,28 +89,42 @@
   (if-let [session (:session req)]
     (. session :getId)))
 
-  (defn
-    ^{:doc "Sets a value on the session" }
-    ring/session-set-value
-    [req name value]
-    ; wrap the Venice datatypes to prevent Java object conversions by
-    ; Java Interop. We want the Venice datatypes in the session
-    (if-let [session (:session req)]
-      (. session :putValue name (java-wrap value))))
+(defn
+  ^{:doc "Sets a value on the session" }
+  ring/session-set-value
+  [req name value]
+  ; wrap the Venice datatypes to prevent Java object conversions by
+  ; Java Interop. We want the Venice datatype in the session
+  (if-let [session (:session req)]
+    (. session :setAttribute name (java-wrap value))))
 
-  (defn
-    ^{:doc "Get a value from the session" }
-    ring/session-get-value
-    [req name]
-    (if-let [session (:session req)]
-      (. session :getValue name)))
+(defn
+  ^{:doc "Get a value from the session" }
+  ring/session-get-value
+  [req name]
+  (if-let [session (:session req)]
+    (. session :getAttribute name)))
 
-  (defn
-    ^{:doc "Remove a value from the session" }
-    ring/session-remove-value
-    [req name]
-    (if-let [session (:session req)]
-      (. session :removeValue name)))
+(defn
+  ^{:doc "Remove a value from the session" }
+  ring/session-remove-value
+  [req name]
+  (if-let [session (:session req)]
+    (. session :removeAttribute name)))
+
+(defn
+  ^{:doc "Returns the time (milliseconds since epoch) when this session was last accessed." }
+  ring/session-last-access-time
+  [req name]
+  (if-let [session (:session req)]
+    (. session :getLastAccessedTime)))
+
+(defn
+  ^{:doc "Returns the time (milliseconds since epoch) when this session was created." }
+  ring/session-creation-time
+  [req name]
+  (if-let [session (:session req)]
+    (. session :getCreationTime name)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -116,7 +138,7 @@
   (fn [req] (handler req)))
 
 (defn
-  ^{ :doc "Turns debugging on/off" }
+  ^{ :doc "Turns handler debugging on/off" }
   ring/mw-debug
   [handler option]
   (let [on (or (nil? option) (== option :on))]
@@ -128,7 +150,7 @@
   ring/mw-print-uri
   [handler]
   (fn [req]
-    (when (:debug req false)
+    (when (ring/debug? req)
           (println (str "URI: " (:uri req))))
     (handler req)))
 
@@ -140,7 +162,7 @@
     (let [id (ring/session-id req)
           counter (inc (coalesce (ring/session-get-value req "request-counter") 0))]
       (ring/session-set-value req "request-counter" counter)
-      (when (:debug req false)
+      (when (ring/debug? req)
             (println (str "Session " id ", request #: " counter))))
     (handler req)))
 
@@ -152,9 +174,9 @@
   ring/mw-add-session
   [handler timeout]
   (fn [req]
-    (let [session (. (:servlet-request req) :getSession)]
+    (let [session (. (:servlet-request req) :getSession true)]
       (when (. session :isNew)
-        (when (:debug req false)
+        (when (ring/debug? req)
               (println (str "Session " (. session :getId) " created")))
         (. session :setMaxInactiveInterval (coalesce timeout -1)))
       (handler (assoc req :session session)))))
@@ -164,7 +186,7 @@
   ring/mw-dump
   [handler]
   (fn [req]
-    (when (:debug req false)
+    (when (ring/debug? req)
           (println "Dump request:")
           (println "   server-port:  " (long (:server-port req)))
           (println "   server-name:  " (:server-name req))
@@ -177,6 +199,7 @@
           (println "   encoding:     " (:character-encoding req))
           (println "   context-path: " (:servlet-context-path req))
           (println "   servlet-path: " (:servlet-path req))
+          (println "   session:      " (:ring/session-id req))
           (println "   headers:      ")
           (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers req)))
           (println "   parameters:   ")
@@ -212,7 +235,7 @@
 ;;      [:get "/static/images/*.png"  image-handler]
 ;;    ])
 ;;
-;; Routing URI filters:
+;; Routing URI pattern filters:
 ;;    "/**"
 ;;    "/app/**"
 ;;    "/static/images/chart.png"
@@ -234,12 +257,12 @@
   ^{ :doc "Compile the routes and provide the matching with the request URI" }
   ring/match-routes
   [routes]
-  (let [compiled (ring/compile-routes routes)]
+  (let [compiled (ring/compile-routes-pattern-uri routes)]
      (fn [req]
        (let [verb (:request-method req)
              uri (:uri req)
              handler (ring/get-route-handler verb uri compiled)]
-         (when (:debug req false)
+         (when (ring/debug? req)
                (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
          (handler req)))))
 
@@ -497,29 +520,50 @@
   ;;    5) compile pattern
   [uri-filter]
   (-<> uri-filter
-       (str/replace-all <> (regex/pattern ":[0-9a-zA-Z_]+") ":PARAM")
        (str/split <> "((?<=[*]{2})|(?=[*]{2}))")
        (map #(if (== "**" %) % (str/split % "((?<=[*])|(?=[*]))")) <>)
        (flatten <>)
-       (map #(if (== ":PARAM" %) % (str/split % "((?<=:PARAM)|(?=:PARAM))")) <>)
-       (flatten <>)
-       (map #(if (or (== "**" %) (== "*" %) (== ":PARAM" %)) % (str "\\Q" % "\\E")) <>)
+       (map #(if (or (== "**" %) (== "*" %)) % (str "\\Q" % "\\E")) <>)
        (map #(if (== "**" %) ".*" %) <>)
        (map #(if (== "*" %) "[^/]+" %) <>)
-       (map #(if (== ":PARAM" %) "[0-9a-zA-Z_]+" %) <>)
+       (str/join "" <>)
+       (regex/pattern <>)))
+
+(defn ring/uri-regex-params
+  ;; /users/:id
+  ;; /users/:id/playlists
+  [uri-filter]
+  (-<> uri-filter
+       (str/replace-all <> (regex/pattern ":[0-9a-zA-Z_]+") ":PARAM")
+       (str/split <> "((?<=:PARAM)|(?=:PARAM))")
+       (map #(if (== ":PARAM" %) % (str/split % "((?<=:PARAM)|(?=:PARAM))")) <>)
+       (flatten <>)
+       (map #(if (== ":PARAM" %) "([0-9a-zA-Z_]+)" (str "\\Q" % "\\E")) <>)
        (str/join "" <>)
        (regex/pattern <>)))
 
 (defn ring/uri-params
   [uri-filter]
-  '())
+  (let [matcher (regex/matcher (ring/uri-regex-params uri-filter))]
+    (regex/find-all-groups matcher)))
 
-(defn- ring/compile-routes
-  [routes]
+(defn- ring/compile-routes-pattern-uri
+  [routes ]
   (map
     (fn [r] { :verb (first r)
               :uri (second r)
               :uri-regex (ring/uri-regex (second r))
+              :uri-params '()
+              :len (count (second r))
+              :handler (third r) })
+    routes))
+
+(defn- ring/compile-routes-parameter-uri
+  [routes ]
+  (map
+    (fn [r] { :verb (first r)
+              :uri (second r)
+              :uri-regex (ring/uri-regex-params (second r))
               :uri-params (ring/uri-params (second r))
               :len (count (second r))
               :handler (third r) })

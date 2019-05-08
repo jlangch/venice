@@ -178,8 +178,15 @@
 (defn logged-in? [req]
   (some? (ring/session-get-value req ":user")))
 
+(defn login [req user]
+  (ring/session-set-value req ":user" user))
+
 (defn logout [req]
+  (clear-session req)
   (ring/session-invalidate req))
+
+(defn clear-session [req]
+  (ring/session-remove-value req ":user"))
 
 
 ;; -----------------------------------------------------------------------------
@@ -188,24 +195,24 @@
 
 (defn do-logout-handler [request]
   (logout request)
-  (ring/redirect "/login"))
+  (ring/redirect request "/login"))
 
 (defn do-login-handler [request]
   (let [user (ring/get-request-parameter request "user")
         pwd (ring/get-request-parameter request "pwd")]
     (if (or (empty? user) (empty? pwd))
       (do
-        (ring/session-remove-value request ":user")
+        (clear-session request)
         { :status 200
           :headers { "Content-Type" "text/html; charset=utf-8" }
           :body (render-login-screen :missing) })
       (do
-        (ring/session-set-value request ":user" user)
-        (ring/redirect "/main")))))
+        (login request user)
+        (ring/redirect request "/main")))))
 
 (defn login-handler [request]
   (if (logged-in? request)
-    (ring/redirect "/main")
+    (ring/redirect request "/main")
     { :status 200
       :headers { "Content-Type" "text/html; charset=utf-8" }
       :body (render-login-screen :ok)}))
@@ -241,7 +248,7 @@
 (defn logged-in-filter [handler]
   (fn [req]
     (if (not (logged-in? req))
-      (ring/redirect "/login")
+      (ring/redirect req "/login")
       (handler req))))
 
 

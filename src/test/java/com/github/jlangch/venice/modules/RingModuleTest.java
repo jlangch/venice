@@ -34,98 +34,98 @@ public class RingModuleTest {
 
 	@Test
 	public void test_uri_filter() {
-		assertTrue(test("/", "/"));
-		assertFalse(test("/", "/a"));
+		assertTrue(test_filter("/", "/"));
+		assertFalse(test_filter("/", "/a"));
 
-		assertTrue(test("/**", "/"));
-		assertTrue(test("/**", "/a"));
-		assertTrue(test("/**", "/a/"));
-		assertTrue(test("/**", "/a/b"));
-		assertTrue(test("/**", "/a/b/"));
-		assertTrue(test("/**", "/a/b/c"));
+		assertTrue(test_filter("/**", "/"));
+		assertTrue(test_filter("/**", "/a"));
+		assertTrue(test_filter("/**", "/a/"));
+		assertTrue(test_filter("/**", "/a/b"));
+		assertTrue(test_filter("/**", "/a/b/"));
+		assertTrue(test_filter("/**", "/a/b/c"));
 
-		assertTrue(test("/x/**", "/x/"));
-		assertTrue(test("/x/**", "/x/a"));
-		assertTrue(test("/x/**", "/x/a/"));
-		assertTrue(test("/x/**", "/x/a/b"));
-		assertTrue(test("/x/**", "/x/a/b/"));
-		assertTrue(test("/x/**", "/x/a/b/c"));
-		assertFalse(test("/x/**", "/"));
-		assertFalse(test("/x/**", "/x"));
-		assertFalse(test("/x/**", "/a"));
-		assertFalse(test("/x/**", "/a/"));
-		assertFalse(test("/x/**", "/a/b"));
+		assertTrue(test_filter("/x/**", "/x/"));
+		assertTrue(test_filter("/x/**", "/x/a"));
+		assertTrue(test_filter("/x/**", "/x/a/"));
+		assertTrue(test_filter("/x/**", "/x/a/b"));
+		assertTrue(test_filter("/x/**", "/x/a/b/"));
+		assertTrue(test_filter("/x/**", "/x/a/b/c"));
+		assertFalse(test_filter("/x/**", "/"));
+		assertFalse(test_filter("/x/**", "/x"));
+		assertFalse(test_filter("/x/**", "/a"));
+		assertFalse(test_filter("/x/**", "/a/"));
+		assertFalse(test_filter("/x/**", "/a/b"));
 
-		assertFalse(test("/x/**/z", "/x/z"));
-		assertTrue(test("/x/**/z", "/x/a/z"));
-		assertTrue(test("/x/**/z", "/x/a/b/z"));
-		assertTrue(test("/x/**/z", "/x/a/b/c/z"));
-		assertFalse(test("/x/**/z", "/"));
-		assertFalse(test("/x/**/z", "/x"));
-		assertFalse(test("/x/**/z", "/z"));
-		assertFalse(test("/x/**/z", "/a"));
-		assertFalse(test("/x/**/z", "/a/"));
-		assertFalse(test("/x/**/z", "/a/b"));
-		assertFalse(test("/x/**/z", "/x/a/b/c/"));
-		assertFalse(test("/x/**/z", "/x/a/b/c/y"));
+		assertFalse(test_filter("/x/**/z", "/x/z"));
+		assertTrue(test_filter("/x/**/z", "/x/a/z"));
+		assertTrue(test_filter("/x/**/z", "/x/a/b/z"));
+		assertTrue(test_filter("/x/**/z", "/x/a/b/c/z"));
+		assertFalse(test_filter("/x/**/z", "/"));
+		assertFalse(test_filter("/x/**/z", "/x"));
+		assertFalse(test_filter("/x/**/z", "/z"));
+		assertFalse(test_filter("/x/**/z", "/a"));
+		assertFalse(test_filter("/x/**/z", "/a/"));
+		assertFalse(test_filter("/x/**/z", "/a/b"));
+		assertFalse(test_filter("/x/**/z", "/x/a/b/c/"));
+		assertFalse(test_filter("/x/**/z", "/x/a/b/c/y"));
 
-		assertFalse(test("/*.png", "/"));
-		assertTrue(test("/*.png", "/x.png"));
-		assertTrue(test("/a/*.png", "/a/x.png"));
-		assertTrue(test("/a/b/*.png", "/a/b/x.png"));
-		assertTrue(test("/a/b/c/*.png", "/a/b/c/x.png"));
+		assertFalse(test_filter("/*.png", "/"));
+		assertTrue(test_filter("/*.png", "/x.png"));
+		assertTrue(test_filter("/a/*.png", "/a/x.png"));
+		assertTrue(test_filter("/a/b/*.png", "/a/b/x.png"));
+		assertTrue(test_filter("/a/b/c/*.png", "/a/b/c/x.png"));
 
-		assertFalse(test("/**/*.png", "/x.png"));
-		assertTrue(test("/**/*.png", "/a/x.png"));
-		assertTrue(test("/**/*.png", "/a/b/x.png"));
-		assertTrue(test("/**/*.png", "/a/b/c/x.png"));
+		assertFalse(test_filter("/**/*.png", "/x.png"));
+		assertTrue(test_filter("/**/*.png", "/a/x.png"));
+		assertTrue(test_filter("/**/*.png", "/a/b/x.png"));
+		assertTrue(test_filter("/**/*.png", "/a/b/c/x.png"));
 
-		assertTrue(test("/**/test/*.png", "/a/test/x.png"));
-		assertTrue(test("/**/test/*.png", "/a/a/test/x.png"));
+		assertTrue(test_filter("/**/test/*.png", "/a/test/x.png"));
+		assertTrue(test_filter("/**/test/*.png", "/a/a/test/x.png"));
 
-		assertTrue(test("/**/test/**/*.png", "/a/test/b/x.png"));
-		assertTrue(test("/**/test/**/*.png", "/a/a/test/b/b/x.png"));
+		assertTrue(test_filter("/**/test/**/*.png", "/a/test/b/x.png"));
+		assertTrue(test_filter("/**/test/**/*.png", "/a/a/test/b/b/x.png"));
 
 		// special chars
-		assertTrue(test("/a/?.png", "/a/?.png"));
-		assertTrue(test("/a/*.png", "/a/?.png"));
-		assertTrue(test("/a/(x).png", "/a/(x).png"));
-		assertTrue(test("/a/*.png", "/a/(x).png"));
-		assertTrue(test("/a/a{3}.png", "/a/a{3}.png"));
-		assertTrue(test("/a/*.png", "/a/a{3}.png"));
-		assertTrue(test("/a/a[3].png", "/a/a[3].png"));
-		assertTrue(test("/a/*.png", "/a/a[3].png"));
+		assertTrue(test_filter("/a/?.png", "/a/?.png"));
+		assertTrue(test_filter("/a/*.png", "/a/?.png"));
+		assertTrue(test_filter("/a/(x).png", "/a/(x).png"));
+		assertTrue(test_filter("/a/*.png", "/a/(x).png"));
+		assertTrue(test_filter("/a/a{3}.png", "/a/a{3}.png"));
+		assertTrue(test_filter("/a/*.png", "/a/a{3}.png"));
+		assertTrue(test_filter("/a/a[3].png", "/a/a[3].png"));
+		assertTrue(test_filter("/a/*.png", "/a/a[3].png"));
 	}
 
 	@Test
 	public void test_uri_filter_params() {
-		assertTrue(test("/a/:id", "/a/5000"));
-		assertTrue(test("/a/:id", "/a/XYZ"));
-		assertTrue(test("/a/:id", "/a/XYZ500_"));
+		assertTrue(test_params("/a/:id", "/a/5000"));
+		assertTrue(test_params("/a/:id", "/a/XYZ"));
+		assertTrue(test_params("/a/:id", "/a/XYZ500_"));
 		
-		assertTrue(test("/a/b/:id", "/a/b/5000"));
-		assertTrue(test("/a/b/:id", "/a/b/XYZ"));
-		assertTrue(test("/a/b/:id", "/a/b/XYZ500_"));
+		assertTrue(test_params("/a/b/:id", "/a/b/5000"));
+		assertTrue(test_params("/a/b/:id", "/a/b/XYZ"));
+		assertTrue(test_params("/a/b/:id", "/a/b/XYZ500_"));
 		
-		assertTrue(test("/a/b/:id/c", "/a/b/5000/c"));
-		assertTrue(test("/a/b/:id/c", "/a/b/XYZ/c"));
-		assertTrue(test("/a/b/:id/c", "/a/b/XYZ500_/c"));
+		assertTrue(test_params("/a/b/:id/c", "/a/b/5000/c"));
+		assertTrue(test_params("/a/b/:id/c", "/a/b/XYZ/c"));
+		assertTrue(test_params("/a/b/:id/c", "/a/b/XYZ500_/c"));
 
 		
-		assertTrue(test("/a/:something_00", "/a/5000"));
-		assertTrue(test("/a/:something_00", "/a/XYZ"));
-		assertTrue(test("/a/:something_00", "/a/XYZ500_"));
+		assertTrue(test_params("/a/:something_00", "/a/5000"));
+		assertTrue(test_params("/a/:something_00", "/a/XYZ"));
+		assertTrue(test_params("/a/:something_00", "/a/XYZ500_"));
 		
-		assertTrue(test("/a/b/:something_00", "/a/b/5000"));
-		assertTrue(test("/a/b/:something_00", "/a/b/XYZ"));
-		assertTrue(test("/a/b/:something_00", "/a/b/XYZ500_"));
+		assertTrue(test_params("/a/b/:something_00", "/a/b/5000"));
+		assertTrue(test_params("/a/b/:something_00", "/a/b/XYZ"));
+		assertTrue(test_params("/a/b/:something_00", "/a/b/XYZ500_"));
 		
-		assertTrue(test("/a/b/:something_00/c", "/a/b/5000/c"));
-		assertTrue(test("/a/b/:something_00/c", "/a/b/XYZ/c"));
-		assertTrue(test("/a/b/:something_00/c", "/a/b/XYZ500_/c"));
+		assertTrue(test_params("/a/b/:something_00/c", "/a/b/5000/c"));
+		assertTrue(test_params("/a/b/:something_00/c", "/a/b/XYZ/c"));
+		assertTrue(test_params("/a/b/:something_00/c", "/a/b/XYZ500_/c"));
 	}
 	
-	private static boolean test(
+	private static boolean test_filter(
 			final String filter, 
 			final String uri
 	) {
@@ -137,6 +137,23 @@ public class RingModuleTest {
 				"   (let [re (ring/uri-regex  \"" + filter + "\")]  \n" + 
 				"      (-> (regex/matcher re uri)                   \n" + 
 				"          (regex/matches?)))                       \n" + 
+				")";
+
+		return (Boolean)venice.eval(script, Parameters.of("uri", uri));
+	}
+	
+	private static boolean test_params(
+			final String filter, 
+			final String uri
+	) {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                       \n" +
+				"   (load-module :ring)                                    \n" +
+				"   (let [re (ring/uri-regex-params  \"" + filter + "\")]  \n" + 
+				"      (-> (regex/matcher re uri)                          \n" + 
+				"          (regex/matches?)))                              \n" + 
 				")";
 
 		return (Boolean)venice.eval(script, Parameters.of("uri", uri));
