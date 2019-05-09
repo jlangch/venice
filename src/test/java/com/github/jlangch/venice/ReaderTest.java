@@ -269,7 +269,7 @@ public class ReaderTest {
 	}
 
 	@Test
-	public void testStringInterpolation_triple_with_single_quotes() {	
+	public void testStringInterpolation_triple_with_quotes_1() {	
 		assertEquals("100", new Venice().eval("(do (def x 100) \"\"\"~{x}\"\"\")"));
 		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} \"\"\")"));
 		assertEquals(" '100' ", new Venice().eval("(do (def x 100) \"\"\" '~{x}' \"\"\")"));
@@ -284,8 +284,29 @@ public class ReaderTest {
 	}
 
 	@Test
-	public void test_interpolate() {
+	public void testStringInterpolation_triple_with_quotes_2() {	
+		assertEquals("100", new Venice().eval("(do (def x 100) \"\"\"~(str x)\"\"\")"));
+		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~(str x) \"\"\")"));
+		assertEquals(" '100' ", new Venice().eval("(do (def x 100) \"\"\" '~(str x)' \"\"\")"));
+		assertEquals(" \"100 ", new Venice().eval("(do (def x 100) \"\"\" \"~(str x) \"\"\")"));
+		assertEquals(" \"100\" ", new Venice().eval("(do (def x 100) \"\"\" \"~(str x)\" \"\"\")"));
+
+		assertEquals("100200", new Venice().eval("(do (let [x 100 y 200] \"\"\"~(str x)~(str y)\"\"\"))"));
+		assertEquals(" 100 200 ", new Venice().eval("(do (let [x 100 y 200] \"\"\" ~(str x) ~(str y) \"\"\"))"));
+		assertEquals(" '100' '200' ", new Venice().eval("(do (let [x 100 y 200] \"\"\" '~(str x)' '~(str y)' \"\"\"))"));
+		assertEquals(" \"100 \"200", new Venice().eval("(do (let [x 100 y 200] \"\"\" \"~(str x) \"~(str y)\"\"\"))"));
+		assertEquals(" \"100\" \"200\" ", new Venice().eval("(do (let [x 100 y 200] \"\"\" \"~(str x)\" \"~(str y)\" \"\"\"))"));
+	}
+
+	@Test
+	public void test_interpolate_1() {
 		final VncVal val = Reader.interpolate(" \"~{x}\" ", "test", 1, 1);
+		assertNotNull(val);
+	}
+
+	@Test
+	public void test_interpolate_2() {
+		final VncVal val = Reader.interpolate(" \"~(str x)\" ", "test", 1, 1);
 		assertNotNull(val);
 	}
 

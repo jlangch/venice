@@ -222,10 +222,9 @@
             (ring/session-id request))})
 
 (defn rest-user-handler [request]
-  (let [user-id (-> request :parameters :id)]
-    { :status 200
-      :headers { "Content-Type" "application/json; charset=utf-8" }
-      :body """{ "user": "~{user-id}" }""" }))
+  { :status 200
+    :headers { "Content-Type" "application/json; charset=utf-8" }
+    :body """{ "user": "~(-> request :parameters :id)" }""" })
 
 (defn checkout-handler [request]
   { :status 200

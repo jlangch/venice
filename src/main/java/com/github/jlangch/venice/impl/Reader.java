@@ -100,8 +100,16 @@ public class Reader {
 	private Token next() {
 		return tokens.get(position++);
 	}
-	
+
 	public static ArrayList<Token> tokenize(final String str, final String filename) {
+		return tokenize(str, filename, true); 
+	}
+
+	public static ArrayList<Token> tokenize(
+			final String str, 
+			final String filename, 
+			final boolean errorOnUnbalancedStringQuotes
+	) {
 		final char[] strArr = str.toCharArray();
 		final Matcher matcher = tokenize_pattern.matcher(str);
 
@@ -114,7 +122,7 @@ public class Reader {
 			if (token == null || token.equals("")) {
 				continue;
 			}
-			else if (token.startsWith("\"\"\"") && !token.endsWith("\"\"\"")) {
+			else if (token.startsWith("\"\"\"") && !token.endsWith("\"\"\"") && errorOnUnbalancedStringQuotes) {
 				// EOF in triple quoted string
 				final int tokenStartPos = matcher.start(1);			
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
@@ -122,7 +130,7 @@ public class Reader {
 							new Token(token, filename, tokenStartPos, pos[0], pos[1]), 
 							"Expected closing \"\"\" for triple quoted string but got EOF"));
 			}
-			else if (token.startsWith("\"") && !token.endsWith("\"")) {
+			else if (token.startsWith("\"") && !token.endsWith("\"") && errorOnUnbalancedStringQuotes) {
 				// EOL in single quoted string
 				final int tokenStartPos = matcher.start(1);			
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
@@ -374,8 +382,9 @@ public class Reader {
 				
 				final String rest = str.substring(pos);
 				if (rest.startsWith("~(")) {
-					final Reader rdr = reader(rest.substring(1), filename);
-					list.add(read_form(rdr));
+					final String s_ = rest.substring(1);
+					final Reader rdr = new Reader(filename, s_, tokenize(s_, filename, false));
+					list.add(read_list(rdr, new VncTinyList(), '(' , ')'));
 					
 					tail = rdr.unprocessedRest().substring(1);
 				}
