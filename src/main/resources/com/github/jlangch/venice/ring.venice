@@ -583,9 +583,10 @@
 
 (defn- ring/get-uri-param-names
   [uri-template]
-  (->  (regex/pattern ":[0-9a-zA-Z_]+")
-       (regex/matcher uri-template)
-       (regex/find-all)))
+  (-<> (regex/pattern ":[0-9a-zA-Z_]+")
+       (regex/matcher <> uri-template)
+       (regex/find-all <>)
+       (map #(keyword %) <>)))
 
 (defn- ring/get-uri-param-values
   [uri-regex uri]
@@ -607,8 +608,8 @@
     { :verb (first route)
       :uri (second route)
       :uri-regex regex
-      :uri-params-names (ring/get-uri-param-names (second route))
-      :uri-params-values (fn [uri] (ring/get-uri-param-values regex uri))
+      :uri-param-names (ring/get-uri-param-names (second route))
+      :uri-param-values (fn [uri] (ring/get-uri-param-values regex uri))
       :len (count (second route))
       :handler (third route) }))
 
