@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Token;
+import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class ReaderTest {
@@ -268,10 +270,23 @@ public class ReaderTest {
 
 	@Test
 	public void testStringInterpolation_triple_with_single_quotes() {	
+		assertEquals("100", new Venice().eval("(do (def x 100) \"\"\"~{x}\"\"\")"));
 		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} \"\"\")"));
 		assertEquals(" '100' ", new Venice().eval("(do (def x 100) \"\"\" '~{x}' \"\"\")"));
 		assertEquals(" \"100 ", new Venice().eval("(do (def x 100) \"\"\" \"~{x} \"\"\")"));
 		assertEquals(" \"100\" ", new Venice().eval("(do (def x 100) \"\"\" \"~{x}\" \"\"\")"));
+
+		assertEquals("100200", new Venice().eval("(do (let [x 100 y 200] \"\"\"~{x}~{y}\"\"\"))"));
+		assertEquals(" 100 200 ", new Venice().eval("(do (let [x 100 y 200] \"\"\" ~{x} ~{y} \"\"\"))"));
+		assertEquals(" '100' '200' ", new Venice().eval("(do (let [x 100 y 200] \"\"\" '~{x}' '~{y}' \"\"\"))"));
+		assertEquals(" \"100 \"200", new Venice().eval("(do (let [x 100 y 200] \"\"\" \"~{x} \"~{y}\"\"\"))"));
+		assertEquals(" \"100\" \"200\" ", new Venice().eval("(do (let [x 100 y 200] \"\"\" \"~{x}\" \"~{y}\" \"\"\"))"));
+	}
+
+	@Test
+	public void test_interpolate() {
+		final VncVal val = Reader.interpolate(" \"~{x}\" ", "test", 1, 1);
+		assertNotNull(val);
 	}
 
 }

@@ -187,13 +187,15 @@ public class Reader {
 		} 
 		else if (matcher.group(8) != null) {
 			// 8: string """
-			final String s = unescapeAndDecodeUnicode(matcher.group(8));			
-			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
+			final String s = unescapeAndDecodeUnicode(matcher.group(8));
+			return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
+						.withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(9) != null) {
 			// 9: string "
 			final String s = unescapeAndDecodeUnicode(matcher.group(9));			
-			return interpolate(s, rdr.filename).withMeta(MetaUtil.toMeta(token));
+			return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
+					.withMeta(MetaUtil.toMeta(token));
 		} 
 		else if (matcher.group(10) != null) {
 			// 10: keyword
@@ -351,7 +353,66 @@ public class Reader {
 		return form;
 	}
 	
-	private static VncVal interpolate(final String s, final String filename) {
+	public static VncVal interpolate(final String s, final String filename, final int line, final int column) {
+		// this is a reader macro implemented in Java
+		
+		int pos = getFirstInterpolationFormStartPos(s);
+		if (pos < 0) {
+			return new VncString(s);
+		}
+		else {
+			final List<VncVal> list = new ArrayList<>();
+			list.add(CoreFunctions.str);
+			
+			String str = s;
+			while (true) {
+				if (pos > 0) {
+					list.add(new VncString(str.substring(0, pos)));
+				}
+				
+				String tail;
+				
+				final String rest = str.substring(pos);
+				if (rest.startsWith("~(")) {
+					final Reader rdr = reader(rest.substring(1), filename);
+					list.add(read_form(rdr));
+					
+					tail = rdr.unprocessedRest().substring(1);
+				}
+				else if (rest.startsWith("~{")) {
+					final int endPos = rest.indexOf('}');
+					if (endPos > 2) {
+						final String expr = rest.substring(2, endPos);
+						final Reader rdr = reader(expr, filename);
+						list.add(read_form(rdr));
+						tail = rest.substring(endPos+1);
+					}
+					else {
+						throw new ParseError(formatParseError(
+								filename, line, column, 
+								"Invalid value interpolation expression\"~{..}\" "));
+					}
+				}
+				else {
+					throw new ParseError(formatParseError(
+							filename, line, column,
+							"Interpolation error. Expected \"~(\" or \"~{\""));
+				}
+				
+				pos = getFirstInterpolationFormStartPos(tail);
+				if (pos < 0) {
+					if (!tail.isEmpty()) {
+						list.add(new VncString(tail));
+					}
+					return new VncList(list);
+				}
+				
+				str = tail;
+			}						
+		}
+	}
+
+	public static VncVal interpolate_(final String s, final String filename) {
 		// this is a reader macro implemented in Java
 		
 		int pos = getFirstInterpolationFormStartPos(s);
@@ -388,7 +449,7 @@ public class Reader {
 			}						
 		}
 	}
-	
+
 	private static int getFirstInterpolationFormStartPos(final String s) {
 		final int p1 = s.indexOf("~{");
 		final int p2 = s.indexOf("~(");
@@ -458,8 +519,12 @@ public class Reader {
 		return new int[] {row,col};
 	}
 	
-	private static String formatParseError(final Token token, String format, Object... args) {
+	private static String formatParseError(final Token token, final String format, final Object... args) {
 		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(token);
+	}
+	
+	private static String formatParseError(final String filename, final int line, final int column, final String format, final Object... args) {
+		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(filename, line, column);
 	}
 
 	// (?s) makes the dot match all characters, including line breaks.

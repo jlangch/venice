@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### fixed
 
 - fixed demo WEB application
+- fixed a problem with `~{x}` string interpolation: `(let [a 1 b 2] """{ "~{a}": "~{b}" }""")`
+
 
 ### changes
 
