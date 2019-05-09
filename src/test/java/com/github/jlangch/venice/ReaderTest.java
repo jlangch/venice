@@ -266,4 +266,12 @@ public class ReaderTest {
 		assertEquals(" 101100 ", new Venice().eval("(do (def x 100) \"\"\" ~(inc x)~{x} \"\"\")"));
 	}
 
+	@Test
+	public void testStringInterpolation_triple_with_single_quotes() {	
+		assertEquals(" 100 ", new Venice().eval("(do (def x 100) \"\"\" ~{x} \"\"\")"));
+		assertEquals(" '100' ", new Venice().eval("(do (def x 100) \"\"\" '~{x}' \"\"\")"));
+		assertEquals(" \"100 ", new Venice().eval("(do (def x 100) \"\"\" \"~{x} \"\"\")"));
+		assertEquals(" \"100\" ", new Venice().eval("(do (def x 100) \"\"\" \"~{x}\" \"\"\")"));
+	}
+
 }

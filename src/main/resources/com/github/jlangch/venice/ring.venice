@@ -239,7 +239,7 @@
 ;;      {:await? false})
 
 (defn
-  ^{ :doc "Compile the routes and provide the matching with the request URI" }
+  ^{ :doc "Compile the routes and return a function that calls the handler matching the URI" }
   ring/match-routes
   [routes]
   (let [compiled (ring/compile-routes routes)]
@@ -253,7 +253,8 @@
                                 ((:uri-param-values route) uri))
              params (merge req-params uri-params)]
          (when (ring/debug? req)
-               (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
+               (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
+               (println (str "URI parameters: " uri-params)))
          (handler (assoc req :parameters params))))))
 
 
@@ -542,7 +543,7 @@
   [regex uri]
   (regex/matches? (regex/matcher regex uri)))
 
-(defn- ring/uri-filter-regex
+(defn ring/uri-filter-regex
   ;; handles URIs like:
   ;; "/abc/**/*.png"
   ;;    1) split:     "/abc/" "**" "/" "*" ".png"
@@ -561,7 +562,7 @@
        (str/join "" <>)
        (regex/pattern <>)))
 
-(defn- ring/uri-params-regex
+(defn ring/uri-params-regex
   ;; handles URIs like:
   ;;   /users/:id
   ;;   /users/:id/playlists/:playlistid

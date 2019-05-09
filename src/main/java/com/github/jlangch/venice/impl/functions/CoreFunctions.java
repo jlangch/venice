@@ -3408,7 +3408,7 @@ public class CoreFunctions {
 					.module("core")
 					.arglists("(not-empty? x)")		
 					.doc("Returns true if x is not empty")
-					.examples("(empty? {:a 1})", "(empty? [1 2])", "(empty? '(1 2))")
+					.examples("(not-empty? {:a 1})", "(not-empty? [1 2])", "(not-empty? '(1 2))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {

@@ -132,11 +132,11 @@ public class RingModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                \n" +
-				"   (load-module :ring)                             \n" +
-				"   (let [re (ring/uri-regex  \"" + filter + "\")]  \n" + 
-				"      (-> (regex/matcher re uri)                   \n" + 
-				"          (regex/matches?)))                       \n" + 
+				"(do                                                       \n" +
+				"   (load-module :ring)                                    \n" +
+				"   (let [re (ring/uri-filter-regex  \"" + filter + "\")]  \n" + 
+				"      (-> (regex/matcher re uri)                          \n" + 
+				"          (regex/matches?)))                              \n" + 
 				")";
 
 		return (Boolean)venice.eval(script, Parameters.of("uri", uri));
@@ -151,7 +151,7 @@ public class RingModuleTest {
 		final String script =
 				"(do                                                       \n" +
 				"   (load-module :ring)                                    \n" +
-				"   (let [re (ring/uri-regex-params  \"" + filter + "\")]  \n" + 
+				"   (let [re (ring/uri-params-regex  \"" + filter + "\")]  \n" + 
 				"      (-> (regex/matcher re uri)                          \n" + 
 				"          (regex/matches?)))                              \n" + 
 				")";
