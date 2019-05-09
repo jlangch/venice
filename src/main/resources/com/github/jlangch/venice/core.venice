@@ -333,16 +333,16 @@
                   "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
                   "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
 
-   list-comp [[binding coll-expr & bindings] body-expr]
+   list-comp [[binding_ coll-expr & bindings] body-expr]
 
-   (cond (not binding)
+   (cond (not binding_)
          `(list ~body-expr)
 
-         (== :when binding)
+         (== :when binding_)
          `(when ~coll-expr (list-comp ~bindings ~body-expr))
 
          :else
-         `(mapcat (fn [~binding] (list-comp ~bindings ~body-expr))
+         `(mapcat (fn [~binding_] (list-comp ~bindings ~body-expr))
                   ~coll-expr)))
 
 
@@ -573,18 +573,16 @@
       :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
                  "(zipmap [:a :b :c] [1 2 3 4 5])") }
 
-   zipmap
+   zipmap [keys vals]
 
-   [keys vals]
-
-      (loop [omap (ordered-map)
-             ks (seq keys)
-             vs (seq vals)]
-         (if (and (not-empty? ks) (not-empty? vs))
-            (recur (assoc omap (first ks) (first vs))
-                   (rest ks)
-                   (rest vs))
-            omap)))
+  (loop [omap (ordered-map)
+         ks (seq keys)
+         vs (seq vals)]
+     (if (and (not-empty? ks) (not-empty? vs))
+        (recur (assoc omap (first ks) (first vs))
+               (rest ks)
+               (rest vs))
+        omap)))
 
 
 (defn

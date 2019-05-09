@@ -242,7 +242,7 @@
   ^{ :doc "Compile the routes and provide the matching with the request URI" }
   ring/match-routes
   [routes]
-  (let [compiled (ring/compile-routes-pattern-uri routes)]
+  (let [compiled (ring/compile-routes-filter-uri routes)]
      (fn [req]
        (let [verb (:request-method req)
              uri (:uri req)
@@ -533,8 +533,13 @@
 ;; Routing (internal)
 ;; -----------------------------------------------------------------------------
 
-(defn ring/uri-regex
-  ;; "/abc/**/*.png"
+(defn ring/uri-matches-regex
+  [regex uri]
+  (regex/matches? (regex/matcher regex uri)))
+
+(defn ring/uri-filter-regex
+  ;; handles URIs like:
+  ;;    "/abc/**/*.png"
   ;;    1) split:     "/abc/" "**" "/" "*" ".png"
   ;;    2) escape:    "\\Q/abc/\\E" "**" "\\Q/\\E" "*" "\\Q.png\\E"
   ;;    3) translate: "\\Q/abc/\\E" ".*" "\\Q/\\E" "[^/]+" "\\Q.png\\E"
@@ -551,11 +556,18 @@
        (str/join "" <>)
        (regex/pattern <>)))
 
-(defn ring/uri-regex-params
-  ;; /users/:id
-  ;; /users/:id/playlists
-  [uri-filter]
-  (-<> uri-filter
+(defn ring/uri-params-regex
+  ;; handles URIs like:
+  ;;   /users/:id
+  ;;   /users/:id/playlists/:playlistid
+  ;;    1) mark:      "/users/:PARAM/playlists/:PARAM"
+  ;;    1) split:     "/users/" ":PARAM" "/playlists/" "*" ":PARAM"
+  ;;    2) escape:    "\\Q/users/\\E" ":PARAM" " "\\Q/playlists/\\E" ":PARAM"
+  ;;    3) translate: "\\Q/users/\\E" "([0-9a-zA-Z_]+)" " "\\Q/playlists/\\E" "([0-9a-zA-Z_]+)"
+  ;;    4) join
+  ;;    5) compile pattern
+  [uri-template]
+  (-<> uri-template
        (str/replace-all <> (regex/pattern ":[0-9a-zA-Z_]+") ":PARAM")
        (str/split <> "((?<=:PARAM)|(?=:PARAM))")
        (map #(if (== ":PARAM" %) % (str/split % "((?<=:PARAM)|(?=:PARAM))")) <>)
@@ -564,29 +576,35 @@
        (str/join "" <>)
        (regex/pattern <>)))
 
-(defn ring/uri-params
-  [uri-filter]
-  (let [matcher (regex/matcher (ring/uri-regex-params uri-filter))]
-    (regex/find-all-groups matcher)))
+(defn ring/get-uri-param-names
+  [uri-template]
+  (->  (regex/pattern ":[0-9a-zA-Z_]+")
+       (regex/matcher uri-template)
+       (regex/find-all)))
 
-(defn- ring/compile-routes-pattern-uri
-  [routes ]
+(defn ring/get-uri-params
+  [uri-filter uri]
+  (->  (ring/uri-regex-params uri-filter)
+       (rest (regex/matches uri))))
+
+(defn- ring/compile-routes-filter-uri
+  [routes]
   (map
     (fn [r] { :verb (first r)
               :uri (second r)
-              :uri-regex (ring/uri-regex (second r))
+              :uri-regex (ring/uri-filter-regex (second r))
               :uri-params '()
               :len (count (second r))
               :handler (third r) })
     routes))
 
-(defn- ring/compile-routes-parameter-uri
-  [routes ]
+(defn- ring/compile-routes-params-uri
+  [routes]
   (map
     (fn [r] { :verb (first r)
               :uri (second r)
-              :uri-regex (ring/uri-regex-params (second r))
-              :uri-params (ring/uri-params (second r))
+              :uri-regex (ring/uri-params-regex (second r))
+              :uri-params (ring/get-uri-param-names (second r))
               :len (count (second r))
               :handler (third r) })
     routes))
@@ -601,9 +619,8 @@
   [verb uri routes]
   (ring/priority-route
     (filter (fn [route]
-              (and (== verb (:verb route))
-                   (-> (regex/matcher (:uri-regex route) uri)
-                       (regex/matches?))))
+                (and (== verb (:verb route))
+                     (ring/uri-matches-regex (:uri-regex route) uri)))
       routes)))
 
 
@@ -639,8 +656,7 @@
       (if ring_res
         (do (ring/set-response-headers res (dissoc (:headers ring_res)))
             (ring/write-body-to-stream (:body ring_res) res (. res :getOutputStream)))
-        (do
-          (ring/send-not-found res))))
+        (do (ring/send-not-found res))))
     (catch :RingRedirectException ex
       (ring/send-redirect req res (:redirectUri ex)))
     (catch :VncException ex
