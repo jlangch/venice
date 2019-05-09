@@ -43,7 +43,7 @@ public class VncKeyword extends VncString implements IVncFunction {
 		FunctionsUtil.assertArity("keyword", args, 1, 2);
 		
 		if (args.first() == Constants.Nil) {
-			return Constants.Nil;
+			return args.second();
 		}
 		else {
 			final VncMap map = Coerce.toVncMap(args.first());

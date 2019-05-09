@@ -246,10 +246,15 @@
      (fn [req]
        (let [verb (:request-method req)
              uri (:uri req)
-             handler (ring/get-route-handler verb uri compiled)]
+             route (ring/get-route verb uri compiled)
+             handler (:handler route)
+             req-params (:parameters req)
+             uri-params (zipmap (:uri-param-names route '())
+                                ((:uri-param-values route) uri))
+             params (merge req-params uri-params)]
          (when (ring/debug? req)
                (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
-         (handler req)))))
+         (handler (assoc req :parameters params))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -592,7 +597,7 @@
     :uri (second route)
     :uri-regex (ring/uri-filter-regex (second route))
     :uri-param-names '()
-    :uri-param-values (fn [uri] {})
+    :uri-param-values (fn [uri] '())
     :len (count (second route))
     :handler (third route) })
 
@@ -620,9 +625,9 @@
   [routes]
   (if (empty? routes)
     nil
-    (:handler (last (sort #(compare (:len %1) (:len %2)) routes)))))
+    (last (sort #(compare (:len %1) (:len %2)) routes))))
 
-(defn- ring/get-route-handler
+(defn- ring/get-route
   [verb uri routes]
   (ring/priority-route
     (filter (fn [route]
