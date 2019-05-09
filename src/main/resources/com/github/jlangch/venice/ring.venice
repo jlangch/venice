@@ -242,7 +242,7 @@
   ^{ :doc "Compile the routes and provide the matching with the request URI" }
   ring/match-routes
   [routes]
-  (let [compiled (ring/compile-routes-filter-uri routes)]
+  (let [compiled (ring/compile-routes routes)]
      (fn [req]
        (let [verb (:request-method req)
              uri (:uri req)
@@ -537,9 +537,9 @@
   [regex uri]
   (regex/matches? (regex/matcher regex uri)))
 
-(defn ring/uri-filter-regex
+(defn- ring/uri-filter-regex
   ;; handles URIs like:
-  ;;    "/abc/**/*.png"
+  ;; "/abc/**/*.png"
   ;;    1) split:     "/abc/" "**" "/" "*" ".png"
   ;;    2) escape:    "\\Q/abc/\\E" "**" "\\Q/\\E" "*" "\\Q.png\\E"
   ;;    3) translate: "\\Q/abc/\\E" ".*" "\\Q/\\E" "[^/]+" "\\Q.png\\E"
@@ -556,7 +556,7 @@
        (str/join "" <>)
        (regex/pattern <>)))
 
-(defn ring/uri-params-regex
+(defn- ring/uri-params-regex
   ;; handles URIs like:
   ;;   /users/:id
   ;;   /users/:id/playlists/:playlistid
@@ -576,38 +576,45 @@
        (str/join "" <>)
        (regex/pattern <>)))
 
-(defn ring/get-uri-param-names
+(defn- ring/get-uri-param-names
   [uri-template]
   (->  (regex/pattern ":[0-9a-zA-Z_]+")
        (regex/matcher uri-template)
        (regex/find-all)))
 
-(defn ring/get-uri-params
-  [uri-filter uri]
-  (->  (ring/uri-regex-params uri-filter)
-       (rest (regex/matches uri))))
+(defn- ring/get-uri-param-values
+  [uri-regex uri]
+  (rest (regex/matches uri-regex uri)))
 
-(defn- ring/compile-routes-filter-uri
-  [routes]
-  (map
-    (fn [r] { :verb (first r)
-              :uri (second r)
-              :uri-regex (ring/uri-filter-regex (second r))
-              :uri-params '()
-              :len (count (second r))
-              :handler (third r) })
-    routes))
+(defn ring/compile-route-filter-uri
+  [route]
+  { :verb (first route)
+    :uri (second route)
+    :uri-regex (ring/uri-filter-regex (second route))
+    :uri-param-names '()
+    :uri-param-values (fn [uri] {})
+    :len (count (second route))
+    :handler (third route) })
 
-(defn- ring/compile-routes-params-uri
-  [routes]
-  (map
-    (fn [r] { :verb (first r)
-              :uri (second r)
-              :uri-regex (ring/uri-params-regex (second r))
-              :uri-params (ring/get-uri-param-names (second r))
-              :len (count (second r))
-              :handler (third r) })
-    routes))
+(defn ring/compile-route-params-uri
+  [route]
+  (let [regex (ring/uri-params-regex (second route))]
+    { :verb (first route)
+      :uri (second route)
+      :uri-regex regex
+      :uri-params-names (ring/get-uri-param-names (second route))
+      :uri-params-values (fn [uri] (ring/get-uri-param-values regex uri))
+      :len (count (second route))
+      :handler (third route) }))
+
+(defn ring/compile-routes
+ [routes]
+ (map
+   (fn [route]
+       (if (str/contains? (second route) ":")
+         (ring/compile-route-params-uri route)
+         (ring/compile-route-filter-uri route)))
+   routes))
 
 (defn- ring/priority-route
   [routes]
