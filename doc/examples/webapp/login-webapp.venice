@@ -185,6 +185,11 @@
   (ring/session-clear req)
   (ring/session-invalidate req))
 
+(def users
+   { "1000"  { :id "1000" :firstname "John" :lastname "Doe" }
+     "1001"  { :id "1001" :firstname "Ford" :lastname "Prefect" }
+     "1002"  { :id "1002" :firstname "Zaphod" :lastname "Beeblebrox" } } )
+
 
 ;; -----------------------------------------------------------------------------
 ;; Handler
@@ -222,9 +227,16 @@
             (ring/session-id request))})
 
 (defn rest-user-handler [request]
-  { :status 200
-    :headers { "Content-Type" "application/json; charset=utf-8" }
-    :body """{ "user": "~(-> request :parameters :id)" }""" })
+  (let [user-id (-> request :parameters :id)
+        user (get users user-id)]
+    (if user
+      { :status 200
+        :headers { "Content-Type" "application/json; charset=utf-8" }
+        :body """{ "id": "~(:id user)", "firstname": "~(:firstname user)", "lastname": "~(:lastname user)"}""" }
+      { :status 404
+        :headers { "Content-Type" "application/json; charset=utf-8" }
+        :body """{ "error": "user not found", "id": "~{user-id}"}""" })
+  ))
 
 (defn checkout-handler [request]
   { :status 200
