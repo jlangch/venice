@@ -26,6 +26,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +44,8 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
@@ -222,8 +226,16 @@ public class JavaInteropUtil {
 		return methodArgs;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static VncVal convertToVncVal(final Object value) {
+		return convertToVncVal(value, false, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static VncVal convertToVncVal(
+			final Object value, 
+			final boolean recursive,
+			final boolean mapIntToLong
+	) {
 		if (value == null) {
 			return Constants.Nil;
 		}
@@ -235,7 +247,9 @@ public class JavaInteropUtil {
 		}
 		else if (value instanceof Number) {
 			if (value instanceof Integer) {
-				return new VncInteger(((Integer)value));
+				return mapIntToLong 
+							? new VncLong((Integer)value)
+							: new VncInteger(((Integer)value));
 			}
 			else if (value instanceof Long) {
 				return new VncLong((Long)value);
@@ -266,13 +280,42 @@ public class JavaInteropUtil {
 			return new VncString(value.toString());
 		}
 		else if (value instanceof List) {
-			return new VncJavaList((List<Object>)value);
+			if (recursive) {
+				final List<VncVal> list = new ArrayList<>();
+				for(Object o : (List<Object>)value) {
+					list.add(convertToVncVal(o, recursive, mapIntToLong));
+				}
+				return new VncList(list);
+			}
+			else {
+				return new VncJavaList((List<Object>)value);
+			}
 		}
 		else if (value instanceof Set) {
-			return new VncJavaSet((Set<Object>)value);
+			if (recursive) {
+				final Set<VncVal> set = new HashSet<>();
+				for(Object o : (Set<Object>)value) {
+					set.add(convertToVncVal(o, recursive, mapIntToLong));
+				}
+				return VncHashSet.ofAll(set);
+			}
+			else {
+				return new VncJavaSet((Set<Object>)value);
+			}
 		}
 		else if (value instanceof Map) {
-			return new VncJavaMap((Map<Object,Object>)value);
+			if (recursive) {
+				final HashMap<VncVal,VncVal> map = new HashMap<>();
+				for(Map.Entry<Object, Object> o : ((Map<Object,Object>)value).entrySet()) {
+					map.put(
+						convertToVncVal(o.getKey(), recursive, mapIntToLong),
+						convertToVncVal(o.getValue(), recursive, mapIntToLong));
+				}
+				return new VncHashMap(map);
+			}
+			else {
+				return new VncJavaMap((Map<Object,Object>)value);
+			}
 		}
 		else if (value instanceof ByteBuffer) {
 			return new VncByteBuffer((ByteBuffer)value);

@@ -125,7 +125,10 @@ public class NanoJsonFunctions {
 				else {
 					try {
 						final VncString s = Coerce.toVncString(val);
-						return JavaInteropUtil.convertToVncVal(JsonParser.any().from(s.getValue()));
+						return JavaInteropUtil.convertToVncVal(
+									JsonParser.any().from(s.getValue()), 
+									true,
+									true);
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to parse JSON", ex);
