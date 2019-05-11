@@ -154,12 +154,12 @@
 
 
 (defmacro
-   ^{ :arglists '("(if-let bindings then)")
+   ^{ :arglists '("(if-let bindings then)" "(if-let bindings then else)")
       :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else"
       :examples (list (str/strip-margin
                         """(if-let [value (* 100 2)]
                           |    (str "The expression is true. value=" value)
-                          |    (str "The expression is false.))""" )) }
+                          |    (str "The expression is false."))""" )) }
 
    if-let [bindings then else]
 
