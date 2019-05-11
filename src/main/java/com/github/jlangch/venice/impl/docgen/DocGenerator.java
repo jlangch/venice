@@ -252,7 +252,7 @@ public class DocGenerator {
 		final DocSection regex = new DocSection("Regex");
 		strings.addSection(regex);
 		regex.addItem(getDocItem("match?"));
-		regex.addItem(getDocItem("match-not?"));
+		regex.addItem(getDocItem("not-match?"));
 
 		final DocSection trim = new DocSection("Trim");
 		strings.addSection(trim);
