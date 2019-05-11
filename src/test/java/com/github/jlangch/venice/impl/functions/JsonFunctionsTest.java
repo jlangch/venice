@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.modules;
+package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,14 +28,29 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 
 
-public class JsonModuleTest {
+public class JsonFunctionsTest {
 
 	@Test
-	public void test_to_json() {
+	public void test_write() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/to-json {:a 100 :b 100 :c [10 20 30]})";
+				"(json/write {:a 100 :b 100 :c [10 20 30]})";
+
+		assertEquals(
+				"{\"a\":100,\"b\":100,\"c\":[10,20,30]}", 
+				venice.eval(script));
+	}
+
+	@Test
+	public void test_spit() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
+				"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
+				"  (. out :flush)                                             \n" +
+				"  (. :java.lang.String :new (. out :toByteArray) \"utf-8\"))   ";
 
 		assertEquals(
 				"{\"a\":100,\"b\":100,\"c\":[10,20,30]}", 
@@ -47,7 +62,7 @@ public class JsonModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/to-pretty-json [{:a 100 :b 100}, {:a 200 :b 200}])";
+				"(json/write [{:a 100 :b 100}, {:a 200 :b 200}] :pretty true)";
 
 		assertEquals(
 			"[{\n" + 
@@ -65,7 +80,7 @@ public class JsonModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/pretty-print (json/to-json {:a 100 :b 100}))";
+				"(json/pretty-print (json/write {:a 100 :b 100}))";
 
 		assertEquals(
 			"{\n" + 
@@ -98,4 +113,5 @@ public class JsonModuleTest {
 			"({a 100 b 100} {a 200 b 200})", 
 			venice.eval("(str " + script + ")"));
 	}
+	
 }

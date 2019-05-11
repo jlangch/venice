@@ -22,8 +22,13 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,12 +38,14 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.grack.nanojson.JsonParser;
 import com.grack.nanojson.JsonWriter;
 
@@ -49,19 +56,24 @@ public class JsonFunctions {
 	// JSON
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction to_json = 
+	public static VncFunction write = 
 		new VncFunction(
-				"json/to-json", 
+				"json/write", 
 				VncFunction
 					.meta()
 					.module("json")
-					.arglists("(json/to-json val)")		
-					.doc("Converts the val to JSON")
-					.examples("(json/to-json {:a 100 :b 100})")
+					.arglists(
+						"(json/write val & options)")		
+					.doc(
+						"Writes the val to a JSON String.\n" +
+						"Options: :pretty true/false (defaults to false) ")
+					.examples(
+						"(json/write {:a 100 :b 100})",
+						"(json/write {:a 100 :b 100} :pretty true)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("json/to-json", args, 1);
+				assertMinArity("json/write", args, 1);
 	
 				final VncVal val = args.first();
 				
@@ -69,39 +81,77 @@ public class JsonFunctions {
 					return Nil;
 				}
 				else {
-					final String json = JsonWriter.string(val.convertToJavaObject());
-					return new VncString(json);
+					final Object javaVal = val.convertToJavaObject();
+					
+					final VncHashMap options = VncHashMap.ofAll(args.slice(1));				
+					final VncVal pretty = options.get(new VncKeyword("pretty")); 
+
+					return pretty == Constants.True
+							? new VncString(JsonWriter.indent(INDENT).string().value(javaVal).done())
+							: new VncString(JsonWriter.string(javaVal));
 				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction to_pretty_json = 
+	public static VncFunction spit = 
 		new VncFunction(
-				"json/to-pretty-json", 
+				"json/spit", 
 				VncFunction
 					.meta()
 					.module("json")
-					.arglists("(json/to-pretty-json val)")		
-					.doc("Converts the val to pretty printed JSON")
-					.examples("(json/to-pretty-json {:a 100 :b 100})")
+					.arglists(
+						"(json/spit out val & options)")		
+					.doc(
+						"Spits the JSON converted val to the output.\n" +
+						"out maybe a Java OutputStream or a Java PrintStream. \n" +
+						"Options: :pretty true/false (defaults to false) ")
+					.examples(
+						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
+						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
+						"  (. out :flush)                                             \n" +
+						"  (. :java.lang.String :new (. out :toByteArray) \"utf-8\"))   ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("json/to-pretty-json", args, 1);
+				assertMinArity("json/spit", args, 2);
 	
-				final VncVal val = args.first();
+				final Object out = Coerce.toVncJavaObject(args.first()).getDelegate();
+				final VncVal val = args.second();
 				
 				if (val == Nil) {
 					return Nil;
 				}
 				else {
-					final String json = JsonWriter.indent("  ")
-												  .string()
-												  .value(val.convertToJavaObject())
-												  .done();
-					return new VncString(json);
+					final Object javaVal = val.convertToJavaObject();
+					
+					final VncHashMap options = VncHashMap.ofAll(args.slice(2));						
+					final VncVal pretty = options.get(new VncKeyword("pretty")); 
+
+					if (out instanceof OutputStream) {
+						if (pretty == Constants.True) {
+							JsonWriter.indent(INDENT).on((OutputStream)out).value(javaVal).done();
+						}
+						else {
+							JsonWriter.on((OutputStream)out).value(javaVal).done();
+						}
+					}
+					else if (out instanceof PrintStream) {
+						if (pretty == Constants.True) {
+							JsonWriter.indent(INDENT).on((PrintStream)out).value(javaVal).done();
+						}
+						else {
+							JsonWriter.on((PrintStream)out).value(javaVal).done();
+						}
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'json/spit' does not allow %s as out",
+								Types.getType(args.first())));
+					}
+					
+					return Nil;
 				}
 			}
 	
@@ -115,8 +165,8 @@ public class JsonFunctions {
 					.meta()
 					.module("json")
 					.arglists("(json/parse s)")		
-					.doc("Parses a JSON string")
-					.examples("(json/parse (json/to-json [{:a 100 :b 100}]))")
+					.doc("Parses a JSON string and returns it as a venice datatype.")
+					.examples("(json/parse (json/write [{:a 100 :b 100}]))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -141,6 +191,54 @@ public class JsonFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction slurp = 
+		new VncFunction(
+				"json/slurp", 
+				VncFunction
+					.meta()
+					.module("json")
+					.arglists("(json/slurp in)")		
+					.doc(
+						"Slurps a JSON string from the input and returns it as a venice datatype.\n" +
+						"in maybe a Java InputStream or a Java Reader.")
+					.examples()
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("json/slurp", args, 1);
+	
+				final VncVal val = args.first();
+				
+				if (val == Nil) {
+					return Nil;
+				}
+				else {
+					try {
+						final Object in = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+						if (in instanceof InputStream) {
+							return convertToVncVal(JsonParser.any().from((InputStream)in));
+						}
+						else if (in instanceof Reader) {
+							return convertToVncVal(JsonParser.any().from((Reader)in));
+						}
+						else {
+							throw new VncException(String.format(
+									"Function 'json/slurp' does not allow %s as in",
+									Types.getType(args.first())));
+						}
+
+						
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to parse JSON", ex);
+					}
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction pretty_print = 
 		new VncFunction(
 				"json/pretty-print", 
@@ -149,7 +247,7 @@ public class JsonFunctions {
 					.module("json")
 					.arglists("(json/pretty-print s)")		
 					.doc("Pretty prints a JSON string")
-					.examples("(json/pretty-print (json/to-json {:a 100 :b 100}))")
+					.examples("(json/pretty-print (json/write {:a 100 :b 100}))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -220,15 +318,19 @@ public class JsonFunctions {
 	}
 
 	
+	private static final String INDENT = "  ";
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-					.put("json/to-json",		to_json)
-					.put("json/to-pretty-json",	to_pretty_json)
+					.put("json/write",			write)
+					.put("json/spit",			spit)
 					.put("json/parse",			parse)
+					.put("json/slurp",			slurp)
 					.put("json/pretty-print",	pretty_print)
 					.toMap();	
 }

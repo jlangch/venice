@@ -1097,10 +1097,11 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(getDocItem("json/pretty-print"));
-		general.addItem(getDocItem("json/to-json"));
-		general.addItem(getDocItem("json/to-pretty-json"));
+		general.addItem(getDocItem("json/write"));
+		general.addItem(getDocItem("json/spit"));
 		general.addItem(getDocItem("json/parse"));
+		general.addItem(getDocItem("json/slurp"));
+		general.addItem(getDocItem("json/pretty-print"));
 
 		return section;
 	}
