@@ -56,20 +56,20 @@ public class JsonFunctions {
 	// JSON
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction write = 
+	public static VncFunction write_str = 
 		new VncFunction(
-				"json/write", 
+				"json/write-str", 
 				VncFunction
 					.meta()
 					.module("json")
 					.arglists(
-						"(json/write val & options)")		
+						"(json/write-str val & options)")		
 					.doc(
-						"Writes the val to a JSON String.\n" +
+						"Writes the val to a JSON string.\n" +
 						"Options: :pretty true/false (defaults to false) ")
 					.examples(
-						"(json/write {:a 100 :b 100})",
-						"(json/write {:a 100 :b 100} :pretty true)")
+						"(json/write-str {:a 100 :b 100})",
+						"(json/write-str {:a 100 :b 100} :pretty true)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -158,15 +158,15 @@ public class JsonFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction parse = 
+	public static VncFunction read_str = 
 		new VncFunction(
-				"json/parse", 
+				"json/read-str", 
 				VncFunction
 					.meta()
 					.module("json")
-					.arglists("(json/parse s)")		
-					.doc("Parses a JSON string and returns it as a venice datatype.")
-					.examples("(json/parse (json/write [{:a 100 :b 100}]))")
+					.arglists("(json/read-str s)")		
+					.doc("Reads a JSON string and returns it as a venice datatype.")
+					.examples("(json/read-str (json/write-str [{:a 100 :b 100}]))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -183,7 +183,7 @@ public class JsonFunctions {
 						return convertToVncVal(JsonParser.any().from(s.getValue()));
 					}
 					catch(Exception ex) {
-						throw new VncException("Failed to parse JSON", ex);
+						throw new VncException("Failed to read JSON string", ex);
 					}
 				}
 			}
@@ -247,7 +247,7 @@ public class JsonFunctions {
 					.module("json")
 					.arglists("(json/pretty-print s)")		
 					.doc("Pretty prints a JSON string")
-					.examples("(json/pretty-print (json/write {:a 100 :b 100}))")
+					.examples("(json/pretty-print (json/write-str {:a 100 :b 100}))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -327,9 +327,9 @@ public class JsonFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
-					.put("json/write",			write)
+					.put("json/write-str",		write_str)
 					.put("json/spit",			spit)
-					.put("json/parse",			parse)
+					.put("json/read-str",		read_str)
 					.put("json/slurp",			slurp)
 					.put("json/pretty-print",	pretty_print)
 					.toMap();	

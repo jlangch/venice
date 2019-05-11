@@ -31,11 +31,11 @@ import com.github.jlangch.venice.Venice;
 public class JsonFunctionsTest {
 
 	@Test
-	public void test_write() {
+	public void test_write_str() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/write {:a 100 :b 100 :c [10 20 30]})";
+				"(json/write-str {:a 100 :b 100 :c [10 20 30]})";
 
 		assertEquals(
 				"{\"a\":100,\"b\":100,\"c\":[10,20,30]}", 
@@ -62,7 +62,7 @@ public class JsonFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/write [{:a 100 :b 100}, {:a 200 :b 200}] :pretty true)";
+				"(json/write-str [{:a 100 :b 100}, {:a 200 :b 200}] :pretty true)";
 
 		assertEquals(
 			"[{\n" + 
@@ -80,7 +80,7 @@ public class JsonFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/pretty-print (json/write {:a 100 :b 100}))";
+				"(json/pretty-print (json/write-str {:a 100 :b 100}))";
 
 		assertEquals(
 			"{\n" + 
@@ -91,11 +91,11 @@ public class JsonFunctionsTest {
 	}
 	
 	@Test
-	public void test_json_parse_1() {
+	public void test_json_read_str_1() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/parse \"\"\"{\"a\": 100, \"b\": 100, \"c\": [10,20,30]}\"\"\")";
+				"(json/read-str \"\"\"{\"a\": 100, \"b\": 100, \"c\": [10,20,30]}\"\"\")";
 
 		assertEquals(
 			"{a 100 b 100 c (10 20 30)}", 
@@ -103,11 +103,11 @@ public class JsonFunctionsTest {
 	}
 	
 	@Test
-	public void test_json_parse_2() {
+	public void test_json_read_str_2() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(json/parse \"\"\"[{\"a\": 100,\"b\": 100}, {\"a\": 200, \"b\": 200}]\"\"\") ";
+				"(json/read-str \"\"\"[{\"a\": 100,\"b\": 100}, {\"a\": 200, \"b\": 200}]\"\"\") ";
 
 		assertEquals(
 			"({a 100 b 100} {a 200 b 200})", 
