@@ -9,12 +9,12 @@ explicitely.
 
 Venice supports
 
-* [JSON](ext-json.md)
 * [Charts](ext-charts.md)
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)
 * [Maven](ext-maven.md)
 * [Kira Template](ext-kira.md)
+* [Jackson JSON](ext-jackson.md)
 
 through extension modules
