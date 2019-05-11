@@ -232,7 +232,7 @@
     (if user
       { :status 200
         :headers { "Content-Type" "application/json; charset=utf-8" }
-        :body """{ "id": "~(:id user)", "firstname": "~(:firstname user)", "lastname": "~(:lastname user)"}""" }
+        :body (json/to-json user) }
       { :status 404
         :headers { "Content-Type" "application/json; charset=utf-8" }
         :body """{ "error": "user not found", "id": "~{user-id}"}""" })
