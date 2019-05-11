@@ -227,14 +227,13 @@ public class JavaInteropUtil {
 	}
 	
 	public static VncVal convertToVncVal(final Object value) {
-		return convertToVncVal(value, false, false);
+		return convertToVncVal(value, false);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static VncVal convertToVncVal(
 			final Object value, 
-			final boolean recursive,
-			final boolean mapIntToLong
+			final boolean recursive
 	) {
 		if (value == null) {
 			return Constants.Nil;
@@ -247,9 +246,7 @@ public class JavaInteropUtil {
 		}
 		else if (value instanceof Number) {
 			if (value instanceof Integer) {
-				return mapIntToLong 
-							? new VncLong((Integer)value)
-							: new VncInteger(((Integer)value));
+				return new VncInteger((Integer)value);
 			}
 			else if (value instanceof Long) {
 				return new VncLong((Long)value);
@@ -283,7 +280,7 @@ public class JavaInteropUtil {
 			if (recursive) {
 				final List<VncVal> list = new ArrayList<>();
 				for(Object o : (List<Object>)value) {
-					list.add(convertToVncVal(o, recursive, mapIntToLong));
+					list.add(convertToVncVal(o, recursive));
 				}
 				return new VncList(list);
 			}
@@ -295,7 +292,7 @@ public class JavaInteropUtil {
 			if (recursive) {
 				final Set<VncVal> set = new HashSet<>();
 				for(Object o : (Set<Object>)value) {
-					set.add(convertToVncVal(o, recursive, mapIntToLong));
+					set.add(convertToVncVal(o, recursive));
 				}
 				return VncHashSet.ofAll(set);
 			}
@@ -308,8 +305,8 @@ public class JavaInteropUtil {
 				final HashMap<VncVal,VncVal> map = new HashMap<>();
 				for(Map.Entry<Object, Object> o : ((Map<Object,Object>)value).entrySet()) {
 					map.put(
-						convertToVncVal(o.getKey(), recursive, mapIntToLong),
-						convertToVncVal(o.getValue(), recursive, mapIntToLong));
+						convertToVncVal(o.getKey(), recursive),
+						convertToVncVal(o.getValue(), recursive));
 				}
 				return new VncHashMap(map);
 			}

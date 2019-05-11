@@ -55,7 +55,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("json"))
+							.createEnv()
 							.setStdoutPrintStream(null);
 	}
 
@@ -1097,15 +1097,10 @@ public class DocGenerator {
 		
 		final DocSection general = new DocSection("JSON");
 		all.addSection(general);
-		general.addItem(getDocItem("json/pretty-print", false, false));
-		general.addItem(getDocItem("json/to-json", false, false));
-		general.addItem(getDocItem("json/to-pretty-json", false, false));
-		general.addItem(getDocItem("json/parse", false, false));
-		general.addItem(new DocItem(" ", null));
-		general.addItem(getDocItem("json/avail?", false, false));
-		general.addItem(getDocItem("json/avail-jdk8-module?", false, false));
-		general.addItem(new DocItem(" ", null));
-		general.addItem(new DocItem("Available if Jackson libs are on runtime classpath", null));
+		general.addItem(getDocItem("json/pretty-print"));
+		general.addItem(getDocItem("json/to-json"));
+		general.addItem(getDocItem("json/to-pretty-json"));
+		general.addItem(getDocItem("json/parse"));
 
 		return section;
 	}

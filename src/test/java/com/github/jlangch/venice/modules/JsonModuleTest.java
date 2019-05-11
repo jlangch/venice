@@ -31,43 +31,11 @@ import com.github.jlangch.venice.Venice;
 public class JsonModuleTest {
 
 	@Test
-	public void test_avail() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                     " +
-				"   (load-module :json)                  " +
-				"                                        " +
-				"   (json/avail?)                        " + 
-				") ";
-
-		assertEquals(Boolean.TRUE, venice.eval(script));
-	}
-
-	@Test
-	public void test_avail_jdk8_module() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                     " +
-				"   (load-module :json)                  " +
-				"                                        " +
-				"   (json/avail-jdk8-module?)            " + 
-				") ";
-
-		assertEquals(Boolean.TRUE, venice.eval(script));
-	}
-
-	@Test
 	public void test_to_json() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                " +
-				"   (load-module :json)                             " +
-				"                                                   " +
-				"   (json/to-json {:a 100 :b 100 :c [10 20 30]})    " + 
-				") ";
+				"(json/to-json {:a 100 :b 100 :c [10 20 30]})";
 
 		assertEquals(
 				"{\"a\":100,\"b\":100,\"c\":[10,20,30]}", 
@@ -79,20 +47,16 @@ public class JsonModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                            " +
-				"   (load-module :json)                                         " +
-				"                                                               " +
-				"   (json/to-pretty-json [{:a 100 :b 100}, {:a 200 :b 200}])    " + 
-				") ";
+				"(json/to-pretty-json [{:a 100 :b 100}, {:a 200 :b 200}])";
 
 		assertEquals(
-			"[ {\n" + 
-			"  \"a\" : 100,\n" + 
-			"  \"b\" : 100\n" + 
-			"}, {\n" + 
-			"  \"a\" : 200,\n" + 
-			"  \"b\" : 200\n" + 
-			"} ]", 
+			"[{\n" + 
+			"  \"a\":100,\n" + 
+			"  \"b\":100\n" + 
+			"},{\n" + 
+			"  \"a\":200,\n" + 
+			"  \"b\":200\n" + 
+			"}]", 
 			venice.eval(script));
 	}
 
@@ -101,16 +65,12 @@ public class JsonModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                            " +
-				"   (load-module :json)                                         " +
-				"                                                               " +
-				"   (json/pretty-print (json/to-json {:a 100 :b 100}))          " + 
-				") ";
+				"(json/pretty-print (json/to-json {:a 100 :b 100}))";
 
 		assertEquals(
 			"{\n" + 
-			"  \"a\" : 100,\n" + 
-			"  \"b\" : 100\n" + 
+			"  \"a\":100,\n" + 
+			"  \"b\":100\n" + 
 			"}", 
 			venice.eval(script));
 	}
@@ -120,14 +80,10 @@ public class JsonModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                     " +
-				"   (load-module :json)                                                  " +
-				"                                                                        " +
-				"   json/parse \"\"\"{\"a\": 100, \"b\": 100, \"c\": [10,20,30]}\"\"\")  " + 
-				") ";
+				"(json/parse \"\"\"{\"a\": 100, \"b\": 100, \"c\": [10,20,30]}\"\"\")";
 
 		assertEquals(
-			"{\"a\": 100, \"b\": 100, \"c\": [10,20,30]}", 
+			"{a 100 b 100 c (10 20 30)}", 
 			venice.eval("(str " + script + ")"));
 	}
 	
@@ -136,16 +92,10 @@ public class JsonModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                             " +
-				"   (load-module :json)                                                          " +
-				"                                                                                " +
-				"   json/parse \"\"\"[{\"a\": 100,\"b\": 100}, {\"a\": 200, \"b\": 200}]\"\"\")  " + 
-				") ";
+				"(json/parse \"\"\"[{\"a\": 100,\"b\": 100}, {\"a\": 200, \"b\": 200}]\"\"\") ";
 
 		assertEquals(
-			"[{\"a\": 100,\"b\": 100}, {\"a\": 200, \"b\": 200}]", 
+			"({a 100 b 100} {a 200 b 200})", 
 			venice.eval("(str " + script + ")"));
 	}
-
-	
 }

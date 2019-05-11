@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.io.Closeable;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -171,9 +172,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public List<String> getAvailableModules() {
 		final List<String> modules = new ArrayList<>(ModuleLoader.VALID_MODULES);
-		modules.remove("core");
-		modules.remove("test");
-		modules.remove("http");
+		modules.removeAll(Arrays.asList("core", "test", "http", "jackson", "logger"));
 		Collections.sort(modules);
 		return modules;
 	}

@@ -28,7 +28,7 @@ public class Functions {
 		functions.putAll(ShellFunctions.ns);
 		functions.putAll(SystemFunctions.ns);
 		functions.putAll(ConcurrencyFunctions.ns);
-		functions.putAll(NanoJsonFunctions.ns);
+		functions.putAll(JsonFunctions.ns);
 	}
 
 }
