@@ -1197,6 +1197,13 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_hash_map_convertToJava() {
+		final Venice venice = new Venice();
+
+		assertEquals("{a=null}", venice.eval("(hash-map :a nil)").toString());
+	}
+	
+	@Test
 	public void test_hash_map_Q() {
 		final Venice venice = new Venice();
 
@@ -1443,6 +1450,8 @@ public class CoreFunctionsTest {
 		assertEquals("([])", venice.eval("(str (list []))"));
 		assertEquals("((1 2))", venice.eval("(str (list '(1 2)))"));
 		assertEquals("((1 2) 3 4)", venice.eval("(str (list '(1 2) 3 4))"));
+
+		assertEquals("[1, null]", venice.eval("'(1 nil)").toString());
 	}
 	
 	@Test

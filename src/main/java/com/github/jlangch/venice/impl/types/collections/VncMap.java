@@ -21,9 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -77,12 +77,13 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	@Override
 	public Object convertToJavaObject() {
-		return entries()
-				.stream()
-				.collect(
-					Collectors.toMap(
-						e -> e.getKey().convertToJavaObject(),
-						e -> e.getValue().convertToJavaObject()));
+		final Map<Object,Object> map = new HashMap<>();
+		for(VncMapEntry e : entries()) {
+			map.put(
+				e.getKey().convertToJavaObject(), 
+				e.getValue().convertToJavaObject());
+		}
+		return map;
 	}
 
  

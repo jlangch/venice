@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - added ...
 
+### fixed
+
+- fixed map conversion to Java map when a map entry value was _null_
+
 
 
 ## [1.5.2] - 2019-05-10
