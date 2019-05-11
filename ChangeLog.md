@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### fixed
 
-- fixed map conversion to Java map when a map entry value was _null_
+- fixed map conversion to Java HashMap when a map entry value was _nil_
 
 
 
