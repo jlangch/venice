@@ -1832,11 +1832,11 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_match_not_Q() {
+	public void test_not_match_Q() {
 		final Venice venice = new Venice();
 
-		assertFalse((Boolean)venice.eval("(match-not? \"123\" \"[0-9]+\")"));
-		assertTrue((Boolean)venice.eval("(match-not? \"123a\" \"[0-9]+\")"));
+		assertFalse((Boolean)venice.eval("(not-match? \"123\" \"[0-9]+\")"));
+		assertTrue((Boolean)venice.eval("(not-match? \"123a\" \"[0-9]+\")"));
 	}
 
 	@Test

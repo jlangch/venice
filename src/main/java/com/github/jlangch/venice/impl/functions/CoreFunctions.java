@@ -804,30 +804,30 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction match_not_Q = 
+	public static VncFunction not_match_Q = 
 		new VncFunction(
-				"match-not?", 
+				"not-match?", 
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(match-not? s regex)")		
+					.arglists("(not-match? s regex)")		
 					.doc("Returns true if the string s does not match the regular expression regex")
 					.examples(
-						"(match-not? \"1234\" \"[0-9]+\")", 
-						"(match-not? \"1234ss\" \"[0-9]+\")")
+						"(not-match? \"1234\" \"[0-9]+\")", 
+						"(not-match? \"1234ss\" \"[0-9]+\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("match-not?", args, 2);
+				assertArity("not-match?", args, 2);
 				
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
-							"Invalid first argument type %s while calling function 'match-not?'",
+							"Invalid first argument type %s while calling function 'not-match?'",
 							Types.getType(args.first())));
 				}
 				if (!Types.isVncString(args.second())) {
 					throw new VncException(String.format(
-							"Invalid second argument type %s while calling function 'match-not?'",
+							"Invalid second argument type %s while calling function 'not-match?'",
 							Types.getType(args.second())));
 				}
 				
@@ -5963,11 +5963,11 @@ public class CoreFunctions {
 				.put(">=",					gte)
 
 				.put("match?",				match_Q)
-				.put("match-not?",			match_not_Q)
+				.put("not-match?",			not_match_Q)
 
 				// deprecated (just for compatibility)
 				.put("match",				match_Q)
-				.put("match-not",			match_not_Q)
+				.put("match-not",			not_match_Q)
 				
 				.put("boolean",				boolean_cast)
 				.put("int",					int_cast)
