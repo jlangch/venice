@@ -113,5 +113,17 @@ public class JsonFunctionsTest {
 			"({a 100 b 100} {a 200 b 200})", 
 			venice.eval("(str " + script + ")"));
 	}
-	
+
+	@Test
+	public void test_slurp() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(let [json (json/write-str {:a 100 :b 100})             \n" +
+				"      data (bytebuf-from-string json :utf-8)            \n" +
+				"      in (. :java.io.ByteArrayInputStream :new data)]   \n" +
+				"  (str (json/slurp in)))                                  ";
+
+		assertEquals("{a 100 b 100}", venice.eval(script));
+	}
 }

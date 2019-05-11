@@ -201,7 +201,11 @@ public class JsonFunctions {
 					.doc(
 						"Slurps a JSON string from the input and returns it as a venice datatype.\n" +
 						"in maybe a Java InputStream or a Java Reader.")
-					.examples()
+					.examples(
+						"(let [json (json/write-str {:a 100 :b 100})             \n" +
+						"      data (bytebuf-from-string json :utf-8)            \n" +
+						"      in (. :java.io.ByteArrayInputStream :new data)]   \n" +
+						"  (str (json/slurp in)))                                  ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
