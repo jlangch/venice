@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -133,7 +134,7 @@ public class JsonFunctions {
 						"(json/spit out val & options)")		
 					.doc(
 						"Spits the JSON converted val to the output.\n" +
-						"out maybe a Java OutputStream or a Java PrintStream. \n" +
+						"out maybe a Java OutputStream or a Java Writer. \n" +
 						"Options: :pretty true/false (defaults to false) ")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
@@ -157,16 +158,22 @@ public class JsonFunctions {
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));						
 					final VncVal pretty = options.get(new VncKeyword("pretty")); 
 
-					if (out instanceof OutputStream) {
+					if (out instanceof PrintStream) {
+						final JsonAppendableWriter writer = pretty == Constants.True
+																? JsonWriter.indent(INDENT).on((PrintStream)out)
+																: JsonWriter.on((PrintStream)out);
+						writer.value(javaVal).done();
+					}
+					else if (out instanceof OutputStream) {
 						final JsonAppendableWriter writer = pretty == Constants.True
 																? JsonWriter.indent(INDENT).on((OutputStream)out)
 																: JsonWriter.on((OutputStream)out);
 						writer.value(javaVal).done();
 					}
-					else if (out instanceof PrintStream) {
+					else if (out instanceof Writer) {
 						final JsonAppendableWriter writer = pretty == Constants.True
-																? JsonWriter.indent(INDENT).on((PrintStream)out)
-																: JsonWriter.on((PrintStream)out);
+																? JsonWriter.indent(INDENT).on((Writer)out)
+																: JsonWriter.on((OutputStream)out);
 						writer.value(javaVal).done();
 					}
 					else {

@@ -20,7 +20,7 @@ Note that these operations are not symmetric. Converting Venice data into JSON i
 
 ### Streams
 
-JSON can be spit to Java OutputStreams or PrintStreams
+JSON can be spit to Java OutputStreams or Writers
 
 ```clojure
 (let [out (. :java.io.ByteArrayOutputStream :new)]
