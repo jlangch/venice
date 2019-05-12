@@ -13,6 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
+/**
+ * Modified by Venice 12.05.2019
+ *  - added function getLinePosition()
+ *  - added function getCharPosition()
+ *  - added function getCharOffset()
+ */
+
 package com.github.jlangch.venice.nanojson;
 
 import java.io.BufferedInputStream;
@@ -712,6 +720,27 @@ final class JsonTokener {
 	}
 
 	/**
+	 * Gets the 1-based line position of the current token.
+	 */
+	public int getLinePosition() {
+		return linePos;
+	}
+
+	/**
+	 * Gets the 1-based character position of the current token.
+	 */
+	public int getCharPosition() {
+		return tokenCharPos;
+	}
+	
+	/**
+	 * Gets the 0-based character offset of the current token from the beginning of the string.
+	 */
+	public int getCharOffset() {
+		return tokenCharOffset;
+	}
+
+	/**
 	 * Throws a helpful exception based on the current alphanumeric token.
 	 */
 	JsonParserException createHelpfulException(char first, char[] expected, int failurePosition)
@@ -733,11 +762,19 @@ final class JsonTokener {
 	 */
 	JsonParserException createParseException(Exception e, String message, boolean tokenPos) {
 		if (tokenPos)
-			return new JsonParserException(e, message + " on line " + linePos + ", char " + tokenCharPos,
-					linePos, tokenCharPos, tokenCharOffset);
+			return new JsonParserException(
+					e, 
+					message + " on line " + linePos + ", char " + tokenCharPos,
+					linePos, 
+					tokenCharPos, 
+					tokenCharOffset);
 		else {
 			int charPos = Math.max(1, index + charOffset - rowPos - utf8adjust);
-			return new JsonParserException(e, message + " on line " + linePos + ", char " + charPos, linePos, charPos,
+			return new JsonParserException(
+					e, 
+					message + " on line " + linePos + ", char " + charPos, 
+					linePos, 
+					charPos,
 					index + charOffset);
 		}
 	}

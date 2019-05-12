@@ -117,8 +117,11 @@ public class VncJsonReader {
 		}
 		else {
 			throw new VncException(
-					"Json deserialization error. Unexpected number type " 
-						+ number.getClass().getName());
+					String.format(
+						"Json deserialization error. Unexpected number type %s at line %d column %d. %s",
+						number.getClass().getName(),
+						reader.getLinePosition(),
+						reader.getCharPosition()));
 		}
 	}
 

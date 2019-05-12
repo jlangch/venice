@@ -17,6 +17,9 @@
 /**
  * Modified by Venice 12.05.2019
  *  - added function from(Reader in)
+ *  - added function getLinePosition()
+ *  - added function getCharPosition()
+ *  - added function getCharOffset()
  */
 package com.github.jlangch.venice.nanojson;
 
@@ -317,7 +320,27 @@ public final class JsonReader {
 		
 		return true;
 	}
+	/**
+	 * Gets the 1-based line position of the current token.
+	 */
+	public int getLinePosition() {
+		return tokener.getLinePosition();
+	}
+
+	/**
+	 * Gets the 1-based character position of the current token.
+	 */
+	public int getCharPosition() {
+		return tokener.getCharPosition();
+	}
 	
+	/**
+	 * Gets the 0-based character offset of the current token from the beginning of the string.
+	 */
+	public int getCharOffset() {
+		return tokener.getCharOffset();
+	}
+
 	private JsonParserException createTokenMismatchException(int... t) {
 		return tokener.createParseException(null, "token mismatch (expected " + Arrays.toString(t)
 						+ ", was " + token + ")",
