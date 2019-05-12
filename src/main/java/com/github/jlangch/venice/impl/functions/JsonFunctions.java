@@ -191,7 +191,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("json/parse", args, 1);
+				assertMinArity("json/read-str", args, 1);
 	
 				final VncVal val = args.first();
 				
