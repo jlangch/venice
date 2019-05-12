@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -39,9 +40,17 @@ import com.github.jlangch.venice.nanojson.JsonParserException;
 import com.github.jlangch.venice.nanojson.JsonReader;
 
 public class VncJsonReader {
-	
+
 	public VncJsonReader(final JsonReader reader) {
+		this(reader, null);
+	}
+
+	public VncJsonReader(
+			final JsonReader reader,
+			final Function<VncVal,VncVal> key_fn
+	) {
 		this.reader = reader;
+		this.key_fn = key_fn;
 	}
 
 	public VncVal read() {
@@ -83,9 +92,10 @@ public class VncJsonReader {
 		
 		final Map<VncVal,VncVal> map = new HashMap<>();
 		while(reader.next()) {
-			final String key = reader.key();
+			final VncVal key = new VncString(reader.key());
+			final VncVal mappedKey = key_fn == null ? key : key_fn.apply(key);
 			final VncVal val = readAny();
-			map.put(new VncString(key), val);
+			map.put(mappedKey, val);
 		}
 		
 		return new VncHashMap(map);
@@ -136,4 +146,5 @@ public class VncJsonReader {
 
 	
 	private final JsonReader reader;
+	private final Function<VncVal,VncVal> key_fn;
 }
