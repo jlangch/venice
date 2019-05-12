@@ -31,15 +31,105 @@ import com.github.jlangch.venice.Venice;
 public class JsonFunctionsTest {
 
 	@Test
-	public void test_write_str() {
+	public void test_write_str_basic() {
 		final Venice venice = new Venice();
 
-		final String script =
-				"(json/write-str {:a 100 :b 100 :c [10 20 30]})";
+		assertEquals(null, venice.eval("(json/write-str nil)"));
+
+		assertEquals("true", venice.eval("(json/write-str true)"));
+		assertEquals("false", venice.eval("(json/write-str false)"));
+	
+		assertEquals("1", venice.eval("(json/write-str (atom 1))"));
+
+		assertEquals("1", venice.eval("(json/write-str 1)"));
+		assertEquals("1.0", venice.eval("(json/write-str 1.0)"));
+		assertEquals("\"1.0\"", venice.eval("(json/write-str 1.0M)"));
+		assertEquals("\"a\"", venice.eval("(json/write-str (keyword \"a\"))"));
+		assertEquals("\"a\"", venice.eval("(json/write-str (symbol \"a\"))"));
+	}
+
+	@Test
+	public void test_write_str_collections() {
+		final Venice venice = new Venice();
+
+		assertEquals("[1,2]", venice.eval("(json/write-str '(1 2)))"));
+		assertEquals("[1,2]", venice.eval("(json/write-str [1 2]))"));
+		
+		assertEquals("[1,2]", venice.eval("(json/write-str #{1 2}))"));		
+		assertEquals("[1,2]", venice.eval("(json/write-str (sorted-set 1 2)))"));
+		assertEquals("{\"a\":1}", venice.eval("(json/write-str {:a 1}))"));
+		
+		assertEquals("{\"a\":1}", venice.eval("(json/write-str (hash-map :a 1)))"));
+		assertEquals("{\"a\":1}", venice.eval("(json/write-str (sorted-map :a 1)))"));
+		assertEquals("{\"a\":1}", venice.eval("(json/write-str (ordered-map :a 1)))"));
+		assertEquals("{\"a\":1}", venice.eval("(json/write-str (mutable-map :a 1)))"));
+		
+		assertEquals(
+				"[1,2]", 
+				venice.eval(
+						"(json/write-str                        \n" +
+						"  (doto (. :java.util.ArrayList :new)  \n" +
+						"        (. :add 1)                     \n" +
+						"        (. :add 2)))                     "));
+		
+		assertEquals(
+				"[1,2]", 
+				venice.eval(
+						"(json/write-str                        \n" +
+						"  (doto (. :java.util.HashSet :new)    \n" +
+						"        (. :add 1)                     \n" +
+						"        (. :add 2)))                     "));
+		
+		assertEquals(
+				"{\"a\":1}", 
+				venice.eval(
+						"(json/write-str                        \n" +
+						"  (doto (. :java.util.HashMap :new)    \n" +
+						"        (. :put \"a\" 1)))             "));
+	}
+
+	@Test
+	public void test_write_str_binary() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{\"a\":\"YWJjZGVmZ2g=\"}", 
+				venice.eval("(json/write-str {:a (bytebuf-from-string \"abcdefgh\" :utf-8)})"));
+	}
+
+	@Test
+	public void test_write_str_time() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{\"a\":\"2018-08-01\"}", 
+				venice.eval("(json/write-str {:a (time/local-date 2018 8 1)})"));
+
+		assertEquals(
+				"{\"a\":\"2018-08-01T14:20:10.2\"}", 
+				venice.eval("(json/write-str {:a (time/local-date-time \"2018-08-01T14:20:10.200\")})"));
+
+		assertEquals(
+				"{\"a\":\"2018-08-01T14:20:10.2+01:00\"}", 
+				venice.eval("(json/write-str {:a (time/zoned-date-time \"2018-08-01T14:20:10.200+01:00\")})"));
+	}
+
+	@Test
+	public void test_write_nested() {
+		final Venice venice = new Venice();
 
 		assertEquals(
 				"{\"a\":100,\"b\":100,\"c\":[10,20,30]}", 
-				venice.eval(script));
+				venice.eval("(json/write-str {:a 100 :b 100 :c [10 20 30]})"));
+
+		assertEquals(
+				"{\"a\":100,\"b\":null,\"c\":[10,20,null]}", 
+				venice.eval("(json/write-str {:a 100 :b nil :c [10 20 nil]})"));
+		
+		assertEquals(
+				"{\"a\":100,\"b\":100,\"c\":[10,20,{\"d\":100,\"e\":200}]}", 
+				venice.eval("(json/write-str {:a 100 :b 100 :c [10 20 {:d 100 :e 200}]})"));
+		
 	}
 
 	@Test

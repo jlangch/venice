@@ -608,27 +608,30 @@ public class JsonFunctions {
 		private void write_VncJavaObject(final String key, final VncJavaObject val) {
 			final Object delegate = val.getDelegate();
 			if (delegate instanceof LocalDate) {
+				final String formatted = ((LocalDate)delegate).format(FMT_LOCAL_DATE);
 				if (key == null) {
-					writer.value(((LocalDate)delegate).format(FMT_LOCAL_DATE));
+					writer.value(formatted);
 				}
 				else {
-					writer.value(key, ((LocalDate)delegate).format(FMT_LOCAL_DATE));
+					writer.value(key, formatted);
 				}
 			}
 			else if (delegate instanceof LocalDateTime) {
+				final String formatted = ((LocalDateTime)delegate).format(FMT_LOCAL_DATE_TIME);
 				if (key == null) {
-					writer.value(((LocalDateTime)delegate).format(FMT_LOCAL_DATE_TIME));
+					writer.value(formatted);
 				}
 				else {
-					writer.value(key, ((LocalDateTime)delegate).format(FMT_LOCAL_DATE_TIME));
+					writer.value(key, formatted);
 				}
 			}
 			else if (delegate instanceof ZonedDateTime) {
+				final String formatted = ((ZonedDateTime)delegate).format(FMT_DATE_TIME);
 				if (key == null) {
-					writer.value(((ZonedDateTime)delegate).format(FMT_DATE_TIME));
+					writer.value(formatted);
 				}
 				else {
-					writer.value(key, ((ZonedDateTime)delegate).format(FMT_DATE_TIME));
+					writer.value(key, formatted);
 				}
 			}
 			else {
