@@ -49,7 +49,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/1082010/cheatsheet.htm
 * [Java interoperability](doc/readme/java-interop.md)
 * [Exception handling](doc/readme/exceptions.md)
 * [Sandbox](doc/readme/sandbox.md)
-* [Json](doc/readme/json.md)
+* [JSON](doc/readme/json.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * See a larger [example](doc/readme/large-example.md)
 * [Change Log](ChangeLog.md)
