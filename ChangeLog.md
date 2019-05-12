@@ -36,7 +36,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - fixed a `~{x}` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~{a}": "~{b}" }""")`
 - fixed a `~(x)` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~(str a)": "~(str b)" }""")`
 
-
 ### changes
 
 - added function `match?` that replaces `match`. `match` did not follow the naming conventions.
