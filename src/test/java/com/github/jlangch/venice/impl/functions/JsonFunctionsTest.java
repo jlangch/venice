@@ -129,7 +129,6 @@ public class JsonFunctionsTest {
 		assertEquals(
 				"{\"a\":100,\"b\":100,\"c\":[10,20,{\"d\":100,\"e\":200}]}", 
 				venice.eval("(json/write-str {:a 100 :b 100 :c [10 20 {:d 100 :e 200}]})"));
-		
 	}
 
 	@Test
