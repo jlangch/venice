@@ -185,7 +185,9 @@ public class JsonFunctions {
 						"      return value will replace the property names in the output. \n" +
 						"      Default is 'identity', use 'keyword' to get keyword \n" +
 						"      properties.")
-					.examples("(json/read-str (json/write-str [{:a 100 :b 100}]))")
+					.examples(
+						"(json/read-str (json/write-str {:a 100 :b 100}))",
+						"(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

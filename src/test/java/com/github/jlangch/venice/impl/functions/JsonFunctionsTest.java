@@ -183,6 +183,20 @@ public class JsonFunctionsTest {
 	public void test_json_read_str_1() {
 		final Venice venice = new Venice();
 
+		assertEquals(
+			"{a 100 b 100}", 
+			venice.eval("(str (json/read-str \"\"\"{\"a\": 100, \"b\": 100}\"\"\"))"));
+		
+		// map object keys to keywords
+		assertEquals(
+				"{:a 100 :b 100}", 
+				venice.eval("(str (json/read-str \"\"\"{\"a\": 100, \"b\": 100}\"\"\" :key-fn keyword))"));
+	}
+	
+	@Test
+	public void test_json_read_str_2() {
+		final Venice venice = new Venice();
+
 		final String script =
 				"(json/read-str \"\"\"{\"a\": 100, \"b\": 100, \"c\": [10,20,30]}\"\"\")";
 
@@ -192,7 +206,7 @@ public class JsonFunctionsTest {
 	}
 	
 	@Test
-	public void test_json_read_str_2() {
+	public void test_json_read_str_3() {
 		final Venice venice = new Venice();
 
 		final String script =
