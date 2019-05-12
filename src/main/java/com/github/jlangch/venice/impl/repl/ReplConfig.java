@@ -29,12 +29,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.grack.nanojson.JsonObject;
-import com.grack.nanojson.JsonParser;
-
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.nanojson.JsonObject;
+import com.github.jlangch.venice.nanojson.JsonParser;
 
 
 /**

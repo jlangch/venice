@@ -53,7 +53,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.grack.nanojson.JsonAppendableWriter;
+import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 
 public class VncJsonWriter {
 	public VncJsonWriter(final JsonAppendableWriter writer) {

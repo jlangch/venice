@@ -30,27 +30,24 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.json.VncJsonReader;
 import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
-import com.grack.nanojson.JsonAppendableWriter;
-import com.grack.nanojson.JsonParser;
-import com.grack.nanojson.JsonWriter;
+import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
+import com.github.jlangch.venice.nanojson.JsonParser;
+import com.github.jlangch.venice.nanojson.JsonReader;
+import com.github.jlangch.venice.nanojson.JsonWriter;
 
 
 public class JsonFunctions {
@@ -191,7 +188,9 @@ public class JsonFunctions {
 				else {
 					try {
 						final VncString s = Coerce.toVncString(val);
-						return convertToVncVal(JsonParser.any().from(s.getValue()));
+						//return convertToVncVal(JsonParser.any().from(s.getValue()));
+						
+						return new VncJsonReader(JsonReader.from(s.getValue())).read();
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to read JSON string", ex);
@@ -232,10 +231,10 @@ public class JsonFunctions {
 						final Object in = Coerce.toVncJavaObject(args.first()).getDelegate();
 
 						if (in instanceof InputStream) {
-							return convertToVncVal(JsonParser.any().from((InputStream)in));
+							return new VncJsonReader(JsonReader.from((InputStream)in)).read();
 						}
 						else if (in instanceof Reader) {
-							return convertToVncVal(JsonParser.any().from((Reader)in));
+							return new VncJsonReader(JsonReader.from((Reader)in)).read();
 						}
 						else {
 							throw new VncException(String.format(
@@ -285,50 +284,6 @@ public class JsonFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-
-
-	@SuppressWarnings("unchecked")
-	private static VncVal convertToVncVal(final Object value) {
-		if (value == null) {
-			return Constants.Nil;
-		}
-		else if (value instanceof String) {
-			return new VncString((String)value);
-		}
-		else if (value instanceof Number) {
-			if (value instanceof Integer) {
-				return new VncLong((Integer)value);
-			}
-			else if (value instanceof Long) {
-				return new VncLong((Long)value);
-			}
-			else if (value instanceof Float) {
-				return new VncDouble((Float)value);
-			}
-			else if (value instanceof Double) {
-				return new VncDouble((Double)value);
-			}
-		}
-		else if (value instanceof Boolean) {
-			return ((Boolean)value).booleanValue() ? Constants.True : Constants.False;
-		}
-		else if (value instanceof List) {
-			final List<VncVal> list = new ArrayList<>();
-			for(Object o : (List<?>)value) {
-				list.add(convertToVncVal(o));
-			}
-			return new VncList(list);
-		}
-		else if (value instanceof Map) {
-			final HashMap<VncVal,VncVal> map = new HashMap<>();
-			for(Map.Entry<Object, Object> o : ((Map<Object,Object>)value).entrySet()) {
-				map.put(convertToVncVal(o.getKey()),convertToVncVal(o.getValue()));
-			}
-			return new VncHashMap(map);
-		}
-			
-		throw new VncException("Failed to parse JSON. Unsupported Java type: " + value.getClass());
-	}
 
 
 	private static final String INDENT = "  ";

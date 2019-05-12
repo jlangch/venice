@@ -98,7 +98,6 @@ shadowJar {
 
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
-    relocate 'com.grack.nanojson', 'org.repackage.com.grack.nanojson'
 
     def buildTimestamp = new Date().format("yyyy-MM-dd'T'HH:mm:ss")
         
@@ -184,5 +183,4 @@ dependencies {
     // runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
     compile 'org.jline:jline:3.10.0'
-    compile 'com.grack:nanojson:1.3'
 }
