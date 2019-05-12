@@ -18,6 +18,28 @@ To convert to/from JSON strings, use json/write-str and json/read-str:
 Note that these operations are not symmetric. Converting Venice data into JSON is lossy.
 
 
+### Streams
+
+JSON can be spit to Java OutputStreams or PrintStreams
+
+```clojure
+(let [out (. :java.io.ByteArrayOutputStream :new)]
+  (json/spit out {:a 100 :b 100 :c [10 20 30]})
+  (. :java.lang.String :new (. out :toByteArray) "utf-8"))
+;;=> "{\"a\":100,\"b\":100,\"c\":[10,20,30]}"
+```
+
+JSON can be slurped from Java InputStreams or Readers
+
+```clojure
+(let [json (json/write-str {:a 100 :b 100})
+      data (bytebuf-from-string json :utf-8) 
+      in (. :java.io.ByteArrayInputStream :new data)]
+  (str (json/slurp in)))
+;;=> "{a 100 b 100}"
+```
+
+
 ### Special data types
 
 Decimals are converted to string
@@ -53,7 +75,4 @@ Ints are converted to longs with write/read
 (json/read-str (json/write-str {:a 100I}))
 ;;=> {"a" 100}
 ```
-
-
-
 
