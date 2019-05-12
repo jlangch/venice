@@ -213,7 +213,7 @@ public class JsonFunctions {
 						return new VncJsonReader(JsonReader.from(s.getValue()), keyFN).read();
 					}
 					catch(Exception ex) {
-						throw new VncException("Failed to read JSON string", ex);
+						throw new VncException("Function 'json/read-str'. Failed to read JSON string", ex);
 					}
 				}
 			}
@@ -277,7 +277,7 @@ public class JsonFunctions {
 						}
 					}
 					catch(Exception ex) {
-						throw new VncException("Failed to parse JSON", ex);
+						throw new VncException("Function 'json/slurp'. Failed to parse JSON", ex);
 					}
 				}
 			}
@@ -297,7 +297,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pretty-print", args, 1);
+				assertArity("json/pretty-print", args, 1);
 	
 				final VncVal val = args.first();
 				
@@ -311,7 +311,7 @@ public class JsonFunctions {
 						return new VncString(JsonWriter.indent("  ").string() .value(o).done());
 					}
 					catch(Exception ex) {
-						throw new VncException("Failed to pretty print JSON", ex);
+						throw new VncException("Function 'json/pretty-print'. Failed to pretty print JSON", ex);
 					}
 				}
 			}
