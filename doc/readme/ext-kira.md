@@ -12,7 +12,7 @@ For example:
 ```clojure
 (load-module :kira)
 (kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" {:xs [1 2 3]})
-=> "foo1 foo2 foo3 "
+;;=> "foo1 foo2 foo3 "
 ```
 
 The `<%= %>` tags will be substituted for the value of the expression within them. This is used for inserting values into a template.
@@ -22,7 +22,7 @@ For example:
 ```clojure
 (load-module :kira)
 (kira/eval "Hello <%= name %>" {:name "Alice"})
-=> "Hello Alice"
+;;=> "Hello Alice"
 ```
 
 ### Customized Delimiters
@@ -32,7 +32,7 @@ The delimiters can be customized:
 ```clojure
 (load-module :kira)
 (kira/eval """Hello $${= name }$$""" ["$${" "}$$"] {:name "Alice"})
-=> "Hello Alice"
+;;=> "Hello Alice"
 ```
 
 ## API Documentation
