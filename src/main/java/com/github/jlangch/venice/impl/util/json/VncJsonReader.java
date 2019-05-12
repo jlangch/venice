@@ -109,21 +109,11 @@ public class VncJsonReader {
 
 	private VncVal readNumber() throws JsonParserException {
 		final Number number = reader.number();
-		if (number instanceof Integer) {
-			return new VncLong((Integer)number);
-		}
-		else if (number instanceof Long) {
-			return new VncLong((Long)number);
-		}
-		else if (number instanceof Float) {
-			return new VncDouble((Float)number);
-		}
-		else if (number instanceof Double) {
-			return new VncDouble((Double)number);
-		}
-		else if (number instanceof JsonLazyNumber) {
+		if (number instanceof JsonLazyNumber) {
 			JsonLazyNumber n = (JsonLazyNumber)number;
-			return n.isDouble() ? new VncDouble(n.doubleValue()) :  new VncLong(n.longValue());
+			return n.isDouble() 
+						? new VncDouble(n.doubleValue()) 
+						: new VncLong(n.longValue());
 		}
 		else {
 			throw new VncException(
