@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -66,7 +67,9 @@ public class JsonFunctions {
 						"(json/write-str val & options)")		
 					.doc(
 						"Writes the val to a JSON string.\n" +
-						"Options: :pretty true/false (defaults to false) ")
+						"Options are : \n" +
+						"  :pretty true/false  \n" + 
+						"      Enables/disables pretty printing. Defaults to false.")
 					.examples(
 						"(json/write-str {:a 100 :b 100})",
 						"(json/write-str {:a 100 :b 100} :pretty true)")
@@ -80,8 +83,7 @@ public class JsonFunctions {
 				if (val == Nil) {
 					return Nil;
 				}
-				else {
-					
+				else {					
 					final VncHashMap options = VncHashMap.ofAll(args.slice(1));
 					final VncVal pretty = options.get(new VncKeyword("pretty")); 
 
@@ -111,7 +113,9 @@ public class JsonFunctions {
 					.doc(
 						"Spits the JSON converted val to the output.\n" +
 						"out maybe a Java OutputStream or a Java Writer. \n" +
-						"Options: :pretty true/false (defaults to false) ")
+						"Options are : \n" +
+						"  :pretty true/false  \n" + 
+						"      Enables/disables pretty printing. Defaults to false.")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
 						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
@@ -172,13 +176,20 @@ public class JsonFunctions {
 				VncFunction
 					.meta()
 					.module("json")
-					.arglists("(json/read-str s)")		
-					.doc("Reads a JSON string and returns it as a venice datatype.")
+					.arglists("(json/read-str s & options)")		
+					.doc(
+						"Reads a JSON string and returns it as a venice datatype.\n" + 
+						"Options are : \n" +
+						"  :key-fn fn  \n" + 
+						"      Single-argument function called on JSON property names; \n" +
+						"      return value will replace the property names in the output. \n" +
+						"      Default is 'identity', use 'keyword' to get keyword \n" +
+						"      properties.")
 					.examples("(json/read-str (json/write-str [{:a 100 :b 100}]))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("json/parse", args, 1);
+				assertMinArity("json/parse", args, 1);
 	
 				final VncVal val = args.first();
 				
@@ -188,9 +199,16 @@ public class JsonFunctions {
 				else {
 					try {
 						final VncString s = Coerce.toVncString(val);
-						//return convertToVncVal(JsonParser.any().from(s.getValue()));
 						
-						return new VncJsonReader(JsonReader.from(s.getValue())).read();
+						final VncHashMap options = VncHashMap.ofAll(args.slice(1));
+						final VncVal key_fn = options.get(new VncKeyword("key-fn")); 
+
+						final Function<VncVal,VncVal> keyFN = 
+								key_fn == Nil 
+									? null
+									: (key) -> ((VncFunction)key_fn).apply(VncList.of(key));
+						
+						return new VncJsonReader(JsonReader.from(s.getValue()), keyFN).read();
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to read JSON string", ex);
@@ -207,10 +225,16 @@ public class JsonFunctions {
 				VncFunction
 					.meta()
 					.module("json")
-					.arglists("(json/slurp in)")		
+					.arglists("(json/slurp in & options)")		
 					.doc(
 						"Slurps a JSON string from the input and returns it as a venice datatype.\n" +
-						"in maybe a Java InputStream or a Java Reader.")
+						"in maybe a Java InputStream or a Java Reader. \n" +
+						"Options are : \n" +
+						"  :key-fn fn  \n" + 
+						"      Single-argument function called on JSON property names; \n" +
+						"      return value will replace the property names in the output. \n" +
+						"      Default is 'identity', use 'keyword' to get keyword \n" +
+						"      properties.")
 					.examples(
 						"(let [json (json/write-str {:a 100 :b 100})             \n" +
 						"      data (bytebuf-from-string json :utf-8)            \n" +
@@ -219,7 +243,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("json/slurp", args, 1);
+				assertMinArity("json/slurp", args, 1);
 	
 				final VncVal val = args.first();
 				
@@ -230,11 +254,19 @@ public class JsonFunctions {
 					try {
 						final Object in = Coerce.toVncJavaObject(args.first()).getDelegate();
 
+						final VncHashMap options = VncHashMap.ofAll(args.slice(1));
+						final VncVal key_fn = options.get(new VncKeyword("key-fn")); 
+
+						final Function<VncVal,VncVal> keyFN = 
+								key_fn == Nil 
+									? null
+									: (key) -> ((VncFunction)key_fn).apply(VncList.of(key));
+
 						if (in instanceof InputStream) {
-							return new VncJsonReader(JsonReader.from((InputStream)in)).read();
+							return new VncJsonReader(JsonReader.from((InputStream)in), keyFN).read();
 						}
 						else if (in instanceof Reader) {
-							return new VncJsonReader(JsonReader.from((Reader)in)).read();
+							return new VncJsonReader(JsonReader.from((Reader)in), keyFN).read();
 						}
 						else {
 							throw new VncException(String.format(
