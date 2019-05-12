@@ -153,8 +153,6 @@ public class JsonFunctions {
 					return Nil;
 				}
 				else {
-					final Object javaVal = val.convertToJavaObject();
-					
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));						
 					final VncVal pretty = options.get(new VncKeyword("pretty")); 
 
@@ -162,19 +160,34 @@ public class JsonFunctions {
 						final JsonAppendableWriter writer = pretty == Constants.True
 																? JsonWriter.indent(INDENT).on((PrintStream)out)
 																: JsonWriter.on((PrintStream)out);
-						writer.value(javaVal).done();
+																
+						write(writer, val);
+						writer.done();
+
+						// final Object javaVal = val.convertToJavaObject();
+						// writer.value(javaVal).done();
 					}
 					else if (out instanceof OutputStream) {
 						final JsonAppendableWriter writer = pretty == Constants.True
 																? JsonWriter.indent(INDENT).on((OutputStream)out)
 																: JsonWriter.on((OutputStream)out);
-						writer.value(javaVal).done();
+																
+						write(writer, val);
+						writer.done();
+
+						// final Object javaVal = val.convertToJavaObject();
+						// writer.value(javaVal).done();
 					}
 					else if (out instanceof Writer) {
 						final JsonAppendableWriter writer = pretty == Constants.True
 																? JsonWriter.indent(INDENT).on((Writer)out)
 																: JsonWriter.on((OutputStream)out);
-						writer.value(javaVal).done();
+																
+						write(writer, val);
+						writer.done();
+
+						// final Object javaVal = val.convertToJavaObject();
+						// writer.value(javaVal).done();
 					}
 					else {
 						throw new VncException(String.format(
@@ -351,6 +364,7 @@ public class JsonFunctions {
 	}
 
 	private static final String INDENT = "  ";
+	
 	
 	
 	private static void write(final JsonAppendableWriter writer, final VncVal val) {
