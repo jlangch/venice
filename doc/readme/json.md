@@ -68,6 +68,13 @@ Decimals are converted to string
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
+Decimals are converted to double
+
+```clojure
+(json/write-str {:a 100.23M} :decimal-as-double true)
+;;=> "{\"a\":100.23}"
+```
+
 Read double as decimal
 
 ```clojure
