@@ -42,7 +42,7 @@ JSON can be slurped from Java InputStreams or Readers
 
 ### Converting JSON object key/value types
 
-Map JSON object keys to Venice keywords
+Map JSON object keys to keywords
 
 ```clojure
 (json/read-str """{"a":100,"b":100}""" :key-fn keyword)
