@@ -82,8 +82,8 @@ public class VncJsonReader {
 				return readBoolean();
 			case NULL:
 				return readNull();
-			default:
-				throw new VncException("Json deserialization error");
+ 			default:
+				throw new RuntimeException("Unexpected Json type " + reader.current());
 		}
 	}
 	
@@ -118,21 +118,10 @@ public class VncJsonReader {
 	}
 
 	private VncVal readNumber() throws JsonParserException {
-		final Number number = reader.number();
-		if (number instanceof JsonLazyNumber) {
-			JsonLazyNumber n = (JsonLazyNumber)number;
-			return n.isDouble() 
-						? new VncDouble(n.doubleValue()) 
-						: new VncLong(n.longValue());
-		}
-		else {
-			throw new VncException(
-					String.format(
-						"Json deserialization error. Unexpected number type %s at line %d column %d. %s",
-						number.getClass().getName(),
-						reader.getLinePosition(),
-						reader.getCharPosition()));
-		}
+		final JsonLazyNumber n = (JsonLazyNumber)reader.number();
+		return n.isDouble() 
+					? new VncDouble(n.doubleValue()) 
+					: new VncLong(n.longValue());
 	}
 
 	private VncVal readBoolean() throws JsonParserException {
