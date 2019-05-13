@@ -43,7 +43,7 @@ public class JsonFunctionsTest {
 
 		assertEquals("1", venice.eval("(json/write-str 1)"));
 		assertEquals("1.0", venice.eval("(json/write-str 1.0)"));
-		assertEquals("\"1.0\"", venice.eval("(json/write-str 1.0M)"));
+		assertEquals("\"1.33\"", venice.eval("(json/write-str 1.33M)"));
 		assertEquals("\"a\"", venice.eval("(json/write-str (keyword \"a\"))"));
 		assertEquals("\"a\"", venice.eval("(json/write-str (symbol \"a\"))"));
 	}
@@ -177,6 +177,16 @@ public class JsonFunctionsTest {
 			"  \"b\": 100\n" + 
 			"}", 
 			venice.eval(script));
+	}
+	
+	@Test
+	public void test_json_read_str_decimal() {
+		final Venice venice = new Venice();
+		
+		// map object keys to keywords
+		assertEquals(
+				"{:a 100 :b 100.33M}", 
+				venice.eval("(str (json/read-str \"\"\"{\"a\": 100, \"b\": 100.33}\"\"\" :key-fn keyword :decimal true))"));
 	}
 	
 	@Test
