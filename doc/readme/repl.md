@@ -63,7 +63,7 @@ typing more characters.
 
 ```text
 venice> (load-module <TAB>
-:json     :kira     :math     :ring     :maven    :logger   :tomcat   :webdav   :xchart
+:kira     :math     :ring     :maven    :tomcat   :webdav   :xchart
 ```
 
 
