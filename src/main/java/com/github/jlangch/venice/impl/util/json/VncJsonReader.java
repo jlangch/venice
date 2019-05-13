@@ -25,10 +25,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -42,15 +44,19 @@ import com.github.jlangch.venice.nanojson.JsonReader;
 public class VncJsonReader {
 
 	public VncJsonReader(final JsonReader reader) {
-		this(reader, null);
+		this(reader, null, null, false);
 	}
 
 	public VncJsonReader(
 			final JsonReader reader,
-			final Function<VncVal,VncVal> key_fn
+			final Function<VncVal,VncVal> key_fn,
+			final BiFunction<VncVal,VncVal,VncVal> value_fn,
+			final boolean toDecimal
 	) {
 		this.reader = reader;
 		this.key_fn = key_fn;
+		this.value_fn = value_fn;
+		this.toDecimal = toDecimal;
 	}
 
 	public VncVal read() {
@@ -86,7 +92,12 @@ public class VncJsonReader {
 		final Map<VncVal,VncVal> map = new HashMap<>();
 		while(reader.next()) {
 			final VncVal key = new VncString(reader.key());
-			map.put(key_fn == null ? key : key_fn.apply(key), readAny());
+			final VncVal mappedKey = key_fn == null ? key : key_fn.apply(key);
+
+			final VncVal val = readAny();
+			final VncVal mappedVal = value_fn == null ? val : value_fn.apply(mappedKey, val);
+
+			map.put(mappedKey, mappedVal);
 		}		
 		return new VncHashMap(map);
 	}
@@ -104,11 +115,15 @@ public class VncJsonReader {
 	private VncVal readNumber() throws JsonParserException {
 		final JsonLazyNumber n = (JsonLazyNumber)reader.number();
 		return n.isDouble() 
-					? new VncDouble(n.doubleValue()) 
+					? (toDecimal 
+						? new VncBigDecimal(n.bigDecimalValue())
+						: new VncDouble(n.doubleValue()))
 					: new VncLong(n.longValue());
 	}
 
 	
 	private final JsonReader reader;
 	private final Function<VncVal,VncVal> key_fn;
+	private final BiFunction<VncVal,VncVal,VncVal> value_fn;
+	private final boolean toDecimal;
 }

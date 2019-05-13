@@ -59,6 +59,11 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	
 	public abstract VncVal get(VncVal key);
 
+	public VncVal get(VncVal key, VncVal defaultValue) {
+		final VncVal val = get(key);
+		return val == Constants.Nil ? defaultValue : val;
+	}
+
 	public abstract VncVal containsKey(VncVal key);
 	
 	public abstract VncList keys();

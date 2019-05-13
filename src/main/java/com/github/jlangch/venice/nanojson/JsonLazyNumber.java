@@ -56,6 +56,10 @@ public class JsonLazyNumber extends Number {
 		return isDouble ? (long)Double.parseDouble(value) : Long.parseLong(value);
 	}
 
+	public BigDecimal bigDecimalValue() {
+		return new BigDecimal(value);
+	}
+
 	public boolean isDouble() {
 		return isDouble;
 	}

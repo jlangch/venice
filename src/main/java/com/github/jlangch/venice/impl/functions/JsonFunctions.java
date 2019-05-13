@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
@@ -68,7 +69,7 @@ public class JsonFunctions {
 					.doc(
 						"Writes the val to a JSON string.\n" +
 						"Options are : \n" +
-						"  :pretty true/false  \n" + 
+						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. Defaults to false.")
 					.examples(
 						"(json/write-str {:a 100 :b 100})",
@@ -85,11 +86,11 @@ public class JsonFunctions {
 				}
 				else {					
 					final VncHashMap options = VncHashMap.ofAll(args.slice(1));
-					final VncVal pretty = options.get(new VncKeyword("pretty")); 
+					final boolean prettyPrint = isTrueOption(options, "pretty"); 
 
 					final StringBuilder sb = new StringBuilder();
 					
-					final JsonAppendableWriter writer = pretty == Constants.True
+					final JsonAppendableWriter writer = prettyPrint
 															? JsonWriter.indent(INDENT).on(sb)
 															: JsonWriter.on(sb);
 								
@@ -114,7 +115,7 @@ public class JsonFunctions {
 						"Spits the JSON converted val to the output.\n" +
 						"out maybe a Java OutputStream or a Java Writer. \n" +
 						"Options are : \n" +
-						"  :pretty true/false  \n" + 
+						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. Defaults to false.")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
@@ -134,24 +135,24 @@ public class JsonFunctions {
 				}
 				else {
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-					final VncVal pretty = options.get(new VncKeyword("pretty")); 
+					final boolean prettyPrint = isTrueOption(options, "pretty"); 
 
 					if (out instanceof PrintStream) {
-						final JsonAppendableWriter writer = pretty == Constants.True
+						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((PrintStream)out)
 																: JsonWriter.on((PrintStream)out);
 																
 						new VncJsonWriter(writer).write(val).done();
 					}
 					else if (out instanceof OutputStream) {
-						final JsonAppendableWriter writer = pretty == Constants.True
+						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((OutputStream)out)
 																: JsonWriter.on((OutputStream)out);
 																
 						new VncJsonWriter(writer).write(val).done();
 					}
 					else if (out instanceof Writer) {
-						final JsonAppendableWriter writer = pretty == Constants.True
+						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((Writer)out)
 																: JsonWriter.on((OutputStream)out);
 																
@@ -180,11 +181,20 @@ public class JsonFunctions {
 					.doc(
 						"Reads a JSON string and returns it as a venice datatype.\n" + 
 						"Options are : \n" +
-						"  :key-fn fn  \n" + 
+						"  :key-fn fn \n" + 
 						"      Single-argument function called on JSON property names; \n" +
 						"      return value will replace the property names in the output. \n" +
 						"      Default is 'identity', use 'keyword' to get keyword \n" +
-						"      properties.")
+						"      properties. \n" +
+						"  :vakue-fn fn \n" + 
+						"      Function to transform values in JSON objects in\n" + 
+						"      the output. For each JSON property, value-fn is called with\n" + 
+						"      two arguments: the property name (transformed by key-fn) and\n" + 
+						"      the value. The return value of value-fn will replace the value\n" + 
+						"      in the output. The default value-fn returns the value unchanged.\n" + 
+						"  :decimal boolean \n" + 
+						"      If true use BigDecimal for decimal numbers instead of Double.\n" + 
+						"      Default is false.")
 					.examples(
 						"(json/read-str (json/write-str {:a 100 :b 100}))",
 						"(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)")
@@ -203,14 +213,18 @@ public class JsonFunctions {
 						final VncString s = Coerce.toVncString(val);
 						
 						final VncHashMap options = VncHashMap.ofAll(args.slice(1));
-						final VncVal key_fn = options.get(new VncKeyword("key-fn")); 
+						final VncFunction key_fn = getFunctionOption(options, "key-fn"); 
+						final VncFunction value_fn = getFunctionOption(options, "value-fn"); 
+						final boolean toDecimal = isTrueOption(options, "decimal"); 
 
 						final Function<VncVal,VncVal> keyFN = 
-								key_fn == Nil 
-									? null
-									: (key) -> ((VncFunction)key_fn).apply(VncList.of(key));
-						
-						return new VncJsonReader(JsonReader.from(s.getValue()), keyFN).read();
+								key_fn == null ? null : (key) -> key_fn.apply(VncList.of(key));
+
+						final BiFunction<VncVal,VncVal,VncVal> valueFN = 
+								value_fn == null ? null : (k, v) -> value_fn.apply(VncList.of(k, v));
+
+						return new VncJsonReader(
+									JsonReader.from(s.getValue()), keyFN, valueFN, toDecimal).read();
 					}
 					catch(Exception ex) {
 						throw new VncException("Function 'json/read-str'. Failed to read JSON string", ex);
@@ -236,7 +250,16 @@ public class JsonFunctions {
 						"      Single-argument function called on JSON property names; \n" +
 						"      return value will replace the property names in the output. \n" +
 						"      Default is 'identity', use 'keyword' to get keyword \n" +
-						"      properties.")
+						"      properties." +
+						"  :vakue-fn fn \n" + 
+						"      Function to transform values in JSON objects in\n" + 
+						"      the output. For each JSON property, value-fn is called with\n" + 
+						"      two arguments: the property name (transformed by key-fn) and\n" + 
+						"      the value. The return value of value-fn will replace the value\n" + 
+						"      in the output. The default value-fn returns the value unchanged.\n" + 
+						"  :decimal boolean \n" + 
+						"      If true use BigDecimal for decimal numbers instead of Double.\n" + 
+						"      Default is false.")
 					.examples(
 						"(let [json (json/write-str {:a 100 :b 100})             \n" +
 						"      data (bytebuf-from-string json :utf-8)            \n" +
@@ -257,18 +280,21 @@ public class JsonFunctions {
 						final Object in = Coerce.toVncJavaObject(args.first()).getDelegate();
 
 						final VncHashMap options = VncHashMap.ofAll(args.slice(1));
-						final VncVal key_fn = options.get(new VncKeyword("key-fn")); 
-
+						final VncFunction key_fn = getFunctionOption(options, "key-fn"); 
+						final VncFunction value_fn = getFunctionOption(options, "value-fn"); 
+						final boolean toDecimal = isTrueOption(options, "decimal"); 
+						
 						final Function<VncVal,VncVal> keyFN = 
-								key_fn == Nil 
-									? null
-									: (key) -> ((VncFunction)key_fn).apply(VncList.of(key));
+								key_fn == null ? null : (key) -> key_fn.apply(VncList.of(key));
+
+						final BiFunction<VncVal,VncVal,VncVal> valueFN = 
+								value_fn == null ? null : (k, v) -> value_fn.apply(VncList.of(k, v));
 
 						if (in instanceof InputStream) {
-							return new VncJsonReader(JsonReader.from((InputStream)in), keyFN).read();
+							return new VncJsonReader(JsonReader.from((InputStream)in), keyFN, valueFN, toDecimal).read();
 						}
 						else if (in instanceof Reader) {
-							return new VncJsonReader(JsonReader.from((Reader)in), keyFN).read();
+							return new VncJsonReader(JsonReader.from((Reader)in), keyFN, valueFN, toDecimal).read();
 						}
 						else {
 							throw new VncException(String.format(
@@ -316,10 +342,19 @@ public class JsonFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	private static boolean isTrueOption(final VncHashMap options, final String optionName) {
+		return options.get(new VncKeyword(optionName),Constants.False) == Constants.True; 
+	}
+	
+	private static VncFunction getFunctionOption(final VncHashMap options, final String optionName) {
+		final VncVal val = options.get(new VncKeyword(optionName)); 
+		return val == Constants.Nil ? null : Coerce.toVncFunction(val);
+	}
 
+	
 	private static final String INDENT = "  ";
 	
 	
