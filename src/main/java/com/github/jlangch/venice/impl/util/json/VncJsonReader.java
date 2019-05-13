@@ -70,20 +70,13 @@ public class VncJsonReader {
 	
 	private VncVal readAny() throws JsonParserException {
 		switch(reader.current()) {
-			case OBJECT:
-				return readObject();
-			case ARRAY:
-				return readArray();
-			case STRING:
-				return readString();
-			case NUMBER:
-				return readNumber();
-			case BOOLEAN:
-				return readBoolean();
-			case NULL:
-				return readNull();
- 			default:
-				throw new RuntimeException("Unexpected Json type " + reader.current());
+			case OBJECT:  return readObject();
+			case ARRAY:   return readArray();
+			case STRING:  return readString();
+			case NUMBER:  return readNumber();
+			case BOOLEAN: return readBoolean();
+			case NULL:    return readNull();
+ 			default: throw new RuntimeException("Unexpected Json type " + reader.current());
 		}
 	}
 	
@@ -94,8 +87,7 @@ public class VncJsonReader {
 		while(reader.next()) {
 			final VncVal key = new VncString(reader.key());
 			final VncVal mappedKey = key_fn == null ? key : key_fn.apply(key);
-			final VncVal val = readAny();
-			map.put(mappedKey, val);
+			map.put(mappedKey, readAny());
 		}
 		
 		return new VncHashMap(map);
@@ -106,8 +98,7 @@ public class VncJsonReader {
 		
 		final List<VncVal> list = new ArrayList<>();
 		while(reader.next()) {
-			final VncVal val = readAny();
-			list.add(val);
+			list.add(readAny());
 		}
 		
 		return new VncList(list);
