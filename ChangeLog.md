@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### added
 
-- added ...
+- added the option 'decimal-as-double' to JSON writer to control whether the writer 
+  emits decimals as JSON string or double.
 
 
 
