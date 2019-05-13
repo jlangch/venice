@@ -56,8 +56,12 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 
 public class VncJsonWriter {
-	public VncJsonWriter(final JsonAppendableWriter writer) {
+	public VncJsonWriter(
+			final JsonAppendableWriter writer,
+			final boolean decimalAsDouble
+	) {
 		this.writer = writer;
+		this.decimalAsDouble = decimalAsDouble;
 	}
 
 	public VncJsonWriter write(final VncVal val) {
@@ -209,12 +213,23 @@ public class VncJsonWriter {
 	}
 
 	private void write_VncBigDecimal(final String key, final VncBigDecimal val) {
-		final String v = val.getValue().toString();
-		if (key == null) {
-			writer.value(v);
+		if (decimalAsDouble) {
+			final double v = val.getValue().doubleValue();
+			if (key == null) {
+				writer.value(v);
+			}
+			else {
+				writer.value(key, v);
+			}
 		}
 		else {
-			writer.value(key, v);
+			final String v = val.getValue().toString();
+			if (key == null) {
+				writer.value(v);
+			}
+			else {
+				writer.value(key, v);
+			}
 		}
 	}
 
@@ -374,4 +389,5 @@ public class VncJsonWriter {
 	private static final DateTimeFormatter FMT_DATE_TIME = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 	private final JsonAppendableWriter writer;
+	private final boolean decimalAsDouble;
 }

@@ -70,7 +70,9 @@ public class JsonFunctions {
 						"Writes the val to a JSON string.\n" +
 						"Options are : \n" +
 						"  :pretty boolean \n" + 
-						"      Enables/disables pretty printing. Defaults to false.")
+						"      Enables/disables pretty printing. Defaults to false. \n" +
+						"  :decimal-as-double boolean \n" + 
+						"      If true emit a decimal as double else as string. Defaults to false.")
 					.examples(
 						"(json/write-str {:a 100 :b 100})",
 						"(json/write-str {:a 100 :b 100} :pretty true)")
@@ -87,6 +89,7 @@ public class JsonFunctions {
 				else {					
 					final VncHashMap options = VncHashMap.ofAll(args.slice(1));
 					final boolean prettyPrint = isTrueOption(options, "pretty"); 
+					final boolean decimalAsDouble = isTrueOption(options, "decimal-as-double"); 
 
 					final StringBuilder sb = new StringBuilder();
 					
@@ -94,7 +97,7 @@ public class JsonFunctions {
 															? JsonWriter.indent(INDENT).on(sb)
 															: JsonWriter.on(sb);
 								
-					new VncJsonWriter(writer).write(val).done();
+					new VncJsonWriter(writer, decimalAsDouble).write(val).done();
 					
 					return new VncString(sb.toString());
 				}
@@ -116,7 +119,9 @@ public class JsonFunctions {
 						"out maybe a Java OutputStream or a Java Writer. \n" +
 						"Options are : \n" +
 						"  :pretty boolean \n" + 
-						"      Enables/disables pretty printing. Defaults to false.")
+						"      Enables/disables pretty printing. Defaults to false. \n" +
+						"  :decimal-as-double boolean \n" + 
+						"      If true emit a decimal as double else as string. Defaults to false.")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
 						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
@@ -136,27 +141,28 @@ public class JsonFunctions {
 				else {
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 					final boolean prettyPrint = isTrueOption(options, "pretty"); 
+					final boolean decimalAsDouble = isTrueOption(options, "decimal-as-double"); 
 
 					if (out instanceof PrintStream) {
 						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((PrintStream)out)
 																: JsonWriter.on((PrintStream)out);
 																
-						new VncJsonWriter(writer).write(val).done();
+						new VncJsonWriter(writer, decimalAsDouble).write(val).done();
 					}
 					else if (out instanceof OutputStream) {
 						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((OutputStream)out)
 																: JsonWriter.on((OutputStream)out);
 																
-						new VncJsonWriter(writer).write(val).done();
+						new VncJsonWriter(writer, decimalAsDouble).write(val).done();
 					}
 					else if (out instanceof Writer) {
 						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((Writer)out)
 																: JsonWriter.on((OutputStream)out);
 																
-						new VncJsonWriter(writer).write(val).done();
+						new VncJsonWriter(writer, decimalAsDouble).write(val).done();
 					}
 					else {
 						throw new VncException(String.format(
