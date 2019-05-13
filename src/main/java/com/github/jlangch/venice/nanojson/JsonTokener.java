@@ -720,27 +720,6 @@ final class JsonTokener {
 	}
 
 	/**
-	 * Gets the 1-based line position of the current token.
-	 */
-	public int getLinePosition() {
-		return linePos;
-	}
-
-	/**
-	 * Gets the 1-based character position of the current token.
-	 */
-	public int getCharPosition() {
-		return tokenCharPos;
-	}
-	
-	/**
-	 * Gets the 0-based character offset of the current token from the beginning of the string.
-	 */
-	public int getCharOffset() {
-		return tokenCharOffset;
-	}
-
-	/**
 	 * Throws a helpful exception based on the current alphanumeric token.
 	 */
 	JsonParserException createHelpfulException(char first, char[] expected, int failurePosition)

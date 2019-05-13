@@ -88,8 +88,7 @@ public class VncJsonReader {
 			final VncVal key = new VncString(reader.key());
 			final VncVal mappedKey = key_fn == null ? key : key_fn.apply(key);
 			map.put(mappedKey, readAny());
-		}
-		
+		}		
 		return new VncHashMap(map);
 	}
 
@@ -100,7 +99,6 @@ public class VncJsonReader {
 		while(reader.next()) {
 			list.add(readAny());
 		}
-		
 		return new VncList(list);
 	}
 
