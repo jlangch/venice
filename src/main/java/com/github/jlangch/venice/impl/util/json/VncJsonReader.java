@@ -60,7 +60,7 @@ public class VncJsonReader {
 		catch(JsonParserException ex) {
 			throw new VncException(
 					String.format(
-						"Json deserialization error at line %d column %d. %s",
+						"JSON deserialization error at line %d column %d. %s",
 						ex.getLinePosition(),
 						ex.getCharPosition(),
 						ex.getMessage()),
@@ -72,11 +72,11 @@ public class VncJsonReader {
 		switch(reader.current()) {
 			case OBJECT:  return readObject();
 			case ARRAY:   return readArray();
-			case STRING:  return readString();
+			case STRING:  return new VncString(reader.string());
 			case NUMBER:  return readNumber();
-			case BOOLEAN: return readBoolean();
-			case NULL:    return readNull();
- 			default: throw new RuntimeException("Unexpected Json type " + reader.current());
+			case BOOLEAN: return reader.bool() ? Constants.True : Constants.False;
+			case NULL:    return Constants.Nil;
+ 			default: throw new RuntimeException("Unexpected JSON type " + reader.current());
 		}
 	}
 	
@@ -102,24 +102,11 @@ public class VncJsonReader {
 		return new VncList(list);
 	}
 
-	private VncVal readString() throws JsonParserException {
-		return new VncString(reader.string());
-	}
-
 	private VncVal readNumber() throws JsonParserException {
 		final JsonLazyNumber n = (JsonLazyNumber)reader.number();
 		return n.isDouble() 
 					? new VncDouble(n.doubleValue()) 
 					: new VncLong(n.longValue());
-	}
-
-	private VncVal readBoolean() throws JsonParserException {
-		return reader.bool() ? Constants.True : Constants.False;
-	}
-
-	private VncVal readNull() throws JsonParserException {
-		reader.nul();
-		return Constants.Nil;
 	}
 
 	
