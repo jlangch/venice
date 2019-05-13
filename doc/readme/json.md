@@ -40,11 +40,22 @@ JSON can be slurped from Java InputStreams or Readers
 ```
 
 
-### Map JSON object keys to Venice keywords
+### Converting JSON object key/value types
+
+Map JSON object keys to Venice keywords
 
 ```clojure
 (json/read-str """{"a":100,"b":100}""" :key-fn keyword)
-;;=> "{:a 100 :b 100}"
+;;=> {:a 100 :b 100}
+```
+
+Map JSON object values to local-date-time
+
+```clojure
+(json/read-str """{"a": "2018-08-01T10:15:30"}""" 
+               :key-fn keyword 
+               :value-fn (fn [k v] (time/local-date-time v))))
+;;=> {:a 2018-08-01T10:15:30}
 ```
 
 
@@ -56,6 +67,14 @@ Decimals are converted to string
 (json/write-str {:a 100.23M})
 ;;=> "{\"a\":\"100.23\"}"
 ```
+
+Read double as decimal
+
+```clojure
+(json/read-str """{"a":10.33}""" :decimal true)
+;;=> {"a" 10.33M}
+```
+
 
 Binary data is converted to a _Base64_ encoded string
 
