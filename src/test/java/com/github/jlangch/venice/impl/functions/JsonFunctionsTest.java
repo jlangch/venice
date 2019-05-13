@@ -155,11 +155,11 @@ public class JsonFunctionsTest {
 
 		assertEquals(
 			"[{\n" + 
-			"  \"a\":100,\n" + 
-			"  \"b\":100\n" + 
+			"  \"a\": 100,\n" + 
+			"  \"b\": 100\n" + 
 			"},{\n" + 
-			"  \"a\":200,\n" + 
-			"  \"b\":200\n" + 
+			"  \"a\": 200,\n" + 
+			"  \"b\": 200\n" + 
 			"}]", 
 			venice.eval(script));
 	}
@@ -173,8 +173,8 @@ public class JsonFunctionsTest {
 
 		assertEquals(
 			"{\n" + 
-			"  \"a\":100,\n" + 
-			"  \"b\":100\n" + 
+			"  \"a\": 100,\n" + 
+			"  \"b\": 100\n" + 
 			"}", 
 			venice.eval(script));
 	}

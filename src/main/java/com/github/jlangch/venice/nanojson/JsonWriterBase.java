@@ -490,7 +490,7 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 			appendIndent();
 		}
 		emitStringValue(key);
-		raw(':');
+		raw(indentString != null ? ": " : ":");
 	}
 
 	/**
