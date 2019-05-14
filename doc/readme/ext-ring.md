@@ -3,7 +3,93 @@
 Venice Ring is a port of Clojure's Ring web applications library.
 
 
-## Sample WEB App
+## Hello World WEB App
+
+```clojure
+(load-module :tomcat)
+(load-module :ring)
+
+(defn hello-world-handler [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Hello World" })
+
+;; A route is defined by a HTTP verb, a URI filter and a handle function.
+;; If multiple routes match the route with the longest URI filter will be 
+;; chosen.
+(def routes [
+  [:get "/**"  hello-world-handler]
+])
+
+(tc/run-tomcat
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-print-uri)         ; ^  |
+                           (ring/mw-debug :on)))       ; +--+
+  {:await? false})
+```
+
+
+## Hello World WEB App with sessions activated
+
+```clojure
+(load-module :tomcat)
+(load-module :ring)
+
+(defn hello-world-handler [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Hello World" })
+
+;; A route is defined by a HTTP verb, a URI filter and a handle function.
+;; If multiple routes match the route with the longest URI filter will be 
+;; chosen.
+(def routes [
+  [:get "/**"  hello-world-handler]
+])
+
+;; The 'mw-request-counter' middlware uses the session to store the 
+;; session's request count and prints it if debug is :on
+(tc/run-tomcat
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-request-counter)   ; ^  |
+                           (ring/mw-add-session 3600)  ; |  |
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on)))       ; +--+
+  {:await? false})
+```
+
+## Hello World WEB App with request/response dump
+
+```clojure
+(load-module :tomcat)
+(load-module :ring)
+
+(defn hello-world-handler [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Hello World" })
+
+;; A route is defined by a HTTP verb, a URI filter and a handle function.
+;; If multiple routes match the route with the longest URI filter will be 
+;; chosen.
+(def routes [
+  [:get "/**"  hello-world-handler]
+])
+
+(tc/run-tomcat
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-dump-response)     ; ^  |
+                           (ring/mw-dump-request)      ; |  |
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on)))       ; +--+
+  {:await? false})
+```
+
+
+## Sample WEB App with multiple routes
 
 ```clojure
 (load-module :tomcat)
@@ -30,10 +116,9 @@ Venice Ring is a port of Clojure's Ring web applications library.
         :headers { "Content-Type" "text/plain; charset=utf-8" }
         :body "File not found" } )))
 
-;; A route is defined by a HTTP verb, a URI filter and a handle
-;; function.
-;; If multiple routes match the route with the longest URI filter
-;; will be chosen
+;; A route is defined by a HTTP verb, a URI filter and a handle function.
+;; If multiple routes match the route with the longest URI filter will be 
+;; chosen.
 (def routes [
   [:get "/**"                   hello-world-handler]
   [:get "/test"                 test-handler]
@@ -51,20 +136,6 @@ Venice Ring is a port of Clojure's Ring web applications library.
                            (ring/mw-print-uri)         ; |  |
                            (ring/mw-debug :on)))       ; +--+
   {:await? false})
-  
-;; run minimal webapp without session and debugging
-;; (tc/run-tomcat
-;;   (ring/create-servlet (-> (ring/match-routes routes)
-;;                            (ring/mw-debug :off)))
-;;   {:await? false})
-
-;; run minimal webapp with session (timeout 3600s) but without debugging
-;; (tc/run-tomcat
-;;   (ring/create-servlet (-> (ring/match-routes routes)
-;;                            (ring/mw-add-session 3600)
-;;                            (ring/mw-debug :off)))
-;;   {:await? false})
-
 ```
 
 
