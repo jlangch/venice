@@ -68,14 +68,16 @@ Decimals are converted to strings
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
-Decimals can be forced to be converted to doubles
+Decimals can be forced to be converted to doubles:
 
 ```clojure
 (json/write-str {:a 100.23M} :decimal-as-double true)
 ;;=> "{\"a\":100.23}"
 ```
 
-Read doubles as decimals
+Read doubles as decimals without precision loss. 
+The decimals are converted from the read string without
+intermediate double conversion:
 
 ```clojure
 (json/read-str """{"a":10.33}""" :decimal true)
