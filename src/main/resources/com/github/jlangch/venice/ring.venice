@@ -253,10 +253,11 @@
              params (merge req-params uri-params)
              req (assoc req :parameters params)]
          (when (ring/debug? req)
-               (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
-               (when (:dump-request req false) (ring/dump-request req)))
+               (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
+         (when (:dump-request req false)
+               (ring/dump-request req))
          (let [res (handler req)]
-           (when (and (ring/debug? req) (:dump-response req false))
+           (when (:dump-response req false)
                  (ring/dump-response res)))))))
 
 
