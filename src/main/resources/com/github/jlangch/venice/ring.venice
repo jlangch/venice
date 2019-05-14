@@ -195,8 +195,7 @@
   ring/mw-dump-request
   [handler]
   (fn [req]
-    (when (ring/debug? req) (ring/dump-request req))
-    (handler req)))
+    (handler (assoc req :dump-request true))))
 
 (defn
   ^{ :doc "Dumps the response." }
@@ -251,11 +250,14 @@
              req-params (:parameters req)
              uri-params (zipmap (:uri-param-names route '())
                                 ((:uri-param-values route) uri))
-             params (merge req-params uri-params)]
+             params (merge req-params uri-params)
+             req (assoc req :parameters params)]
          (when (ring/debug? req)
                (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
-               (println (str "URI parameters: " uri-params)))
-         (handler (assoc req :parameters params))))))
+               (when (:dump-request req false) (ring/dump-request req)))
+         (let [res (handler req)]
+           (when (and (ring/debug? req) (:dump-response req false))
+                 (ring/dump-response res)))))))
 
 
 ;; -----------------------------------------------------------------------------
