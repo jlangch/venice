@@ -141,13 +141,15 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :doc "Identity, does effectively just delegate" }
+  ^{ :doc "Identity, does effectively just delegate to the handler" }
   ring/mw-identity
   [handler]
   (fn [req] (handler req)))
 
 (defn
-  ^{ :doc "Turns handler debugging on/off" }
+  ^{ :doc (str/strip-indent """\
+      Turns handler debug flag on the request on/off and then calls
+      the handler with the modified request.""" ) }
   ring/mw-debug
   [handler option]
   (let [on (or (nil? option) (== option :on))]
@@ -155,7 +157,7 @@
       (handler (assoc req :debug on)))))
 
 (defn
-  ^{ :doc "Prints the URI." }
+  ^{ :doc "Prints the URI from the request and then calls the handler" }
   ring/mw-print-uri
   [handler]
   (fn [req]
@@ -164,7 +166,9 @@
     (handler req)))
 
 (defn
-  ^{ :doc "Counts the requests and stores the value in the session." }
+  ^{ :doc (str/strip-indent """\
+        Increments the number requests, stores it in the attribute
+        'request-counter' in the session, and then calls the handler.""" ) }
   ring/mw-request-counter
   [handler]
   (fn [req]
@@ -179,7 +183,9 @@
   ^{ :doc (str/strip-indent """\
         Adds the session to the request. If a new session is created
         the given timeout is set as the MaxInactiveInterval. If a
-        timeout is not given the session will never timeout.""" ) }
+        timeout is not given the session will never timeout.
+        Adds the session to the request and then calls the handler
+        with the modified request.""" ) }
   ring/mw-add-session
   [handler timeout]
   (fn [req]
@@ -191,18 +197,21 @@
       (handler (assoc req :session session)))))
 
 (defn
-  ^{ :doc "Dumps the request." }
+  ^{ :doc "Dumps the request and then calls the handler." }
   ring/mw-dump-request
   [handler]
   (fn [req]
-    (handler (assoc req :dump-request true))))
+    (ring/dump-request req)
+    (handler req)))
 
 (defn
-  ^{ :doc "Dumps the response." }
+  ^{ :doc "Calls the handler and the dumps the handler's response." }
   ring/mw-dump-response
   [handler]
   (fn [req]
-    (handler (assoc req :dump-response true))))
+    (let [res (handler req)]
+      (ring/dump-response res)
+      res)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -238,7 +247,9 @@
 ;;      {:await? false})
 
 (defn
-  ^{ :doc "Compile the routes and return a function that calls the handler matching the URI" }
+  ^{ :doc (str/strip-indent """\
+        Compile the routes and return a function that calls the handler
+        matching the URI.""" ) }
   ring/match-routes
   [routes]
   (let [compiled (ring/compile-routes routes)]
@@ -254,12 +265,9 @@
              req (assoc req :parameters params)]
          (when (ring/debug? req)
                (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
-         (when (:dump-request req false)
-               (ring/dump-request req))
-         (let [res (handler req)]
-           (when (:dump-response req false)
-                 (ring/dump-response res))
-           res)))))
+         (when (ring/debug? req)
+               (println (str "URI parameters: " uri-params)))
+         (handler req)))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -664,7 +672,16 @@
   (-> (. res :getWriter)
       (. :println (str "<html><body><p>Internal Error</p></body></html>"))))
 
-(defn ring/handle
+(defn 
+  ^{ :doc (str/strip-indent """\
+        Bootstrap the handler chain. Builds the request from then
+        HttpServletRequest and calls the handler with the request.
+        Builds the HttpServletResponse withn the handler's response.
+        Sends a not-found HTTP response if the handler returned a
+        nil response. Sends a redirect if a handler raises a
+        RingRedirectException. In case of any othe exception sends a
+        internal-error (HTTP status 500) response.""") }
+  ring/handle
   [req res servlet handler]
   (try
     (let [ring_req (-> req
