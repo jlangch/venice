@@ -191,8 +191,8 @@
   (fn [req]
     (let [session (. (:servlet-request req) :getSession true)]
       (when (. session :isNew)
-        (when (ring/debug? req)
-              (println (str "Session " (. session :getId) " created")))
+            (when (ring/debug? req)
+                  (println (str "Session " (. session :getId) " created")))
         (. session :setMaxInactiveInterval (coalesce timeout -1)))
       (handler (assoc req :session session)))))
 
@@ -253,8 +253,8 @@
   ring/match-routes
   [routes]
   (let [compiled (ring/compile-routes routes)]
-     (fn [req]
-       (let [verb (:request-method req)
+    (fn [req]
+      (let [verb (:request-method req)
              uri (:uri req)
              route (ring/get-route verb uri compiled)
              handler (:handler route)
@@ -263,11 +263,10 @@
                                 ((:uri-param-values route) uri))
              params (merge req-params uri-params)
              req (assoc req :parameters params)]
-         (when (ring/debug? req)
-               (println (str "Route: " verb " \"" uri "\" -> " (name handler))))
-         (when (ring/debug? req)
-               (println (str "URI parameters: " uri-params)))
-         (handler req)))))
+        (when (ring/debug? req)
+              (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
+              (println (str "URI parameters: " uri-params)))
+        (handler req)))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -412,7 +411,7 @@
   [response headers]
   (docoll
     (fn [[key val-or-vals]]
-        (if (string? val-or-vals)
+      (if (string? val-or-vals)
           (. response :setHeader key val-or-vals)
           (docoll (fn [val] (. response :setHeader key val)) val-or-vals)))
     headers)
@@ -450,7 +449,7 @@
        (fn [response-map]
          (ring/update-servlet-response response async-context response-map))
        (fn [exception]
-         (. response :sendError  500 (. exception :getMessage))
+         (. response :sendError 500 (. exception :getMessage))
          (. async-context :complete ))))))
 
 (defn
@@ -672,15 +671,15 @@
   (-> (. res :getWriter)
       (. :println (str "<html><body><p>Internal Error</p></body></html>"))))
 
-(defn 
+(defn
   ^{ :doc (str/strip-indent """\
         Bootstrap the handler chain. Builds the request from then
         HttpServletRequest and calls the handler with the request.
-        Builds the HttpServletResponse withn the handler's response.
+        Builds the HttpServletResponse from the handler's response.
         Sends a not-found HTTP response if the handler returned a
         nil response. Sends a redirect if a handler raises a
-        RingRedirectException. In case of any othe exception sends a
-        internal-error (HTTP status 500) response.""") }
+        RingRedirectException. In case of any other exception sends
+        an internal-error (HTTP status 500) response.""") }
   ring/handle
   [req res servlet handler]
   (try
