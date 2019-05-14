@@ -61,21 +61,23 @@ Map JSON object values to local-date-time
 
 ### Special data types
 
-Decimals are converted to string
+Decimals are converted to strings
 
 ```clojure
 (json/write-str {:a 100.23M})
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
-Decimals are converted to double
+Decimals can be forced to be converted to doubles:
 
 ```clojure
 (json/write-str {:a 100.23M} :decimal-as-double true)
 ;;=> "{\"a\":100.23}"
 ```
 
-Read double as decimal
+Read doubles as decimals without precision loss. 
+The decimals are converted from the read string without
+intermediate double conversion:
 
 ```clojure
 (json/read-str """{"a":10.33}""" :decimal true)
