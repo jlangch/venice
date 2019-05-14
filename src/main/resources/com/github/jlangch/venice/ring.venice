@@ -258,7 +258,8 @@
                (ring/dump-request req))
          (let [res (handler req)]
            (when (:dump-response req false)
-                 (ring/dump-response res)))))))
+                 (ring/dump-response res))
+           res)))))
 
 
 ;; -----------------------------------------------------------------------------
