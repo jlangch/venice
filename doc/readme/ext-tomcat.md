@@ -28,6 +28,8 @@ Type `ctrl-c` in the REPL to shutdown the server.
 ## Define a servlet
 
 ```clojure
+(load-module :tomcat)
+
 (defn send-text
   [res status text]
   (. res :setStatus status)
@@ -35,7 +37,7 @@ Type `ctrl-c` in the REPL to shutdown the server.
   (-> (. res :getWriter)
       (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
 
-(defn hello-world-servlet
+(defn my-hello-world-servlet
   []
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
@@ -49,4 +51,7 @@ Type `ctrl-c` in the REPL to shutdown the server.
         :doOptions (fn [req res servlet] (send-text res 404 "Not Found"))
         :doTrace (fn [req res servlet] (send-text res 404 "Not Found"))
         :getLastModified (fn [req] -1) })))
+
+; run Tomcat
+(tc/run-tomcat (my-hello-world-servlet) {:await? false})
 ```
