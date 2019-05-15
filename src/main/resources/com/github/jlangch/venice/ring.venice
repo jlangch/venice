@@ -33,6 +33,14 @@
   (throw (. :RingRedirectException :new url)))
 
 (defn
+  ^{:doc "Create a HTTP Not-Found 404 response with content-type text/html. " }
+  ring/not-found-response
+  ([] (ring/not-found-response "Not Found"))
+  ([msg] { :status 404
+           :headers { "Content-Type" "text/html; charset=utf-8" }
+           :body """<html><body><p>~(str/escape-html msg)</p></body></html>""" }))
+
+(defn
   ^{ :doc (str/strip-indent """\
         Returns the value of the specified request parameter. If the request
         did not include a parameter of the specified name, this method returns
@@ -193,7 +201,7 @@
       (when (. session :isNew)
             (when (ring/debug? req)
                   (println (str "Session " (. session :getId) " created")))
-        (. session :setMaxInactiveInterval (coalesce timeout -1)))
+            (. session :setMaxInactiveInterval (coalesce timeout -1)))
       (handler (assoc req :session session)))))
 
 (defn
@@ -256,17 +264,19 @@
     (fn [req]
       (let [verb (:request-method req)
              uri (:uri req)
-             route (ring/get-route verb uri compiled)
-             handler (:handler route)
              req-params (:parameters req)
-             uri-params (zipmap (:uri-param-names route '())
-                                ((:uri-param-values route) uri))
-             params (merge req-params uri-params)
-             req (assoc req :parameters params)]
-        (when (ring/debug? req)
-              (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
-              (println (str "URI parameters: " uri-params)))
-        (handler req)))))
+             route (ring/get-route verb uri compiled)]
+        (if route
+          (let [handler (:handler route)
+                uri-params (zipmap (:uri-param-names route '())
+                                    ((:uri-param-values route) uri))
+                params (merge req-params uri-params)
+                req (assoc req :parameters params)]
+            (when (ring/debug? req)
+                  (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
+                  (println (str "URI parameters: " uri-params)))
+            (handler req))
+          (ring/not-found-response))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -276,19 +286,19 @@
 (defn
   ^{ :doc "Create a ring servlet" }
   ring/create-servlet
- [handler]
- (. :VeniceServlet :new
-   (proxify :IVeniceServlet
-     { :init (fn [config] nil)
-       :destroy (fn [] nil)
-       :doGet (fn [req res servlet] (ring/handle req res servlet handler))
-       :doHead (fn [req res servlet] (ring/handle req res servlet handler))
-       :doPost (fn [req res servlet] (ring/handle req res servlet handler))
-       :doPut (fn [req res servlet] (ring/handle req res servlet handler))
-       :doDelete (fn [req res servlet] (ring/handle req res servlet handler))
-       :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
-       :doTrace (fn [req res servlet] (ring/handle req res servlet handler))
-       :getLastModified (fn [req] -1) })))
+  [handler]
+  (. :VeniceServlet :new
+    (proxify :IVeniceServlet
+      { :init (fn [config] nil)
+        :destroy (fn [] nil)
+        :doGet     (fn [req res servlet] (ring/handle req res servlet handler))
+        :doHead    (fn [req res servlet] (ring/handle req res servlet handler))
+        :doPost    (fn [req res servlet] (ring/handle req res servlet handler))
+        :doPut     (fn [req res servlet] (ring/handle req res servlet handler))
+        :doDelete  (fn [req res servlet] (ring/handle req res servlet handler))
+        :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
+        :doTrace   (fn [req res servlet] (ring/handle req res servlet handler))
+        :getLastModified (fn [req] -1) })))
 
 
 ;; -----------------------------------------------------------------------------

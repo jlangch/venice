@@ -250,9 +250,7 @@
     :body style-css })
 
 (defn not-found-handler [request]
-  { :status 404
-    :headers { "Content-Type" "text/html; charset=utf-8" }
-    :body "<html><body><p>Not Found</p></body></html>" })
+  (ring/not-found-response ))
 
 
 ;; -----------------------------------------------------------------------------
