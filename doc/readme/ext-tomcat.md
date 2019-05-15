@@ -33,7 +33,7 @@ Type `ctrl-c` in the REPL to shutdown the server.
   (. res :setStatus status)
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
-      (. :println (str "<html><body><p>" text "</p></body></html>"))))
+      (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
 
 (defn hello-world-servlet
   []
