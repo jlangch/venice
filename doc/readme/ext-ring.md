@@ -112,9 +112,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
       { :status 200
         :headers { "Content-Type" (io/mime-type name) }
         :body file }
-      { :status 404
-        :headers { "Content-Type" "text/plain; charset=utf-8" }
-        :body (ring/not-found-response "File not found") } )))
+      (ring/not-found-response "File not found"))))
 
 ;; A route is defined by a HTTP verb, a URI filter and a handle function.
 ;; If multiple routes match the route with the longest URI filter will be 
