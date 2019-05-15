@@ -11,7 +11,7 @@ To simplify things there is a
 [Ring style WEB App module](ext-ring.md) available.
  
  
-## Start Tomcat with the 'HelloWorld' demo 
+## Start Tomcat with the built-in 'HelloWorld' demo 
 
 Start a REPL:
 
