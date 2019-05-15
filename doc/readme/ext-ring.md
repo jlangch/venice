@@ -12,7 +12,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 (defn hello-world-handler [request]
   { :status 200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body "Hello World" })
+    :body (str/escape-html "Hello World") })
 
 ;; A route is defined by a HTTP verb, a URI filter and a handle function.
 ;; If multiple routes match the route with the longest URI filter will be 
@@ -39,7 +39,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 (defn hello-world-handler [request]
   { :status 200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body "Hello World" })
+    :body (str/escape-html "Hello World") })
 
 ;; A route is defined by a HTTP verb, a URI filter and a handle function.
 ;; If multiple routes match the route with the longest URI filter will be 
@@ -69,7 +69,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 (defn hello-world-handler [request]
   { :status 200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body "Hello World" })
+    :body (str/escape-html "Hello World") })
 
 ;; A route is defined by a HTTP verb, a URI filter and a handle function.
 ;; If multiple routes match the route with the longest URI filter will be 
@@ -98,12 +98,12 @@ Venice Ring is a port of Clojure's Ring web applications library.
 (defn hello-world-handler [request]
   { :status 200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body "Hello World" })
+    :body (str/escape-html "Hello World") })
 
 (defn test-handler [request]
   { :status 200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body "Test" })
+    :body (str/escape-html "Test") })
 
 (defn image-handler [request]
   (let [name (last (str/split (:uri request) "/"))
