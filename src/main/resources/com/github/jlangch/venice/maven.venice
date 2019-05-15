@@ -41,12 +41,12 @@
   (-> (regex/matcher "<dependency>[\\s\\S]*?</dependency>" pom)
       (regex/find-all)))
 
-(defn- maven/find-pom-dependency-exlusions [dependency]
+(defn- maven/find-pom-dependency-exclusions [dependency]
   (map
     (fn [e]
       {:groupId (maven/get-xml-element-content "groupId" e)
        :artifactId (maven/get-xml-element-content "artifactId" e) } )
-    (-> (regex/matcher "<exlusion>[\\s\\S]*?</exlusion>" pom)
+    (-> (regex/matcher "<exclusion>[\\s\\S]*?</exclusion>" pom)
         (regex/find-all))))
 
 (defn maven/map-pom-dependency [dependency]
@@ -55,7 +55,7 @@
     {:groupId (maven/get-xml-element-content "groupId" d)
      :artifactId (maven/get-xml-element-content "artifactId" d)
      :version (maven/get-xml-element-content "version" d)
-     :exclusions (maven/find-pom-dependency-exlusions d)
+     :exclusions (maven/find-pom-dependency-exclusions d)
      :type (maven/get-xml-element-content "type" d)
      :scope (maven/get-xml-element-content "scope" d)
      :optional (maven/get-xml-element-content "optional" d) } ))
