@@ -1,7 +1,16 @@
 ;; Maven utilities
 
+(defn- maven/strip-newline [s]
+  (str/join (str/split-lines s)))
+
+(defn- maven/get-xml-element-content [tag xml-fragment]
+  (-> (regex/matcher "<~{tag}>.*?</~{tag}>" xml-fragment)
+      (regex/find)
+      (str/strip-start "<~{tag}>")
+      (str/strip-end "</~{tag}>")))
+
 (defn-
-  maven/download-artefact
+  maven/download-artefact-file
   [uri target-dir target-file]
   (let [target (str target-dir "/" target-file)]
      (println (str "Downloading " uri))
@@ -10,7 +19,7 @@
 
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
-  maven/parse
+  maven/parse-artefact
   [artefact repo]
   (let [elements (str/split artefact ":")
         group-id (first elements)
@@ -20,25 +29,47 @@
         uri (str/join "/" [repo group-id artefact-id version file-name-base])]
     [uri file-name-base]))
 
-
 (defn-
-  maven/download-by-type
+  maven/download-artefact-by-type
   [artefact repo dir file-suffix]
-  (let [elements (maven/parse artefact repo)
+  (let [elements (maven/parse-artefact artefact repo)
         uri (str (first elements) file-suffix)
         target-file (str (second elements) file-suffix)]
-    (maven/download-artefact uri dir target-file)))
+    (maven/download-artefact-file uri dir target-file)))
+
+(defn- maven/find-pom-dependencies [pom]
+  (-> (regex/matcher "<dependency>[\\s\\S]*?</dependency>" pom)
+      (regex/find-all)))
+
+(defn- maven/find-pom-dependency-exlusions [dependency]
+  (map
+    (fn [e]
+      {:groupId (maven/get-xml-element-content "groupId" e)
+       :artifactId (maven/get-xml-element-content "artifactId" e) } )
+    (-> (regex/matcher "<exlusion>[\\s\\S]*?</exlusion>" pom)
+        (regex/find-all))))
+
+(defn maven/map-pom-dependency [dependency]
+  ; see: https://maven.apache.org/pom.html
+  (let [d (maven/strip-newline dependency) ]
+    {:groupId (maven/get-xml-element-content "groupId" d)
+     :artifactId (maven/get-xml-element-content "artifactId" d)
+     :version (maven/get-xml-element-content "version" d)
+     :exclusions (maven/find-pom-dependency-exlusions d)
+     :type (maven/get-xml-element-content "type" d)
+     :scope (maven/get-xml-element-content "scope" d)
+     :optional (maven/get-xml-element-content "optional" d) } ))
 
 (defn
-  ^{ :arglists '("(maven/download artefact options*)")
-     :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from the Maven repository. "
+  ^{ :arglists '("(maven/download-artefact artefact options*)")
+     :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from a Maven repository. "
      :examples '(
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\")"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\")"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
-  maven/download
+       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\")"
+       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
+       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :dir \".\")"
+       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
+       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
+  maven/download-artefact
   [artefact & options]
   (let [opts (apply hash-map options)
         binary (:binary opts true)
@@ -46,6 +77,14 @@
         pom (:pom opts false)
         dir (:dir opts ".")
         repo (:repo opts "https://repo1.maven.org/maven2")]
-    (when binary (maven/download-by-type artefact repo dir ".jar"))
-    (when sources (maven/download-by-type artefact repo dir "-sources.jar"))
-    (when pom (maven/download-by-type artefact repo dir ".pom"))))
+    (when binary (maven/download-artefact-by-type artefact repo dir ".jar"))
+    (when sources (maven/download-artefact-by-type artefact repo dir "-sources.jar"))
+    (when pom (maven/download-artefact-by-type artefact repo dir ".pom"))))
+
+(defn
+  ^{ :arglists '("(maven/parse-pom-dependencies pom)")
+     :doc "Parses the dependencies of a pom."
+     :examples '("(maven/parse-pom-dependencies (io/slurp \"pom.xml\"))" ) }
+  maven/parse-pom-dependencies
+  [pom]
+  (map #(maven/map-pom-dependency %) (maven/find-pom-dependencies pom)))
