@@ -263,9 +263,9 @@
   (let [compiled (ring/compile-routes routes)]
     (fn [req]
       (let [verb (:request-method req)
-             uri (:uri req)
-             req-params (:parameters req)
-             route (ring/get-route verb uri compiled)]
+            uri (:uri req)
+            req-params (:parameters req)
+            route (ring/get-route verb uri compiled)]
         (if route
           (let [handler (:handler route)
                 uri-params (zipmap (:uri-param-names route '())
