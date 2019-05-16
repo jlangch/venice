@@ -1,6 +1,6 @@
-# JSON
+# Jackson JSON
 
-Venice supports JSON if the [Jackson](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
+Venice supports Jackson if the [Jackson](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
 
  - com.fasterxml.jackson.core:jackson-core:2.9.8
  - com.fasterxml.jackson.core:jackson-databind:2.9.8
