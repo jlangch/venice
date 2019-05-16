@@ -266,10 +266,10 @@ public class StringFunctions {
 						"Trims leading and trailing spaces from s. " +
 						"Returns nil if the rewsulting string is empry")
 					.examples(
-						"(str/trim \"\")",
-						"(str/trim \"    \")",
-						"(str/trim nil)",
-						"(str/trim \" abc   \")")
+						"(str/trim-to-nil \"\")",
+						"(str/trim-to-nil \"    \")",
+						"(str/trim-to-nil nil)",
+						"(str/trim-to-nil \" abc   \")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
