@@ -1,14 +1,5 @@
 ;; Maven utilities
 
-(defn- maven/strip-newline [s]
-  (str/join (str/split-lines s)))
-
-(defn- maven/get-xml-element-content [tag xml-fragment]
-  (-> (regex/matcher "<~{tag}>.*?</~{tag}>" xml-fragment)
-      (regex/find)
-      (str/strip-start "<~{tag}>")
-      (str/strip-end "</~{tag}>")))
-
 (defn-
   maven/download-artefact-file
   [uri target-dir target-file]
@@ -37,29 +28,6 @@
         target-file (str (second elements) file-suffix)]
     (maven/download-artefact-file uri dir target-file)))
 
-(defn- maven/find-pom-dependencies [pom]
-  (-> (regex/matcher "<dependency>[\\s\\S]*?</dependency>" pom)
-      (regex/find-all)))
-
-(defn- maven/find-pom-dependency-exclusions [dependency]
-  (map
-    (fn [e]
-      {:groupId (maven/get-xml-element-content "groupId" e)
-       :artifactId (maven/get-xml-element-content "artifactId" e) } )
-    (-> (regex/matcher "<exclusion>[\\s\\S]*?</exclusion>" pom)
-        (regex/find-all))))
-
-(defn maven/map-pom-dependency [dependency]
-  ; see: https://maven.apache.org/pom.html
-  (let [d (maven/strip-newline dependency) ]
-    {:groupId (maven/get-xml-element-content "groupId" d)
-     :artifactId (maven/get-xml-element-content "artifactId" d)
-     :version (maven/get-xml-element-content "version" d)
-     :exclusions (maven/find-pom-dependency-exclusions d)
-     :type (maven/get-xml-element-content "type" d)
-     :scope (maven/get-xml-element-content "scope" d)
-     :optional (maven/get-xml-element-content "optional" d) } ))
-
 (defn
   ^{ :arglists '("(maven/download artefact options*)")
      :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from a Maven repository. "
@@ -72,19 +40,11 @@
   maven/download
   [artefact & options]
   (let [opts (apply hash-map options)
-        binary (:binary opts true)
+        jar (:jar opts true)
         sources (:sources opts false)
         pom (:pom opts false)
         dir (:dir opts ".")
         repo (:repo opts "https://repo1.maven.org/maven2")]
-    (when binary (maven/download-artefact-by-type artefact repo dir ".jar"))
+    (when jar (maven/download-artefact-by-type artefact repo dir ".jar"))
     (when sources (maven/download-artefact-by-type artefact repo dir "-sources.jar"))
     (when pom (maven/download-artefact-by-type artefact repo dir ".pom"))))
-
-(defn
-  ^{ :arglists '("(maven/pom-dependencies pom)")
-     :doc "Returns the dependencies defined in a pom."
-     :examples '("(maven/pom-dependencies (io/slurp \"pom.xml\"))" ) }
-  maven/pom-dependencies
-  [pom]
-  (map #(maven/map-pom-dependency %) (maven/find-pom-dependencies pom)))
