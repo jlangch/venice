@@ -61,15 +61,15 @@
      :optional (maven/get-xml-element-content "optional" d) } ))
 
 (defn
-  ^{ :arglists '("(maven/download-artefact artefact options*)")
+  ^{ :arglists '("(maven/download artefact options*)")
      :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from a Maven repository. "
      :examples '(
-       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\")"
-       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
-       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :dir \".\")"
-       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
-       "(maven/download-artefact \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
-  maven/download-artefact
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\")"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\")"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
+       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
+  maven/download
   [artefact & options]
   (let [opts (apply hash-map options)
         binary (:binary opts true)
@@ -82,9 +82,9 @@
     (when pom (maven/download-artefact-by-type artefact repo dir ".pom"))))
 
 (defn
-  ^{ :arglists '("(maven/parse-pom-dependencies pom)")
-     :doc "Parses the dependencies of a pom."
-     :examples '("(maven/parse-pom-dependencies (io/slurp \"pom.xml\"))" ) }
-  maven/parse-pom-dependencies
+  ^{ :arglists '("(maven/pom-dependencies pom)")
+     :doc "Returns the dependencies defined in a pom."
+     :examples '("(maven/pom-dependencies (io/slurp \"pom.xml\"))" ) }
+  maven/pom-dependencies
   [pom]
   (map #(maven/map-pom-dependency %) (maven/find-pom-dependencies pom)))
