@@ -28,6 +28,9 @@ Type `ctrl-c` in the REPL to shutdown the server.
 ## Define a servlet
 
 ```clojure
+(import :com.github.jlangch.venice.servlet.IVeniceServlet
+        :com.github.jlangch.venice.servlet.VeniceServlet)
+
 (load-module :tomcat)
 
 (defn send-text

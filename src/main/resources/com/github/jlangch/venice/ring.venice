@@ -5,9 +5,9 @@
 
 (import :com.github.jlangch.venice.RingRedirectException
         :com.github.jlangch.venice.VncException
-        :com.github.jlangch.venice.impl.servlet.IVeniceServlet
-        :com.github.jlangch.venice.impl.servlet.VeniceServlet
-        :com.github.jlangch.venice.impl.servlet.FilterOutputStreamCloseCB
+        :com.github.jlangch.venice.servlet.IVeniceServlet
+        :com.github.jlangch.venice.servlet.VeniceServlet
+        :com.github.jlangch.venice.servlet.FilterOutputStreamCloseCB
         :java.io.BufferedWriter
         :java.io.OutputStreamWriter
         :java.lang.Exception
