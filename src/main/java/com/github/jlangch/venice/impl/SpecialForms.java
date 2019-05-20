@@ -199,6 +199,38 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction set_BANG = 
+		new SpecialFormsDocFunction(
+				"set!",
+				VncFunction
+				.meta()
+				.arglists("(set! var-symbol expr)")		
+				.doc("Sets a global or thread-local variable to the value of the expression.")
+				.examples(
+					"(do                             \n" +
+					"  (def x 10)                    \n" +
+					"  (set! x 20)                   \n" +
+					"  x)                              ",
+					 
+					"(do                             \n" +
+					"   (def-dynamic x 100)          \n" +
+					"   (set! x 200)                 \n" +
+					"   x)                             ",
+					
+					"(do                             \n" +
+					"   (def-dynamic x 100)          \n" +
+					"   (with-out-str                \n" +
+					"      (print x)                 \n" +
+					"      (binding [x 200]          \n" +
+					"        (print (str \"-\" x))   \n" +
+					"        (set! x (inc x))        \n" +
+					"        (print (str \"-\" x)))  \n" +
+					"      (print (str \"-\" x))))     ")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction defmulti = 
 		new SpecialFormsDocFunction(
 				"defmulti",
@@ -579,6 +611,7 @@ public class SpecialForms {
 					.put("defmethod",	defmethod)
 					.put("def-dynamic",	def_dynamic)
 					.put("binding",		binding)
+					.put("set!",		set_BANG)
 					.put("do",			do_)
 					.put("if",			if_)
 					.put("let",			let)

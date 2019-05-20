@@ -826,4 +826,122 @@ public class SpecialFormsTest {
 		assertEquals("2",   venice.eval("(str ({\"a\" 1 \"b\" 2} \"b\"))"));
 	}	
 
+	@Test
+	public void test_set_BANG_1() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def x 100)                    \n" +
+				"   (set! x 200))                    ";
+				
+		assertEquals(200L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_2() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def x 100)                    \n" +
+				"   (set! x 200)                   \n" +
+				"   x)                               ";
+				
+		assertEquals(200L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_3() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def x 100)                    \n" +
+				"   (set! x (inc x)))                ";
+				
+		assertEquals(101L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_4() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def x 100)                    \n" +
+				"   (set! x (inc x))               \n" +
+				"   x)                               ";
+				
+		assertEquals(101L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_dynamic_1() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def-dynamic x 100)            \n" +
+				"   (set! x 200))                    ";
+				
+		assertEquals(200L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_dynamic_2() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def-dynamic x 100)            \n" +
+				"   (set! x 200)                   \n" +
+				"   x)                               ";
+				
+		assertEquals(200L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_dynamic_3() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def-dynamic x 100)            \n" +
+				"   (set! x (inc x)))                ";
+				
+		assertEquals(101L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_dynamic_4() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def-dynamic x 100)            \n" +
+				"   (set! x (inc x))               \n" +
+				"   x)                               ";
+				
+		assertEquals(101L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_set_BANG_dynamic_5() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                               \n" +
+				"   (def-dynamic x 100)            \n" +
+				"   (with-out-str                  \n" +
+				"      (print x)                   \n" +
+				"      (binding [x 200]            \n" +
+				"        (print (str \"-\" x))     \n" +
+				"        (set! x (inc x))          \n" +
+				"        (print (str \"-\" x)))    \n" +
+				"      (print (str \"-\" x))))       ";
+				
+		assertEquals("100-200-201-100", venice.eval(script));					
+	}
+
 }

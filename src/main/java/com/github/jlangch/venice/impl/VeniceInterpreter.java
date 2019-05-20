@@ -419,6 +419,32 @@ public class VeniceInterpreter implements Serializable  {
 					env = recur_env;
 					break;
 				}
+				
+				case "set!": { // (set! var-symbol expr)
+					VncSymbol sym = Coerce.toVncSymbol(ast.second());
+					sym = sym.withMeta(evaluate(sym.getMeta(), env));
+					final Var globVar = env.getGlobalVarOrNull(sym);
+					if (globVar != null) {
+						final VncVal expr = ast.third();
+						final VncVal res = evaluate(expr, env).withMeta(sym.getMeta());
+						
+						if (globVar instanceof DynamicVar) {
+							env.popGlobalDynamic(sym);
+							env.pushGlobalDynamic(sym, res);
+						}
+						else {
+							env.setGlobal(new Var(sym, res));
+						}
+						return res;
+					}
+					else {
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+							throw new VncException(String.format(
+										"The global var or thread-local '%s' does not exist!", 
+										sym.getName()));
+						}
+					}
+				}
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try", ast))) {
