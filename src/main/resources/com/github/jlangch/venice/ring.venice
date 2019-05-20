@@ -67,10 +67,19 @@
   (first (get (:headers req) name)))
 
 (defn
-  ^{ :doc "Returns all the values of the specified request header as a list" }
+  ^{ :doc "Returns all the values of the specified request header as a list." }
   ring/get-request-headers
   [req name]
   (get (:headers req) name))
+
+(defn
+  ^{ :doc (str/strip-indent """\
+        Returns all 'Accept' header mime-types of the request as a set.
+        Strips off the ratings""" ) }
+  ring/get-request-header-accept-mimetypes
+  [req]
+  (into #{} (map #(first (str/split % " *; *"))
+                 (get (:headers req) "Accept"))))
 
 (defn
   ^{ :doc "Returns true if debugging is turned on else false" }
@@ -391,9 +400,8 @@
     (fn [headers name]
       (assoc headers
         (str/lower-case name)
-        (->> (. request :getHeaders name)
-             (java-enumeration-to-list) ;
-             (str/join ","))))
+        (-> (. request :getHeaders name)
+            (java-enumeration-to-list))))
     {}
     (java-enumeration-to-list (. request :getHeaderNames))))
 

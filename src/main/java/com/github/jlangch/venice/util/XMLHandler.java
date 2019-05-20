@@ -21,8 +21,14 @@
  */
 package com.github.jlangch.venice.util;
 
+import java.io.InputStream;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -117,6 +123,30 @@ public class XMLHandler extends DefaultHandler {
 		h.skippedEntity(name);
 	}
 
+	public static void parse(
+			final InputSource is,
+			final boolean namespaceAware,
+			final ContentHandler handler
+	) {
+		try {
+			final SAXParserFactory f = SAXParserFactory.newInstance();
+			f.setNamespaceAware(namespaceAware);
+			final SAXParser p = f.newSAXParser();
+			p.parse(is, new XMLHandler(handler));
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
+	public static void parse(
+			final InputStream is,
+			final boolean namespaceAware,
+			final ContentHandler handler
+	) {
+		parse(new InputSource(is), namespaceAware, handler);
+	}
+
+	
 	private final ContentHandler h;
 }
