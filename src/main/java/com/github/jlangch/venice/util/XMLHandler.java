@@ -27,7 +27,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -36,7 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class XMLHandler extends DefaultHandler {
 
-	public XMLHandler(final ContentHandler h) {
+	public XMLHandler(final IXMLHandler h) {
 		this.h = h;
 	}
 
@@ -96,7 +95,7 @@ public class XMLHandler extends DefaultHandler {
 			final int start, 
 			final int length
 	) throws SAXException {
-		h.characters(ch, start, length);
+		h.characters(new String(ch), start, length);
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class XMLHandler extends DefaultHandler {
 			final int start, 
 			final int length
 	) throws SAXException {
-		h.ignorableWhitespace(ch, start, length);
+		h.ignorableWhitespace(new String(ch), start, length);
 	}
 
 	@Override
@@ -126,7 +125,7 @@ public class XMLHandler extends DefaultHandler {
 	public static void parse(
 			final InputSource is,
 			final boolean namespaceAware,
-			final ContentHandler handler
+			final IXMLHandler handler
 	) {
 		try {
 			final SAXParserFactory f = SAXParserFactory.newInstance();
@@ -142,11 +141,11 @@ public class XMLHandler extends DefaultHandler {
 	public static void parse(
 			final InputStream is,
 			final boolean namespaceAware,
-			final ContentHandler handler
+			final IXMLHandler handler
 	) {
 		parse(new InputSource(is), namespaceAware, handler);
 	}
 
 	
-	private final ContentHandler h;
+	private final IXMLHandler h;
 }

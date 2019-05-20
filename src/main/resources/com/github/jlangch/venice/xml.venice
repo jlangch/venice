@@ -1,0 +1,81 @@
+;; XML parser
+;;
+
+(import :com.github.jlangch.venice.util.XMLHandler
+        :com.github.jlangch.venice.util.IXMLHandler
+        :java.io.StringReader
+        :javax.xml.parsers.SAXParser
+        :javax.xml.parsers.SAXParserFactory
+        :org.xml.sax.InputSource)
+
+
+(defn
+  ^{ :doc "Create a SAX parser content handler" }
+  xml/handler-dump
+  []
+  (. :XMLHandler :new
+    (proxify :IXMLHandler
+      { :startElement (fn [uri local-name q-name attributes] (println "start:" q-name))
+        :endElement (fn [uri local-name q-name] (println  "end:" q-name))
+        :characters (fn [chars start length] (println (str "chars: \"" (xml/subs chars start length) "\"")))
+        :setDocumentLocator (fn [locator] nil)
+        :startDocument (fn [] nil)
+        :endDocument (fn [] nil)
+        :startPrefixMapping (fn [prefix uri] nil)
+        :endPrefixMapping (fn [prefix] nil)
+        :ignorableWhitespace (fn [chars start length] nil)
+        :processingInstruction (fn [target data] nil)
+        :skippedEntity (fn [name] nil) })))
+
+(defn
+  ^{ :doc "Create a SAX parser content handler" }
+  xml/handler
+  []
+  (. :XMLHandler :new
+    (proxify :IXMLHandler
+      { :startElement (fn [uri local-name q-name attributes] nil)
+        :endElement (fn [uri local-name q-name] nil)
+        :characters (fn [chars start length] nil)
+        :setDocumentLocator (fn [locator] nil)
+        :startDocument (fn [] nil)
+        :endDocument (fn [] nil)
+        :startPrefixMapping (fn [prefix uri] nil)
+        :endPrefixMapping (fn [prefix] nil)
+        :ignorableWhitespace (fn [chars start length] nil)
+        :processingInstruction (fn [target data] nil)
+        :skippedEntity (fn [name] nil) })))
+
+(defn
+  ^{ :doc (str/strip-indent """\
+        Parses and loads the XML from the InputSource s with the parser
+        IXMLHandler handler.""" ) }
+  xml/parse
+  [s handler]
+  (-> (. :SAXParserFactory :newInstance)
+      (. :newSAXParser)
+      (. :parse s handler)))
+
+(defn
+  ^{ :doc "Create a SAX InputSource from a string" }
+  xml/str-to-input-source
+  [s]
+  (->> (. :StringReader :new s)
+       (. :InputSource :new)))
+
+(defn xml/subs [chars start length]
+  (str/subs chars (long start) (+ (long start) (long length))))
+
+(defn
+  ^{ :doc (str/strip-indent """\
+        Parses SAX attributes into a list of attribute maps. The
+        attribute map holds the keys :local-name, :q-name, :type,
+        :uri, :value""" ) }
+  xml/parse-attributes
+  [attributes]
+  (map
+    (fn [n] { :local-name (. attributes :getLocalName n)
+              :q-name (. attributes :getQName n)
+              :type (. attributes :getType n)
+              :uri (. attributes :getURI n)
+              :value (. attributes :getValue n) })
+    (range (:length attributes))))
