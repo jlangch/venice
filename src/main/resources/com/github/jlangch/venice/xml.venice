@@ -27,8 +27,10 @@
       (proxify :IXMLHandler
         { :startElement
               (fn [uri local-name q-name attributes]
-                (let [e {:tag q-name
-                         :attributes (xml/parse-attributes attributes)} ]
+                (let [attr (xml/parse-attributes attributes)
+                      e (if (nil? attr)
+                            {:tag q-name }
+                            {:tag q-name :attributes attr}) ]
                   (push-chars)
                   (set! *stack* (conj *stack* *current*))
                   (set! *current* e)

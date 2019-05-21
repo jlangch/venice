@@ -72,10 +72,10 @@ public class XmlModuleTest {
 
 		assertEquals(
 			"{:attributes {:type private} " +
-			 ":content [{:attributes nil :content [Tove] :tag to} " +
-			           "{:attributes nil :content [Jani] :tag from} " +
-			           "{:attributes nil :content [Reminder] :tag heading} " +
-			           "{:attributes nil :content [Don't forget me this weekend!] :tag body}] " +
+			 ":content [{:content [Tove] :tag to} " +
+			           "{:content [Jani] :tag from} " +
+			           "{:content [Reminder] :tag heading} " +
+			           "{:content [Don't forget me this weekend!] :tag body}] " +
 			 ":tag note}", 
 			venice.eval(script, Parameters.of("xml", xml)));
 	}
@@ -119,11 +119,7 @@ public class XmlModuleTest {
 				") ";
 
 		assertEquals(
-			"{:attributes nil " +
-			 ":content [{:attributes nil " +
-			            ":content [{:attributes nil " +
-			                       ":content [{:attributes nil " +
-			                                  ":content [D] " +
+			"{:content [{:content [{:content [{:content [D] " +
 			                                  ":tag d}] " +
 			                       ":tag c}] " +
 			            ":tag b}] " +
