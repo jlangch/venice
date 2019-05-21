@@ -5,5 +5,5 @@
    ;; load the Venice XML extension module
    (load-module :xml)
    
-   (str (xml/sparse "<a><b>B</b></a>")))
+   (str (xml/parse-str "<a><b>B</b></a>")))
 ```

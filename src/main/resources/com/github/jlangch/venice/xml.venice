@@ -74,7 +74,7 @@
 
 (defn
   ^{ :doc "Parses an XML from the string s." }
-  xml/sparse
+  xml/parse-str
   ([s] (xml/parse (xml/input-source-from-str s) (xml/handler)))
   ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
 

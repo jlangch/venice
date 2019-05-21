@@ -48,7 +48,7 @@ public class XmlModuleTest {
 				"(do                                                                                               \n" +
 				"   (load-module :xml)                                                                             \n" +
 				"                                                                                                  \n" +
-				"   (let [data (xml/sparse xml)]                                                                   \n" + 
+				"   (let [data (xml/parse-str xml)]                                                                   \n" + 
 				"      (assert (== \"private\" (-> data :attributes :type)))                                       \n" + 
 				"                                                                                                  \n" +
 				"      (assert (== \"to\" (:tag (nth (:content data) 0))))                                         \n" + 
