@@ -32,6 +32,8 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.github.jlangch.venice.VncException;
+
 
 public class XMLHandler extends DefaultHandler {
 
@@ -47,12 +49,22 @@ public class XMLHandler extends DefaultHandler {
 
 	@Override
 	public void startDocument() throws SAXException {
-		h.startDocument();
+		try {
+			h.startDocument();
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
 	public void endDocument() throws SAXException {
-		h.endDocument();
+		try {
+			h.endDocument();
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
@@ -60,14 +72,24 @@ public class XMLHandler extends DefaultHandler {
 			final String prefix, 
 			final String uri
 	) throws SAXException {
-		h.startPrefixMapping(prefix, uri);
+		try {
+			h.startPrefixMapping(prefix, uri);
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
 	public void endPrefixMapping(
 			final String prefix
 	) throws SAXException {
-		h.endPrefixMapping(prefix);
+		try {
+			h.endPrefixMapping(prefix);
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
@@ -77,7 +99,12 @@ public class XMLHandler extends DefaultHandler {
 			final String qName, 
 			final Attributes atts
 	) throws SAXException {
-		h.startElement(uri, localName, qName, atts);
+		try {
+			h.startElement(uri, localName, qName, atts);
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
@@ -86,7 +113,12 @@ public class XMLHandler extends DefaultHandler {
 			final String localName, 
 			final String qName
 	) throws SAXException {
-		h.endElement(uri, localName, qName);
+		try {
+			h.endElement(uri, localName, qName);
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
@@ -95,7 +127,12 @@ public class XMLHandler extends DefaultHandler {
 			final int start, 
 			final int length
 	) throws SAXException {
-		h.characters(new String(ch), start, length);
+		try {
+			h.characters(new String(ch).substring(start, start + length));
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
@@ -104,7 +141,12 @@ public class XMLHandler extends DefaultHandler {
 			final int start, 
 			final int length
 	) throws SAXException {
-		h.ignorableWhitespace(new String(ch), start, length);
+		try {
+			h.ignorableWhitespace(new String(ch).substring(start, start + length));
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
 	}
 
 	@Override
@@ -112,14 +154,26 @@ public class XMLHandler extends DefaultHandler {
 			final String target, 
 			final String data
 	) throws SAXException {
-		h.processingInstruction(target, data);
+		try {
+			h.processingInstruction(target, data);
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
+
 	}
 
 	@Override
 	public void skippedEntity(
 			final String name
 	) throws SAXException {
-		h.skippedEntity(name);
+		try {
+			h.skippedEntity(name);
+		}
+		catch(VncException ex) {
+			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+		}
+
 	}
 
 	public static void parse(

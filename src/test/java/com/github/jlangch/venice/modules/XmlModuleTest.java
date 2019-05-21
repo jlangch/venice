@@ -34,20 +34,24 @@ public class XmlModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                         \n" +
-				"   (load-module :xml)                       \n" +
-				"                                            \n" +
-				"   (xml/parse (xml/str-to-input-source xml) \n" + 
-				"              (xml/handler-dump))           \n" + 
+				"(do                                            \n" +
+				"   (load-module :xml)                          \n" +
+				"                                               \n" +
+				"   (defn parse [xml]                           \n" +
+				"      (xml/parse (xml/str-to-input-source xml) \n" + 
+				"                 (xml/handler)))               \n" + 
+				"                                               \n" +
+				"   (let [data (parse xml)]                     \n" + 
+				"      (str data))                              \n" + 
 				") ";
 
-		venice.eval(script, Parameters.of("xml", xml));
+		System.out.println(venice.eval(script, Parameters.of("xml", xml)));
 	}
 
 	
 	private static final String xml =
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-		"<note>" +
+		"<note type=\"private\">" +
 		"  <to>Tove</to>" +
 		"  <from>Jani</from>" +
 		"  <heading>Reminder</heading>" +

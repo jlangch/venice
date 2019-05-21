@@ -237,7 +237,7 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.module("str")
-					.arglists("(str/trim s substr)")		
+					.arglists("(str/trim s)")		
 					.doc("Trims leading and trailing spaces from s.")
 					.examples("(str/trim \" abc  \")")
 					.build()
@@ -261,10 +261,10 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.module("str")
-					.arglists("(str/trim-to-nil s substr)")		
+					.arglists("(str/trim-to-nil s)")		
 					.doc(
 						"Trims leading and trailing spaces from s. " +
-						"Returns nil if the rewsulting string is empry")
+						"Returns nil if the resulting string is empty")
 					.examples(
 						"(str/trim-to-nil \"\")",
 						"(str/trim-to-nil \"    \")",

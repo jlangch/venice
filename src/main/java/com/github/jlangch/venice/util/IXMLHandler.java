@@ -46,10 +46,10 @@ public interface IXMLHandler {
 	public void endElement(String uri, String localName, String qName) 
 		throws SAXException;
 
-	void characters(String chars, int start, int length) 
+	void characters(String chars) 
 		throws SAXException;
 
-	void ignorableWhitespace(String chars, int start, int length) 
+	void ignorableWhitespace(String chars) 
 		throws SAXException;
 
 	void processingInstruction(String target, String data) 

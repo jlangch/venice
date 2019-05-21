@@ -3,57 +3,76 @@
 
 (import :com.github.jlangch.venice.util.XMLHandler
         :com.github.jlangch.venice.util.IXMLHandler
+        :java.lang.StringBuilder
         :java.io.StringReader
         :javax.xml.parsers.SAXParser
         :javax.xml.parsers.SAXParserFactory
         :org.xml.sax.InputSource)
 
-
-(defn
-  ^{ :doc "Create a SAX parser content handler" }
-  xml/handler-dump
-  []
-  (. :XMLHandler :new
-    (proxify :IXMLHandler
-      { :startElement (fn [uri local-name q-name attributes] (println "start:" q-name))
-        :endElement (fn [uri local-name q-name] (println  "end:" q-name))
-        :characters (fn [chars start length] (println (str "chars: \"" (xml/subs chars start length) "\"")))
-        :setDocumentLocator (fn [locator] nil)
-        :startDocument (fn [] nil)
-        :endDocument (fn [] nil)
-        :startPrefixMapping (fn [prefix uri] nil)
-        :endPrefixMapping (fn [prefix] nil)
-        :ignorableWhitespace (fn [chars start length] nil)
-        :processingInstruction (fn [target data] nil)
-        :skippedEntity (fn [name] nil) })))
+(def-dynamic *stack*)
+(def-dynamic *current*)
+(def-dynamic *sb*)
+(def-dynamic *state*) ; :element :chars :between
 
 (defn
   ^{ :doc "Create a SAX parser content handler" }
   xml/handler
   []
-  (. :XMLHandler :new
-    (proxify :IXMLHandler
-      { :startElement (fn [uri local-name q-name attributes] nil)
-        :endElement (fn [uri local-name q-name] nil)
-        :characters (fn [chars start length] nil)
-        :setDocumentLocator (fn [locator] nil)
-        :startDocument (fn [] nil)
-        :endDocument (fn [] nil)
-        :startPrefixMapping (fn [prefix uri] nil)
-        :endPrefixMapping (fn [prefix] nil)
-        :ignorableWhitespace (fn [chars start length] nil)
-        :processingInstruction (fn [target data] nil)
-        :skippedEntity (fn [name] nil) })))
+  (let [push-content (fn [e c]
+                       (assoc e :content (conj (or (:content e) []) c)))
+        push-chars (fn []
+                     (let [sb (str *sb*)]
+                       (when (and (== *state* :chars) (str/trim-to-nil sb))
+                         (set! *current* (push-content *current* sb)))))]
+    (. :XMLHandler :new
+      (proxify :IXMLHandler
+        { :startElement
+              (fn [uri local-name q-name attributes]
+                (let [e {:tag q-name
+                         :attributes (xml/parse-attributes attributes)} ]
+                  (push-chars)
+                  (set! *stack* (conj *stack* *current*))
+                  (set! *current* e)
+                  (set! *state* :element)
+                  nil))
+          :endElement
+              (fn [uri local-name q-name]
+                (push-chars)
+                (set! *current* (push-content (peek *stack*) *current*))
+                (set! *stack* (pop *stack*))
+                (set! *state* :between)
+                nil)
+          :characters
+              (fn [chars]
+                (when-not (== *state* :chars)
+                  (set! *sb* (. :StringBuilder :new)))
+                (. *sb* :append chars)
+                (set! *state* :chars)
+                nil)
+          :setDocumentLocator (fn [locator] nil)
+          :startDocument (fn [] nil)
+          :endDocument (fn [] nil)
+          :startPrefixMapping (fn [prefix uri] nil)
+          :endPrefixMapping (fn [prefix] nil)
+          :ignorableWhitespace (fn [chars] nil)
+          :processingInstruction (fn [target data] nil)
+          :skippedEntity (fn [name] nil) }))))
 
 (defn
   ^{ :doc (str/strip-indent """\
-        Parses and loads the XML from the InputSource s with the parser
-        IXMLHandler handler.""" ) }
+        Parses and loads the XML from the source s with the parser
+        IXMLHandler handler. The source may be an InputSource,
+        an InputStream, a File, or a string describing an URI.""" ) }
   xml/parse
   [s handler]
-  (-> (. :SAXParserFactory :newInstance)
-      (. :newSAXParser)
-      (. :parse s handler)))
+  (binding [*stack* []
+            *current* {}
+            *state* :between
+            *sb* nil]
+    (-> (. :SAXParserFactory :newInstance)
+        (. :newSAXParser)
+        (. :parse s handler))
+    (first (:content *current*))))
 
 (defn
   ^{ :doc "Create a SAX InputSource from a string" }
@@ -62,20 +81,13 @@
   (->> (. :StringReader :new s)
        (. :InputSource :new)))
 
-(defn xml/subs [chars start length]
-  (str/subs chars (long start) (+ (long start) (long length))))
-
 (defn
-  ^{ :doc (str/strip-indent """\
-        Parses SAX attributes into a list of attribute maps. The
-        attribute map holds the keys :local-name, :q-name, :type,
-        :uri, :value""" ) }
+  ^{ :doc "Parse SAX attributes into a map." }
   xml/parse-attributes
   [attributes]
-  (map
-    (fn [n] { :local-name (. attributes :getLocalName n)
-              :q-name (. attributes :getQName n)
-              :type (. attributes :getType n)
-              :uri (. attributes :getURI n)
-              :value (. attributes :getValue n) })
-    (range (:length attributes))))
+  (let [len (:length attributes)]
+    (when (> len 0)
+      (apply merge
+             (map (fn [x] { (keyword (. attributes :getQName x))
+                            (. attributes :getValue x) } )
+                  (range len))))))
