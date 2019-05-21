@@ -89,8 +89,8 @@
   ^{ :doc "Parse SAX attributes into a map." }
   xml/parse-attributes
   [attributes]
-  ; use XMLUtil helpers to work on Java 8 and Java 9+
-  ; reflective access to SAX classes cause problems Java 9+
+  ; use XMLUtil helpers to make it work on Java 8 and Java 9+
+  ; reflective access to SAX classes cause problems with Java 9+
   (let [len (. :XMLUtil :getAttributesLength attributes)]
     (when (> len 0)
       (apply merge

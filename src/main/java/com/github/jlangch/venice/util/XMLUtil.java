@@ -71,6 +71,14 @@ public class XMLUtil {
 		}
 	}
 
+	public static boolean isAttributesEmpty(final Attributes attributes) {
+		return attributes.getLength() <= 0;
+	}
+
+	public static boolean isAttributesNotEmpty(final Attributes attributes) {
+		return attributes.getLength() > 0;
+	}
+	
 	// Helper to get around illegal reflective access operations on Java 9+
 	public static int getAttributesLength(final Attributes attributes) {
 		return attributes.getLength();
