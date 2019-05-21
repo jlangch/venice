@@ -15,6 +15,7 @@ Venice supports
 * [WebDAV](ext-webdav.md)
 * [Maven](ext-maven.md)
 * [Kira Template](ext-kira.md)
+* [XML](ext-xml.md)
 * [Jackson JSON](ext-jackson.md)
 
 through extension modules

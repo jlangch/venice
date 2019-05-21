@@ -3,10 +3,9 @@
 
 (import :com.github.jlangch.venice.util.XMLHandler
         :com.github.jlangch.venice.util.IXMLHandler
+        :com.github.jlangch.venice.util.XMLUtil
         :java.lang.StringBuilder
         :java.io.StringReader
-        :javax.xml.parsers.SAXParser
-        :javax.xml.parsers.SAXParserFactory
         :org.xml.sax.InputSource)
 
 (def-dynamic *stack*)
@@ -61,22 +60,27 @@
 (defn
   ^{ :doc (str/strip-indent """\
         Parses and loads the XML from the source s with the parser
-        IXMLHandler handler. The source may be an InputSource,
-        an InputStream, a File, or a string describing an URI.""" ) }
+        XMLHandler handler. The source may be an InputSource, an
+        InputStream, a File, or a string describing an URI.""" ) }
   xml/parse
-  [s handler]
-  (binding [*stack* []
-            *current* {}
-            *state* :between
-            *sb* nil]
-    (-> (. :SAXParserFactory :newInstance)
-        (. :newSAXParser)
-        (. :parse s handler))
-    (first (:content *current*))))
+  ([s] (xml/parse s (xml/handler)))
+  ([s handler]
+    (binding [*stack* []
+              *current* {}
+              *state* :between
+              *sb* nil]
+      (. :XMLUtil :parse s false handler)
+      (first (:content *current*)))))
+
+(defn
+  ^{ :doc "Parses an XML from the string s." }
+  xml/sparse
+  ([s] (xml/parse (xml/input-source-from-str s) (xml/handler)))
+  ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
 
 (defn
   ^{ :doc "Create a SAX InputSource from a string" }
-  xml/str-to-input-source
+  xml/input-source-from-str
   [s]
   (->> (. :StringReader :new s)
        (. :InputSource :new)))
@@ -85,9 +89,11 @@
   ^{ :doc "Parse SAX attributes into a map." }
   xml/parse-attributes
   [attributes]
-  (let [len (:length attributes)]
+  ; use XMLUtil helpers to work on Java 8 and Java 9+
+  ; reflective access to SAX classes cause problems Java 9+
+  (let [len (. :XMLUtil :getAttributesLength attributes)]
     (when (> len 0)
       (apply merge
-             (map (fn [x] { (keyword (. attributes :getQName x))
-                            (. attributes :getValue x) } )
+             (map (fn [x] { (keyword (. :XMLUtil :getAttributeQName attributes x))
+                            (. :XMLUtil :getAttributeValue attributes x) } )
                   (range len))))))
