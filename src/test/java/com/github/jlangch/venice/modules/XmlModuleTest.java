@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -30,31 +32,105 @@ import com.github.jlangch.venice.Venice;
 public class XmlModuleTest {
 
 	@Test
-	public void test_xml() {
+	public void test_xml_1() {
 		final Venice venice = new Venice();
 
+		final String xml =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+				"<note type=\"private\">" +
+				"  <to>Tove</to>" +
+				"  <from>Jani</from>" +
+				"  <heading>Reminder</heading>" +
+				"  <body>Don't forget me this weekend!</body>" +
+				"</note>";
+
 		final String script =
-				"(do                                            \n" +
-				"   (load-module :xml)                          \n" +
-				"                                               \n" +
-				"   (defn parse [xml]                           \n" +
-				"      (xml/parse (xml/str-to-input-source xml) \n" + 
-				"                 (xml/handler)))               \n" + 
-				"                                               \n" +
-				"   (let [data (parse xml)]                     \n" + 
-				"      (str data))                              \n" + 
+				"(do                                                                                               \n" +
+				"   (load-module :xml)                                                                             \n" +
+				"                                                                                                  \n" +
+				"   (defn source [xml]                                                                             \n" +
+				"      (xml/str-to-input-source xml))                                                              \n" + 
+				"                                                                                                  \n" +
+				"   (let [data (xml/parse (source xml))]                                                           \n" + 
+				"      (assert (== \"private\" (-> data :attributes :type)))                                       \n" + 
+				"                                                                                                  \n" +
+				"      (assert (== \"to\" (:tag (nth (:content data) 0))))                                         \n" + 
+				"      (assert (== nil (:attributes (nth (:content data) 0))))                                     \n" + 
+				"      (assert (== \"Tove\" (first (:content (nth (:content data) 0)))))                           \n" + 
+				"                                                                                                  \n" +
+				"      (assert (== \"from\" (:tag (nth (:content data) 1))))                                       \n" + 
+				"      (assert (== nil (:attributes (nth (:content data) 1))))                                     \n" + 
+				"      (assert (== \"Jani\" (first (:content (nth (:content data) 1)))))                           \n" + 
+				"                                                                                                  \n" +
+				"      (assert (== \"heading\" (:tag (nth (:content data) 2))))                                    \n" + 
+				"      (assert (== nil (:attributes (nth (:content data) 2))))                                     \n" + 
+				"      (assert (== \"Reminder\" (first (:content (nth (:content data) 2)))))                       \n" + 
+				"                                                                                                  \n" +
+				"      (assert (== \"body\" (:tag (nth (:content data) 3))))                                       \n" + 
+				"      (assert (== nil (:attributes (nth (:content data) 3))))                                     \n" + 
+				"      (assert (== \"Don't forget me this weekend!\" (first (:content (nth (:content data) 3)))))  \n" + 
+				"                                                                                                  \n" +
+				"      (str data))                                                                                 \n" + 
 				") ";
 
-		System.out.println(venice.eval(script, Parameters.of("xml", xml)));
+		assertEquals(
+			"{:attributes {:type private} " +
+			 ":content [{:attributes nil :content [Tove] :tag to} " +
+			           "{:attributes nil :content [Jani] :tag from} " +
+			           "{:attributes nil :content [Reminder] :tag heading} " +
+			           "{:attributes nil :content [Don't forget me this weekend!] :tag body}] " +
+			 ":tag note}", 
+			venice.eval(script, Parameters.of("xml", xml)));
 	}
 
-	
-	private static final String xml =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-		"<note type=\"private\">" +
-		"  <to>Tove</to>" +
-		"  <from>Jani</from>" +
-		"  <heading>Reminder</heading>" +
-		"  <body>Don't forget me this weekend!</body>" +
-		"</note>";
+	@Test
+	public void test_xml_2() {
+		final Venice venice = new Venice();
+
+		final String xml =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+				"<a>" +
+				"  <b>" +
+				"    <c>" +
+				"      <d>D</d>" +
+				"    </c>" +
+				"  </b>" +
+				"</a>";
+
+		final String script =
+				"(do                                                                                                          \n" +
+				"   (load-module :xml)                                                                                        \n" +
+				"                                                                                                             \n" +
+				"   (defn source [xml]                                                                                        \n" +
+				"      (xml/str-to-input-source xml))                                                                         \n" + 
+				"                                                                                                             \n" +
+				"   (let [data (xml/parse (source xml))]                                                                      \n" + 
+				"      (assert (== nil (:attributes data)))                                                                   \n" + 
+				"      (assert (== \"a\" (:tag data)))                                                                        \n" + 
+				"                                                                                                             \n" +
+				"      (assert (== nil (:attributes (first (:content data)))))                                                \n" + 
+				"      (assert (== \"b\" (:tag (first (:content data)))))                                                     \n" + 
+				"                                                                                                             \n" +
+				"      (assert (== nil (:attributes (first (:content (first (:content data)))))))                             \n" + 
+				"      (assert (== \"c\" (:tag (first (:content (first (:content data)))))))                                  \n" + 
+				"                                                                                                             \n" +
+				"      (assert (== nil (:attributes (first (:content (first (:content (first (:content data)))))))))          \n" + 
+				"      (assert (== \"d\" (:tag (first (:content (first (:content (first (:content data)))))))))               \n" + 
+				"      (assert (== \"D\" (first (:content (first (:content (first (:content (first (:content data))))))))))   \n" + 
+				"                                                                                                             \n" +
+				"      (str data))                                                                                            \n" + 
+				") ";
+
+		assertEquals(
+			"{:attributes nil " +
+			 ":content [{:attributes nil " +
+			            ":content [{:attributes nil " +
+			                       ":content [{:attributes nil " +
+			                                   ":content [D] " +
+			                                   ":tag d}] " +
+			                       ":tag c}] " +
+			            ":tag b}] " +
+			 ":tag a}",
+			venice.eval(script, Parameters.of("xml", xml)));
+	}
 }

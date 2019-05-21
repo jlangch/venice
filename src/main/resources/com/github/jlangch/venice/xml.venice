@@ -64,15 +64,16 @@
         IXMLHandler handler. The source may be an InputSource,
         an InputStream, a File, or a string describing an URI.""" ) }
   xml/parse
-  [s handler]
-  (binding [*stack* []
-            *current* {}
-            *state* :between
-            *sb* nil]
-    (-> (. :SAXParserFactory :newInstance)
-        (. :newSAXParser)
-        (. :parse s handler))
-    (first (:content *current*))))
+  ([s] (xml/parse s (xml/handler)))
+  ([s handler]
+    (binding [*stack* []
+              *current* {}
+              *state* :between
+              *sb* nil]
+      (-> (. :SAXParserFactory :newInstance)
+          (. :newSAXParser)
+          (. :parse s handler))
+      (first (:content *current*)))))
 
 (defn
   ^{ :doc "Create a SAX InputSource from a string" }
