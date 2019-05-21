@@ -66,11 +66,16 @@
    ; instead of (get {:a 1 :b 2} :b)
    ; maps/keys work as functions
    ({:a 1 :b 2} :b)
-   (:b {:a 1 :b 2}))
+   (:b {:a 1 :b 2})
    
    ; keyword as function supports defaults
-   (:c {:a 1 :b 2})) ; -> nil
-   (:c {:a 1 :b 2} :none)) ; -> :none
+   (:c {:a 1 :b 2})  ; -> nil
+   (:c {:a 1 :b 2} :none)  ; -> :none
+   
+   ; accessing nested maps
+   (let [m {:a {:b {:c 3}}}]
+      (-> m :a :b :c))  ; -> 3
+)
 ```
 
 
