@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added the option 'decimal-as-double' to JSON writer to control whether the writer 
   emits decimals as JSON string or double.
 - added improvements for 'ring' and 'tomcat' module
+- added XML parser built on the JDK's SAX parser
 
 
 
