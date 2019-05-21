@@ -1,6 +1,10 @@
 # XML
 
-Parses an XML string into Venice data structures
+Parses an XML string into Venice data structures.
+
+Returns a tree of XML element maps with the
+keys :tag (XML element name), :attrs (XML element attributes), 
+and :content (XML element content).
 
 ```clojure
 (do
@@ -9,6 +13,6 @@ Parses an XML string into Venice data structures
    
    (str (xml/parse-str "<a><b>B</b></a>"))
    
-   (str (xml/parse-str "<a a1="100"><b>B</b></a>")))
+   (str (xml/parse-str """<a a1="100"><b>B</b></a>""")))
 ```
 

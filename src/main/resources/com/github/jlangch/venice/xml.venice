@@ -30,7 +30,7 @@
                 (let [attr (xml/parse-attributes attributes)
                       e (if (nil? attr)
                             {:tag q-name }
-                            {:tag q-name :attributes attr}) ]
+                            {:tag q-name :attrs attr}) ]
                   (push-chars)
                   (set! *stack* (conj *stack* *current*))
                   (set! *current* e)
@@ -63,7 +63,9 @@
   ^{ :doc (str/strip-indent """\
         Parses and loads the XML from the source s with the parser
         XMLHandler handler. The source may be an InputSource, an
-        InputStream, a File, or a string describing an URI.""" ) }
+        InputStream, a File, or a string describing an URI.
+        Returns a tree of XML element maps with the
+        keys :tag, :attrs, and :content.""" ) }
   xml/parse
   ([s] (xml/parse s (xml/handler)))
   ([s handler]
@@ -75,7 +77,10 @@
       (first (:content *current*)))))
 
 (defn
-  ^{ :doc "Parses an XML from the string s." }
+  ^{ :doc (str/strip-indent """\
+        Parses an XML from the string s.
+        Returns a tree of XML element maps with the
+        keys :tag, :attrs, and :content.""" ) }
   xml/parse-str
   ([s] (xml/parse (xml/input-source-from-str s) (xml/handler)))
   ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
