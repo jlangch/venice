@@ -48,23 +48,23 @@ public class XmlModuleTest {
 				"(do                                                                                               \n" +
 				"   (load-module :xml)                                                                             \n" +
 				"                                                                                                  \n" +
-				"   (let [data (xml/parse-str xml)]                                                                   \n" + 
-				"      (assert (== \"private\" (-> data :attrs :type)))                                       \n" + 
+				"   (let [data (xml/parse-str xml)]                                                                \n" + 
+				"      (assert (== \"private\" (-> data :attrs :type)))                                            \n" + 
 				"                                                                                                  \n" +
 				"      (assert (== \"to\" (:tag (nth (:content data) 0))))                                         \n" + 
-				"      (assert (== nil (:attrs (nth (:content data) 0))))                                     \n" + 
+				"      (assert (== nil (:attrs (nth (:content data) 0))))                                          \n" + 
 				"      (assert (== \"Tove\" (first (:content (nth (:content data) 0)))))                           \n" + 
 				"                                                                                                  \n" +
 				"      (assert (== \"from\" (:tag (nth (:content data) 1))))                                       \n" + 
-				"      (assert (== nil (:attrs (nth (:content data) 1))))                                     \n" + 
+				"      (assert (== nil (:attrs (nth (:content data) 1))))                                          \n" + 
 				"      (assert (== \"Jani\" (first (:content (nth (:content data) 1)))))                           \n" + 
 				"                                                                                                  \n" +
 				"      (assert (== \"heading\" (:tag (nth (:content data) 2))))                                    \n" + 
-				"      (assert (== nil (:attrs (nth (:content data) 2))))                                     \n" + 
+				"      (assert (== nil (:attrs (nth (:content data) 2))))                                          \n" + 
 				"      (assert (== \"Reminder\" (first (:content (nth (:content data) 2)))))                       \n" + 
 				"                                                                                                  \n" +
 				"      (assert (== \"body\" (:tag (nth (:content data) 3))))                                       \n" + 
-				"      (assert (== nil (:attrs (nth (:content data) 3))))                                     \n" + 
+				"      (assert (== nil (:attrs (nth (:content data) 3))))                                          \n" + 
 				"      (assert (== \"Don't forget me this weekend!\" (first (:content (nth (:content data) 3)))))  \n" + 
 				"                                                                                                  \n" +
 				"      (str data))                                                                                 \n" + 
@@ -102,16 +102,16 @@ public class XmlModuleTest {
 				"      (xml/input-source-from-str xml))                                                                       \n" + 
 				"                                                                                                             \n" +
 				"   (let [data (xml/parse (source xml))]                                                                      \n" + 
-				"      (assert (== nil (:attrs data)))                                                                   \n" + 
+				"      (assert (== nil (:attrs data)))                                                                        \n" + 
 				"      (assert (== \"a\" (:tag data)))                                                                        \n" + 
 				"                                                                                                             \n" +
-				"      (assert (== nil (:attrs (first (:content data)))))                                                \n" + 
+				"      (assert (== nil (:attrs (first (:content data)))))                                                     \n" + 
 				"      (assert (== \"b\" (:tag (first (:content data)))))                                                     \n" + 
 				"                                                                                                             \n" +
-				"      (assert (== nil (:attrs (first (:content (first (:content data)))))))                             \n" + 
+				"      (assert (== nil (:attrs (first (:content (first (:content data)))))))                                  \n" + 
 				"      (assert (== \"c\" (:tag (first (:content (first (:content data)))))))                                  \n" + 
 				"                                                                                                             \n" +
-				"      (assert (== nil (:attrs (first (:content (first (:content (first (:content data)))))))))          \n" + 
+				"      (assert (== nil (:attrs (first (:content (first (:content (first (:content data)))))))))               \n" + 
 				"      (assert (== \"d\" (:tag (first (:content (first (:content (first (:content data)))))))))               \n" + 
 				"      (assert (== \"D\" (first (:content (first (:content (first (:content (first (:content data))))))))))   \n" + 
 				"                                                                                                             \n" +

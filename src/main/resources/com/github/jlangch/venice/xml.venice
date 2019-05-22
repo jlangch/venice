@@ -100,6 +100,6 @@
   (let [len (. attributes :getLength)]
     (when (> len 0)
       (apply merge
-             (map (fn [x] { (keyword (. attributes :getQName  x))
+             (map (fn [x] { (keyword (. attributes :getQName x))
                             (. attributes :getValue x) } )
                   (range len))))))

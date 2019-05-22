@@ -87,18 +87,27 @@
 ```
 
 
-## Function composition
+## Partial functions
 
+```clojure
+(map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
+```
+
+
+## Function composition
 
 ```clojure
 (filter (comp not zero?) [0 1 0 2 0 3 0 4])  ;; => [1 2 3 4]
 ```
 
-
-## Partial functions
-
 ```clojure
-(map (partial * 2) [1 2 3 4])   ;; => (2 4 6 8)
+(def xform
+  (comp 
+    (partial take 4)
+    (partial map #(+ 2 %))
+    (partial filter odd?)))
+    
+(xform (range 0 10))  ;; => (3 5 7 9)
 ```
 
 
