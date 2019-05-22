@@ -21,3 +21,79 @@ and :content (XML element content).
               </a>""")))
 ```
 
+
+## Navigate through XML documents
+
+The following examples will outline an XPath like navigation through parsed 
+XML documents.
+
+
+### Getting started
+
+````xml
+<book>
+  <table-of-contents/>
+  <chapter name="Introduction">
+    <para>Here is the intro</para>
+    <para>Another paragraph</para>
+  </chapter>
+  <chapter name="Conclusion">
+    <para>All done now</para>
+  </chapter>
+</book>
+```
+
+Parse the XML
+
+```clojure
+(do
+   (load-module :xml)
+   
+   (def data (xml/parse-str 
+               """<?xml version="1.0" encoding="UTF-8"?>
+                  <book>
+                    <table-of-contents/>
+                    <chapter name="Introduction">
+                      <para>Here is the intro</para>
+                      <para>Another paragraph</para>
+                    </chapter>
+                    <chapter name="Conclusion">
+                      <para>All done now</para>
+                    </chapter>
+                  </book>""")))
+```
+
+`xml/parse` parses the XML into a tree structure like this
+
+```clojure
+{:tag "book" :content [{:tag "table-of-contents"} ...]}
+```
+
+## Descending into the content
+
+Descends into the node's child elements
+
+```clojure
+(def children (partial mapcat #(:content %)))
+```
+
+Give it a sequence of nodes and it returns a sequence of children
+
+```clojure
+(children [data])
+```
+
+which results in
+
+```clojure
+({:tag "table-of-contents"} 
+ {:tag "chapter" 
+  :attrs {:name "Introduction"} 
+  :content [...]} 
+ {:tag "chapter"
+  :attrs {:name "Conclusion"} 
+  :content [...] })
+```
+
+
+to be continued...
