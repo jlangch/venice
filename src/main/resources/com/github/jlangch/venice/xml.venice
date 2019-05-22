@@ -97,11 +97,9 @@
   ^{ :doc "Parse SAX attributes into a map." }
   xml/parse-attributes
   [attributes]
-  ; use XMLUtil helpers to make it work on Java 8 and Java 9+
-  ; reflective access to SAX classes cause problems with Java 9+
-  (let [len (. :XMLUtil :getAttributesLength attributes)]
+  (let [len (. attributes :getLength)]
     (when (> len 0)
       (apply merge
-             (map (fn [x] { (keyword (. :XMLUtil :getAttributeQName attributes x))
-                            (. :XMLUtil :getAttributeValue attributes x) } )
+             (map (fn [x] { (keyword (. attributes :getQName  x))
+                            (. attributes :getValue x) } )
                   (range len))))))

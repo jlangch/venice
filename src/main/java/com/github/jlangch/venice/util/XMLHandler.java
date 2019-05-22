@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.XmlAttributesWrapper;
 
 
 public class XMLHandler extends DefaultHandler {
@@ -91,10 +92,12 @@ public class XMLHandler extends DefaultHandler {
 			final String uri, 
 			final String localName, 
 			final String qName, 
-			final Attributes atts
+			final Attributes attrs
 	) throws SAXException {
 		try {
-			h.startElement(uri, localName, qName, atts);
+			// wrap org.xml.sax.Attributes to allow reflective access
+			// without "illegal reflective access operations" warnings on Java 9+
+			h.startElement(uri, localName, qName, new XmlAttributesWrapper(attrs));
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);

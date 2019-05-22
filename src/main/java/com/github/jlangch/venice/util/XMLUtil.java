@@ -26,7 +26,6 @@ import java.io.InputStream;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 
 
@@ -71,29 +70,7 @@ public class XMLUtil {
 		}
 	}
 
-	public static boolean isAttributesEmpty(final Attributes attributes) {
-		return attributes.getLength() <= 0;
-	}
-
-	public static boolean isAttributesNotEmpty(final Attributes attributes) {
-		return attributes.getLength() > 0;
-	}
 	
-	// Helper to get around illegal reflective access operations on Java 9+
-	public static int getAttributesLength(final Attributes attributes) {
-		return attributes.getLength();
-	}
-
-	// Helper to get around illegal reflective access operations on Java 9+
-	public static String getAttributeQName(final Attributes attributes, final int index) {
-		return attributes.getQName(index);
-	}
-
-	// Helper to get around illegal reflective access operations on Java 9+
-	public static String getAttributeValue(final Attributes attributes, final int index) {
-		return attributes.getValue(index);
-	}
-
 	private static SAXParser newParser(final boolean namespaceAware) throws Exception {
 		final SAXParserFactory f = SAXParserFactory.newInstance();
 		f.setNamespaceAware(namespaceAware);
