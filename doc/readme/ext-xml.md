@@ -30,7 +30,7 @@ XML documents.
 
 ### Getting started
 
-````xml
+```xml
 <book>
   <table-of-contents/>
   <chapter name="Introduction">
