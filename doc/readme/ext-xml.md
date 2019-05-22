@@ -13,6 +13,10 @@ and :content (XML element content).
    
    (str (xml/parse-str "<a><b>B</b></a>"))
    
-   (str (xml/parse-str """<a a1="100"><b>B</b></a>""")))
+   (str (xml/parse-str 
+           """<?xml version="1.0" encoding="UTF-8"?>
+              <a a1="100">
+                <b>B</b>
+              </a>""")))
 ```
 

@@ -17,8 +17,9 @@
   ^{ :doc "Create a SAX parser content handler" }
   xml/handler
   []
-  (let [push-content (fn [e c]
-                       (assoc e :content (conj (or (:content e) []) c)))
+  (let [push-content (fn [elem content]
+                       (let [new (conj (or (:content elem) []) content)]
+                          (assoc elem :content new)))
         push-chars (fn []
                      (let [sb (str *sb*)]
                        (when (and (== *state* :chars) (str/trim-to-nil sb))
@@ -28,12 +29,12 @@
         { :startElement
               (fn [uri local-name q-name attributes]
                 (let [attr (xml/parse-attributes attributes)
-                      e (if (nil? attr)
-                            {:tag q-name }
-                            {:tag q-name :attrs attr}) ]
+                      elem (if (nil? attr)
+                             {:tag q-name }
+                             {:tag q-name :attrs attr}) ]
                   (push-chars)
                   (set! *stack* (conj *stack* *current*))
-                  (set! *current* e)
+                  (set! *current* elem)
                   (set! *state* :element)
                   nil))
           :endElement
