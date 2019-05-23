@@ -160,7 +160,7 @@ which results in
 ```
 
 
-### Select children based on their tag and attributes
+### Select children based on their tag, attributes and position
 
 ```clojure
 (let [path [(xml/tag= "book")
