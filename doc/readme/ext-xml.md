@@ -188,6 +188,22 @@ Alternatively the query can be written as:
      second)
 ```
 
+### Aggregate total price
+
+```clojure
+(let [path [(xml/tag= "book")
+            (xml/attr= :category "web")
+            (xml/tag= "price")
+            xml/text]]
+  (reduce + (map decimal (xml/path-> path nodes))))
+```
+
+result:
+
+```clojure
+89.94M
+```
+
 ### Define custom tag and attribute predicates
 
 #### Tag predicate
