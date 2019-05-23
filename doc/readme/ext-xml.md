@@ -37,14 +37,14 @@ SAX InputSource
 InputStream
 
 ```clojure
-(try-with [is (. :java.io.FileInputStream :new (io/file "example.xml"))]
+(try-with [is (. :java.io.FileInputStream :new (io/file "books.xml"))]
    (xml/parse is))
 ```
 
 File
 
 ```clojure       
-(xml/parse (io/file "example.xml"))
+(xml/parse (io/file "books.xml"))
 ```
 
 URI
@@ -62,19 +62,43 @@ XML documents.
 
 ### Getting started
 
-The XML:
+The XML 'book.xml':
 
 ```xml
-<book>
-  <table-of-contents/>
-  <chapter name="Introduction">
-    <para>Here is the intro</para>
-    <para>Another paragraph</para>
-  </chapter>
-  <chapter name="Conclusion">
-    <para>All done now</para>
-  </chapter>
-</book>
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore>
+  <book category="cooking">
+    <title lang="en">Everyday Italian</title>
+    <author>Giada De Laurentiis</author>
+    <year>2005</year>
+    <price>30.00</price>
+  </book>
+
+  <book category="children">
+    <title lang="en">Harry Potter</title>
+    <author>J K. Rowling</author>
+    <year>2005</year>
+    <price>29.99</price>
+  </book>
+
+  <book category="web">
+    <title lang="en">XQuery Kick Start</title>
+    <author>James McGovern</author>
+    <author>Per Bothner</author>
+    <author>Kurt Cagle</author>
+    <author>James Linn</author>
+    <author>Vaidyanathan Nagarajan</author>
+    <year>2003</year>
+    <price>49.99</price>
+  </book>
+
+  <book category="web" cover="paperback">
+    <title lang="en">Learning XML</title>
+    <author>Erik T. Ray</author>
+    <year>2003</year>
+    <price>39.95</price>
+  </book>
+</bookstore>
 ```
 
 Parse the XML
@@ -83,24 +107,13 @@ Parse the XML
 (do
    (load-module :xml)
    
-   (def nodes (xml/parse-str 
-	               """<?xml version="1.0" encoding="UTF-8"?>
-	                  <book>
-	                    <table-of-contents/>
-	                    <chapter name="Introduction">
-	                      <para>Here is the intro</para>
-	                      <para>Another paragraph</para>
-	                    </chapter>
-	                    <chapter name="Conclusion">
-	                      <para>All done now</para>
-	                    </chapter>
-	                  </book>""")))
+   (def nodes (xml/parse (io/file "books.xml"))))
 ```
 
-`xml/parse-str` parses the XML into a tree structure like this
+`xml/parse` parses the XML into a tree structure like this
 
 ```clojure
-{:tag "book" :content [{:tag "table-of-contents"} ...]}
+{:tag "bookstore" :content [{:tag "book"} ...]}
 ```
 
 
@@ -117,20 +130,20 @@ Descends into the node's child elements
 which results in
 
 ```clojure
-({:tag "table-of-contents"}
- {:tag "chapter"
-  :attrs {:name "Introduction"}
+({:tag "bookstore"}
+ {:tag "book"
+  :attrs {:category "cooking"}
   :content [...]}
- {:tag "chapter"
-  :attrs {:name "Conclusion"}
+ {:tag "book"
+  :attrs {:category "children"}
   :content [...] })
 ```
 
 ### Select children based on their tag
 
 ```clojure
-(let [path [(xml/tag= "chapter")
-            (xml/tag= "para")
+(let [path [(xml/tag= "book")
+            (xml/tag= "title")
             xml/text]]
   (xml/path-> path nodes))
 ```
@@ -138,16 +151,16 @@ which results in
 which results in
 
 ```clojure
-'("Here is the intro" "Another paragraph" "All done now")
+'("Everyday Italian" "Harry Potter" "XQuery Kick Start" "Learning XML")
 ```
 
 
 ### Select children based on their tag and attributes
 
 ```clojure
-(let [path [(xml/tag= "chapter")
-            (xml/attr= :name "Introduction")
-            (xml/tag= "para")
+(let [path [(xml/tag= "book")
+            (xml/attr= :category "web")
+            (xml/tag= "title")
             xml/text
             second]]
   (xml/path-> path nodes))
@@ -156,16 +169,16 @@ which results in
 which results in
 
 ```clojure
-"Another paragraph"
+"Learning XML"
 ```
 
 Alternatively the query can be written as:
 
 ```clojure
 (->> [nodes]
-     ((xml/tag= "chapter"))
-     ((xml/attr= :name "Introduction"))
-     ((xml/tag= "para"))
+     ((xml/tag= "book"))
+     ((xml/attr= :category "web"))
+     ((xml/tag= "title"))
      xml/text
      second)
 ```
