@@ -42,7 +42,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/08fc260/cheatsheet.htm
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
-* [Refs](doc/readme/refs.md)
+* [Mutable Refs](doc/readme/refs.md)
 * [Destructuring](doc/readme/destructuring.md)
 * [Advanced string features](doc/readme/advanced-strings.md)
 * [Concurrency](doc/readme/concurrency.md)
