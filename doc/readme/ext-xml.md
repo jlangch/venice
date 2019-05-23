@@ -43,7 +43,7 @@ InputStream
 
 ```clojure
 (try-with [is (. :java.io.FileInputStream :new (io/file "books.xml"))]
-   (xml/parse is))
+  (xml/parse is))
 ```
 
 File
@@ -67,7 +67,7 @@ XML documents.
 
 ### Getting started
 
-The XML 'book.xml':
+The XML 'books.xml':
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
