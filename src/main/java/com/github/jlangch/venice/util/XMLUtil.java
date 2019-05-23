@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util;
 
+import java.io.File;
 import java.io.InputStream;
 
 import javax.xml.parsers.SAXParser;
@@ -51,6 +52,19 @@ public class XMLUtil {
 	) {
 		try {
 			newParser(namespaceAware).parse(is, handler);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void parse(
+			final File f,
+			final boolean namespaceAware,
+			final XMLHandler handler
+	) {
+		try {
+			newParser(namespaceAware).parse(f, handler);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
