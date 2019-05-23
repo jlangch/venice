@@ -79,9 +79,8 @@
 
 (defn
   ^{ :doc (str/strip-indent """\
-        Parses an XML from the string s.
-        Returns a tree of XML element maps with the
-        keys :tag, :attrs, and :content.""" ) }
+        Parses an XML from the string s. Returns a tree of XML element
+        maps with the keys :tag, :attrs, and :content.""" ) }
   xml/parse-str
   ([s] (xml/parse (xml/input-source-from-str s) (xml/handler)))
   ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
@@ -103,3 +102,45 @@
              (map (fn [x] { (keyword (. attributes :getQName x))
                             (. attributes :getValue x) } )
                   (range len))))))
+
+(defn
+  ^{ :arglists '("(xml/path-apply path nodes)")
+     :doc "Applies the path to a node or a collection of nodes"
+     :examples '( (str/strip-indent """\
+                     (let [nodes (xml/parse-str "<a><b><c>C</c></b></a>")
+                           path [(xml/tag= "b")
+                                 (xml/tag= "c")
+                                 xml/text
+                                 first]]
+                       (xml/path-apply path nodes))""" )) }
+  xml/path-apply
+  [path nodes]
+  ((apply comp (reverse path)) (if (sequential? nodes) nodes [nodes])))
+
+(def
+  ^{ :arglists '("(xml/children nodes)")
+     :doc "Returns the children of the XML nodes collection"
+     :examples '( """(children (list (xml/parse-str "<a><b>B</b></a>")))""" ) }
+  xml/children
+  (partial mapcat #(:content %)))
+
+(def
+  ^{ :arglists '("(xml/text nodes)")
+     :doc "Returns a list of text contents of the XML nodes collection"
+     :examples '( """(children (list (xml/parse-str "<a><b>B</b></a>")))""" ) }
+  xml/text
+  (comp (partial filter string?) (partial mapcat #(:content %))))
+
+(defn xml/tagp [pred]
+  (comp
+    (partial filter #(pred (:tag %)))
+    xml/children))
+
+(defn xml/tag= [tag]
+  (xml/tagp (partial == tag)))
+
+(defn xml/attrp [attr pred]
+  (partial filter #(pred (-> % :attrs attr))))
+
+(defn xml/attr= [attr val]
+  (xml/attrp attr (partial == val)))

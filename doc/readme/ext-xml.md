@@ -30,6 +30,8 @@ XML documents.
 
 ### Getting started
 
+The XML:
+
 ```xml
 <book>
   <table-of-contents/>
@@ -49,38 +51,35 @@ Parse the XML
 (do
    (load-module :xml)
    
-   (def data (xml/parse-str 
-               """<?xml version="1.0" encoding="UTF-8"?>
-                  <book>
-                    <table-of-contents/>
-                    <chapter name="Introduction">
-                      <para>Here is the intro</para>
-                      <para>Another paragraph</para>
-                    </chapter>
-                    <chapter name="Conclusion">
-                      <para>All done now</para>
-                    </chapter>
-                  </book>""")))
+   (def nodes (xml/parse-str 
+	               """<?xml version="1.0" encoding="UTF-8"?>
+	                  <book>
+	                    <table-of-contents/>
+	                    <chapter name="Introduction">
+	                      <para>Here is the intro</para>
+	                      <para>Another paragraph</para>
+	                    </chapter>
+	                    <chapter name="Conclusion">
+	                      <para>All done now</para>
+	                    </chapter>
+	                  </book>""")))
 ```
 
-`xml/parse` parses the XML into a tree structure like this
+`xml/parse-str` parses the XML into a tree structure like this
 
 ```clojure
 {:tag "book" :content [{:tag "table-of-contents"} ...]}
 ```
 
-## Descending into the content
+
+## Querying the parsed nodes
+
+### Getting children
 
 Descends into the node's child elements
 
 ```clojure
-(def children (partial mapcat #(:content %)))
-```
-
-Give it a sequence of nodes and it returns a sequence of children
-
-```clojure
-(children [data])
+(xml/children [nodes])
 ```
 
 which results in
@@ -95,5 +94,35 @@ which results in
   :content [...] })
 ```
 
+### Select children based on their tag
 
-to be continued...
+```clojure
+(let [path [(xml/tag= "chapter")
+            (xml/tag= "para")
+            xml/text]]
+  (xml/path-apply path nodes))
+```
+
+which results in
+
+```clojure
+("Here is the intro" "Another paragraph" "All done now")
+```
+
+
+### Select children based on their tag and attributes
+
+```clojure
+(let [path [(xml/tag= "chapter")
+            (xml/attr= :name "Introduction")
+            (xml/tag= "para")
+            xml/text
+            second]]
+  (xml/path-apply path nodes))
+```
+
+which results in
+
+```clojure
+"Another paragraph"
+```
