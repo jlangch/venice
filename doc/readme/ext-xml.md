@@ -203,7 +203,7 @@ Alternatively the query can be written as:
 - `(xml/attrp :category (partial == "web"))`
 
   
-#### regex predicate for tag and attribute value:
+#### Example 1: regex predicate for tag and attribute value:
 
 ```clojure
 (let [path [(xml/tagp #(match? % "book.*"))
@@ -221,7 +221,7 @@ result:
 ```
 
 
-#### has _:cover_ attribute:
+#### Example 2: has _:cover_ attribute:
 
 ```clojure
 (let [path [(xml/tag= "book")
