@@ -22,6 +22,38 @@ and :content (XML element content).
 ```
 
 
+
+Alternatively Venice can parse XML data from a _SAX InputSource_, an _InputStream_, 
+a _File_ or an _URI_:
+
+
+SAX InputSource
+
+```clojure
+(xml/parse (->> (. :StringReader :new "<a><b>B</b></a>")
+                (. :InputSource :new)))
+```
+
+InputStream
+
+```clojure
+(try-with [is (. :java.io.FileInputStream :new (io/file "example.xml"))]
+   (xml/parse is))
+```
+
+File
+
+```clojure       
+(xml/parse (io/file "example.xml"))
+```
+
+URI
+
+```clojure       
+(xml/parse "https://www.w3schools.com/xml/books.xml")
+```
+
+
 ## Navigate through XML documents
 
 The following examples will outline an XPath like navigation through parsed 
