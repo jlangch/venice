@@ -190,13 +190,13 @@ Alternatively the query can be written as:
 
 ### Define custom tag and attribute predicates
 
-Tag predicate:
+#### Tag predicate:
 
 `(xml/tag= "book")` is equivalent to
 - `(xml/tagp #(== % "book"))`
 - `(xml/tagp (partial == "book"))`
  
-Attribute predicate:   
+#### Attribute predicate:   
 
 `(xml/attr= :category "web")` is equivalent to 
 - `(xml/attrp :category #(== % "web"))`
