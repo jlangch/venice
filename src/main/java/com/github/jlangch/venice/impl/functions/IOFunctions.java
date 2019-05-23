@@ -1120,6 +1120,32 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_uri_stream = 
+			new VncFunction(
+					"io/uri-stream", 
+					VncFunction
+						.meta()
+						.module("io")
+						.arglists("(io/uri-stream uri)")		
+						.doc("Returns a Java InputStream from the uri.")
+						.build()
+			) {	
+				public VncVal apply(final VncList args) {
+					assertMinArity("io/uri-stream", args, 1);
+
+					final String uri = Coerce.toVncString(args.first()).getValue();
+					
+					try {	
+						return new VncJavaObject(new URL(uri).openStream());
+					}
+					catch (Exception ex) {
+						throw new VncException(ex.getMessage(), ex);
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction io_wrap_os_with_buffered_writer = 
 		new VncFunction(
 				"io/wrap-os-with-buffered-writer", 
@@ -1404,6 +1430,7 @@ public class IOFunctions {
 					.put("io/copy-stream",					io_copy_stream)
 					.put("io/slurp-stream",					io_slurp_stream)
 					.put("io/spit-stream",					io_spit_stream)
+					.put("io/uri-stream",					io_uri_stream)
 					.put("io/wrap-os-with-buffered-writer",	io_wrap_os_with_buffered_writer)					
 					.put("io/wrap-os-with-print-writer",	io_wrap_os_with_print_writer)					
 					.put("io/wrap-is-with-buffered-reader",	io_wrap_is_with_buffered_reader)					
