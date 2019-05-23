@@ -1,7 +1,7 @@
 # Mutable reference types
 
 
-Venice has three major mutable references with different use cases and APIs:
+Venice has three major mutable reference types with different use cases and APIs:
 
 **1. Agent**
 
