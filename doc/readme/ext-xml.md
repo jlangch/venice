@@ -67,7 +67,7 @@ XML documents.
 
 ### Getting started
 
-The XML 'books.xml':
+The XML [books.xml](https://www.w3schools.com/xml/books.xml):
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -112,7 +112,7 @@ Parse the XML
 (do
    (load-module :xml)
    
-   (def nodes (xml/parse (io/file "books.xml"))))
+   (def nodes (xml/parse "https://www.w3schools.com/xml/books.xml")))
 ```
 
 `xml/parse` parses the XML into a tree structure like this
@@ -153,7 +153,7 @@ which results in
   (xml/path-> path nodes))
 ```
 
-which results in
+result:
 
 ```clojure
 '("Everyday Italian" "Harry Potter" "XQuery Kick Start" "Learning XML")
@@ -171,7 +171,7 @@ which results in
   (xml/path-> path nodes))
 ```
 
-which results in
+result:
 
 ```clojure
 "Learning XML"
@@ -186,4 +186,40 @@ Alternatively the query can be written as:
      ((xml/tag= "title"))
      xml/text
      second)
+```
+
+### Define custom tag and attribute predicates
+
+regex predicate for tag and attribute value:
+
+```clojure
+(let [path [(xml/tagp #(match? % "book.*"))
+            (xml/attrp :category #(match? % "web.*"))
+            (xml/tag= "title")
+            xml/text
+            second]]
+  (xml/path-> path nodes))
+```
+
+result:
+
+```clojure
+"Learning XML"
+```
+
+
+Has _:cover_ attribute:
+
+```clojure
+(let [path [(xml/tag= "book")
+            (xml/attrp :cover some?)
+            (xml/tag= "title")
+            xml/text]]
+  (xml/path-> path nodes))
+```
+
+result:
+
+```clojure
+"Learning XML"
 ```

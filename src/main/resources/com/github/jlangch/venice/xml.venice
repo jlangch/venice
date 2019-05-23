@@ -104,7 +104,7 @@
                   (range len))))))
 
 (defn
-  ^{ :arglists '("(xml/path-apply path nodes)")
+  ^{ :arglists '("(xml/path-> path nodes)")
      :doc "Applies the path to a node or a collection of nodes"
      :examples '( (str/strip-indent """\
                      (let [nodes (xml/parse-str "<a><b><c>C</c></b></a>")
@@ -138,7 +138,7 @@
 
 (defn xml/tag= [tag]
   (xml/tagp (partial == tag)))
-
+  
 (defn xml/attrp [attr pred]
   (partial filter #(pred (-> % :attrs attr))))
 
