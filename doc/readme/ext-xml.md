@@ -190,7 +190,20 @@ Alternatively the query can be written as:
 
 ### Define custom tag and attribute predicates
 
-regex predicate for tag and attribute value:
+Tag predicate:
+
+`(xml/tag= "book")` is equivalent to
+- `(xml/tagp #(== % "book"))`
+- `(xml/tagp (partial == "book"))`
+ 
+Attribute predicate:   
+
+`(xml/attr= :category "web")` is equivalent to 
+- `(xml/attrp :category #(== % "web"))`
+- `(xml/attrp :category (partial == "web"))`
+
+  
+#### regex predicate for tag and attribute value:
 
 ```clojure
 (let [path [(xml/tagp #(match? % "book.*"))
@@ -208,7 +221,7 @@ result:
 ```
 
 
-Has _:cover_ attribute:
+#### has _:cover_ attribute:
 
 ```clojure
 (let [path [(xml/tag= "book")
