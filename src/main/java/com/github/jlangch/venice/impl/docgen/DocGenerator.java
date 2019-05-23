@@ -891,6 +891,7 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/slurp"));
 		io.addItem(getDocItem("io/slurp-lines"));
 		io.addItem(getDocItem("io/spit"));
+		io.addItem(getDocItem("io/download"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
 		io.addItem(getDocItem("io/temp-file"));

@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,6 +38,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -910,7 +912,49 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_download = 
+		new VncFunction(
+				"io/download", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/download uri & options)")		
+					.doc(
+						"Downloads the content from uri and reads it as text (string) " +
+						"or binary (bytebuf). \n" +
+						"Defaults to binary=false and encoding=UTF-8. \n" +
+						"Options: :encoding \"UTF-8\" :binary true/false.")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/download", args, 1);
 	
+				final String uri = Coerce.toVncString(args.first()).getValue();
+
+				try {	
+					final VncHashMap options = VncHashMap.ofAll(args.rest());
+					
+					final VncVal binary = options.get(new VncKeyword("binary")); 
+
+					final VncVal encVal = options.get(new VncKeyword("encoding")); 						
+					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+
+					try (BufferedInputStream is = new BufferedInputStream(new URL(uri).openStream())) {
+						byte data[] = IOStreamUtil.copyIStoByteArray(is);
+
+						return binary == True
+								? new VncByteBuffer(ByteBuffer.wrap(data))
+								: new VncString(new String(data, encoding));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_copy_stream = 
 		new VncFunction(
 				"io/copy-stream", 
@@ -1358,6 +1402,7 @@ public class IOFunctions {
 					.put("io/slurp",						io_slurp)
 					.put("io/slurp-lines",					io_slurp_lines)
 					.put("io/spit",							io_spit)
+					.put("io/download",						io_download)
 					.put("io/copy-stream",					io_copy_stream)
 					.put("io/slurp-stream",					io_slurp_stream)
 					.put("io/spit-stream",					io_spit_stream)
