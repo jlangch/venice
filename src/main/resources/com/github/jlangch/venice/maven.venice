@@ -6,7 +6,8 @@
   (let [target (str target-dir "/" target-file)]
      (println (str "Downloading " uri))
      (println (str "         to " target "..."))
-     (sh "curl" uri "--output" target)))
+     (->> (io/download uri :binary true)
+          (io/spit target))))
 
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }

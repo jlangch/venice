@@ -848,8 +848,6 @@ public class IOFunctions {
 				assertMinArity("io/spit", args, 2);
 	
 				try {
-					// Currently just string content is supported!
-					
 					File file;
 					
 					if (Types.isVncString(args.first()) ) {
