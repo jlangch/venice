@@ -35,7 +35,6 @@ Venice requires Java 8 or newer.
 Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/08fc260/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/08fc260/cheatsheet.pdf)
 
 
-
 ## Documentation
 
 * [REPL](doc/readme/repl.md)
@@ -43,6 +42,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/08fc260/cheatsheet.htm
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
+* [Refs](doc/readme/refs.md)
 * [Destructuring](doc/readme/destructuring.md)
 * [Advanced string features](doc/readme/advanced-strings.md)
 * [Concurrency](doc/readme/concurrency.md)

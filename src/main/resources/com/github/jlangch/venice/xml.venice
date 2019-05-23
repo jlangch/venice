@@ -112,8 +112,8 @@
                                  (xml/tag= "c")
                                  xml/text
                                  first]]
-                       (xml/path-apply path nodes))""" )) }
-  xml/path-apply
+                       (xml/path-> path nodes))""" )) }
+  xml/path->
   [path nodes]
   ((apply comp (reverse path)) (if (sequential? nodes) nodes [nodes])))
 

@@ -85,12 +85,12 @@ Descends into the node's child elements
 which results in
 
 ```clojure
-({:tag "table-of-contents"} 
- {:tag "chapter" 
-  :attrs {:name "Introduction"} 
-  :content [...]} 
+({:tag "table-of-contents"}
  {:tag "chapter"
-  :attrs {:name "Conclusion"} 
+  :attrs {:name "Introduction"}
+  :content [...]}
+ {:tag "chapter"
+  :attrs {:name "Conclusion"}
   :content [...] })
 ```
 
@@ -100,13 +100,13 @@ which results in
 (let [path [(xml/tag= "chapter")
             (xml/tag= "para")
             xml/text]]
-  (xml/path-apply path nodes))
+  (xml/path-> path nodes))
 ```
 
 which results in
 
 ```clojure
-("Here is the intro" "Another paragraph" "All done now")
+'("Here is the intro" "Another paragraph" "All done now")
 ```
 
 
@@ -118,11 +118,22 @@ which results in
             (xml/tag= "para")
             xml/text
             second]]
-  (xml/path-apply path nodes))
+  (xml/path-> path nodes))
 ```
 
 which results in
 
 ```clojure
 "Another paragraph"
+```
+
+Alternatively the query can be written as:
+
+```clojure
+(->> [nodes]
+     ((xml/tag= "chapter"))
+     ((xml/attr= :name "Introduction"))
+     ((xml/tag= "para"))
+     xml/text
+     second)
 ```
