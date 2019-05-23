@@ -23,11 +23,16 @@ and :content (XML element content).
 
 
 
-Alternatively Venice can parse XML data from a _SAX InputSource_, an _InputStream_, 
-a _File_ or an _URI_:
+Alternatively Venice can parse XML data from various sources:
 
 
-SAX InputSource
+String
+
+```clojure
+(xml/parse-str "<a><b>B</b></a>")
+```
+
+SAX Parser InputSource
 
 ```clojure
 (xml/parse (->> (. :StringReader :new "<a><b>B</b></a>")
