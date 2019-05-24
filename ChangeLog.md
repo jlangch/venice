@@ -9,94 +9,98 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.5.6] - 2019-05-xx
 
-### added
+### Added
+
+- ...
+
+### Changed
 
 - upgraded to JLine 3.11.0
-- added ...
 
 
 
 ## [1.5.5] - 2019-05-23
 
-### added
+### Added
 
-- added special form `set!` to set a global or thread-local variable 
-- added the option 'decimal-as-double' to the JSON writer to control whether 
+- special form `set!` to set a global or thread-local variable 
+- the option 'decimal-as-double' to the JSON writer to control whether 
   the writer emits decimals as JSON strings or doubles.
-- added improvements for 'ring' and 'tomcat' module
-- added an XML parser built on the JDK's SAX parser: [XML](doc/readme/ext-xml.md) 
-
+- improvements for 'ring' and 'tomcat' module
+- an XML parser built on the JDK's SAX parser: [XML](doc/readme/ext-xml.md) 
 
 
 ## [1.5.4] - 2019-05-14
 
-### added
+### Added
 
-- added support for JSON: `json/write-str`, `json/read-str`, `json/spit`, `json/slurp`, `json/pretty-print`
+- support for JSON: `json/write-str`, `json/read-str`, `json/spit`, `json/slurp`, `json/pretty-print`
 
 
 
 ## [1.5.3] - 2019-05-11
 
-### fixed
+### Fixed
 
-- fixed map conversion to Java HashMap when a map entry value was _nil_
+- map conversion to Java HashMap when a map entry value was _nil_
 
 
 
 ## [1.5.2] - 2019-05-10
 
-### added
+### Added
 
-- added functions `regex/find-all`, `regex/find-group`, and `regex/find-all-groups`
-- added code completion for the REPL
+- functions `regex/find-all`, `regex/find-group`, and `regex/find-all-groups`
+- code completion for the REPL
+- function `match?` that replaces `match`. `match` did not follow the naming conventions.
+- function `match-not?` that replaces `match-not`. `match-not` did not follow the naming conventions.
 
-### fixed
+### Fixed
 
-- fixed demo WEB application
-- fixed a `~{x}` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~{a}": "~{b}" }""")`
-- fixed a `~(x)` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~(str a)": "~(str b)" }""")`
+- demo WEB application
+- a `~{x}` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~{a}": "~{b}" }""")`
+- a `~(x)` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~(str a)": "~(str b)" }""")`
 
-### changes
-
-- added function `match?` that replaces `match`. `match` did not follow the naming conventions.
-- added function `match-not?` that replaces `match-not`. `match-not` did not follow the naming conventions.
-- function `match` is deprecated
-- function `match-not` is deprecated
+### Deprecated
+- function `match`
+- function `match-not`
 
 
 
 ## [1.5.1] - 2019-05-07
 
-### added
+### Added
 
-- added function `regex/matches`
-- added a simple templating module: [Kira](doc/readme/ext-kira.md)
-- added encoding/decoding functions for Base64 and URLs
-- added escape functions for HTML and XML
+- function `regex/matches`
+- a simple templating module: [Kira](doc/readme/ext-kira.md)
+- encoding/decoding functions for Base64 and URLs
+- escape functions for HTML and XML
 
-### fixed
+### Fixed
 
-- fixed `regex/group` to handle `nil` groups correctly
+- `regex/group` to handle `nil` groups correctly
 
 
 
 ## [1.5.0] - 2019-05-03
 
-### added
+### Added
 
-- added stack datatype
-- added defaults for keyword as function: `(:c {:a 1 :b 2} :none))`
-- added an embedded [Apache Tomcat WEB Server](doc/readme/ext-tomcat.md) launcher 
+- stack datatype
+- defaults for keyword as function: `(:c {:a 1 :b 2} :none))`
+- an embedded [Apache Tomcat WEB Server](doc/readme/ext-tomcat.md) launcher 
+
+### Changed
+
 - handle REPL parse errors gracefully, allow to get the incorrect expression from the history to fix it
 
-### fixed
+### Fixed
 
-- fixed the order of the stacktrace frames (reversed it)
-- fixed dereferencing a `future` when the future has thrown an exception
-- fixed `io/copy-stream`
+- the order of the stacktrace frames (reversed it)
+- dereferencing a `future` when the future has thrown an exception
+- `io/copy-stream`
 
-### incompatible changes
+### Incompatible Changes
 
 - removed 'io/spit-temp-file', replace with 'io/spit'
 - removed 'io/slurp-temp-file', replace with 'io/slurp'
@@ -105,72 +109,72 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.4.5] - 2019-04-26
 
-### added
+### Added
 
-- added functions `str/letter?`, `str/digit?`, `str/whitespace?`, `str/linefeed?`
-- added regular expression functions: `regex/pattern`, `regex/matcher`, `regex/find?`, `regex/group`, ...
+- functions `str/letter?`, `str/digit?`, `str/whitespace?`, `str/linefeed?`
+- regular expression functions: `regex/pattern`, `regex/matcher`, `regex/find?`, `regex/group`, ...
 - enhanced REPL to change and manage the sandbox. Type `!sandbox` in the REPL.
 
-### fixed
+### Fixed
 
-- fixed a problem with detecting unauthorized private function calls
+- a problem with detecting unauthorized private function calls
 
 
 
 ## [1.4.4] - 2019-04-22
 
-### added
+### Added
 
-- added function `defn-` to simply private function definition
-- added inheritance of thread-local vars for child threads used by futures and agents
+- function `defn-` to simply private function definition
+- inheritance of thread-local vars for child threads used by futures and agents
 
 
 
 ## [1.4.3] - 2019-04-19
 
-### added
+### Added
 
-- added support for raw Java array data types. E.g.: `(long-array '(1 2 3))`
-- added locale support for `str/format` function
-- added function `resolve` to resolve symbols
-- added private functions
+- support for raw Java array data types. E.g.: `(long-array '(1 2 3))`
+- locale support for `str/format` function
+- function `resolve` to resolve symbols
+- private functions
 
-### fixed
+### Fixed
 
-- fixed unit tests for Java 11
+- unit tests for Java 11
 
 
 
 ## [1.4.2] - 2019-04-04
 
-### added
+### Added
 
 - enhanced the function `into` to handle raw Java collections the most 
   efficient way
-- added int numeric type (int literals have suffix 'I'). E.g. `2I`, 
+- int numeric type (int literals have suffix 'I'). E.g. `2I`, 
   `(+ 2I 3I)`, `(int 2)`
-- added a limit to the number of bytes that can be written to a 
+- a limit to the number of bytes that can be written to a 
   _CapturingPrintStream_ by a Venice script to prevent buggy or malicious 
   scripts to overrun the memory. Defaults to 10MB.
 
-### fixed
+### Fixed
 
-- fixed a problem with the `*out*` dynamic var not being visible to 
+- a problem with the `*out*` dynamic var not being visible to 
   precompiled scripts
 
 
 
 ## [1.4.1] - 2019-03-31
 
-### added
+### Added
 
 - improved performance of precompiled scripts
 - significantly reduced the size of precompiled scripts
-- added math module with bigint support
-- added support for `compare` function for all raw java types. Thereby sequences 
+- math module with bigint support
+- support for `compare` function for all raw java types. Thereby sequences 
   with raw java types can be sorted.
-- added function `instance?`
-- added sandbox support for macros. E.g. Venice macros like `load-file`
+- function `instance?`
+- sandbox support for macros. E.g. Venice macros like `load-file`
   and `load-classpath-file` can now be rejected by the sandbox without needing
   to sandbox the underlying functions.
 
@@ -178,46 +182,49 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.4.0] - 2019-03-18
 
-### added
+### Added
 
-- added Clojure style multi methods for dynamic method dispatching
+- Clojure style multi methods for dynamic method dispatching
 
 
 
 ## [1.3.6] - 2019-03-02
 
-### added
+### Added
 
-- added a result history to the REPL `*1`, `*2`, `*3` return the last, the second 
-        last and the third last result
-- added REPL help 
-- reworked meta data handling. E.g.: `(def ^:test m [1 2 3])`, `(def ^{:test true} m [1 2 3])`
+- result history to the REPL. The symbols `*1`, `*2`, `*3` return the last, the second 
+  last and the third last result
+- REPL help 
+
+### Changed
+
+- meta data handling for documenting. E.g.: `(def ^:test m [1 2 3])`, `(def ^{:test true} m [1 2 3])`
 
 
 
 ## [1.3.5] - 2019-02-24
 
-### added
+### Added
 
-- added REPL multi-line support
+- REPL multi-line support
 
-### fixed
+### Fixed
 
-- fixed handling EOF/EOL in strings and providing better error messages
+- handling EOF/EOL in strings and providing better error messages
 
 
 
 ## [1.3.4] - 2019-02-22
 
-### fixed
+### Fixed
 
-- fixed problem with Maven repo push
+- problem with Maven repo push
 
 
 
 ## [1.3.3] - 2019-02-21
 
-### added
+### Added
 
 - migrated REPL to JLine3
 
@@ -225,37 +232,37 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.3.2] - 2019-02-17
 
-### added
+### Added
 
 - upgraded to VAVR 0.10.0 
-- added function `replace`
+- function `replace`
 
-### fixed
+### Fixed
 
-- fixed compareTo for collection types (list, vector, set, and map)
-- fixed a problem with incorrectly evaluated quoted symbols used as map keys. 
+- compareTo for collection types (list, vector, set, and map)
+- a problem with incorrectly evaluated quoted symbols used as map keys. 
         E.g.: `(replace {'a 5} [10 'a])`
 
 
 
 ## [1.3.1] - 2019-02-08
 
-### added
+### Added
 
-- added map to work as function that delivers a value to a passed key 
+- map to work as function that delivers a value to a passed key 
         `({:a 1 :b 2} :b)`
-- added functions (`prof`, `perf`, `dorun`) to simplify Venice performance 
+- functions (`prof`, `perf`, `dorun`) to simplify Venice performance 
         tests
 
-### fixed
+### Fixed
 
-- fixed ValueException stack trace
+- ValueException stack trace
 
 
 
 ## [1.3.0] - 2019-01-19
 
-### added
+### Added
 
 - migrated all collections to immutable persistent data structures
            based on VAVR.
@@ -264,132 +271,132 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.2.2] - 2019-01-10
 
-### added
+### Added
 
-- added multi-arity functions and macros
+- multi-arity functions and macros
 
 
 
 ## [1.2.1] - 2019-01-06
 
-### added
+### Added
 
-- added line escapes to make `str/strip-indent` work (see README)
-- added function `sqrt`
-- added nested associative destructuring
+- line escapes to make `str/strip-indent` work (see README)
+- function `sqrt`
+- nested associative destructuring
 
-### fixed
+### Fixed
 
-- fixed functions `print` and `println` to print `nil` values correctly
-- fixed sequential destructuring when using remaining and :as element 
+- functions `print` and `println` to print `nil` values correctly
+- sequential destructuring when using remaining and :as element 
   together `(let [[x y & z :as all] [1 2 3 4 5 6]] ...)`
 
 
 
 ## [1.2.0] - 2018-12-28
 
-### added
+### Added
 
-- added support for triple quoted, multi-line string literals: `"""{ "name": "john" }"""`
-- added string interpolation: `(do (let [x 100] """~{x} ~(inc x)"""))`
+- support for triple quoted, multi-line string literals: `"""{ "name": "john" }"""`
+- string interpolation: `(do (let [x 100] """~{x} ~(inc x)"""))`
 
 
 
 ## [1.1.3] - 2018-12-21
 
-### added
+### Added
 
-- added a cached thread pool to run the futures for scripts with execution 
+- a cached thread pool to run the futures for scripts with execution 
         time limit
 
-### fixed
+### Fixed
 
-- fixed execution time limit with sandbox
+- execution time limit with sandbox
 
 
 
 ## [1.1.2] - 2018-12-10
 
-### added
+### Added
 
-- added a configurable execution time limit for Venice scripts running
+- a configurable execution time limit for Venice scripts running
         within a sandbox
-- added multi expression body for functions
-- added _defn_ macro support for pre conditions
+- multi expression body for functions
+- _defn_ macro support for pre conditions
 
-### fixed
+### Fixed
 
-- fixed agent _shutdown-agents?_ arity error message
+- agent _shutdown-agents?_ arity error message
 
 
 
 ## [1.1.1] - 2018-11-30
 
-### added
+### Added
 
-- added more implicit type conversions to convert Java lists to Venice lists.
+- more implicit type conversions to convert Java lists to Venice lists.
 
-### fixed
+### Fixed
 
-- fixed default sandbox rules to allow invoking `(delay 100)` under a sandbox
+- default sandbox rules to allow invoking `(delay 100)` under a sandbox
 
 
 
 ## [1.1.0] - 2018-11-25
 
-### added
+### Added
 
-- added agents that complement Venice concurrency features. Agents 
+- agents that complement Venice concurrency features. Agents 
         provide independent, asynchronous change of state.
-- added special form _defonce_. e.g: `(defonce x 100)`
-- added dynamic (thread-local) binding. e.g: `(binding [x 100] (print x))`
-- added _with-out-str_ macro that returns the captured text from stdout.
-- added _delay_ macro that defers function evaluation.
-- added function _realized?_ for delays, futures, and promises
-- added functions _io/file-parent_, _io/file-name_, _io/file-path_
+- special form _defonce_. e.g: `(defonce x 100)`
+- dynamic (thread-local) binding. e.g: `(binding [x 100] (print x))`
+- _with-out-str_ macro that returns the captured text from stdout.
+- _delay_ macro that defers function evaluation.
+- function _realized?_ for delays, futures, and promises
+- functions _io/file-parent_, _io/file-name_, _io/file-path_
 
-### fixed
+### Fixed
 
-- fixed error message for map creation with an odd number of items 
+- error message for map creation with an odd number of items 
         and added file location.
 
 
 
 ## [1.0.0] - 2018-11-09
 
-### added
+### Added
 
-- added improvements to stack traces
+- improvements to stack traces
 
 
 
 ## [0.9.12] - 2018-11-08
 
-### added
+### Added
 
-- added user friendly stack traces as an alternative to pure Java stack traces
+- user friendly stack traces as an alternative to pure Java stack traces
         that are pretty difficult to read
 
-### fixed
+### Fixed
 
-- fixed internal datatypes on public APIs.
+- internal datatypes on public APIs.
 
 
 
 ## [0.9.11] - 2018-11-07
 
-### added
+### Added
 
-- added support for optional names for anonymous functions. e.g. `(fn double [x] (* 2 x))`
-- added function _doc_
-- added function _list*_
-- added function _io/file-size_
+- support for optional names for anonymous functions. e.g. `(fn double [x] (* 2 x))`
+- function _doc_
+- function _list*_
+- function _io/file-size_
 
-### fixed
+### Fixed
 
-- fixed the _with-sh-dir_ macro to check that the directory exists. If not
+- the _with-sh-dir_ macro to check that the directory exists. If not
         an exception is thrown.
-- fixed sandbox for proxy methods. Venice proxy callbacks can potentially
+- sandbox for proxy methods. Venice proxy callbacks can potentially
         run in a thread other than the Venice parent function. The Venice parent
         function's sandbox is now applied to the proxy function.
 
@@ -397,59 +404,59 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [0.9.10] - 2018-10-28
 
-### added
+### Added
 
-- added function _with-sh-throw_ that causes subsequent _sh_ calls to throw an 
+- function _with-sh-throw_ that causes subsequent _sh_ calls to throw an 
         exception if the exit code of the spawned shell process is not equal
         to 0.
-- added function _io/delete-file_ supports multiple files
-- added function _time/leap-year?_
-- added function _time/length-of-year_
-- added function _time/length-of-month_
-- added _cons_, _conj_, _disj_ for sets
-- added reader macro `#{}` to create sets. e.g. `#{1 2}`
-- added reader macro `@` for dereference `(@a -> (deref a)`
-- added reader macro `#()` to create anonymous functions. e.g. `(map #(* 2 %1) (range 1 5))`
+- function _io/delete-file_ supports multiple files
+- function _time/leap-year?_
+- function _time/length-of-year_
+- function _time/length-of-month_
+- _cons_, _conj_, _disj_ for sets
+- reader macro `#{}` to create sets. e.g. `#{1 2}`
+- reader macro `@` for dereference `(@a -> (deref a)`
+- reader macro `#()` to create anonymous functions. e.g. `(map #(* 2 %1) (range 1 5))`
 
-### fixed
+### Fixed
 
-- fixed default sandbox class rules (they were missing)
+- default sandbox class rules (they were missing)
 
 
 
 ## [0.9.9] - 2018-10-21
 
-### added
+### Added
 
-- added function _compare_
-- added function _printf_
-- added support to execute scripts: `java -jar venice-0.9.9.jar -script "(+ 1 1)"`
+- function _compare_
+- function _printf_
+- support to execute scripts: `java -jar venice-0.9.9.jar -script "(+ 1 1)"`
 
 
 
 ## [0.9.8] - 2018-10-15
 
-### fixed
+### Fixed
 
-- fixed _partial_ function
+- _partial_ function
 
 
 
 ## [0.9.7] - 2018-10-15
 
-### added
+### Added
 
-- added macro _case_
-- added pre-conditions for functions
-- added function _str/char_ to convert a number into single char string
+- macro _case_
+- pre-conditions for functions
+- function _str/char_ to convert a number into single char string
 
 
 
 ## [0.9.6] - 2018-10-01
 
-### fixed
+### Fixed
 
-- fixed _def_ global variables to be redefined locally
+- _def_ global variables to be redefined locally
 
 
 
@@ -457,12 +464,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added ability to mix Venice functions with Java streams
+- ability to mix Venice functions with Java streams
 - migrated to JUnit 5
 
-### fixed
+### Fixed
 
-- fixed _def_ creates now global variables instead of using the local env context
+- _def_ creates now global variables instead of using the local env context
 
 
 
@@ -470,14 +477,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function 'io/load-classpath-resource' to load resources from 
+- function 'io/load-classpath-resource' to load resources from 
         classpath. The function is sandboxed.
-- added function 'lock' and 'unlock' to WebDAV extension module.
+- function 'lock' and 'unlock' to WebDAV extension module.
 
-### fixed
+### Fixed
 
-- fixed documentation for function 'future'. The function is sandboxed!
-- fixed function 'reduce' to work with maps too.
+- documentation for function 'future'. The function is sandboxed!
+- function 'reduce' to work with maps too.
 
 
 
@@ -485,12 +492,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function 'repeatedly'
+- function 'repeatedly'
 
-### fixed
+### Fixed
 
-- fixed sandboxed access to system properties
-- fixed a Java interop issue with with boxing args to type byte[] (the
+- sandboxed access to system properties
+- a Java interop issue with with boxing args to type byte[] (the
   boxing works now for all ByteBuffer subclasses)
 
 
@@ -499,16 +506,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added support for Futures (the sandbox is active in the future's thread)
-- added support for Promises (aka CompletedFuture)
-- added support for sandboxed Java system properties
-- added function 'system-prop' to access to Java system properties
-- added function 'butlast'
-- added threading macro 'as->'
+- support for Futures (the sandbox is active in the future's thread)
+- support for Promises (aka CompletedFuture)
+- support for sandboxed Java system properties
+- function 'system-prop' to access to Java system properties
+- function 'butlast'
+- threading macro 'as->'
 
-### fixed
+### Fixed
 
-- fixed 'sh' function when providing stdin data to subprocess
+- 'sh' function when providing stdin data to subprocess
 
 
 
@@ -516,16 +523,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function 'time/with-time'
-- added function 'time/first-day-of-month', 'time/last-day-of-month'
-- added function 'time/earliest', 'time/latest', 'time/within?'
-- added function 'name', 'split-with'
-- added function 'sh', 'os?', 'sleep'
+- function 'time/with-time'
+- function 'time/first-day-of-month', 'time/last-day-of-month'
+- function 'time/earliest', 'time/latest', 'time/within?'
+- function 'name', 'split-with'
+- function 'sh', 'os?', 'sleep'
 
-### fixed
+### Fixed
 
-- fixed XChart xy-chart
-- fixed try-with-resources to close the resources in reversed order 
+- XChart xy-chart
+- try-with-resources to close the resources in reversed order 
         of its definition
 
 
@@ -534,7 +541,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added time functions
+- time functions
 
 
 
@@ -542,13 +549,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added support for thread local
-- added webdav extension module
+- support for thread local
+- webdav extension module
 
-### fixed
+### Fixed
 
-- fixed a hiding exception problem with JavaInterop on static method calls
-- fixed printing full exception stack trace in REPL not just the message
+- a hiding exception problem with JavaInterop on static method calls
+- printing full exception stack trace in REPL not just the message
 
 
 
@@ -556,17 +563,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added support for catching multiple exceptions within a try-catch-finally block
-- added chart examples
-- added updated cheat sheets
-- added function 'load-classpath-file' to sequentially read and evaluate the set 
+- support for catching multiple exceptions within a try-catch-finally block
+- chart examples
+- updated cheat sheets
+- function 'load-classpath-file' to sequentially read and evaluate the set 
         of forms contained in the classpath file.
-- added function 'io/move-file'
+- function 'io/move-file'
 
-### fixed
+### Fixed
 
-- fixed documentation for functions 'proxify' and 'cond'
-- fixed xchart extension module xy-chart axis styling
+- documentation for functions 'proxify' and 'cond'
+- xchart extension module xy-chart axis styling
 
 
 
@@ -574,17 +581,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function 'io/slurp-stream'
-- added function 'io/spit-stream'
-- added function 'io/delete-file-on-exit'
-- added function 'flush' takes an optional argument output stream. E.g.: (flush os)
-- added try-with-resources block 'try-with'
+- function 'io/slurp-stream'
+- function 'io/spit-stream'
+- function 'io/delete-file-on-exit'
+- function 'flush' takes an optional argument output stream. E.g.: (flush os)
+- try-with-resources block 'try-with'
 
-### fixed
+### Fixed
 
-- fixed Cheat Sheet for functions referenced multiple times
-- fixed cheat sheet page breaks on PDF
-- fixed try-catch-finally. The finally block is only evaluated for side effects
+- Cheat Sheet for functions referenced multiple times
+- cheat sheet page breaks on PDF
+- try-catch-finally. The finally block is only evaluated for side effects
 
 
 
@@ -592,14 +599,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added dpi scaling to charts (high-res charts)
-- added sandboxing for created temp files 
-- added more documented functions in the cheatsheet
+- dpi scaling to charts (high-res charts)
+- sandboxing for created temp files 
+- more documented functions in the cheatsheet
 
-### fixed
+### Fixed
 
-- fixed xchart/to-bytes
-- fixed str/join
+- xchart/to-bytes
+- str/join
 
 
 
@@ -607,14 +614,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function 'type' to reveal the type of an item
-- added set functions 'intersect' and 'union'
+- function 'type' to reveal the type of an item
+- set functions 'intersect' and 'union'
 
-### fixed
+### Fixed
 
-- fixed function 'into'.
-- fixed adding elements to data type 'set'.
-- fixed README Java Interop example
+- function 'into'.
+- adding elements to data type 'set'.
+- README Java Interop example
 
 
 
@@ -622,26 +629,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function keep, merge, assoc-in, get-in
-- added function update, vec, difference
-- added function every? and any? operating on sequential collections
-- added associative destructuring 
+- function keep, merge, assoc-in, get-in
+- function update, vec, difference
+- function every? and any? operating on sequential collections
+- associative destructuring 
     - `(let [{:keys [a b]} {:a 1 :b 2}] (+ a b))`
     - `(let [{:syms [a b]} {'a 1 'b 2}] (+ a b))`
     - `(let [{:strs [a b]} {"a" 1 "b" 2}] (+ a b))`
     - `(fn [x {:keys [a b]}] (+ x a b))`
-- added destructuring `:as` and `:or`options
+- destructuring `:as` and `:or`options
     - `(fn [x {:keys [a b] :or {b 2} :as params}] (+ x a b))`
     - `(let [[x y :as coords] [1 2 3 4]] (str "x:" x ", y:" y ", dim:" (count coords)))`
 - improved Java interop with Java functions returning arrays
     - `byte[]` is converted to bytebuf
     - all other arrays are converted to vector
 
-### fixed
+### Fixed
 
-- fixed Java interop proxifying interfaces with void functions (e.g. Runnable)
-- fixed sort function to work on sets as well
-- fixed apply function to handle coll with nil value correctly
+- Java interop proxifying interfaces with void functions (e.g. Runnable)
+- sort function to work on sets as well
+- apply function to handle coll with nil value correctly
 
 
 
@@ -649,14 +656,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function empty
-- added function mapv
-- added function docoll
-- added support to change 'stdout' stream by adding the variable `*out*`
+- function empty
+- function mapv
+- function docoll
+- support to change 'stdout' stream by adding the variable `*out*`
 
-### fixed
+### Fixed
 
-- fixed mixed precision math (+, -, *, /). Implicitly coerce values to higher 
+- mixed precision math (+, -, *, /). Implicitly coerce values to higher 
   precision operand type. As a result (range 0 5 0.5) emits correct values and 
   does not loop anymore.
 
@@ -666,12 +673,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function str/blank?
-- added support for `**` pattern in sandbox rules: E.g.: `org.apache.commons.text.**:*`
+- function str/blank?
+- support for `**` pattern in sandbox rules: E.g.: `org.apache.commons.text.**:*`
 
-### fixed
+### Fixed
 
-- fixed Java Interop callbacks to support import statements
+- Java Interop callbacks to support import statements
 
 
 
@@ -679,9 +686,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function str/quote
-- added function bytebuf-from-string, bytebuf-to-string
-- added support for Java callbacks
+- function str/quote
+- function bytebuf-from-string, bytebuf-to-string
+- support for Java callbacks
 
 
 
@@ -689,9 +696,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- fixed REPL
-- fixed CheatSheet: not is a function not a macro
-- fixed JSON lib detection
+- REPL
+- CheatSheet: not is a function not a macro
+- JSON lib detection
 
 
 ## [0.6.0] - 2018-07-26
@@ -702,8 +709,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- fixed loading forms from strings, files, and modules 
-- fixed JavaInterop on invoking methods with byte array parameters
+- loading forms from strings, files, and modules 
+- JavaInterop on invoking methods with byte array parameters
 
 
 ## [0.5.0] - 2018-07-24
@@ -718,18 +725,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added function composition
-- added partial functions
-- added functions partition, distinct, and dedupe
-- added an explicit Venice type for keywords
-- added keywords to act like functions on maps: (:b {:a 1 :b 2}) => 2
-- added JSON util functions (requires Jackson lib at runtime on classpath)
-- added support for scoped enum values while interacting with Java objects 
-- added support for Java arrays
+- function composition
+- partial functions
+- functions partition, distinct, and dedupe
+- an explicit Venice type for keywords
+- keywords to act like functions on maps: (:b {:a 1 :b 2}) => 2
+- JSON util functions (requires Jackson lib at runtime on classpath)
+- support for scoped enum values while interacting with Java objects 
+- support for Java arrays
 
 ### Fixed
 
-- fixed SecurityException handling
+- SecurityException handling
 - made 'not' a function (instead of a macro) so it can be used from higher order functions
 
 
@@ -738,12 +745,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added Java Interop function (. classname :class). Returns the class for the classname
-- added improved error messages for Java Interop
-- added smarter type coercion, replaces simple casts and giving better error messages
+- Java Interop function (. classname :class). Returns the class for the classname
+- improved error messages for Java Interop
+- smarter type coercion, replaces simple casts and giving better error messages
   if the coercion is not possible
-- added zipmap, interleave, interpose, nfirst, and nlast functions
-- added PDF cheatsheet
+- zipmap, interleave, interpose, nfirst, and nlast functions
+- PDF cheatsheet
 
 
 
@@ -751,14 +758,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- added line and column number to parser exception
-- added file I/O functions
+- line and column number to parser exception
+- file I/O functions
 - refactored sandbox
 - supporting escaped unicode '\u0041' characters in string literals
 
 ### Fixed
 
-- fixed JavaInterop passing enums args
+- JavaInterop passing enums args
 
 
 
