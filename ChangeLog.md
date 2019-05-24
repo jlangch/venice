@@ -224,9 +224,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.3.3] - 2019-02-21
 
-### Added
+### Changed
 
-- migrated REPL to JLine3
+- REPL to be built on JLine3
 
 
 
@@ -234,14 +234,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- upgraded to VAVR 0.10.0 
 - function `replace`
+
+### Changed
+
+- VAVR lib to actual version 0.10.0 
 
 ### Fixed
 
 - compareTo for collection types (list, vector, set, and map)
 - a problem with incorrectly evaluated quoted symbols used as map keys. 
-        E.g.: `(replace {'a 5} [10 'a])`
+  E.g.: `(replace {'a 5} [10 'a])`
 
 
 
@@ -250,9 +253,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - map to work as function that delivers a value to a passed key 
-        `({:a 1 :b 2} :b)`
+  `({:a 1 :b 2} :b)`
 - functions (`prof`, `perf`, `dorun`) to simplify Venice performance 
-        tests
+  tests
 
 ### Fixed
 
@@ -265,7 +268,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - migrated all collections to immutable persistent data structures
-           based on VAVR.
+  based on VAVR.
 
 
 
@@ -307,7 +310,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - a cached thread pool to run the futures for scripts with execution 
-        time limit
+  time limit
 
 ### Fixed
 
@@ -320,7 +323,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - a configurable execution time limit for Venice scripts running
-        within a sandbox
+  within a sandbox
 - multi expression body for functions
 - _defn_ macro support for pre conditions
 
@@ -347,7 +350,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - agents that complement Venice concurrency features. Agents 
-        provide independent, asynchronous change of state.
+  provide independent, asynchronous change of state.
 - special form _defonce_. e.g: `(defonce x 100)`
 - dynamic (thread-local) binding. e.g: `(binding [x 100] (print x))`
 - _with-out-str_ macro that returns the captured text from stdout.
@@ -358,7 +361,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - error message for map creation with an odd number of items 
-        and added file location.
+  and added file location.
 
 
 
@@ -375,7 +378,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - user friendly stack traces as an alternative to pure Java stack traces
-        that are pretty difficult to read
+  that are pretty difficult to read
 
 ### Fixed
 
@@ -395,10 +398,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - the _with-sh-dir_ macro to check that the directory exists. If not
-        an exception is thrown.
+  an exception is thrown.
 - sandbox for proxy methods. Venice proxy callbacks can potentially
-        run in a thread other than the Venice parent function. The Venice parent
-        function's sandbox is now applied to the proxy function.
+  run in a thread other than the Venice parent function. The Venice parent
+  function's sandbox is now applied to the proxy function.
 
 
 
@@ -407,8 +410,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - function _with-sh-throw_ that causes subsequent _sh_ calls to throw an 
-        exception if the exit code of the spawned shell process is not equal
-        to 0.
+  exception if the exit code of the spawned shell process is not equal
+  to 0.
 - function _io/delete-file_ supports multiple files
 - function _time/leap-year?_
 - function _time/length-of-year_
@@ -478,7 +481,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - function 'io/load-classpath-resource' to load resources from 
-        classpath. The function is sandboxed.
+  classpath. The function is sandboxed.
 - function 'lock' and 'unlock' to WebDAV extension module.
 
 ### Fixed
@@ -533,7 +536,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - XChart xy-chart
 - try-with-resources to close the resources in reversed order 
-        of its definition
+  of its definition
 
 
 
@@ -567,7 +570,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - chart examples
 - updated cheat sheets
 - function 'load-classpath-file' to sequentially read and evaluate the set 
-        of forms contained in the classpath file.
+  of forms contained in the classpath file.
 - function 'io/move-file'
 
 ### Fixed
