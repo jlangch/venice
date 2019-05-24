@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.10.0</version>
+            <version>3.11.0</version>
             <scope>provided</scope>
          </dependency>
         <dependency>

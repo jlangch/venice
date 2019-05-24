@@ -164,10 +164,10 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
 
     // required for json module unit tests
-    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.8'
-    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-core:2.9.8'
-    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-    testRuntimeOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8'
+    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.9'
+    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-core:2.9.9'
+    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
+    testRuntimeOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9'
 
     // required for cheatsheet generation
     compileOnly 'org.antlr:ST4:4.0.8'
@@ -182,5 +182,5 @@ dependencies {
  
     // runtime dependencies (repackaged)
     compile 'io.vavr:vavr:0.10.0'
-    compile 'org.jline:jline:3.10.0'
+    compile 'org.jline:jline:3.11.0'
 }
