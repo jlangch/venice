@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added the option 'decimal-as-double' to the JSON writer to control whether 
   the writer emits decimals as JSON strings or doubles.
 - added improvements for 'ring' and 'tomcat' module
-- added an XML parser built on the JDK's SAX parser
+- added an XML parser built on the JDK's SAX parser: [XML](doc/readme/ext-xml.md) 
 
 
 
