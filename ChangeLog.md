@@ -67,6 +67,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - a `~(x)` string interpolation problem with trailing `"`: `(let [a 1 b 2] """{ "~(str a)": "~(str b)" }""")`
 
 ### Deprecated
+
 - function `match`
 - function `match-not`
 
