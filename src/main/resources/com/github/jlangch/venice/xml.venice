@@ -14,7 +14,8 @@
 (def-dynamic *state*) ; :element :chars :between
 
 (defn
-  ^{ :doc "Create a SAX parser content handler" }
+  ^{ :arglists '("(xml/handler)")
+     :doc "Create a SAX parser content handler" }
   xml/handler
   []
   (let [push-content (fn [elem content]
@@ -61,7 +62,8 @@
           :skippedEntity (fn [name] nil) }))))
 
 (defn
-  ^{ :doc (str/strip-indent """\
+  ^{ :arglists '("(xml/parse s)" "(xml/parse s handler)")
+     :doc (str/strip-indent """\
         Parses and loads the XML from the source s with the parser
         XMLHandler handler. The source may be an InputSource, an
         InputStream, a File, or a string describing an URI.
@@ -78,7 +80,8 @@
       (first (:content *current*)))))
 
 (defn
-  ^{ :doc (str/strip-indent """\
+  ^{ :arglists '("(xml/parse-str s)" "(xml/parse-str s handler)")
+     :doc (str/strip-indent """\
         Parses an XML from the string s. Returns a tree of XML element
         maps with the keys :tag, :attrs, and :content.""" ) }
   xml/parse-str
@@ -86,14 +89,16 @@
   ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
 
 (defn
-  ^{ :doc "Create a SAX InputSource from a string" }
+  ^{ :arglists '("(xml/input-source-from-str s)")
+     :doc "Create a SAX InputSource from a string" }
   xml/input-source-from-str
   [s]
   (->> (. :StringReader :new s)
        (. :InputSource :new)))
 
 (defn
-  ^{ :doc "Parse SAX attributes into a map." }
+  ^{ :arglists '("(xml/parse-attributes attrs)")
+     :doc "Parse SAX attributes into a map." }
   xml/parse-attributes
   [attributes]
   (let [len (. attributes :getLength)]
@@ -106,13 +111,14 @@
 (defn
   ^{ :arglists '("(xml/path-> path nodes)")
      :doc "Applies the path to a node or a collection of nodes"
-     :examples '( (str/strip-indent """\
-                     (let [nodes (xml/parse-str "<a><b><c>C</c></b></a>")
-                           path [(xml/tag= "b")
-                                 (xml/tag= "c")
-                                 xml/text
-                                 first]]
-                       (xml/path-> path nodes))""" )) }
+     :examples (list (str/strip-indent """\
+                       (load-module :xml)
+                       (let [nodes (xml/parse-str "<a><b><c>C</c></b></a>")
+                             path [(xml/tag= "b")
+                                   (xml/tag= "c")
+                                   xml/text
+                                   first]]
+                         (xml/path-> path nodes))""" )) }
   xml/path->
   [path nodes]
   ((apply comp (reverse path)) (if (sequential? nodes) nodes [nodes])))
@@ -120,14 +126,22 @@
 (def
   ^{ :arglists '("(xml/children nodes)")
      :doc "Returns the children of the XML nodes collection"
-     :examples '( """(children (list (xml/parse-str "<a><b>B</b></a>")))""" ) }
+     :examples (list (str/strip-indent """\
+                       (load-module :xml)
+                       (xml/children
+                         (list (xml/parse-str "<a><b>B</b></a>")))""" )) }
   xml/children
   (partial mapcat #(:content %)))
 
 (def
   ^{ :arglists '("(xml/text nodes)")
      :doc "Returns a list of text contents of the XML nodes collection"
-     :examples '( """(children (list (xml/parse-str "<a><b>B</b></a>")))""" ) }
+     :examples (list (str/strip-indent """\
+                       (load-module :xml)
+                       (let [nodes (xml/parse-str "<a><b>B</b></a>")
+                             path [(xml/tag= "b")
+                                   xml/text]]
+                         (xml/path-> path nodes))""" )) }
   xml/text
   (comp (partial filter string?) (partial mapcat #(:content %))))
 
@@ -138,7 +152,7 @@
 
 (defn xml/tag= [tag]
   (xml/tagp (partial == tag)))
-  
+
 (defn xml/attrp [attr pred]
   (partial filter #(pred (-> % :attrs attr))))
 

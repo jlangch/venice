@@ -55,7 +55,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv()
+							.createEnv(Arrays.asList("xml"))
 							.setStdoutPrintStream(null);
 	}
 
@@ -1098,13 +1098,21 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 		
-		final DocSection general = new DocSection("JSON");
-		all.addSection(general);
-		general.addItem(getDocItem("json/write-str"));
-		general.addItem(getDocItem("json/read-str"));
-		general.addItem(getDocItem("json/spit"));
-		general.addItem(getDocItem("json/slurp"));
-		general.addItem(getDocItem("json/pretty-print"));
+		final DocSection json = new DocSection("JSON");
+		all.addSection(json);
+		json.addItem(getDocItem("json/write-str"));
+		json.addItem(getDocItem("json/read-str"));
+		json.addItem(getDocItem("json/spit"));
+		json.addItem(getDocItem("json/slurp"));
+		json.addItem(getDocItem("json/pretty-print"));
+		
+		final DocSection xml = new DocSection("XML");
+		all.addSection(xml);
+		xml.addItem(getDocItem("xml/parse-str"));
+		xml.addItem(getDocItem("xml/parse"));
+		xml.addItem(getDocItem("xml/path->"));
+		xml.addItem(getDocItem("xml/children"));
+		xml.addItem(getDocItem("xml/text"));
 
 		return section;
 	}
