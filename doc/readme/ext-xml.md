@@ -139,9 +139,10 @@ which results in
  {:tag "book"
   :attrs {:category "cooking"}
   :content [...]}
+ {...}
  {:tag "book"
   :attrs {:category "children"}
-  :content [...] })
+  :content [...]})
 ```
 
 ### Select children based on their tag
