@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -381,5 +382,58 @@ public class IOFunctionsTest {
 
 		assertEquals("s: hello", venice.eval("(str \"s: \" (with-out-str (print \"hello\")))"));
 	}
-	
+
+	@Test
+	public void test_io_zip() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(io/unzip (io/zip nil \"test\") \"test\")"));	
+		assertEquals("abcdef", new String(
+									((ByteBuffer)venice.eval(
+											"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+											"    (io/zip \"test\") \n" +
+											"    (io/unzip \"test\"))")).array(), 
+									"utf-8"));	
+	}
+
+	@Test
+	public void test_io_unzip_first() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(io/unzip-first (io/zip nil \"test\"))"));	
+		assertEquals("abcdef", new String(
+									((ByteBuffer)venice.eval(
+											"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+											"    (io/zip \"test\") \n" +
+											"    (io/unzip-first))")).array(), 
+									"utf-8"));	
+	}
+
+	@Test
+	public void test_io_unzip_nth() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(io/unzip-nth (io/zip nil \"test\") 0)"));	
+		assertEquals("abcdef", new String(
+									((ByteBuffer)venice.eval(
+											"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+											"    (io/zip \"test\") \n" +
+											"    (io/unzip-nth 0))")).array(), 
+									"utf-8"));	
+		assertEquals(null, venice.eval(
+										"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+										"    (io/zip \"test\") \n" +
+										"    (io/unzip-nth 1))"));	
+	}
+
+	@Test
+	public void test_io_gzip() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(io/ungzip (io/gzip nil))"));	
+		assertEquals("abcdef", new String(
+									((ByteBuffer)venice.eval("(io/ungzip (io/gzip (bytebuf-from-string \"abcdef\" \"utf-8\")))")).array(), 
+									"utf-8"));	
+	}
+
 }

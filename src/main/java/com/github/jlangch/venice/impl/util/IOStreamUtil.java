@@ -47,7 +47,36 @@ public class IOStreamUtil {
 			return output.toByteArray();
 		}
 	}
-	
+
+    public static byte[] copyIStoByteArray(
+    		final InputStream input, 
+    		final int numBytesToCopy
+    ) throws IOException {
+        if (numBytesToCopy < 0) {
+            throw new IllegalArgumentException(
+            		"numBytesToCopy must not be negative: " + numBytesToCopy);
+        }
+
+        if (numBytesToCopy == 0) {
+            return new byte[0];
+        }
+
+        final byte[] data = new byte[numBytesToCopy];
+        int offset = 0;
+        int read;
+
+        while (offset < numBytesToCopy && (read = input.read(data, offset, numBytesToCopy - offset)) != -1) {
+            offset += read;
+        }
+
+        if (offset != numBytesToCopy) {
+            throw new IOException(
+            		"Unexpected read size. current: " + offset + ", expected: " + numBytesToCopy);
+        }
+
+        return data;
+    }
+
 	public static String copyIStoString(
 			final InputStream is,
 			final String encoding

@@ -906,6 +906,18 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
 		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
 
+		final DocSection zip = new DocSection("zip");
+		all.addSection(zip);
+		zip.addItem(getDocItem("io/zip"));
+		zip.addItem(getDocItem("io/unzip"));
+		zip.addItem(getDocItem("io/unzip-first"));
+		zip.addItem(getDocItem("io/unzip-nth"));
+
+		final DocSection gzip = new DocSection("gzip");
+		all.addSection(gzip);
+		gzip.addItem(getDocItem("io/gzip"));
+		gzip.addItem(getDocItem("io/ungzip"));
+
 		final DocSection other = new DocSection("other");
 		all.addSection(other);
 		other.addItem(getDocItem("io/load-classpath-resource"));
