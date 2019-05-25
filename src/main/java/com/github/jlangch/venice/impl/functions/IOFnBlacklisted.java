@@ -68,6 +68,7 @@ public class IOFnBlacklisted {
 								"io/copy-stream",
 								"io/delete-file",
 								"io/delete-file-on-exit",
+								"io/download",
 								"io/exists-dir?",
 								"io/exists-file?",
 								"io/file-size",
