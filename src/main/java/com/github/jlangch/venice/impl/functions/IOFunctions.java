@@ -1179,7 +1179,7 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/gzip f os)")		
-					.doc("gzips f to the OutputStream os. f may be a bytebuf or an InputStream. Returns a bytebuf.")
+					.doc("gzips f to the OutputStream os. f may be a bytebuf or an InputStream.")
 					.examples(
 						"(do                                                 \n" +
 						"  (import :java.io.ByteArrayOutputStream)           \n" +						
