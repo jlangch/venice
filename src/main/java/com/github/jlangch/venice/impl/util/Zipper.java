@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -296,6 +297,64 @@ public class Zipper {
 		}
 	}
 	
+	public static byte[] gzip(final InputStream is) {
+		if (is == null) {
+			throw new IllegalArgumentException("An 'is' must not be null");
+		}
+
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	
+			try (GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
+				IOStreamUtil.copy(is, gzos);
+				gzos.flush();
+			}
+	
+			return baos.toByteArray();
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void gzip(final byte[] binary, final OutputStream os) {
+		if (binary == null) {
+			throw new IllegalArgumentException("A 'binary' must not be null");
+		}
+		if (os == null) {
+			throw new IllegalArgumentException("An 'os' must not be null");
+		}
+
+		try {
+			try (GZIPOutputStream gzos = new GZIPOutputStream(os)) {
+				gzos.write(binary, 0, binary.length);
+				gzos.flush();
+			}
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void gzip(final InputStream is, final OutputStream os) {
+		if (is == null) {
+			throw new IllegalArgumentException("An 'is' must not be null");
+		}
+		if (os == null) {
+			throw new IllegalArgumentException("An 'os' must not be null");
+		}
+
+		try {
+			try (GZIPOutputStream gzos = new GZIPOutputStream(os)) {
+				IOStreamUtil.copy(is, gzos);
+				gzos.flush();
+			}
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
 	public static byte[] ungzip(final byte[] binary) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
@@ -305,6 +364,21 @@ public class Zipper {
 
 		try {
 			try (GZIPInputStream gzis = new GZIPInputStream(bais)) {
+				return IOStreamUtil.copyIStoByteArray(gzis);
+			}
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
+	public static byte[] ungzip(final InputStream inputStream) {
+		if (inputStream == null) {
+			throw new IllegalArgumentException("A 'inputStream' must not be null");
+		}
+
+		try {
+			try (GZIPInputStream gzis = new GZIPInputStream(inputStream)) {
 				return IOStreamUtil.copyIStoByteArray(gzis);
 			}
 		}

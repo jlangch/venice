@@ -912,11 +912,14 @@ public class DocGenerator {
 		zip.addItem(getDocItem("io/unzip"));
 		zip.addItem(getDocItem("io/unzip-first"));
 		zip.addItem(getDocItem("io/unzip-nth"));
+		zip.addItem(getDocItem("io/unzip-all"));
 
 		final DocSection gzip = new DocSection("gzip");
 		all.addSection(gzip);
 		gzip.addItem(getDocItem("io/gzip"));
+		gzip.addItem(getDocItem("io/gzip-to-stream"));
 		gzip.addItem(getDocItem("io/ungzip"));
+		gzip.addItem(getDocItem("io/ungzip-to-stream"));
 
 		final DocSection other = new DocSection("other");
 		all.addSection(other);

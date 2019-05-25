@@ -1650,7 +1650,7 @@ public class CoreFunctions {
 					.meta()
 					.module("core")
 					.arglists("(bytebuf-from-string s encoding)")		
-					.doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to UTF-8")
+					.doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to :UTF-8")
 					.examples("(bytebuf-from-string \"abcdef\" :UTF-8)")
 					.build()
 		) {		
@@ -1660,11 +1660,7 @@ public class CoreFunctions {
 				final String s = Coerce.toVncString(args.first()).getValue();
 	
 				final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-				final String encoding = encVal == Nil 
-											? "UTF-8" 
-											: Types.isVncKeyword(encVal)
-												? Coerce.toVncKeyword(encVal).getValue()
-												: Coerce.toVncString(encVal).getValue();
+				final String encoding = encoding(encVal);
 				
 				try {
 					return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(encoding)));				
@@ -1685,7 +1681,7 @@ public class CoreFunctions {
 					.meta()
 					.module("core")
 					.arglists("(bytebuf-to-string buf encoding)")		
-					.doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to UTF-8")
+					.doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
 					.examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
 					.build()
 		) {	
@@ -1695,18 +1691,14 @@ public class CoreFunctions {
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 	
 				final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-				final String encoding = encVal == Nil 
-											? "UTF-8" 
-											: Types.isVncKeyword(encVal)
-												? Coerce.toVncKeyword(encVal).getValue()
-												: Coerce.toVncString(encVal).getValue();
+				final String encoding = encoding(encVal);
 				
 				try {
 					return new VncString(new String(buf.array(), encoding));				
 				}
 				catch(Exception ex) {
 					throw new VncException(String.format(
-							"Failed to convert bytebuffer to string"));
+							"Failed to convert bytebuf to string"));
 				}
 			}
 	
@@ -5922,6 +5914,14 @@ public class CoreFunctions {
 		}
 	}
 
+	private static String encoding(final VncVal enc) {
+		return enc == Nil 
+				? "UTF-8" 
+				: Types.isVncKeyword(enc)
+					? Coerce.toVncKeyword(enc).getValue()
+					: Coerce.toVncString(enc).getValue();
+	}
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions

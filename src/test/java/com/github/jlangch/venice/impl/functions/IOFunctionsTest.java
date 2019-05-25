@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -390,7 +391,7 @@ public class IOFunctionsTest {
 		assertEquals(null, venice.eval("(io/unzip (io/zip nil \"test\") \"test\")"));	
 		assertEquals("abcdef", new String(
 									((ByteBuffer)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 											"    (io/zip \"test\") \n" +
 											"    (io/unzip \"test\"))")).array(), 
 									"utf-8"));	
@@ -403,7 +404,7 @@ public class IOFunctionsTest {
 		assertEquals(null, venice.eval("(io/unzip-first (io/zip nil \"test\"))"));	
 		assertEquals("abcdef", new String(
 									((ByteBuffer)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 											"    (io/zip \"test\") \n" +
 											"    (io/unzip-first))")).array(), 
 									"utf-8"));	
@@ -416,14 +417,30 @@ public class IOFunctionsTest {
 		assertEquals(null, venice.eval("(io/unzip-nth (io/zip nil \"test\") 0)"));	
 		assertEquals("abcdef", new String(
 									((ByteBuffer)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 											"    (io/zip \"test\") \n" +
 											"    (io/unzip-nth 0))")).array(), 
 									"utf-8"));	
 		assertEquals(null, venice.eval(
-										"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+										"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 										"    (io/zip \"test\") \n" +
 										"    (io/unzip-nth 1))"));	
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void test_io_unzip_all() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(io/unzip-all (io/zip nil \"test\") 0)"));	
+		
+		Map<String,ByteBuffer> data = (Map<String,ByteBuffer>)venice.eval(
+											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+											"    (io/zip \"test\") \n" +
+											"    (io/unzip-all))");
+		
+		assertEquals(1, data.size());
+		assertEquals("abcdef", new String(data.get("test").array(), "utf-8"));	
 	}
 
 	@Test
@@ -432,8 +449,37 @@ public class IOFunctionsTest {
 
 		assertEquals(null, venice.eval("(io/ungzip (io/gzip nil))"));	
 		assertEquals("abcdef", new String(
-									((ByteBuffer)venice.eval("(io/ungzip (io/gzip (bytebuf-from-string \"abcdef\" \"utf-8\")))")).array(), 
+									((ByteBuffer)venice.eval("(io/ungzip (io/gzip (bytebuf-from-string \"abcdef\" :utf-8)))")).array(), 
 									"utf-8"));	
+	}
+
+	@Test
+	public void test_io_gzip_to_stream() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals("abcdef",
+				venice.eval(
+						"(do                                                 \n" +
+						"  (import :java.io.ByteArrayOutputStream)           \n" +						
+						"  (try-with [os (. :ByteArrayOutputStream :new)]    \n" +
+						"    (do                                             \n" +
+						"      (-> (bytebuf-from-string \"abcdef\" :utf-8)   \n" +
+						"          (io/gzip-to-stream os))                   \n" +
+						"      (-> (. os :toByteArray)                       \n" +
+						"          (io/ungzip)                               \n" +
+						"          (bytebuf-to-string :utf-8)))))              "));
+	}
+
+	@Test
+	public void test_io_ungzip_to_stream() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals("abcdef",
+				venice.eval(
+					"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+					"    (io/gzip) \n" +
+					"    (io/ungzip-to-stream) \n" +
+					"    (io/slurp-stream :binary false :encoding :utf-8))"));	
 	}
 
 }

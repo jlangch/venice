@@ -693,7 +693,7 @@ public class IOFunctions {
 						"Read all lines from f. f may be a file, a string file path, " +
 						"a Java InputStream, or a Java Reader. \n\n" + 
 						"Options: \n" +
-						"  :encoding enc - e.g :encoding \"UTF-8\", defaults to UTF-8")
+						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -710,7 +710,7 @@ public class IOFunctions {
 											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
 						final VncVal encVal = options.get(new VncKeyword("encoding")); 					
-						final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+						final String encoding = encoding(encVal);
 
 						final List<VncString> lines = 
 								Files.readAllLines(file.toPath(), Charset.forName(encoding))
@@ -724,7 +724,7 @@ public class IOFunctions {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
 						final VncVal encVal = options.get(new VncKeyword("encoding")); 					
-						final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+						final String encoding = encoding(encVal);
 
 						final BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding));
 						return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
@@ -762,7 +762,7 @@ public class IOFunctions {
 						"or a Java Reader. \n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding \"UTF-8\", defaults to UTF-8")
+						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -787,7 +787,7 @@ public class IOFunctions {
 						}
 						else {
 							final VncVal encVal = options.get(new VncKeyword("encoding")); 						
-							final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+							final String encoding = encoding(encVal);
 		
 							final byte[] data = Files.readAllBytes(file.toPath());
 							
@@ -803,7 +803,7 @@ public class IOFunctions {
 						}
 						else {
 							final VncVal encVal = options.get(new VncKeyword("encoding")); 							
-							final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+							final String encoding = encoding(encVal);
 		
 							return new VncString(IOStreamUtil.copyIStoString(is, encoding));
 						}
@@ -815,7 +815,7 @@ public class IOFunctions {
 						
 						if (binary == True) {
 							final VncVal encVal = options.get(new VncKeyword("encoding")); 						
-							final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
+							final String encoding = encoding(encVal);
 
 							return new VncByteBuffer(s.getBytes(encoding));
 						}
@@ -849,7 +849,7 @@ public class IOFunctions {
 						"f may be a file or a string file path. \n\n" +
 						"Options: \n" +
 						"  :append true/false - e.g :append true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding \"UTF-8\", defaults to UTF-8")
+						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -879,7 +879,7 @@ public class IOFunctions {
 					
 					final VncVal encVal = options.get(new VncKeyword("encoding")); 
 						
-					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+					final String encoding = encoding(encVal);
 	
 					byte[] data;
 					
@@ -928,8 +928,8 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/zip buf entry-name)")		
-					.doc("zips a byte buffer with the given entry name.")
-					.examples("(io/zip (bytebuf-from-string \"abcdef\" \"utf-8\") \"x\")")
+					.doc("Zips a bytebuf with the given entry name.")
+					.examples("(io/zip (bytebuf-from-string \"abcdef\" :utf-8) \"x\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -965,9 +965,9 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/unzip buf entry-name)")		
-					.doc("unzips an entry returning its data as a byte buffer.")
+					.doc("Unzips an entry returning its data as a bytebuf.")
 					.examples(
-						"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/zip \"test\") \n" +
 						"    (io/unzip \"test\"))")
 					.build()
@@ -1006,9 +1006,9 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/unzip-first buf)")		
-					.doc("unzips the first entry of the zip returning its data as a byte buffer.")
+					.doc("Unzips the first entry of the zip returning its data as a bytebuf.")
 					.examples(
-						"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
+						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/zip \"test\") \n" +
 						"    (io/unzip-first))")
 					.build()
@@ -1040,45 +1040,98 @@ public class IOFunctions {
 		};
 
 	public static VncFunction io_unzip_nth = 
-			new VncFunction(
-					"io/unzip-nth", 
-					VncFunction
-						.meta()
-						.module("io")
-						.arglists("(io/unzip-nth buf)")		
-						.doc("unzips the nth (0-based) entry of the zip returning its data as a byte buffer.")
-						.examples(
-							"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
-							"    (io/zip \"test\") \n" +
-							"    (io/unzip-nth 0))")
-						.build()
-			) {	
-				public VncVal apply(final VncList args) {
-					assertMinArity("io/unzip-nth", args, 2);
-		
-					final VncVal buf = args.first();
-					final int entryIdx = Coerce.toVncLong(args.second()).getIntValue();
-					try {
-						if (buf == Nil) {
+		new VncFunction(
+				"io/unzip-nth", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/unzip-nth buf)")		
+					.doc("Unzips the nth (0-based) entry of the zip returning its data as a bytebuf.")
+					.examples(
+						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+						"    (io/zip \"test\") \n" +
+						"    (io/unzip-nth 0))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/unzip-nth", args, 2);
+	
+				final VncVal buf = args.first();
+				final int entryIdx = Coerce.toVncLong(args.second()).getIntValue();
+				try {
+					if (buf == Nil) {
+						return Nil;
+					}
+					else if (Types.isVncByteBuffer(buf) ) {
+						final byte[] data = Zipper.unzipNthEntry(((VncByteBuffer)buf).getValue().array(), entryIdx);
+						return data == null ? Nil : new VncByteBuffer(data);
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/unzip-nth' does not allow %s as f",
+								Types.getType(buf)));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_unzip_all = 
+		new VncFunction(
+				"io/unzip-all", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/unzip-all buf)")		
+					.doc(
+						"Unzips all entries of the zip returning a map the entry name as key " +
+						"and the entry data as bytebuf value.")
+					.examples(
+						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+						"    (io/zip \"test\") \n" +
+						"    (io/unzip-all))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/unzip-all", args, 1);
+	
+				final VncVal buf = args.first();
+				try {
+					if (buf == Nil) {
+						return Nil;
+					}
+					else if (Types.isVncByteBuffer(buf) ) {
+						final Map<String,byte[]> data = Zipper.unzipAll(((VncByteBuffer)buf).getValue().array());
+						if (data == null) {
 							return Nil;
 						}
-						else if (Types.isVncByteBuffer(buf) ) {
-							final byte[] data = Zipper.unzipNthEntry(((VncByteBuffer)buf).getValue().array(), entryIdx);
-							return data == null ? Nil : new VncByteBuffer(data);
-						}
 						else {
-							throw new VncException(String.format(
-									"Function 'io/unzip-nth' does not allow %s as f",
-									Types.getType(buf)));
+							final Map<VncString,VncByteBuffer> tmp = 
+								data.entrySet()
+									.stream()
+									.collect(Collectors.toMap(
+												e -> new VncString(e.getKey()), 
+												e -> new VncByteBuffer(e.getValue())));
+							return new VncHashMap(tmp);
 						}
-					} 
-					catch (Exception ex) {
-						throw new VncException(ex.getMessage(), ex);
 					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/unzip-all' does not allow %s as f",
+								Types.getType(buf)));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
 				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction io_gzip = 
 		new VncFunction(
@@ -1086,9 +1139,9 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/gzip buf)")		
-					.doc("gzips a byte buffer.")
-					.examples("(io/gzip (bytebuf-from-string \"abcdef\" \"utf-8\"))")
+					.arglists("(io/gzip f)")		
+					.doc("gzips f. f may be a bytebuf or an InputStream. Returns a bytebuf.")
+					.examples("(io/gzip (bytebuf-from-string \"abcdef\" :utf-8))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1102,9 +1155,63 @@ public class IOFunctions {
 					else if (Types.isVncByteBuffer(buf) ) {
 						return new VncByteBuffer(Zipper.gzip(((VncByteBuffer)buf).getValue().array()));
 					}
+					else if (Types.isVncJavaObject(buf, InputStream.class)) {
+						return new VncByteBuffer(Zipper.gzip((InputStream)((VncJavaObject)buf).getDelegate()));
+					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/gzip' does not allow %s as f",
+								Types.getType(buf)));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_gzip_to_stream = 
+		new VncFunction(
+				"io/gzip-to-stream", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/gzip f os)")		
+					.doc("gzips f to the OutputStream os. f may be a bytebuf or an InputStream. Returns a bytebuf.")
+					.examples(
+						"(do                                                 \n" +
+						"  (import :java.io.ByteArrayOutputStream)           \n" +						
+						"  (try-with [os (. :ByteArrayOutputStream :new)]    \n" +
+						"    (do                                             \n" +
+						"      (-> (bytebuf-from-string \"abcdef\" :utf-8)   \n" +
+						"          (io/gzip-to-stream os))                   \n" +
+						"      (-> (. os :toByteArray)                       \n" +
+						"          (io/ungzip)                               \n" +
+						"          (bytebuf-to-string :utf-8)))))              ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/gzip-to-stream", args, 2);
+	
+				final VncVal buf = args.first();
+				final OutputStream os = (OutputStream)Coerce.toVncJavaObject(args.second()).getDelegate();
+				try {
+					if (buf == Nil) {
+						return Nil;
+					}
+					else if (Types.isVncByteBuffer(buf) ) {
+						Zipper.gzip(((VncByteBuffer)buf).getValue().array(), os);
+						return Nil;
+					}
+					else if (Types.isVncJavaObject(buf, InputStream.class)) {
+						Zipper.gzip((InputStream)((VncJavaObject)buf).getDelegate(), os);
+						return Nil;
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/gzip-to-stream' does not allow %s as f",
 								Types.getType(buf)));
 					}
 				} 
@@ -1122,16 +1229,16 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/ungzip buf)")		
-					.doc("ungzips a byte buffer.")
+					.arglists("(io/ungzip f)")		
+					.doc("ungzips f. f may be a bytebuf or an InputStream. Returns a bytebuf.")
 					.examples(
-							"(-> (bytebuf-from-string \"abcdef\" \"utf-8\") \n" +
-							"    (io/gzip) \n" +
-							"    (io/ungzip))")
+						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+						"    (io/gzip) \n" +
+						"    (io/ungzip))")	
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/gunzip", args, 1);
+				assertMinArity("io/ungzip", args, 1);
 	
 				final VncVal buf = args.first();
 				try {
@@ -1141,9 +1248,52 @@ public class IOFunctions {
 					else if (Types.isVncByteBuffer(buf) ) {
 						return new VncByteBuffer(Zipper.ungzip(((VncByteBuffer)buf).getValue().array()));
 					}
+					else if (Types.isVncJavaObject(buf, InputStream.class)) {
+						return new VncByteBuffer(Zipper.ungzip((InputStream)((VncJavaObject)buf).getDelegate()));
+					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/ungzip' does not allow %s as f",
+								Types.getType(buf)));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction io_ungzip_to_stream = 
+		new VncFunction(
+				"io/ungzip-to-stream", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/ungzip-to-stream buf)")		
+					.doc("ungzips a bytebuf returning an InputStream to read the deflated data from.")
+					.examples(
+							"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+							"    (io/gzip) \n" +
+							"    (io/ungzip-to-stream) \n" +
+							"    (io/slurp-stream :binary false :encoding :utf-8))")	
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/ungzip-to-stream", args, 1);
+	
+				final VncVal buf = args.first();
+				try {
+					if (buf == Nil) {
+						return Nil;
+					}
+					else if (Types.isVncByteBuffer(buf) ) {
+						return new VncJavaObject(Zipper.ungzipToStream(((VncByteBuffer)buf).getValue().array()));
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/ungzip-to-stream' does not allow %s as f",
 								Types.getType(buf)));
 					}
 				} 
@@ -1167,7 +1317,7 @@ public class IOFunctions {
 						"or binary (bytebuf). \n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding \"UTF-8\", defaults to UTF-8")
+						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1254,7 +1404,7 @@ public class IOFunctions {
 						"For string data an optional encoding can be specified.\n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding \"UTF-8\", defaults to UTF-8")
+						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileInputStream) \n" +
@@ -1313,7 +1463,7 @@ public class IOFunctions {
 						"the operation.\n\n" +
 						"Options: \n" +
 						"  :flush true/false - e.g :flush true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding \"UTF-8\", defaults to UTF-8")
+						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileOutputStream) \n" +
@@ -1405,12 +1555,12 @@ public class IOFunctions {
 					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")		
 					.doc(
 						"Wraps an OutputStream with a BufferedWriter using an optional " +
-						"encoding (defaults to UTF-8).")
+						"encoding (defaults to :UTF-8).")
 					.examples(
 						"(do                                                         \n" +
 						"   (import :java.io.ByteArrayOutputStream)                  \n" +
 						"   (let [os (. :ByteArrayOutputStream :new)                 \n" +
-						"         wr (io/wrap-os-with-buffered-writer os \"utf-8\")] \n" +
+						"         wr (io/wrap-os-with-buffered-writer os :utf-8)]    \n" +
 						"      (. wr :write \"line 1\")                              \n" +
 						"      (. wr :newLine)                                       \n" +
 						"      (. wr :write \"line 2\")                              \n" +
@@ -1444,12 +1594,12 @@ public class IOFunctions {
 					.arglists("(io/wrap-os-with-print-writer os encoding?)")		
 					.doc(
 						"Wraps an OutputStream with a PrintWriter using an optional " +
-						"encoding (defaults to UTF-8).")
+						"encoding (defaults to :UTF-8).")
 					.examples(
 						"(do                                                      \n" +
 						"   (import :java.io.ByteArrayOutputStream)               \n" +
 						"   (let [os (. :ByteArrayOutputStream :new)              \n" +
-						"         wr (io/wrap-os-with-print-writer os \"utf-8\")] \n" +
+						"         wr (io/wrap-os-with-print-writer os :utf-8)]    \n" +
 						"      (. wr :println \"line 1\")                         \n" +
 						"      (. wr :println \"line 2\")                         \n" +
 						"      (. wr :flush)                                      \n" +
@@ -1482,13 +1632,13 @@ public class IOFunctions {
 						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")		
 						.doc(
 							"Wraps an InputStream with a BufferedReader using an optional " +
-							"encoding (defaults to UTF-8).")
+							"encoding (defaults to :UTF-8).")
 						.examples(
 							"(do                                                                          \n" +
 							"   (import :java.io.ByteArrayInputStream)                                    \n" +						
 							"   (let [data (byte-array [108 105 110 101 32 49 10 108 105 110 101 32 50])  \n" +
 							"         is (. :ByteArrayInputStream :new data)                              \n" +
-							"         rd (io/wrap-is-with-buffered-reader is \"utf-8\")]                  \n" +
+							"         rd (io/wrap-is-with-buffered-reader is :utf-8)]                     \n" +
 							"      (println (. rd :readLine))                                             \n" +
 							"      (println (. rd :readLine))))                                             ")
 						.build()
@@ -1653,6 +1803,14 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+
+	private static String encoding(final VncVal enc) {
+		return enc == Nil 
+				? "UTF-8" 
+				: Types.isVncKeyword(enc)
+					? Coerce.toVncKeyword(enc).getValue()
+					: Coerce.toVncString(enc).getValue();
+	}
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1697,8 +1855,11 @@ public class IOFunctions {
 					.put("io/unzip",						io_unzip)
 					.put("io/unzip-first",					io_unzip_first)
 					.put("io/unzip-nth",					io_unzip_nth)
+					.put("io/unzip-all",					io_unzip_all)
 					.put("io/gzip",							io_gzip)
+					.put("io/gzip-to-stream",				io_gzip_to_stream)
 					.put("io/ungzip",						io_ungzip)
+					.put("io/ungzip-to-stream",				io_ungzip_to_stream)
 					.toMap();
 
 	
