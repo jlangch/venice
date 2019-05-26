@@ -958,6 +958,11 @@ public class IOFunctions {
 					while (idx < args.size()) {
 						final String name = Coerce.toVncString(args.nth(idx++)).getValue();
 						
+						if (map.containsKey(name)) {
+							throw new VncException(String.format(
+									"Function 'io/zip' duplicate entry name %s", name));
+						}
+
 						final VncVal dataVal = args.nth(idx++);
 						Object data = null;
 						if (Types.isVncByteBuffer(dataVal)) {
@@ -970,11 +975,6 @@ public class IOFunctions {
 							throw new VncException(String.format(
 									"Function 'io/zip' does not allow %s as f",
 									Types.getType(dataVal)));
-						}
-					
-						if (map.containsKey(name)) {
-							throw new VncException(String.format(
-									"Function 'io/zip' duplicate entry name %s", name));
 						}
 						
 						map.put(name, data);
