@@ -1184,12 +1184,11 @@ public class IOFunctions {
 						"(do                                                 \n" +
 						"  (import :java.io.ByteArrayOutputStream)           \n" +						
 						"  (try-with [os (. :ByteArrayOutputStream :new)]    \n" +
-						"    (do                                             \n" +
 						"      (-> (bytebuf-from-string \"abcdef\" :utf-8)   \n" +
 						"          (io/gzip-to-stream os))                   \n" +
 						"      (-> (. os :toByteArray)                       \n" +
 						"          (io/ungzip)                               \n" +
-						"          (bytebuf-to-string :utf-8)))))              ")
+						"          (bytebuf-to-string :utf-8))))               ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {

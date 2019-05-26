@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 
+- try/catch/finally supports now multiple body expressions for each of the 
+  try, catch, finally blocks
+- try-with/catch/finally supports now multiple body expressions  for each
+  of the try-with, catch, finally blocks 
 - JLine3 lib to actual version 3.11.0
 
 ### Fixed

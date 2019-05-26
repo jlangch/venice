@@ -765,7 +765,8 @@ public class DocGenerator {
 		util.addItem(getDocItem("comment"));
 		util.addItem(getDocItem("gensym"));
 		util.addItem(getDocItem("time"));
-
+		util.addItem(getDocItem("with-out-str"));
+		
 		final DocSection profil = new DocSection("Profiling");
 		all.addSection(profil);
 		profil.addItem(getDocItem("time"));

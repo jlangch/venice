@@ -849,30 +849,23 @@ public class VeniceInterpreter implements Serializable  {
 		VncVal result = Nil;
 
 		try {
-			result = evaluate(ast.second(), env);
+			result = evaluateBody(getTryBody(ast), env);
 		} 
 		catch (Throwable th) {
-			CatchBlock catchBlock = null;
-			if (ast.size() > 2) {
-				catchBlock = findCatchBlockMatchingThrowable(ast.slice(2), th);
-				if (catchBlock != null) {
-					env.set(catchBlock.getExSym(), new VncJavaObject(th));
-					
-					final VncVal blocks = eval_ast(catchBlock.getBody(), env);
-					result = Coerce.toVncSequence(blocks).first();
-				}
-			}
-			
+			final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ast, th);
 			if (catchBlock == null) {
 				throw th;
 			}
+			else {
+				env.set(catchBlock.getExSym(), new VncJavaObject(th));
+				
+				return evaluateBody(catchBlock.getBody(), env);
+			}
 		}
 		finally {
-			if (ast.size() > 2) {
-				final VncList finallyBlock = findFirstFinallyBlock(ast.slice(2));
-				if (finallyBlock != null) {
-					eval_ast(finallyBlock.rest(), env);
-				}
+			final VncList finallyBlock = findFirstFinallyBlock(ast);
+			if (finallyBlock != null) {
+				eval_ast(finallyBlock.rest(), env);
 			}
 		}
 		
@@ -903,31 +896,24 @@ public class VeniceInterpreter implements Serializable  {
 		VncVal result = Nil;
 		try {
 			try {
-				result = evaluate(ast.nth(2), env);
+				result = evaluateBody(getTryBody(ast), env);
 			} 
 			catch (Throwable th) {
-				CatchBlock catchBlock = null;
-				if (ast.size() > 3) {
-					catchBlock = findCatchBlockMatchingThrowable(ast.slice(3), th);
-					if (catchBlock != null) {
-						env.set(catchBlock.getExSym(), new VncJavaObject(th));
-
-						final VncVal blocks = eval_ast(catchBlock.getBody(), env);
-						result = Coerce.toVncSequence(blocks).first();
-					}
-				}
-						
+				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ast, th);
 				if (catchBlock == null) {
 					throw th;
+				}
+				else {
+					env.set(catchBlock.getExSym(), new VncJavaObject(th));
+				
+					return evaluateBody(catchBlock.getBody(), env);
 				}
 			}
 			finally {
 				// finally is only for side effects
-				if (ast.size() > 3) {
-					final VncList finallyBlock = findFirstFinallyBlock(ast.slice(3));
-					if (finallyBlock != null) {
-						eval_ast(finallyBlock.rest(), env);
-					}
+				final VncList finallyBlock = findFirstFinallyBlock(ast);
+				if (finallyBlock != null) {
+					eval_ast(finallyBlock.rest(), env);
 				}
 			}
 		}
@@ -967,23 +953,43 @@ public class VeniceInterpreter implements Serializable  {
 		return result;
 	}
 
+	private VncList getTryBody(final VncList ast) {
+		final List<VncVal> body = new ArrayList<>();
+		for(VncVal e : ast.rest().getList()) {
+			if (Types.isVncList(e)) {
+				final VncVal first = ((VncList)e).first();
+				if (Types.isVncSymbol(first)) {
+					final String symName = ((VncSymbol)first).getName();
+					if (symName.equals("catch") || symName.equals("finally")) {
+						break;
+					}
+				}
+			}
+			body.add(e);
+		}
+		
+		return new VncList(body);
+	}
+	
 	private CatchBlock findCatchBlockMatchingThrowable(
 			final VncList blocks, 
 			final Throwable th
 	) {
-		final VncList block = blocks
-								.stream()
-								.map(b -> (VncList)b)
-								.filter(b -> ((VncSymbol)b.first()).getName().equals("catch"))
-								.filter(b -> isCatchBlockMatchingThrowable(b, th))
-								.findFirst()
-								.orElse(null);
+		for(VncVal b : blocks.getList()) {
+			if (Types.isVncList(b)) {
+				final VncList block = ((VncList)b);
+				final VncVal first = block.first();
+				if (Types.isVncSymbol(first) && ((VncSymbol)first).getName().equals("catch")) {
+					if (isCatchBlockMatchingThrowable(block, th)) {
+						return new CatchBlock(
+									Coerce.toVncSymbol(block.nth(2)), 
+									block.slice(3));
+					}
+				}
+			}
+		}
 		
-		return block == null
-				? null
-				: new CatchBlock(
-						Coerce.toVncSymbol(block.nth(2)), 
-						block.slice(3));
+		return null;
 	}
 	
 	private boolean isCatchBlockMatchingThrowable(
@@ -997,12 +1003,13 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncList findFirstFinallyBlock(final VncList blocks) {
-		for(int ii=0; ii<blocks.size(); ii++) {
-			final VncList block = Coerce.toVncList(blocks.nth(ii));
-			
-			final VncSymbol sym = Coerce.toVncSymbol(block.first());
-			if (sym.getName().equals("finally")) {
-				return block;
+		for(VncVal b : blocks.getList()) {
+			if (Types.isVncList(b)) {
+				final VncList block = ((VncList)b);
+				final VncVal first = block.first();
+				if (Types.isVncSymbol(first) && ((VncSymbol)first).getName().equals("finally")) {
+					return block;
+				}
 			}
 		}
 		return null;
@@ -1024,20 +1031,7 @@ public class VeniceInterpreter implements Serializable  {
 
 				validateFnPreconditions(name, preConditions, localEnv);
 				
-				if (body.isEmpty()) {
-					return Constants.Nil;
-				}
-				else if (body.size() == 1) {
-					return evaluate(body.first(), localEnv);
-				}
-				else if (body.size() == 2) {
-					evaluate(body.first(), localEnv);
-					return evaluate(body.last(), localEnv);
-				}
-				else {
-					eval_ast(body.slice(0, body.size()-1), localEnv);
-					return evaluate(body.last(), localEnv);
-				}
+				return evaluateBody(body, localEnv);
 			}
 			
 			private static final long serialVersionUID = -1L;
@@ -1083,6 +1077,23 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				}
  			}
+		}
+	}
+	
+	private VncVal evaluateBody(final VncList body, final Env env) {
+		if (body.isEmpty()) {
+			return Constants.Nil;
+		}
+		else if (body.size() == 1) {
+			return evaluate(body.first(), env);
+		}
+		else if (body.size() == 2) {
+			evaluate(body.first(), env);
+			return evaluate(body.last(), env);
+		}
+		else {
+			eval_ast(body.slice(0, body.size()-1), env);
+			return evaluate(body.last(), env);
 		}
 	}
 	
