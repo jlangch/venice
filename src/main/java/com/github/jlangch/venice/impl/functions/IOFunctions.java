@@ -31,6 +31,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,6 +51,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
@@ -990,6 +993,53 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_zip_size = 
+		new VncFunction(
+				"io/zip-size", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/zip-size zip)")		
+					.doc(
+						"Returns the number of entries in the zip.")
+					.examples(
+						"(io/zip-size (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/zip-size", args, 1);
+	
+				if (args.isEmpty()) {
+					return new VncLong(0);
+				}
+				
+				try {
+					final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+					final ByteArrayInputStream bais = new ByteArrayInputStream(buf.array());
+			
+					int count = 0;
+					try (ZipInputStream zis = new ZipInputStream(bais)) {
+						while(true) {
+							final ZipEntry entry = zis.getNextEntry();
+							if (entry == null) {
+								break;
+							}
+							
+							count++;
+						}
+						
+						return new VncLong(count); 
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_unzip = 
 		new VncFunction(
 				"io/unzip", 
@@ -1894,6 +1944,7 @@ public class IOFunctions {
 					.put("io/unzip-first",					io_unzip_first)
 					.put("io/unzip-nth",					io_unzip_nth)
 					.put("io/unzip-all",					io_unzip_all)
+					.put("io/zip-size",						io_zip_size)
 					.put("io/gzip",							io_gzip)
 					.put("io/gzip-to-stream",				io_gzip_to_stream)
 					.put("io/ungzip",						io_ungzip)

@@ -396,6 +396,20 @@ public class IOFunctionsTest {
 	}
 
 	@Test
+	public void test_io_zip_size() throws Exception {
+		final Venice venice = new Venice();
+
+		assertEquals(1L, venice.eval(
+								"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
+								"    (io/zip-size))"));	
+
+		assertEquals(2L, venice.eval(
+								"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+								"            \"b\" (bytebuf-from-string \"def\" :utf-8)) \n" +
+								"    (io/zip-size))"));	
+	}
+
+	@Test
 	public void test_io_unzip_first() throws Exception {
 		final Venice venice = new Venice();
 
