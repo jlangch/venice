@@ -75,7 +75,7 @@ public class Zipper {
 		}
 	}
 	
-	public static byte[] zip(final Map<String, byte[]> entries) {
+	public static byte[] zip(final Map<String, Object> entries) {
 		if (entries == null ) {
 			throw new IllegalArgumentException("An 'entries' map must not be null");
 		}
@@ -84,12 +84,25 @@ public class Zipper {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	
 			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-				for (Map.Entry<String, byte[]> entry : entries.entrySet()) {
+				for (Map.Entry<String,Object> entry : entries.entrySet()) {
+					final Object value = entry.getValue();
+					byte[] bytes;
 					if (entry.getValue() != null) {
+						if (value instanceof byte[]) {
+							bytes = (byte[])value;
+						}
+						else if (value instanceof InputStream) {
+							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+						}
+						else {
+							throw new IllegalArgumentException(
+									"Only values of type byte[] or InputStream are supoorted!");
+						}
+						
 						final ZipEntry e = new ZipEntry(entry.getKey());
 						e.setMethod(ZipEntry.DEFLATED);
 						zos.putNextEntry(e);
-						zos.write(entry.getValue(), 0, entry.getValue().length);					
+						zos.write(bytes, 0, bytes.length);
 						zos.closeEntry();
 					}
 				}

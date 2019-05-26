@@ -929,7 +929,10 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/zip & entries)")		
-					.doc("Creates a zip containing the entries. An entry is given by a name and data. Returns the zip as bytebuf.")
+					.doc(
+						"Creates a zip containing the entries. An entry is given by a " +
+						"name and data. data maybe a bytebuf or an InputStream. " +
+						"Returns the zip as bytebuf.")
 					.examples(
 						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8))",
 						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8) \n" +
@@ -950,11 +953,24 @@ public class IOFunctions {
 					}
 					
 					int idx = 0;
-					final LinkedHashMap<String, byte[]> map = new LinkedHashMap<>();
+					final LinkedHashMap<String,Object> map = new LinkedHashMap<>();
 					
 					while (idx < args.size()) {
 						final String name = Coerce.toVncString(args.nth(idx++)).getValue();
-						final byte[] data = Coerce.toVncByteBuffer(args.nth(idx++)).getValue().array();
+						
+						final VncVal dataVal = args.nth(idx++);
+						Object data = null;
+						if (Types.isVncByteBuffer(dataVal)) {
+							data = ((VncByteBuffer)dataVal).getValue().array();
+						}
+						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
+							data = (InputStream)((VncJavaObject)dataVal).getDelegate();
+						}
+						else {
+							throw new VncException(String.format(
+									"Function 'io/zip' does not allow %s as f",
+									Types.getType(dataVal)));
+						}
 					
 						if (map.containsKey(name)) {
 							throw new VncException(String.format(
