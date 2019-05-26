@@ -928,7 +928,7 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/zip buf entry-name)")		
-					.doc("Zips a bytebuf with the given entry name.")
+					.doc("Zips a bytebuf with the given entry name. Returns the zip as bytebuf.")
 					.examples("(io/zip (bytebuf-from-string \"abcdef\" :utf-8) \"x\")")
 					.build()
 		) {	
@@ -964,8 +964,10 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/unzip buf entry-name)")		
-					.doc("Unzips an entry returning its data as a bytebuf.")
+					.arglists("(io/unzip zip entry-name)")		
+					.doc(
+						"Unzips an entry from zip (a bytebuf) returning the entry's " +
+						"data as a bytebuf.")
 					.examples(
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/zip \"test\") \n" +
@@ -1005,8 +1007,10 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/unzip-first buf)")		
-					.doc("Unzips the first entry of the zip returning its data as a bytebuf.")
+					.arglists("(io/unzip-first zip)")		
+					.doc(
+						"Unzips the first entry of the zip (a bytebuf) returning " +
+						"its data as a bytebuf.")
 					.examples(
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/zip \"test\") \n" +
@@ -1045,8 +1049,10 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/unzip-nth buf)")		
-					.doc("Unzips the nth (0-based) entry of the zip returning its data as a bytebuf.")
+					.arglists("(io/unzip-nth zip)")		
+					.doc(
+						"Unzips the nth (0-based) entry of the zip (a bytebuf) " +
+						"returning its data as a bytebuf.")
 					.examples(
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/zip \"test\") \n" +
@@ -1086,10 +1092,10 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/unzip-all buf)")		
+					.arglists("(io/unzip-all zip)")		
 					.doc(
-						"Unzips all entries of the zip returning a map the entry name as key " +
-						"and the entry data as bytebuf value.")
+						"Unzips all entries of the zip (a bytebuf) returning a map with " +
+						"the entry names as key and the entry data as bytebuf values.")
 					.examples(
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/zip \"test\") \n" +
