@@ -956,6 +956,11 @@ public class IOFunctions {
 						final String name = Coerce.toVncString(args.nth(idx++)).getValue();
 						final byte[] data = Coerce.toVncByteBuffer(args.nth(idx++)).getValue().array();
 					
+						if (map.containsKey(name)) {
+							throw new VncException(String.format(
+									"Function 'io/zip' duplicate entry name %s", name));
+						}
+						
 						map.put(name, data);
 					}
 					
