@@ -388,11 +388,9 @@ public class IOFunctionsTest {
 	public void test_io_zip() throws Exception {
 		final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval("(io/unzip (io/zip nil \"test\") \"test\")"));	
 		assertEquals("abcdef", new String(
 									((ByteBuffer)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-											"    (io/zip \"test\") \n" +
+											"(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
 											"    (io/unzip \"test\"))")).array(), 
 									"utf-8"));	
 	}
@@ -401,11 +399,9 @@ public class IOFunctionsTest {
 	public void test_io_unzip_first() throws Exception {
 		final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval("(io/unzip-first (io/zip nil \"test\"))"));	
 		assertEquals("abcdef", new String(
 									((ByteBuffer)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-											"    (io/zip \"test\") \n" +
+											"(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
 											"    (io/unzip-first))")).array(), 
 									"utf-8"));	
 	}
@@ -414,17 +410,18 @@ public class IOFunctionsTest {
 	public void test_io_unzip_nth() throws Exception {
 		final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval("(io/unzip-nth (io/zip nil \"test\") 0)"));	
-		assertEquals("abcdef", new String(
+		assertEquals("abc", new String(
 									((ByteBuffer)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-											"    (io/zip \"test\") \n" +
+											"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
 											"    (io/unzip-nth 0))")).array(), 
 									"utf-8"));	
-		assertEquals(null, venice.eval(
-										"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-										"    (io/zip \"test\") \n" +
-										"    (io/unzip-nth 1))"));	
+
+		assertEquals("def", new String(
+									((ByteBuffer)venice.eval(
+											"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+											"            \"b\" (bytebuf-from-string \"def\" :utf-8)) \n" +
+											"    (io/unzip-nth 1))")).array(), 
+									"utf-8"));	
 	}
 
 	@SuppressWarnings("unchecked")
@@ -432,15 +429,16 @@ public class IOFunctionsTest {
 	public void test_io_unzip_all() throws Exception {
 		final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval("(io/unzip-all (io/zip nil \"test\") 0)"));	
-		
 		Map<String,ByteBuffer> data = (Map<String,ByteBuffer>)venice.eval(
-											"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-											"    (io/zip \"test\") \n" +
-											"    (io/unzip-all))");
+										"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+										"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+										"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+										"    (io/unzip-all))"); 
 		
-		assertEquals(1, data.size());
-		assertEquals("abcdef", new String(data.get("test").array(), "utf-8"));	
+		assertEquals(3, data.size());
+		assertEquals("abc", new String(data.get("a").array(), "utf-8"));	
+		assertEquals("def", new String(data.get("b").array(), "utf-8"));	
+		assertEquals("ghi", new String(data.get("c").array(), "utf-8"));	
 	}
 
 	@Test

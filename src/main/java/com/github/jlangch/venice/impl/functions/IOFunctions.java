@@ -46,6 +46,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -927,28 +928,38 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/zip buf entry-name)")		
-					.doc("Zips a bytebuf with the given entry name. Returns the zip as bytebuf.")
-					.examples("(io/zip (bytebuf-from-string \"abcdef\" :utf-8) \"x\")")
+					.arglists("(io/zip & entries)")		
+					.doc("Creates a zip containing the entries. An entry is given by a name and data. Returns the zip as bytebuf.")
+					.examples(
+						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8))",
+						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8) \n" +
+						"        \"b\" (bytebuf-from-string \"def\" :utf-8) \n" +
+						"        \"c\" (bytebuf-from-string \"ghi\" :utf-8))  ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip", args, 2);
 	
-				final VncVal buf = args.first();
-				final String entryName = Coerce.toVncString(args.second()).getValue();
+				if (args.isEmpty()) {
+					return Nil;
+				}
+				
 				try {
-					if (buf == Nil) {
-						return Nil;
+					if (args.size() % 2 == 1) {
+						throw new VncException("Function 'io/zip' requires an even number of arguments");
 					}
-					else if (Types.isVncByteBuffer(buf) ) {
-						return new VncByteBuffer(Zipper.zip(((VncByteBuffer)buf).getValue().array(), entryName));
+					
+					int idx = 0;
+					final LinkedHashMap<String, byte[]> map = new LinkedHashMap<>();
+					
+					while (idx < args.size()) {
+						final String name = Coerce.toVncString(args.nth(idx++)).getValue();
+						final byte[] data = Coerce.toVncByteBuffer(args.nth(idx++)).getValue().array();
+					
+						map.put(name, data);
 					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/zip' does not allow %s as f",
-								Types.getType(buf)));
-					}
+					
+					return new VncByteBuffer(Zipper.zip(map));
 				} 
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -969,13 +980,12 @@ public class IOFunctions {
 						"Unzips an entry from zip (a bytebuf) returning the entry's " +
 						"data as a bytebuf.")
 					.examples(
-						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-						"    (io/zip \"test\") \n" +
+						"(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
 						"    (io/unzip \"test\"))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/unzip", args, 2);
+				assertArity("io/unzip", args, 2);
 	
 				final VncVal buf = args.first();
 				final String entryName = Coerce.toVncString(args.second()).getValue();
@@ -1012,13 +1022,13 @@ public class IOFunctions {
 						"Unzips the first entry of the zip (a bytebuf) returning " +
 						"its data as a bytebuf.")
 					.examples(
-						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-						"    (io/zip \"test\") \n" +
+						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b\" (bytebuf-from-string \"def\" :utf-8)) \n" +
 						"    (io/unzip-first))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/unzip-first", args, 1);
+				assertArity("io/unzip-first", args, 1);
 	
 				final VncVal buf = args.first();
 				try {
@@ -1049,18 +1059,19 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/unzip-nth zip)")		
+					.arglists("(io/unzip-nth zip n)")		
 					.doc(
 						"Unzips the nth (0-based) entry of the zip (a bytebuf) " +
 						"returning its data as a bytebuf.")
 					.examples(
-						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-						"    (io/zip \"test\") \n" +
-						"    (io/unzip-nth 0))")
+						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+						"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+						"    (io/unzip-nth 1))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/unzip-nth", args, 2);
+				assertArity("io/unzip-nth", args, 2);
 	
 				final VncVal buf = args.first();
 				final int entryIdx = Coerce.toVncLong(args.second()).getIntValue();
@@ -1097,13 +1108,14 @@ public class IOFunctions {
 						"Unzips all entries of the zip (a bytebuf) returning a map with " +
 						"the entry names as key and the entry data as bytebuf values.")
 					.examples(
-						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
-						"    (io/zip \"test\") \n" +
+						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+						"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-all))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/unzip-all", args, 1);
+				assertArity("io/unzip-all", args, 1);
 	
 				final VncVal buf = args.first();
 				try {
@@ -1151,7 +1163,7 @@ public class IOFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/gzip", args, 1);
+				assertArity("io/gzip", args, 1);
 	
 				final VncVal buf = args.first();
 				try {
@@ -1198,7 +1210,7 @@ public class IOFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/gzip-to-stream", args, 2);
+				assertArity("io/gzip-to-stream", args, 2);
 	
 				final VncVal buf = args.first();
 				final OutputStream os = (OutputStream)Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -1243,7 +1255,7 @@ public class IOFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/ungzip", args, 1);
+				assertArity("io/ungzip", args, 1);
 	
 				final VncVal buf = args.first();
 				try {
@@ -1286,7 +1298,7 @@ public class IOFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/ungzip-to-stream", args, 1);
+				assertArity("io/ungzip-to-stream", args, 1);
 	
 				final VncVal buf = args.first();
 				try {
