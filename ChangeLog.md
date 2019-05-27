@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
+## [1.5.7] - 2019-05-xx
+
+### Added
+
+- ...
+
+### Changed
+
+- ... 
+
+
+
 ## [1.5.6] - 2019-05-27
 
 ### Added
