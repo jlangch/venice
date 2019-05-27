@@ -37,8 +37,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.lang3.StringUtils;
-
 
 /**
  * A helper to compress/uncompress binary data blocks using the zip/gzip
@@ -50,7 +48,7 @@ public class Zipper {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
-		if (StringUtils.isEmpty(entryName)) {
+		if (StringUtil.isEmpty(entryName)) {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
 
@@ -121,7 +119,7 @@ public class Zipper {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
-		if (StringUtils.isEmpty(entryName)) {
+		if (StringUtil.isEmpty(entryName)) {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
 
@@ -191,7 +189,7 @@ public class Zipper {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
-		if (StringUtils.isEmpty(entryName)) {
+		if (StringUtil.isEmpty(entryName)) {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
 
