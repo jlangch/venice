@@ -1000,8 +1000,7 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/zip-size zip)")		
-					.doc(
-						"Returns the number of entries in the zip.")
+					.doc("Returns the number of entries in the zip.")
 					.examples(
 						"(io/zip-size (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)))")
 					.build()
@@ -1025,7 +1024,6 @@ public class IOFunctions {
 							if (entry == null) {
 								break;
 							}
-							
 							count++;
 						}
 						
