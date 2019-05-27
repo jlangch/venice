@@ -914,6 +914,7 @@ public class DocGenerator {
 		zip.addItem(getDocItem("io/unzip-first"));
 		zip.addItem(getDocItem("io/unzip-nth"));
 		zip.addItem(getDocItem("io/unzip-all"));
+		zip.addItem(getDocItem("io/zip?"));
 
 		final DocSection gzip = new DocSection("gzip");
 		all.addSection(gzip);
@@ -921,6 +922,7 @@ public class DocGenerator {
 		gzip.addItem(getDocItem("io/gzip-to-stream"));
 		gzip.addItem(getDocItem("io/ungzip"));
 		gzip.addItem(getDocItem("io/ungzip-to-stream"));
+		gzip.addItem(getDocItem("io/gzip?"));
 
 		final DocSection other = new DocSection("other");
 		all.addSection(other);

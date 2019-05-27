@@ -1391,6 +1391,92 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_zip_Q = 
+		new VncFunction(
+				"io/zip?", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/zip? f)")		
+					.doc("Returns true if f is a zipped. f may be a bytebuf or an InputStream")
+					.examples(
+						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) " +
+						"    (io/zip?))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/zip?", args, 1);
+	
+				if (args.isEmpty()) {
+					return False;
+				}
+				
+				try {
+					final VncVal zip = args.first();
+					
+					if (Types.isVncByteBuffer(zip)) {
+						return Zipper.isZipFile(((VncByteBuffer)zip).getValue().array()) ? True : False;
+					}
+					else if (Types.isVncJavaObject(zip, InputStream.class)) {
+						return Zipper.isZipFile((InputStream)((VncJavaObject)zip).getDelegate()) ? True : False;
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/zip?' does not allow %s as f",
+								Types.getType(zip)));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_gzip_Q = 
+		new VncFunction(
+				"io/gzip?", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/gzip? f)")		
+					.doc("Returns true if f is gzipped. f may be a bytebuf or an InputStream")
+					.examples(
+						"(-> (io/gzip (bytebuf-from-string \"abc\" :utf-8)) " +
+						"    (io/gzip?))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/gzip?", args, 1);
+	
+				if (args.isEmpty()) {
+					return False;
+				}
+				
+				try {
+					final VncVal zip = args.first();
+					
+					if (Types.isVncByteBuffer(zip)) {
+						return Zipper.isGZipFile(((VncByteBuffer)zip).getValue().array()) ? True : False;
+					}
+					else if (Types.isVncJavaObject(zip, InputStream.class)) {
+						return Zipper.isGZipFile((InputStream)((VncJavaObject)zip).getDelegate()) ? True : False;
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/gzip?' does not allow %s as f",
+								Types.getType(zip)));
+					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_download = 
 		new VncFunction(
 				"io/download", 
@@ -1938,12 +2024,14 @@ public class IOFunctions {
 					.put("io/default-charset",				io_default_charset)
 					.put("io/load-classpath-resource",		io_load_classpath_resource)
 					.put("io/zip",							io_zip)
+					.put("io/zip?",							io_zip_Q)
 					.put("io/unzip",						io_unzip)
 					.put("io/unzip-first",					io_unzip_first)
 					.put("io/unzip-nth",					io_unzip_nth)
 					.put("io/unzip-all",					io_unzip_all)
 					.put("io/zip-size",						io_zip_size)
 					.put("io/gzip",							io_gzip)
+					.put("io/gzip?",						io_gzip_Q)
 					.put("io/gzip-to-stream",				io_gzip_to_stream)
 					.put("io/ungzip",						io_ungzip)
 					.put("io/ungzip-to-stream",				io_ungzip_to_stream)

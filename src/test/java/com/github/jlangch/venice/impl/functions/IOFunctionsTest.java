@@ -396,6 +396,21 @@ public class IOFunctionsTest {
 	}
 
 	@Test
+	public void test_io_zip_Q() throws Exception {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval(
+								"(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
+								"    (io/zip? ))"));	
+
+		assertFalse((Boolean)venice.eval(
+								"(-> (io/gzip (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
+								"    (io/zip? ))"));	
+		
+		assertFalse((Boolean)venice.eval("(io/zip? (bytebuf [1 2 3 4]))"));	
+	}
+
+	@Test
 	public void test_io_zip_size() throws Exception {
 		final Venice venice = new Venice();
 
@@ -463,6 +478,21 @@ public class IOFunctionsTest {
 		assertEquals("abcdef", new String(
 									((ByteBuffer)venice.eval("(io/ungzip (io/gzip (bytebuf-from-string \"abcdef\" :utf-8)))")).array(), 
 									"utf-8"));	
+	}
+
+	@Test
+	public void test_io_gzip_Q() throws Exception {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval(
+								"(-> (io/gzip (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
+								"    (io/gzip? ))"));	
+
+		assertFalse((Boolean)venice.eval(
+								"(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
+								"    (io/gzip? ))"));	
+		
+		assertFalse((Boolean)venice.eval("(io/gzip? (bytebuf [1 2 3 4]))"));	
 	}
 
 	@Test
