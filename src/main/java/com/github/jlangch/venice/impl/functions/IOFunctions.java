@@ -46,7 +46,6 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -934,7 +933,8 @@ public class IOFunctions {
 					.arglists("(io/zip & entries)")		
 					.doc(
 						"Creates a zip containing the entries. An entry is given by a " +
-						"name and data. data maybe a bytebuf or an InputStream. " +
+						"name and data. data maybe a bytebuf, a file, a string (file path) " +
+						"or an InputStream. " +
 						"Returns the zip as bytebuf.")
 					.examples(
 						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8))",
@@ -973,6 +973,12 @@ public class IOFunctions {
 						}
 						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
 							data = (InputStream)((VncJavaObject)dataVal).getDelegate();
+						}
+						else if (Types.isVncJavaObject(dataVal, File.class)) {
+							data = (File)((VncJavaObject)dataVal).getDelegate();
+						}
+						else if (Types.isVncString(dataVal)) {
+							data = new File(Coerce.toVncString(dataVal).getValue());
 						}
 						else {
 							throw new VncException(String.format(
@@ -1211,6 +1217,138 @@ public class IOFunctions {
 								"Function 'io/unzip-all' does not allow %s as f",
 								Types.getType(buf)));
 					}
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_zip_file = 
+		new VncFunction(
+				"io/zip-file", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/zip-file src-file dest)")		
+					.doc("Zips a file or directory to a file, a string (file path), or an OutputStream.")
+					.examples("(io/zip-file (io/file \"test-dir\") (io/file \"test-file.zip\"))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/zip-file", args, 2);
+	
+				final File sourceFile = Coerce.toVncJavaObject(args.first(), File.class);
+				final VncVal dest = args.second();
+				
+				try {
+					if (Types.isVncJavaObject(dest, File.class) ) {
+						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, File.class));
+					}
+					else if (Types.isVncJavaObject(dest, OutputStream.class) ) {
+						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, OutputStream.class));
+					}
+					else if (Types.isVncString(dest)) {
+						Zipper.zipFileOrDir(sourceFile, null, new File(Coerce.toVncString(dest).getValue()));
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/zip-file' does not allow %s as dest",
+								Types.getType(dest)));
+					}
+					
+					return Nil;
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_zip_list = 
+		new VncFunction(
+				"io/zip-list", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/zip-list f)")		
+					.doc("List the content of a the zip f. f may be a file, a string (file path), or an InputStream")
+					.examples("(io/zip-list (io/file \"test-file.zip\"))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/zip-list", args, 1);
+				
+				try {
+					final VncVal zip = args.first();
+
+					if (Types.isVncJavaObject(zip, File.class) ) {
+						Zipper.listZip(Coerce.toVncJavaObject(zip, File.class), System.out);
+					}
+					else if (Types.isVncJavaObject(zip, InputStream.class) ) {
+						Zipper.listZip(Coerce.toVncJavaObject(zip, InputStream.class), System.out);
+					}
+					else if (Types.isVncString(zip)) {
+						Zipper.listZip(new File(Coerce.toVncString(zip).getValue()), System.out);
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/zip-list' does not allow %s as f",
+								Types.getType(zip)));
+					}
+				
+					return Nil;
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_unzip_to_dir = 
+		new VncFunction(
+				"io/unzip-to-dir", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/unzip-to-dir f dir)")		
+					.doc("Unzips f to a directory. f may be a file, a bytebuf or an InputStream.")
+					.examples(
+						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+						"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+						"    (io/unzip-to-dir (io/file \".\"))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("io/unzip-to-dir", args, 2);
+	
+				final VncVal f = args.first();
+				final File dir = Coerce.toVncJavaObject(args.second(), File.class);
+				
+				try {
+					if (Types.isVncByteBuffer(f) ) {
+						Zipper.unzipToDir(((VncByteBuffer)f).getValue().array(), dir);
+					}
+					else if (Types.isVncJavaObject(f, File.class) ) {
+						Zipper.unzipToDir(Coerce.toVncJavaObject(f, File.class), dir);
+					}
+					else if (Types.isVncJavaObject(f, InputStream.class) ) {
+						Zipper.unzipToDir(Coerce.toVncJavaObject(f, InputStream.class), dir);
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/unzip-to-dir' does not allow %s as f",
+								Types.getType(f)));
+					}
+					
+					return Nil;
 				} 
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -1898,9 +2036,33 @@ public class IOFunctions {
 				final String prefix = Coerce.toVncString(args.first()).getValue();
 				final String suffix = Coerce.toVncString(args.second()).getValue();
 				try {
-					final String path = File.createTempFile(prefix, suffix).getPath();
-					tempFiles.add(path);
-					return new VncString(path);
+					return new VncString(Files.createTempFile(prefix, suffix).normalize().toString());
+				}
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_temp_dir = 
+		new VncFunction(
+				"io/temp-dir", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/temp-dir prefix)")		
+					.doc("Creates a temp directory with prefix.")
+					.examples("(io/temp-dir \"test-\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/temp-dir", args, 1);
+	
+				final String prefix = Coerce.toVncString(args.first()).getValue();
+				try {
+					return new VncString(Files.createTempDirectory(prefix).normalize().toString());
 				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -1985,6 +2147,7 @@ public class IOFunctions {
 	}
 	
 	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -2007,6 +2170,7 @@ public class IOFunctions {
 					.put("io/mkdir",						io_mkdir)
 					.put("io/mkdirs",						io_mkdirs)
 					.put("io/temp-file",					io_temp_file)
+					.put("io/temp-dir",						io_temp_dir)
 					.put("io/tmp-dir",						io_tmp_dir)
 					.put("io/user-dir",						io_user_dir)
 					.put("io/slurp",						io_slurp)
@@ -2024,11 +2188,14 @@ public class IOFunctions {
 					.put("io/default-charset",				io_default_charset)
 					.put("io/load-classpath-resource",		io_load_classpath_resource)
 					.put("io/zip",							io_zip)
+					.put("io/zip-file",						io_zip_file)
+					.put("io/zip-list",						io_zip_list)
 					.put("io/zip?",							io_zip_Q)
 					.put("io/unzip",						io_unzip)
 					.put("io/unzip-first",					io_unzip_first)
 					.put("io/unzip-nth",					io_unzip_nth)
 					.put("io/unzip-all",					io_unzip_all)
+					.put("io/unzip-to-dir",					io_unzip_to_dir)
 					.put("io/zip-size",						io_zip_size)
 					.put("io/gzip",							io_gzip)
 					.put("io/gzip?",						io_gzip_Q)
@@ -2036,7 +2203,4 @@ public class IOFunctions {
 					.put("io/ungzip",						io_ungzip)
 					.put("io/ungzip-to-stream",				io_ungzip_to_stream)
 					.toMap();
-
-	
-	private static final HashSet<String> tempFiles = new HashSet<>();
 }

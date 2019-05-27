@@ -26,10 +26,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
+import java.nio.file.attribute.FileTime;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +50,8 @@ import java.util.zip.ZipOutputStream;
 /**
  * A helper to compress/uncompress binary data blocks using the zip/gzip
  * inflater/deflater.
+ * 
+ * <p> Use <pre>unzip -vl a.zip</pre> to list a zip
  */
 public class Zipper {
 
@@ -94,9 +102,14 @@ public class Zipper {
 					else if (value instanceof InputStream) {
 						bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
 					}
+					else if (value instanceof File) {
+						try (FileInputStream fis = new FileInputStream((File)value)) {
+							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+						}
+					}
 					else {
 						throw new IllegalArgumentException(
-								"Only values of type byte[] or InputStream are supoorted!");
+								"Only values of type byte[], File or InputStream are supported!");
 					}
 					
 					final ZipEntry e = new ZipEntry(entry.getKey());
@@ -302,7 +315,11 @@ public class Zipper {
 		}
 	}
 
-	public static void zipFileOrDir(final File sourceFileOrDir, final File destZip) {
+	public static void zipFileOrDir(
+			final File sourceFileOrDir, 
+			final FilenameFilter filter,
+			final File destZip
+	) {
 		if (sourceFileOrDir == null) {
 			throw new IllegalArgumentException("A 'sourceFileOrDir' must not be null");
 		}
@@ -311,14 +328,18 @@ public class Zipper {
 		}
 
 		try (FileOutputStream fos = new FileOutputStream(destZip)) {
-			zipFileOrDir(sourceFileOrDir, fos);
+			zipFileOrDir(sourceFileOrDir, filter, fos);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
 
-	public static void zipFileOrDir(final File sourceFileOrDir, final OutputStream os) {
+	public static void zipFileOrDir(
+			final File sourceFileOrDir, 
+			final FilenameFilter filter, 
+			final OutputStream os
+	) {
 		if (sourceFileOrDir == null) {
 			throw new IllegalArgumentException("A 'sourceFileOrDir' must not be null");
 		}
@@ -327,9 +348,78 @@ public class Zipper {
 		}
 
 		try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
-			zipFile(sourceFileOrDir, sourceFileOrDir.getName(), zipOut);
+			zipFile(sourceFileOrDir, sourceFileOrDir.getName(), filter, zipOut);
 		}
 		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void listZip(final File zip, final PrintStream ps) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+
+		try (FileInputStream fis = new FileInputStream(zip)) {
+			listZip(fis, ps);
+		} 
+		catch (IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void listZip(final InputStream is, final PrintStream ps) {
+		if (is == null) {
+			throw new IllegalArgumentException("An 'is' must not be null");
+		}
+
+		final String format1 = "%10s  %6s  %10s  %3s%%  %16s  %8s  %s";
+		final String format2 = "%10s          %10s  %3s%%                              %d files";
+
+
+		try {
+			ps.println("    Length  Method       Size   Cmpr         Date/Time    CRC-32  Name");
+			ps.println("----------  ------  ----------  ----  ----------------  --------  ----");
+
+			long totCount = 0L;
+			long totLength = 0L;
+			long totSize = 0L;
+			
+			final ZipInputStream zis = new ZipInputStream(is);
+			
+			while(true) {
+				final ZipEntry entry = zis.getNextEntry();
+				if (entry == null) {
+					break;
+				}
+
+				final long length = entry.isDirectory() ? 0 : entry.getSize();
+				final long size = entry.isDirectory() ? 0 : entry.getCompressedSize();
+				final String crc = entry.getCrc() == -1 ? "-" : String.format("%08X", entry.getCrc() & 0xFFFFFFFF);
+				final long compression = size <= 0 || length <= 0 ? 0 : (size * 100L) / length;
+				final String method = entry.getMethod() == 0 ? "Stored" : "Defl:N";
+				final FileTime ftime = entry.getLastModifiedTime();
+				final String time = ftime == null
+											? "-"
+											: LocalDateTime
+												.ofInstant(ftime.toInstant(), ZoneOffset.UTC)
+												.format(formatter);
+				totCount++;
+				totLength +=  Math.max(0, length);
+				totSize +=  Math.max(0, size);
+										
+				ps.println(String.format(format1, length, method, size, compression, time, crc, entry.getName()));
+
+				zis.closeEntry();
+			}
+			zis.close();
+
+			final long totCompression = totSize == 0 || totLength == 0 ? 0 : (totSize * 100L) / totLength;
+
+			ps.println("----------  ------  ----------  ----  ----------------  --------  ----");
+			ps.println(String.format(format2, totLength, totSize, totCompression, totCount));
+		} 
+		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
@@ -342,8 +432,8 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'dir' must not be null");
 		}
 
-		try {
-			unzipToDir(new FileInputStream(zip), destDir);
+		try (FileInputStream fis = new FileInputStream(zip)) {
+			unzipToDir(fis, destDir);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -378,10 +468,18 @@ public class Zipper {
 			final ZipInputStream zis = new ZipInputStream(zipIS);
 			ZipEntry zipEntry = zis.getNextEntry();
 			while (zipEntry != null) {
-				try (FileOutputStream fos = new FileOutputStream(newFile(destDir, zipEntry))) {
-					IOStreamUtil.copy(zis, fos);
-					zipEntry = zis.getNextEntry();
+				final File f = newFile(destDir, zipEntry);
+				if (zipEntry.isDirectory()) {
+					f.mkdirs();
 				}
+				else {
+					f.getParentFile().mkdirs();
+					try (FileOutputStream fos = new FileOutputStream(f)) {
+						IOStreamUtil.copy(zis, fos);
+					}
+				}
+				
+				zipEntry = zis.getNextEntry();
 			}
 				
 			zis.closeEntry();
@@ -548,7 +646,7 @@ public class Zipper {
 		return ByteBuffer.wrap(bytes).getShort() == GZIP_HEADER;
 	}
 	
-	public static List<String> listZipEntries(final byte[] binary) {
+	public static List<String> listZipEntryNames(final byte[] binary) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
@@ -575,6 +673,7 @@ public class Zipper {
 	private static void zipFile(
 			final File fileToZip, 
 			final String fileName, 
+			final FilenameFilter filter, 
 			final ZipOutputStream zipOut
 	) throws IOException {
 		if (fileToZip.isHidden()) {
@@ -593,7 +692,7 @@ public class Zipper {
 			
 			final File[] children = fileToZip.listFiles();
 			for (File childFile : children) {
-				zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+				zipFile(childFile, fileName + "/" + childFile.getName(), filter, zipOut);
 			}
 			
 			return;
@@ -616,11 +715,12 @@ public class Zipper {
     	if (!destFilePath.startsWith(destDirPath + File.separator)) {
     		throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
     	}
-         
+    	
     	return destFile;
     }
    
-    
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+  
 	public static final int ZIP_HEADER = 0x504b0304;
 	public static final short GZIP_HEADER = 0x1f8b;
 }

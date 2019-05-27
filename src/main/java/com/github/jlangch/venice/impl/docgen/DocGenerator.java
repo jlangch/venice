@@ -910,10 +910,12 @@ public class DocGenerator {
 		final DocSection zip = new DocSection("zip");
 		all.addSection(zip);
 		zip.addItem(getDocItem("io/zip"));
+		zip.addItem(getDocItem("io/zip-file", false, false));
 		zip.addItem(getDocItem("io/unzip"));
 		zip.addItem(getDocItem("io/unzip-first"));
 		zip.addItem(getDocItem("io/unzip-nth"));
 		zip.addItem(getDocItem("io/unzip-all"));
+		zip.addItem(getDocItem("io/unzip-to-dir", false, false));
 		zip.addItem(getDocItem("io/zip?"));
 
 		final DocSection gzip = new DocSection("gzip");
