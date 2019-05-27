@@ -371,4 +371,21 @@ public class Coerce {
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T toVncJavaObject(final VncVal val, final Class<T> type) {
+		if (val == null) {
+			return null;
+		}
+		else if (Types.isVncJavaObject(val, type)) {
+			return (T)((VncJavaObject)val).getDelegate();
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to java-object of type %s. %s", 
+					Types.getType(val),
+					type.getName(),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
 }
