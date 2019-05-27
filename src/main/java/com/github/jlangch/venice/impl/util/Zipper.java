@@ -23,6 +23,9 @@ package com.github.jlangch.venice.impl.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -78,36 +81,34 @@ public class Zipper {
 			throw new IllegalArgumentException("An 'entries' map must not be null");
 		}
 		
-		try {
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	
-			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-				for (Map.Entry<String,Object> entry : entries.entrySet()) {
-					final Object value = entry.getValue();
-					byte[] bytes;
-					if (entry.getValue() != null) {
-						if (value instanceof byte[]) {
-							bytes = (byte[])value;
-						}
-						else if (value instanceof InputStream) {
-							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
-						}
-						else {
-							throw new IllegalArgumentException(
-									"Only values of type byte[] or InputStream are supoorted!");
-						}
-						
-						final ZipEntry e = new ZipEntry(entry.getKey());
-						e.setMethod(ZipEntry.DEFLATED);
-						zos.putNextEntry(e);
-						zos.write(bytes, 0, bytes.length);
-						zos.closeEntry();
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+			for (Map.Entry<String,Object> entry : entries.entrySet()) {
+				final Object value = entry.getValue();
+				byte[] bytes;
+				if (entry.getValue() != null) {
+					if (value instanceof byte[]) {
+						bytes = (byte[])value;
 					}
+					else if (value instanceof InputStream) {
+						bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+					}
+					else {
+						throw new IllegalArgumentException(
+								"Only values of type byte[] or InputStream are supoorted!");
+					}
+					
+					final ZipEntry e = new ZipEntry(entry.getKey());
+					e.setMethod(ZipEntry.DEFLATED);
+					zos.putNextEntry(e);
+					zos.write(bytes, 0, bytes.length);
+					zos.closeEntry();
 				}
-				
-				zos.flush();
 			}
-	
+			
+			zos.flush();
+			
 			return baos.toByteArray();
 		}
 		catch(IOException ex) {
@@ -123,27 +124,26 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
 
-		try {
-			final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
+
+		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
 	
-			try (ZipInputStream zis = new ZipInputStream(bais)) {
-				while(true) {
-					final ZipEntry entry = zis.getNextEntry();
-					if (entry == null) {
-						break;
-					}
-					
-					final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
-
-					zis.closeEntry();
-
-					if (entryName.equals(entry.getName())) {
-						return data;
-					}					
+		try (ZipInputStream zis = new ZipInputStream(bais)) {
+			while(true) {
+				final ZipEntry entry = zis.getNextEntry();
+				if (entry == null) {
+					break;
 				}
 				
-				return null; // ZIP entry not found 
+				final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
+
+				zis.closeEntry();
+
+				if (entryName.equals(entry.getName())) {
+					return data;
+				}					
 			}
+			
+			return null; // ZIP entry not found 
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -155,30 +155,28 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 
-		try {
-			final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
-	
-			try (ZipInputStream zis = new ZipInputStream(bais)) {
-				int entryIdx = 0;
-				
-				while(true) {
-					final ZipEntry entry = zis.getNextEntry();
-					if (entry == null) {
-						break;
-					}
-					
-					final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
-					
-					if (entryIdx == nth) {
-						return data;
-					}
-					
-					zis.closeEntry();
-					entryIdx++;
+		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
+
+		try (ZipInputStream zis = new ZipInputStream(bais)) {
+			int entryIdx = 0;
+			
+			while(true) {
+				final ZipEntry entry = zis.getNextEntry();
+				if (entry == null) {
+					break;
 				}
 				
-				return null; // ZIP entry not found 
+				final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
+				
+				if (entryIdx == nth) {
+					return data;
+				}
+				
+				zis.closeEntry();
+				entryIdx++;
 			}
+			
+			return null; // ZIP entry not found 
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -253,31 +251,29 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 		
-		try {
-			final Map<String, byte[]> files = new HashMap<String, byte[]>();
-			
-			final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
-	
-			try (ZipInputStream zis = new ZipInputStream(bais)) {
-				while(true) {
-					final ZipEntry entry = zis.getNextEntry();
-					if (entry == null) {
-						break;
-					}
-					
-					final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
-					
-					if (!entry.isDirectory() || includeDirs) {
-						files.put(
-							entry.getName(), 
-							entry.isDirectory() ? null : data);
-					}
-					
-					zis.closeEntry();
+		final Map<String, byte[]> files = new HashMap<String, byte[]>();
+		
+		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
+
+		try (ZipInputStream zis = new ZipInputStream(bais)) {
+			while(true) {
+				final ZipEntry entry = zis.getNextEntry();
+				if (entry == null) {
+					break;
 				}
 				
-				return files;
+				final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
+				
+				if (!entry.isDirectory() || includeDirs) {
+					files.put(
+						entry.getName(), 
+						entry.isDirectory() ? null : data);
+				}
+				
+				zis.closeEntry();
 			}
+			
+			return files;
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -293,9 +289,7 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			try (GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
 				gzos.write(binary, 0, binary.length);
 				gzos.flush();
@@ -307,15 +301,103 @@ public class Zipper {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
+
+	public static void zipFileOrDir(final File sourceFileOrDir, final File destZip) {
+		if (sourceFileOrDir == null) {
+			throw new IllegalArgumentException("A 'sourceFileOrDir' must not be null");
+		}
+		if (destZip == null) {
+			throw new IllegalArgumentException("A 'destZip' must not be null");
+		}
+
+		try (FileOutputStream fos = new FileOutputStream(destZip)) {
+			zipFileOrDir(sourceFileOrDir, fos);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void zipFileOrDir(final File sourceFileOrDir, final OutputStream os) {
+		if (sourceFileOrDir == null) {
+			throw new IllegalArgumentException("A 'sourceFileOrDir' must not be null");
+		}
+		if (os == null) {
+			throw new IllegalArgumentException("An 'os' must not be null");
+		}
+
+		try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
+			zipFile(sourceFileOrDir, sourceFileOrDir.getName(), zipOut);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void unzipToDir(final File zip, final File destDir) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+		if (destDir == null) {
+			throw new IllegalArgumentException("A 'dir' must not be null");
+		}
+
+		try {
+			unzipToDir(new FileInputStream(zip), destDir);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
+	public static void unzipToDir(byte[] zipBinary, final File destDir) {
+		if (zipBinary == null) {
+			throw new IllegalArgumentException("A 'zipBinary' must not be null");
+		}
+		if (destDir == null) {
+			throw new IllegalArgumentException("A 'dir' must not be null");
+		}
+
+		try (InputStream is = new ByteArrayInputStream(zipBinary)) {
+			unzipToDir(is, destDir);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
+	public static void unzipToDir(final InputStream zipIS, final File destDir) {
+		if (zipIS == null) {
+			throw new IllegalArgumentException("A 'zipIS' must not be null");
+		}
+		if (destDir == null) {
+			throw new IllegalArgumentException("A 'dir' must not be null");
+		}
+
+		try {
+			final ZipInputStream zis = new ZipInputStream(zipIS);
+			ZipEntry zipEntry = zis.getNextEntry();
+			while (zipEntry != null) {
+				try (FileOutputStream fos = new FileOutputStream(newFile(destDir, zipEntry))) {
+					IOStreamUtil.copy(zis, fos);
+					zipEntry = zis.getNextEntry();
+				}
+			}
+				
+			zis.closeEntry();
+			zis.close();
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
 	
 	public static byte[] gzip(final InputStream is) {
 		if (is == null) {
 			throw new IllegalArgumentException("An 'is' must not be null");
 		}
 
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {	
 			try (GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
 				IOStreamUtil.copy(is, gzos);
 				gzos.flush();
@@ -336,11 +418,9 @@ public class Zipper {
 			throw new IllegalArgumentException("An 'os' must not be null");
 		}
 
-		try {
-			try (GZIPOutputStream gzos = new GZIPOutputStream(os)) {
-				gzos.write(binary, 0, binary.length);
-				gzos.flush();
-			}
+		try (GZIPOutputStream gzos = new GZIPOutputStream(os)) {
+			gzos.write(binary, 0, binary.length);
+			gzos.flush();
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -355,11 +435,9 @@ public class Zipper {
 			throw new IllegalArgumentException("An 'os' must not be null");
 		}
 
-		try {
-			try (GZIPOutputStream gzos = new GZIPOutputStream(os)) {
-				IOStreamUtil.copy(is, gzos);
-				gzos.flush();
-			}
+		try (GZIPOutputStream gzos = new GZIPOutputStream(os)) {
+			IOStreamUtil.copy(is, gzos);
+			gzos.flush();
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -373,10 +451,8 @@ public class Zipper {
 
 		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
 
-		try {
-			try (GZIPInputStream gzis = new GZIPInputStream(bais)) {
-				return IOStreamUtil.copyIStoByteArray(gzis);
-			}
+		try (GZIPInputStream gzis = new GZIPInputStream(bais)) {
+			return IOStreamUtil.copyIStoByteArray(gzis);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -388,10 +464,8 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'inputStream' must not be null");
 		}
 
-		try {
-			try (GZIPInputStream gzis = new GZIPInputStream(inputStream)) {
-				return IOStreamUtil.copyIStoByteArray(gzis);
-			}
+		try (GZIPInputStream gzis = new GZIPInputStream(inputStream)) {
+			return IOStreamUtil.copyIStoByteArray(gzis);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -479,28 +553,74 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 	
-		try {
-			final List<String> entries = new ArrayList<>();
-			
-			try(ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(binary))) {		
-				while(true) {
-					final ZipEntry entry = zis.getNextEntry();
-					if (entry == null) {
-						break;
-					}
-					
-					entries.add(entry.getName());	
-					zis.closeEntry();
+		final List<String> entries = new ArrayList<>();
+		
+		try(ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(binary))) {		
+			while(true) {
+				final ZipEntry entry = zis.getNextEntry();
+				if (entry == null) {
+					break;
 				}
-				return entries;
+				
+				entries.add(entry.getName());	
+				zis.closeEntry();
 			}
+			return entries;
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
+
+	private static void zipFile(
+			final File fileToZip, 
+			final String fileName, 
+			final ZipOutputStream zipOut
+	) throws IOException {
+		if (fileToZip.isHidden()) {
+			return;
+		}
+		
+		if (fileToZip.isDirectory()) {
+			if (fileName.endsWith("/")) {
+				zipOut.putNextEntry(new ZipEntry(fileName));
+				zipOut.closeEntry();
+			} 
+			else {
+				zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+				zipOut.closeEntry();
+			}
+			
+			final File[] children = fileToZip.listFiles();
+			for (File childFile : children) {
+				zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+			}
+			
+			return;
+		}
+		
+		try (FileInputStream fis = new FileInputStream(fileToZip)) {
+			final ZipEntry zipEntry = new ZipEntry(fileName);
+			zipOut.putNextEntry(zipEntry);
+		
+			IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);		
+		}
+    }
 	
-	
+    private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+    	final File destFile = new File(destinationDir, zipEntry.getName());
+         
+    	final String destDirPath = destinationDir.getCanonicalPath();
+    	final String destFilePath = destFile.getCanonicalPath();
+         
+    	if (!destFilePath.startsWith(destDirPath + File.separator)) {
+    		throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+    	}
+         
+    	return destFile;
+    }
+   
+    
 	public static final int ZIP_HEADER = 0x504b0304;
 	public static final short GZIP_HEADER = 0x1f8b;
 }
