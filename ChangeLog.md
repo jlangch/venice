@@ -23,10 +23,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - JLine3 lib to actual version 3.11.0
 - to Gradle 5.4.1
 
-### Fixed
-
-- ...
-
 
 
 ## [1.5.5] - 2019-05-23
