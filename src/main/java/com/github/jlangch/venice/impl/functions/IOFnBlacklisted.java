@@ -86,6 +86,7 @@ public class IOFnBlacklisted {
 								"io/user-dir",
 								"io/load-classpath-resource",
 								
+								// I/O zip
 								"io/zip",
 								"io/zip-append",
 								"io/zip-file",
