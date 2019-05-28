@@ -229,6 +229,9 @@ public class Zipper {
 								}
 							}
 							
+							// allow replace
+							Files.deleteIfExists(nf);
+							
 							try (OutputStream os = Files.newOutputStream(nf)) {
 								os.write(entryBytes);
 								os.flush();
