@@ -54,10 +54,10 @@ Map JSON object keys to keywords
 Map JSON object values to local-date-time
 
 ```clojure
-(json/read-str """{"a": "2018-08-01T10:15:30"}""" 
+(json/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
                :key-fn keyword 
-               :value-fn (fn [k v] (time/local-date-time v))))
-;;=> {:a 2018-08-01T10:15:30}
+               :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v)))
+;;=> {:a 2018-08-01T10:15:30 :b 100}
 ```
 
 
