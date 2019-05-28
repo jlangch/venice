@@ -1281,7 +1281,9 @@ public class IOFunctions {
 						"or an InputStream. \n" +
 						"Options: \n" +
 						"  :verbose true/false - e.g :verbose true, defaults to false")
-					.examples("(io/zip-list (io/file \"test-file.zip\"))")
+					.examples(
+						"(io/zip-list \"test-file.zip\")",
+						"(io/zip-list \"test-file.zip\" :verbose true)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
