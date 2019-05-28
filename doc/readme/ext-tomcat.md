@@ -1,6 +1,7 @@
 # Apache Tomcat
 
-The Apache Tomcat extension module provides starting an embedded Tomcat server and running servlets.
+The Apache Tomcat extension module provides functions to start an embedded 
+Tomcat server and running servlets.
 
 Dependencies:
 
@@ -11,7 +12,7 @@ To simplify things there is a
 [Ring style WEB App module](ext-ring.md) available.
  
  
-## Start Tomcat with the built-in 'HelloWorld' demo 
+## Start Tomcat from the REPL with the built-in 'HelloWorld' demo 
 
 Start a REPL:
 
