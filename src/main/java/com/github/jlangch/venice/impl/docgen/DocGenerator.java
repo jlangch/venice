@@ -909,8 +909,9 @@ public class DocGenerator {
 
 		final DocSection zip = new DocSection("zip");
 		all.addSection(zip);
-		zip.addItem(getDocItem("io/zip"));
+		zip.addItem(getDocItem("io/zip", false, false));
 		zip.addItem(getDocItem("io/zip-file", false, false));
+		zip.addItem(getDocItem("io/zip-list", false, false));
 		zip.addItem(getDocItem("io/unzip"));
 		zip.addItem(getDocItem("io/unzip-first"));
 		zip.addItem(getDocItem("io/unzip-nth"));

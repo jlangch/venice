@@ -933,10 +933,28 @@ public class IOFunctions {
 						"name and data. The entry data maybe a bytebuf, a file, a string (file path) " +
 						"or an InputStream. Returns the zip as bytebuf.")
 					.examples(
-						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8))",
-						"(io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8) \n" +
-						"        \"b\" (bytebuf-from-string \"def\" :utf-8) \n" +
-						"        \"c\" (bytebuf-from-string \"ghi\" :utf-8))  ")
+						"; single entry                                                   \n" +
+						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8))     \n" +
+						"     (io/spit \"test.zip\"))                                       ",
+						
+						"; multiple entries                                               \n" +
+						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
+						"             \"b.txt\" (bytebuf-from-string \"def\" :utf-8)      \n" +
+						"             \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8))     \n" +
+						"     (io/spit \"test.zip\"))                                       ",
+						
+						"; multiple entries with subdirectories                           \n" +
+						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
+						"             \"x/b.txt\" (bytebuf-from-string \"def\" :utf-8)    \n" +
+						"             \"x/y/c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+						"     (io/spit \"test.zip\"))                                       ",
+					
+						"; multiple entries with subdirectories and an empty directory    \n" +
+						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
+						"             \"x/b.txt\" (bytebuf-from-string \"def\" :utf-8)    \n" +
+						"             \"x/y/c.txt\" (bytebuf-from-string \"ghi\" :utf-8)  \n" +
+						"             \"x/y/z/\" nil)                                     \n" +
+						"     (io/spit \"test.zip\"))                                       ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -963,8 +981,11 @@ public class IOFunctions {
 						}
 
 						final VncVal dataVal = args.nth(idx++);
-						Object data = null;
-						if (Types.isVncByteBuffer(dataVal)) {
+						Object data;
+						if (dataVal == Nil) {
+							data = new byte[0];
+						}
+						else if (Types.isVncByteBuffer(dataVal)) {
 							data = ((VncByteBuffer)dataVal).getValue().array();
 						}
 						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
@@ -1378,7 +1399,8 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/zip-file src-file dest)")		
 					.doc("Zips a file or directory to a file, a string (file path), or an OutputStream.")
-					.examples("(io/zip-file (io/file \"test-dir\") (io/file \"test-file.zip\"))")
+					.examples(
+						"(io/zip-file \"test-dir\" \"test.zip\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {

@@ -67,16 +67,35 @@ public class Zipper {
 		if (StringUtil.isEmpty(entryName)) {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
+		if ("/".equals(entryName)) {
+			throw new IllegalArgumentException("A 'entryName' must not be \"/\"");
+		}
 
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-				final ZipEntry entry = new ZipEntry(entryName);
+				final String name = entryName.startsWith("/") ? entryName.substring(1) : entryName;
 				
-				zos.putNextEntry(entry);
-				zos.write(binary);
-				zos.closeEntry();
+				if (name.endsWith("/")) {
+					// directory
+					final ZipEntry e = new ZipEntry(name);
+					e.setMethod(ZipEntry.STORED);
+					e.setSize(0);
+					e.setCrc(0);
+					
+					zos.putNextEntry(e);
+					zos.closeEntry();
+				}
+				else {
+					// file
+					final ZipEntry e = new ZipEntry(name);
+					e.setMethod(ZipEntry.DEFLATED);
+					
+					zos.putNextEntry(e);
+					zos.write(binary);
+					zos.closeEntry();
+				}
 				
-				//zos.finish();
+				zos.finish();
 				zos.flush();
 			}
 	
@@ -96,29 +115,54 @@ public class Zipper {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
 				for (Map.Entry<String,Object> entry : entries.entrySet()) {
-					final Object value = entry.getValue();
-					byte[] bytes;
-					if (entry.getValue() != null) {
-						if (value instanceof byte[]) {
-							bytes = (byte[])value;
-						}
-						else if (value instanceof InputStream) {
-							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
-						}
-						else if (value instanceof File) {
-							try (FileInputStream fis = new FileInputStream((File)value)) {
+					
+					String entryName = entry.getKey();
+					if (StringUtil.isEmpty(entryName)) {
+						throw new IllegalArgumentException("A 'entryName' must not be null or empty");
+					}
+					if ("/".equals(entryName)) {
+						throw new IllegalArgumentException("A 'entryName' must not be \"/\"");
+					}
+					entryName = entryName.startsWith("/") ? entryName.substring(1) : entryName;
+
+					if (entryName.endsWith("/")) {
+						// directory
+						final ZipEntry e = new ZipEntry(entryName);
+						e.setMethod(ZipEntry.STORED);
+						e.setSize(0);
+						e.setCrc(0);
+						
+						zos.putNextEntry(e);
+						zos.closeEntry();
+					}
+					else {
+						// file
+						final Object value = entry.getValue();
+						byte[] bytes;
+						if (entry.getValue() != null) {
+							if (value instanceof byte[]) {
+								bytes = (byte[])value;
+							}
+							else if (value instanceof InputStream) {
 								bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
 							}
+							else if (value instanceof File) {
+								try (FileInputStream fis = new FileInputStream((File)value)) {
+									bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+								}
+							}
+							else {
+								throw new IllegalArgumentException(
+										"Only values of type byte[], File or InputStream are supported!");
+							}
+	
+							final ZipEntry e = new ZipEntry(entryName);
+							e.setMethod(ZipEntry.DEFLATED);
+							
+							zos.putNextEntry(e);
+							zos.write(bytes);
+							zos.closeEntry();
 						}
-						else {
-							throw new IllegalArgumentException(
-									"Only values of type byte[], File or InputStream are supported!");
-						}
-						
-						final ZipEntry e = new ZipEntry(entry.getKey());
-						zos.putNextEntry(e);
-						zos.write(bytes);
-						zos.closeEntry();
 					}
 				}
 				
@@ -880,11 +924,19 @@ public class Zipper {
 		
 		if (fileToZip.isDirectory()) {
 			if (fileName.endsWith("/")) {
-				zipOut.putNextEntry(new ZipEntry(fileName));
+				final ZipEntry e = new ZipEntry(fileName);
+				e.setMethod(ZipEntry.STORED);
+				e.setSize(0);
+				e.setCrc(0);
+				zipOut.putNextEntry(e);
 				zipOut.closeEntry();
 			} 
 			else {
-				zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+				final ZipEntry e = new ZipEntry(fileName + "/");
+				e.setMethod(ZipEntry.STORED);
+				e.setSize(0);
+				e.setCrc(0);
+				zipOut.putNextEntry(e);
 				zipOut.closeEntry();
 			}
 			
@@ -898,6 +950,7 @@ public class Zipper {
 		
 		try (FileInputStream fis = new FileInputStream(fileToZip)) {
 			final ZipEntry zipEntry = new ZipEntry(fileName);
+			zipEntry.setMethod(ZipEntry.DEFLATED);
 			zipOut.putNextEntry(zipEntry);		
 			IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);
 			zipOut.closeEntry();
