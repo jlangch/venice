@@ -1024,9 +1024,10 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/zip-append f & entries)")		
 					.doc(
-						"Appends the entries to an existing zip f. " +
-						"An entry is given by a name and data. The entry data maybe nil, " +
-						"a bytebuf, a file, a string (file path), or an InputStream.")
+						"Appends entries to an existing zip file f. Overwrites existing " +
+						"entries. An entry is given by a name and data. The entry data " +
+						"maybe nil, a bytebuf, a file, a string (file path), or an " +
+						"InputStream.")
 					.examples( 
 						"(do                                                               \n" +
 						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                \n" +

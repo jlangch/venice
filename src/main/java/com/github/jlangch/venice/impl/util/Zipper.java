@@ -229,7 +229,7 @@ public class Zipper {
 								}
 							}
 							
-							// allow replace
+							// allow overwrite
 							Files.deleteIfExists(nf);
 							
 							try (OutputStream os = Files.newOutputStream(nf)) {
