@@ -32,6 +32,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -63,20 +68,19 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
 
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		try {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
 				final ZipEntry entry = new ZipEntry(entryName);
-				entry.setMethod(ZipEntry.DEFLATED);
 				
 				zos.putNextEntry(entry);
-				zos.write(binary, 0, binary.length);
+				zos.write(binary);
 				zos.closeEntry();
 				
+				//zos.finish();
 				zos.flush();
 			}
 	
+			baos.flush();
 			return baos.toByteArray();
 		}
 		catch(IOException ex) {
@@ -89,40 +93,86 @@ public class Zipper {
 			throw new IllegalArgumentException("An 'entries' map must not be null");
 		}
 		
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-			for (Map.Entry<String,Object> entry : entries.entrySet()) {
-				final Object value = entry.getValue();
-				byte[] bytes;
-				if (entry.getValue() != null) {
-					if (value instanceof byte[]) {
-						bytes = (byte[])value;
-					}
-					else if (value instanceof InputStream) {
-						bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
-					}
-					else if (value instanceof File) {
-						try (FileInputStream fis = new FileInputStream((File)value)) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+				for (Map.Entry<String,Object> entry : entries.entrySet()) {
+					final Object value = entry.getValue();
+					byte[] bytes;
+					if (entry.getValue() != null) {
+						if (value instanceof byte[]) {
+							bytes = (byte[])value;
+						}
+						else if (value instanceof InputStream) {
 							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
 						}
+						else if (value instanceof File) {
+							try (FileInputStream fis = new FileInputStream((File)value)) {
+								bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+							}
+						}
+						else {
+							throw new IllegalArgumentException(
+									"Only values of type byte[], File or InputStream are supported!");
+						}
+						
+						final ZipEntry e = new ZipEntry(entry.getKey());
+						zos.putNextEntry(e);
+						zos.write(bytes);
+						zos.closeEntry();
 					}
-					else {
-						throw new IllegalArgumentException(
-								"Only values of type byte[], File or InputStream are supported!");
-					}
-					
-					final ZipEntry e = new ZipEntry(entry.getKey());
-					e.setMethod(ZipEntry.DEFLATED);
-					zos.putNextEntry(e);
-					zos.write(bytes, 0, bytes.length);
-					zos.closeEntry();
 				}
+				
+				zos.flush();
 			}
 			
-			zos.flush();
-			
+			baos.flush();
 			return baos.toByteArray();
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
+	public static void zipAppend(final File zip, final Map<String, Object> entries) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+		if (entries == null ) {
+			throw new IllegalArgumentException("An 'entries' map must not be null");
+		}
+
+		try {
+			final Path zipFile = Paths.get(zip.getPath());
+
+			try (FileSystem fs = FileSystems.newFileSystem(zipFile, null)) {		
+				for (Map.Entry<String,Object> entry : entries.entrySet()) {
+					final Object value = entry.getValue();
+					byte[] bytes;
+					if (entry.getValue() != null) {
+						if (value instanceof byte[]) {
+							bytes = (byte[])value;
+						}
+						else if (value instanceof InputStream) {
+							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+						}
+						else if (value instanceof File) {
+							try (FileInputStream fis = new FileInputStream((File)value)) {
+								bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+							}
+						}
+						else {
+							throw new IllegalArgumentException(
+									"Only values of type byte[], File or InputStream are supported!");
+						}
+	
+						final Path nf = fs.getPath(entry.getKey());
+						try (OutputStream os = Files.newOutputStream(nf)) {
+							os.write(bytes);
+							os.flush();
+						}		
+					}
+				}
+			}
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -447,8 +497,8 @@ public class Zipper {
 			printZipListLineDelim(ps, verbose);
 
 			long totCount = 0L;
-			long totLength = 0L;
 			long totSize = 0L;
+			long totCompressedSize = 0L;
 			
 			final ZipInputStream zis = new ZipInputStream(is);
 			
@@ -458,41 +508,28 @@ public class Zipper {
 					break;
 				}
 
-				final long length = entry.isDirectory() ? 0 : entry.getSize();
-				final long size = entry.isDirectory() ? 0 : entry.getCompressedSize();
-				final String crc = entry.getCrc() == -1 ? "-" : String.format("%08X", entry.getCrc() & 0xFFFFFFFF);
-				final long compression = size <= 0 || length <= 0 ? 0 : (size * 100L) / length;
-				final String method = entry.getMethod() == 0 ? "Stored" : "Defl:N";
-				final FileTime ftime = entry.getLastModifiedTime();
-				final String time = ftime == null
-											? "-"
-											: LocalDateTime
-												.ofInstant(ftime.toInstant(), ZoneOffset.UTC)
-												.format(ziplist_formatter);
+				zis.closeEntry();
+
+				final long size = entry.isDirectory() ? 0 : entry.getSize();
+				final long compressedSize = entry.isDirectory() ? 0 : entry.getCompressedSize();
+				final long compression = compressionPercentage(size, compressedSize);
 				totCount++;
-				totLength +=  Math.max(0, length);
-				totSize +=  Math.max(0, size);
+				totSize += Math.max(0, size);
+				totCompressedSize += Math.max(0, compressedSize);
 	
 		    	printZipListLine(
-		    			ps, verbose,
-		    			String.valueOf(length), method, 
-		    			String.valueOf(size), 
-		    			String.valueOf(compression) + "%", 
-		    			time, crc, entry.getName());
-
-				zis.closeEntry();
+		    			ps, verbose, size, entry.getMethod(), compressedSize, compression, 
+		    			entry.getLastModifiedTime(), entry.getCrc(), entry.getName());
 			}
 			zis.close();
 
-			final long totCompression = totSize == 0 || totLength == 0 ? 0 : (totSize * 100L) / totLength;
+			final long totCompression = compressionPercentage(totSize, totCompressedSize);
 
 			printZipListLineDelim(ps, verbose);
-	    	printZipListLine(
-	    			ps, verbose,
-	    			String.valueOf(totLength), "", 
-	    			String.valueOf(totSize), 
-	    			String.valueOf(totCompression) + "%", 
-	    			"", "", String.valueOf(totCount) + " files");
+	    	
+			printZipListLine(
+	    			ps, verbose, totSize, null, totCompressedSize,  totCompression, 
+	    			null, null, String.valueOf(totCount) + " files");
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -861,9 +898,9 @@ public class Zipper {
 		
 		try (FileInputStream fis = new FileInputStream(fileToZip)) {
 			final ZipEntry zipEntry = new ZipEntry(fileName);
-			zipOut.putNextEntry(zipEntry);
-		
-			IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);		
+			zipOut.putNextEntry(zipEntry);		
+			IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);
+			zipOut.closeEntry();
 		}
     }
 	
@@ -880,6 +917,32 @@ public class Zipper {
     	return destFile;
     }
  
+    private static void printZipListLine(
+    		final PrintStream ps, 
+    		final boolean verbose,
+    		final long length, 
+    		final Integer method,
+    		final long size,
+    		final long compression,
+    		final FileTime time,
+    		final Long crc,
+    		final String name
+    ) {
+		final String sMethod = method == null ? "" : (method == 0 ? "Stored" : "Defl:N");
+
+		final String sTime = time == null
+								? "-"
+								: LocalDateTime
+									.ofInstant(time.toInstant(), ZoneOffset.UTC)
+									.format(ziplist_formatter);
+
+		final String sCrc = crc == null ? "" : (crc == -1 ? "-" : String.format("%08X", crc & 0xFFFFFFFF));
+
+    	printZipListLine(
+    			ps, verbose, String.valueOf(length), sMethod, String.valueOf(size), 
+    			String.valueOf(compression) + "%", sTime, sCrc, name);
+    }
+
     private static void printZipListLine(
     		final PrintStream ps, 
     		final boolean verbose,
@@ -909,6 +972,12 @@ public class Zipper {
     	printZipListLine(
     			ps, verbose, 
     			"----------", "------", "----------", "----", "----------------", "--------", "----");
+    }
+    
+    private static long compressionPercentage(final long size, final long compressedSize) {
+    	return (size <= 0 || compressedSize <= 0)
+    				? 0L
+    				: ((size - compressedSize) * 100L + (size / 2L)) / size;
     }
 
     

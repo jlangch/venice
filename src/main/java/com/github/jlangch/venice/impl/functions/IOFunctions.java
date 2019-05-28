@@ -861,8 +861,8 @@ public class IOFunctions {
 					if (Types.isVncString(args.first()) ) {
 						file = new File(((VncString)args.first()).getValue());
 					}
-					else if (isJavaIoFile(args.first()) ) {
-						file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					else if (Types.isVncJavaObject(args.first(), File.class)) {
+						file = Coerce.toVncJavaObject(args.first(), File.class);
 					}
 					else {
 						throw new VncException(String.format(
@@ -986,6 +986,97 @@ public class IOFunctions {
 					}
 					
 					return new VncByteBuffer(Zipper.zip(map));
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_zip_append = 
+		new VncFunction(
+				"io/zip-append", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/zip-append f & entries)")		
+					.doc(
+						"Appends the entries to an existing zip f. " +
+						"An entry is given by a name and data. The entry data maybe a bytebuf, " +
+						"a file, a string (file path), or an InputStream. Returns the zip as bytebuf.")
+					.examples( 
+						"(do                                                         \n" +
+						"  (-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8))   \n" +
+						"      (io/spit \"test.zip\"))                               \n" +
+						"  (io/zip-append                                            \n" +
+						"        \"test.zip\"                                        \n" +
+						"        \"a\" (bytebuf-from-string \"abc\" :utf-8)          \n" +
+						"        \"b\" (bytebuf-from-string \"def\" :utf-8)          \n" +
+						"        \"c\" (bytebuf-from-string \"ghi\" :utf-8)))          ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/zip-append", args, 3);
+	
+				final VncVal fileVal = args.first();
+				File file = null;
+				if (Types.isVncJavaObject(fileVal, File.class)) {
+					file = (File)((VncJavaObject)fileVal).getDelegate();
+				}
+				else if (Types.isVncString(fileVal)) {
+					file = new File(Coerce.toVncString(fileVal).getValue());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/zip-append' does not allow %s as f",
+							Types.getType(fileVal)));
+				}
+
+				final VncList entryArgs = args.slice(1);
+				try {
+					if (entryArgs.size() % 2 == 1) {
+						throw new VncException("Function 'io/zip-append' requires an even number of entry arguments");
+					}
+					
+					int idx = 0;
+					final LinkedHashMap<String,Object> map = new LinkedHashMap<>();
+					
+					while (idx < entryArgs.size()) {
+						final String name = Coerce.toVncString(entryArgs.nth(idx++)).getValue();
+						
+						if (map.containsKey(name)) {
+							throw new VncException(String.format(
+									"Function 'io/zip-append' duplicate entry name %s", name));
+						}
+
+						final VncVal dataVal = entryArgs.nth(idx++);
+						Object data = null;
+						if (Types.isVncByteBuffer(dataVal)) {
+							data = ((VncByteBuffer)dataVal).getValue().array();
+						}
+						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
+							data = (InputStream)((VncJavaObject)dataVal).getDelegate();
+						}
+						else if (Types.isVncJavaObject(dataVal, File.class)) {
+							data = (File)((VncJavaObject)dataVal).getDelegate();
+						}
+						else if (Types.isVncString(dataVal)) {
+							data = new File(Coerce.toVncString(dataVal).getValue());
+						}
+						else {
+							throw new VncException(String.format(
+									"Function 'io/zip-append' does not allow %s as entry data",
+									Types.getType(dataVal)));
+						}
+						
+						map.put(name, data);
+					}
+					
+					Zipper.zipAppend(file, map);
+					
+					return Nil;
 				} 
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -2294,6 +2385,7 @@ public class IOFunctions {
 					.put("io/default-charset",				io_default_charset)
 					.put("io/load-classpath-resource",		io_load_classpath_resource)
 					.put("io/zip",							io_zip)
+					.put("io/zip-append",					io_zip_append)
 					.put("io/zip-file",						io_zip_file)
 					.put("io/zip-list",						io_zip_list)
 					.put("io/zip?",							io_zip_Q)
