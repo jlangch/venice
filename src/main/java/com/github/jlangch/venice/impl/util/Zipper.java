@@ -190,18 +190,19 @@ public class Zipper {
 
 			try (FileSystem fs = FileSystems.newFileSystem(zipFile, null)) {		
 				for (Map.Entry<String,Object> entry : entries.entrySet()) {
-					final Object value = entry.getValue();
-					byte[] bytes;
-					if (entry.getValue() != null) {
-						if (value instanceof byte[]) {
-							bytes = (byte[])value;
+					final String entryName = entry.getKey();
+					final Object entryValue = entry.getValue();
+					byte[] entryBytes;
+					if (entryValue != null) {
+						if (entryValue instanceof byte[]) {
+							entryBytes = (byte[])entryValue;
 						}
-						else if (value instanceof InputStream) {
-							bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+						else if (entryValue instanceof InputStream) {
+							entryBytes = IOStreamUtil.copyIStoByteArray((InputStream)entryValue);
 						}
-						else if (value instanceof File) {
-							try (FileInputStream fis = new FileInputStream((File)value)) {
-								bytes = IOStreamUtil.copyIStoByteArray((InputStream)value);
+						else if (entryValue instanceof File) {
+							try (FileInputStream fis = new FileInputStream((File)entryValue)) {
+								entryBytes = IOStreamUtil.copyIStoByteArray((InputStream)entryValue);
 							}
 						}
 						else {
@@ -209,11 +210,30 @@ public class Zipper {
 									"Only values of type byte[], File or InputStream are supported!");
 						}
 	
-						final Path nf = fs.getPath(entry.getKey());
-						try (OutputStream os = Files.newOutputStream(nf)) {
-							os.write(bytes);
-							os.flush();
-						}		
+						if (entryName.endsWith("/")) {
+							// directory
+							final Path nf = fs.getPath(entryName);
+							if (Files.notExists(nf)) { 
+								Files.createDirectories(nf);
+							}
+						}
+						else {
+							// file
+							final Path nf = fs.getPath(entryName);
+							
+							// create missing directories
+							final Path dir = nf.getParent();
+							if (dir != null) {
+								if (Files.notExists(dir)) { 
+									Files.createDirectories(dir);
+								}
+							}
+							
+							try (OutputStream os = Files.newOutputStream(nf)) {
+								os.write(entryBytes);
+								os.flush();
+							}
+						}
 					}
 				}
 			}
