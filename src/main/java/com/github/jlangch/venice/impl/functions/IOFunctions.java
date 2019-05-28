@@ -1033,9 +1033,9 @@ public class IOFunctions {
 						"      (io/spit \"test.zip\"))                               \n" +
 						"  (io/zip-append                                            \n" +
 						"        \"test.zip\"                                        \n" +
-						"        \"a\" (bytebuf-from-string \"abc\" :utf-8)          \n" +
-						"        \"b\" (bytebuf-from-string \"def\" :utf-8)          \n" +
-						"        \"c\" (bytebuf-from-string \"ghi\" :utf-8)))          ")
+						"        \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
+						"        \"b.txt\" (bytebuf-from-string \"def\" :utf-8)      \n" +
+						"        \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)))      ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1118,7 +1118,7 @@ public class IOFunctions {
 						"Returns the number of entries in the zip f. f maybe a bytebuf, " +
 						"a file, a string (file path) or an InputStream.")
 					.examples(
-						"(io/zip-size (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)))")
+						"(io/zip-size (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1168,8 +1168,8 @@ public class IOFunctions {
 						"Unzips an entry from zip f the entry's data as a bytebuf. f maybe a bytebuf, \n" + 
 						"a file, a string (file path) or an InputStream.")
 					.examples(
-						"(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
-						"    (io/unzip \"test\"))")
+						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
+						"    (io/unzip \"a.txt\"))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1222,8 +1222,8 @@ public class IOFunctions {
 						"Unzips the first entry of the zip f returning its data as a bytebuf. " +
 						"f maybe a bytebuf, a file, a string (file path) or an InputStream.")
 					.examples(
-						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
-						"            \"b\" (bytebuf-from-string \"def\" :utf-8)) \n" +
+						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)) \n" +
 						"    (io/unzip-first))")
 					.build()
 		) {	
@@ -1276,9 +1276,9 @@ public class IOFunctions {
 						"Unzips the nth (zero.based) entry of the zip f returning its data as a bytebuf. " +
 						"f maybe a bytebuf, a file, a string (file path) or an InputStream.")
 					.examples(
-						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
-						"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
-						"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-nth 1))")
 					.build()
 		) {	
@@ -1333,9 +1333,9 @@ public class IOFunctions {
 						"the entry names as key and the entry data as bytebuf values. " +
 						"f maybe a bytebuf, a file, a string (file path) or an InputStream.")
 					.examples(
-						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
-						"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
-						"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-all))")
 					.build()
 		) {	
@@ -1498,10 +1498,10 @@ public class IOFunctions {
 						"Unzips f to a directory. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream.")
 					.examples(
-						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
-						"            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
-						"            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
-						"    (io/unzip-to-dir (io/file \".\"))")
+						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+						"    (io/unzip-to-dir \".\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
