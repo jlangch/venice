@@ -84,7 +84,22 @@ public class IOFnBlacklisted {
 								"io/temp-file",
 								"io/tmp-dir",
 								"io/user-dir",
-								"io/load-classpath-resource"));
+								"io/load-classpath-resource",
+								
+								"io/zip",
+								"io/zip-append",
+								"io/zip-file",
+								"io/zip-list",
+								"io/unzip",
+								"io/unzip-first",
+								"io/unzip-nth",
+								"io/unzip-all",
+								"io/unzip-to-dir",
+								"io/zip-size",
+								"io/gzip",
+								"io/gzip-to-stream",
+								"io/ungzip",
+								"io/ungzip-to-stream"));
 	}
 
 }
