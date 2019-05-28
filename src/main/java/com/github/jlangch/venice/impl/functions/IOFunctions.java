@@ -1247,11 +1247,11 @@ public class IOFunctions {
 					if (Types.isVncJavaObject(dest, File.class) ) {
 						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, File.class));
 					}
-					else if (Types.isVncJavaObject(dest, OutputStream.class) ) {
-						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, OutputStream.class));
-					}
 					else if (Types.isVncString(dest)) {
 						Zipper.zipFileOrDir(sourceFile, null, new File(Coerce.toVncString(dest).getValue()));
+					}
+					else if (Types.isVncJavaObject(dest, OutputStream.class) ) {
+						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, OutputStream.class));
 					}
 					else {
 						throw new VncException(String.format(
@@ -1275,25 +1275,33 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/zip-list f)")		
-					.doc("List the content of a the zip f. f may be a file, a string (file path), or an InputStream")
+					.arglists("(io/zip-list f & options)")		
+					.doc(
+						"List the content of a the zip f. f may be a file, a string (file path), " +
+						"or an InputStream. \n" +
+						"Options: \n" +
+						"  :verbose true/false - e.g :verbose true, defaults to false")
 					.examples("(io/zip-list (io/file \"test-file.zip\"))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("io/zip-list", args, 1);
+				assertMinArity("io/zip-list", args, 1);
 				
 				try {
 					final VncVal zip = args.first();
 
+					final VncHashMap options = VncHashMap.ofAll(args.rest());
+					
+					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false; 
+
 					if (Types.isVncJavaObject(zip, File.class) ) {
-						Zipper.listZip(Coerce.toVncJavaObject(zip, File.class), System.out);
-					}
-					else if (Types.isVncJavaObject(zip, InputStream.class) ) {
-						Zipper.listZip(Coerce.toVncJavaObject(zip, InputStream.class), System.out);
+						Zipper.listZip(Coerce.toVncJavaObject(zip, File.class), System.out, verbose);
 					}
 					else if (Types.isVncString(zip)) {
-						Zipper.listZip(new File(Coerce.toVncString(zip).getValue()), System.out);
+						Zipper.listZip(new File(Coerce.toVncString(zip).getValue()), System.out, verbose);
+					}
+					else if (Types.isVncJavaObject(zip, InputStream.class) ) {
+						Zipper.listZip(Coerce.toVncJavaObject(zip, InputStream.class), System.out, verbose);
 					}
 					else {
 						throw new VncException(String.format(

@@ -355,31 +355,27 @@ public class Zipper {
 		}
 	}
 
-	public static void listZip(final File zip, final PrintStream ps) {
+	public static void listZip(final File zip, final PrintStream ps, final boolean verbose) {
 		if (zip == null) {
 			throw new IllegalArgumentException("A 'zip' must not be null");
 		}
 
 		try (FileInputStream fis = new FileInputStream(zip)) {
-			listZip(fis, ps);
+			listZip(fis, ps, verbose);
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
 
-	public static void listZip(final InputStream is, final PrintStream ps) {
+	public static void listZip(final InputStream is, final PrintStream ps, final boolean verbose) {
 		if (is == null) {
 			throw new IllegalArgumentException("An 'is' must not be null");
 		}
 
-		final String format1 = "%10s  %6s  %10s  %3s%%  %16s  %8s  %s";
-		final String format2 = "%10s          %10s  %3s%%                              %d files";
-
-
 		try {
-			ps.println("    Length  Method       Size   Cmpr         Date/Time    CRC-32  Name");
-			ps.println("----------  ------  ----------  ----  ----------------  --------  ----");
+			printZipListLineHead(ps, verbose);
+			printZipListLineDelim(ps, verbose);
 
 			long totCount = 0L;
 			long totLength = 0L;
@@ -403,12 +399,17 @@ public class Zipper {
 											? "-"
 											: LocalDateTime
 												.ofInstant(ftime.toInstant(), ZoneOffset.UTC)
-												.format(formatter);
+												.format(ziplist_formatter);
 				totCount++;
 				totLength +=  Math.max(0, length);
 				totSize +=  Math.max(0, size);
-										
-				ps.println(String.format(format1, length, method, size, compression, time, crc, entry.getName()));
+	
+		    	printZipListLine(
+		    			ps, verbose,
+		    			String.valueOf(length), method, 
+		    			String.valueOf(size), 
+		    			String.valueOf(compression) + "%", 
+		    			time, crc, entry.getName());
 
 				zis.closeEntry();
 			}
@@ -416,8 +417,13 @@ public class Zipper {
 
 			final long totCompression = totSize == 0 || totLength == 0 ? 0 : (totSize * 100L) / totLength;
 
-			ps.println("----------  ------  ----------  ----  ----------------  --------  ----");
-			ps.println(String.format(format2, totLength, totSize, totCompression, totCount));
+			printZipListLineDelim(ps, verbose);
+	    	printZipListLine(
+	    			ps, verbose,
+	    			String.valueOf(totLength), "", 
+	    			String.valueOf(totSize), 
+	    			String.valueOf(totCompression) + "%", 
+	    			"", "", String.valueOf(totCount) + " files");
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -718,8 +724,38 @@ public class Zipper {
     	
     	return destFile;
     }
-   
-	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+ 
+    private static void printZipListLine(
+    		final PrintStream ps, 
+    		final boolean verbose,
+    		final String length, 
+    		final String method,
+    		final String size,
+    		final String compression,
+    		final String time,
+    		final String crc,
+    		final String name
+    ) {
+    	if (verbose) {
+        	ps.println(String.format(ziplist_format, length, method, size, compression, time, crc, name));
+    	}
+    	else {
+        	ps.println(String.format(ziplist_format_short, length, time, name));
+    	}
+    }
+
+    private static void printZipListLineHead(final PrintStream ps, final boolean verbose) {
+    	printZipListLine(ps, verbose, "Length", "Method", "Size", "Cmpr", "Date/Time", "CRC-32", "Name");
+    }
+
+    private static void printZipListLineDelim(final PrintStream ps, final boolean verbose) {
+    	printZipListLine(ps, verbose, "----------", "------", "----------", "----", "----------------", "--------", "----");
+    }
+
+    
+    private static final String ziplist_format = "%10s  %6s  %10s  %4s  %16s  %8s  %s";
+    private static final String ziplist_format_short = "%10s  %16s %s";
+	private static final DateTimeFormatter ziplist_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
   
 	public static final int ZIP_HEADER = 0x504b0304;
 	public static final short GZIP_HEADER = 0x1f8b;
