@@ -129,6 +129,22 @@ public class Zipper {
 		}
 	}
 
+	public static byte[] unzip(final File zip, final String entryName) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+		if (StringUtil.isEmpty(entryName)) {
+			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
+		}
+
+		try (FileInputStream is = new FileInputStream(zip)) {
+			return unzip(is, entryName); 
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
 	public static byte[] unzip(final byte[] binary, final String entryName) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
@@ -137,10 +153,24 @@ public class Zipper {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
 
+		try (ByteArrayInputStream is = new ByteArrayInputStream(binary)) {
+			return unzip(is, entryName); 
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
 
-		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
-	
-		try (ZipInputStream zis = new ZipInputStream(bais)) {
+	public static byte[] unzip(final InputStream is, final String entryName) {
+		if (is == null) {
+			throw new IllegalArgumentException("A 'is' must not be null");
+		}
+		if (StringUtil.isEmpty(entryName)) {
+			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
+		}
+
+
+		try (ZipInputStream zis = new ZipInputStream(is)) {
 			while(true) {
 				final ZipEntry entry = zis.getNextEntry();
 				if (entry == null) {
@@ -163,14 +193,38 @@ public class Zipper {
 		}
 	}
 	
+	public static byte[] unzipNthEntry(final File zip, final int nth) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+
+		try (FileInputStream is = new FileInputStream(zip)) {
+			return unzipNthEntry(is, nth);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
 	public static byte[] unzipNthEntry(final byte[] binary, final int nth) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 
-		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
+		try (ByteArrayInputStream is = new ByteArrayInputStream(binary)) {
+			return unzipNthEntry(is, nth);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
+	public static byte[] unzipNthEntry(final InputStream is, final int nth) {
+		if (is == null) {
+			throw new IllegalArgumentException("A 'binary' must not be null");
+		}
 
-		try (ZipInputStream zis = new ZipInputStream(bais)) {
+		try (ZipInputStream zis = new ZipInputStream(is)) {
 			int entryIdx = 0;
 			
 			while(true) {
@@ -255,20 +309,41 @@ public class Zipper {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
-	
-	public static Map<String, byte[]> unzipAll(
-			final byte[] binary,
-			final boolean includeDirs
-	) {
+
+	public static Map<String, byte[]> unzipAll(final File zip) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+		
+		try (FileInputStream is = new FileInputStream(zip)) {			
+			return unzipAll(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static Map<String, byte[]> unzipAll(final byte[] binary) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 		
+		try (ByteArrayInputStream is = new ByteArrayInputStream(binary)) {			
+			return unzipAll(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static Map<String, byte[]> unzipAll(final InputStream is) {
+		if (is == null) {
+			throw new IllegalArgumentException("A 'is' must not be null");
+		}
+		
 		final Map<String, byte[]> files = new HashMap<String, byte[]>();
 		
-		final ByteArrayInputStream bais = new ByteArrayInputStream(binary);
-
-		try (ZipInputStream zis = new ZipInputStream(bais)) {
+		try (ZipInputStream zis = new ZipInputStream(is)) {
 			while(true) {
 				final ZipEntry entry = zis.getNextEntry();
 				if (entry == null) {
@@ -277,11 +352,9 @@ public class Zipper {
 				
 				final byte[] data = IOStreamUtil.copyIStoByteArray(zis);
 				
-				if (!entry.isDirectory() || includeDirs) {
-					files.put(
-						entry.getName(), 
-						entry.isDirectory() ? null : data);
-				}
+				files.put(
+					entry.getName(), 
+					entry.isDirectory() ? null : data);
 				
 				zis.closeEntry();
 			}
@@ -291,10 +364,6 @@ public class Zipper {
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
-	}
-	
-	public static Map<String, byte[]> unzipAll(final byte[] binary) {
-		return unzipAll(binary, false);
 	}
 	
 	public static byte[] gzip(final byte[] binary) {
@@ -610,6 +679,15 @@ public class Zipper {
 		}
 	}
 
+	public static boolean isZipFile(final File file) {
+		try (FileInputStream is = new FileInputStream(file)) {
+			return isZipFile(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
 	public static boolean isZipFile(final InputStream inputStream) {
 		try {
 			inputStream.mark(4);
@@ -651,15 +729,41 @@ public class Zipper {
 		
 		return ByteBuffer.wrap(bytes).getShort() == GZIP_HEADER;
 	}
+
+	public static List<String> listZipEntryNames(final File zip) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
 	
+		try(InputStream is = new FileInputStream(zip)) {		
+			return listZipEntryNames(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
 	public static List<String> listZipEntryNames(final byte[] binary) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 	
+		try(InputStream is = new ByteArrayInputStream(binary)) {		
+			return listZipEntryNames(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static List<String> listZipEntryNames(final InputStream is) {
+		if (is == null) {
+			throw new IllegalArgumentException("A 'is' must not be null");
+		}
+	
 		final List<String> entries = new ArrayList<>();
 		
-		try(ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(binary))) {		
+		try(ZipInputStream zis = new ZipInputStream(is)) {		
 			while(true) {
 				final ZipEntry entry = zis.getNextEntry();
 				if (entry == null) {
