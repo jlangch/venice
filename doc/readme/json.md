@@ -15,7 +15,9 @@ To convert to/from JSON strings, use json/write-str and json/read-str:
 ;;=> {"a" 1, "b" 2}
 ```
 
-Note that these operations are not symmetric. Converting Venice data into JSON is lossy.
+Note that these operations are not symmetric. Converting Venice data into JSON is lossy. 
+JSON has a restricted set of data types so not all Venice datatypes can be adequately 
+converted. E.g. there is no real decimal type and Venice `int` is converted to `long`.
 
 
 ### Streams
