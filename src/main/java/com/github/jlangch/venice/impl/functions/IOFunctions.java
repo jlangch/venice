@@ -1028,14 +1028,11 @@ public class IOFunctions {
 						"An entry is given by a name and data. The entry data maybe a bytebuf, " +
 						"a file, a string (file path), or an InputStream. Returns the zip as bytebuf.")
 					.examples( 
-						"(do                                                         \n" +
-						"  (-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8))   \n" +
-						"      (io/spit \"test.zip\"))                               \n" +
-						"  (io/zip-append                                            \n" +
-						"        \"test.zip\"                                        \n" +
-						"        \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
-						"        \"b.txt\" (bytebuf-from-string \"def\" :utf-8)      \n" +
-						"        \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)))      ")
+						"(do                                                               \n" +
+						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                \n" +
+						"    (->> (io/zip \"a.txt\" data)                                  \n" +
+						"         (io/spit \"test.zip\"))                                  \n" +
+						"    (io/zip-append \"test.zip\" \"b.txt\" data \"c.txt\" data)))    ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
