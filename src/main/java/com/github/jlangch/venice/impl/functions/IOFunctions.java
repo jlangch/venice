@@ -930,8 +930,8 @@ public class IOFunctions {
 					.arglists("(io/zip & entries)")		
 					.doc(
 						"Creates a zip containing the entries. An entry is given by a " +
-						"name and data. The entry data maybe a bytebuf, a file, a string (file path) " +
-						"or an InputStream. Returns the zip as bytebuf.")
+						"name and data. The entry data maybe nil, a bytebuf, a file, " +
+						"a string (file path), or an InputStream. Returns the zip as bytebuf.")
 					.examples(
 						"; single entry                                                   \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8))     \n" +
@@ -1025,8 +1025,8 @@ public class IOFunctions {
 					.arglists("(io/zip-append f & entries)")		
 					.doc(
 						"Appends the entries to an existing zip f. " +
-						"An entry is given by a name and data. The entry data maybe a bytebuf, " +
-						"a file, a string (file path), or an InputStream. Returns the zip as bytebuf.")
+						"An entry is given by a name and data. The entry data maybe nil, " +
+						"a bytebuf, a file, a string (file path), or an InputStream.")
 					.examples( 
 						"(do                                                               \n" +
 						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                \n" +
@@ -1070,8 +1070,11 @@ public class IOFunctions {
 						}
 
 						final VncVal dataVal = entryArgs.nth(idx++);
-						Object data = null;
-						if (Types.isVncByteBuffer(dataVal)) {
+						Object data;
+						if (dataVal == Nil) {
+							data = new byte[0];
+						}
+						else if (Types.isVncByteBuffer(dataVal)) {
 							data = ((VncByteBuffer)dataVal).getValue().array();
 						}
 						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
