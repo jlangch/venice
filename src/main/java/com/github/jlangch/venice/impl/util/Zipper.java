@@ -565,6 +565,19 @@ public class Zipper {
 		}
 	}
 	
+	public static byte[] gzip(final File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("A 'file' must not be null");
+		}
+
+		try (InputStream is = new FileInputStream(file)) {
+			return gzip(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
 	public static byte[] gzip(final InputStream is) {
 		if (is == null) {
 			throw new IllegalArgumentException("An 'is' must not be null");
@@ -632,6 +645,19 @@ public class Zipper {
 		}
 	}
 	
+	public static byte[] ungzip(final File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("A 'file' must not be null");
+		}
+
+		try (FileInputStream is = new FileInputStream(file)) {
+			return ungzip(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
 	public static byte[] ungzip(final InputStream inputStream) {
 		if (inputStream == null) {
 			throw new IllegalArgumentException("A 'inputStream' must not be null");
@@ -680,6 +706,10 @@ public class Zipper {
 	}
 
 	public static boolean isZipFile(final File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("A 'file' must not be null");
+		}
+
 		try (FileInputStream is = new FileInputStream(file)) {
 			return isZipFile(is);
 		}
@@ -688,11 +718,15 @@ public class Zipper {
 		}
 	}
 
-	public static boolean isZipFile(final InputStream inputStream) {
+	public static boolean isZipFile(final InputStream is) {
+		if (is == null) {
+			throw new IllegalArgumentException("An 'is' must not be null");
+		}
+
 		try {
-			inputStream.mark(4);
-			final byte[] bytes = IOStreamUtil.copyIStoByteArray(inputStream, 4);
-			inputStream.reset();
+			is.mark(4);
+			final byte[] bytes = IOStreamUtil.copyIStoByteArray(is, 4);
+			is.reset();
 	
 			return isZipFile(bytes);
 		}
@@ -709,11 +743,28 @@ public class Zipper {
 		return ByteBuffer.wrap(bytes).getInt() == ZIP_HEADER;
 	}
 	
-	public static boolean isGZipFile(final InputStream inputStream) {
+	public static boolean isGZipFile(final File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("A 'file' must not be null");
+		}
+
+		try (FileInputStream is = new FileInputStream(file)) {
+			return isGZipFile(is);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+	
+	public static boolean isGZipFile(final InputStream is) {
+		if (is == null) {
+			throw new IllegalArgumentException("An 'is' must not be null");
+		}
+
 		try {
-			inputStream.mark(2);
-			final byte[] bytes = IOStreamUtil.copyIStoByteArray(inputStream, 2);
-			inputStream.reset();
+			is.mark(2);
+			final byte[] bytes = IOStreamUtil.copyIStoByteArray(is, 2);
+			is.reset();
 	
 			return isGZipFile(bytes);
 		}
@@ -849,11 +900,15 @@ public class Zipper {
     }
 
     private static void printZipListLineHead(final PrintStream ps, final boolean verbose) {
-    	printZipListLine(ps, verbose, "Length", "Method", "Size", "Cmpr", "Date/Time", "CRC-32", "Name");
+    	printZipListLine(
+    			ps, verbose, 
+    			"Length", "Method", "Size", "Cmpr", "Date/Time", "CRC-32", "Name");
     }
 
     private static void printZipListLineDelim(final PrintStream ps, final boolean verbose) {
-    	printZipListLine(ps, verbose, "----------", "------", "----------", "----", "----------------", "--------", "----");
+    	printZipListLine(
+    			ps, verbose, 
+    			"----------", "------", "----------", "----", "----------------", "--------", "----");
     }
 
     
