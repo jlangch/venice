@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
@@ -552,31 +553,48 @@ public class ZipFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/zip-file src-file dest)")		
+					.arglists("(io/zip-file src-file dest filter-fn?)")		
 					.doc(
 						"Zips a file or directory to a file (given as File or string " +
-						"file path) or an OutputStream.")
+						"file path) or an OutputStream. An optional filter function filters " +
+						"the files to be added to the zip. If the function is missing all " +
+						"non hidden files will be added. The filter function takes two args " +
+						"the file's directory and the file's name.")
 					.examples(
-						"(io/zip-file \"test-dir\" \"test.zip\")")
+						"(io/zip-file \"test-dir\" \"test.zip\")",
+						"(io/zip-file \"test-dir\" \"test.zip\" (fn [dir name] (str/ends-with? name \".txt\")))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("io/zip-file", args, 2);
+				assertArity("io/zip-file", args, 2, 3);
 	
 				final File sourceFile = Coerce.toVncJavaObject(args.first(), File.class);
 				final VncVal dest = args.second();
+				
+				FilenameFilter filter = null;
+				if (args.size() == 3) {
+					final VncFunction filterFn = Coerce.toVncFunction(args.third());
+					filter = new FilenameFilter() {
+									public boolean accept(final File dir, final String name) {
+										return True == filterFn.apply(
+															VncList.of(
+																new VncJavaObject(dir),
+																new VncString(name)));
+									} 
+							 };
+				}
 				
 				validateReadableFileOrDirectory(sourceFile);
 
 				try {
 					if (Types.isVncJavaObject(dest, File.class)) {
-						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, File.class));
+						Zipper.zipFileOrDir(sourceFile, filter, Coerce.toVncJavaObject(dest, File.class));
 					}
 					else if (Types.isVncString(dest)) {
-						Zipper.zipFileOrDir(sourceFile, null, new File(Coerce.toVncString(dest).getValue()));
+						Zipper.zipFileOrDir(sourceFile, filter, new File(Coerce.toVncString(dest).getValue()));
 					}
 					else if (Types.isVncJavaObject(dest, OutputStream.class)) {
-						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, OutputStream.class));
+						Zipper.zipFileOrDir(sourceFile, filter, Coerce.toVncJavaObject(dest, OutputStream.class));
 					}
 					else {
 						throw new VncException(String.format(

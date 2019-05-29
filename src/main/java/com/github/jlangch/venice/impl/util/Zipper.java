@@ -940,16 +940,17 @@ public class Zipper {
 			for (File childFile : children) {
 				zipFile(childFile, fileName + "/" + childFile.getName(), filter, zipOut);
 			}
-			
-			return;
 		}
-		
-		try (FileInputStream fis = new FileInputStream(fileToZip)) {
-			final ZipEntry zipEntry = new ZipEntry(fileName);
-			zipEntry.setMethod(ZipEntry.DEFLATED);
-			zipOut.putNextEntry(zipEntry);		
-			IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);
-			zipOut.closeEntry();
+		else if (fileToZip.isFile()) {
+			if (filter == null || filter.accept(fileToZip.getParentFile(), fileToZip.getName())) {
+				try (FileInputStream fis = new FileInputStream(fileToZip)) {
+					final ZipEntry zipEntry = new ZipEntry(fileName);
+					zipEntry.setMethod(ZipEntry.DEFLATED);
+					zipOut.putNextEntry(zipEntry);		
+					IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);
+					zipOut.closeEntry();
+				}
+			}
 		}
     }
 	
