@@ -293,7 +293,7 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/exists-file? f)")		
-					.doc("Returns true if the file f exists. fx must be a file or a string (file path).")
+					.doc("Returns true if the file f exists. f must be a file or a string (file path).")
 					.examples("(io/exists-file? \"/temp/test.txt\")")
 					.build()
 		) {		
@@ -331,6 +331,110 @@ public class IOFunctions {
 									"Function 'io/exists-dir?' does not allow %s as f");
 						
 				return Constants.bool(f.isDirectory());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_can_read_Q = 
+		new VncFunction(
+				"io/file-can-read?", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/file-can-read? f)")		
+					.doc(
+						"Returns true if the file or directory f exists and can be read. " +
+						"f must be a file or a string (file path).")
+					.examples("(io/file-can-read? \"/temp/test.txt\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-can-read?", args, 1);
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-can-read?' does not allow %s as x");
+						
+				return Constants.bool((f.isFile() || f.isDirectory()) && f.canRead());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_can_write_Q = 
+		new VncFunction(
+				"io/file-can-write?", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/file-can-write? f)")		
+					.doc(
+						"Returns true if the file or directory f exists and can be written. " +
+						"f must be a file or a string (file path).")
+					.examples("(io/file-can-write? \"/temp/test.txt\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-can-write?", args, 1);
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-can-write?' does not allow %s as x");
+						
+				return Constants.bool((f.isFile() || f.isDirectory()) && f.canWrite());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_can_execute_Q = 
+		new VncFunction(
+				"io/file-can-execute?", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/file-can-execute? f)")		
+					.doc(
+						"Returns true if the file or directory f exists and can be executed. " +
+						"f must be a file or a string (file path).")
+					.examples("(io/file-can-execute? \"/temp/test.txt\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-can-execute?", args, 1);
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-can-execute?' does not allow %s as x");
+						
+				return Constants.bool((f.isFile() || f.isDirectory()) && f.canExecute());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_hidden_Q = 
+		new VncFunction(
+				"io/file-hidden?", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/file-hidden? f)")		
+					.doc(
+						"Returns true if the file or directory f exists and is hidden. " +
+						"f must be a file or a string (file path).")
+					.examples("(io/file-hidden? \"/temp/test.txt\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-hidden?", args, 1);
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-hidden?' does not allow %s as x");
+						
+				return Constants.bool((f.isFile() || f.isDirectory()) && f.isHidden());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1480,6 +1584,10 @@ public class IOFunctions {
 					.put("io/file-size",					io_file_size)
 					.put("io/exists-file?",					io_exists_file_Q)
 					.put("io/exists-dir?",					io_exists_dir_Q)
+					.put("io/file-can-read?",				io_file_can_read_Q)
+					.put("io/file-can-write?",				io_file_can_write_Q)
+					.put("io/file-can-execute?",			io_file_can_execute_Q)
+					.put("io/file-hidden?",					io_file_hidden_Q)
 					.put("io/list-files",					io_list_files)
 					.put("io/delete-file",					io_delete_file)
 					.put("io/delete-file-on-exit",			io_delete_file_on_exit)

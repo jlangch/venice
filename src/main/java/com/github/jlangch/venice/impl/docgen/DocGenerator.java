@@ -883,6 +883,10 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/file-canonical-path"));
 		io.addItem(getDocItem("io/exists-file?"));
 		io.addItem(getDocItem("io/exists-dir?"));
+		io.addItem(getDocItem("io/file-can-read?", false, false));
+		io.addItem(getDocItem("io/file-can-write?", false, false));
+		io.addItem(getDocItem("io/file-can-execute?", false, false));
+		io.addItem(getDocItem("io/file-hidden?", false, false));
 		io.addItem(getDocItem("io/list-files"));
 		io.addItem(getDocItem("io/file-size"));
 		io.addItem(getDocItem("io/delete-file"));
