@@ -439,6 +439,74 @@ public class IOFunctionsTest {
 	}
 
 	@Test
+	public void test_io_zip_append() {
+		final Venice venice = new Venice();
+
+		try {
+			venice.eval(
+					"(let [base-dir (io/file (io/temp-dir \"zip-test-\"))    \n" +
+					"      zip      (io/file base-dir \"x.zip\")             \n" + 
+					"      data1     (bytebuf-from-string \"abc\" :utf-8)    \n" + 
+					"      data2     (bytebuf-from-string \"def\" :utf-8)]   \n" + 
+					"                                                        \n" +
+					"  ; create the initial zip                              \n" +
+					"  (io/spit zip (io/zip \"a.txt\" data1))                \n" +
+					"                                                        \n" +
+					"  ; append files                                        \n" +
+					"  (io/zip-append zip \"b.txt\" data1)                   \n" +
+					"  (io/zip-append zip \"c.txt\" data1)                   \n" +
+					"  (io/zip-append zip                                    \n" +
+					"                 \"d.txt\" data1                        \n" +
+					"                 \"e.txt\" data1                        \n" +
+					"                 \"f.txt\" data1)                       \n" +
+					"  (assert (== 6 (io/zip-size zip)))                     \n" +
+					"                                                        \n" +
+					"  ; append files with overwrite                         \n" +
+					"  (io/zip-append zip \"e.txt\" data2)                   \n" +
+					"  (io/zip-append zip                                    \n" +
+					"                 \"f.txt\" data2                        \n" +
+					"                 \"g.txt\" data2                        \n" +
+					"                 \"h.txt\" data2)                       \n" +
+					"  (assert (== 8 (io/zip-size zip)))                     \n" +
+					"                                                        \n" +
+					"  ; add empty dir                                       \n" +
+					"  (io/zip-append zip \"x/\" nil)                        \n" +
+					"  (assert (== 9 (io/zip-size zip)))                     \n" +
+					"                                                        \n" +
+					"  ; append files with dir                               \n" +
+					"  (io/zip-append zip \"y/a.txt\" data1)                 \n" +
+					"  (io/zip-append zip \"y/b.txt\" data1)                 \n" +
+					"  (io/zip-append zip                                    \n" +
+					"                 \"y/c.txt\" data1                      \n" +
+					"                 \"z/d.txt\" data1                      \n" +
+					"                 \"z/e.txt\" data1)                     \n" +
+					"  (assert (== 16 (io/zip-size zip)))                    \n" +
+					"                                                        \n" +
+					"  ; test a.txt                                          \n" +
+					"  (-> (io/unzip zip \"a.txt\")                          \n" +
+					"      (bytebuf-to-string :utf-8)                        \n" +
+					"      (== \"abc\"))                                     \n" +
+					"                                                        \n" +
+					"  ; test e.txt                                          \n" +
+					"  (-> (io/unzip zip \"e.txt\")                          \n" +
+					"      (bytebuf-to-string :utf-8)                        \n" +
+					"      (== \"def\"))                                     \n" +
+					"                                                        \n" +
+					"  ; test z/e.txt                                        \n" +
+					"  (-> (io/unzip zip \"z/e.txt\")                        \n" +
+					"      (bytebuf-to-string :utf-8)                        \n" +
+					"      (== \"abc\"))                                     \n" +
+					"                                                        \n" +
+					"  (io/delete-file zip)                                  \n" +
+					"  (io/delete-file base-dir)                             \n" +
+					")");
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Test
 	public void test_io_zip_Q() throws Exception {
 		final Venice venice = new Venice();
 
