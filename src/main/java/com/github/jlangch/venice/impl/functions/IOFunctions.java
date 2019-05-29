@@ -931,7 +931,9 @@ public class IOFunctions {
 					.doc(
 						"Creates a zip containing the entries. An entry is given by a " +
 						"name and data. The entry data maybe nil, a bytebuf, a file, " +
-						"a string (file path), or an InputStream. Returns the zip as bytebuf.")
+						"a string (file path), or an InputStream. " +
+						"An entry name with a trailing '/' creates a directory. " +
+						"Returns the zip as bytebuf.")
 					.examples(
 						"; single entry                                                   \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8))     \n" +
@@ -949,11 +951,9 @@ public class IOFunctions {
 						"             \"x/y/c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"     (io/spit \"test.zip\"))                                       ",
 					
-						"; multiple entries with subdirectories and an empty directory    \n" +
+						"; empty directory z/                                             \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
-						"             \"x/b.txt\" (bytebuf-from-string \"def\" :utf-8)    \n" +
-						"             \"x/y/c.txt\" (bytebuf-from-string \"ghi\" :utf-8)  \n" +
-						"             \"x/y/z/\" nil)                                     \n" +
+						"             \"z/\" nil)                                         \n" +
 						"     (io/spit \"test.zip\"))                                       ")
 					.build()
 		) {	
@@ -1027,13 +1027,18 @@ public class IOFunctions {
 						"Appends entries to an existing zip file f. Overwrites existing " +
 						"entries. An entry is given by a name and data. The entry data " +
 						"maybe nil, a bytebuf, a file, a string (file path), or an " +
-						"InputStream.")
+						"InputStream." +
+						"An entry name with a trailing '/' creates a directory. ")
 					.examples( 
-						"(do                                                               \n" +
-						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                \n" +
-						"    (->> (io/zip \"a.txt\" data)                                  \n" +
-						"         (io/spit \"test.zip\"))                                  \n" +
-						"    (io/zip-append \"test.zip\" \"b.txt\" data \"c.txt\" data)))    ")
+						"(do                                                                 \n" +
+						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                  \n" +
+						"    ; create the zip with a first file                              \n" +
+						"    (->> (io/zip \"a.txt\" data)                                    \n" +
+						"         (io/spit \"test.zip\"))                                    \n" +
+						"    ; add text files                                                \n" +
+						"    (io/zip-append \"test.zip\" \"b.txt\" data \"x/c.txt\" data)    \n" +
+						"    ; add an empty directory                                        \n" +
+						"    (io/zip-append \"test.zip\" \"x/y/\" nil)))                       ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {

@@ -68,7 +68,7 @@ public class JsonFunctions {
 						"(json/write-str val & options)")		
 					.doc(
 						"Writes the val to a JSON string.\n" +
-						"Options are : \n" +
+						"Options are: \n" +
 						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. Defaults to false. \n" +
 						"  :decimal-as-double boolean \n" + 
@@ -117,7 +117,7 @@ public class JsonFunctions {
 					.doc(
 						"Spits the JSON converted val to the output.\n" +
 						"out maybe a Java OutputStream or a Java Writer. \n" +
-						"Options are : \n" +
+						"Options are: \n" +
 						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. Defaults to false. \n" +
 						"  :decimal-as-double boolean \n" + 
@@ -186,7 +186,7 @@ public class JsonFunctions {
 					.arglists("(json/read-str s & options)")		
 					.doc(
 						"Reads a JSON string and returns it as a venice datatype.\n" + 
-						"Options are : \n" +
+						"Options are: \n" +
 						"  :key-fn fn \n" + 
 						"      Single-argument function called on JSON property names; \n" +
 						"      return value will replace the property names in the output. \n" +
@@ -251,12 +251,12 @@ public class JsonFunctions {
 					.doc(
 						"Slurps a JSON string from the input and returns it as a venice datatype.\n" +
 						"in maybe a Java InputStream or a Java Reader. \n" +
-						"Options are : \n" +
+						"Options are: \n" +
 						"  :key-fn fn  \n" + 
 						"      Single-argument function called on JSON property names; \n" +
 						"      return value will replace the property names in the output. \n" +
 						"      Default is 'identity', use 'keyword' to get keyword \n" +
-						"      properties." +
+						"      properties. \n" +
 						"  :vakue-fn fn \n" + 
 						"      Function to transform values in JSON objects in\n" + 
 						"      the output. For each JSON property, value-fn is called with\n" + 
