@@ -556,7 +556,7 @@ public class Zipper {
 	    			ps, verbose, 
 	    			totSize, null, totCompressedSize,
 	    			null, null, 
-	    			String.valueOf(totCount) + " files");
+	    			totCount == 1 ? "1 file" : String.valueOf(totCount) + " files");
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
