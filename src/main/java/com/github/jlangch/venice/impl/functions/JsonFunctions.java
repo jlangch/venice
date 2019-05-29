@@ -185,7 +185,7 @@ public class JsonFunctions {
 					.module("json")
 					.arglists("(json/read-str s & options)")		
 					.doc(
-						"Reads a JSON string and returns it as a venice datatype.\n" + 
+						"Reads a JSON string and returns it as a Venice datatype.\n" + 
 						"Options are: \n" +
 						"  :key-fn fn \n" + 
 						"      Single-argument function called on JSON property names; \n" +
@@ -251,7 +251,7 @@ public class JsonFunctions {
 					.module("json")
 					.arglists("(json/slurp in & options)")		
 					.doc(
-						"Slurps a JSON string from the input and returns it as a venice datatype.\n" +
+						"Slurps a JSON string from the input and returns it as a Venice datatype.\n" +
 						"in maybe a Java InputStream or a Java Reader. \n" +
 						"Options are: \n" +
 						"  :key-fn fn  \n" + 
