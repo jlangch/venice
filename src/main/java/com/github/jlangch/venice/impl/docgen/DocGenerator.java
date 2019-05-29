@@ -875,18 +875,11 @@ public class DocGenerator {
 		final DocSection io = new DocSection("file-io");
 		all.addSection(io);
 		io.addItem(getDocItem("io/file"));
-		io.addItem(getDocItem("io/file?"));
 		io.addItem(getDocItem("io/file-parent"));
 		io.addItem(getDocItem("io/file-name"));
 		io.addItem(getDocItem("io/file-path"));
 		io.addItem(getDocItem("io/file-absolute-path"));
 		io.addItem(getDocItem("io/file-canonical-path"));
-		io.addItem(getDocItem("io/exists-file?"));
-		io.addItem(getDocItem("io/exists-dir?"));
-		io.addItem(getDocItem("io/file-can-read?", false, false));
-		io.addItem(getDocItem("io/file-can-write?", false, false));
-		io.addItem(getDocItem("io/file-can-execute?", false, false));
-		io.addItem(getDocItem("io/file-hidden?", false, false));
 		io.addItem(getDocItem("io/list-files"));
 		io.addItem(getDocItem("io/file-size"));
 		io.addItem(getDocItem("io/delete-file"));
@@ -902,6 +895,16 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
 		io.addItem(getDocItem("io/temp-file"));
+
+		final DocSection io_test = new DocSection("file-io test");
+		all.addSection(io_test);
+		io_test.addItem(getDocItem("io/file?"));
+		io_test.addItem(getDocItem("io/exists-file?"));
+		io_test.addItem(getDocItem("io/exists-dir?"));
+		io_test.addItem(getDocItem("io/file-can-read?", false, false));
+		io_test.addItem(getDocItem("io/file-can-write?", false, false));
+		io_test.addItem(getDocItem("io/file-can-execute?", false, false));
+		io_test.addItem(getDocItem("io/file-hidden?", false, false));
 
 		final DocSection stream = new DocSection("stream-io");
 		all.addSection(stream);
