@@ -192,7 +192,7 @@ public class JsonFunctions {
 						"      return value will replace the property names in the output. \n" +
 						"      Default is 'identity', use 'keyword' to get keyword \n" +
 						"      properties. \n" +
-						"  :vakue-fn fn \n" + 
+						"  :value-fn fn \n" + 
 						"      Function to transform values in JSON objects in\n" + 
 						"      the output. For each JSON property, value-fn is called with\n" + 
 						"      two arguments: the property name (transformed by key-fn) and\n" + 
@@ -257,7 +257,7 @@ public class JsonFunctions {
 						"      return value will replace the property names in the output. \n" +
 						"      Default is 'identity', use 'keyword' to get keyword \n" +
 						"      properties. \n" +
-						"  :vakue-fn fn \n" + 
+						"  :value-fn fn \n" + 
 						"      Function to transform values in JSON objects in\n" + 
 						"      the output. For each JSON property, value-fn is called with\n" + 
 						"      two arguments: the property name (transformed by key-fn) and\n" + 
