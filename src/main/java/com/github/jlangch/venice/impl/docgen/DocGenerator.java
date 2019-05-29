@@ -922,7 +922,7 @@ public class DocGenerator {
 
 		final DocSection gzip = new DocSection("gzip");
 		all.addSection(gzip);
-		gzip.addItem(getDocItem("io/gzip"));
+		gzip.addItem(getDocItem("io/gzip", false, false));
 		gzip.addItem(getDocItem("io/gzip-to-stream"));
 		gzip.addItem(getDocItem("io/gzip?"));
 		gzip.addItem(getDocItem("io/ungzip"));

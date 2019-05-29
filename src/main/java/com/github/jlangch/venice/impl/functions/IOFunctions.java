@@ -1547,8 +1547,14 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/gzip f)")		
-					.doc("gzips f. f may be a file, a string (file path), a bytebuf or an InputStream. Returns a bytebuf.")
-					.examples("(io/gzip (bytebuf-from-string \"abcdef\" :utf-8))")
+					.doc(
+						"gzips f. f may be a file, a string (file path), a bytebuf or an " +
+						"InputStream. Returns a bytebuf.")
+					.examples(
+						"(->> (io/gzip \"a.txt\")  \n" +
+						"     (io/spit \"a.gz\"))    ",
+						
+						"(io/gzip (bytebuf-from-string \"abcdef\" :utf-8))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1652,7 +1658,9 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/ungzip f)")		
-					.doc("ungzips f. f may be a file, a string (file path), a bytebuf, or an InputStream. Returns a bytebuf.")
+					.doc(
+						"ungzips f. f may be a file, a string (file path), a bytebuf, " +
+						"or an InputStream. Returns a bytebuf.")
 					.examples(
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/gzip) \n" +
@@ -1700,7 +1708,9 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/ungzip-to-stream buf)")		
-					.doc("ungzips a bytebuf returning an InputStream to read the deflated data from.")
+					.doc(
+						"ungzips a bytebuf returning an InputStream to read the deflated " +
+						"data from.")
 					.examples(
 							"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 							"    (io/gzip) \n" +
