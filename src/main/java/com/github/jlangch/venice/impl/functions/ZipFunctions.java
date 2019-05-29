@@ -558,7 +558,7 @@ public class ZipFunctions {
 						"Zips a file or directory to a file (given as File or string " +
 						"file path) or an OutputStream. \n\n" +
 						"Options: \n" +
-						"  :filter-fn fn - filters the files to be added to the zip. Adds all witout filter \n" +
+						"  :filter-fn fn - filters the files to be added to the zip. \n" +
 						"  :include-start-dir bool - include the start dir, defaults to false ")
 					.examples(
 						"(io/zip-file \"test-dir\" \"test.zip\")",
