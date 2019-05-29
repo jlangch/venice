@@ -500,6 +500,19 @@ public class Zipper {
 		}
 	}
 
+	public static void listZip(final byte[] binary, final PrintStream ps, final boolean verbose) {
+		if (binary == null) {
+			throw new IllegalArgumentException("A 'binary' must not be null");
+		}
+
+		try (ByteArrayInputStream is = new ByteArrayInputStream(binary)) {
+			listZip(is, ps, verbose);
+		} 
+		catch (IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
 	public static void listZip(final File zip, final PrintStream ps, final boolean verbose) {
 		if (zip == null) {
 			throw new IllegalArgumentException("A 'zip' must not be null");

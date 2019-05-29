@@ -693,7 +693,7 @@ public class IOFunctions {
 						"Read all lines from f. f may be a file, a string file path, " +
 						"a Java InputStream, or a Java Reader. \n\n" + 
 						"Options: \n" +
-						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -762,7 +762,7 @@ public class IOFunctions {
 						"or a Java Reader. \n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -849,7 +849,7 @@ public class IOFunctions {
 						"f may be a file or a string file path. \n\n" +
 						"Options: \n" +
 						"  :append true/false - e.g :append true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1404,7 +1404,9 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/zip-file src-file dest)")		
-					.doc("Zips a file or directory to a file, a string (file path), or an OutputStream.")
+					.doc(
+						"Zips a file or directory to a file (given as File or string " +
+						"file path) or an OutputStream.")
 					.examples(
 						"(io/zip-file \"test-dir\" \"test.zip\")")
 					.build()
@@ -1449,8 +1451,8 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/zip-list f & options)")		
 					.doc(
-						"List the content of a the zip f. f may be a file, a string (file path), " +
-						"or an InputStream. \n" +
+						"List the content of a the zip f. f may be a bytebuf, a file, " +
+						"a string (file path), or an InputStream. \n" +
 						"Options: \n" +
 						"  :verbose true/false - e.g :verbose true, defaults to false")
 					.examples(
@@ -1462,25 +1464,28 @@ public class IOFunctions {
 				assertMinArity("io/zip-list", args, 1);
 				
 				try {
-					final VncVal zip = args.first();
+					final VncVal f = args.first();
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					
 					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false; 
 
-					if (Types.isVncJavaObject(zip, File.class) ) {
-						Zipper.listZip(Coerce.toVncJavaObject(zip, File.class), System.out, verbose);
+					if (Types.isVncByteBuffer(f) ) {
+						Zipper.listZip(((VncByteBuffer)f).getValue().array(), System.out, verbose);
 					}
-					else if (Types.isVncString(zip)) {
-						Zipper.listZip(new File(Coerce.toVncString(zip).getValue()), System.out, verbose);
+					else if (Types.isVncJavaObject(f, File.class) ) {
+						Zipper.listZip(Coerce.toVncJavaObject(f, File.class), System.out, verbose);
 					}
-					else if (Types.isVncJavaObject(zip, InputStream.class) ) {
-						Zipper.listZip(Coerce.toVncJavaObject(zip, InputStream.class), System.out, verbose);
+					else if (Types.isVncString(f)) {
+						Zipper.listZip(new File(Coerce.toVncString(f).getValue()), System.out, verbose);
+					}
+					else if (Types.isVncJavaObject(f, InputStream.class) ) {
+						Zipper.listZip(Coerce.toVncJavaObject(f, InputStream.class), System.out, verbose);
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/zip-list' does not allow %s as f",
-								Types.getType(zip)));
+								Types.getType(f)));
 					}
 				
 					return Nil;
@@ -1756,7 +1761,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/zip? f)")		
 					.doc(
-						"Returns true if f is a zipped. f may be a file, a string (file path), " +
+						"Returns true if f is a zipped file. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream")
 					.examples(
 						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) " +
@@ -1807,7 +1812,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/gzip? f)")		
 					.doc(
-						"Returns true if f is a zipped. f may be a file, a string (file path), " +
+						"Returns true if f is a gzipped file. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream")
 					.examples(
 						"(-> (io/gzip (bytebuf-from-string \"abc\" :utf-8)) " +
@@ -1858,11 +1863,11 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/download uri & options)")		
 					.doc(
-						"Downloads the content from uri and reads it as text (string) " +
+						"Downloads the content from the uri and reads it as text (string) " +
 						"or binary (bytebuf). \n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1949,7 +1954,7 @@ public class IOFunctions {
 						"For string data an optional encoding can be specified.\n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileInputStream) \n" +
@@ -2008,7 +2013,7 @@ public class IOFunctions {
 						"the operation.\n\n" +
 						"Options: \n" +
 						"  :flush true/false - e.g :flush true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :UTF-8, defaults to :UTF-8")
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileOutputStream) \n" +
@@ -2100,7 +2105,7 @@ public class IOFunctions {
 					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")		
 					.doc(
 						"Wraps an OutputStream with a BufferedWriter using an optional " +
-						"encoding (defaults to :UTF-8).")
+						"encoding (defaults to :utf-8).")
 					.examples(
 						"(do                                                         \n" +
 						"   (import :java.io.ByteArrayOutputStream)                  \n" +
@@ -2139,7 +2144,7 @@ public class IOFunctions {
 					.arglists("(io/wrap-os-with-print-writer os encoding?)")		
 					.doc(
 						"Wraps an OutputStream with a PrintWriter using an optional " +
-						"encoding (defaults to :UTF-8).")
+						"encoding (defaults to :utf-8).")
 					.examples(
 						"(do                                                      \n" +
 						"   (import :java.io.ByteArrayOutputStream)               \n" +
@@ -2177,7 +2182,7 @@ public class IOFunctions {
 						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")		
 						.doc(
 							"Wraps an InputStream with a BufferedReader using an optional " +
-							"encoding (defaults to :UTF-8).")
+							"encoding (defaults to :utf-8).")
 						.examples(
 							"(do                                                                          \n" +
 							"   (import :java.io.ByteArrayInputStream)                                    \n" +						
