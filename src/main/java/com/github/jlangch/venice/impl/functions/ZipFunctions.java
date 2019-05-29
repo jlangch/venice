@@ -558,12 +558,17 @@ public class ZipFunctions {
 						"Zips a file or directory to a file (given as File or string " +
 						"file path) or an OutputStream. \n\n" +
 						"Options: \n" +
-						"  :filter-fn fn - filters the files to be added to the zip \n" +
-						"  :include-dir bool - include the start dir, defaults to false ")
+						"  :filter-fn fn - filters the files to be added to the zip. Adds all witout filter \n" +
+						"  :include-start-dir bool - include the start dir, defaults to false ")
 					.examples(
 						"(io/zip-file \"test-dir\" \"test.zip\")",
+						"(io/zip-file \"test-dir\" \"test.zip\" :include-start-dir true)",
 						"(io/zip-file \"test-dir\" \n" +
 						"             \"test.zip\" \n" +
+						"             :filter-fn (fn [dir name] (str/ends-with? name \".txt\")))",
+						"(io/zip-file \"test-dir\"            \n" +
+						"             \"test.zip\"            \n" +
+						"             :include-start-dir true \n" +
 						"             :filter-fn (fn [dir name] (str/ends-with? name \".txt\")))")
 					.build()
 		) {	
@@ -577,7 +582,7 @@ public class ZipFunctions {
 
 				final VncVal filterFnVal = options.get(new VncKeyword("filter-fn")); 					
 				final VncFunction filterFn = filterFnVal == Nil ? null : Coerce.toVncFunction(filterFnVal);				
-				final boolean includeStartDir = options.get(new VncKeyword("include-dir")) == True; 					
+				final boolean includeStartDir = options.get(new VncKeyword("include-start-dir")) == True; 					
 
 				final FilenameFilter filter = filterFn == null
 												? null

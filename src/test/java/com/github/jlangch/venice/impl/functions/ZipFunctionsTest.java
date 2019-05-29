@@ -110,7 +110,7 @@ public class ZipFunctionsTest {
 					"                                                        \n" +
 					"  (io/zip-file zip-dir                                  \n" +
 					"               zip                                      \n" +
-					"               :include-dir true)                       \n" +
+					"               :include-start-dir true)                 \n" +
 					"  (assert (io/exists-file? zip))                        \n" +
 					"  (assert (== 4 (io/zip-size zip)))                     \n" +
 					"                                                        \n" +
@@ -156,7 +156,7 @@ public class ZipFunctionsTest {
 					"                                                        \n" +
 					"  (io/zip-file zip-dir                                  \n" +
 					"               zip                                      \n" +
-					"               :include-dir true                        \n" +
+					"               :include-start-dir true                  \n" +
 					"               :filter-fn (fn [d n] (str/ends-with? n \".txt\")))  \n" +
 					"  (assert (io/exists-file? zip))                        \n" +
 					"  (assert (== 3 (io/zip-size zip)))                     \n" +
@@ -203,7 +203,7 @@ public class ZipFunctionsTest {
 					"                                                        \n" +
 					"  (io/zip-file zip-dir                                  \n" +
 					"               zip                                      \n" +
-					"               :include-dir false                       \n" +
+					"               :include-start-dir false                 \n" +
 					"               :filter-fn (fn [d n] (str/ends-with? n \".txt\")))  \n" +
 					"  (assert (io/exists-file? zip))                        \n" +
 					"  (assert (== 2 (io/zip-size zip)))                     \n" +
