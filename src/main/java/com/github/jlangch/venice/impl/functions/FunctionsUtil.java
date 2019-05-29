@@ -2,14 +2,12 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class FunctionsUtil {
@@ -35,10 +33,6 @@ public class FunctionsUtil {
 		if (arity < minArity) {
 			throw new ArityException(arity, fnName);
 		}
-	}
-
-	public static boolean isJavaIoFile(final VncVal val) {
-		return Types.isVncJavaObject(val, File.class);
 	}
 
 	public static VncList removeNilValues(final VncList list) {

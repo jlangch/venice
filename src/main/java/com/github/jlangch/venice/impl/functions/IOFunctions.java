@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.isJavaIoFile;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
@@ -32,6 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -84,8 +85,8 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/file path) (io/file parent child)")		
 					.doc(
-						"Returns a java.io.File. path, parent, and child can be a string " +
-						"or a java.io.File")
+						"Returns a java.io.File. path, parent, may be a file or a string (file path) " +
+						"child must be a string")
 					.examples(
 						"(io/file \"/temp/test.txt\")",
 						"(io/file \"/temp\" \"test.txt\")",
@@ -96,45 +97,19 @@ public class IOFunctions {
 				assertArity("io/file", args, 1, 2);
 							
 				if (args.size() == 1) {
-					final VncVal path = args.first();
-					if (Types.isVncString(path)) {
-						return new VncJavaObject(new File(((VncString)path).getValue()));
-					}
-					else if (isJavaIoFile(path) ) {
-						return path;
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/file' does not allow %s as path",
-								Types.getType(path)));
-					}
+					return new VncJavaObject(
+									convertToFile(
+											args.first(), 
+											"Function 'io/file' does not allow %s as path"));
 				}
 				else {
-					final VncVal parent = args.first();
-					final VncVal child = args.second();
+					final File parent = convertToFile(
+											args.first(), 
+											"Function 'io/file' does not allow %s as parent");
 					
-					File parentFile;
-	
-					if (Types.isVncString(parent)) {
-						parentFile = new File(((VncString)parent).getValue());
-					}
-					else if (isJavaIoFile(parent) ) {
-						parentFile = (File)((VncJavaObject)parent).getDelegate();
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/file' does not allow %s as parent",
-								Types.getType(parent)));
-					}
-	
-					if (Types.isVncString(child)) {
-						 return new VncJavaObject(new File(parentFile, ((VncString)child).getValue()));
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/file' does not allow %s as child",
-								Types.getType(child)));
-					}
+					final String child = Coerce.toVncString(args.second()).getValue();
+					
+					return new VncJavaObject(new File(parent, child));
 				}		
 			}
 	
@@ -148,21 +123,18 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/file-size f)")		
-					.doc("Returns the size of the file f. f must be a java.io.File.")
-					.examples("(io/file-size (io/file \"/bin/sh\"))")
+					.doc("Returns the size of the file f. f must be a file or a string (file path).")
+					.examples("(io/file-size \"/bin/sh\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-size", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/file-size' does not allow %s as f",
-							Types.getType(args.first())));
-				}
-	
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
-				return new VncLong(file.length());
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-size' does not allow %s as f");
+				
+				return new VncLong(f.length());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -175,21 +147,71 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/file-path f)")		
-					.doc("Returns the path of the file f. f must be a java.io.File.")
+					.doc("Returns the path of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-path", args, 1);
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-path' does not allow %s as f");
+						
+				return new VncString(f.getPath());
+			}
 	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/file-path' does not allow %s as f",
-							Types.getType(args.first())));
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_canonical_path = 
+		new VncFunction(
+				"io/file-canonical-path", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/file-canonical-path f)")		
+					.doc("Returns the canonical path of the file f. f must be a file or a string (file path).")
+					.examples("(io/file-canonical-path (io/file \"/tmp/test/../x.txt\"))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-canonical-path", args, 1);
+
+				try {
+					final File f = convertToFile(
+										args.first(), 
+										"Function 'io/file-canonical-path' does not allow %s as f");
+							
+					return new VncString(f.getCanonicalPath());
 				}
+				catch(IOException ex) {
+					throw new VncException("Failed to get canonical file path", ex);
+				}
+			}
 	
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
-				return new VncString(file.getPath());
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_absolute_path = 
+		new VncFunction(
+				"io/file-absolute-path", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/file-absolute-path f)")		
+					.doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
+					.examples("(io/file-absolute-path (io/file \"/tmp/test/x.txt\"))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-absolute-path", args, 1);
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-absolute-path' does not allow %s as f");
+						
+				return new VncString(f.getAbsolutePath());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -202,21 +224,19 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/file-parent f)")		
-					.doc("Returns the parent file of the file f. f must be a java.io.File.")
+					.doc("Returns the parent file of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-parent", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/file-parent' does not allow %s as f",
-							Types.getType(args.first())));
-				}
-	
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
-				return new VncJavaObject(file.getParentFile());
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-parent' does not allow %s as f");
+						
+				final File parent = f.getParentFile();
+				return parent == null ? Nil : new VncJavaObject(parent);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -229,21 +249,18 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/file-name f)")		
-					.doc("Returns the name of the file f. f must be a java.io.File.")
+					.doc("Returns the name of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-name", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/file-name' does not allow %s as f",
-							Types.getType(args.first())));
-				}
-	
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
-				return new VncString(file.getName());
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/file-name' does not allow %s as f");
+						
+				return new VncString(f.getName());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -263,8 +280,7 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file?", args, 1);
 	
-				final VncVal path = args.first();
-				return isJavaIoFile(path) ? True : False;
+				return Types.isVncJavaObject(args.first(), File.class) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -276,22 +292,19 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/exists-file? x)")		
-					.doc("Returns true if the file x exists. x must be a java.io.File.")
-					.examples("(io/exists-file? (io/file \"/temp/test.txt\"))")
+					.arglists("(io/exists-file? f)")		
+					.doc("Returns true if the file f exists. fx must be a file or a string (file path).")
+					.examples("(io/exists-file? \"/temp/test.txt\")")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/exists-file?", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/exists-file?' does not allow %s as x",
-							Types.getType(args.first())));
-				}
-	
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
-				return file.isFile() ? True : False;
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/exists-file?' does not allow %s as x");
+						
+				return Constants.bool(f.isFile());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -306,21 +319,18 @@ public class IOFunctions {
 					.arglists("(io/exists-dir? f)")		
 					.doc(
 						"Returns true if the file f exists and is a directory. " +
-						"f must be a java.io.File.")
+						"f must be a file or a string (file path).")
 					.examples("(io/exists-dir? (io/file \"/temp\"))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("io/exists-dir?", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/exists-dir?' does not allow %s as f",
-							Types.getType(args.first())));
-				}
-	
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
-				return file.isDirectory() ? True : False;
+
+				final File f = convertToFile(
+									args.first(), 
+									"Function 'io/exists-dir?' does not allow %s as f");
+						
+				return Constants.bool(f.isDirectory());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -333,26 +343,23 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/delete-file f & files)")		
-					.doc("Deletes one or multiple files. f must be a java.io.File.")
+					.doc("Deletes one or multiple files. f must be a file or a string (file path)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/delete-file", args, 1);
 	
 				args.forEach(f -> {
-					if (!isJavaIoFile(f) ) {
-						throw new VncException(String.format(
-								"Function 'io/delete-file' does not allow %s as f",
-								Types.getType(args.first())));
-					}
-	
-					final File file = (File)((VncJavaObject)f).getDelegate();
 					try {
-						Files.deleteIfExists(file.toPath());	
+						final File file = convertToFile(
+											f, 
+											"Function 'io/delete-file' does not allow %s as f");
+								
+						Files.deleteIfExists(file.toPath());
 					}
 					catch(Exception ex) {
 						throw new VncException(
-								String.format("Failed to delete file %s", file.getPath()),
+								String.format("Failed to delete file %s", f.toString()),
 								ex);
 					}
 				});
@@ -370,32 +377,23 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/delete-file-on-exit f)")		
-					.doc("Deletes a file on JVM exit. f must be a string or java.io.File.")
+					.doc("Deletes a file on JVM exit. f must be a file or a string (file path).")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("io/delete-file-on-exit", args, 1);
 	
-				File file;
-				if (Types.isVncString(args.first()) ) {
-					file = new File(((VncString)args.first()).getValue());
-				}
-				else if (isJavaIoFile(args.first()) ) {
-					file = (File)((VncJavaObject)args.first()).getDelegate();
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'io/delete-file-on-exit' does not allow %s as f",
-							Types.getType(args.first())));
-				}
-	
+				final File file = convertToFile(
+									args.first(), 
+									"Function 'io/delete-file-on-exit' does not allow %s as f");
+						
 				try {
-					file.deleteOnExit();;	
+					file.deleteOnExit();	
 				}
 				catch(Exception ex) {
 					throw new VncException(
 							String.format(
-									"Failed to marke file %s to delete on exit", 
+									"Failed to mark file %s to be deleted on exit", 
 									file.getPath()),
 							ex);
 				}
@@ -414,26 +412,23 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/list-files dir filterFn?)")		
 					.doc(
-						"Lists files in a directory. dir must be a java.io.File. " +
+						"Lists files in a directory. dir must be a file or a string (file path). " +
 						"filterFn is an optional filter that filters the files found.")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("io/list-files", args, 1, 2);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/list-files' does not allow %s as dir",
-							Types.getType(args.first())));
-				}
+
+				final File dir = convertToFile(
+									args.first(), 
+									"Function 'io/list-files' does not allow %s as dir");
 				
-				final File file = (File)((VncJavaObject)args.first()).getDelegate();
 				try {
 					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
 	
 					final List<VncVal> files = new ArrayList<>();
 	
-					for(File f : file.listFiles()) {
+					for(File f : dir.listFiles()) {
 						final VncVal result = (filterFn == null) 
 												? True 
 												: filterFn.apply(VncList.of(new VncJavaObject(f)));
@@ -446,7 +441,7 @@ public class IOFunctions {
 				}
 				catch(Exception ex) {
 					throw new VncException(
-							String.format("Failed to list files %s", file.getPath()), 
+							String.format("Failed to list files %s", dir.getPath()), 
 							ex);
 				}
 			}
@@ -460,57 +455,56 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/copy-file input output)")		
+					.arglists("(io/copy-file source dest)")		
 					.doc(
-						"Copies input to output. Returns nil or throws IOException. " + 
-						"Input must be a java.io.File, output must be a java.io.File " +
-						"or java.io.OutputStream.")
+						"Copies source to dest. Returns nil or throws IOException. " + 
+						"Source must be a file or a string (file path), dest must be a file, " +
+						"a string (file path), or an OutputStream.")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("io/copy-file", args, 2);
+
+				final File source = convertToFile(
+										args.first(), 
+										"Function 'io/copy-file' does not allow %s as source");
 	
-				if (!isJavaIoFile(args.first())) {
-					throw new VncException(String.format(
-							"Function 'io/copy-file' does not allow %s as input",
-							Types.getType(args.first())));
-				}
-
+				final VncVal destVal = args.second();
 				
-				final File from = (File)((VncJavaObject)args.first()).getDelegate();
-
-				if (isJavaIoFile(args.second())) {
-					final File to = (File)((VncJavaObject)args.second()).getDelegate();
+				if (Types.isVncString(destVal) || Types.isVncJavaObject(destVal, File.class)) {
+					final File dest = Types.isVncString(destVal)
+										? new File(Coerce.toVncString(destVal).getValue())
+										: Coerce.toVncJavaObject(destVal, File.class);
 					
 					try {
-						Files.copy(from.toPath(), to.toPath());
+						Files.copy(source.toPath(), dest.toPath());
 					}
 					catch(Exception ex) {
 						throw new VncException(
 								String.format(
 										"Failed to copy file %s to %s", 
-										from.getPath(), 
-										to.getPath()),
+										source.getPath(), dest.getPath()),
 								ex);
 					}
 				}
-				else if (Types.isVncJavaObject(args.second(), OutputStream.class)) {
-					final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
+				else if (Types.isVncJavaObject(destVal, OutputStream.class)) {
+					final OutputStream os = (OutputStream)((VncJavaObject)destVal).getDelegate();
+					
 					try {
-						IOStreamUtil.copyFileToOS(from, (OutputStream)os);
+						IOStreamUtil.copyFileToOS(source, os);
 					}
 					catch(Exception ex) {
 						throw new VncException(
 								String.format(
 										"Failed to copy file %s to stream", 
-										from.getPath()),
+										source.getPath()),
 								ex);
 					}
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'io/copy-file' does not allow %s as output",
-							Types.getType(args.second())));
+							"Function 'io/copy-file' does not allow %s as dest",
+							Types.getType(destVal)));
 				}
 				
 				return Nil;
@@ -528,36 +522,27 @@ public class IOFunctions {
 					.arglists("(io/move-file source target)")		
 					.doc(
 						"Moves source to target. Returns nil or throws IOException. " + 
-						"Source and target must be a java.io.File.")
+						"Source and target must be a file or a string (file path).")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/move-file", args, 2);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/move-file' does not allow %s as source",
-							Types.getType(args.first())));
-				}
-				if (!isJavaIoFile(args.second()) ) {
-					throw new VncException(String.format(
-							"Function 'io/move-file' does not allow %s as target",
-							Types.getType(args.second())));
-				}
-	
-	
-				final File from = (File)((VncJavaObject)args.first()).getDelegate();
-				final File to = (File)((VncJavaObject)args.second()).getDelegate();
-				
+
+				final File from = convertToFile(
+									args.first(), 
+									"Function 'io/move-file' does not allow %s as source");
+
+				final File to = convertToFile(
+									args.second(), 
+									"Function 'io/move-file' does not allow %s as target");
+
 				try {
 					Files.move(from.toPath(), to.toPath());
 				}
 				catch(Exception ex) {
 					throw new VncException(
 							String.format(
-									"Failed to move file %s to %s", 
-									from.getPath(), 
-									to.getPath()),
+								"Failed to move file %s to %s", from.getPath(), to.getPath()),
 							ex);
 				}
 				
@@ -574,27 +559,22 @@ public class IOFunctions {
 					.meta()
 					.module("io")
 					.arglists("(io/mkdir dir)")		
-					.doc("Creates the directory. dir must be a java.io.File.")
+					.doc("Creates the directory. dir must be a file or a string (file path).")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/mkdir", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/mkdir' does not allow %s as dir",
-							Types.getType(args.first())));
-				}
-	
-				final File dir = (File)((VncJavaObject)args.first()).getDelegate();				
+
+				final File dir = convertToFile(
+									args.first(), 
+									"Function 'io/mkdir' does not allow %s as dir");
+
 				try {
 					dir.mkdir();
 				}
 				catch(Exception ex) {
 					throw new VncException(
-							String.format(
-									"Failed to create dir %s", 
-									dir.getPath()),
+							String.format("Failed to create dir %s", dir.getPath()),
 							ex);
 				}
 				
@@ -613,27 +593,22 @@ public class IOFunctions {
 					.arglists("(io/mkdirs dir)")		
 					.doc(
 						"Creates the directory including any necessary but nonexistent " +
-						"parent directories. dir must be a java.io.File.")
+						"parent directories. dir must be a file or a string (file path).")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("io/mkdirs", args, 1);
-	
-				if (!isJavaIoFile(args.first()) ) {
-					throw new VncException(String.format(
-							"Function 'io/mkdirs' does not allow %s as dir",
-							Types.getType(args.first())));
-				}
-	
-				final File dir = (File)((VncJavaObject)args.first()).getDelegate();				
+
+				final File dir = convertToFile(
+									args.first(), 
+									"Function 'io/mkdirs' does not allow %s as dir");
+
 				try {
 					dir.mkdirs();
 				}
 				catch(Exception ex) {
 					throw new VncException(
-							String.format(
-									"Failed to create dir %s", 
-									dir.getPath()),
+							String.format("Failed to create dir %s",  dir.getPath()),
 							ex);
 				}
 				
@@ -757,7 +732,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/slurp f & options)")		
 					.doc(
-						"Reads the content of f as text (string) or binary (bytebuf). " +
+						"Reads the content of file f as text (string) or binary (bytebuf). " +
 						"f may be a file, a string file path, a Java InputStream, " +
 						"or a Java Reader. \n\n" +
 						"Options: \n" +
@@ -846,7 +821,7 @@ public class IOFunctions {
 					.arglists("(io/spit f content & options)")		
 					.doc(
 						"Opens f, writes content, and then closes f. " +
-						"f may be a file or a string file path. \n\n" +
+						"f may be a file or a string (file path). \n\n" +
 						"Options: \n" +
 						"  :append true/false - e.g :append true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
@@ -856,19 +831,10 @@ public class IOFunctions {
 				assertMinArity("io/spit", args, 2);
 	
 				try {
-					File file;
-					
-					if (Types.isVncString(args.first()) ) {
-						file = new File(((VncString)args.first()).getValue());
-					}
-					else if (Types.isVncJavaObject(args.first(), File.class)) {
-						file = Coerce.toVncJavaObject(args.first(), File.class);
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/spit' does not allow %s as f",
-								Types.getType(args.first())));
-					}
+
+					final File file = convertToFile(
+										args.first(), 
+										"Function 'io/spit' does not allow %s as f");
 	
 			
 					final VncVal content = args.second();
@@ -930,7 +896,7 @@ public class IOFunctions {
 					.arglists("(io/zip & entries)")		
 					.doc(
 						"Creates a zip containing the entries. An entry is given by a " +
-						"name and data. The entry data maybe nil, a bytebuf, a file, " +
+						"name and data. The entry data may be nil, a bytebuf, a file, " +
 						"a string (file path), or an InputStream. " +
 						"An entry name with a trailing '/' creates a directory. " +
 						"Returns the zip as bytebuf.")
@@ -1026,7 +992,7 @@ public class IOFunctions {
 					.doc(
 						"Appends entries to an existing zip file f. Overwrites existing " +
 						"entries. An entry is given by a name and data. The entry data " +
-						"maybe nil, a bytebuf, a file, a string (file path), or an " +
+						"may be nil, a bytebuf, a file, a string (file path), or an " +
 						"InputStream." +
 						"An entry name with a trailing '/' creates a directory. ")
 					.examples( 
@@ -1121,7 +1087,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/zip-size f)")		
 					.doc(
-						"Returns the number of entries in the zip f. f maybe a bytebuf, " +
+						"Returns the number of entries in the zip f. f may be a bytebuf, " +
 						"a file, a string (file path) or an InputStream.")
 					.examples(
 						"(io/zip-size (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)))")
@@ -1171,7 +1137,7 @@ public class IOFunctions {
 					.module("io")
 					.arglists("(io/unzip f entry-name)")		
 					.doc(
-						"Unzips an entry from zip f the entry's data as a bytebuf. f maybe a bytebuf, \n" + 
+						"Unzips an entry from zip f the entry's data as a bytebuf. f may be a bytebuf, \n" + 
 						"a file, a string (file path) or an InputStream.")
 					.examples(
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
@@ -1226,7 +1192,7 @@ public class IOFunctions {
 					.arglists("(io/unzip-first zip)")		
 					.doc(
 						"Unzips the first entry of the zip f returning its data as a bytebuf. " +
-						"f maybe a bytebuf, a file, a string (file path) or an InputStream.")
+						"f may be a bytebuf, a file, a string (file path) or an InputStream.")
 					.examples(
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)) \n" +
@@ -1280,7 +1246,7 @@ public class IOFunctions {
 					.arglists("(io/unzip-nth zip n)")		
 					.doc(
 						"Unzips the nth (zero.based) entry of the zip f returning its data as a bytebuf. " +
-						"f maybe a bytebuf, a file, a string (file path) or an InputStream.")
+						"f may be a bytebuf, a file, a string (file path) or an InputStream.")
 					.examples(
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
@@ -1337,7 +1303,7 @@ public class IOFunctions {
 					.doc(
 						"Unzips all entries of the zip f returning a map with " +
 						"the entry names as key and the entry data as bytebuf values. " +
-						"f maybe a bytebuf, a file, a string (file path) or an InputStream.")
+						"f may be a bytebuf, a file, a string (file path) or an InputStream.")
 					.examples(
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
@@ -1418,13 +1384,13 @@ public class IOFunctions {
 				final VncVal dest = args.second();
 				
 				try {
-					if (Types.isVncJavaObject(dest, File.class) ) {
+					if (Types.isVncJavaObject(dest, File.class)) {
 						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, File.class));
 					}
 					else if (Types.isVncString(dest)) {
 						Zipper.zipFileOrDir(sourceFile, null, new File(Coerce.toVncString(dest).getValue()));
 					}
-					else if (Types.isVncJavaObject(dest, OutputStream.class) ) {
+					else if (Types.isVncJavaObject(dest, OutputStream.class)) {
 						Zipper.zipFileOrDir(sourceFile, null, Coerce.toVncJavaObject(dest, OutputStream.class));
 					}
 					else {
@@ -1470,16 +1436,16 @@ public class IOFunctions {
 					
 					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false; 
 
-					if (Types.isVncByteBuffer(f) ) {
+					if (Types.isVncByteBuffer(f)) {
 						Zipper.listZip(((VncByteBuffer)f).getValue().array(), System.out, verbose);
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						Zipper.listZip(Coerce.toVncJavaObject(f, File.class), System.out, verbose);
 					}
 					else if (Types.isVncString(f)) {
 						Zipper.listZip(new File(Coerce.toVncString(f).getValue()), System.out, verbose);
 					}
-					else if (Types.isVncJavaObject(f, InputStream.class) ) {
+					else if (Types.isVncJavaObject(f, InputStream.class)) {
 						Zipper.listZip(Coerce.toVncJavaObject(f, InputStream.class), System.out, verbose);
 					}
 					else {
@@ -1521,17 +1487,18 @@ public class IOFunctions {
 				final VncVal f = args.first();
 				final File dir = Coerce.toVncJavaObject(args.second(), File.class);
 				
+				
 				try {
-					if (Types.isVncByteBuffer(f) ) {
+					if (Types.isVncByteBuffer(f)) {
 						Zipper.unzipToDir(((VncByteBuffer)f).getValue().array(), dir);
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						Zipper.unzipToDir(Coerce.toVncJavaObject(f, File.class), dir);
 					}
-					else if (Types.isVncString(f) ) {
+					else if (Types.isVncString(f)) {
 						Zipper.unzipToDir(new File(Coerce.toVncString(f).getValue()), dir);
 					}
-					else if (Types.isVncJavaObject(f, InputStream.class) ) {
+					else if (Types.isVncJavaObject(f, InputStream.class)) {
 						Zipper.unzipToDir(Coerce.toVncJavaObject(f, InputStream.class), dir);
 					}
 					else {
@@ -1575,13 +1542,13 @@ public class IOFunctions {
 					if (f == Nil) {
 						return Nil;
 					}
-					else if (Types.isVncByteBuffer(f) ) {
+					else if (Types.isVncByteBuffer(f)) {
 						return new VncByteBuffer(Zipper.gzip(((VncByteBuffer)f).getValue().array()));
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						return new VncByteBuffer(Zipper.gzip(Coerce.toVncJavaObject(f, File.class)));
 					}
-					else if (Types.isVncString(f) ) {
+					else if (Types.isVncString(f)) {
 						return new VncByteBuffer(Zipper.gzip(new File(Coerce.toVncString(f).getValue())));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
@@ -1631,15 +1598,15 @@ public class IOFunctions {
 					if (f == Nil) {
 						return Nil;
 					}
-					else if (Types.isVncByteBuffer(f) ) {
+					else if (Types.isVncByteBuffer(f)) {
 						Zipper.gzip(((VncByteBuffer)f).getValue().array(), os);
 						return Nil;
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						Zipper.gzip(Coerce.toVncJavaObject(f, File.class));
 						return Nil;
 					}
-					else if (Types.isVncString(f) ) {
+					else if (Types.isVncString(f)) {
 						Zipper.gzip(new File(Coerce.toVncString(f).getValue()));
 						return Nil;
 					}
@@ -1685,13 +1652,13 @@ public class IOFunctions {
 					if (f == Nil) {
 						return Nil;
 					}
-					else if (Types.isVncByteBuffer(f) ) {
+					else if (Types.isVncByteBuffer(f)) {
 						return new VncByteBuffer(Zipper.ungzip(((VncByteBuffer)f).getValue().array()));
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						return new VncByteBuffer(Zipper.ungzip(Coerce.toVncJavaObject(f, File.class)));
 					}
-					else if (Types.isVncString(f) ) {
+					else if (Types.isVncString(f)) {
 						return new VncByteBuffer(Zipper.ungzip(new File(Coerce.toVncString(f).getValue())));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
@@ -1736,7 +1703,7 @@ public class IOFunctions {
 					if (buf == Nil) {
 						return Nil;
 					}
-					else if (Types.isVncByteBuffer(buf) ) {
+					else if (Types.isVncByteBuffer(buf)) {
 						return new VncJavaObject(Zipper.ungzipToStream(((VncByteBuffer)buf).getValue().array()));
 					}
 					else {
@@ -1781,10 +1748,10 @@ public class IOFunctions {
 					if (Types.isVncByteBuffer(f)) {
 						return Zipper.isZipFile(((VncByteBuffer)f).getValue().array()) ? True : False;
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						return Zipper.isZipFile(Coerce.toVncJavaObject(f, File.class)) ? True : False;
 					}
-					else if (Types.isVncString(f) ) {
+					else if (Types.isVncString(f)) {
 						return Zipper.isZipFile(new File(Coerce.toVncString(f).getValue())) ? True : False;
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
@@ -1832,10 +1799,10 @@ public class IOFunctions {
 					if (Types.isVncByteBuffer(f)) {
 						return Zipper.isGZipFile(((VncByteBuffer)f).getValue().array()) ? True : False;
 					}
-					else if (Types.isVncJavaObject(f, File.class) ) {
+					else if (Types.isVncJavaObject(f, File.class)) {
 						return Zipper.isGZipFile(Coerce.toVncJavaObject(f, File.class)) ? True : False;
 					}
-					else if (Types.isVncString(f) ) {
+					else if (Types.isVncString(f)) {
 						return Zipper.isGZipFile(new File(Coerce.toVncString(f).getValue())) ? True : False;
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
@@ -1917,12 +1884,12 @@ public class IOFunctions {
 				final Object is = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
 			
-				if (!(is instanceof InputStream) ) {
+				if (!(is instanceof InputStream)) {
 					throw new VncException(String.format(
 							"Function 'io/copy-stream' does not allow %s as in-stream",
 							Types.getType(args.first())));
 				}
-				if (!(os instanceof OutputStream) ) {
+				if (!(os instanceof OutputStream)) {
 					throw new VncException(String.format(
 							"Function 'io/copy-stream' does not allow %s as out-stream",
 							Types.getType(args.second())));
@@ -2228,12 +2195,12 @@ public class IOFunctions {
 	
 				final VncVal file = args.first();
 				
-				if (Types.isVncString(file) ) {
+				if (Types.isVncString(file)) {
 					return new VncString(
 								MimeTypes.getMimeTypeFromFileName(
 										((VncString)file).getValue()));
 				}
-				else if (isJavaIoFile(file) ) {
+				else if (Types.isVncJavaObject(file, File.class)) {
 					return new VncString(
 							MimeTypes.getMimeTypeFromFile(
 									(File)(Coerce.toVncJavaObject(file).getDelegate())));
@@ -2386,6 +2353,18 @@ public class IOFunctions {
 					: Coerce.toVncString(enc).getValue();
 	}
 	
+	private static File convertToFile(final VncVal f, final String errFormat) {
+		if (Types.isVncString(f)) {
+			return new File(((VncString)f).getValue());
+		}
+		else if (Types.isVncJavaObject(f, File.class)) {
+			return (File)((VncJavaObject)f).getDelegate();
+		}
+		else {
+			throw new VncException(String.format(errFormat, f));
+		}
+	}
+	
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -2397,6 +2376,8 @@ public class IOFunctions {
 					.put("io/file",							io_file)
 					.put("io/file?",						io_file_Q)
 					.put("io/file-path",					io_file_path)
+					.put("io/file-canonical-path",			io_file_canonical_path)
+					.put("io/file-absolute-path",			io_file_absolute_path)
 					.put("io/file-parent",					io_file_parent)
 					.put("io/file-name",					io_file_name)
 					.put("io/file-size",					io_file_size)

@@ -29,4 +29,9 @@ public class Constants {
 	
 	public static VncConstant False = new VncConstant("false");
 
+	
+	
+	public static VncConstant bool(final boolean bool) {
+		return bool ? True : False;
+	}
 }
