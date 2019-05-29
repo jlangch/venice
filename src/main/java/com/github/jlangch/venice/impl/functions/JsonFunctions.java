@@ -203,7 +203,9 @@ public class JsonFunctions {
 						"      Default is false.")
 					.examples(
 						"(json/read-str (json/write-str {:a 100 :b 100}))",
-						"(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)")
+						"(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)",
+						"(json/read-str (json/write-str {:a 100 :b 100}) \n" +
+						"                   :value-fn (fn [k v] (if (== \"a\" k) (inc v) v)))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
