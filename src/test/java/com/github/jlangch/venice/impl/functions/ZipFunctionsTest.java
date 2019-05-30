@@ -47,7 +47,83 @@ public class ZipFunctionsTest {
 	}
 
 	@Test
-	public void test_io_zip_file_not_include_dir() {
+	public void test_io_zip_file_single_not_add_base() {
+		final Venice venice = new Venice();
+
+		try {
+			venice.eval(
+					"(let [base-dir (io/file (io/temp-dir \"zip-test-\"))    \n" +
+					"      zip-dir  (io/file base-dir \"test\")              \n" + 
+					"      a1       (io/file zip-dir \"a1.txt\")             \n" + 
+					"      zip      (io/file base-dir \"a.zip\")]            \n" + 
+					"                                                        \n" +
+					"  (io/mkdir zip-dir)                                    \n" +
+					"  (io/spit a1 \"a1\")                                   \n" +
+					"                                                        \n" +
+					"  (io/zip-file a1 zip)                                  \n" +
+					"  (assert (io/exists-file? zip))                        \n" +
+					"  (assert (== 1 (io/zip-size zip)))                     \n" +
+					"                                                        \n" +
+					"  (io/delete-file a1)                                   \n" +
+					"  (assert (== 0 (count (io/list-files zip-dir))))       \n" +
+					"                                                        \n" +
+					"  (io/unzip-to-dir zip zip-dir)                         \n" +
+					"                                                        \n" +
+					"  (assert (== 1 (count (io/list-files zip-dir))))       \n" +
+					"  (io/delete-file a1)                                   \n" +
+					"  (assert (== 0 (count (io/list-files zip-dir))))       \n" +
+					"                                                        \n" +
+					"  (io/delete-file a1 zip-dir)                           \n" +
+					"  (io/delete-file zip)                                  \n" +
+					"  (assert (== 0 (count (io/list-files base-dir))))      \n" +
+					"  (io/delete-file base-dir)                             \n" +
+					")");
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Test
+	public void test_io_zip_file_single_add_base() {
+		final Venice venice = new Venice();
+
+		try {
+			venice.eval(
+					"(let [base-dir (io/file (io/temp-dir \"zip-test-\"))    \n" +
+					"      zip-dir  (io/file base-dir \"test\")              \n" + 
+					"      a1       (io/file zip-dir \"a1.txt\")             \n" + 
+					"      zip      (io/file base-dir \"a.zip\")]            \n" + 
+					"                                                        \n" +
+					"  (io/mkdir zip-dir)                                    \n" +
+					"  (io/spit a1 \"a1\")                                   \n" +
+					"                                                        \n" +
+					"  (io/zip-file a1 zip :add-base-dir true)               \n" +
+					"  (assert (io/exists-file? zip))                        \n" +
+					"  (assert (== 1 (io/zip-size zip)))                     \n" +
+					"                                                        \n" +
+					"  (io/delete-file a1)                                   \n" +
+					"  (assert (== 0 (count (io/list-files zip-dir))))       \n" +
+					"                                                        \n" +
+					"  (io/unzip-to-dir zip base-dir)                        \n" +
+					"                                                        \n" +
+					"  (assert (== 1 (count (io/list-files zip-dir))))       \n" +
+					"  (io/delete-file a1)                                   \n" +
+					"  (assert (== 0 (count (io/list-files zip-dir))))       \n" +
+					"                                                        \n" +
+					"  (io/delete-file a1 zip-dir)                           \n" +
+					"  (io/delete-file zip)                                  \n" +
+					"  (assert (== 0 (count (io/list-files base-dir))))      \n" +
+					"  (io/delete-file base-dir)                             \n" +
+					")");
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Test
+	public void test_io_zip_file_not_add_base() {
 		final Venice venice = new Venice();
 
 		try {
@@ -90,7 +166,7 @@ public class ZipFunctionsTest {
 	}
 
 	@Test
-	public void test_io_zip_file_include_dir() {
+	public void test_io_zip_file_add_base() {
 		final Venice venice = new Venice();
 
 		try {
@@ -136,7 +212,7 @@ public class ZipFunctionsTest {
 	}
 
 	@Test
-	public void test_io_zip_file_filter_include_dir() {
+	public void test_io_zip_file_filter_add_base() {
 		final Venice venice = new Venice();
 
 		try {
@@ -183,7 +259,7 @@ public class ZipFunctionsTest {
 	}
 
 	@Test
-	public void test_io_zip_file_filter_not_include_dir() {
+	public void test_io_zip_file_filter_not_add_base() {
 		final Venice venice = new Venice();
 
 		try {

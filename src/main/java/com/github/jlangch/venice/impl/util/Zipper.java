@@ -494,20 +494,27 @@ public class Zipper {
 			throw new IllegalArgumentException("An 'os' must not be null");
 		}
 
-		try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
-			if (sourceFileOrDir.isFile()) {
-				zipFile(sourceFileOrDir, sourceFileOrDir.getName(), filter, zipOut);
-			}
-			else {
-				if (addBaseDir) {
-					zipFile(sourceFileOrDir, sourceFileOrDir.getName(), filter, zipOut);
+		try {
+			final File file = sourceFileOrDir.getCanonicalFile();
+			
+			try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
+				if (file.isFile()) {
+					final String name = (addBaseDir && file.getParentFile() != null)
+											? file.getParentFile().getName() + "/" + file.getName()
+											: file.getName();
+					zipFile(file, name, filter, zipOut);
 				}
 				else {
-					final File[] children = sourceFileOrDir.listFiles();
-					for (File childFile : children) {
-						zipFile(childFile, childFile.getName(), filter, zipOut);
+					if (addBaseDir) {
+						zipFile(file, file.getName(), filter, zipOut);
 					}
-
+					else {
+						final File[] children = file.listFiles();
+						for (File childFile : children) {
+							zipFile(childFile, childFile.getName(), filter, zipOut);
+						}
+	
+					}
 				}
 			}
 		}
