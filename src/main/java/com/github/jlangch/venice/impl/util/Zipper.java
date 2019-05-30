@@ -463,7 +463,7 @@ public class Zipper {
 	public static void zipFileOrDir(
 			final File sourceFileOrDir, 
 			final FilenameFilter filter,
-			final boolean includeStartDir,
+			final boolean addBaseDir,
 			final File destZip
 	) {
 		if (sourceFileOrDir == null) {
@@ -474,7 +474,7 @@ public class Zipper {
 		}
 
 		try (FileOutputStream fos = new FileOutputStream(destZip)) {
-			zipFileOrDir(sourceFileOrDir, filter, includeStartDir, fos);
+			zipFileOrDir(sourceFileOrDir, filter, addBaseDir, fos);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -484,7 +484,7 @@ public class Zipper {
 	public static void zipFileOrDir(
 			final File sourceFileOrDir, 
 			final FilenameFilter filter, 
-			final boolean includeStartDir,
+			final boolean addBaseDir,
 			final OutputStream os
 	) {
 		if (sourceFileOrDir == null) {
@@ -499,7 +499,7 @@ public class Zipper {
 				zipFile(sourceFileOrDir, sourceFileOrDir.getName(), filter, zipOut);
 			}
 			else {
-				if (includeStartDir) {
+				if (addBaseDir) {
 					zipFile(sourceFileOrDir, sourceFileOrDir.getName(), filter, zipOut);
 				}
 				else {

@@ -559,16 +559,12 @@ public class ZipFunctions {
 						"file path) or an OutputStream. \n\n" +
 						"Options: \n" +
 						"  :filter-fn fn - filters the files to be added to the zip. \n" +
-						"  :include-start-dir bool - include the start dir, defaults to false ")
+						"  :add-base-dir bool - add the base dir, defaults to false ")
 					.examples(
 						"(io/zip-file \"test-dir\" \"test.zip\")",
-						"(io/zip-file \"test-dir\" \"test.zip\" :include-start-dir true)",
+						"(io/zip-file \"test-dir\" \"test.zip\" :add-base-dir true)",
 						"(io/zip-file \"test-dir\" \n" +
 						"             \"test.zip\" \n" +
-						"             :filter-fn (fn [dir name] (str/ends-with? name \".txt\")))",
-						"(io/zip-file \"test-dir\"            \n" +
-						"             \"test.zip\"            \n" +
-						"             :include-start-dir true \n" +
 						"             :filter-fn (fn [dir name] (str/ends-with? name \".txt\")))")
 					.build()
 		) {	
@@ -582,7 +578,7 @@ public class ZipFunctions {
 
 				final VncVal filterFnVal = options.get(new VncKeyword("filter-fn")); 					
 				final VncFunction filterFn = filterFnVal == Nil ? null : Coerce.toVncFunction(filterFnVal);				
-				final boolean includeStartDir = options.get(new VncKeyword("include-start-dir")) == True; 					
+				final boolean addBaseDir = options.get(new VncKeyword("add-base-dir")) == True; 					
 
 				final FilenameFilter filter = filterFn == null
 												? null
@@ -598,13 +594,13 @@ public class ZipFunctions {
 
 				try {
 					if (Types.isVncJavaObject(dest, File.class)) {
-						Zipper.zipFileOrDir(sourceFile, filter, includeStartDir, Coerce.toVncJavaObject(dest, File.class));
+						Zipper.zipFileOrDir(sourceFile, filter, addBaseDir, Coerce.toVncJavaObject(dest, File.class));
 					}
 					else if (Types.isVncString(dest)) {
-						Zipper.zipFileOrDir(sourceFile, filter, includeStartDir, new File(Coerce.toVncString(dest).getValue()));
+						Zipper.zipFileOrDir(sourceFile, filter, addBaseDir, new File(Coerce.toVncString(dest).getValue()));
 					}
 					else if (Types.isVncJavaObject(dest, OutputStream.class)) {
-						Zipper.zipFileOrDir(sourceFile, filter, includeStartDir, Coerce.toVncJavaObject(dest, OutputStream.class));
+						Zipper.zipFileOrDir(sourceFile, filter, addBaseDir, Coerce.toVncJavaObject(dest, OutputStream.class));
 					}
 					else {
 						throw new VncException(String.format(
