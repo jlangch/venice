@@ -461,20 +461,19 @@ public class Zipper {
 	}
 
 	public static void zipFileOrDir(
-			final File sourceFileOrDir, 
-			final FilenameFilter filter,
-			final boolean addBaseDir,
-			final File destZip
+			final File zip,
+			final List<File> sourceFileOrDirs, 
+			final FilenameFilter filter
 	) {
-		if (sourceFileOrDir == null) {
-			throw new IllegalArgumentException("A 'sourceFileOrDir' must not be null");
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
 		}
-		if (destZip == null) {
-			throw new IllegalArgumentException("A 'destZip' must not be null");
+		if (sourceFileOrDirs == null || sourceFileOrDirs.isEmpty()) {
+			throw new IllegalArgumentException("A 'sourceFileOrDirs' must not be null or empty");
 		}
 
-		try (FileOutputStream fos = new FileOutputStream(destZip)) {
-			zipFileOrDir(sourceFileOrDir, filter, addBaseDir, fos);
+		try (FileOutputStream fos = new FileOutputStream(zip)) {
+			zipFileOrDir(fos, sourceFileOrDirs, filter);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -482,38 +481,25 @@ public class Zipper {
 	}
 
 	public static void zipFileOrDir(
-			final File sourceFileOrDir, 
-			final FilenameFilter filter, 
-			final boolean addBaseDir,
-			final OutputStream os
+			final OutputStream os, 
+			final List<File> sourceFileOrDirs, 
+			final FilenameFilter filter
 	) {
-		if (sourceFileOrDir == null) {
-			throw new IllegalArgumentException("A 'sourceFileOrDir' must not be null");
-		}
 		if (os == null) {
 			throw new IllegalArgumentException("An 'os' must not be null");
 		}
+		if (sourceFileOrDirs == null || sourceFileOrDirs.isEmpty()) {
+			throw new IllegalArgumentException("A 'sourceFileOrDirs' must not be null or empty");
+		}
 
 		try {
-			final File file = sourceFileOrDir.getCanonicalFile();
-			
 			try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
-				if (file.isFile()) {
-					final String name = (addBaseDir && file.getParentFile() != null)
-											? file.getParentFile().getName() + "/" + file.getName()
-											: file.getName();
-					zipFile(file, name, filter, zipOut);
-				}
-				else {
-					if (addBaseDir) {
-						zipFile(file, file.getName(), filter, zipOut);
+				for(File f : sourceFileOrDirs) {
+					if (f.isDirectory()) {
+						zipFile(f, f.getName(), filter, zipOut);
 					}
-					else {
-						final File[] children = file.listFiles();
-						for (File childFile : children) {
-							zipFile(childFile, childFile.getName(), filter, zipOut);
-						}
-	
+					else if (f.isFile()) {
+						zipFile(f, f.getName(), filter, zipOut);
 					}
 				}
 			}

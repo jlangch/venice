@@ -31,7 +31,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -553,34 +555,42 @@ public class ZipFunctions {
 				VncFunction
 					.meta()
 					.module("io")
-					.arglists("(io/zip-file src-file dest & options)")		
+					.arglists("(io/zip-file options* zip-file & files)")		
 					.doc(
-						"Zips a file or directory to a file (given as File or string " +
-						"file path) or an OutputStream. \n\n" +
+						"Zips files. The zip-file my be a file, a string (file path) or " +
+						"an OutputStream. \n\n" +
 						"Options: \n" +
-						"  :filter-fn fn - filters the files to be added to the zip. \n" +
-						"  :add-base-dir bool - add the base dir, defaults to false ")
+						"  :filter-fn fn - filters the files to be added to the zip.")
 					.examples(
-						"(io/zip-file \"test-dir\" \"test.zip\")",
-						"(io/zip-file \"test-dir\" \"test.zip\" :add-base-dir true)",
-						"(io/zip-file \"test-dir\" \n" +
+						"(io/zip-file \"test.zip\" \"x/a.txt\" \"x/b.txt\")",
+						"(io/zip-file \"test.zip\" \"dir\")",
+						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))" +
 						"             \"test.zip\" \n" +
-						"             :filter-fn (fn [dir name] (str/ends-with? name \".txt\")))")
+						"             \"test-dir\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip-file", args, 2);
 	
-				final File sourceFile = convertToFile(
-											args.first(), 
-											"Function 'io/zip-append' does not allow %s as src-file");
-				final VncVal dest = args.second();
+				int ii = 0;
 				
-				final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+				// read options
+				VncHashMap options = new VncHashMap();
+				while (Types.isVncKeyword(args.nth(ii))) {
+					final VncVal optName = args.nth(ii++);
+					final VncVal optVal = args.nth(ii++);
+					options = options.assoc(optName, optVal);
+				}
+	
+				// destination zip
+				final VncVal dest = args.nth(ii++);
 
+				// files
+				final VncList files = args.slice(ii);
+
+				// parse filter
 				final VncVal filterFnVal = options.get(new VncKeyword("filter-fn")); 					
 				final VncFunction filterFn = filterFnVal == Nil ? null : Coerce.toVncFunction(filterFnVal);				
-				final boolean addBaseDir = options.get(new VncKeyword("add-base-dir")) == True; 					
 
 				final FilenameFilter filter = filterFn == null
 												? null
@@ -591,22 +601,34 @@ public class ZipFunctions {
 																					new VncJavaObject(dir),
 																					new VncString(name)));
 														}};
-				
-				validateReadableFileOrDirectory(sourceFile);
+
+				// parse files
+				final List<File> filesToZip = new ArrayList<>();
+				files.forEach(f -> {
+					final File file = convertToFile(
+											f, "Function 'io/zip-file' does not allow %s as file");
+					
+					validateReadableFileOrDirectory(file);
+
+					filesToZip.add(file);	
+				});
 
 				try {
 					if (Types.isVncJavaObject(dest, File.class)) {
-						Zipper.zipFileOrDir(sourceFile, filter, addBaseDir, Coerce.toVncJavaObject(dest, File.class));
+						Zipper.zipFileOrDir(
+								Coerce.toVncJavaObject(dest, File.class), filesToZip, filter);
 					}
 					else if (Types.isVncString(dest)) {
-						Zipper.zipFileOrDir(sourceFile, filter, addBaseDir, new File(Coerce.toVncString(dest).getValue()));
+						Zipper.zipFileOrDir(
+								new File(Coerce.toVncString(dest).getValue()), filesToZip, filter);
 					}
 					else if (Types.isVncJavaObject(dest, OutputStream.class)) {
-						Zipper.zipFileOrDir(sourceFile, filter, addBaseDir, Coerce.toVncJavaObject(dest, OutputStream.class));
+						Zipper.zipFileOrDir(
+								Coerce.toVncJavaObject(dest, OutputStream.class), filesToZip, filter);
 					}
 					else {
 						throw new VncException(String.format(
-								"Function 'io/zip-file' does not allow %s as dest",
+								"Function 'io/zip-file' does not allow %s as zip-file",
 								Types.getType(dest)));
 					}
 					
