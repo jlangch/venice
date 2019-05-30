@@ -571,7 +571,9 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip-file", args, 2);
 	
-				final File sourceFile = Coerce.toVncJavaObject(args.first(), File.class);
+				final File sourceFile = convertToFile(
+											args.first(), 
+											"Function 'io/zip-append' does not allow %s as src-file");
 				final VncVal dest = args.second();
 				
 				final VncHashMap options = VncHashMap.ofAll(args.slice(2));
