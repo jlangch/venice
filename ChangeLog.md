@@ -7,17 +7,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.5.7] - 2019-05-xx
+## [1.5.7] - 2019-06-01
 
 ### Added
 
-- function `io/zip-list` to list zip file content
+- function `io/zip-list` to list zip file content (similiar to Linux' «unzip -vl x.zip» command)
 - function `io/zip-append` to append or replace files to a zip
 - function `io/zip-remove` to remove files from a zip
-
-### Changed
-
-- ... 
 
 ### Fixed
 
