@@ -228,7 +228,7 @@ public class Zipper {
 						// directory
 						if (Files.isDirectory(nf)) { 
 							try {
-								List<Path> tree = Files.walk(nf).collect(Collectors.toList());
+								final List<Path> tree = Files.walk(nf).collect(Collectors.toList());
 								Collections.reverse(tree);
 								tree.forEach(p -> deletePath(p));
 							}

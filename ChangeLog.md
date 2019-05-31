@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - function `io/zip-list` to list zip file content
-- function `io/zip-append` to append files to an existing zip
+- function `io/zip-append` to append or replace files to a zip
+- function `io/zip-remove` to remove files from a zip
 
 ### Changed
 
