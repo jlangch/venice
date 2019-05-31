@@ -170,7 +170,6 @@ public class ZipFunctions {
 						"InputStream." +
 						"An entry name with a trailing '/' creates a directory. ")
 					.examples( 
-						"(do                                                                 \n" +
 						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                  \n" +
 						"    ; create the zip with a first file                              \n" +
 						"    (->> (io/zip \"a.txt\" data)                                    \n" +
@@ -234,6 +233,51 @@ public class ZipFunctions {
 					}
 					
 					Zipper.zipAppend(file, map);
+					
+					return Nil;
+				} 
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_zip_remove = 
+		new VncFunction(
+				"io/zip-remove", 
+				VncFunction
+					.meta()
+					.module("io")
+					.arglists("(io/zip-remove f & entry-names)")		
+					.doc("Remove entries from a zip file f.")
+					.examples( 
+						"; remove files from zip \n" +
+						"(io/zip-remove \"test.zip\" \"x/a.txt\" \"x/b.txt\")",
+						
+						"; remove directory from zip \n" +
+						"(io/zip-remove \"test.zip\" \"x/y/\")"
+						)
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/zip-remove", args, 2);
+	
+				final File file = convertToFile(
+									args.first(), 
+									"Function 'io/zip-remove' does not allow %s as f");
+				
+				validateReadableFile(file);
+
+				try {
+					Zipper.zipRemove(
+							file,
+							args.slice(1)
+								.getList()
+								.stream()
+								.map(e -> Coerce.toVncString(e).getValue())
+								.collect(Collectors.toList()));
 					
 					return Nil;
 				} 
@@ -562,9 +606,11 @@ public class ZipFunctions {
 						"Options: \n" +
 						"  :filter-fn fn - filters the files to be added to the zip.")
 					.examples(
-						"(io/zip-file \"test.zip\" \"x/a.txt\" \"x/b.txt\")",
+						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
+						
 						"(io/zip-file \"test.zip\" \"dir\")",
-						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))" +
+						
+						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))  \n" +
 						"             \"test.zip\" \n" +
 						"             \"test-dir\")")
 					.build()
@@ -1134,6 +1180,7 @@ public class ZipFunctions {
 			new VncHashMap.Builder()
 					.put("io/zip",						io_zip)
 					.put("io/zip-append",				io_zip_append)
+					.put("io/zip-remove",				io_zip_remove)
 					.put("io/zip-file",					io_zip_file)
 					.put("io/zip-list",					io_zip_list)
 					.put("io/zip?",						io_zip_Q)

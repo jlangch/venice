@@ -42,9 +42,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -196,6 +198,49 @@ public class Zipper {
 								os.write(entryBytes);
 								os.flush();
 							}
+						}
+					}
+				}
+			}
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public static void zipRemove(final File zip, final List<String> entryNames) {
+		if (zip == null) {
+			throw new IllegalArgumentException("A 'zip' must not be null");
+		}
+		
+		if (entryNames == null || entryNames.isEmpty()) {
+			return;
+		}
+
+		try {
+			final Path zipFile = Paths.get(zip.getPath());
+
+			try (FileSystem fs = FileSystems.newFileSystem(zipFile, null)) {		
+				for (String entryName : entryNames) {
+					final Path nf = fs.getPath(entryName);
+
+					if (entryName.endsWith("/")) {
+						// directory
+						if (Files.isDirectory(nf)) { 
+							try {
+								List<Path> tree = Files.walk(nf).collect(Collectors.toList());
+								Collections.reverse(tree);
+								tree.forEach(p -> deletePath(p));
+							}
+							catch(IOException ex) {
+								throw new RuntimeException(ex.getMessage(), ex);
+							}
+						}
+					}
+					else {
+						// file
+						if (Files.isRegularFile(nf)) { 
+							Files.deleteIfExists(nf);
 						}
 					}
 				}
@@ -1073,6 +1118,15 @@ public class Zipper {
     	return (size <= 0 || compressedSize <= 0)
     				? 0L
     				: ((size - compressedSize) * 100L + (size / 2L)) / size;
+    }
+    
+    private static void deletePath(Path p) {
+		try {
+			Files.delete(p);
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(ex.getMessage(), ex);
+		}
     }
 
     

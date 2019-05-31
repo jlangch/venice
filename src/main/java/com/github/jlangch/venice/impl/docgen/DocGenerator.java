@@ -922,6 +922,7 @@ public class DocGenerator {
 		zip.addItem(getDocItem("io/zip-file", false, false));
 		zip.addItem(getDocItem("io/zip-list", false, false));
 		zip.addItem(getDocItem("io/zip-append", false, false));
+		zip.addItem(getDocItem("io/zip-remove", false, false));
 		zip.addItem(getDocItem("io/zip?"));
 		zip.addItem(getDocItem("io/unzip"));
 		zip.addItem(getDocItem("io/unzip-first"));
