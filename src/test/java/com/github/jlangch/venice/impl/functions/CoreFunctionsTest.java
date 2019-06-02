@@ -1491,6 +1491,97 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_stack() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(stack? (stack))"));
+
+		assertEquals(null, venice.eval("(pop! (stack))"));
+				
+		assertEquals(1L, venice.eval(
+							"(let [s (stack)]  \n" +
+							"    (push! s 1)   \n" +
+							"    (pop! s))     \n"));
+		
+		assertEquals(3L, venice.eval(
+							"(let [s (stack)]  \n" +
+							"    (push! s 1)   \n" +
+							"    (push! s 2)   \n" +
+							"    (push! s 3)   \n" +
+							"    (pop! s))     \n"));
+		
+		assertEquals(1L, venice.eval(
+							"(let [s (stack)]  \n" +
+							"    (push! s 1)   \n" +
+							"    (push! s 2)   \n" +
+							"    (push! s 3)   \n" +
+							"    (pop! s)      \n" +
+							"    (pop! s)      \n" +
+							"    (pop! s))     \n"));
+		
+		assertEquals(null, venice.eval(
+							"(let [s (stack)]  \n" +
+							"    (push! s 1)   \n" +
+							"    (push! s 2)   \n" +
+							"    (push! s 3)   \n" +
+							"    (pop! s)      \n" +
+							"    (pop! s)      \n" +
+							"    (pop! s)      \n" +
+							"    (pop! s))     \n"));
+	}
+	
+	@Test
+	public void test_queue() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(queue? (queue))"));
+
+		assertEquals(null, venice.eval("(poll! (queue))"));
+		
+		
+		assertEquals(1L, venice.eval(
+							"(let [s (queue 10)]  \n" +
+							"    (offer! s 1)     \n" +
+							"    (poll! s))       \n"));
+		
+		assertEquals(1L, venice.eval(
+							"(let [s (queue 10)]  \n" +
+							"    (offer! s 1)     \n" +
+							"    (offer! s 2)     \n" +
+							"    (offer! s 3)     \n" +
+							"    (poll! s))       \n"));
+		
+		assertEquals(3L, venice.eval(
+							"(let [s (queue 10)]  \n" +
+							"    (offer! s 1)     \n" +
+							"    (offer! s 2)     \n" +
+							"    (offer! s 3)     \n" +
+							"    (poll! s)        \n" +
+							"    (poll! s)        \n" +
+							"    (poll! s))       \n"));
+		
+		assertEquals(null, venice.eval(
+							"(let [s (queue 10)]  \n" +
+							"    (offer! s 1)     \n" +
+							"    (offer! s 2)     \n" +
+							"    (offer! s 3)     \n" +
+							"    (poll! s)        \n" +
+							"    (poll! s)        \n" +
+							"    (poll! s)        \n" +
+							"    (poll! s))       \n"));
+		
+		assertEquals(null, venice.eval(
+							"(let [s (queue 10)]      \n" +
+							"    (offer! s 1 100)     \n" +
+							"    (offer! s 2 100)     \n" +
+							"    (offer! s 3 100)     \n" +
+							"    (poll! s 100)        \n" +
+							"    (poll! s 100)        \n" +
+							"    (poll! s 100)        \n" +
+							"    (poll! s 100))       \n"));
+	}
+
+	@Test
 	public void test_keyword_Q() {
 		final Venice venice = new Venice();
 

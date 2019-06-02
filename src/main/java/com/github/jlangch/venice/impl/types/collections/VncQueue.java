@@ -22,7 +22,8 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Printer;
@@ -30,66 +31,92 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class VncStack extends VncCollection {
+public class VncQueue extends VncCollection {
 
-	public VncStack() {
-		super(Constants.Nil);
-		this.stack = new ConcurrentLinkedDeque<>();
+	public VncQueue() {
+		this(Integer.MAX_VALUE);
 	}
 
-	private VncStack(final VncStack stack, final VncVal meta) {
+	public VncQueue(final int capacity) {
+		super(Constants.Nil);
+		this.capacity = capacity;
+		this.queue = new LinkedBlockingDeque<>(capacity);
+	}
+
+	private VncQueue(final VncQueue queue, final VncVal meta) {
 		super(meta);
-		this.stack = stack.stack;
+		this.capacity = queue.capacity;
+		this.queue = queue.queue;
 	}
 
 	
 	@Override
 	public VncCollection empty() {
-		return new VncStack();
+		return new VncQueue(capacity);
 	}
 
 	@Override
-	public VncStack withMeta(final VncVal meta) {
-		return new VncStack(this, meta);
+	public VncQueue withMeta(final VncVal meta) {
+		return new VncQueue(this, meta);
 	}
 
 	@Override
 	public VncList toVncList() {
-		return VncList.of(stack.toArray(new VncVal[0]));
+		return VncList.of(queue.toArray(new VncVal[0]));
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return VncVector.of(stack.toArray(new VncVal[0]));
+		return VncVector.of(queue.toArray(new VncVal[0]));
 	}
 
 	@Override
 	public int size() {
-		return stack.size();
+		return queue.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return stack.isEmpty();
+		return queue.isEmpty();
 	}
-	
-	public VncStack push(final VncVal val) {
-		stack.push(val);
+
+	public VncQueue offer(final VncVal val) {
+		queue.offer(val);
 		return this;
 	}
 
-	public VncVal pop() {
-		final VncVal val = stack.poll();
+	public VncQueue offer(final VncVal val, final long timeoutMillis) {
+		try {
+			queue.offer(val, timeoutMillis, TimeUnit.MILLISECONDS);
+			return this;
+		}
+		catch(InterruptedException ex) {
+			throw new com.github.jlangch.venice.InterruptedException("(offer queue timeout val) interrupted", ex);
+		}
+	}
+	
+	public VncVal poll() {
+		final VncVal val = queue.poll();
 		return val == null ? Constants.Nil : val;
+	}
+	
+	public VncVal poll(final long timeoutMillis) {
+		try {
+			final VncVal val = queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
+			return val == null ? Constants.Nil : val;
+		}
+		catch(InterruptedException ex) {
+			throw new com.github.jlangch.venice.InterruptedException("(poll queue timeout) interrupted", ex);
+		}
 	}
 
 	public VncVal peek() {
-		final VncVal val = stack.peek();
+		final VncVal val = queue.peek();
 		return val == null ? Constants.Nil : val;
 	}
 
 	public void clear() {
-		stack.clear();
+		queue.clear();
 	}
 	
 	@Override 
@@ -100,7 +127,7 @@ public class VncStack extends VncCollection {
 	@Override
 	public Object convertToJavaObject() {
 		return Arrays
-				.stream(stack.toArray(new VncVal[0]))
+				.stream(queue.toArray(new VncVal[0]))
 				.map(v -> v.convertToJavaObject())
 				.collect(Collectors.toList());
 	}
@@ -117,5 +144,6 @@ public class VncStack extends VncCollection {
 
 	private static final long serialVersionUID = -564531670922145260L;
 
-	private final ConcurrentLinkedDeque<VncVal> stack;
+	private final int capacity;
+	private final LinkedBlockingDeque<VncVal> queue;
 }

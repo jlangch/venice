@@ -56,6 +56,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
@@ -175,6 +176,10 @@ public class Types {
 
 	public static boolean isVncStack(final VncVal val) {
 		return val != null && (val instanceof VncStack);
+	}
+
+	public static boolean isVncQueue(final VncVal val) {
+		return val != null && (val instanceof VncQueue);
 	}
 
 	public static boolean isIVncFunction(final VncVal val) {
