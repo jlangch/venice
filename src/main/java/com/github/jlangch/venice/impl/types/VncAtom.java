@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.Watchable;
 
 
-public class VncAtom extends VncVal {
+public class VncAtom extends VncVal implements IDeref {
 
 	public VncAtom(final VncVal value, final VncVal meta) {
 		super(meta);
@@ -49,6 +49,7 @@ public class VncAtom extends VncVal {
 		return newVal;
 	}
 	
+	@Override
 	public VncVal deref() {
 		return state.get();
 	}

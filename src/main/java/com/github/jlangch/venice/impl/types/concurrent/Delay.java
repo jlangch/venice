@@ -24,17 +24,19 @@ package com.github.jlangch.venice.impl.types.concurrent;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class Delay {
+public class Delay implements IDeref {
 
 	public Delay(final VncFunction fn) {
 		this.fn = fn;
 	}
 	
+	@Override 
 	public VncVal deref() {
 		return results.computeIfAbsent(KEY, k -> compute()).deref();
 	}

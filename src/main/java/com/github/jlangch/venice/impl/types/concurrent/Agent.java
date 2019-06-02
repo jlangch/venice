@@ -34,6 +34,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -51,7 +52,7 @@ import com.github.jlangch.venice.impl.util.concurrent.StripedRunnable;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
-public class Agent {
+public class Agent implements IDeref {
 
 	public Agent(final VncVal state, final VncList options) {
 		value.set(new Value(state == null ? Constants.Nil : state, null));
@@ -68,6 +69,7 @@ public class Agent {
 		return id;
 	}
 	
+	@Override
 	public VncVal deref() {
 		return value.get().deref();
 	}

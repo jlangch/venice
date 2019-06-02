@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncAtom;
@@ -64,6 +65,10 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 public class Types {
 
+	public static boolean isIDeref(final Object val) {
+		return val != null && (val instanceof IDeref);
+	}
+	
 	public static boolean isVncVal(final Object val) {
 		return val != null && (val instanceof VncVal);
 	}

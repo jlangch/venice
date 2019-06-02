@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -120,9 +121,9 @@ public class ConcurrencyFunctions {
 
 				final VncVal first = args.first();
 
-				if (Types.isVncAtom(first)) {
-					final VncAtom atm = (VncAtom)args.first();
-					return atm.deref();
+				if (Types.isIDeref(first)) {
+					final IDeref d = Coerce.toIDeref(args.first());
+					return d.deref();
 				}
 				else if (Types.isVncJavaObject(first)) {
 					final Object delegate = ((VncJavaObject)first).getDelegate();
@@ -159,11 +160,8 @@ public class ConcurrencyFunctions {
 							throw new VncException("Failed to deref future", ex);
 						}
 					}
-					else if (delegate instanceof Delay) {
-						return ((Delay)delegate).deref();
-					}
-					else if (delegate instanceof Agent) {
-						return ((Agent)delegate).deref();
+					else if (Types.isIDeref(delegate)) {
+						return ((IDeref)delegate).deref();
 					}
 				}
 	

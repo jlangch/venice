@@ -89,6 +89,7 @@ public class IOFnBlacklisted {
 								// I/O zip
 								"io/zip",
 								"io/zip-append",
+								"io/zip-remove",
 								"io/zip-file",
 								"io/zip-list",
 								"io/unzip",
