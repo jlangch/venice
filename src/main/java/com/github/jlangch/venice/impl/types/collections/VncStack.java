@@ -79,13 +79,11 @@ public class VncStack extends VncCollection {
 	}
 
 	public VncVal pop() {
-		final VncVal val = stack.poll();
-		return val == null ? Constants.Nil : val;
+		return toNil(stack.poll());
 	}
 
 	public VncVal peek() {
-		final VncVal val = stack.peek();
-		return val == null ? Constants.Nil : val;
+		return toNil(stack.peek());
 	}
 
 	public void clear() {
@@ -112,6 +110,11 @@ public class VncStack extends VncCollection {
 	
 	public String toString(final boolean print_readably) {
 		return "(" + Printer.join(toVncList().getList(), " ", print_readably) + ")";
+	}
+
+	
+	private VncVal toNil(final VncVal val) {
+		return val == null ? Constants.Nil : val;
 	}
 
 

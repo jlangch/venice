@@ -96,14 +96,12 @@ public class VncQueue extends VncCollection {
 	}
 	
 	public VncVal poll() {
-		final VncVal val = queue.poll();
-		return val == null ? Constants.Nil : val;
+		return toNil(queue.poll());
 	}
 	
 	public VncVal poll(final long timeoutMillis) {
 		try {
-			final VncVal val = queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
-			return val == null ? Constants.Nil : val;
+			return toNil(queue.poll(timeoutMillis, TimeUnit.MILLISECONDS));
 		}
 		catch(InterruptedException ex) {
 			throw new com.github.jlangch.venice.InterruptedException("(poll queue timeout) interrupted", ex);
@@ -111,8 +109,7 @@ public class VncQueue extends VncCollection {
 	}
 
 	public VncVal peek() {
-		final VncVal val = queue.peek();
-		return val == null ? Constants.Nil : val;
+		return toNil(queue.peek());
 	}
 
 	public void clear() {
@@ -141,7 +138,12 @@ public class VncQueue extends VncCollection {
 		return "(" + Printer.join(toVncList().getList(), " ", print_readably) + ")";
 	}
 
+	
+	private VncVal toNil(final VncVal val) {
+		return val == null ? Constants.Nil : val;
+	}
 
+	
 	private static final long serialVersionUID = -564531670922145260L;
 
 	private final int capacity;
