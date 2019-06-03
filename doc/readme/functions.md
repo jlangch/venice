@@ -113,7 +113,7 @@
 
 ## Function threading macros
 
-Thread first
+Thread first `->`
 
 ```clojure
 (do
@@ -124,7 +124,7 @@ Thread first
 (-> person :address :street)) ;; => "Lindenstrasse 45"
 ```
 
-Thread last
+Thread last `->>`
 
 ```clojure
 (->> (range 0 8)
@@ -132,7 +132,7 @@ Thread last
      (map #(+ 2 %)))  ;; => (3 5 7 9)
 ```
 
-Thread any
+Thread any `as->`, `-<>`
 
 ```clojure
 ;allows to use arbitrary positioning of the argument
