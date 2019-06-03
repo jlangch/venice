@@ -121,7 +121,7 @@ Thread first `->`
     {:name "Peter Meier"
      :address {:street "Lindenstrasse 45"
      :city "Bern" :zip 3000}})
-(-> person :address :street)) ;; => "Lindenstrasse 45"
+  (-> person :address :street)) ;; => "Lindenstrasse 45"
 ```
 
 Thread last `->>`
