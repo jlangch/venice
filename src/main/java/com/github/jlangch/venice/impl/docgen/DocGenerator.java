@@ -565,6 +565,28 @@ public class DocGenerator {
 		stacks_test.addItem(getDocItem("empty?"));
 		stacks_test.addItem(getDocItem("stack?"));
 
+		
+		final DocSection queues = new DocSection("Queue");
+		section.addSection(queues);
+
+		final DocSection queues_create = new DocSection("Create");
+		queues.addSection(queues_create);
+		queues_create.addItem(getDocItem("queue"));
+		
+
+		final DocSection queues_access = new DocSection("Access");
+		queues.addSection(queues_access);
+		queues_access.addItem(getDocItem("peek"));
+		queues_access.addItem(getDocItem("pull!"));
+		queues_access.addItem(getDocItem("offer!"));
+		queues_access.addItem(getDocItem("count"));
+
+		
+		final DocSection queues_test = new DocSection("Test");
+		queues.addSection(queues_test);
+		queues_test.addItem(getDocItem("empty?"));
+		queues_test.addItem(getDocItem("queue?"));
+
 		return section;
 	}		
 

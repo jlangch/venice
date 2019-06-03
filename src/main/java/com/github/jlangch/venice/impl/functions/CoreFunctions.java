@@ -2061,7 +2061,21 @@ public class CoreFunctions {
 					.module("core")
 					.arglists("(queue )", "(queue 100)")		
 					.doc("Creates a new mutable threadsafe bounded or unbounded queue.")
-					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
+					.examples(
+						";unbounded queue   \n" +
+						"(let [q (queue)]   \n" +
+						"  (offer! q 1)     \n" +
+						"  (offer! q 2)     \n" +
+						"  (offer! q 3)     \n" +
+						"  (poll! q)        \n" +
+						"   q)                ",
+						";bounded queue        \n" +
+						"(let [q (queue 10)]   \n" +
+						"  (offer! q 1000 1)   \n" +
+						"  (offer! q 1000 2)   \n" +
+						"  (offer! q 1000 3)   \n" +
+						"  (poll! q 1000)      \n" +
+						"   q)                   ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -4361,7 +4375,7 @@ public class CoreFunctions {
 					VncFunction
 						.meta()
 						.module("core")
-						.arglists("(offer! queue v)", "(offer! timeout queue)")		
+						.arglists("(offer! queue v)", "(offer! queue timeout v)")		
 						.doc("Offers an item to a queue with an optional timeout in milliseconds.")
 						.examples("(let [s (queue)]\n   (offer! s 4)\n   (offer! s 3)\n   (poll! s)\n   s)")
 						.build()
