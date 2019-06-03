@@ -310,10 +310,18 @@
    ^{ :arglists '("(as-> expr name & forms)")
       :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position."
       :examples (list (str/strip-margin
-                        "(as-> [:foo :bar] v
+                        ";allows to use arbitrary positioning of the argument
+                        |(as-> [:foo :bar] v
                         |      (map name v)
                         |      (first v)
-                        |      (str/subs v 1))" )) }
+                        |      (str/subs v 1))" )
+                      (str/strip-margin
+                        ";allows the use of if statements in the thread
+                        |(as-> {:a 1 :b 2} m
+                        |      (update m :a #(+ % 10))
+                        |      (if true
+                        |        (update m :b #(+ % 10))
+                        |         m))" ) ) }
 
    as-> [expr name & forms]
 

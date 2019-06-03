@@ -113,7 +113,7 @@
 
 ## Function threading macros
 
-### Thread first
+Thread first
 
 ```clojure
 (do
@@ -124,7 +124,7 @@
 (-> person :address :street)) ;; => "Lindenstrasse 45"
 ```
 
-### Thread last
+Thread last
 
 ```clojure
 (->> (range 0 8)
@@ -132,14 +132,31 @@
      (map #(+ 2 %)))  ;; => (3 5 7 9)
 ```
 
-### Thread any
+Thread any
 
 ```clojure
+;allows to use arbitrary positioning of the argument
+(as-> [:foo :bar] v
+      (map name v)
+      (first v)
+      (str/subs v 1))  ;; => "oo"
+```
+
+```clojure
+; allows the use of if statements in the thread
+(as-> {:a 1 :b 2} m
+      (update m :a #(+ % 10))
+      (if true
+        (update m :b #(+ % 10))
+         m))  ;; => {:a 11 :b 12}
+```
+
+```clojure
+; allows to use arbitrary positioning of the argument
 (-<> (range 0 8)
      (filter odd? <>)
      (reduce + <>)
-     (* <> 2)
-     (str "Result: " <> ))  ;; => "Result: 32"
+     (* <> 2))  ;; => "Result: 32"
 ```
 
 
