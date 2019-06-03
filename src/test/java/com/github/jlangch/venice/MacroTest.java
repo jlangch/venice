@@ -516,6 +516,29 @@ public class MacroTest {
 	}
 
 	@Test
+	public void test_thread_as() {
+		final Venice venice = new Venice();
+		
+		assertEquals(
+				"{:a 11 :b 12}", 
+				venice.eval(
+						"(str                              \n" +
+						"  (as-> {:a 1 :b 2} m             \n" + 
+						"        (update m :a #(+ % 10))   \n" + 
+						"        (if true                  \n" + 
+						"          (update m :b #(+ % 10)) \n" + 
+						"           m)))                     "));
+	
+		assertEquals(
+				"oo", 
+				venice.eval(
+						"(as-> [:foo :bar] v      " +    
+						"	      (map name v)    " +
+						"	      (first v)       " +
+						"	      (str/subs v 1)) "));
+	}
+	
+	@Test
 	public void test_thread_any() {
 		final Venice venice = new Venice();
 
