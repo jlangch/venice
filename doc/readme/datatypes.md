@@ -161,4 +161,23 @@ Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
 
 ```clojure
 (stack )
+
+(let [s (stack)]
+  (push! s 1)
+  (push! s 2)
+  (pop! s))
+```
+
+
+### queue
+
+Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
+
+```clojure
+(queue 100)
+
+(let [q (queue 10)]
+  (offer! q 1)
+  (offer! q 2)
+  (poll! q))
 ```

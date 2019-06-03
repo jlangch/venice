@@ -111,6 +111,38 @@
 ```
 
 
+## Function threading macros
+
+### Thread first
+
+```clojure
+(do
+  (def person
+    {:name "Peter Meier"
+     :address {:street "Lindenstrasse 45"
+     :city "Bern" :zip 3000}})
+(-> person :address :street)) ;; => "Lindenstrasse 45"
+```
+
+### Thread last
+
+```clojure
+(->> (range 0 8)
+     (filter odd?)
+     (map #(+ 2 %)))  ;; => (3 5 7 9)
+```
+
+### Thread any
+
+```clojure
+(-<> (range 0 8)
+     (filter odd? <>)
+     (reduce + <>)
+     (* <> 2)
+     (str "Result: " <> ))  ;; => "Result: 32"
+```
+
+
 ## Multimethods
 
 Multimethods are a powerful mechanism for runtime polymorphism.
