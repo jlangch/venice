@@ -577,7 +577,7 @@ public class DocGenerator {
 		final DocSection queues_access = new DocSection("Access");
 		queues.addSection(queues_access);
 		queues_access.addItem(getDocItem("peek"));
-		queues_access.addItem(getDocItem("pull!"));
+		queues_access.addItem(getDocItem("poll!"));
 		queues_access.addItem(getDocItem("offer!"));
 		queues_access.addItem(getDocItem("count"));
 
@@ -716,6 +716,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("gc"));
+		util.addItem(getDocItem("shutdown-hook"));
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
 		util.addItem(getDocItem("coalesce"));

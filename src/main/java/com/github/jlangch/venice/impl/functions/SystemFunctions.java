@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Version;
@@ -45,6 +46,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class SystemFunctions {
@@ -199,6 +201,52 @@ public class SystemFunctions {
 				
 				Runtime.getRuntime().runFinalization();
 				Runtime.getRuntime().gc();
+				
+				return Nil;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction shutdown_hook = 
+		new VncFunction(
+				"shutdown-hook", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(shutdown-hook f)")		
+					.doc("Registers the function f as shutdown hook.")
+					.examples("(shutdown-hook (fn [] (println \"shutdown\")))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("shutdown-hook", args, 1);
+				
+				final VncFunction fn = Coerce.toVncFunction(args.first());
+
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+				
+				// thread local values from the parent thread
+				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
+						new AtomicReference<>(ThreadLocalMap.getValues());
+
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+				    public void run() {					
+						try {
+							// inherit thread local values to the child thread
+							ThreadLocalMap.setValues(parentThreadLocals.get());
+							ThreadLocalMap.clearCallStack();
+							JavaInterop.register(parentInterceptor);	
+							
+							fn.apply(new VncList());
+						}
+						finally {
+							// clean up
+							JavaInterop.unregister();
+							ThreadLocalMap.remove();
+						}
+				    }
+				});	
 				
 				return Nil;
 			}
@@ -390,6 +438,7 @@ public class SystemFunctions {
 					.put("current-time-millis",	current_time_millis)
 					.put("nano-time",			nano_time)
 					.put("gc",					gc)
+					.put("shutdown-hook",		shutdown_hook)					
 					.put("sandboxed?",			sandboxed_Q)
 					.put("sleep",				sleep)
 					.put("callstack",			callstack)
