@@ -7,7 +7,3 @@
 [Project Euler](https://projecteuler.net/)
 
 [Dali SVG](https://github.com/stathissideris/dali)
-
-[REPL](http://app.klipse.tech/)
-
-[REPL](https://repl.it/repls/RepentantAngelicBrackets)
