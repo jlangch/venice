@@ -215,7 +215,7 @@ public class SystemFunctions {
 					.meta()
 					.module("core")
 					.arglists("(shutdown-hook f)")		
-					.doc("Registers the function f as shutdown hook.")
+					.doc("Registers the function f as JVM shutdown hook.")
 					.examples("(shutdown-hook (fn [] (println \"shutdown\")))")
 					.build()
 		) {		
