@@ -89,7 +89,8 @@ actors accept data to be processed by the actor's function
 ### one-shot
 
 
-Executes a one-shot action that becomes enabled after 3 seconds.
+Executes a one-shot action that becomes enabled after the specified 
+time. 3 seconds in the example:
 						
 ```clojure
 (schedule-delay #(println 100) 3 :seconds)
@@ -106,8 +107,8 @@ scheduled function’s value or canceled to abort the execution.
 
 ### periodic
 
-Executes a periodic action that becomes enabled first after 1s initial delay and
-is subsequently executed with a period of 3s 
+Executes a periodic action that becomes enabled first after the initial delay and
+is subsequently executed with the given period:
 
 ```clojure
 (schedule-at-fixed-rate #(println "test") 1 3 :seconds)
