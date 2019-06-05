@@ -252,7 +252,7 @@ public class ScheduleFunctions {
 	
 	private static ScheduledExecutorService createExecutor() {
 		return Executors.newScheduledThreadPool(
-						2,
+						4,
 						ThreadPoolUtil.createThreadFactory(
 								"venice-scheduler-pool-%d", 
 								threadPoolCounter,
