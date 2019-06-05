@@ -118,7 +118,7 @@ is subsequently executed with the given period:
 to cancel the scheduled task. 
 
 Execute a periodic task with a 1s initial delay, a period 
-if 3s, and cancel it after 16s:
+of 3s, and cancel it after 16s:
 
 ```clojure
 (let [s (schedule-at-fixed-rate (fn [] (println "test")) 1 3 :seconds)]
