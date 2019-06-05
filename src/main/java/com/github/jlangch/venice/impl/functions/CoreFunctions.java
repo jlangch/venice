@@ -3490,7 +3490,7 @@ public class CoreFunctions {
 					.module("core")
 					.arglists("(cons x coll)")		
 					.doc(
-						"Returns a new collection where x is the first element and coll is\n" + 
+						"Returns a new collection where x is the first element and coll is " + 
 						"the rest")
 					.examples(
 						"(cons 1 '(2 3 4 5 6))",

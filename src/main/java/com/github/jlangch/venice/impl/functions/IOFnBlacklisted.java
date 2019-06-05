@@ -63,6 +63,10 @@ public class IOFnBlacklisted {
 								"shutdown-agents?",
 								"await-termination-agents",
 								"await-termination-agents?",
+								
+								// scheduler
+								"schedule-delay",
+								"schedule-at-fixed-rate",
 
 								// I/O
 								"io/copy-file",

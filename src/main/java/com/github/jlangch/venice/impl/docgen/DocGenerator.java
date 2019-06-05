@@ -855,6 +855,11 @@ public class DocGenerator {
 		agents.addItem(getDocItem("await-termination-agents", false, false));
 		agents.addItem(getDocItem("await-termination-agents?", false, false));
 		
+		final DocSection sched = new DocSection("Scheduler");
+		all.addSection(sched);
+		sched.addItem(getDocItem("schedule-delay", false, false));
+		sched.addItem(getDocItem("schedule-at-fixed-rate", false, false));
+		
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);
 		thlocal.addItem(getDocItem("thread-local"));
