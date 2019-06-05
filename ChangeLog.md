@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - queue datatype (bounded or unbounded)
 - Venice functions to be registered as JVM shutdown hooks
+- a one-shot and periodic scheduler `schedule-delay`, `schedule-at-fixed-rate`
 
 ### Fixed
 
