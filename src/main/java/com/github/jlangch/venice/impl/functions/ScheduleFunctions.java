@@ -117,7 +117,7 @@ public class ScheduleFunctions {
 					}
 				};
 				
-				final ScheduledFuture<VncVal> future = executor.schedule(
+				final ScheduledFuture<VncVal> future = getExecutor().schedule(
 														taskWrapper, 
 														delay.getValue(),
 														toTimeUnit(unit));
@@ -198,7 +198,7 @@ public class ScheduleFunctions {
 					}
 				};
 				
-				final ScheduledFuture<?> future = executor.scheduleAtFixedRate(
+				final ScheduledFuture<?> future = getExecutor().scheduleAtFixedRate(
 														taskWrapper, 
 														delay.getValue(),
 														period.getValue(),
@@ -212,11 +212,19 @@ public class ScheduleFunctions {
 
 
 	public static void shutdown() {
-		executor.shutdown();
+		synchronized(threadPoolCounter) {
+			if (executor != null) {
+				executor.shutdown();
+			}
+		}
 	}
 
 	public static void shutdownNow() {
-		executor.shutdownNow();
+		synchronized(threadPoolCounter) {
+			if (executor != null) {
+				executor.shutdownNow();
+			}
+		}
 	}
 	
 	
@@ -230,8 +238,28 @@ public class ScheduleFunctions {
 			default: throw new VncException("Invalid scheduler time-unit " + unit.getValue());
 		}
 	}
+
+
+	private static ScheduledExecutorService getExecutor() {
+		synchronized(threadPoolCounter) {
+			if (executor == null) {
+				executor = createExecutor();				
+			}
+			return executor;
+		}
+	}
+
 	
-	
+	private static ScheduledExecutorService createExecutor() {
+		return Executors.newScheduledThreadPool(
+						2,
+						ThreadPoolUtil.createThreadFactory(
+								"venice-scheduler-pool-%d", 
+								threadPoolCounter,
+								true /* daemon threads */));
+		
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -245,11 +273,5 @@ public class ScheduleFunctions {
 	
 	private final static AtomicLong threadPoolCounter = new AtomicLong(0);
 
-	private final static ScheduledExecutorService executor = 
-			Executors.newScheduledThreadPool(
-					2,
-					ThreadPoolUtil.createThreadFactory(
-							"venice-scheduler-pool-%d", 
-							threadPoolCounter,
-							true /* daemon threads */));
+	private static ScheduledExecutorService executor = null;
 }
