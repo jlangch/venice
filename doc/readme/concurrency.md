@@ -83,6 +83,45 @@ actors accept data to be processed by the actor's function
 ```
 
 
+
+## Scheduler
+
+### one-shot
+
+
+Executes a one-shot action that becomes enabled after 3 seconds.
+						
+```clojure
+(schedule-delay #(println 100) 3 :seconds)
+```
+
+`(deref s)` blocks the current thread until the result gets available. 
+						
+```clojure
+(let [s (schedule-delay (fn [] 100) 3 :seconds)]
+  (println "result: " (deref s)))
+```
+
+### periodic
+
+Executes a periodic action that becomes enabled first after 1s initial delay and
+is subsequently executed with a period of 3s 
+
+```clojure
+(schedule-at-fixed-rate #(println "test") 1 3 :seconds)
+```
+
+Cancel the periodic task after 16s 
+
+```clojure
+(let [s (schedule-at-fixed-rate (fn [] (println "test")) 1 3 :seconds)]
+  (sleep 16000)
+  (future-cancel s)
+  (println "done."))
+```
+
+
+
 ## Thread local vars
 
 Thread local var bindings can be nested
