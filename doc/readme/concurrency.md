@@ -95,8 +95,9 @@ Executes a one-shot action that becomes enabled after 3 seconds.
 (schedule-delay #(println 100) 3 :seconds)
 ```
 
-`schedule-delay` returns a future that can be dereferenced.
-`(deref s)` blocks the current thread until the result gets available. 
+`schedule-delay` returns a future that can be dereferenced to get the 
+scheduled function’s value. `(deref s)` blocks the current thread until 
+the result gets available. 
 						
 ```clojure
 (let [s (schedule-delay (fn [] 100) 3 :seconds)]
