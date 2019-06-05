@@ -1071,7 +1071,7 @@ public class ConcurrencyFunctions {
 					}
 				};
 				
-				final Future<VncVal> future = executor.submit(taskWrapper);
+				final Future<VncVal> future = getExecutor().submit(taskWrapper);
 				
 				return new VncJavaObject(future);
 			}
@@ -1406,13 +1406,41 @@ public class ConcurrencyFunctions {
 
 	
 	public static void shutdown() {
-		executor.shutdown();
+		synchronized(futureThreadPoolCounter) {
+			if (executor != null) {
+				executor.shutdown();
+			}
+		}
 	}
 
 	public static void shutdownNow() {
-		executor.shutdownNow();
+		synchronized(futureThreadPoolCounter) {
+			if (executor != null) {
+				executor.shutdownNow();
+			}
+		}
 	}
 
+
+	private static ExecutorService getExecutor() {
+		synchronized(futureThreadPoolCounter) {
+			if (executor == null) {
+				executor = createExecutor();				
+			}
+			return executor;
+		}
+	}
+
+	
+	private static ExecutorService createExecutor() {
+		return Executors.newCachedThreadPool(
+				ThreadPoolUtil.createThreadFactory(
+						"venice-future-pool-%d", 
+						futureThreadPoolCounter,
+						true /* daemon threads */));
+		
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1470,10 +1498,5 @@ public class ConcurrencyFunctions {
 	
 	private final static AtomicLong futureThreadPoolCounter = new AtomicLong(0);
 
-	private final static ExecutorService executor = 
-			Executors.newCachedThreadPool(
-					ThreadPoolUtil.createThreadFactory(
-							"venice-future-pool-%d", 
-							futureThreadPoolCounter,
-							true /* daemon threads */));
+	private static ExecutorService executor;
 }
