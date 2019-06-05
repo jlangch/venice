@@ -96,8 +96,8 @@ Executes a one-shot action that becomes enabled after 3 seconds.
 ```
 
 `schedule-delay` returns a future that can be dereferenced to get the 
-scheduled function’s value. `(deref s)` blocks the current thread until 
-the result gets available. 
+scheduled function’s value or canceled to abort the execution.
+`(deref s)` blocks the current thread until the result gets available. 
 						
 ```clojure
 (let [s (schedule-delay (fn [] 100) 3 :seconds)]
@@ -113,7 +113,10 @@ is subsequently executed with a period of 3s
 (schedule-at-fixed-rate #(println "test") 1 3 :seconds)
 ```
 
-Cancel the periodic task after 16s 
+`schedule-at-fixed-rate` returns a future that can be used
+to cancel the scheduled task. 
+
+Cancel the periodic task after 16s:
 
 ```clojure
 (let [s (schedule-at-fixed-rate (fn [] (println "test")) 1 3 :seconds)]
