@@ -124,6 +124,20 @@ Cancel the periodic task after 16s
 
 ## Thread local vars
 
+Dynamic variables start off as a global variable and can be bound with 'binding' 
+to a new value on the local thread. 
+
+```clojure
+(do
+  (def-dynamic x 100)
+  (println x)         ; x level 1 => 100
+  
+  (binding [x 200]      
+      (println x))    ; x level 2 => 200
+      
+  (println x))        ; x level 1 => 100
+```
+
 Thread local var bindings can be nested
 
 ```clojure
