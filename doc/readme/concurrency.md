@@ -97,7 +97,7 @@ time. 3 seconds in the example:
 ```
 
 `schedule-delay` returns a future that can be dereferenced to get the 
-scheduled function’s value or canceled to abort the execution.
+scheduled function’s value or to cancel the waiting execution.
 `(deref s)` blocks the current thread until the result gets available. 
 						
 ```clojure
