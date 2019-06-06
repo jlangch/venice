@@ -108,7 +108,7 @@ scheduled function’s value or to cancel the waiting execution.
 ### periodic
 
 Executes a periodic action that becomes enabled first after the initial delay and
-is subsequently executed with the given period:
+then subsequently with the given period:
 
 ```clojure
 (schedule-at-fixed-rate #(println "test") 1 3 :seconds)
