@@ -54,3 +54,5 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/484ed3d/cheatsheet.htm
 * See a larger [example](doc/readme/large-example.md)
 * [Change Log](ChangeLog.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
+* [3rd Party Libs](doc/readme/3rdparty-lic.md)
+
