@@ -187,11 +187,11 @@ public class REPL {
 						Licenses.lics().entrySet().forEach(e -> {
 							println(terminal, "stdout", "");
 							println(terminal, "stdout", DELIM);
-							println(terminal, "stdout", e.getKey());
+							println(terminal, "stdout", e.getKey() + " License");
 							println(terminal, "stdout", DELIM);
 							println(terminal, "stdout", e.getValue());
 						});
-						break;
+						continue;
 					}
 					else if (cmd.equals("exit")) {
 						println(terminal, "interrupt", " good bye ");
