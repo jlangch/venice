@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
+import com.github.jlangch.venice.impl.util.Licenses;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -182,13 +183,23 @@ public class REPL {
 						handleSandboxCommand(params, terminal, env);
 						continue;
 					}
+					else if (cmd.equals("lic")) {
+						Licenses.lics().entrySet().forEach(e -> {
+							println(terminal, "stdout", "");
+							println(terminal, "stdout", DELIM);
+							println(terminal, "stdout", e.getKey());
+							println(terminal, "stdout", DELIM);
+							println(terminal, "stdout", e.getValue());
+						});
+						break;
+					}
 					else if (cmd.equals("exit")) {
-						println(terminal, "interrupt", " good bye ");					
+						println(terminal, "interrupt", " good bye ");
 						Thread.sleep(1000);
 						break;
 					}
 					
-					println(terminal, "system", "invalid command");					
+					println(terminal, "system", "invalid command");
 					continue;
 				}
 			} 
@@ -467,6 +478,7 @@ public class REPL {
 			"  !reload     reload Venice environment\n" +	
 			"  !?, !help   help\n" +	
 			"  !config     show a sample REPL config\n" +	
+			"  !lic        prints the 3rd party licenses\n" +	
 			"  !env        print env symbols:\n" +	
 			"                !env print {symbol-name}\n" +	
 			"                !env global\n" +	
@@ -514,6 +526,7 @@ public class REPL {
 			"   !sandbox add-rule blacklist:venice:io/exists-dir?\n" +
 			"   !sandbox add-rule blacklist:venice:*io*\n";	
 
+	private final static String DELIM = "--------------------------------------------------------------------------------";
 	
 	private ReplConfig config;
 	private IInterceptor interceptor;
