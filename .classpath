@@ -7,16 +7,16 @@
 	<classpathentry kind="lib" path="lib/eclipse/ST-4.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/commons-text-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/commons-lang3-3.7.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-core-9.1.16.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-pdf-openpdf-9.1.16.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/openpdf-1.2.10.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-core-9.1.18.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-pdf-openpdf-9.1.18.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/openpdf-1.2.18.jar"/>
 	<classpathentry kind="lib" path="lib/provided/jline-3.11.0.jar" sourcepath="lib/provided/jline-3.11.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/provided/vavr-0.10.0.jar" sourcepath="lib/provided/vavr-0.10.0-sources.jar"/>
 	<classpathentry kind="lib" path="src/main/resources"/>
-	<classpathentry kind="lib" path="lib/eclipse/jackson-core-2.9.8.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/jackson-databind-2.9.8.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/jackson-datatype-jdk8-2.9.8.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/jackson-annotations-2.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/jackson-core-2.9.9.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/jackson-databind-2.9.9.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/jackson-datatype-jdk8-2.9.9.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/jackson-annotations-2.9.9.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/javax.servlet-api-4.0.1.jar" sourcepath="lib/eclipse/javax.servlet-api-4.0.1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
