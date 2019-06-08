@@ -42,6 +42,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -50,6 +51,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.HexFormatter;
+import com.github.jlangch.venice.impl.util.HexUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.Tuple2;
 
@@ -1093,6 +1096,122 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_bytebuf_to_hex = 
+		new VncFunction(
+				"str/bytebuf-to-hex", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists(
+						"(str/bytebuf-to-hex data)",
+						"(str/bytebuf-to-hex data :upper)")		
+					.doc(
+						"Converts byte data to a hex string using the hexadecimal digits: " + 
+						"0123456789abcdef. \n" +
+						"If the :upper options is passed the hex digits 0123456789ABCDEF " +
+						"are used.")
+					.examples(
+						"(str/bytebuf-to-hex (bytebuf [0 1 2 3 4 5 6]))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/bytebuf-to-hex", args, 1, 2);
+					
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				
+				final VncByteBuffer data = Coerce.toVncByteBuffer(args.first());
+				
+				if (args.size() == 1) {
+					return new VncString(HexUtil.toString(data.getValue().array()));
+				}
+				else {
+					final VncKeyword opt = Coerce.toVncKeyword(args.second());
+					if (opt.getValue().equalsIgnoreCase("upper")) {
+						return new VncString(HexUtil.toStringUpperCase(data.getValue().array()));
+					}
+					else {
+						throw new VncException("Function 'str/bytebuf-to-hex' expects the option :upper");
+					}
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_hex_to_bytebuf = 
+		new VncFunction(
+				"str/hex-to-bytebuf", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists("(str/hex-to-bytebuf hex)")		
+					.doc("Converts a hex string to a bytebuf")
+					.examples(
+						"(str/hex-to-bytebuf \"005E4AFF\")",
+						"(str/hex-to-bytebuf \"005e4aff\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/hex-to-bytebuf", args, 1);
+					
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				
+				return new VncByteBuffer(HexUtil.toBytes(Coerce.toVncString(args.first()).getValue()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_format_bytebuf = 
+		new VncFunction(
+				"str/format-bytebuf", 
+				VncFunction
+					.meta()
+					.module("str")
+					.arglists(
+						"(str/format-bytebuf data delimiter & options)")		
+					.doc(
+						"Formats a bytebuffer. \n\n" + 
+						"Options \n" +
+						"  :prefix0x - prefix with 0x" )
+					.examples(
+						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) nil)",
+						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) \"\")",
+						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) \", \")",
+						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) \", \" :prefix0x)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("str/format-bytebuf", args, 2, 3);
+					
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				
+				final VncByteBuffer data = Coerce.toVncByteBuffer(args.first());
+				final String delimiter = args.second() == Nil ? "" : Coerce.toVncString(args.second()).getValue();
+				
+				if (args.size() == 2) {
+					return new VncString(HexFormatter.toHex(data.getValue().array(), delimiter, false));
+				}
+				else {
+					final VncKeyword opt = Coerce.toVncKeyword(args.third());
+					if (opt.getValue().equalsIgnoreCase("prefix0x")) {
+						return new VncString(HexFormatter.toHex(data.getValue().array(), delimiter, true));
+					}
+					else {
+						throw new VncException("Function 'str/format-bytebuf' expects the option :prefix0x");
+					}
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_encode_base64 = 
 		new VncFunction(
 				"str/encode-base64", 
@@ -1341,6 +1460,9 @@ public class StringFunctions {
 					.put("str/strip-margin",		str_strip_margin)
 					.put("str/repeat",				str_repeat)
 					.put("str/char",				str_char)
+					.put("str/hex-to-bytebuf",		str_hex_to_bytebuf)
+					.put("str/bytebuf-to-hex",		str_bytebuf_to_hex)					
+					.put("str/format-bytebuf",		str_format_bytebuf)					
 					.put("str/encode-base64",		str_encode_base64)
 					.put("str/decode-base64",		str_decode_base64)
 					.put("str/encode-url",			str_encode_url)

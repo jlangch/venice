@@ -259,6 +259,12 @@ public class DocGenerator {
 		trim.addItem(getDocItem("str/trim"));
 		trim.addItem(getDocItem("str/trim-to-nil"));
 
+		final DocSection hex = new DocSection("Hex");
+		strings.addSection(hex);
+		hex.addItem(getDocItem("str/hex-to-bytebuf"));
+		hex.addItem(getDocItem("str/bytebuf-to-hex"));
+		hex.addItem(getDocItem("str/format-bytebuf"));
+
 		final DocSection encode = new DocSection("Encode/Decode");
 		strings.addSection(encode);
 		encode.addItem(getDocItem("str/encode-base64"));
@@ -998,6 +1004,12 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("count"));
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
 		bb_use.addItem(getDocItem("bytebuf-sub"));
+
+		final DocSection hex = new DocSection("Hex");
+		all.addSection(hex);
+		hex.addItem(getDocItem("str/hex-to-bytebuf"));
+		hex.addItem(getDocItem("str/bytebuf-to-hex"));
+		hex.addItem(getDocItem("str/format-bytebuf"));
 
 		return section;
 	}
