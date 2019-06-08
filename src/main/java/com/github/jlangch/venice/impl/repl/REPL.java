@@ -478,7 +478,8 @@ public class REPL {
 			"  !reload     reload Venice environment\n" +	
 			"  !?, !help   help\n" +	
 			"  !config     show a sample REPL config\n" +	
-			"  !lic        prints the 3rd party licenses\n" +	
+			"  !lic        prints the licenses for 3rd party\n" +
+			"              libs included with Venice\n" +	
 			"  !env        print env symbols:\n" +	
 			"                !env print {symbol-name}\n" +	
 			"                !env global\n" +	
@@ -526,7 +527,7 @@ public class REPL {
 			"   !sandbox add-rule blacklist:venice:io/exists-dir?\n" +
 			"   !sandbox add-rule blacklist:venice:*io*\n";	
 
-	private final static String DELIM = "--------------------------------------------------------------------------------";
+	private final static String DELIM = StringUtil.repeat('-', 80);
 	
 	private ReplConfig config;
 	private IInterceptor interceptor;

@@ -185,6 +185,27 @@ public class StringUtil {
 		
 		return text.substring(0, maxLen - lenTruncationMarker) + truncationMarker;
 	}
+	
+	public static String repeat(final String s, final int times) {
+		if (s == null) {
+			throw new IllegalArgumentException("s must not be null");
+		}
+		if (times < 0) {
+			throw new IllegalArgumentException("A times must not be negative");
+		}
+
+		final StringBuilder sb = new StringBuilder();
+		for(int ii=0; ii<times; ii++) sb.append(s);
+		return sb.toString();
+	}
+	
+	public static String repeat(final char c, final int times) {
+		if (times < 0) {
+			throw new IllegalArgumentException("A times must not be negative");
+		}
+
+		return new String(new char[times]).replace('\0', c);
+	}
 
 	public static boolean isEmpty(final String s){
 		return s == null || s.length() == 0;
