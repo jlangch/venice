@@ -17,5 +17,6 @@ Venice supports
 * [WebDAV](ext-webdav.md)
 * [Maven](ext-maven.md)
 * [Jackson JSON](ext-jackson.md)
+* [Cryptographic Functions](ext-crypt.md)
 
 through extension modules
