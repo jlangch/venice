@@ -1,0 +1,28 @@
+;; Venice crypt functions
+
+(import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
+(import :com.github.jlangch.venice.impl.util.crypt.PBKDF2_Hash)
+
+(defn
+  ^{ :arglists '("(crypt/md5-hash t)")
+     :doc "Hashes a string or a bytebuf using MD5"
+     :examples '("""(crypt/md5-hash "hello world")""") }
+
+  crypt/md5-hash [text]
+
+  (. :MD5_Hash :hash text))
+
+
+(defn
+  ^{ :arglists '("(crypt/pbkdf2-hash text salt)",
+                 "(crypt/pbkdf2-hash text salt iterations key-length)")
+     :doc "Hashes a string using PBKDF2. iterations default to 1000, key-length defaults to 256"
+     :examples '("""(crypt/pbkdf2-hash "hello world" "3657609")"""
+                 """(crypt/pbkdf2-hash "hello world" "3657609" 1000 256)""") }
+
+  crypt/pbkdf2-hash
+
+  ([text salt]
+      (crypt/pbkdf2-hash text salt 1000 256))
+  ([text salt iterations key-length]
+      (. :PBKDF2_Hash :hash text salt iterations key-length)))
