@@ -24,7 +24,6 @@ Specifying a salt, the number of iterations, and key length:
 
 ### SHA-512
 
-
 ```clojure
 (str/bytebuf-to-hex
   (crypt/sha512-hash "hello world" "-salt-")
