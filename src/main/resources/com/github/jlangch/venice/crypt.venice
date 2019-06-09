@@ -1,15 +1,19 @@
 ;; Venice crypt functions
 
 (import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
+(import :com.github.jlangch.venice.impl.util.crypt.SHA512_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.PBKDF2_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.CipherSuiteFactory)
 (import :com.github.jlangch.venice.impl.util.crypt.CipherSuite)
 
 
 (defn
-  ^{ :arglists '("(crypt/md5-hash t)")
+  ^{ :arglists '("(crypt/md5-hash data)")
      :doc "Hashes a string or a bytebuf using MD5. Note: MD5 is not safe any more use PBKDF2."
-     :examples '("""(crypt/md5-hash "hello world")""") }
+     :examples (list (str/strip-margin
+                       """(str/bytebuf-to-hex
+                         |  (crypt/md5-hash "hello world")
+                         |  :upper) """ )) }
 
   crypt/md5-hash [text]
 
@@ -17,11 +21,35 @@
 
 
 (defn
+  ^{ :arglists '("(crypt/sha512-hash data)", "(crypt/sha512-hash data salt)")
+     :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
+     :examples (list (str/strip-margin
+                       """(str/bytebuf-to-hex
+                         |  (crypt/sha512-hash "hello world")
+                         |  :upper) """ )
+                     (str/strip-margin
+                       """(str/bytebuf-to-hex
+                         |  (crypt/sha512-hash "hello world" "-salt-")
+                         |  :upper) """ )) }
+
+  crypt/sha512-hash
+
+  ([text] (. :SHA512_Hash :hash text nil))
+  ([text salt] (. :SHA512_Hash :hash text salt)))
+
+
+(defn
   ^{ :arglists '("(crypt/pbkdf2-hash text salt)",
                  "(crypt/pbkdf2-hash text salt iterations key-length)")
      :doc "Hashes a string using PBKDF2. iterations default to 1000, key-length defaults to 256"
-     :examples '("""(crypt/pbkdf2-hash "hello world" "3657609")"""
-                 """(crypt/pbkdf2-hash "hello world" "3657609" 1000 256)""") }
+     :examples (list (str/strip-margin
+                       """(str/bytebuf-to-hex
+                         |  (crypt/pbkdf2-hash "hello world" "-salt-")
+                         |  :upper) """ )
+                     (str/strip-margin
+                       """(str/bytebuf-to-hex
+                         |  (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+                         |  :upper) """ )) }
 
   crypt/pbkdf2-hash
 
