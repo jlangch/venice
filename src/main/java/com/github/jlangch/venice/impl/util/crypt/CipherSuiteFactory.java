@@ -28,8 +28,10 @@ import java.security.spec.KeySpec;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 
 
@@ -41,7 +43,7 @@ public class CipherSuiteFactory {
 	/**
 	 * Creates a cipher suite.
 	 * 
-	 * @param algorithm An algorithm {"DES", "3DES", "Blowfish"}
+	 * @param algorithm An algorithm {"DES", "3DES", "Blowfish", "AES256"}
 	 * @param passphrase A passphrase
 	 * @param urlSafe 
 	 * 			if true this encoder will emit - and _ instead of the 
@@ -70,6 +72,9 @@ public class CipherSuiteFactory {
 			}
 			else if ("Blowfish".equalsIgnoreCase(algorithm)) {
 				return createCipherSuite(passphrase, "Blowfish", "{Blowfish}", urlSafe);
+			}
+			else if ("AES256".equalsIgnoreCase(algorithm)) {
+				return createCipherSuite_AES256(passphrase, "AES256", "{AES256}", urlSafe);
 			}
 			else {
 				throw new EncryptionException("Invalid cipher algorithm name '" + algorithm + "'");
@@ -101,7 +106,30 @@ public class CipherSuiteFactory {
         cipherDecrypt.init(Cipher.DECRYPT_MODE, key, paramSpec);
 		return new CipherSuite(cipherEncrypt, cipherDecrypt, prefix, urlSafe);
 	}
-	
+
+
+	private static CipherSuite createCipherSuite_AES256(
+			final String passphrase, 
+			final String algorithm, 
+			final String prefix,
+			final boolean urlSafe
+	) 
+	throws GeneralSecurityException {
+        byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        IvParameterSpec ivspec = new IvParameterSpec(iv);
+         
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), SALT, 65536, 256);
+        SecretKey tmp = factory.generateSecret(spec);
+        SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+         
+        Cipher cipherEncrypt = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        Cipher cipherDecrypt = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        cipherEncrypt.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
+        cipherDecrypt.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
+		return new CipherSuite(cipherEncrypt, cipherDecrypt, prefix, urlSafe);
+	}
+
 	
     private static final byte[] SALT = {
         (byte)0xA9, (byte)0x9B, (byte)0xC8, (byte)0x32,

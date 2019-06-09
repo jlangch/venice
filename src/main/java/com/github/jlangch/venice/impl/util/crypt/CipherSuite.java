@@ -103,6 +103,26 @@ public class CipherSuite {
 		}
     }
 
+	
+	/**
+	 * Encrypts binary data.
+	 * 
+	 * @param data the data
+	 * @return the encryted data
+	 */
+	public synchronized byte[] encrypt(final byte[] data) {
+		if (data == null) return null;
+		if (data.length == 0) return data;
+		
+		try {
+			// Encrypt
+			return this.cipherEncrypt.doFinal(data);
+		}
+		catch(Exception ex) {
+			throw new EncryptionException("Failed to encrypt data.", ex);
+		}
+    }
+
 	/**
 	 * Decrypts a Base64 encrypted string.
 	 * 
@@ -126,6 +146,25 @@ public class CipherSuite {
 		}
 		catch(Exception ex) {
 			throw new EncryptionException("Failed to decrypt message.", ex);
+		} 
+    }
+
+	/**
+	 * Decrypts binary data.
+	 * 
+	 * @param data the data
+	 * @return The decrypted data
+	 */
+	public synchronized byte[] decrypt(final byte[] data) {
+		if (data == null) return null;
+		if (data.length == 0) return data;
+
+		try {
+				// Decrypt
+			return cipherDecrypt.doFinal(data);
+		}
+		catch(Exception ex) {
+			throw new EncryptionException("Failed to decrypt data.", ex);
 		} 
     }
 

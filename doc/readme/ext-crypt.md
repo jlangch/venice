@@ -27,5 +27,35 @@ Note: MD5 is not safe anymore use PBKDF2 instead
 ```
 
 
+## Encryption
 
-## Encryption /Decryption
+```clojure
+(do
+  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+  (encrypt "hello") ; => "ndmW1NLsDHA"
+  (encrypt "world") ; => "KPYjndkZ8vM"
+  (encrypt (bytebuf [1 2 3 4 5])) ; => [234 220 237 189 12 176 242 147]
+) 
+```
+
+The encrypted data is returned as base64 encoded string.
+
+The :url-safe option controls the base64 encoding towards URL safety.
+If true this base64 encoder will emit '-' and '_' instead of the usual 
+'+' and '/' characters. Defaults to false.
+Note: no padding is added when encoding using the URL-safe alphabet.
+
+Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
+
+
+## Decryption
+
+```clojure
+(do
+  (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
+  (decrypt "ndmW1NLsDHA") ; => "hello"
+  (decrypt "KPYjndkZ8vM") ; => "world"
+) 
+```
+
+The decrypt function expects a base64 encoded string.

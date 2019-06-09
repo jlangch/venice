@@ -34,10 +34,14 @@
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
      :doc (str/strip-margin
-             """Returns a new function to encrypt a text given the algorithm and passphrase.
+             """Returns a new function to encrypt a string or bytebuf data given
+               |the algorithm and passphrase. If a string is passed a base64
+               |encoded encrypted string is returned. If a bytebuf is passed
+               |an encryped bytebuf is returned.
+               |Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
                |
                |Options:
-               |  :url-safe bool - If true this Base64 encoder will emit '-' and '_'
+               |  :url-safe bool - If true this base64 encoder will emit '-' and '_'
                |                   instead of the usual '+' and '/' characters.
                |                   Defaults to false.
                |                   Note: no padding is added when encoding using the URL-safe
@@ -58,10 +62,14 @@
 (defn
   ^{ :arglists '("(crypt/decrypt algorithm passphrase :url-safe)")
   :doc (str/strip-margin
-          """Returns a new function to encrypt a text given the algorithm and passphrase.
+          """Returns a new function to decrypt a string or bytebuf given the
+            |algorithm and passphrase. If a string is passed it is base64
+            |decode before decrypted and returned as string. If a bytebuf is
+            |passed an decryped bytebuf is returned.
+            |Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
             |
             |Options:
-            |  :url-safe bool - If true this Base64 decoder will convert '-' and '_'
+            |  :url-safe bool - If true this base64 decoder will convert '-' and '_'
             |                   characters back to '+' and '/' before decoding.
             |                   Defaults to false.""")
      :examples (list (str/strip-margin
