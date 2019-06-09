@@ -40,7 +40,7 @@ Note: MD5 is not safe anymore use PBKDF2 instead
 
 Encrypts a string or a bytebuf. String data is returned as base64 encoded string.
 
-The :url-safe option controls the base64 encoding towards URL safety.
+The :url-safe option controls the base64 encoding regarding URL safety.
 If true this base64 encoder will emit '-' and '_' instead of the usual 
 '+' and '/' characters. Defaults to false.
 Note: no padding is added when encoding using the URL-safe alphabet.
