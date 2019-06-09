@@ -38,7 +38,7 @@ Note: MD5 is not safe anymore use PBKDF2 instead
 ) 
 ```
 
-The encrypted data is returned as base64 encoded string.
+Encrypts a string or a bytebuf. String data is returned as base64 encoded string.
 
 The :url-safe option controls the base64 encoding towards URL safety.
 If true this base64 encoder will emit '-' and '_' instead of the usual 
@@ -59,4 +59,4 @@ Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
 ) 
 ```
 
-The decrypt function expects a base64 encoded string.
+The decrypt function expects a base64 encoded string or a bytebuf.
