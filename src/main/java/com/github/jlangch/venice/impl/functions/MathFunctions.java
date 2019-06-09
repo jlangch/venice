@@ -27,10 +27,10 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
@@ -1070,5 +1070,5 @@ public class MathFunctions {
 					.toMap();	
 
 
-	private static final Random random = new Random();
+	private static final SecureRandom random = new SecureRandom();
 }
