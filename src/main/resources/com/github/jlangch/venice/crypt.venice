@@ -8,7 +8,7 @@
 
 (defn
   ^{ :arglists '("(crypt/md5-hash t)")
-     :doc "Hashes a string or a bytebuf using MD5"
+     :doc "Hashes a string or a bytebuf using MD5. Note: MD5 is not safe any more use PBKDF2."
      :examples '("""(crypt/md5-hash "hello world")""") }
 
   crypt/md5-hash [text]
