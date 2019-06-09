@@ -1005,6 +1005,11 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
 		bb_use.addItem(getDocItem("bytebuf-sub"));
 
+		final DocSection encode = new DocSection("Base64");
+		all.addSection(encode);
+		encode.addItem(getDocItem("str/encode-base64"));
+		encode.addItem(getDocItem("str/decode-base64"));
+
 		final DocSection hex = new DocSection("Hex");
 		all.addSection(hex);
 		hex.addItem(getDocItem("str/hex-to-bytebuf"));

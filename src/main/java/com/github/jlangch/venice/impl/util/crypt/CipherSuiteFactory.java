@@ -34,7 +34,6 @@ import javax.crypto.spec.PBEParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 
-
 /**
  * Cipher suite factory
  */
@@ -46,8 +45,8 @@ public class CipherSuiteFactory {
 	 * @param algorithm An algorithm {"DES", "3DES", "Blowfish", "AES256"}
 	 * @param passphrase A passphrase
 	 * @param urlSafe 
-	 * 			if true this encoder will emit - and _ instead of the 
-	 * 			usual + and / characters. 
+	 * 			if true this encoder will emit '-' and '_' instead of the 
+	 * 			usual '+' and '/' characters. 
 	 * 			Note: no padding is added when encoding using the URL-safe alphabet.
 	 * @return A cipher suite
 	 * @throws EncryptionException if the algorithm is not supported
@@ -81,7 +80,7 @@ public class CipherSuiteFactory {
 			}
         }
 		catch (Exception ex) {
-			throw new EncryptionException("Failed tocreate cipher suite.", ex);
+			throw new EncryptionException("Failed to create cipher suite.", ex);
 		} 
 	}
 
@@ -90,8 +89,7 @@ public class CipherSuiteFactory {
 			final String algorithm, 
 			final String prefix,
 			final boolean urlSafe
-	) 
-	throws GeneralSecurityException {
+	) throws GeneralSecurityException {
         // Create the key
         KeySpec keySpec = new PBEKeySpec(passphrase.toCharArray(), SALT, ITERATIONS);
         SecretKey key = SecretKeyFactory.getInstance(algorithm).generateSecret(keySpec);
@@ -113,8 +111,7 @@ public class CipherSuiteFactory {
 			final String algorithm, 
 			final String prefix,
 			final boolean urlSafe
-	) 
-	throws GeneralSecurityException {
+	) throws GeneralSecurityException {
         byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         IvParameterSpec ivspec = new IvParameterSpec(iv);
          
