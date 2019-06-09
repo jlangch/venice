@@ -40,7 +40,7 @@ Specifying a salt, the number of iterations, and key length:
 
 ### MD5
 
-Note: MD5 is not safe anymore use PBKDF2 instead
+Note: MD5 is not safe anymore use PBKDF2 instead to hash passwords
 
 ```clojure
 (str/bytebuf-to-hex
