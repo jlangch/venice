@@ -43,25 +43,33 @@ public class CipherSuiteFactory {
 	 * 
 	 * @param algorithm An algorithm {"DES", "3DES", "Blowfish"}
 	 * @param passphrase A passphrase
+	 * @param urlSafe 
+	 * 			if true this encoder will emit - and _ instead of the 
+	 * 			usual + and / characters. 
+	 * 			Note: no padding is added when encoding using the URL-safe alphabet.
 	 * @return A cipher suite
 	 * @throws EncryptionException if the algorithm is not supported
 	 */
-	public static CipherSuite create(final String algorithm, final String passphrase) {
+	public static CipherSuite create(
+			final String algorithm, 
+			final String passphrase,
+			final boolean urlSafe
+	) {
 		try {
 			if ("DES".equalsIgnoreCase(algorithm)) {
-				return createCipherSuite(passphrase, "PBEWithMD5AndDES", "{DES}");
+				return createCipherSuite(passphrase, "PBEWithMD5AndDES", "{DES}", urlSafe);
 			}
 			else if ("PBEWithMD5AndDES".equalsIgnoreCase(algorithm)) {
-				return createCipherSuite(passphrase, "PBEWithMD5AndDES", "{DES}");
+				return createCipherSuite(passphrase, "PBEWithMD5AndDES", "{DES}", urlSafe);
 			}
 			else if ("3DES".equalsIgnoreCase(algorithm)) {
-				return createCipherSuite(passphrase, "PBEWithMD5AndTripleDES", "{3DES}");
+				return createCipherSuite(passphrase, "PBEWithMD5AndTripleDES", "{3DES}", urlSafe);
 			}
 			else if ("PBEWithMD5AndTripleDES".equalsIgnoreCase(algorithm)) {
-				return createCipherSuite(passphrase, "PBEWithMD5AndTripleDES", "{3DES}");
+				return createCipherSuite(passphrase, "PBEWithMD5AndTripleDES", "{3DES}", urlSafe);
 			}
 			else if ("Blowfish".equalsIgnoreCase(algorithm)) {
-				return createCipherSuite(passphrase, "Blowfish", "{Blowfish}");
+				return createCipherSuite(passphrase, "Blowfish", "{Blowfish}", urlSafe);
 			}
 			else {
 				throw new EncryptionException("Invalid cipher algorithm name '" + algorithm + "'");
@@ -75,7 +83,8 @@ public class CipherSuiteFactory {
 	private static CipherSuite createCipherSuite(
 			final String passphrase, 
 			final String algorithm, 
-			final String prefix
+			final String prefix,
+			final boolean urlSafe
 	) 
 	throws GeneralSecurityException {
         // Create the key
@@ -90,7 +99,7 @@ public class CipherSuiteFactory {
         // Create the ciphers
         cipherEncrypt.init(Cipher.ENCRYPT_MODE, key, paramSpec);
         cipherDecrypt.init(Cipher.DECRYPT_MODE, key, paramSpec);
-		return new CipherSuite(cipherEncrypt, cipherDecrypt, prefix);
+		return new CipherSuite(cipherEncrypt, cipherDecrypt, prefix, urlSafe);
 	}
 	
 	

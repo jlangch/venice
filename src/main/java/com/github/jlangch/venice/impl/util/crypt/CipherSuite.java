@@ -25,6 +25,8 @@ import java.util.Base64;
 
 import javax.crypto.Cipher;
 
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * Encrypts and decrypts text messages using a passphrase based on a 
@@ -40,8 +42,17 @@ public class CipherSuite {
 	 * @param encrypt An encrypt cipher
 	 * @param decrypt An decrypt cipher
 	 * @param cipherPrefix A cipher prefix (E.g. {DES})
+	 * @param urlSafe 
+	 * 			if true this encoder will emit - and _ instead of the 
+	 * 			usual + and / characters. 
+	 * 			Note: no padding is added when encoding using the URL-safe alphabet.
 	 */
-	public CipherSuite(final Cipher encrypt, final Cipher decrypt, final String cipherPrefix) {
+	public CipherSuite(
+			final Cipher encrypt, 
+			final Cipher decrypt, 
+			final String cipherPrefix,
+			final boolean urlSafe
+	) {
 		if (encrypt == null) {
 			throw new IllegalArgumentException("An encrypt cipher must not be null");
 		}
@@ -55,6 +66,7 @@ public class CipherSuite {
         this.cipherEncrypt = encrypt;
         this.cipherDecrypt = decrypt;
         this.cipherPrefix = cipherPrefix;
+        this.urlSafe = urlSafe;
 	}
 	
 	/**
@@ -74,8 +86,17 @@ public class CipherSuite {
 			// Encrypt
 			final byte[] enc = this.cipherEncrypt.doFinal(utf8);
 			
-			// Encode bytes to base64 to get a string (no chunks and URL safe)
-			return Base64.getEncoder().encodeToString(enc);
+			// Encode bytes to base64 to get a string
+			if (urlSafe) {
+				return Base64.getEncoder()
+							 .withoutPadding()
+							 .encodeToString(enc)
+							 .replace('+', '-')
+							 .replace('/', '_');
+			}
+			else {
+				return Base64.getEncoder().encodeToString(enc);
+			}
 		}
 		catch(Exception ex) {
 			throw new EncryptionException("Failed to encrypt message.", ex);
@@ -93,8 +114,12 @@ public class CipherSuite {
 		if (message.length() == 0) return "";
 
 		try {
+			final String m = urlSafe 
+								? message.replace('-', '+').replace('_', '/')
+								: message;
+
 			// Remove the option encryption marker and decode base64 to get bytes
-			final byte[] dec = Base64.getDecoder().decode(message.getBytes("UTF-8"));
+			final byte[] dec = Base64.getDecoder().decode(m.getBytes("UTF-8"));
 
 			// Decrypt
 			return new String(cipherDecrypt.doFinal(dec), "UTF-8");
@@ -117,9 +142,25 @@ public class CipherSuite {
 	public String getCipherPrefix() {
 		return cipherPrefix;
 	}
-	
+
+
+	public boolean isEncrypted(final String text) {
+		return StringUtils.trimToEmpty(text).startsWith(getCipherPrefix());
+	}
+
+	public String prefix(final String text) {
+		return text == null ? null : getCipherPrefix() + text;
+	}
+
+	public String deprefix(final String text) {
+		return isEncrypted(text) 
+				? text.substring(getCipherPrefix().length())
+				: text;
+	}
+
 
     private final Cipher cipherEncrypt;
 	private final Cipher cipherDecrypt;	
 	private final String cipherPrefix;
+	private final boolean urlSafe;
 }

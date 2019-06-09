@@ -2,6 +2,9 @@
 
 (import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.PBKDF2_Hash)
+(import :com.github.jlangch.venice.impl.util.crypt.CipherSuiteFactory)
+(import :com.github.jlangch.venice.impl.util.crypt.CipherSuite)
+
 
 (defn
   ^{ :arglists '("(crypt/md5-hash t)")
@@ -26,3 +29,47 @@
       (crypt/pbkdf2-hash text salt 1000 256))
   ([text salt iterations key-length]
       (. :PBKDF2_Hash :hash text salt iterations key-length)))
+
+
+(defn
+  ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
+     :doc (str/strip-margin
+             """Returns a new function to encrypt a text given the algorithm and passphrase.
+               |
+               |Options:
+               |  :url-safe bool - If true this Base64 encoder will emit '-' and '_'
+               |                   instead of the usual '+' and '/' characters.
+               |                   Defaults to false.
+               |                   Note: no padding is added when encoding using the URL-safe
+               |                         alphabet.""")
+     :examples (list (str/strip-margin
+                       """(def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+                         |(encrypt "hello") ; => "ndmW1NLsDHA"
+                         |(encrypt "world") ; => "KPYjndkZ8vM" """ )) }
+
+  crypt/encrypt
+
+  [algorithm passphrase & options]
+  (let [url-safe (:url-safe (apply hash-map options) false)
+        suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
+    (fn [text] (. suite :encrypt text))))
+
+
+(defn
+  ^{ :arglists '("(crypt/decrypt algorithm passphrase :url-safe)")
+  :doc (str/strip-margin
+          """Returns a new function to encrypt a text given the algorithm and passphrase.
+            |
+            |Options:
+            |  :url-safe bool - If true this Base64 decoder will convert '-' and '_'
+            |                   characters back to '+' and '/' before decoding.
+            |                   Defaults to false.""")
+     :examples (list (str/strip-margin
+                       """(def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+                         |(decrypt "ndmW1NLsDHA") ; => "hello"
+                         |(decrypt "KPYjndkZ8vM") ; => "world" """ )) }
+
+  crypt/decrypt [algorithm passphrase & options]
+  (let [url-safe (:url-safe (apply hash-map options) false)
+        suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
+     (fn [text] (. suite :decrypt text))))
