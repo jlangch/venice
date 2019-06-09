@@ -55,6 +55,7 @@ Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
   (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
   (decrypt "ndmW1NLsDHA") ; => "hello"
   (decrypt "KPYjndkZ8vM") ; => "world"
+  (decrypt  (bytebuf [234 220 237 189 12 176 242 147])) ; => [1 2 3 4 5]
 ) 
 ```
 
