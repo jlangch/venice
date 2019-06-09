@@ -5,11 +5,11 @@
 
 ### PBKDF2
 
-Just using a salt ("1234"):
+Just using a salt:
 
 ```clojure
 (str/bytebuf-to-hex
-  (crypt/pbkdf2-hash "hello world" "1234")
+  (crypt/pbkdf2-hash "hello world" "-salt-")
   :upper)
 ```
 
@@ -17,7 +17,7 @@ Specifying a salt, the number of iterations, and key length:
 
 ```clojure
 (str/bytebuf-to-hex
-  (crypt/pbkdf2-hash "hello world" "1234" 1000 256)
+  (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
   :upper)
 ```
 
