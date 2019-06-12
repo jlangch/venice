@@ -72,7 +72,7 @@ If true this base64 encoder will emit '-' and '_' instead of the usual
 '+' and '/' characters. Defaults to false.
 Note: no padding is added when encoding using the URL-safe alphabet.
 
-Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
+Supported algorithms: "DES", "3DES", "AES256"
 
 
 ## Decryption

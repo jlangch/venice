@@ -42,7 +42,7 @@ public class CipherSuiteFactory {
 	/**
 	 * Creates a cipher suite.
 	 * 
-	 * @param algorithm An algorithm {"DES", "3DES", "Blowfish", "AES256"}
+	 * @param algorithm An algorithm {"DES", "3DES", "AES256"}
 	 * @param passphrase A passphrase
 	 * @param urlSafe 
 	 * 			if true this encoder will emit '-' and '_' instead of the 
@@ -68,9 +68,6 @@ public class CipherSuiteFactory {
 			}
 			else if ("PBEWithMD5AndTripleDES".equalsIgnoreCase(algorithm)) {
 				return createCipherSuite(passphrase, "PBEWithMD5AndTripleDES", "{3DES}", urlSafe);
-			}
-			else if ("Blowfish".equalsIgnoreCase(algorithm)) {
-				return createCipherSuite(passphrase, "Blowfish", "{Blowfish}", urlSafe);
 			}
 			else if ("AES256".equalsIgnoreCase(algorithm)) {
 				return createCipherSuite_AES256(passphrase, "AES256", "{AES256}", urlSafe);

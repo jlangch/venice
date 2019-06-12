@@ -66,7 +66,7 @@
                |the algorithm and passphrase. If a string is passed a base64
                |encoded encrypted string is returned. If a bytebuf is passed
                |an encryped bytebuf is returned.
-               |Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
+               |Supported algorithms: "DES", "3DES", "AES256"
                |
                |Options:
                |  :url-safe bool - If true this base64 encoder will emit '-' and '_'
@@ -94,7 +94,7 @@
             |algorithm and passphrase. If a string is passed it is base64
             |decode before decrypted and returned as string. If a bytebuf is
             |passed an decryped bytebuf is returned.
-            |Supported algorithms: "DES", "3DES", "Blowfish", "AES256"
+            |Supported algorithms: "DES", "3DES", "AES256"
             |
             |Options:
             |  :url-safe bool - If true this base64 decoder will convert '-' and '_'
