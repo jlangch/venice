@@ -21,16 +21,14 @@
  */
 package com.github.jlangch.venice.impl.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 
@@ -46,6 +44,21 @@ public class FileUtil {
 	}
 
 	/**
+	 * Loads binary data from a file.
+	 * 
+	 * @param source The source file
+	 * @return the loaded file data
+	 */
+	public static byte[] load(final File source) {
+		try {
+			return Files.readAllBytes(source.toPath());
+		} 
+		catch (Exception ex) {
+			throw new FileException("Failed to load file <" + source + ">.", ex);
+		}
+	}
+
+	/**
 	 * Copies a file.
 	 * 
 	 * @param source The source file
@@ -57,72 +70,23 @@ public class FileUtil {
 			final File destination, 
 			final boolean overwrite
 	) {
-		FileInputStream inStream = null;
-		FileOutputStream outStream = null;
-		
 		try {
-			if (overwrite && destination.exists()) {
-				if (!destination.delete()) {
-					throw new RuntimeException(
-							"Failed to delete existing destination file: " 
-								+ destination);
-				}
+			if (overwrite) {
+				Files.copy(
+						source.toPath(), 
+						destination.toPath());
 			}
-
-			inStream = new FileInputStream(source);
-			outStream = new FileOutputStream(destination);
-
-			IOStreamUtil.copy(inStream, outStream);
-			
-			// Closing an output stream is critical especially with file I/O
-			// on network file systems => catch exceptions
-			outStream.close();
-			outStream = null;
+			else {
+				Files.copy(
+						source.toPath(), 
+						destination.toPath(), 
+						StandardCopyOption.REPLACE_EXISTING);
+			}
 		} 
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new FileException(
 					"Failed to copy file from <" + source + "> to <" + destination + ">.", 
 					ex);
-		}
-		catch (RuntimeException ex) {
-			throw new FileException(
-					"Failed to copy file from <" + source + "> to <" + destination + ">.", 
-					ex);
-		} 
-		finally {
-			silentClose(inStream);
-			silentClose(outStream);
-		}
-	}
-
-	/**
-	 * Loads binary data from a file.
-	 * 
-	 * @param source The source file
-	 * @return the loaded file data
-	 */
-	public static byte[] load(final File source) {
-		InputStream inStream = null;
-		ByteArrayOutputStream outStream = null;
-		
-		try {
-			inStream = new FileInputStream(source);
-			outStream = new ByteArrayOutputStream();
-
-			IOStreamUtil.copy(inStream, outStream);
-			
-			outStream.flush();	
-			return outStream.toByteArray();
-		} 
-		catch (IOException ex) {
-			throw new FileException("Failed to load file <" + source + ">.", ex);
-		}
-		catch (RuntimeException ex) {
-			throw new FileException("Failed to load file <" + source + ">.", ex);
-		}
-		finally {
-			silentClose(inStream);
-			silentClose(outStream);
 		}
 	}
 	
@@ -138,36 +102,25 @@ public class FileUtil {
 			final File destination, 
 			final boolean overwrite
 	) {
-		OutputStream outStream = null;
-		
 		try {
-			if (overwrite && destination.exists()) {
-				if (!destination.delete()) {
-					throw new RuntimeException(
-							"Failed to delete existing destination file: " 
-								+ destination);
-				}
+			if (overwrite) {
+				Files.write(
+						destination.toPath(), 
+						data, 
+						StandardOpenOption.WRITE, 
+						StandardOpenOption.CREATE,
+						StandardOpenOption.TRUNCATE_EXISTING);
 			}
-
-			outStream = new FileOutputStream(destination);
-
-			outStream.write(data, 0, data.length);
-						
-			outStream.flush();
-			
-			// Closing an output stream is critical especially with file I/O
-			// on network file systems => catch exceptions
-			outStream.close();
-			outStream = null;
+			else {
+				Files.write(
+						destination.toPath(), 
+						data, 
+						StandardOpenOption.WRITE, 
+						StandardOpenOption.CREATE_NEW);
+			}
 		} 
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new FileException("Failed to save to file <" + destination + ">.", ex);
-		}
-		catch (RuntimeException ex) {
-			throw new FileException("Failed to save to file <" + destination + ">.", ex);
-		}
-		finally {
-			silentClose(outStream);
 		}
 	}
 
@@ -178,27 +131,16 @@ public class FileUtil {
 	 * @param destination The destination file
 	 */
 	public static void append(final byte[] data, final File destination) {
-		OutputStream outStream = null;
-		
 		try {
-			outStream = new FileOutputStream(destination, true);
-
-			outStream.write(data, 0, data.length);
-						
-			outStream.flush();
-			
-			// Closing an output stream is critical especially with file I/O
-			// on network file systems => catch exceptions
-			outStream.close();
-			outStream = null;
+			Files.write(
+					destination.toPath(), 
+					data, 
+					StandardOpenOption.WRITE, 
+					StandardOpenOption.CREATE, 
+					StandardOpenOption.APPEND);
 		} 
 		catch (Exception ex) {
-			throw new FileException(
-					"Failed to append to file <" + destination + ">.", 
-					ex);
-		}
-		finally {
-			silentClose(outStream);
+			throw new FileException("Failed to append to file <" + destination + ">.", ex);
 		}
 	}
 
@@ -216,36 +158,21 @@ public class FileUtil {
 			final File destination, 
 			final boolean overwrite
 	) {
-		OutputStream outStream = null;
-		
 		try {
-			if (overwrite && destination.exists()) {
-				if (!destination.delete()) {
-					throw new RuntimeException(
-							"Failed to delete existing destination file: " 
-								+ destination);
-				}
+			if (overwrite) {
+				Files.copy(
+						inStream, 
+						destination.toPath(), 
+						StandardCopyOption.REPLACE_EXISTING);
 			}
-
-			outStream = new FileOutputStream(destination);
-
-			IOStreamUtil.copy(inStream, outStream);
-						
-			outStream.flush();
-			
-			// Closing an output stream is critical especially with file I/O
-			// on network file systems
-			outStream.close();
-			outStream = null;
+			else {
+				Files.copy(
+						inStream, 
+						destination.toPath());
+			}
 		} 
-		catch (IOException ex) {
-			throw new FileException("Failed to data to file <" + destination + ">.", ex);
-		}
-		catch (RuntimeException ex) {
-			throw new FileException("Failed to data to file <" + destination + ">.", ex);
-		}
-		finally {
-			silentClose(outStream);
+		catch (Exception ex) {
+			throw new FileException("Failed to save stream  data to file <" + destination + ">.", ex);
 		}
 	}
 	
@@ -603,19 +530,6 @@ public class FileUtil {
 			else {
 				copy(file, new File(dstdir, file.getName()), true);
 			}
-		}
-	}
-
-
-	private static void silentClose(final InputStream is) {
-		if (is != null) {
-			try { is.close(); } catch(Exception ex) { /* ignore */ }
-		}
-	}
-
-	private static void silentClose(final OutputStream os) {
-		if (os != null) {
-			try { os.close(); } catch(Exception ex) { /* ignore */ }
 		}
 	}
 	
