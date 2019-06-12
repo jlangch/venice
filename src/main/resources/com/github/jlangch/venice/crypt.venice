@@ -77,14 +77,16 @@
      :examples (list (str/strip-margin
                        """(def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
                          |(encrypt "hello") ; => "ndmW1NLsDHA"
-                         |(encrypt "world") ; => "KPYjndkZ8vM" """ )) }
+                         |(encrypt "world") ; => "KPYjndkZ8vM"
+                         |(encrypt (bytebuf [1 2 3 4 5])) """ )) }
 
   crypt/encrypt
 
   [algorithm passphrase & options]
+
   (let [url-safe (:url-safe (apply hash-map options) false)
         suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
-    (fn [text] (. suite :encrypt text))))
+    (fn [data] (. suite :encrypt data))))
 
 
 (defn
@@ -92,7 +94,7 @@
   :doc (str/strip-margin
           """Returns a new function to decrypt a string or a bytebuf given the
             |algorithm and passphrase. If a string is passed it is base64
-            |decoded before being decrypted and returned as string. If a
+            |decoded, decrypted, and returned as string. If a
             |bytebuf is passed the decrypted bytebuf is returned.
             |Supported algorithms: "DES", "3DES", "AES256"
             |
@@ -103,9 +105,13 @@
      :examples (list (str/strip-margin
                        """(def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
                          |(decrypt "ndmW1NLsDHA") ; => "hello"
-                         |(decrypt "KPYjndkZ8vM") ; => "world" """ )) }
+                         |(decrypt "KPYjndkZ8vM") ; => "world"
+                         |(decrypt  (bytebuf [234 220 237 189 12 176 242 147])) """ )) }
 
-  crypt/decrypt [algorithm passphrase & options]
+  crypt/decrypt
+
+  [algorithm passphrase & options]
+
   (let [url-safe (:url-safe (apply hash-map options) false)
         suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
-     (fn [text] (. suite :decrypt text))))
+     (fn [data] (. suite :decrypt data))))
