@@ -120,8 +120,10 @@ Thread first `->`
   (def person
     {:name "Peter Meier"
      :address {:street "Lindenstrasse 45"
-     :city "Bern" :zip 3000}})
-  (-> person :address :street)) ;; => "Lindenstrasse 45"
+               :city "Bern" 
+               :zip 3000}})
+  (-> person :address :street) ;; => "Lindenstrasse 45"
+  (-> person :email :private)) ;; => nil
 ```
 
 Thread last `->>`
