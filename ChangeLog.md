@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - a one-shot and periodic scheduler `schedule-delay`, `schedule-at-fixed-rate`
 - bytebuf/hex conversion functions `str/hex-to-bytebuf`, `str/bytebuf-to-hex`, `str/format-bytebuf`
 - cryptographic hash functions for PBKDF2 and SHA-512
-- encryption/decryption functions for "DES", "3DES", "Blowfish", and "AES256"
+- encryption/decryption functions for "DES", "3DES", and "AES256"
 
 ### Fixed
 
