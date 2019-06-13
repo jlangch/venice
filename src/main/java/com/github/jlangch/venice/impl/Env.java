@@ -223,21 +223,27 @@ public class Env implements Serializable {
 	public String toString() {
 		return new StringBuilder()
 					.append("level ").append(level).append(":")
-					.append("\n   [local]\n").append(toString(localSymbols, "      "))
-					.append("\n   [global]\n").append(toString(getAllGlobalSymbols(), "      "))
+					.append("\n   [local]\n").append(toString(localSymbols, "      ", null))
+					.append("\n   [global]\n").append(toString(getAllGlobalSymbols(), "      ", null))
 					.toString();
 	}
 	
 	public String localsToString() {
 		return new StringBuilder()
 					.append("level ").append(level).append(":")
-					.append("\n   [local]\n").append(toString(localSymbols, "      "))
+					.append("\n   [local]\n").append(toString(localSymbols, "      ", null))
 					.toString();
 	}
 	
 	public String globalsToString() {
 		return new StringBuilder()
-					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   "))
+					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   ", null))
+					.toString();
+	}
+	
+	public String globalsToString(final String regexFilter) {
+		return new StringBuilder()
+					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   ", regexFilter))
 					.toString();
 	}
 	
@@ -253,10 +259,15 @@ public class Env implements Serializable {
 		return this;
 	}
 	
-	private String toString(final Map<VncSymbol,Var> vars, final String indent) {
+	private String toString(
+			final Map<VncSymbol,Var> vars, 
+			final String indent, final 
+			String regexFilter
+	) {
 		return vars.values()
 				   .stream()
 				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
+				   .filter(v -> regexFilter == null ? true : v.getName().getName().matches(regexFilter))
 				   .map(v -> String.format(
 								"%s%s: %s", 
 								indent,

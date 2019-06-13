@@ -269,29 +269,39 @@ public class REPL {
 			terminal.writer().println(HELP_ENV);
 			return;
 		}
-		else if (params.length == 1) {
-			if (params[0].equals("levels")) {
+		else if (params[0].equals("levels")) {
+			if (params.length == 1) {
 				println(terminal, "stdout", "Levels: " + (env.level() + 1));
 				return;
 			}
-			else if (params[0].equals("global")) {
-				println(terminal, "stdout", env.globalsToString());
-				return;
-			}
 		}
-		else if (params.length == 2) {
-			if (params[0].equals("print")) {
+		else if (params[0].equals("print")) {
+			if (params.length == 2) {
 				final VncVal val = env.get(new VncSymbol(params[1]));
 				println(terminal, "stdout", venice.PRINT(val));
 				return;
 			}
-			else if (params[0].equals("local")) {
+		}
+		else if (params[0].equals("global")) {
+			if (params.length == 1) {
+				println(terminal, "stdout", env.globalsToString());
+				return;
+			}
+			else if (params.length == 2) {
+				String filter = StringUtil.trimToNull(params[1]);
+				filter = filter == null ? null : filter.replaceAll("[*]", ".*");
+				println(terminal, "stdout", env.globalsToString(filter));
+				return;
+			}
+		}
+		else if (params[0].equals("local")) {
+			if (params.length == 2) {
 				final int level = Integer.valueOf(params[1]);
 				println(terminal, "stdout", env.getLevelEnv(level).localsToString());
 				return;
 			}
 		}
-		
+				
 		println(terminal, "system", "invalid env command");					
 	}
 
@@ -483,6 +493,8 @@ public class REPL {
 			"  !env        print env symbols:\n" +	
 			"                !env print {symbol-name}\n" +	
 			"                !env global\n" +	
+			"                !env global io/*\n" +	
+			"                !env global *file*\n" +	
 			"                !env local {level}\n" +	
 			"                !env levels\n" +	
 			"  !sandbox    sandbox\n" +	
@@ -512,6 +524,8 @@ public class REPL {
 			"Please choose from:\n" +	
 			"   !env print {symbol-name}\n" +	
 			"   !env global\n" +	
+			"   !env global io/*\n" +	
+			"   !env global *file*\n" +	
 			"   !env local {level}\n" +	
 			"   !env levels\n";
 
