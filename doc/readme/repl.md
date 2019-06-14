@@ -46,12 +46,13 @@ venice> !env global *file*
 
 ## Function documentation
 
-Find a Venice JSON functions and print the doc for `json/write-str`:
+Find the Venice cryptography PBKDF2 hash function and print the doc for it:
 
 ```text
-venice> !env global *json*
+venice> (load-module :crypt)
+venice> !env global crypt*
 
-venice> (doc json/write-str)
+venice> (doc crypt/pbkdf2-hash)
 ```
 
 
