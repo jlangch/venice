@@ -313,6 +313,13 @@ public class JavaInteropTest {
 
 		assertEquals("abc: 100", venice.eval("(. :java.lang.String :format \"%s: %d\" '(\"abc\" 100))", symbols()));
 	}
+
+	@Test
+	public void testVarargs_2() {
+		final Venice venice = new Venice();
+
+		assertEquals("a.txt", venice.eval("(str (. :java.nio.file.Paths :get \"a.txt\" '()))", symbols()));
+	}
 	
 	@Test
 	public void testStaticVoid() {

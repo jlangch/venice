@@ -68,7 +68,14 @@ can be sorted and Java types can be used with sets and maps.
 ## Java VarArgs
 
 ```clojure
-(. :java.lang.String :format "%s: %d" ["abc" 100])
+; Java signature: String String::format(String format, Object... args)
+(. :java.lang.String :format "%s: %d" ["abc" 100])  ;; => "abc: 100"
+
+; Java signature: Path Paths::get(String first, String... more)
+(. :java.nio.file.Paths :get "a.txt" '())  ;; => a.txt
+(. :java.nio.file.Paths :get "." "a.txt")  ;; => ./a.txt
+(. :java.nio.file.Paths :get "/temp" "a.txt")  ;; => /temp/a.txt
+(. :java.nio.file.Paths :get "/temp" '("xxx" "a.txt"))  ;; => /temp/xxx/a.txt
 ```
 
 

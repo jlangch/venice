@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,8 @@ public class IOFunctions {
 					.examples(
 						"(io/file \"/temp/test.txt\")",
 						"(io/file \"/temp\" \"test.txt\")",
-						"(io/file (io/file \"/temp\") \"test.txt\")")
+						"(io/file (io/file \"/temp\") \"test.txt\")",
+						"(io/file (. :java.io.File :new \"/temp/test.txt\"))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -624,7 +626,7 @@ public class IOFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
+
 	public static VncFunction io_move_file = 
 		new VncFunction(
 				"io/move-file", 
@@ -1542,6 +1544,9 @@ public class IOFunctions {
 		}
 		else if (Types.isVncJavaObject(f, File.class)) {
 			return (File)((VncJavaObject)f).getDelegate();
+		}
+		else if (Types.isVncJavaObject(f, Path.class)) {
+			return ((Path)((VncJavaObject)f).getDelegate()).toFile();
 		}
 		else {
 			throw new VncException(String.format(errFormat, f));

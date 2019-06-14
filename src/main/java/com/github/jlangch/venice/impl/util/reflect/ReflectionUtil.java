@@ -354,6 +354,10 @@ public class ReflectionUtil {
 		return method.getParameters().length;
 	}
 
+	public static boolean hasVarArgs(final Method method) {
+		return method.isVarArgs();
+	}
+
 	public static boolean isStatic(final Method method) {
 		return Modifier.isStatic(method.getModifiers());
 	}
@@ -432,7 +436,8 @@ public class ReflectionUtil {
 								|| (addStaticMethods && isStatic(m)))
 				.filter(m -> addTransientMethods || !isTransient(m))
 				.filter(m -> addDeprecatedMethods || !isDeprecated(m))
-				.filter(m -> arity == null  || arity(m) == arity)
+				.filter(m -> arity == null  || arity == arity(m))
+				//.filter(m -> arity == null  || arity == arity(m) || (m.isVarArgs() && arity >= (arity(m) - 1)))
 				.collect(Collectors.toList());
 	}
 
