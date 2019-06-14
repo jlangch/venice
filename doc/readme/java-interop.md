@@ -67,6 +67,8 @@ can be sorted and Java types can be used with sets and maps.
 
 ## Java VarArgs
 
+Java varargs are passed as list or vector:
+
 ```clojure
 ; Java signature: String String::format(String format, Object... args)
 (. :java.lang.String :format "%s: %d" ["abc" 100])  ;; => "abc: 100"
@@ -79,7 +81,10 @@ can be sorted and Java types can be used with sets and maps.
 ```
 
 
-## Java Callbacks
+## Java Callbacks (dynamic proxies)
+
+The Venice `proxify` function wraps one or multiple Venice function with 
+a Java Dynamic Proxy:
 
 ```clojure
 ;; File filter
@@ -90,6 +95,11 @@ can be sorted and Java types can be used with sets and maps.
 
    ;; create a dynamic proxy for the interface FilenameFilter
    ;; and implement its function 'accept' by 'file-filter'
+   ;;
+   ;; public interface FilenameFilter {
+   ;;   boolean accept(File dir, String name);
+   ;; }
+   
    (. (io/file "/tmp") 
       :list 
       (proxify :FilenameFilter {:accept file-filter})))
