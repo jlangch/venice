@@ -30,14 +30,37 @@ ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
 
 
-## Print documentation
+## Display global symbols
+
+```text
+venice> !env global
+```
+
+Use wildcards to filter global symbols:
+
+```text
+venice> !env global io/*
+venice> !env global *file*
+```
+
+
+## Function documentation
+
+Find a Venice JSON functions and print the doc for `json/write-str`:
+
+```text
+venice> !env global *json*
+
+venice> (doc json/write-str)
+```
+
 
 Print the documentation for a Venice function
 
-```clojure
-(doc zipmap)
+```text
+venice> (doc zipmap)
 
-(doc +)
+venice> (doc +)
 ```
 
 
@@ -98,13 +121,6 @@ Reload the Venice context without restarting the REPL
 
 ```text
 venice> !reload
-```
-
-
-## Display global symbols
-
-```text
-venice> !env global
 ```
 
 
