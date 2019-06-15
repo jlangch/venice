@@ -46,7 +46,7 @@ venice> !env global *file*
 
 ## Function documentation
 
-Find the Venice cryptography PBKDF2 hash function and print the doc for it:
+E.g.: Find the Venice cryptography PBKDF2 hash function and print the doc for it:
 
 ```text
 venice> (load-module :crypt)
