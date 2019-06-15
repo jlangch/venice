@@ -28,10 +28,12 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Version;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -164,16 +166,28 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(sleep n)")		
-					.doc("Sleep for n milliseconds.")
-					.examples("(sleep 30)")
+					.arglists(
+						"(sleep n)", 
+						"(sleep n time-unit)")		
+					.doc(
+						"Sleep for the time n. The default time unit is milliseconds \n" +
+						"Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
+					.examples(
+						"(sleep 30)", 
+						"(sleep 30 :milliseconds)", 
+						"(sleep 5 :seconds)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("sleep", args, 1);
+				assertArity("sleep", args, 1, 2);
 				
 				try {
-					Thread.sleep(Math.max(0, Coerce.toVncLong(args.first()).getValue()));
+					final long sleep = Coerce.toVncLong(args.first()).getValue();
+					final TimeUnit unit = args.size() == 1 
+											? TimeUnit.MILLISECONDS 
+											: toTimeUnit(Coerce.toVncKeyword(args.second()));
+
+					Thread.sleep(Math.max(0, unit.toMillis(sleep)));
 				} 
 				catch(InterruptedException ex) {
 					throw new com.github.jlangch.venice.InterruptedException("(sleep n) interrupted", ex);
@@ -426,6 +440,16 @@ public class SystemFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+	private static TimeUnit toTimeUnit(final VncKeyword unit) {
+		switch(unit.getValue()) {
+			case "milliseconds": return TimeUnit.MILLISECONDS;
+			case "seconds": return TimeUnit.SECONDS;
+			case "minutes":  return TimeUnit.MINUTES;
+			case "hours": return TimeUnit.HOURS;
+			case "days": return TimeUnit.DAYS;
+			default: throw new VncException("Invalid scheduler time-unit " + unit.getValue());
+		}
+	}
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions

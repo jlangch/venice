@@ -146,7 +146,7 @@ public class ScheduleFunctions {
 						"(schedule-at-fixed-rate (fn[] (println \"test\")) 1 2 :seconds)",
 						
 						"(let [s (schedule-at-fixed-rate (fn[] (println \"test\")) 1 2 :seconds)] \n" +
-						"   (sleep 16000) \n" +
+						"   (sleep 16 :seconds) \n" +
 						"   (future-cancel s))")
 					.build()
 		) {		
