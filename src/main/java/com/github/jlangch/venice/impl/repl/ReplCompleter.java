@@ -58,6 +58,14 @@ public class ReplCompleter implements Completer {
     		venice.getAvailableModules()
     			  .forEach(m -> candidates.add(new Candidate(":" + m)));
      	}
+    	else if (line.line().startsWith("(doc ")) {
+    		final String namePrefix = StringUtil.trimToNull(line.line().substring(5));   		
+    		env.getAllGlobalFunctionSymbols()
+    		   .stream()
+    		   .map(s -> s.getName())
+    		   .filter(s -> namePrefix == null ? true : s.startsWith(namePrefix))
+     		   .forEach(s -> candidates.add(new Candidate(s)));
+     	}
     	else if (line.word().startsWith("(")) {
     		final String sym = StringUtil.trimToNull(line.word().substring(1));
     		env.getAllGlobalFunctionSymbols()

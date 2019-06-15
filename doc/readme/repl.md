@@ -69,6 +69,7 @@ venice> (doc +)
 
 The REPL supports code completion. Completion is triggered by the `TAB` key.
 
+
 ### Code completion for functions
 
 ```text
@@ -99,6 +100,14 @@ chart.venice             exception.venice         perf-test-1.venice
 indent.venice            parsatron.venice         perf-test-2.venice
 script.venice            chart-swing.venice       login-webapp.venice
 webdav.venice            demo-webapp.venice       vaadin-download.venice
+```
+
+
+### Code completion for doc function
+
+```text
+venice> (doc li<TAB>
+list        list*       list?       list-comp
 ```
 
 
