@@ -49,7 +49,7 @@ public class MD5_Hash {
 	/**
 	 * Hash a text
 	 * 
-	 * @param text a buffer
+	 * @param buffer a buffer
 	 * @return the hash
 	 */
 	public static byte[] hash(final byte[] buffer) {

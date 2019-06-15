@@ -50,7 +50,7 @@ public class SHA512_Hash {
 	/**
 	 * Hash a text
 	 * 
-	 * @param text a buffer
+	 * @param buffer a buffer
 	 * @param salt a salt
 	 * @return the hash
 	 */
