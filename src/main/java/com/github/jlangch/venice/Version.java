@@ -48,5 +48,5 @@ public class Version {
 	}
 	
 	
-	public static final String VERSION = "1.5.8-snapshot";
+	public static final String VERSION = "1.5.8";
 }

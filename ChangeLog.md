@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.5.8] - 2019-06-xx
+## [1.5.8] - 2019-06-15
 
 ### Added
 
@@ -18,10 +18,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - cryptographic hash functions for PBKDF2 and SHA-512
 - encryption/decryption functions for DES, 3DES, and AES256
 - REPL wildcard filters for listing symbols: `!env global`, `!env global io/*`, `!env global *file*`
-
-### Fixed
-
-- ...
 
 
 
