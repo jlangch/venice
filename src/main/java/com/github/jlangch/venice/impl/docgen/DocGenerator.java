@@ -55,7 +55,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("xml"))
+							.createEnv(Arrays.asList("xml", "crypt"))
 							.setStdoutPrintStream(null);
 	}
 
@@ -1190,6 +1190,14 @@ public class DocGenerator {
 		xml.addItem(getDocItem("xml/path->"));
 		xml.addItem(getDocItem("xml/children"));
 		xml.addItem(getDocItem("xml/text"));
+		
+		final DocSection crypt = new DocSection("Cryptography");
+		all.addSection(crypt);
+		crypt.addItem(getDocItem("crypt/md5-hash"));
+		crypt.addItem(getDocItem("crypt/sha512-hash"));
+		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
+		crypt.addItem(getDocItem("crypt/encrypt"));
+		crypt.addItem(getDocItem("crypt/decrypt"));
 
 		return section;
 	}

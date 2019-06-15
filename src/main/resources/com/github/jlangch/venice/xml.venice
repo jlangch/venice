@@ -83,7 +83,11 @@
   ^{ :arglists '("(xml/parse-str s)" "(xml/parse-str s handler)")
      :doc (str/strip-indent """\
         Parses an XML from the string s. Returns a tree of XML element
-        maps with the keys :tag, :attrs, and :content.""" ) }
+        maps with the keys :tag, :attrs, and :content.""" )
+     :examples (list (str/strip-indent """\
+                      (do
+                        (load-module :xml)
+                        (xml/parse-str "<a><b>B</b></a>")) """ )) }
   xml/parse-str
   ([s] (xml/parse (xml/input-source-from-str s) (xml/handler)))
   ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
@@ -112,13 +116,14 @@
   ^{ :arglists '("(xml/path-> path nodes)")
      :doc "Applies the path to a node or a collection of nodes"
      :examples (list (str/strip-indent """\
-                       (load-module :xml)
-                       (let [nodes (xml/parse-str "<a><b><c>C</c></b></a>")
-                             path [(xml/tag= "b")
-                                   (xml/tag= "c")
-                                   xml/text
-                                   first]]
-                         (xml/path-> path nodes))""" )) }
+                       (do
+                         (load-module :xml)
+                         (let [nodes (xml/parse-str "<a><b><c>C</c></b></a>")
+                               path [(xml/tag= "b")
+                                     (xml/tag= "c")
+                                     xml/text
+                                     first]]
+                           (xml/path-> path nodes))) """ )) }
   xml/path->
   [path nodes]
   ((apply comp (reverse path)) (if (sequential? nodes) nodes [nodes])))
@@ -127,9 +132,10 @@
   ^{ :arglists '("(xml/children nodes)")
      :doc "Returns the children of the XML nodes collection"
      :examples (list (str/strip-indent """\
-                       (load-module :xml)
-                       (xml/children
-                         (list (xml/parse-str "<a><b>B</b></a>")))""" )) }
+                       (do
+                         (load-module :xml)
+                         (xml/children
+                           (list (xml/parse-str "<a><b>B</b></a>")))) """ )) }
   xml/children
   (partial mapcat #(:content %)))
 
@@ -137,11 +143,12 @@
   ^{ :arglists '("(xml/text nodes)")
      :doc "Returns a list of text contents of the XML nodes collection"
      :examples (list (str/strip-indent """\
-                       (load-module :xml)
-                       (let [nodes (xml/parse-str "<a><b>B</b></a>")
-                             path [(xml/tag= "b")
-                                   xml/text]]
-                         (xml/path-> path nodes))""" )) }
+                       (do
+                         (load-module :xml)
+                         (let [nodes (xml/parse-str "<a><b>B</b></a>")
+                               path [(xml/tag= "b")
+                                     xml/text]]
+                           (xml/path-> path nodes))) """ )) }
   xml/text
   (comp (partial filter string?) (partial mapcat #(:content %))))
 

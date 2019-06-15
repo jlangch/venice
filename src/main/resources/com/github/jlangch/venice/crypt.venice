@@ -11,9 +11,11 @@
   ^{ :arglists '("(crypt/md5-hash data)")
      :doc "Hashes a string or a bytebuf using MD5. Note: MD5 is not safe any more use PBKDF2."
      :examples (list (str/strip-margin
-                       """(str/bytebuf-to-hex
-                         |  (crypt/md5-hash "hello world")
-                         |  :upper) """ )) }
+                       """(do
+                         |  (load-module :crypt)
+                         |  (str/bytebuf-to-hex
+                         |    (crypt/md5-hash "hello world")
+                         |    :upper)) """ )) }
 
   crypt/md5-hash [text]
 
@@ -24,13 +26,17 @@
   ^{ :arglists '("(crypt/sha512-hash data)", "(crypt/sha512-hash data salt)")
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
      :examples (list (str/strip-margin
-                       """(str/bytebuf-to-hex
-                         |  (crypt/sha512-hash "hello world")
-                         |  :upper) """ )
+                       """(do
+                         |  (load-module :crypt)
+                         |  (str/bytebuf-to-hex
+                         |    (crypt/sha512-hash "hello world")
+                         |    :upper)) """ )
                      (str/strip-margin
-                       """(str/bytebuf-to-hex
-                         |  (crypt/sha512-hash "hello world" "-salt-")
-                         |  :upper) """ )) }
+                       """(do
+                         |  (load-module :crypt)
+                         |  (str/bytebuf-to-hex
+                         |    (crypt/sha512-hash "hello world" "-salt-")
+                         |    :upper)) """ )) }
 
   crypt/sha512-hash
 
@@ -43,13 +49,17 @@
                  "(crypt/pbkdf2-hash text salt iterations key-length)")
      :doc "Hashes a string using PBKDF2. iterations default to 1000, key-length defaults to 256"
      :examples (list (str/strip-margin
-                       """(str/bytebuf-to-hex
-                         |  (crypt/pbkdf2-hash "hello world" "-salt-")
-                         |  :upper) """ )
+                       """(do
+                         |  (load-module :crypt)
+                         |  (str/bytebuf-to-hex
+                         |    (crypt/pbkdf2-hash "hello world" "-salt-")
+                         |    :upper)) """ )
                      (str/strip-margin
-                       """(str/bytebuf-to-hex
-                         |  (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
-                         |  :upper) """ )) }
+                       """(do
+                         |  (load-module :crypt)
+                         |  (str/bytebuf-to-hex
+                         |    (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+                         |    :upper)) """ )) }
 
   crypt/pbkdf2-hash
 
@@ -75,10 +85,12 @@
                |                   Note: no padding is added when encoding using
                |                         the URL-safe alphabet.""")
      :examples (list (str/strip-margin
-                       """(def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-                         |(encrypt "hello") ; => "ndmW1NLsDHA"
-                         |(encrypt "world") ; => "KPYjndkZ8vM"
-                         |(encrypt (bytebuf [1 2 3 4 5])) """ )) }
+                       """(do
+                         |  (load-module :crypt)
+                         |  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+                         |  (encrypt "hello") ; => "ndmW1NLsDHA"
+                         |  (encrypt "world") ; => "KPYjndkZ8vM"
+                         |  (encrypt (bytebuf [1 2 3 4 5]))) """ )) }
 
   crypt/encrypt
 
@@ -103,10 +115,12 @@
             |                   characters back to '+' and '/' before decoding.
             |                   Defaults to false.""")
      :examples (list (str/strip-margin
-                       """(def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-                         |(decrypt "ndmW1NLsDHA") ; => "hello"
-                         |(decrypt "KPYjndkZ8vM") ; => "world"
-                         |(decrypt  (bytebuf [234 220 237 189 12 176 242 147])) """ )) }
+                       """(do
+                         |  (load-module :crypt)
+                         |  (def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+                         |  (decrypt "ndmW1NLsDHA") ; => "hello"
+                         |  (decrypt "KPYjndkZ8vM") ; => "world"
+                         |  (decrypt  (bytebuf [234 220 237 189 12 176 242 147]))) """ )) }
 
   crypt/decrypt
 
