@@ -25,7 +25,7 @@ import java.util.Base64;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.lang3.StringUtils;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
@@ -184,7 +184,7 @@ public class CipherSuite {
 
 
 	public boolean isEncrypted(final String text) {
-		return StringUtils.trimToEmpty(text).startsWith(getCipherPrefix());
+		return StringUtil.trimToEmpty(text).startsWith(getCipherPrefix());
 	}
 
 	public String prefix(final String text) {

@@ -7,15 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.5.9] - 2019-06-xx
-
-### Added
-
-- ...
+## [1.5.9] - 2019-06-19
 
 ### Fixed
 
-- ...
+- runtime dependency on commons-lang3 lib.
 
 
 

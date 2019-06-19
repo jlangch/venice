@@ -900,6 +900,8 @@ public class DocGenerator {
 		final DocSection to_str = new DocSection("to-str");
 		all.addSection(to_str);
 		to_str.addItem(getDocItem("pr-str"));
+		to_str.addItem(getDocItem("with-out-str"));
+
 
 		final DocSection from = new DocSection("from");
 		all.addSection(from);
