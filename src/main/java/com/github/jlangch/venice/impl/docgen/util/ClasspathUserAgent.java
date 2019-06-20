@@ -29,10 +29,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * <p>With alternate base paths
  * <pre>
  *   ITextRenderer renderer = new ITextRenderer(..);
- *   ITextUserAgent userAgent = new ClasspathUserAgent(
- *                                      renderer.getOutputDevice(), 
- *                                      "templates/pdf",
- *                                      "fonts");
+ *   ITextUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice()) 
+ *                                      .addAlternateBasePath("templates/pdf")
+ *                                      .addAlternateBasePath("fonts");
  *   userAgent.setSharedContext(renderer.getSharedContext());
  *   renderer.getSharedContext().setUserAgentCallback(userAgent);
  *   renderer.setDocument(doc, "classpath:///");
