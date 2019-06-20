@@ -34,12 +34,12 @@ public class PdfRenderer {
 	public static byte[] renderCheatSheet(final String xhtml) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {			
 			final ITextRenderer renderer = new ITextRenderer(DOTS_PER_POINT, DOTS_PER_PIXEL);
-			final ITextUserAgent userAgent = new ClasspathUserAgent(
-													renderer.getOutputDevice());
+			final ITextUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice())
+													.addAlternateBasePath("com/github/jlangch/venice/docgen");
 			userAgent.setSharedContext(renderer.getSharedContext());
 			renderer.getSharedContext().setUserAgentCallback(userAgent);
 
-			renderer.setDocumentFromString(xhtml, "classpath://com/github/jlangch/venice");
+			renderer.setDocumentFromString(xhtml, "classpath:///");
 			renderer.layout();
 			renderer.createPDF(os);
 			os.flush();

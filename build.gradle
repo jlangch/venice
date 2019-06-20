@@ -81,6 +81,7 @@ sourceSets {
         }
         resources {
             srcDirs = ['src/main/resources']
+            exclude 'com/github/jlangch/venice/docgen/*.ttf'
         }
     }
 }

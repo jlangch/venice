@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- ...
+- layout improvements to the PDF cheatsheet. The PDF cheatsheet embeds now the
+  'Open Sans' and 'Source Code Pro' open source fonts to be always available.
 
 ### Fixed
 

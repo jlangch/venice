@@ -4,6 +4,24 @@
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
+            $if(data.pdfmode)$
+            @font-face {
+                font-family: 'Open Sans';
+                src: url('OpenSans-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+            @font-face {
+                font-family: 'Source Code Pro';
+                src: url('SourceCodePro-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+            $endif$
             @page {
                 size: A4 portrait;
                 margin: 2cm 1.0cm;
@@ -243,7 +261,7 @@
                     <h1>$it.name; format="xml"$</h1>
                     <div class="arglists">
                         <div class="arglist">
-                          $it.signatures:{sig|<code>$sig; format="xml"$</code>}$                          
+                         $it.signatures:{sig|<code>$sig; format="xml"$</code>}$                          
                         </div>
                     </div>
                     <div class="descr">

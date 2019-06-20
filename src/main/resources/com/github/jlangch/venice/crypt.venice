@@ -72,10 +72,7 @@
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
      :doc (str/strip-margin
-             """Returns a new function to encrypt a string or a bytebuf given
-               |the algorithm and passphrase. If a string is passed it is
-               |encrypted and returned as a base64 encoded string. If a bytebuf
-               |is passed the encryped bytebuf is returned.
+             """Returns a new function to encrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is encrypted and returned as a base64 encoded string. If a bytebuf is passed the encryped bytebuf is returned.
                |Supported algorithms: "DES", "3DES", "AES256"
                |
                |Options:
@@ -104,10 +101,7 @@
 (defn
   ^{ :arglists '("(crypt/decrypt algorithm passphrase :url-safe)")
   :doc (str/strip-margin
-          """Returns a new function to decrypt a string or a bytebuf given the
-            |algorithm and passphrase. If a string is passed it is base64
-            |decoded, decrypted, and returned as string. If a
-            |bytebuf is passed the decrypted bytebuf is returned.
+          """Returns a new function to decrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is base64 decoded, decrypted, and returned as string. If a bytebuf is passed the decrypted bytebuf is returned.
             |Supported algorithms: "DES", "3DES", "AES256"
             |
             |Options:

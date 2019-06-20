@@ -46,15 +46,6 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		final ITextOutputDevice outputDevice
 	) {
 		super(outputDevice);
-		
-		if (alternateBasePaths != null) {
-			for(String path : alternateBasePaths) {
-				path = stripLeadingTrailingSlash(path);
-				if (StringUtil.isNotBlank(path)) {
-					this.alternateBasePaths.add(path);
-				}
-			}
-		}
 	}
 
 	public ClasspathUserAgent addAlternateBasePath(final String path) {
@@ -62,17 +53,20 @@ public class ClasspathUserAgent extends ITextUserAgent {
 			throw new IllegalArgumentException("A path must not be blank");
 		}
 
-		alternateBasePaths.add(path);
+		final String altPath = stripLeadingTrailingSlash(path);
+		if (StringUtil.isNotBlank(altPath)) {
+			alternateBasePaths.add(altPath);
+		}
 		
 		return this;
 	}
 
 	public ClasspathUserAgent addResource(final String name, final byte[] data) {
 		if (StringUtil.isBlank(name)) {
-			throw new IllegalArgumentException("A resource' name must not be blank");
+			throw new IllegalArgumentException("A 'resource' name must not be blank");
 		}
 		if (data == null) {
-			throw new IllegalArgumentException("A resource' data must not be null");
+			throw new IllegalArgumentException("A 'resource' data must not be null");
 		}
 		
 		cachedResources.put(name, ByteBuffer.wrap(data));
