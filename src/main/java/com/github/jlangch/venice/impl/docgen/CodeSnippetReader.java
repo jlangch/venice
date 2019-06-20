@@ -67,7 +67,7 @@ public class CodeSnippetReader {
 	
 	private List<String> load() {
 		return StringUtil.splitIntoLines(
-				new ClassPathResource(getVeniceBasePath() + "impl/docgen/cheatsheet.snippets")
+				new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet.snippets")
 						.getResourceAsString("UTF-8"));
 	}
 

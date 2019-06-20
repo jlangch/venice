@@ -35,6 +35,7 @@ public class Licenses {
 		lics.put("VAVR", loadLicense("LICENSE-Vavr.txt"));
 		lics.put("JLine3", loadLicense("LICENSE-JLine3.txt"));
 		lics.put("nanojson", loadLicense("LICENSE-nanojson.txt"));
+		lics.put("Open Font License", loadLicense("LICENSE-OFL.txt"));
 		
 		return lics;
 	}

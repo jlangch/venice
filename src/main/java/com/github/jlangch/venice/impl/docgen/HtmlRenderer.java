@@ -54,7 +54,7 @@ public class HtmlRenderer {
 	}
 	
 	private static String loadCheatSheetTemplate() {
-		return new ClassPathResource(getVeniceBasePath() + "impl/docgen/cheatsheet.html")
+		return new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet.html")
 						.getResourceAsString("UTF-8");
 	}
 }

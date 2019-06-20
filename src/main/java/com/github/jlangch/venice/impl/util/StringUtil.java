@@ -154,7 +154,7 @@ public class StringUtil {
 					.map(s -> { int pos = s.indexOf(margin); return pos < 0 ? s : s.substring(pos+1); })
 					.collect(Collectors.joining("\n")));
 	}
-
+	
 	/**
 	 * Truncates a string.
 	 * 
@@ -210,9 +210,17 @@ public class StringUtil {
 	public static boolean isEmpty(final String s){
 		return s == null || s.length() == 0;
 	}
+	
+	public static boolean isNotEmpty(final String s){
+		return !isEmpty(s);
+	}
 
 	public static boolean isBlank(final String s){
 		return s == null || s.length() == 0 || s.trim().length() == 0;
+	}
+
+	public static boolean isNotBlank(final String s){
+		return !isBlank(s);
 	}
 	
 	public static boolean isAsciiAlphaUpper(final char ch){
@@ -225,6 +233,18 @@ public class StringUtil {
 		}
 		else if (str.startsWith(remove)) {
 			return str.substring(remove.length());
+		}
+		else {
+			return str;
+		}
+	}
+	
+	public static String removeEnd(final String str, final String remove) {
+		if (isEmpty(str) || isEmpty(remove)) {
+			return str;
+		}
+		else if (str.endsWith(remove)) {
+			return str.substring(0, str.length()-remove.length());
 		}
 		else {
 			return str;

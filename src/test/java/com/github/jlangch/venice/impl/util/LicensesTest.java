@@ -30,7 +30,7 @@ public class LicensesTest {
 
 	@Test
 	public void test() {
-		assertEquals(3, Licenses.lics().size());
+		assertEquals(4, Licenses.lics().size());
 	}
 	
 }
