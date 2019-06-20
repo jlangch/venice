@@ -12,18 +12,36 @@
 
 ## Futures & Promises
 
+A future takes a function and yields a future object that will invoke the function 
+in another thread, and will cache the result and return it on all subsequent calls 
+to deref. If the computation has not yet finished, calls to deref will block, 
+unless the variant of deref with timeout is used. 
+A future can be cancelled `(future-cancel f)` as long its computation has not yet 
+finished. A future can be checked if it has been cancelled `(future-cancelled? f)` or
+if its computation has finished `(realized? f)`.
+
 ```clojure
 (do
    (defn task [] (sleep 1000) 200)
    (deref (future task)))
 ```
 
+Promise is a thread-safe object that encapsulates immutable value. This value might 
+not be available yet and can be delivered exactly once, from any thread, later. 
+If another thread tries to dereference a promise before it's delivered, it'll 
+block calling thread. If promise is already resolved (delivered), no blocking 
+occurs at all. Promise can only be delivered once and can never change its value 
+once set
+
 ```clojure
 (do
    (def p (promise))
    (defn task [] (sleep 500) (deliver p 123))
 
+   ; deliver a value to the promise
    (future task)
+   
+   ; deref the promise
    (deref p))
 ```
 

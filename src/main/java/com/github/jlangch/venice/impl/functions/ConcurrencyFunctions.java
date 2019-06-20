@@ -1108,7 +1108,14 @@ public class ConcurrencyFunctions {
 					.module("core")
 					.arglists("(future-done? f)")		
 					.doc( "Returns true if f is a Future is done otherwise false")
-					.examples("(future-done? (future (fn [] 100)))")
+					.examples(
+						"(do                                                            \n" +
+						"   (def wait (fn [] (do (sleep 200) 100)))                     \n" +
+						"   (let [f (future wait)]                                      \n" +
+						"      (sleep 50)                                               \n" +
+						"      (printf \"After 50ms: done=%b\\n\" (future-done? f))     \n" +
+						"      (sleep 300)                                              \n" +
+						"      (printf \"After 300ms: done=%b\\n\" (future-done? f))))    ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1141,7 +1148,15 @@ public class ConcurrencyFunctions {
 					.module("core")
 					.arglists("(future-cancel f)")		
 					.doc("Cancels the future")
-					.examples("(future-cancel (future (fn [] 100)))")
+					.examples(
+						"(do                                                                     \n" +
+						"   (def wait (fn [] (do (sleep 400) 100)))                              \n" +
+						"   (let [f (future wait)]                                               \n" +
+						"      (sleep 50)                                                        \n" +
+						"      (printf \"After 50ms: cancelled=%b\\n\" (future-cancelled? f))    \n" +
+						"      (future-cancel f)                                                 \n" +
+						"      (sleep 100)                                                       \n" +
+						"      (printf \"After 150ms: cancelled=%b\\n\" (future-cancelled? f))))   ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
