@@ -943,7 +943,7 @@
                                         <code>Java interop. Calls a constructor or an class/object method or accesses a class/instance field. The function is sandboxed.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2019-06-20T21:02:11.182+02:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
+                                        <code>;; invoke constructor <br/>(. :java.lang.Long :new 10)<br/>=&gt; 10<br/><br/>;; invoke static method <br/>(. :java.time.ZonedDateTime :now)<br/>=&gt; 2019-06-20T21:31:12.888+02:00[Europe/Zurich]<br/><br/>;; invoke static method <br/>(. :java.lang.Math :min 10 20)<br/>=&gt; 10<br/><br/>;; access static field <br/>(. :java.lang.Math :PI)<br/>=&gt; 3.141592653589793<br/><br/>;; invoke method <br/>(. (. :java.lang.Long :new 10) :toString)<br/>=&gt; &quot;10&quot;<br/><br/>;; get class name <br/>(. :java.lang.Math :class)<br/>=&gt; class java.lang.Math<br/><br/>;; get class name <br/>(. (. :java.io.File :new &quot;/temp&quot;) :class)<br/>=&gt; class java.io.File</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1003">
@@ -1090,11 +1090,11 @@
                                     <h1>agent</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                         <code>(agent state options)</code>                          
+                                         <code>(agent state &amp; options)</code>                          
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Creates and returns an agent with an initial value of state and zero or more options. <br/>  :error-handler handler-fn <br/>  :error-mode mode-keyword <br/>The handler-fn is called if an action throws an exception. It&apos;s afunction taking two args the agent and the exception. The mode-keyword may be either :continue (the default) or :fail</code>
+                                        <code>Creates and returns an agent with an initial value of state and zero or more options. <br/><br/>Options: <br/>  :error-handler handler-fn <br/>  :error-mode mode-keyword <br/>The handler-fn is called if an action throws an exception. It&apos;s afunction taking two args the agent and the exception. The mode-keyword may be either :continue (the default) or :fail</code>
                                     </div>
                                     <div class="examples">
                                         <code>(do                         <br/>   (def x (agent 100))      <br/>   (send x + 5)             <br/>   (sleep 100)              <br/>   (deref x))                 <br/>=&gt; 105</code>
@@ -1706,11 +1706,11 @@
                                     <h1>crypt/decrypt</h1>
                                     <div class="arglists">
                                         <div class="arglist">
-                                         <code>(crypt/decrypt algorithm passphrase :url-safe)</code>                          
+                                         <code>(crypt/decrypt algorithm passphrase &amp; options)</code>                          
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Returns a new function to decrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is base64 decoded, decrypted, and returned as string. If a bytebuf is passed the decrypted bytebuf is returned.<br/>Supported algorithms: &quot;DES&quot;, &quot;3DES&quot;, &quot;AES256&quot;<br/><br/>Options:<br/>  :url-safe bool - If true this base64 decoder will convert &apos;-&apos; and &apos;_&apos;<br/>                   characters back to &apos;+&apos; and &apos;/&apos; before decoding.<br/>                   Defaults to false.</code>
+                                        <code>Returns a new function to decrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is base64 decoded, decrypted, and returned as string. If a bytebuf is passed the decrypted bytebuf is returned.<br/>Supported algorithms: &quot;DES&quot;, &quot;3DES&quot;, &quot;AES256&quot;<br/><br/>Options:<br/>  :url-safe enabled<br/>      The boolean option directs the base64 decoder to decode<br/>      standard or  URL safe base64 encoded strings.<br/>      If enabled (true) the base64 decoder will convert &apos;-&apos; and &apos;_&apos;<br/>      characters back to &apos;+&apos; and &apos;/&apos; before decoding.<br/>      Defaults to false.</code>
                                     </div>
                                     <div class="examples">
                                         <code>(do<br/>  (load-module :crypt)<br/>  (def decrypt (crypt/encrypt &quot;3DES&quot; &quot;secret&quot; :url-safe true))<br/>  (decrypt &quot;ndmW1NLsDHA&quot;) ; =&gt; &quot;hello&quot;<br/>  (decrypt &quot;KPYjndkZ8vM&quot;) ; =&gt; &quot;world&quot;<br/>  (decrypt  (bytebuf [234 220 237 189 12 176 242 147]))) <br/>=&gt; [192 19 255 241 144 162 159 77 53 176 196 254 163 194 211 219]</code>
@@ -1724,7 +1724,7 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Returns a new function to encrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is encrypted and returned as a base64 encoded string. If a bytebuf is passed the encryped bytebuf is returned.<br/>Supported algorithms: &quot;DES&quot;, &quot;3DES&quot;, &quot;AES256&quot;<br/><br/>Options:<br/>  :url-safe bool - If true this base64 encoder will emit &apos;-&apos; and &apos;_&apos;<br/>                   instead of the usual &apos;+&apos; and &apos;/&apos; characters.<br/>                   Defaults to false.<br/>                   Note: no padding is added when encoding using<br/>                         the URL-safe alphabet.</code>
+                                        <code>Returns a new function to encrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is encrypted and returned as a base64 encoded string. If a bytebuf is passed the encryped bytebuf is returned.<br/>Supported algorithms: &quot;DES&quot;, &quot;3DES&quot;, &quot;AES256&quot;<br/><br/>Options:<br/>  :url-safe enabled<br/>      The boolean option directs the base64 encoder to emit<br/>      standard or URL safe base64 enoded strings.<br/>      If enabled (true) the base64 encoder will emit &apos;-&apos; and &apos;_&apos;<br/>      instead of the usual &apos;+&apos; and &apos;/&apos; characters.<br/>      Defaults to false.<br/>      Note: no padding is added when encoding using the<br/>            URL-safe alphabet.</code>
                                     </div>
                                     <div class="examples">
                                         <code>(do<br/>  (load-module :crypt)<br/>  (def encrypt (crypt/encrypt &quot;3DES&quot; &quot;secret&quot; :url-safe true))<br/>  (encrypt &quot;hello&quot;) ; =&gt; &quot;ndmW1NLsDHA&quot;<br/>  (encrypt &quot;world&quot;) ; =&gt; &quot;KPYjndkZ8vM&quot;<br/>  (encrypt (bytebuf [1 2 3 4 5]))) <br/>=&gt; [234 220 237 189 12 176 242 147]</code>
@@ -1783,7 +1783,7 @@
                                         <code>Returns the current time in milliseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(current-time-millis)<br/>=&gt; 1561057331164</code>
+                                        <code>(current-time-millis)<br/>=&gt; 1561059072869</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1006">
@@ -1923,7 +1923,7 @@
                                         <code>Creates a global variable.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(def x 5)<br/>=&gt; 5<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; function anonymous-8b5d9b99-1dc8-4dff-951d-b55c8d3ac1c9 {visibility :public, module &quot;example&quot;}</code>
+                                        <code>(def x 5)<br/>=&gt; 5<br/><br/>(def sum (fn [x y] (+ x y)))<br/>=&gt; function anonymous-24e8c594-4409-45b5-803b-e4fad6e903d3 {visibility :public, module &quot;example&quot;}</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1201">
@@ -3740,7 +3740,7 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Spits the JSON converted val to the output.<br/>out maybe a Java OutputStream or a Java Writer. <br/>Options are: <br/>  :pretty boolean <br/>      Enables/disables pretty printing. Defaults to false. <br/>  :decimal-as-double boolean <br/>      If true emit a decimal as double else as string. Defaults to false.</code>
+                                        <code>Spits the JSON converted val to the output.<br/>out maybe a Java OutputStream or a Java Writer. <br/>Options are: <br/>  :pretty boolean <br/>      Enables/disables pretty printing. <br/>      Defaults to false. <br/>  :decimal-as-double boolean <br/>      If true emit a decimal as double else as string. <br/>      Defaults to false.</code>
                                     </div>
                                     <div class="examples">
                                         <code>(let [out (. :java.io.ByteArrayOutputStream :new)]           <br/>  (json/spit out {:a 100 :b 100 :c [10 20 30]})              <br/>  (. out :flush)                                             <br/>  (. :java.lang.String :new (. out :toByteArray) &quot;utf-8&quot;))   <br/>=&gt; &quot;{\&quot;a\&quot;:100,\&quot;b\&quot;:100,\&quot;c\&quot;:[10,20,30]}&quot;</code>
@@ -3754,7 +3754,7 @@
                                         </div>
                                     </div>
                                     <div class="descr">
-                                        <code>Writes the val to a JSON string.<br/>Options are: <br/>  :pretty boolean <br/>      Enables/disables pretty printing. Defaults to false. <br/>  :decimal-as-double boolean <br/>      If true emit a decimal as double else as string. Defaults to false.</code>
+                                        <code>Writes the val to a JSON string.<br/>Options are: <br/>  :pretty boolean <br/>      Enables/disables pretty printing. <br/>      Defaults to false. <br/>  :decimal-as-double boolean <br/>      If true emit a decimal as double else as string. <br/>      Defaults to false.</code>
                                     </div>
                                     <div class="examples">
                                         <code>(json/write-str {:a 100 :b 100})<br/>=&gt; &quot;{\&quot;a\&quot;:100,\&quot;b\&quot;:100}&quot;<br/><br/>(json/write-str {:a 100 :b 100} :pretty true)<br/>=&gt; &quot;{\n  \&quot;a\&quot;: 100,\n  \&quot;b\&quot;: 100\n}&quot;</code>
@@ -4177,7 +4177,7 @@
                                         <code>Returns a memoized version of a referentially transparent function.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do<br/>   (def fibonacci<br/>      (memoize<br/>         (fn [n]<br/>             (cond<br/>                (&lt;= n 0) 0<br/>                (&lt; n 2) 1<br/>                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))<br/><br/>   (time (fibonacci 25)))<br/>Elapsed time: 8.63 ms<br/>=&gt; 75025</code>
+                                        <code>(do<br/>   (def fibonacci<br/>      (memoize<br/>         (fn [n]<br/>             (cond<br/>                (&lt;= n 0) 0<br/>                (&lt; n 2) 1<br/>                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))<br/><br/>   (time (fibonacci 25)))<br/>Elapsed time: 7.92 ms<br/>=&gt; 75025</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1322">
@@ -4303,7 +4303,7 @@
                                         <code>Returns the current value of the running Java Virtual Machine&apos;s high-resolution time source, in nanoseconds.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(nano-time)<br/>=&gt; 712001059291994</code>
+                                        <code>(nano-time)<br/>=&gt; 713742762730387</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1025">
@@ -4877,7 +4877,7 @@
                                         <code>Without argument returns a double between 0.0 and 1.0. With argument max returns a random double between 0.0 and max.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-double)<br/>=&gt; 0.5755839194056652<br/><br/>(rand-double 100.0)<br/>=&gt; 67.57441657809161</code>
+                                        <code>(rand-double)<br/>=&gt; 0.43865783936699776<br/><br/>(rand-double 100.0)<br/>=&gt; 96.29349835902647</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1035">
@@ -4891,7 +4891,7 @@
                                         <code>Without argument returns a Gaussion distributed double value with mean 0.0 and standard deviation 1.0. With argument mean and stddev returns a Gaussion distributed double value with the given mean and standard deviation.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-gaussian)<br/>=&gt; 1.039977424405695<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; 11.151077320488458</code>
+                                        <code>(rand-gaussian)<br/>=&gt; -1.5477105391055852<br/><br/>(rand-gaussian 0.0 5.0)<br/>=&gt; -2.157188295930687</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1033">
@@ -4905,7 +4905,7 @@
                                         <code>Without argument returns a random long between 0 and MAX_LONG. With argument max returns a random long between 0 and max exclusive.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(rand-long)<br/>=&gt; 3448816582534073029<br/><br/>(rand-long 100)<br/>=&gt; 98</code>
+                                        <code>(rand-long)<br/>=&gt; 4278305424423995500<br/><br/>(rand-long 100)<br/>=&gt; 0</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1237">
@@ -4961,7 +4961,7 @@
                                         <code>Returns true if a value has been produced for a promise, delay, or future.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(do                                <br/>   (def task (fn [] 100))          <br/>   (let [f (future task)]          <br/>        (println (realized? f))    <br/>        (println @f)               <br/>        (println (realized? f))))    <br/>false<br/>100<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def p (promise))               <br/>   (println (realized? p))         <br/>   (deliver p 123)                 <br/>   (println @p)                    <br/>   (println (realized? p)))          <br/>false<br/>123<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def x (delay 100))             <br/>   (println (realized? x))         <br/>   (println @x)                    <br/>   (println (realized? x)))          <br/>false<br/>100<br/>true<br/>=&gt; nil</code>
+                                        <code>(do                                <br/>   (def task (fn [] 100))          <br/>   (let [f (future task)]          <br/>        (println (realized? f))    <br/>        (println @f)               <br/>        (println (realized? f))))    <br/>true<br/>100<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def p (promise))               <br/>   (println (realized? p))         <br/>   (deliver p 123)                 <br/>   (println @p)                    <br/>   (println (realized? p)))          <br/>false<br/>123<br/>true<br/>=&gt; nil<br/><br/>(do                                <br/>   (def x (delay 100))             <br/>   (println (realized? x))         <br/>   (println @x)                    <br/>   (println (realized? x)))          <br/>false<br/>100<br/>true<br/>=&gt; nil</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1209">
@@ -5227,7 +5227,7 @@
                                         <code>Takes a function of no args, presumably with side effects, and returns a collection of n calls to it</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(repeatedly 5 #(rand-long 11))<br/>=&gt; (2 0 10 9 1)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (3 3 3 3 3)</code>
+                                        <code>(repeatedly 5 #(rand-long 11))<br/>=&gt; (6 3 8 5 5)<br/><br/>;; compare with repeat, which only calls the &apos;rand-long&apos;<br/>;; function once, repeating the value five times. <br/>(repeat 5 (rand-long 11))<br/>=&gt; (4 4 4 4 4)</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1236">
@@ -6543,7 +6543,7 @@
                                         <code>Evaluates expr and prints the time it took.  Returns the value of expr.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time (+ 100 200))<br/>Elapsed time: 12.33 us<br/>=&gt; 300</code>
+                                        <code>(time (+ 100 200))<br/>Elapsed time: 10.93 us<br/>=&gt; 300</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1132">
@@ -6585,7 +6585,7 @@
                                         <code>Creates a new date. A date is represented by &apos;java.util.Date&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/date)<br/>=&gt; Thu Jun 20 21:02:01 CEST 2019</code>
+                                        <code>(time/date)<br/>=&gt; Thu Jun 20 21:31:03 CEST 2019</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1108">
@@ -6683,7 +6683,7 @@
                                         <code>Formats a date with a format</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;20-06-2019&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2019-06-20T21:02:01.682CEST&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2019-06-20T21:02:01.687+02:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2019-06-20T21:02:01.691CEST&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2019-06-20T21:02:01.695+02:00&quot;</code>
+                                        <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)<br/>=&gt; &quot;20-06-2019&quot;<br/><br/>(time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)<br/>=&gt; &quot;2019-06-20T21:31:03.378CEST&quot;<br/><br/>(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)<br/>=&gt; &quot;2019-06-20T21:31:03.383+02:00&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))<br/>=&gt; &quot;2019-06-20T21:31:03.388CEST&quot;<br/><br/>(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))<br/>=&gt; &quot;2019-06-20T21:31:03.392+02:00&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1130">
@@ -6823,7 +6823,7 @@
                                         <code>Creates a new local-date-time. A local-date-time is represented by &apos;java.time.LocalDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/local-date-time)<br/>=&gt; 2019-06-20T21:02:01.399<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2019-06-20T21:02:01.417</code>
+                                        <code>(time/local-date-time)<br/>=&gt; 2019-06-20T21:31:03.109<br/><br/>(time/local-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00<br/><br/>(time/local-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10<br/><br/>(time/local-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time &quot;2018-08-01T14:20:10.200&quot;)<br/>=&gt; 2018-08-01T14:20:10.200<br/><br/>(time/local-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00<br/><br/>(time/local-date-time (. :java.util.Date :new))<br/>=&gt; 2019-06-20T21:31:03.128</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1114">
@@ -6879,7 +6879,7 @@
                                         <code>Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2019-06-18<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2019-06-18T21:02:01.774<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-06-18T21:02:01.778+02:00[Europe/Zurich]</code>
+                                        <code>(time/minus (time/local-date) :days 2)<br/>=&gt; 2019-06-18<br/><br/>(time/minus (time/local-date-time) :days 2)<br/>=&gt; 2019-06-18T21:31:03.469<br/><br/>(time/minus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-06-18T21:31:03.474+02:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1121">
@@ -6893,7 +6893,7 @@
                                         <code>Returns the minute of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 2<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 2</code>
+                                        <code>(time/minute (time/local-date))<br/>=&gt; 0<br/><br/>(time/minute (time/local-date-time))<br/>=&gt; 31<br/><br/>(time/minute (time/zoned-date-time))<br/>=&gt; 31</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1119">
@@ -6963,7 +6963,7 @@
                                         <code>Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2019-06-22<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2019-06-22T21:02:01.760<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-06-22T21:02:01.765+02:00[Europe/Zurich]</code>
+                                        <code>(time/plus (time/local-date) :days 2)<br/>=&gt; 2019-06-22<br/><br/>(time/plus (time/local-date-time) :days 2)<br/>=&gt; 2019-06-22T21:31:03.457<br/><br/>(time/plus (time/zoned-date-time) :days 2)<br/>=&gt; 2019-06-22T21:31:03.461+02:00[Europe/Zurich]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1122">
@@ -6977,7 +6977,7 @@
                                         <code>Returns the second of the date 0..59</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 1<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 1</code>
+                                        <code>(time/second (time/local-date))<br/>=&gt; 0<br/><br/>(time/second (time/local-date-time))<br/>=&gt; 3<br/><br/>(time/second (time/zoned-date-time))<br/>=&gt; 3</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1147">
@@ -7089,7 +7089,7 @@
                                         <code>Creates a new zoned-date-time. A zoned-date-time is represented by &apos;java.time.ZonedDateTime&apos;</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(time/zoned-date-time)<br/>=&gt; 2019-06-20T21:02:01.429+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2019-06-20T21:02:01.446+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2019-06-20T19:02:01.449Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2019-06-20T19:02:01.467Z[UTC]</code>
+                                        <code>(time/zoned-date-time)<br/>=&gt; 2019-06-20T21:31:03.140+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1)<br/>=&gt; 2018-08-01T00:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200+01:00<br/><br/>(time/zoned-date-time 1375315200000)<br/>=&gt; 2013-08-01T02:00+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time (. :java.util.Date :new))<br/>=&gt; 2019-06-20T21:31:03.158+02:00[Europe/Zurich]<br/><br/>(time/zoned-date-time :UTC)<br/>=&gt; 2019-06-20T19:31:03.161Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1)<br/>=&gt; 2018-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10)<br/>=&gt; 2018-08-01T14:20:10Z[UTC]<br/><br/>(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC &quot;2018-08-01T14:20:10.200+01:00&quot;)<br/>=&gt; 2018-08-01T14:20:10.200Z[UTC]<br/><br/>(time/zoned-date-time :UTC 1375315200000)<br/>=&gt; 2013-08-01T00:00Z[UTC]<br/><br/>(time/zoned-date-time :UTC (. :java.util.Date :new))<br/>=&gt; 2019-06-20T19:31:03.180Z[UTC]</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1117">
@@ -7229,7 +7229,7 @@
                                         <code>Generates a UUID.</code>
                                     </div>
                                     <div class="examples">
-                                        <code>(uuid )<br/>=&gt; &quot;d3221cd0-c2c2-40c2-bc77-e907d017155f&quot;</code>
+                                        <code>(uuid )<br/>=&gt; &quot;eb9a2f3b-48a7-4018-9246-9d145b4b8ecc&quot;</code>
                                     </div>
                                 </div>
                                 <div class="detail" id="1316">

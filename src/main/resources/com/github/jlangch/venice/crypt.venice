@@ -76,11 +76,14 @@
                |Supported algorithms: "DES", "3DES", "AES256"
                |
                |Options:
-               |  :url-safe bool - If true this base64 encoder will emit '-' and '_'
-               |                   instead of the usual '+' and '/' characters.
-               |                   Defaults to false.
-               |                   Note: no padding is added when encoding using
-               |                         the URL-safe alphabet.""")
+               |  :url-safe enabled
+               |      The boolean option directs the base64 encoder to emit
+               |      standard or URL safe base64 enoded strings.
+               |      If enabled (true) the base64 encoder will emit '-' and '_'
+               |      instead of the usual '+' and '/' characters.
+               |      Defaults to false.
+               |      Note: no padding is added when encoding using the
+               |            URL-safe alphabet.""")
      :examples (list (str/strip-margin
                        """(do
                          |  (load-module :crypt)
@@ -99,15 +102,18 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/decrypt algorithm passphrase :url-safe)")
+  ^{ :arglists '("(crypt/decrypt algorithm passphrase & options)")
   :doc (str/strip-margin
           """Returns a new function to decrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is base64 decoded, decrypted, and returned as string. If a bytebuf is passed the decrypted bytebuf is returned.
             |Supported algorithms: "DES", "3DES", "AES256"
             |
             |Options:
-            |  :url-safe bool - If true this base64 decoder will convert '-' and '_'
-            |                   characters back to '+' and '/' before decoding.
-            |                   Defaults to false.""")
+            |  :url-safe enabled
+            |      The boolean option directs the base64 decoder to decode
+            |      standard or  URL safe base64 encoded strings.
+            |      If enabled (true) the base64 decoder will convert '-' and '_'
+            |      characters back to '+' and '/' before decoding.
+            |      Defaults to false.""")
      :examples (list (str/strip-margin
                        """(do
                          |  (load-module :crypt)

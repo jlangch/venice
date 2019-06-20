@@ -70,9 +70,11 @@ public class JsonFunctions {
 						"Writes the val to a JSON string.\n" +
 						"Options are: \n" +
 						"  :pretty boolean \n" + 
-						"      Enables/disables pretty printing. Defaults to false. \n" +
+						"      Enables/disables pretty printing. \n" +
+						"      Defaults to false. \n" +
 						"  :decimal-as-double boolean \n" + 
-						"      If true emit a decimal as double else as string. Defaults to false.")
+						"      If true emit a decimal as double else as string. \n" +
+						"      Defaults to false.")
 					.examples(
 						"(json/write-str {:a 100 :b 100})",
 						"(json/write-str {:a 100 :b 100} :pretty true)")
@@ -119,9 +121,11 @@ public class JsonFunctions {
 						"out maybe a Java OutputStream or a Java Writer. \n" +
 						"Options are: \n" +
 						"  :pretty boolean \n" + 
-						"      Enables/disables pretty printing. Defaults to false. \n" +
+						"      Enables/disables pretty printing. \n" +
+						"      Defaults to false. \n" +
 						"  :decimal-as-double boolean \n" + 
-						"      If true emit a decimal as double else as string. Defaults to false.")
+						"      If true emit a decimal as double else as string. \n" +
+						"      Defaults to false.")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
 						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +

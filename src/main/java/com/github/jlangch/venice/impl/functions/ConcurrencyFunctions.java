@@ -454,10 +454,11 @@ public class ConcurrencyFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(agent state options)")		
+					.arglists("(agent state & options)")		
 					.doc(
 						"Creates and returns an agent with an initial value of state and " +
-						"zero or more options. \n" +
+						"zero or more options. \n\n" +
+						"Options: \n" +
 						"  :error-handler handler-fn \n" +
 						"  :error-mode mode-keyword \n" +
 						"The handler-fn is called if an action throws an exception. It's a" +
