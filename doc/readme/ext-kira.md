@@ -79,7 +79,7 @@ Examples of use:
 Venice template:
 
 ```clojure
-(do
+do
   (load-module :kira)
 
   (def template (str/strip-indent """\
@@ -88,14 +88,26 @@ Venice template:
          <user>
            <firstname>${ (print (:first %)) }$</firstname>
            <lastname>${ (print (:last %)) }$</lastname>
+           <address>
+             <street>${ (print (-> % :location :street)) }$</street>
+             <zip>${ (print (-> % :location :zip)) }$</zip>
+             <city>${ (print (-> % :location :city)) }$</city>
+           </address>
          </user>
          ${)) users) }$
        </users>
        """))
 
-  (def data { :users [ {:first "zaphod" :last "beeblebrox"}
-                       {:first "arthur" :last "dent"}
-                       {:first "ford" :last "prefect"} ] } )
+  (def data { :users [ {:first "Thomas"
+                        :last "Meier"
+                        :location { :street "Aareweg 3"
+                                    :zip "3000"
+                                    :city "Bern" }}
+                       {:first "Anna"
+                        :last "Steiger"
+                        :location { :street "Auengasse 27"
+                                    :zip "5000"
+                                    :city "Aarau" }}  ] } )
 
   (println (kira/eval template ["${" "}$"] data)))
 ```
@@ -106,18 +118,23 @@ Output:
 <users>
   
   <user>
-    <firstname>zaphod</firstname>
-    <lastname>beeblebrox</lastname>
+    <firstname>Thomas</firstname>
+    <lastname>Meier</lastname>
+    <address>
+      <street>Aareweg 3</street>
+      <zip>3000</zip>
+      <city>Bern</city>
+    </address>
   </user>
   
   <user>
-    <firstname>arthur</firstname>
-    <lastname>dent</lastname>
-  </user>
-  
-  <user>
-    <firstname>ford</firstname>
-    <lastname>prefect</lastname>
+    <firstname>Anna</firstname>
+    <lastname>Steiger</lastname>
+    <address>
+      <street>Auengasse 27</street>
+      <zip>5000</zip>
+      <city>Aarau</city>
+    </address>
   </user>
   
 </users>
