@@ -30,12 +30,12 @@ if its computation has finished `(realized? f)`.
    (deref (future task)))
 ```
 
-A promise is a thread-safe object that encapsulates immutable value. This value 
+A promise is a thread-safe object that encapsulates an immutable value. This value 
 might not be available yet and can be delivered exactly once, from any thread, 
 later. If another thread tries to dereference a promise before it's delivered, 
-it'll block calling thread. If promise is already resolved (delivered), no 
-blocking occurs at all. Promise can only be delivered once and can never change 
-its value once set
+it will block the calling thread. If the promise is already resolved (delivered), 
+no blocking occurs at all. Promise can only be delivered once and can never change 
+its value once set.
 
 ```clojure
 (do
