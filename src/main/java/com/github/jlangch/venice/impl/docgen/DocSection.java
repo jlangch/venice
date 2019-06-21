@@ -28,12 +28,21 @@ import java.util.List;
 public class DocSection {
 	
 	public DocSection(final String title) {
+		this(title, null);
+	}
+	
+	public DocSection(final String title, final String id) {
 		this.title = title;
+		this.id = id;
 	}
 	
 	
 	public String getTitle() {
 		return title;
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	public void addSection(final DocSection section) {
@@ -66,6 +75,7 @@ public class DocSection {
 	
 	
 	private final String title;
+	private final String id;
 	
 	private final List<DocSection> sections = new ArrayList<>();	
 	private final List<DocItem> items = new ArrayList<>();

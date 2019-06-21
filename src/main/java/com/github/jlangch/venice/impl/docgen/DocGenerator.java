@@ -125,14 +125,14 @@ public class DocGenerator {
 				.flatMap(List::stream)
 				.map(s -> s.getItems())
 				.flatMap(List::stream)
-				.distinct()
 				.filter(i -> !StringUtil.isBlank(i.getName()))
+				.distinct()
 				.sorted(Comparator.comparing(DocItem::getName))
 				.collect(Collectors.toList());
 	}
 	
 	private DocSection getPrimitivesSection() {
-		final DocSection section = new DocSection("Primitives");
+		final DocSection section = new DocSection("Primitives", idgen.id());
 		
 		final DocSection lit = new DocSection("Literals");
 		section.addSection(lit);
@@ -316,7 +316,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getCollectionsSection() {
-		final DocSection section = new DocSection("Collections");
+		final DocSection section = new DocSection("Collections", idgen.id());
 
 
 		final DocSection collections = new DocSection("Collections");
@@ -597,7 +597,7 @@ public class DocGenerator {
 	}		
 
 	private DocSection getArraysSection() {
-		final DocSection section = new DocSection("Arrays");
+		final DocSection section = new DocSection("Arrays", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -625,7 +625,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getRegexSection() {
-		final DocSection section = new DocSection("Regex");
+		final DocSection section = new DocSection("Regex", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -649,7 +649,7 @@ public class DocGenerator {
 	}
 	
 	private DocSection getFunctionsSection() {
-		final DocSection section = new DocSection("Functions");
+		final DocSection section = new DocSection("Functions", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -703,7 +703,7 @@ public class DocGenerator {
 
 
 	private DocSection getSystemSection() {
-		final DocSection section = new DocSection("System");
+		final DocSection section = new DocSection("System", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -738,7 +738,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getMacrosSection() {
-		final DocSection section = new DocSection("Macros");
+		final DocSection section = new DocSection("Macros", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -805,7 +805,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getConcurrencySection() {
-		final DocSection section = new DocSection("Concurrency");
+		final DocSection section = new DocSection("Concurrency", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -884,7 +884,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getIOSection() {
-		final DocSection section = new DocSection("IO");
+		final DocSection section = new DocSection("IO", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -985,7 +985,7 @@ public class DocGenerator {
 	}
 	
 	private DocSection getByteBufSection() {
-		final DocSection section = new DocSection("Byte Buffer");
+		final DocSection section = new DocSection("Byte Buffer", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -1022,7 +1022,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getTimeSection() {
-		final DocSection section = new DocSection("Time");
+		final DocSection section = new DocSection("Time", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -1099,7 +1099,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getSpecialFormsSection() {
-		final DocSection section = new DocSection("Special Forms");
+		final DocSection section = new DocSection("Special Forms", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -1133,7 +1133,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getJavaInteropSection() {
-		final DocSection section = new DocSection("Java Interoperability");
+		final DocSection section = new DocSection("Java Interoperability", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
@@ -1172,7 +1172,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getMiscellaneousSection() {
-		final DocSection section = new DocSection("Miscellaneous");
+		final DocSection section = new DocSection("Miscellaneous", idgen.id());
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);

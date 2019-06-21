@@ -138,6 +138,9 @@
                 width: 100%;
                 text-align: right;
             }                            
+            .nav-back a {
+                margin-left: 1em;
+            } 
             .nav-back a:link, 
             .nav-back a:visited, 
             .nav-back a:hover, 
@@ -211,7 +214,7 @@
             
             <div class="column">
                 $data.left:{s1|
-                <div class="section">
+                <div class="section" id="$s1.id$">
                     <h2>$s1.title$</h2>
                     $s1.sections:{s2|
                     $if(s2.title)$<h3>$s2.title; format="xml"$</h3>$endif$
@@ -232,7 +235,7 @@
             
             <div class="column">
                 $data.right:{s1|
-                <div class="section">
+                <div class="section" id="$s1.id$">
                     <h2>$s1.title$</h2>
                     $s1.sections:{s2|
                     $if(s2.title)$<h3>$s2.title; format="xml"$</h3>$endif$
@@ -270,7 +273,7 @@
                 $data.details:{it|
                 $if(it.id)$
                 <div class="detail" id="$it.id$">
-                    <div class="nav-back"> <a href="#top">top</a></div>
+                    <div class="nav-back"><a href="#top">top</a></div>
                     <h1>$it.name; format="xml"$</h1>
                      <div class="arglists">
                         <div class="arglist">
