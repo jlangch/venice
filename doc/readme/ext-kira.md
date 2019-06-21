@@ -82,16 +82,18 @@ Venice template:
 do
   (load-module :kira)
 
+  (defn emit [s] (print (str/escape-xml s)))
+  
   (def template (str/strip-indent """\
        <users>
          ${ (docoll #(print (str }$
          <user>
-           <firstname>${ (print (:first %)) }$</firstname>
-           <lastname>${ (print (:last %)) }$</lastname>
+           <firstname>${ (emit (:first %)) }$</firstname>
+           <lastname>${ (emit (:last %)) }$</lastname>
            <address>
-             <street>${ (print (-> % :location :street)) }$</street>
-             <zip>${ (print (-> % :location :zip)) }$</zip>
-             <city>${ (print (-> % :location :city)) }$</city>
+             <street>${ (emit (-> % :location :street)) }$</street>
+             <zip>${ (emit (-> % :location :zip)) }$</zip>
+             <city>${ (emit (-> % :location :city)) }$</city>
            </address>
          </user>
          ${)) users) }$
