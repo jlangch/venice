@@ -11,7 +11,7 @@ To convert to/from JSON strings, use json/write-str and json/read-str:
 (json/write-str {:a 1 :b 2})
 ;;=> "{\"a\":1,\"b\":2}"
 
-(json/read-str "{\"a\":1,\"b\":2}")
+(json/read-str """{"a":1,"b":2}""")
 ;;=> {"a" 1, "b" 2}
 ```
 
