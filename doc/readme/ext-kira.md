@@ -117,8 +117,10 @@ Venice template:
              <city>${ (emit (-> user :location :city)) }$</city>
            </address>
            <emails>
-           ${ (docoll (fn [[type email]] (print (str }$  <email type="${ (emit (name type)) }$"> ${ (emit email) }$</email>
-           ${))) (:emails user)) }$</emails>
+             ${ (docoll (fn [[type email]] (print (str }$
+             <email type="${ (emit (name type)) }$"> ${ (emit email) }$</email>
+             ${))) (:emails user)) }$
+           </emails>
          </user>
          ${))) users) }$
        </users>
