@@ -1124,7 +1124,7 @@ public class ConcurrencyFunctions {
 				if (Types.isVncJavaObject(args.first(), Future.class)) {
 					try {
 						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
 						return future.isDone() ? True : False;
 					}
 					catch(Exception ex) {
@@ -1166,7 +1166,7 @@ public class ConcurrencyFunctions {
 				if (Types.isVncJavaObject(args.first(), Future.class)) {
 					try {
 						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
 						future.cancel(true);
 						return args.first();
 					}
@@ -1200,7 +1200,7 @@ public class ConcurrencyFunctions {
 				if (Types.isVncJavaObject(args.first(), Future.class)) {
 					try {
 						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = (Future<VncVal>)((VncJavaObject)args.first()).getDelegate();
+						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
 						return future.isCancelled() ? True : False;
 					}
 					catch(Exception ex) {
@@ -1263,7 +1263,7 @@ public class ConcurrencyFunctions {
 				assertArity("force", args, 1);
 	
 				if (Types.isVncJavaObject(args.first(), Delay.class)) {
-					final Delay delay = (Delay)((VncJavaObject)args.first()).getDelegate();
+					final Delay delay = Coerce.toVncJavaObject(args.first(), Delay.class);
 					return delay.deref();
 				}
 				else {

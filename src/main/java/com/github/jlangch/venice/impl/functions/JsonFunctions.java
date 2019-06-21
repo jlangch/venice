@@ -67,7 +67,7 @@ public class JsonFunctions {
 					.arglists(
 						"(json/write-str val & options)")		
 					.doc(
-						"Writes the val to a JSON string.\n" +
+						"Writes the val to a JSON string.\n\n" +
 						"Options are: \n" +
 						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. \n" +
@@ -118,7 +118,7 @@ public class JsonFunctions {
 						"(json/spit out val & options)")		
 					.doc(
 						"Spits the JSON converted val to the output.\n" +
-						"out maybe a Java OutputStream or a Java Writer. \n" +
+						"out maybe a Java OutputStream or a Java Writer. \n\n" +
 						"Options are: \n" +
 						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. \n" +
@@ -189,7 +189,7 @@ public class JsonFunctions {
 					.module("json")
 					.arglists("(json/read-str s & options)")		
 					.doc(
-						"Reads a JSON string and returns it as a Venice datatype.\n" + 
+						"Reads a JSON string and returns it as a Venice datatype.\n\n" + 
 						"Options are: \n" +
 						"  :key-fn fn \n" + 
 						"      Single-argument function called on JSON property names; \n" +
@@ -256,7 +256,7 @@ public class JsonFunctions {
 					.arglists("(json/slurp in & options)")		
 					.doc(
 						"Slurps a JSON string from the input and returns it as a Venice datatype.\n" +
-						"in maybe a Java InputStream or a Java Reader. \n" +
+						"in maybe a Java InputStream or a Java Reader. \n\n" +
 						"Options are: \n" +
 						"  :key-fn fn  \n" + 
 						"      Single-argument function called on JSON property names; \n" +

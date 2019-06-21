@@ -3,6 +3,10 @@
 
 ## Atoms
 
+Atoms provide uncoordinated, synchronous access to a single identity. 
+The primary use of an atom is to hold Venice’s immutable data structures. 
+The value held by an atom is changed with the `swap!` method.
+
 ```clojure
 (do
    (def counter (atom 2))
@@ -26,12 +30,12 @@ if its computation has finished `(realized? f)`.
    (deref (future task)))
 ```
 
-Promise is a thread-safe object that encapsulates immutable value. This value might 
-not be available yet and can be delivered exactly once, from any thread, later. 
-If another thread tries to dereference a promise before it's delivered, it'll 
-block calling thread. If promise is already resolved (delivered), no blocking 
-occurs at all. Promise can only be delivered once and can never change its value 
-once set
+A promise is a thread-safe object that encapsulates immutable value. This value 
+might not be available yet and can be delivered exactly once, from any thread, 
+later. If another thread tries to dereference a promise before it's delivered, 
+it'll block calling thread. If promise is already resolved (delivered), no 
+blocking occurs at all. Promise can only be delivered once and can never change 
+its value once set
 
 ```clojure
 (do
@@ -48,6 +52,10 @@ once set
 
 ## Delays
 
+The delay function takes a body of expressions and yields a Delay object that will
+invoke the body only the first time it is forced (with `force` or `deref`/`@`), and
+will cache the result and return it on all subsequent `force` calls.
+
 ```clojure
 (do  
    (def x (delay (println "realizing...") 100))
@@ -57,6 +65,10 @@ once set
 
 
 ## Agents
+
+Agents provide uncoordinated, asynchronous access to a single identity. Actions are 
+functions that are asynchronously applied to an Agent's state and whose 
+return value becomes the Agent's new state.
 
 while agents accept functions to process the agent's state...
 
@@ -105,7 +117,6 @@ actors accept data to be processed by the actor's function
 ## Scheduler
 
 ### one-shot
-
 
 Executes a one-shot action that becomes enabled after the specified 
 time. 3 seconds in the example:

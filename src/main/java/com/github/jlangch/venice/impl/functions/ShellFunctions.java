@@ -73,9 +73,8 @@ public class ShellFunctions {
 					.module("core")
 					.arglists("(sh & args)")		
 					.doc(
-						"Passes the given strings to Runtime.exec() to launch a sub-process.\n" + 
-						"\n" +
-						" Options are\n" + 
+						"Passes the given strings to Runtime.exec() to launch a sub-process.\n\n" +
+						"Options are\n" + 
 						"  :in        may be given followed by input source as InputStream,\n" + 
 						"             Reader, File, ByteBuf, or String, to be fed to the\n" + 
 						"             sub-process's stdin.\n" + 
@@ -103,7 +102,7 @@ public class ShellFunctions {
 						"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
 						"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
 						"\n" +
-						" sh returns a map of\n" + 
+						"sh returns a map of\n" + 
 						"  :exit => sub-process's exit code\n" + 
 						"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
 						"  :err  => sub-process's stderr (String via platform default encoding)")
