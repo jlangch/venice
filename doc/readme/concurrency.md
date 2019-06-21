@@ -134,6 +134,7 @@ scheduled function’s value or to cancel the waiting execution.
   (println "result: " (deref s)))
 ```
 
+
 ### periodic
 
 Executes a periodic action that becomes enabled first after the initial delay and
