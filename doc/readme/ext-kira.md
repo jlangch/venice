@@ -71,3 +71,54 @@ Examples of use:
 
 (hello "Alice")
 ```
+
+## Examples
+
+### XML
+
+Venice template:
+
+```clojure
+(do
+  (load-module :kira)
+
+  (def template (str/strip-indent """\
+       <users>
+         ${ (docoll #(print (str }$
+         <user>
+           <firstname>${ (print (:first %)) }$</firstname>
+           <lastname>${ (print (:last %)) }$</lastname>
+         </user>
+         ${)) users) }$
+       </users>
+       """))
+
+  (def data { :users [ {:first "zaphod" :last "beeblebrox"}
+                       {:first "arthur" :last "dent"}
+                       {:first "ford" :last "prefect"} ] } )
+
+  (println (kira/eval template ["${" "}$"] data)))
+```
+
+Output:
+
+```xml
+<users>
+  
+  <user>
+    <firstname>zaphod</firstname>
+    <lastname>beeblebrox</lastname>
+  </user>
+  
+  <user>
+    <firstname>arthur</firstname>
+    <lastname>dent</lastname>
+  </user>
+  
+  <user>
+    <firstname>ford</firstname>
+    <lastname>prefect</lastname>
+  </user>
+  
+</users>
+``
