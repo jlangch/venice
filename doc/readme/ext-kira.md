@@ -79,24 +79,27 @@ Examples of use:
 Venice template:
 
 ```clojure
-do
+(do
   (load-module :kira)
 
   (defn emit [s] (print (str/escape-xml s)))
-  
+
   (def template (str/strip-indent """\
        <users>
-         ${ (docoll #(print (str }$
+         ${ (docoll (fn [user] (print (str }$
          <user>
-           <firstname>${ (emit (:first %)) }$</firstname>
-           <lastname>${ (emit (:last %)) }$</lastname>
+           <firstname>${ (emit (:first user)) }$</firstname>
+           <lastname>${ (emit (:last user)) }$</lastname>
            <address>
-             <street>${ (emit (-> % :location :street)) }$</street>
-             <zip>${ (emit (-> % :location :zip)) }$</zip>
-             <city>${ (emit (-> % :location :city)) }$</city>
+             <street>${ (emit (-> user :location :street)) }$</street>
+             <zip>${ (emit (-> user :location :zip)) }$</zip>
+             <city>${ (emit (-> user :location :city)) }$</city>
            </address>
+           <emails>
+           ${ (docoll (fn [[type email]] (print (str }$  <email type="${ (emit (name type)) }$"> ${ (emit email) }$</email>
+           ${))) (:emails user)) }$</emails>
          </user>
-         ${)) users) }$
+         ${))) users) }$
        </users>
        """))
 
@@ -104,12 +107,16 @@ do
                         :last "Meier"
                         :location { :street "Aareweg 3"
                                     :zip "3000"
-                                    :city "Bern" }}
+                                    :city "Bern" }
+                        :emails { :private "thomas.meier@privat.ch"
+                                  :business "thomas.meier@business.ch" } }
                        {:first "Anna"
                         :last "Steiger"
                         :location { :street "Auengasse 27"
                                     :zip "5000"
-                                    :city "Aarau" }}  ] } )
+                                    :city "Aarau" }
+                        :emails { :private "anna.steiger@privat.ch"
+                                  :business "anna.steiger@business.ch" } }]})
 
   (println (kira/eval template ["${" "}$"] data)))
 ```
@@ -127,6 +134,10 @@ Output:
       <zip>3000</zip>
       <city>Bern</city>
     </address>
+    <emails>
+      <email type="business"> thomas.meier@business.ch</email>
+      <email type="private"> thomas.meier@privat.ch</email>
+    </emails>
   </user>
   
   <user>
@@ -137,7 +148,12 @@ Output:
       <zip>5000</zip>
       <city>Aarau</city>
     </address>
+    <emails>
+      <email type="business"> anna.steiger@business.ch</email>
+      <email type="private"> anna.steiger@privat.ch</email>
+    </emails>
   </user>
   
 </users>
+
 ```
