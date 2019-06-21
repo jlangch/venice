@@ -76,6 +76,27 @@ Examples of use:
 
 ### XML
 
+Raw template:
+
+```text
+<users>   
+  {foreach user} 
+  <user>
+    <firstname>$$</firstname>
+    <lastname>$$</lastname>
+    <address>
+      <street>$$</street>
+      <zip>$$</zip>
+      <city>$$</city>
+    </address>
+    <emails>
+      {foreach email}
+      <email type="$$">$$</email>
+    </emails>
+  </user>
+</users>
+```
+
 Venice template:
 
 ```clojure
