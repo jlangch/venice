@@ -174,6 +174,56 @@ Output:
 
 ### Conditionals
 
+#### if - then
+
+
+```clojure
+(do
+  (load-module :kira)
+  
+  )
+```
+
+Output:
+
+```xml
+```
+
+#### if - then - else
+
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def template (str/strip-indent """\
+       body {
+         background-color: white;
+         font-family: 'Open Sans', sans-serif;
+         color: #444;
+         font-size: <% (print (if (== font :large) 36 12)) %>px;
+         line-height: 1.5em;
+         font-weight: <%= weight %>;
+       }"""))
+
+  (def data { :font :large 
+              :weight "400" })
+  
+  (println (kira/eval template data)))
+```
+
+Output:
+
+```css
+body {
+  background-color: white;
+  font-family: 'Open Sans', sans-serif;
+  color: #444;
+  font-size: 36px;
+  line-height: 1.5em;
+  font-weight: 400;
+}
+```
 
 
 
