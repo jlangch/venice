@@ -76,24 +76,28 @@ Examples of use:
 
 ### XML
 
-Raw template:
+Template blueprint:
 
 ```text
 <users>   
-  {foreach user} 
+  $users:{u|
   <user>
-    <firstname>$$</firstname>
-    <lastname>$$</lastname>
+    <firstname>...</firstname>
+    <lastname>...</lastname>
     <address>
-      <street>$$</street>
-      <zip>$$</zip>
-      <city>$$</city>
+      <street>...</street>
+      <zip>...</zip>
+      <city>...</city>
     </address>
+    $if(add-email)$
     <emails>
-      {foreach email}
-      <email type="$$">$$</email>
+      $u.emails:{e|
+      <email type="...">...</email>
+      }$
     </emails>
+    $endif$
   </user>
+  }$
 </users>
 ```
 
@@ -116,11 +120,13 @@ Venice template:
              <zip>${ (emit (-> user :location :zip)) }$</zip>
              <city>${ (emit (-> user :location :city)) }$</city>
            </address>
+           ${ (if add-emails (print (str }$
            <emails>
              ${ (docoll (fn [[type email]] (print (str }$
              <email type="${ (emit (name type)) }$"> ${ (emit email) }$</email>
              ${))) (:emails user)) }$
            </emails>
+           ${)))  }$
          </user>
          ${))) users) }$
        </users>
@@ -139,7 +145,15 @@ Venice template:
                                     :zip "5000"
                                     :city "Aarau" }
                         :emails { :private "anna.steiger@privat.ch"
-                                  :business "anna.steiger@business.ch" } }]})
+                                  :business "anna.steiger@business.ch" } }
+                       {:first "Peter"
+                        :last "Kihl"
+                        :location { :street "Bahnhofstrasse 453"
+                                    :zip "8000"
+                                    :city "Zürich" }
+                        :emails { :private "peter.kihl@privat.ch"
+                                  :business "peter.kihl@business.ch" } }]
+              :add-emails true })
 
   (println (kira/eval template ["${" "}$"] data)))
 ```
