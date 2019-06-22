@@ -141,8 +141,8 @@ Loop over a collection of items:
        <users>
          ${ (kira/docoll users (fn [user] (kira/emit }$
          <user>
-           <firstname>${ (kira/escape-xml (:first user)) }$</firstname>
-           <lastname>${ (kira/escape-xml (:last user)) }$</lastname>
+           <firstname><% (kira/escape-xml (:first user)) %></firstname>
+           <lastname><% (kira/escape-xml (:last user)) %></lastname>
          </user>
          ${ ))) }$
        </users>"""))
@@ -150,7 +150,7 @@ Loop over a collection of items:
   (def data { :users [ {:first "Thomas" :last "Meier" }
                        {:first "Anna" :last "Steiger" } ]  })
 
-  (println (kira/eval template ["${" "}$"] data)))
+  (println (kira/eval template data)))
 ```
 
 Output:
@@ -174,20 +174,49 @@ Output:
 
 ### Conditionals
 
-#### if - then
+#### when
 
+Optionally add the user's eMail:
 
 ```clojure
 (do
   (load-module :kira)
   
-  )
+  (def template (str/strip-indent """\
+       <users>
+         <% (kira/docoll users (fn [user] (kira/emit %>
+         <user>
+           <firstname><% (kira/escape-xml (:first user)) %></firstname>
+           <lastname><% (kira/escape-xml (:last user)) %></lastname>
+           <% (when add-email (kira/emit %>
+           <email><% (kira/escape-xml (:email user)) %></email>
+           <% )) %>
+         </user>
+         <% ))) %>
+       </users>"""))
+
+  (def data { :users [ {:first "Thomas"
+                        :last "Meier"
+                        :email "thomas.meier@foo.org" } ]
+              :add-email true })
+
+  (println (kira/eval template data)))
 ```
 
 Output:
 
 ```xml
+<users>
+  
+  <user>
+    <firstname>Thomas</firstname>
+    <lastname>Meier</lastname>
+    <email>thomas.meier@foo.org</email>
+  </user>
+  
+</users>
 ```
+
 
 #### if - then - else
 
