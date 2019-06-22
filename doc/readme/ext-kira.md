@@ -109,30 +109,31 @@ Venice template:
 (do
   (load-module :kira)
 
-  (defn emit [s] (print (str/escape-xml s)))
+  (defn escape [s] (print (str/escape-xml s)))  
+  (defn emit [s] (print (str s)))
+  (defn do-coll [coll fn] (docoll fn coll))
 
   (def template (str/strip-indent """\
        <users>
-         ${ (docoll (fn [user] (print (str }$
+         ${ (do-coll users (fn [user] (emit }$
          <user>
-           <firstname>${ (emit (:first user)) }$</firstname>
-           <lastname>${ (emit (:last user)) }$</lastname>
+           <firstname>${ (escape (:first user)) }$</firstname>
+           <lastname>${ (escape (:last user)) }$</lastname>
            <address>
-             <street>${ (emit (-> user :location :street)) }$</street>
-             <zip>${ (emit (-> user :location :zip)) }$</zip>
-             <city>${ (emit (-> user :location :city)) }$</city>
+             <street>${ (escape (-> user :location :street)) }$</street>
+             <zip>${ (escape (-> user :location :zip)) }$</zip>
+             <city>${ (escape (-> user :location :city)) }$</city>
            </address>
-           ${ (if add-emails (print (str }$
+           ${ (if add-emails (emit }$
            <emails>
-             ${ (docoll (fn [[type email]] (print (str }$
-             <email type="${ (emit (name type)) }$"> ${ (emit email) }$</email>
-             ${))) (:emails user)) }$
+             ${ (do-coll (:emails user) (fn [[type email]] (emit }$
+             <email type="${ (escape (name type)) }$"> ${ (emit email) }$</email>
+             ${ ))) }$
            </emails>
-           ${)))  }$
+           ${ )) }$
          </user>
-         ${))) users) }$
-       </users>
-       """))
+         ${ ))) }$
+       </users>"""))
 
   (def data { :users [ {:first "Thomas"
                         :last "Meier"
@@ -147,20 +148,13 @@ Venice template:
                                     :zip "5000"
                                     :city "Aarau" }
                         :emails { :private "anna.steiger@privat.ch"
-                                  :business "anna.steiger@business.ch" } }
-                       {:first "Peter"
-                        :last "Kihl"
-                        :location { :street "Bahnhofstrasse 453"
-                                    :zip "8000"
-                                    :city "Zürich" }
-                        :emails { :private "peter.kihl@privat.ch"
-                                  :business "peter.kihl@business.ch" } }]
+                                  :business "anna.steiger@business.ch" } } ]
               :add-emails true })
 
   (println (kira/eval template ["${" "}$"] data)))
 ```
 
-Output:
+The produced output:
 
 ```xml
 <users>
@@ -194,5 +188,11 @@ Output:
   </user>
   
 </users>
+```
 
+
+To analyze the parsed template just print it:
+
+```clojure
+  (println (kira/parse-string template ["${" "}$"]))
 ```
