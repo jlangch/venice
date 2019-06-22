@@ -81,7 +81,7 @@ Examples of use:
 
 ### Escape output
 
-Kira has built-in support for escaping XML/HTML:
+#### Kira has built-in support for escaping XML/HTML:
 
 ```clojure
 (do
@@ -103,6 +103,27 @@ Output:
 <formula>
   <predicate>x &gt; 100</predicate>
 </formula>
+```
+
+#### Custom output conversion
+
+Any Venice function can be used to escape/convert/format output:
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def template """timestamp: <% (print (time/format ts "yyyy-MM-dd HH:mm:ss")) %>""")
+
+  (def data { :ts (time/local-date-time) })
+  
+  (println (kira/eval template data)))
+```
+
+Output:
+
+```text
+timestamp: 2019-06-22 19:21:07
 ```
 
 
