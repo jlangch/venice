@@ -105,17 +105,19 @@ Output:
 </formula>
 ```
 
-#### Custom output conversion
+#### Custom conversion
 
-Any Venice function can be used to escape/convert/format output:
+Any Venice functionality can be used to escape/convert/format output:
 
 ```clojure
 (do
   (load-module :kira)
   
-  (def template """timestamp: <% (print (time/format ts "yyyy-MM-dd HH:mm:ss")) %>""")
+  (defn format-ts [t] (print (time/format t "yyyy-MM-dd HH:mm:ss")))
+  
+  (def template """timestamp: <% (format-ts timestamp) %>""")
 
-  (def data { :ts (time/local-date-time) })
+  (def data { :timestamp (time/local-date-time) })
   
   (println (kira/eval template data)))
 ```
@@ -129,7 +131,49 @@ timestamp: 2019-06-22 19:21:07
 
 ### Loops
 
+Loop over a collection of items:
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def template (str/strip-indent """\
+       <users>
+         ${ (kira/docoll users (fn [user] (kira/emit }$
+         <user>
+           <firstname>${ (kira/escape-xml (:first user)) }$</firstname>
+           <lastname>${ (kira/escape-xml (:last user)) }$</lastname>
+         </user>
+         ${ ))) }$
+       </users>"""))
+
+  (def data { :users [ {:first "Thomas" :last "Meier" }
+                       {:first "Anna" :last "Steiger" } ]  })
+
+  (println (kira/eval template ["${" "}$"] data)))
+```
+
+Output:
+
+```xml
+<users>
+  
+  <user>
+    <firstname>Thomas</firstname>
+    <lastname>Meier</lastname>
+  </user>
+  
+  <user>
+    <firstname>Anna</firstname>
+    <lastname>Steiger</lastname>
+  </user>
+  
+</users>
+```
+
+
 ### Conditionals
+
 
 
 
