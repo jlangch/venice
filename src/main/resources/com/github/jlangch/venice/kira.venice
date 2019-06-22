@@ -51,6 +51,18 @@
       (with-out-str
         ~(-> src kira/read-source (kira/parse-string delimiters) read-string)))))
 
+(defn
+  ^{ :doc "XML escape the string and emit it" }
+  kira/escape-xml [s] (print (str/escape-xml s)))
+
+(defn
+  ^{ :doc "Emit a string" }
+  kira/emit [s] (print (str s)))
+
+(defn
+  ^{ :doc "Applies f to the items of the collection." }
+  kira/docoll [coll f] (docoll f coll))
+
 (defmacro
   ^{ :doc (str/strip-indent """\
         Compile a template into a function that takes the supplied arguments.

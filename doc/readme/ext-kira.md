@@ -108,26 +108,22 @@ Venice template:
 ```clojure
 (do
   (load-module :kira)
-
-  (defn escape [s] (print (str/escape-xml s)))  
-  (defn emit [s] (print (str s)))
-  (defn do-coll [coll fn] (docoll fn coll))
-
+  
   (def template (str/strip-indent """\
        <users>
-         ${ (do-coll users (fn [user] (emit }$
+         ${ (kira/docoll users (fn [user] (kira/emit }$
          <user>
-           <firstname>${ (escape (:first user)) }$</firstname>
-           <lastname>${ (escape (:last user)) }$</lastname>
+           <firstname>${ (kira/escape-xml (:first user)) }$</firstname>
+           <lastname>${ (kira/escape-xml (:last user)) }$</lastname>
            <address>
-             <street>${ (escape (-> user :location :street)) }$</street>
-             <zip>${ (escape (-> user :location :zip)) }$</zip>
-             <city>${ (escape (-> user :location :city)) }$</city>
+             <street>${ (kira/escape-xml (-> user :location :street)) }$</street>
+             <zip>${ (kira/escape-xml (-> user :location :zip)) }$</zip>
+             <city>${ (kira/escape-xml (-> user :location :city)) }$</city>
            </address>
-           ${ (if add-emails (emit }$
+           ${ (if add-emails (kira/emit }$
            <emails>
-             ${ (do-coll (:emails user) (fn [[type email]] (emit }$
-             <email type="${ (escape (name type)) }$"> ${ (emit email) }$</email>
+             ${ (kira/docoll (:emails user) (fn [[type email]] (kira/emit }$
+             <email type="${ (kira/escape-xml (name type)) }$"> ${ (kira/escape-xml email) }$</email>
              ${ ))) }$
            </emails>
            ${ )) }$
