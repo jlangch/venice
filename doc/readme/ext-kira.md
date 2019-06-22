@@ -79,8 +79,8 @@ Examples of use:
 Template blueprint:
 
 ```text
-<users>   
-  $users:{u|
+<users>
+  $(for u in users)$
   <user>
     <firstname>...</firstname>
     <lastname>...</lastname>
@@ -89,15 +89,15 @@ Template blueprint:
       <zip>...</zip>
       <city>...</city>
     </address>
-    $if(add-email)$
+    $(if add-email)$
     <emails>
-      $u.emails:{e|
+      $(for e in u.emails)$
       <email type="...">...</email>
-      }$
+      $(endfor)$
     </emails>
-    $endif$
+    $(endif)$
   </user>
-  }$
+  $(endfor)$
 </users>
 ```
 
