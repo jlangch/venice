@@ -11,6 +11,7 @@ For example:
 
 ```clojure
 (load-module :kira)
+
 (kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" {:xs [1 2 3]})
 ;;=> "foo1 foo2 foo3 "
 ```
@@ -21,6 +22,7 @@ For example:
 
 ```clojure
 (load-module :kira)
+
 (kira/eval "Hello <%= name %>" {:name "Alice"})
 ;;=> "Hello Alice"
 ```
@@ -31,6 +33,7 @@ The delimiters can be customized:
 
 ```clojure
 (load-module :kira)
+
 (kira/eval """Hello $${= name }$$""" ["$${" "}$$"] {:name "Alice"})
 ;;=> "Hello Alice"
 ```
@@ -72,6 +75,43 @@ Examples of use:
 (hello "Alice")
 ```
 
+
+
+## Building blocks
+
+### Escape output
+
+Kira has built-in support for escaping XML/HTML:
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def template (str/strip-indent """\
+       <formula>
+         <predicate><% (kira/escape-xml predicate) %></predicate>
+       </formula>"""))
+
+  (def data { :predicate "x > 100" })
+  
+  (println (kira/eval template data)))
+```
+
+Output:
+
+```xml
+<formula>
+  <predicate>x &gt; 100</predicate>
+</formula>
+```
+
+
+### Loops
+
+### Conditionals
+
+
+
 ## Examples
 
 ### XML
@@ -82,7 +122,7 @@ Template blueprint:
 
 ```text
 <users>
-  $(for u in users)$
+  ${for u in users}$
   <user>
     <firstname>...</firstname>
     <lastname>...</lastname>
@@ -91,15 +131,15 @@ Template blueprint:
       <zip>...</zip>
       <city>...</city>
     </address>
-    $(if add-email)$
+    ${if add-email}$
     <emails>
-      $(for e in u.emails)$
+      ${for e in u.emails}$
       <email type="...">...</email>
-      $(endfor)$
+      ${endfor}$
     </emails>
-    $(endif)$
+    ${endif}$
   </user>
-  $(endfor)$
+  ${endfor}$
 </users>
 ```
 
@@ -120,7 +160,7 @@ Venice template:
              <zip>${ (kira/escape-xml (-> user :location :zip)) }$</zip>
              <city>${ (kira/escape-xml (-> user :location :city)) }$</city>
            </address>
-           ${ (if add-emails (kira/emit }$
+           ${ (when add-emails (kira/emit }$
            <emails>
              ${ (kira/docoll (:emails user) (fn [[type email]] (kira/emit }$
              <email type="${ (kira/escape-xml (name type)) }$"> ${ (kira/escape-xml email) }$</email>
