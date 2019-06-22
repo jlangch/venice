@@ -76,6 +76,8 @@ Examples of use:
 
 ### XML
 
+The XML example demonstrates _Kira_ loops, nested loops and conditionals.
+
 Template blueprint:
 
 ```text
