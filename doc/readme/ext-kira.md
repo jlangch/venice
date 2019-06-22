@@ -10,9 +10,12 @@ The `<% %>` tags are used to embed a section of Clojure code with side-effects. 
 For example:
 
 ```clojure
-(load-module :kira)
+(do
+  (load-module :kira)
 
-(kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" {:xs [1 2 3]})
+  (kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" 
+             {:xs [1 2 3]}))
+
 ;;=> "foo1 foo2 foo3 "
 ```
 
@@ -21,9 +24,11 @@ The `<%= %>` tags will be substituted for the value of the expression within the
 For example:
 
 ```clojure
-(load-module :kira)
+(do
+  (load-module :kira)
 
-(kira/eval "Hello <%= name %>" {:name "Alice"})
+  (kira/eval "Hello <%= name %>" {:name "Alice"}))
+
 ;;=> "Hello Alice"
 ```
 
@@ -32,9 +37,11 @@ For example:
 The delimiters can be customized:
 
 ```clojure
-(load-module :kira)
+(do
+  (load-module :kira)
 
-(kira/eval """Hello $${= name }$$""" ["$${" "}$$"] {:name "Alice"})
+  (kira/eval """Hello ${= name }$""" ["${" "}$"] {:name "Alice"}))
+  
 ;;=> "Hello Alice"
 ```
 
@@ -139,12 +146,12 @@ Loop over a collection of items:
   
   (def template (str/strip-indent """\
        <users>
-         ${ (kira/docoll users (fn [user] (kira/emit }$
+         <% (kira/docoll users (fn [user] (kira/emit %>
          <user>
            <firstname><% (kira/escape-xml (:first user)) %></firstname>
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
          </user>
-         ${ ))) }$
+         <% ))) %>
        </users>"""))
 
   (def data { :users [ {:first "Thomas" :last "Meier" }
@@ -218,8 +225,7 @@ Output:
 ```
 
 
-#### if - then - else
-
+#### if - then - else with value
 
 ```clojure
 (do
@@ -251,6 +257,52 @@ body {
   font-size: 36px;
   line-height: 1.5em;
   font-weight: 400;
+}
+```
+
+
+#### if - then - else with blocks
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def template (str/strip-indent """\
+       <% (if font-mono (kira/emit %>
+       @font-face {
+           font-family: 'Source Code Pro';
+           src: url('SourceCodePro-Regular.ttf');
+           font-style: normal;
+           font-weight: normal;
+           color: #888;
+           font-size: 10px;
+       }
+       <% ) (kira/emit %>
+       @font-face {
+           font-family: 'Open Sans';
+           src: url('OpenSans-Regular.ttf');
+           font-style: normal;
+           font-weight: normal;
+           color: #444;
+           font-size: 12px;
+       }
+       <% )) %>"""))
+
+  (def data { :font-mono true })
+  
+  (println (kira/eval template data)))
+```
+
+Output:
+
+```css
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('SourceCodePro-Regular.ttf');
+    font-style: normal;
+    font-weight: normal;
+    color: #888;
+    font-size: 10px;
 }
 ```
 
@@ -295,24 +347,24 @@ Venice template:
   
   (def template (str/strip-indent """\
        <users>
-         ${ (kira/docoll users (fn [user] (kira/emit }$
+         <% (kira/docoll users (fn [user] (kira/emit %>
          <user>
-           <firstname>${ (kira/escape-xml (:first user)) }$</firstname>
-           <lastname>${ (kira/escape-xml (:last user)) }$</lastname>
+           <firstname><% (kira/escape-xml (:first user)) %></firstname>
+           <lastname><% (kira/escape-xml (:last user)) %></lastname>
            <address>
-             <street>${ (kira/escape-xml (-> user :location :street)) }$</street>
-             <zip>${ (kira/escape-xml (-> user :location :zip)) }$</zip>
-             <city>${ (kira/escape-xml (-> user :location :city)) }$</city>
+             <street><% (kira/escape-xml (-> user :location :street)) %></street>
+             <zip><% (kira/escape-xml (-> user :location :zip)) %></zip>
+             <city><% (kira/escape-xml (-> user :location :city)) %></city>
            </address>
-           ${ (when add-emails (kira/emit }$
+           <% (when add-emails (kira/emit %>
            <emails>
-             ${ (kira/docoll (:emails user) (fn [[type email]] (kira/emit }$
-             <email type="${ (kira/escape-xml (name type)) }$"> ${ (kira/escape-xml email) }$</email>
-             ${ ))) }$
+             <% (kira/docoll (:emails user) (fn [[type email]] (kira/emit %>
+             <email type="<% (kira/escape-xml (name type)) %>"> <% (kira/escape-xml email) %></email>
+             <% ))) %>
            </emails>
-           ${ )) }$
+           <% )) %>
          </user>
-         ${ ))) }$
+         <% ))) %>
        </users>"""))
 
   (def data { :users [ {:first "Thomas"
@@ -331,7 +383,7 @@ Venice template:
                                   :business "anna.steiger@business.ch" } } ]
               :add-emails true })
 
-  (println (kira/eval template ["${" "}$"] data)))
+  (println (kira/eval template data)))
 ```
 
 The produced output:
@@ -374,5 +426,5 @@ The produced output:
 To analyze the parsed template just print it:
 
 ```clojure
-  (println (kira/parse-string template ["${" "}$"]))
+  (println (kira/parse-string template))
 ```
