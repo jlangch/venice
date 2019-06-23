@@ -7,7 +7,7 @@ resource usage low if the modules are not used.
 Extension Modules are plain Venice scripts and must be loaded 
 explicitly.
 
-Venice supports
+Venice provides:
 
 * [Kira Template](ext-kira.md)
 * [XML](ext-xml.md)
@@ -18,5 +18,3 @@ Venice supports
 * [Maven](ext-maven.md)
 * [Jackson JSON](ext-jackson.md)
 * [Cryptographic Functions](ext-crypt.md)
-
-through extension modules
