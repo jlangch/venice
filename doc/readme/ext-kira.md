@@ -464,5 +464,5 @@ The produced output:
 To analyze the parsed template just print it:
 
 ```clojure
-  (println (kira/parse-string template))
+(println (kira/parse-string template))
 ```
