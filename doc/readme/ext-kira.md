@@ -122,6 +122,12 @@ Output:
 
 Any Venice functions can be used to escape/convert/format output:
 
+```text
+<% (print (format x)) %>
+```
+
+Example:
+
 ```clojure
 (do
   (load-module :kira)
