@@ -90,6 +90,12 @@ Examples of use:
 
 #### Kira has built-in support for escaping XML/HTML:
 
+```text
+<% (kira/escape-xml text) %>
+```
+
+Example: 
+
 ```clojure
 (do
   (load-module :kira)
@@ -114,7 +120,7 @@ Output:
 
 #### Custom conversion
 
-Any Venice functionality can be used to escape/convert/format output:
+Any Venice functions can be used to escape/convert/format output:
 
 ```clojure
 (do
@@ -137,6 +143,12 @@ timestamp: 2019-06-22 19:21:07
 
 
 ### Loops
+
+```text
+<% (kira/docoll coll (fn [item] (kira/emit %>
+   ...
+<% ))) %>
+```
 
 Loop over a collection of items:
 
@@ -183,7 +195,13 @@ Output:
 
 #### when
 
-Optionally add the user's eMail:
+```text
+<% (when predicate (kira/emit %>
+   ...
+<% )) %>
+```
+
+Example: 
 
 ```clojure
 (do
@@ -227,6 +245,12 @@ Output:
 
 #### if - then - else with value
 
+```text
+<% (print (if (== font :large) 36 12)) %>
+```
+
+Example: 
+
 ```clojure
 (do
   (load-module :kira)
@@ -262,6 +286,14 @@ body {
 
 
 #### if - then - else with blocks
+
+```text
+<% (if predicate (kira/emit %>
+   ...
+<% ) (kira/emit %>
+   ...
+<% )) %>
+```
 
 ```clojure
 (do
