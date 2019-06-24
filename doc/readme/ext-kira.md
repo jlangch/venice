@@ -433,6 +433,7 @@ Template blueprint:
   <user>
     <firstname>...</firstname>
     <lastname>...</lastname>
+    <birthdate>...</birthdate>
     <address>
       <street>...</street>
       <zip>...</zip>
@@ -516,6 +517,7 @@ The produced output:
   <user>
     <firstname>Thomas</firstname>
     <lastname>Meier</lastname>
+    <birthdate>2000-08-01</birthdate>
     <address>
       <street>Aareweg 3</street>
       <zip>3000</zip>
@@ -530,6 +532,7 @@ The produced output:
   <user>
     <firstname>Anna</firstname>
     <lastname>Steiger</lastname>
+    <birthdate>1987-10-15</birthdate>
     <address>
       <street>Auengasse 27</street>
       <zip>5000</zip>
