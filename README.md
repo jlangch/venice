@@ -52,6 +52,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/ac5e91f/cheatsheet.htm
 * [JSON](doc/readme/json.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * See a larger [example](doc/readme/large-example.md)
+* [Profiling](doc/readme/profiling.md)
 * [Change Log](ChangeLog.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
 * [3rd Party Libs](doc/readme/3rdparty-lic.md)
