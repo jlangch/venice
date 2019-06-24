@@ -49,7 +49,9 @@ The profiler runs the sum function 100 times as warm-up followed by 100 times to
          (if (< i n)
             (recur (inc i))
             i)))
+            
    (perf (sum 100000) 100 100)
+   
    (println (prof :data-formatted "Metrics: loop")))
 ```
 
