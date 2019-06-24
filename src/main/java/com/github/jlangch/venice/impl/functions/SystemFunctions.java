@@ -26,6 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -199,6 +200,27 @@ public class SystemFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction pid = 
+		new VncFunction(
+				"pid", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(pid)")		
+					.doc("Returns the PID of this process.")
+					.examples("(pid)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("pid", args, 0);
+			     
+				return new VncString(
+							ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction gc = 
 		new VncFunction(
 				"gc", 
@@ -267,6 +289,7 @@ public class SystemFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
 
 	public static VncFunction callstack = 
 		new VncFunction(
@@ -461,6 +484,7 @@ public class SystemFunctions {
 					.put("objid",				objid)
 					.put("current-time-millis",	current_time_millis)
 					.put("nano-time",			nano_time)
+					.put("pid",					pid)
 					.put("gc",					gc)
 					.put("shutdown-hook",		shutdown_hook)					
 					.put("sandboxed?",			sandboxed_Q)

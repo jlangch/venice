@@ -721,6 +721,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("gc"));
+		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
