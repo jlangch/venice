@@ -12,8 +12,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - layout improvements to the PDF cheatsheet. The PDF cheatsheet embeds now the
-  'Open Sans' and 'Source Code Pro' open source fonts to be always available.
+  'Open Sans' and 'Source Code Pro' open source fonts to be available on all 
+  platforms the cheatsheet is opened.
 - helper functions to _Kira_ templating to simplify template processing
+- extensive documentation to _Kira_ templating: [Kira](doc/readme/ext-kira.md)
 
 ### Fixed
 
