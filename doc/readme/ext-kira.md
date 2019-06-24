@@ -160,10 +160,6 @@ Output:
 <formula>x &gt; 100</formula>
 ```
 
-```text
-<% (kira/escape-xml text) %>
-```
-
 #### Data conversion/formatting prior to escape XML: 
 
 ```text
