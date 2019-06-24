@@ -140,7 +140,9 @@ public class KiraModuleTest {
 	}
 	
 	
-	
+	// ------------------------------------------------------------------------
+	// Evaluation
+	// ------------------------------------------------------------------------
 	
 	@Test
 	public void test_kira_1() {
@@ -288,15 +290,15 @@ public class KiraModuleTest {
 
 		// (let [xs [1 2 3 4]] (docoll #(print (str "foo" % " ")) xs))
 		
-		// (kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" {:xs [1 2 3]})
+		// (kira/eval """<% (kira/docoll xs #(print (str %>foo<% % " ")))%>""" {:xs [1 2 3]})
 		
 		final String script =
-				"(do                                                                  \n" +
-				"   (load-module :kira)                                               \n" +
-				"                                                                     \n" +
-				"   (kira/eval                                                        \n" + 
-				"       \"\"\"<% (docoll #(print (str %>foo<% % \" \")) xs)%>\"\"\"   \n" + 
-				"      {:xs [1 2 3]})                                                 \n" + 
+				"(do                                                                       \n" +
+				"   (load-module :kira)                                                    \n" +
+				"                                                                          \n" +
+				"   (kira/eval                                                             \n" + 
+				"       \"\"\"<% (kira/docoll xs #(print (str %>foo<% % \" \")))%>\"\"\"   \n" + 
+				"      {:xs [1 2 3]})                                                      \n" + 
 				")";
 
 		assertEquals("foo1 foo2 foo3 ", venice.eval(script));
@@ -308,48 +310,93 @@ public class KiraModuleTest {
 
 		// (let [xs [1 2 3 4]] (docoll #(print (str "foo" % " ")) xs))
 		
-		// (kira/eval """$ (docoll #(print (str $foo$ % " ")) xs)$""" ["$" "$"] {:xs [1 2 3]})
+		// (kira/eval """$ (kira/docoll xs #(print (str $foo$ % " ")))$""" ["$" "$"] {:xs [1 2 3]})
 		
 		final String script =
-				"(do                                                                  \n" +
-				"   (load-module :kira)                                               \n" +
-				"                                                                     \n" +
-				"   (kira/eval                                                        \n" + 
-				"       \"\"\"$ (docoll #(print (str $foo$ % \" \")) xs)$\"\"\"       \n" + 
-				"      [\"$\" \"$\"]                                                  \n" + 
-				"      {:xs [1 2 3]})                                                 \n" + 
+				"(do                                                                       \n" +
+				"   (load-module :kira)                                                    \n" +
+				"                                                                          \n" +
+				"   (kira/eval                                                             \n" + 
+				"       \"\"\"$ (kira/docoll xs #(print (str $foo$ % \" \")))$\"\"\"       \n" + 
+				"      [\"$\" \"$\"]                                                       \n" + 
+				"      {:xs [1 2 3]})                                                      \n" + 
 				")";
 
 		assertEquals("foo1 foo2 foo3 ", venice.eval(script));
 	}
+	
+	
+	// ------------------------------------------------------------------------
+	// Compiled
+	// ------------------------------------------------------------------------
 
 	@Test
-	public void test_kira_6() {
+	public void test_compile() {
 		final Venice venice = new Venice();
 
 		// (let [func (kira/fn [x] "foo<%= x %>")] (func "bar"))
 		
 		final String script =
-				"(do                                                                  \n" +
-				"   (load-module :kira)                                               \n" +
-				"                                                                     \n" +
-				"   (let [tf (kira/fn [x] \"foo<%= x %>\")] (tf \"bar\"))               " +
+				"(do                                           \n" +
+				"   (load-module :kira)                        \n" +
+				"                                              \n" +
+				"   (let [template \"foo<%= x %>\"             \n" +
+				"         tf (kira/fn [x] \"foo<%= x %>\")]    \n" +
+				"      (tf \"bar\"))                           \n" +
 				")";
 
 		assertEquals("foobar", venice.eval(script));
 	}
 
 	@Test
-	public void test_kira_6_delim_2() {
+	public void test_compile_multivars() {
+		final Venice venice = new Venice();
+
+		// (let [func (kira/fn [x] "formula: <%= x %> + <%= y %> + <%= z %>")] (func "a" "2b" "c"))
+		
+		final String script =
+				"(do                                                                        \n" +
+				"   (load-module :kira)                                                     \n" +
+				"                                                                           \n" +
+				"   (let [template \"formula: <%= x %> + <%= y %> + <%= z %>\"              \n" +
+				"         tf (kira/fn [x y z] template)]                                    \n" +
+				"      (tf \"a\" \"2b\" \"c\"))                                             \n" +
+				")";
+
+		assertEquals("formula: a + 2b + c", venice.eval(script));
+	}
+
+	@Test
+	public void test_compile_multivars_2() {
+		final Venice venice = new Venice();
+
+		// (let [func (kira/fn [x] <% (kira/emit x) %> + <% (kira/emit y) %>)] (func "a" "2b"))
+		
+		final String script =
+				"(do                                                                        \n" +
+				"   (load-module :kira)                                                     \n" +
+				"                                                                           \n" +
+				"   (let [template \"formula: <% (kira/emit x) %> + <% (kira/emit y) %>\"   \n" +
+				"         tf (kira/fn [x y z] template)]                                    \n" +
+				"      (tf \"a\" \"2b\"))                                                   \n" +
+				")";
+
+		assertEquals("formula: a + 2b", venice.eval(script));
+	}
+
+	@Test
+	public void test_compile_delim() {
 		final Venice venice = new Venice();
 
 		// (let [func (kira/fn [x] "foo$= x $" ["$" "$"])] (func "bar"))
 		
 		final String script =
-				"(do                                                                  \n" +
-				"   (load-module :kira)                                               \n" +
-				"                                                                     \n" +
-				"   (let [tf (kira/fn [x] \"foo$= x $\" [\"$\" \"$\"])] (tf \"bar\"))  " +
+				"(do                                                     \n" +
+				"   (load-module :kira)                                  \n" +
+				"                                                        \n" +
+				"   (let [template \"foo$= x $\"                         \n" +
+				"         tf (kira/fn [x] template [\"$\" \"$\"])]       \n" +
+				"     (tf \"bar\"))                                      \n" +
 				")";
 
 		assertEquals("foobar", venice.eval(script));

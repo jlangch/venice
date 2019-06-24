@@ -5,7 +5,8 @@ Kira is a simple templating module for Venice.
 
 ## Syntax
 
-The `<% %>` tags are used to embed a section of Clojure code with side-effects. This is commonly used for control structures like loops or conditionals.
+The `<% %>` tags are used to embed a section of Clojure code with side-effects. 
+This is commonly used for control structures like loops or conditionals.
 
 For example:
 
@@ -19,7 +20,8 @@ For example:
 ;;=> "foo1 foo2 foo3 "
 ```
 
-The `<%= %>` tags will be substituted for the value of the expression within them. This is used for inserting values into a template.
+The `<%= %>` tags will be substituted for the value of the expression within them. 
+This is used for inserting values into a template.
 
 For example:
 
@@ -55,13 +57,26 @@ The delimiters can be customized:
 (kira/eval source delimiters bindings)
 ```
 
-Evaluate a template source using an optional map of bindings. The template source can be a string, or any I/O source understood by the standard slurp function.
+Evaluate a template source using an optional map of bindings. The template source 
+can be a string, or any I/O source understood by the standard slurp function.
 
 Example of use:
 
 ```clojure
-(kira/eval "Hello <%= name %>" {:name "Bob"})
-(kira/eval "Hello $= name $" ["$" "$"] {:name "Bob"})
+(kira/eval 
+   "Hello <%= name %>" 
+   {:name "Bob"})
+
+(kira/eval "Hello <%= name1 %> and <%= name2 %>" 
+           {:name1 "Bob" 
+            :name2 "Alice"})
+
+(kira/eval "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>" 
+           {:names ["Bob" "Alice"]})
+
+(kira/eval 
+   "Hello $= name $" ["$" "$"] 
+   {:name "Bob"})
 ```
 
 ### kira/fn
@@ -71,15 +86,46 @@ Example of use:
 (kira/fn args source delimiters)
 ```
 
-Compile a template source into a anonymous function. This is a lot faster than `kira/eval` for repeated calls, as the template source is only parsed when the function is created.
+Compile a template source into a anonymous function. This is a lot faster than `kira/eval` 
+for repeated calls, as the template source is only parsed when the function is created.
 
 Examples of use:
 
 ```clojure
-(def hello
-  (kira/fn [name] "Hello <%= name %>"))
+(do
+  (load-module :kira)
+  
+  (def hello
+    (kira/fn [name] "Hello <%= name %>"))
 
-(hello "Alice")
+  (println (hello "Alice"))
+  (println (hello "Bob")))
+```
+
+Defining a template with two scalar parameters:
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def hello
+    (kira/fn [name1 name2] "Hello <%= name1 %> and <% (kira/emit name2) %>"))
+
+  (hello "Alice" "Bob")
+  (hello "Miss Piggy" "Kermit"))
+```
+
+Defining a template with parameters passed as vector:
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def hello
+    (kira/fn [names] "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>"))
+
+  (hello ["Alice" "Bob"])
+  (hello ["Miss Piggy" "Kermit"]))
 ```
 
 
@@ -101,11 +147,9 @@ Example:
   (load-module :kira)
   
   (def template (str/strip-indent """\
-       <formula>
-         <predicate><% (kira/escape-xml predicate) %></predicate>
-       </formula>"""))
+       <formula><% (kira/escape-xml formula) %></formula>"""))
 
-  (def data { :predicate "x > 100" })
+  (def data { :formula "x > 100" })
   
   (println (kira/eval template data)))
 ```
@@ -113,10 +157,43 @@ Example:
 Output:
 
 ```xml
-<formula>
-  <predicate>x &gt; 100</predicate>
-</formula>
+<formula>x &gt; 100</formula>
 ```
+
+```text
+<% (kira/escape-xml text) %>
+```
+
+#### Data conversion/formatting prior to escape XML: 
+
+```text
+<% (kira/escape-xml text fmt-fn) %>
+```
+
+Example: 
+
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+  
+  (def template (str/strip-indent """\
+       <birthdate><% (kira/escape-xml (:birth-date data) format-ts) %></birthdate>"""))
+
+  (def data { :birth-date (time/local-date 2000 8 1) })
+  
+  (println (kira/eval template data)))
+```
+
+Output:
+
+```xml
+<birthdate>2000-08-01</birthdate>
+```
+
+
 
 #### Custom conversion
 
@@ -383,12 +460,15 @@ Venice template:
 (do
   (load-module :kira)
   
+  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+  
   (def template (str/strip-indent """\
        <users>
          <% (kira/docoll users (fn [user] (kira/emit %>
          <user>
            <firstname><% (kira/escape-xml (:first user)) %></firstname>
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
+           <birthdate><% (kira/escape-xml (:birth-date user) format-ts) %></birthdate>
            <address>
              <street><% (kira/escape-xml (-> user :location :street)) %></street>
              <zip><% (kira/escape-xml (-> user :location :zip)) %></zip>
@@ -407,6 +487,7 @@ Venice template:
 
   (def data { :users [ {:first "Thomas"
                         :last "Meier"
+                        :birth-date (time/local-date 2000 8 1)
                         :location { :street "Aareweg 3"
                                     :zip "3000"
                                     :city "Bern" }
@@ -414,6 +495,7 @@ Venice template:
                                   :business "thomas.meier@business.ch" } }
                        {:first "Anna"
                         :last "Steiger"
+                        :birth-date (time/local-date 1987 10 15)
                         :location { :street "Auengasse 27"
                                     :zip "5000"
                                     :city "Aarau" }
@@ -421,7 +503,13 @@ Venice template:
                                   :business "anna.steiger@business.ch" } } ]
               :add-emails true })
 
-  (println (kira/eval template data)))
+  ; runtime evaluation
+  (println (kira/eval template data))
+  
+  ; pre-compiled evaluation
+  (let [tf (kira/fn [users add-emails] template)]
+    (println (tf (:users data) (:add-emails data))))
+)
 ```
 
 The produced output:

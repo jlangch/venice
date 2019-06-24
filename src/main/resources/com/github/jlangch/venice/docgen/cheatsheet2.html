@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Venice Cheat Sheet</title>
+        
+        <style type="text/css">
+            <% (when pdf-mode (kira/emit %>
+             @font-face {
+                font-family: 'Open Sans';
+                src: url('OpenSans-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+            @font-face {
+                font-family: 'Source Code Pro';
+                src: url('SourceCodePro-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+            <% )) %>
+            @page {
+                size: A4 portrait;
+                margin: 2cm 1.0cm;
+                padding: 0;
+            }
+            body {
+                background-color: white;
+                font-family: 'Open Sans', sans-serif;
+                color: #444;
+                font-size: <% (print (if pdf-mode "10px" "16px")) %>;
+                 line-height: 1.5em;
+                font-weight: 400;
+            }            
+            h1 {
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
+                color: #507dca;
+                font-size: 1.8em;
+                line-height: 2em;
+                font-weight: 300;
+            }
+            div.header h1 {
+                margin-top: <% (print (if pdf-mode "0.5em" "1.5em")) %>;
+                 font-weight: 500;
+            }
+            h2 {
+                margin-top: 1.5em;
+                margin-bottom: 1.5em;
+                color: #4165a2;
+                font-size: 1.4em;
+                line-height: 2em;
+                font-weight: 400;
+            }
+            h3 {
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+                line-height: 1.5em;
+                font-weight: 400;
+            }
+            a {
+                color: #3548A7;
+                margin-right: 12px;
+            }
+			a:visited {
+				color: #922790;
+			}
+			
+			a:hover {
+				color: #0355e2;
+			}
+            pre {
+                margin: 0;
+            }
+            code {
+                display: block;
+                white-space: pre-wrap;
+                font-family: 'Source Code Pro', sans-serif;
+                font-weight: 400;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+            tr:nth-child(odd) {
+                background-color: #f5f5f5;
+            }
+            tr:nth-child(even) {
+                background-color: #fafafa;
+            }
+            td {
+                vertical-align: top;
+                padding: 0.5em;
+            }
+            td.shrink {
+                white-space: nowrap;
+                padding-right: 2em;
+            }
+            td.expand {
+                width: 95%;
+            }                         
+            div.header h1 {
+                font-size: 3em;
+            }
+            .header {
+                margin: 0 0 0 0.5em;
+            }
+            .column:first-child {
+                clear: both;
+            }
+            .column {
+                float: left;
+                padding: 0;
+                margin: 0;
+                width: 50%;
+            }
+            .section {
+                color: #424242;
+                background-color: #ebebeb;
+                margin: 0.5em;
+                padding: 0 0.5em 0.5em;
+            }                            
+            .embedding {
+                background-color: white;
+                margin: 0 0 0 0;
+                padding: <% (print (if pdf-mode "0em" "10em")) %> 0.5em 0.5em;
+            }                            
+            div.embedding h2 {
+                margin: 1em 0 0 0;
+                font-size: 1.2em;
+                font-weight: 400;
+            }                            
+            .nav-back {
+                width: 100%;
+                text-align: right;
+            }                            
+            .nav-back a {
+                margin-left: 1em;
+            } 
+            .nav-back a:link, 
+            .nav-back a:visited, 
+            .nav-back a:hover, 
+            .nav-back a:active {
+                text-decoration: none;
+                background-color: transparent;
+                color: #a0a0a0;
+            }
+            .code-snippet {
+                color: #424242;
+                background-color: #f5f5f5;
+                margin: 0.5em 0;
+                padding: 0 0.5em 0.5em;
+            }                            
+            .details {
+                clear: both;
+                background-color: white;
+                margin: 0 0 0 0;
+                padding: <% (print (if pdf-mode "0em" "20em")) %> 0.5em 0.5em;
+            }                            
+            .detail {
+                background-color: #ebebeb;
+                margin: 0.5em 0 0.5em 0;
+                padding: 0.5em;
+            }                            
+            .detail h1 {
+                color: #4165a2;
+                background-color: #f5f5f5;
+                margin: 0.1em 0 0.5em 0;
+                padding: 0.5em 0.5em 0.5em 0.3em;
+            }                            
+            .arglists {
+                background-color: #f5f5f5;
+                margin: 0.5em 0 0.5em 0;
+                padding: 0.5em;
+            }                            
+            .arglist {
+                background-color: #f5f5f5;
+                margin: 0.5em 0 0.5em 0;
+                padding: 0;
+            }                            
+            .descr {
+                background-color: #f5f5f5;
+                margin: 0.5em 0 0.5em 0;
+                padding: 0.5em;
+            }                            
+            .examples {
+                background-color: #f5f5f5;
+                margin: 0;
+                padding: 0.5em;
+            }
+        </style>
+       <% (when-not pdf-mode (kira/emit %>
+        <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500"/>
+        <script>
+            WebFont.load({
+                google: {
+                    families: ["Open Sans:300,300italic,400,400italic,600,600italic","PT Serif:400,400italic,700,700italic","Source Code Pro:regular,500"]
+                }
+            });
+        </script>
+        <% )) %>
+    </head>
+
+    <body>
+        <div class="main">
+            <div class="header" id="top">    
+                 <h1>Venice $data.version; format="xml"$ Cheat Sheet</h1>
+            </div>
+            
+            <div class="column">
+                 <% (kira/docoll left (fn [s1] (kira/emit %>
+                 <div class="section" id="$s1.id$">
+                    <h2>$s1.title$</h2>
+                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
+                    $if(s2.title)$<h3>$s2.title; format="xml"$</h3>$endif$
+                    <table>
+                        <tbody>
+                            <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
+                            <tr>
+                                <td class="shrink">$s3.title; format="xml"$</td>
+                                <td class="expand"><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
+                            </tr>
+                            <% ))) %>
+                        </tbody>
+                    </table>
+                    <% ))) %>
+                </div>
+                <% ))) %>
+            </div>
+            
+            <div class="column">
+                <% (kira/docoll right (fn [s1] (kira/emit %>
+                <div class="section" id="$s1.id$">
+                    <h2>$s1.title$</h2>
+                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
+                    $if(s2.title)$<h3>$s2.title; format="xml"$</h3>$endif$
+                    <table>
+                        <tbody>
+                            <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
+                            <tr>
+                                <td class="shrink">$s3.title; format="xml"$</td>
+                                <td class="expand"><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
+                            </tr>
+                            <% ))) %>
+                        </tbody>
+                    </table>
+                    <% ))) %>
+                </div>
+                <% ))) %>
+            </div>
+ 
+ 			<div style="clear: both;"></div>
+ 			
+            <div class="embedding" style="page-break-before: always;">
+               <h1>Embedding in Java</h1>
+               
+               <% (kira/docoll snippets (fn [s] (kira/emit %> 
+               <h2>$s.title; format="xml"$</h2>
+               <div class="code-snippet">
+                   <code>$s.code; format="xml:multiline"$</code>                
+               </div>
+               <% ))) %>
+            </div>
+            
+            <div class="details" style="page-break-before: always;">
+                <h1>Function details</h1>
+                
+                <% (kira/docoll details (fn [it] (kira/emit %> 
+                <% (when it.id (kira/emit %>
+                <div class="detail" id="$it.id$">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>$it.name; format="xml"$</h1>
+                     <div class="arglists">
+                        <div class="arglist">
+                         $it.signatures:{sig|<code>$sig; format="xml"$</code>}$                          
+                        </div>
+                    </div>
+                    <div class="descr">
+                        <code>$it.description; format="xml:multiline"$</code>
+                    </div>
+                    <div class="examples">
+                        <code>$it.examples; format="xml:multiline"$</code>
+                    </div>
+                </div>
+                <% )) %>
+                <% ))) %>             
+            </div>
+        </div>
+    </body>
+
+</html>
