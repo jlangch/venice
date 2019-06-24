@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.5.10] - 2019-06-xx
+## [1.5.10] - 2019-06-24
 
 ### Added
 
@@ -16,10 +16,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
   platforms the cheatsheet is opened.
 - helper functions to _Kira_ templating to simplify template processing
 - extensive documentation to _Kira_ templating: [Kira](doc/readme/ext-kira.md)
-
-### Fixed
-
-- ...
 
 
 
