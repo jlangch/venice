@@ -117,7 +117,7 @@ Defining a template with two scalar parameters:
   (hello "Miss Piggy" "Kermit"))
 ```
 
-Defining a template with parameters passed as vector:
+Defining a template with parameters passed in a vector:
 
 ```clojure
 (do
