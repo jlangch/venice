@@ -30,6 +30,118 @@ import com.github.jlangch.venice.Venice;
 
 public class KiraModuleTest {
 
+	// ------------------------------------------------------------------------
+	// Utility functions
+	// ------------------------------------------------------------------------
+	
+	@Test
+	public void test_emit() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                                                  \n" +
+				"   (load-module :kira)                               \n" +
+				"                                                     \n" +
+				"   (with-out-str                                     \n" +
+				"      (kira/emit \"abc def\"))                       \n" + 
+				")";
+
+		assertEquals("abc def", venice.eval(script1));
+	}
+	
+	@Test
+	public void test_escape_xml() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                  \n" +
+				"   (load-module :kira)                               \n" +
+				"                                                     \n" +
+				"   (with-out-str                                     \n" +
+				"      (kira/escape-xml \"\"\"a < > & ' \" b\"\"\"))  \n" + 
+				")";
+
+		assertEquals("a &lt; &gt; &amp; &apos; &quot; b", venice.eval(script));
+	}
+	
+	@Test
+	public void test_escape_xml_transform() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                                      \n" +
+				"   (load-module :kira)                   \n" +
+				"                                         \n" +
+				"   (with-out-str                         \n" +
+				"      (kira/escape-xml                   \n" +
+				"          \"a < > b\"                    \n" + 
+				"          str/upper-case))               \n" +
+				")";
+
+		assertEquals("A &lt; &gt; B", venice.eval(script1));
+
+		final String script2 =
+				"(do                                      \n" +
+				"   (load-module :kira)                   \n" +
+				"                                         \n" +
+				"   (with-out-str                         \n" +
+				"      (kira/escape-xml                   \n" +
+				"          \"a < > b\"                    \n" + 
+				"          #(str/upper-case %)))          \n" +
+				")";
+
+		assertEquals("A &lt; &gt; B", venice.eval(script2));
+	}
+	
+	@Test
+	public void test_escape_xml_multiline() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                                            \n" +
+				"   (load-module :kira)                         \n" +
+				"                                               \n" +
+				"   (with-out-str                               \n" +
+				"      (kira/escape-xml-multiline               \n" +
+				"          \"line <1>\nline <2>\nline <3>\"     \n" +
+				"          #(str % \"<br/>\")))                     \n" + 
+				")";
+
+		assertEquals(
+				"line &lt;1&gt;<br/>line &lt;2&gt;<br/>line &lt;3&gt;<br/>", 
+				venice.eval(script1));
+	}
+	
+	@Test
+	public void test_escape_xml_docoll() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                                               \n" +
+				"   (load-module :kira)                            \n" +
+				"                                                  \n" +
+				"   (with-out-str                                  \n" +
+				"      (kira/docoll [1 2 3]                        \n" +
+				"                   (fn [x] (kira/emit (+ x 1))))) \n" +
+				")";
+
+		assertEquals("234", venice.eval(script1));
+
+		final String script2 =
+				"(do                                               \n" +
+				"   (load-module :kira)                            \n" +
+				"                                                  \n" +
+				"   (with-out-str                                  \n" +
+				"      (kira/docoll []                             \n" +
+				"                   (fn [x] (kira/emit (+ x 1))))) \n" +
+				")";
+
+		assertEquals("", venice.eval(script2));
+	}
+	
+	
+	
+	
 	@Test
 	public void test_kira_1() {
 		final Venice venice = new Venice();

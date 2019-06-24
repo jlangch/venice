@@ -287,7 +287,6 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("str/letter?"));
 		str_test.addItem(getDocItem("str/whitespace?"));
 		str_test.addItem(getDocItem("str/linefeed?"));
-
 		
 		final DocSection other = new DocSection("Other");
 		section.addSection(other);

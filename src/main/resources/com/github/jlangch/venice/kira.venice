@@ -4,6 +4,9 @@
 ;; (https://github.com/weavejester/comb). Venice's Kira
 ;; templating library builds on the ideas of 'comb'.
 
+;; -----------------------------------------------------------------------------
+;; Framework functions
+;; -----------------------------------------------------------------------------
 (defn- kira/read-source [source]
   (if (string? source)
     source
@@ -51,16 +54,37 @@
       (with-out-str
         ~(-> src kira/read-source (kira/parse-string delimiters) read-string)))))
 
-(defn
-  ^{ :doc "XML escape the string and emit it" }
-  kira/escape-xml [s] (print (str/escape-xml s)))
+
+;; -----------------------------------------------------------------------------
+;; Public functions
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :doc "Emit a string" }
   kira/emit [s] (print (str s)))
 
 (defn
-  ^{ :doc "Applies f to the items of the collection." }
+  ^{ :doc (str/strip-indent """\
+        XML escapes a string and emits it. An optional function f transforms
+        the string before being escaped.""" ) }
+  kira/escape-xml
+  ([s]   (kira/escape-xml s identity))
+  ([s f] (kira/emit (str/escape-xml (f s)))))
+
+(defn
+  ^{ :doc (str/strip-indent """\
+        XML escapes a multi-line string. Splits the string into lines, XML
+        escapes each line, applies the mapping function f to each line, and
+        emits the joined lines""" ) }
+  kira/escape-xml-multiline
+  [s f] (->> (str/split-lines s)
+             (map #(str/escape-xml %))
+             (map #(f %))
+             (str/join)
+             (kira/emit)))
+
+(defn
+  ^{ :doc "Applies the function f to the items of the collection." }
   kira/docoll [coll f] (docoll f coll))
 
 (defmacro
