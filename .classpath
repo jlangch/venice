@@ -4,9 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="lib" path="lib/eclipse/ST-4.0.8.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/commons-text-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/commons-lang3-3.7.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-core-9.1.18.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-pdf-openpdf-9.1.18.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/openpdf-1.2.20.jar"/>

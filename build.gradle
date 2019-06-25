@@ -171,9 +171,6 @@ dependencies {
     testRuntimeOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9'
 
     // required for cheatsheet generation
-    compileOnly 'org.antlr:ST4:4.0.8'
-    compileOnly 'org.apache.commons:commons-text:1.2'
-    compileOnly 'org.apache.commons:commons-lang3:3.7'
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.18'
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18'
     compileOnly 'com.github.librepdf:openpdf:1.2.18'
