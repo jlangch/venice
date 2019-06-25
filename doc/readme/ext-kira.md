@@ -63,22 +63,15 @@ can be a string, or any I/O source understood by the standard slurp function.
 Example of use:
 
 ```clojure
-(kira/eval 
-   "Hello <%= name %>" 
-   {:name "Bob"})
+(kira/eval "Hello <%= name %>" {:name "Bob"})
 
-(kira/eval 
-   "Hello <%= name1 %> and <%= name2 %>" 
-   {:name1 "Bob" 
-    :name2 "Alice"})
+(kira/eval "Hello <%= name1 %> and <%= name2 %>" 
+           {:name1 "Bob" name2 "Alice"})
 
-(kira/eval 
-   "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>" 
-   {:names ["Bob" "Alice"]})
+(kira/eval "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>" 
+           {:names ["Bob" "Alice"]})
 
-(kira/eval 
-   "Hello $= name $" ["$" "$"] 
-   {:name "Bob"})
+(kira/eval "Hello $= name $" ["$" "$"]  {:name "Bob"})
 ```
 
 ### kira/fn
@@ -97,8 +90,7 @@ Examples of use:
 (do
   (load-module :kira)
   
-  (def hello
-    (kira/fn [name] "Hello <%= name %>"))
+  (def hello (kira/fn [name] "Hello <%= name %>"))
 
   (println (hello "Alice"))
   (println (hello "Bob")))
