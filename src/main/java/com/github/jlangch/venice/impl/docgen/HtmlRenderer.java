@@ -31,7 +31,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 
-public class HtmlRenderer2 {
+public class HtmlRenderer {
 	
 	public static String renderCheatSheet(final Map<String,Object> data) {
 		try {

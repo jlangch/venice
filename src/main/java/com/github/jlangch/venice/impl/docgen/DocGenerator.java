@@ -79,12 +79,12 @@ public class DocGenerator {
 			
 			// HTML
 			data.put("pdfmode", false);
-			final String html = HtmlRenderer2.renderCheatSheet(data);
+			final String html = HtmlRenderer.renderCheatSheet(data);
 			save(new File(getUserDir(), "cheatsheet.html"), html);
 			
 			// PDF
 			data.put("pdfmode", true);
-			final String xhtml = HtmlRenderer2.renderCheatSheet(data);
+			final String xhtml = HtmlRenderer.renderCheatSheet(data);
 			final byte[] pdf = PdfRenderer.renderCheatSheet(xhtml);
 			save(new File(getUserDir(), "cheatsheet.pdf"), pdf);
 			
