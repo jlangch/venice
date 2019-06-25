@@ -37,9 +37,9 @@ public class HtmlRenderer2 {
 		try {
 			final String template = loadCheatSheetTemplate();
 			
-			final String script = "(do                           \n" +
-								  "   (load-module :kira)        \n" +
-								  "   (kira/eval template data))   ";
+			final String script = "(do                                           \n" +
+								  "   (load-module :kira)                        \n" +
+								  "   (kira/eval template [\"${\" \"}$\"] data))   ";
 			
 			final Venice venice = new Venice();
 			

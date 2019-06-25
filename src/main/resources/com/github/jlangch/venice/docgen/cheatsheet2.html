@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-   		<meta name="author" content="<% (kira/escape-xml meta-author) %>"/>
+   		<meta name="author" content="${ (kira/escape-xml meta-author) }$"/>
        
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
-            <% (when pdfmode (kira/emit %>
+            ${ (when pdfmode (kira/emit }$
              @font-face {
                 font-family: 'Open Sans';
                 src: url('OpenSans-Regular.ttf');
@@ -23,7 +23,7 @@
                 -fs-pdf-font-embed: embed;
                 -fs-pdf-font-encoding: Identity-H;
             }
-            <% )) %>
+            ${ )) }$
             @page {
                 size: A4 portrait;
                 margin: 2cm 1.0cm;
@@ -33,7 +33,7 @@
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
-                font-size: <% (print (if pdfmode "10px" "16px")) %>;
+                font-size: ${ (print (if pdfmode "10px" "16px")) }$;
                 line-height: 1.5em;
                 font-weight: 400;
             }            
@@ -46,7 +46,7 @@
                 font-weight: 300;
             }
             div.header h1 {
-                margin-top: <% (print (if pdfmode "0.5em" "1.5em")) %>;
+                margin-top: ${ (print (if pdfmode "0.5em" "1.5em")) }$;
                 font-weight: 500;
             }
             h2 {
@@ -129,7 +129,7 @@
             .embedding {
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: <% (print (if pdfmode "0em" "10em")) %> 0.5em 0.5em;
+                padding: ${ (print (if pdfmode "0em" "10em")) }$ 0.5em 0.5em;
             }                            
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -161,7 +161,7 @@
                 clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: <% (print (if pdfmode "0em" "20em")) %> 0.5em 0.5em;
+                padding: ${ (print (if pdfmode "0em" "20em")) }$ 0.5em 0.5em;
             }                            
             .detail {
                 background-color: #ebebeb;
@@ -195,7 +195,7 @@
                 padding: 0.5em;
             }
         </style>
-       <% (when-not pdfmode (kira/emit %>
+       ${ (when-not pdfmode (kira/emit }$
         <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500"/>
         <script>
@@ -205,55 +205,55 @@
                 }
             });
         </script>
-        <% )) %>
+        ${ )) }$
     </head>
 
     <body>
         <div class="main">
             <div class="header" id="top">    
-                 <h1>Venice <% (kira/escape-xml version) %> Cheat Sheet</h1>
+                 <h1>Venice ${ (kira/escape-xml version) }$ Cheat Sheet</h1>
             </div>
             
             <div class="column">
-                 <% (kira/docoll left (fn [s1] (kira/emit %>
-                 <div class="section" id="<% (kira/emit (:id s1)) %>">
-                    <h2><% (kira/escape-xml (:title s1)) %></h2>
-                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>                  
-                    <% (when (:title s2) (kira/emit %><h3><% (kira/escape-xml (:title s2)) %></h3><% )) %>                   
+                 ${ (kira/docoll left (fn [s1] (kira/emit }$
+                 <div class="section" id="${ (kira/emit (:id s1)) }$">
+                    <h2>${ (kira/escape-xml (:title s1)) }$</h2>
+                    ${ (kira/docoll (:sections s1) (fn [s2] (kira/emit }$                  
+                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$                   
                     <table>
                         <tbody>
-                            <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
+                            ${ (kira/docoll (:sections s2) (fn [s3] (kira/emit }$
                             <tr>
-                                <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
-                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a> <% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div><% )) %><% ))) %></code></td>
+                                <td class="shrink">${ (kira/escape-xml (:title s3)) }$</td>
+                                <td class="expand"><code>${ (kira/docoll (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:name it)) }$</a> ${ ) (kira/emit }$<div>${ (kira/escape-xml (:name it)) }$</div>${ )) }$${ ))) }$</code></td>
                             </tr>
-                            <% ))) %>
+                            ${ ))) }$
                         </tbody>
                     </table>
-                    <% ))) %>
+                    ${ ))) }$
                 </div>
-                <% ))) %>
+                ${ ))) }$
             </div>
             
             <div class="column">
-                <% (kira/docoll right (fn [s1] (kira/emit %>
-                <div class="section" id="<% (kira/emit (:id s1)) %>">
-                    <h2><% (kira/escape-xml (:title s1)) %></h2>
-                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>                  
-                    <% (when (:title s2) (kira/emit %><h3><% (kira/escape-xml (:title s2)) %></h3><% )) %>                   
+                ${ (kira/docoll right (fn [s1] (kira/emit }$
+                <div class="section" id="${ (kira/emit (:id s1)) }$">
+                    <h2>${ (kira/escape-xml (:title s1)) }$</h2>
+                    ${ (kira/docoll (:sections s1) (fn [s2] (kira/emit }$                  
+                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$                   
                     <table>
                         <tbody>
-                            <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
+                            ${ (kira/docoll (:sections s2) (fn [s3] (kira/emit }$
                             <tr>
-                                <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
-                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a> <% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div><% )) %><% ))) %></code></td>
+                                <td class="shrink">${ (kira/escape-xml (:title s3)) }$</td>
+                                <td class="expand"><code>${ (kira/docoll (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:name it)) }$</a> ${ ) (kira/emit }$<div>${ (kira/escape-xml (:name it)) }$</div>${ )) }$${ ))) }$</code></td>
                             </tr>
-                            <% ))) %>
+                            ${ ))) }$
                         </tbody>
                     </table>
-                    <% ))) %>
+                    ${ ))) }$
                 </div>
-                <% ))) %>
+                ${ ))) }$
             </div>
  
  			<div style="clear: both;"></div>
@@ -261,38 +261,38 @@
             <div class="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
                
-               <% (kira/docoll snippets (fn [s] (kira/emit %> 
-               <h2><% (kira/escape-xml (:title s)) %></h2>
+               ${ (kira/docoll snippets (fn [s] (kira/emit }$ 
+               <h2>${ (kira/escape-xml (:title s)) }$</h2>
                <div class="code-snippet">
-                   <code><% (kira/escape-xml (:code s)) %></code>                
+                   <code>${ (kira/escape-xml (:code s)) }$</code>                
                </div>
-               <% ))) %>
+               ${ ))) }$
             </div>
             
             <div class="details" style="page-break-before: always;">
                 <h1>Function details</h1>
                 
-                <% (kira/docoll details (fn [it] (kira/emit %> 
-                <% (when (:id it) (kira/emit %>
-                <div class="detail" id="<% (kira/emit (:id it)) %>">
+                ${ (kira/docoll details (fn [it] (kira/emit }$ 
+                ${ (when (:id it) (kira/emit }$
+                <div class="detail" id="${ (kira/emit (:id it)) }$">
                     <div class="nav-back"><a href="#top">top</a></div>
-                    <h1><% (kira/escape-xml (:name it)) %></h1>
+                    <h1>${ (kira/escape-xml (:name it)) }$</h1>
                      <div class="arglists">
                         <div class="arglist">
-                           <% (kira/docoll (:signatures it) (fn [sig] (kira/emit %>
-                           <code><% (kira/escape-xml sig) %></code>
-                           <% ))) %>
+                           ${ (kira/docoll (:signatures it) (fn [sig] (kira/emit }$
+                           <code>${ (kira/escape-xml sig) }$</code>
+                           ${ ))) }$
                         </div>
                     </div>
                     <div class="descr">
-                        <code><% (kira/escape-xml (:description it)) %></code>
+                        <code>${ (kira/escape-xml (:description it)) }$</code>
                     </div>
                     <div class="examples">
-                        <code><% (kira/escape-xml (:examples it)) %></code>
+                        <code>${ (kira/escape-xml (:examples it)) }$</code>
                     </div>
                 </div>
-                <% )) %>
-                <% ))) %>             
+                ${ )) }$
+                ${ ))) }$             
             </div>
         </div>
     </body>
