@@ -27,6 +27,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 
@@ -45,6 +46,12 @@ public class HtmlRenderer2 {
 			return (String)venice.eval(
 							script,
 							Parameters.of("template", template, "data", data));
+		}
+		catch(VncException ex) {
+			throw new RuntimeException(
+						"Failed to render cheat sheet HTML. \n" + 
+						"Venice Callstack: \n" + ex.getCallStackAsString("   "),
+						ex);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException("Failed to render cheat sheet HTML", ex);
