@@ -305,7 +305,7 @@
                     <h1><% (kira/escape-xml (:name it)) %></h1>
                      <div class="arglists">
                         <div class="arglist">
-                           <% (kira/docoll details (fn [sig] (kira/emit %>
+                           <% (kira/docoll (:signatures it) (fn [sig] (kira/emit %>
                            <code><% (kira/escape-xml sig) %></code>
                            <% ))) %>
                         </div>
