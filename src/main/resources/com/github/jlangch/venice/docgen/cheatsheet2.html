@@ -32,7 +32,7 @@
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
                 font-size: <% (print (if pdfmode "10px" "16px")) %>;
-                 line-height: 1.5em;
+                line-height: 1.5em;
                 font-weight: 400;
             }            
             h1 {
@@ -45,7 +45,7 @@
             }
             div.header h1 {
                 margin-top: <% (print (if pdfmode "0.5em" "1.5em")) %>;
-                 font-weight: 500;
+                font-weight: 500;
             }
             h2 {
                 margin-top: 1.5em;
@@ -214,11 +214,11 @@
             
             <div class="column">
                  <% (kira/docoll left (fn [s1] (kira/emit %>
-                 <div class="section" id="<% (:id s1) %>">
+                 <div class="section" id="<% (kira/emit (:id s1)) %>">
                     <h2><% (kira/escape-xml (:title s1)) %></h2>
                     <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
                     
-                    <% (when (some? (:title s2)) (kira/emit %>
+                    <% (when (:title s2) (kira/emit %>
                     <h3><% (kira/escape-xml (:title s2)) %></h3>
                     <% )) %>
                     
@@ -227,17 +227,7 @@
                             <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
                             <tr>
                                 <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
-                                <td class="expand">
-                                	<code>
-                                	<% (kira/docoll (:items s3) (fn [it] (kira/emit %>
-	 	                              	<% (if (some? (:id it)) (kira/emit %>
-										<a href="#<% (:id it) %>"><% (kira/escape-xml (:name it)) %></a>
-										<% ) (kira/emit %>
-										<div><% (kira/escape-xml (:name it)) %></div>
-										<% )) %>
-                                 	<% ))) %>
-                                	</code>
-                                </td>
+                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a><% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div> <% )) %><% ))) %></code></td>
                             </tr>
                             <% ))) %>
                         </tbody>
@@ -249,11 +239,11 @@
             
             <div class="column">
                 <% (kira/docoll right (fn [s1] (kira/emit %>
-                <div class="section" id="<% (:id s1) %>">
+                <div class="section" id="<% (kira/emit (:id s1)) %>">
                     <h2><% (kira/escape-xml (:title s1)) %></h2>
                     <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
                     
-                    <% (when (some? (:title s2)) (kira/emit %>
+                    <% (when (:title s2) (kira/emit %>
                     <h3><% (kira/escape-xml (:title s2)) %></h3>
                     <% )) %>
                     
@@ -262,17 +252,7 @@
                             <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
                             <tr>
                                 <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
-                                <td class="expand">
-                                	<code>
-                                	<% (kira/docoll (:items s3) (fn [it] (kira/emit %>
-	 	                              	<% (if (some? (:id it)) (kira/emit %>
-										<a href="#<% (:id it) %>"><% (kira/escape-xml (:name it)) %></a>
-										<% ) (kira/emit %>
-										<div><% (kira/escape-xml (:name it)) %></div>
-										<% )) %>
-                                 	<% ))) %>
-                                	</code>
-                                </td>
+                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a><% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div> <% )) %><% ))) %></code></td>
                             </tr>
                             <% ))) %>
                         </tbody>
@@ -290,7 +270,7 @@
                <% (kira/docoll snippets (fn [s] (kira/emit %> 
                <h2><% (kira/escape-xml (:title s)) %></h2>
                <div class="code-snippet">
-                   <code><% (kira/escape-xml-multiline (:code s)) %></code>                
+                   <code><% (kira/escape-xml (:code s)) %></code>                
                </div>
                <% ))) %>
             </div>
@@ -299,8 +279,8 @@
                 <h1>Function details</h1>
                 
                 <% (kira/docoll details (fn [it] (kira/emit %> 
-                <% (when (some? (:id it)) (kira/emit %>
-                <div class="detail" id="<% (:id it) %>">
+                <% (when (:id it) (kira/emit %>
+                <div class="detail" id="<% (kira/emit (:id it)) %>">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1><% (kira/escape-xml (:name it)) %></h1>
                      <div class="arglists">
@@ -311,10 +291,10 @@
                         </div>
                     </div>
                     <div class="descr">
-                        <code><% (kira/escape-xml-multiline (:description it)) %></code>
+                        <code><% (kira/escape-xml (:description it)) %></code>
                     </div>
                     <div class="examples">
-                        <code><% (kira/escape-xml-multiline (:examples it)) %></code>
+                        <code><% (kira/escape-xml (:examples it)) %></code>
                     </div>
                 </div>
                 <% )) %>
