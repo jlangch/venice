@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-   		<meta name="author" content="${ (kira/escape-xml meta-author) }$"/>
+        <meta name="author" content="${ (kira/escape-xml meta-author) }$"/>
        
         <title>Venice Cheat Sheet</title>
         
@@ -67,13 +67,13 @@
                 color: #3548A7;
                 margin-right: 12px;
             }
-			a:visited {
-				color: #922790;
-			}
-			
-			a:hover {
-				color: #0355e2;
-			}
+            a:visited {
+                color: #922790;
+            }
+
+            a:hover {
+                color: #0355e2;
+            }
             pre {
                 margin: 0;
             }
@@ -104,7 +104,7 @@
             }
             td.expand {
                 width: 95%;
-            }                         
+            }
             div.header h1 {
                 font-size: 3em;
             }
@@ -125,21 +125,21 @@
                 background-color: #ebebeb;
                 margin: 0.5em;
                 padding: 0 0.5em 0.5em;
-            }                            
+            }
             .embedding {
                 background-color: white;
                 margin: 0 0 0 0;
                 padding: ${ (print (if pdfmode "0em" "10em")) }$ 0.5em 0.5em;
-            }                            
+            }
             div.embedding h2 {
                 margin: 1em 0 0 0;
                 font-size: 1.2em;
                 font-weight: 400;
-            }                            
+            }
             .nav-back {
                 width: 100%;
                 text-align: right;
-            }                            
+            }
             .nav-back a {
                 margin-left: 1em;
             } 
@@ -156,39 +156,39 @@
                 background-color: #f5f5f5;
                 margin: 0.5em 0;
                 padding: 0 0.5em 0.5em;
-            }                            
+            }
             .details {
                 clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
                 padding: ${ (print (if pdfmode "0em" "20em")) }$ 0.5em 0.5em;
-            }                            
+            }
             .detail {
                 background-color: #ebebeb;
                 margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
-            }                            
+            }
             .detail h1 {
                 color: #4165a2;
                 background-color: #f5f5f5;
                 margin: 0.1em 0 0.5em 0;
                 padding: 0.5em 0.5em 0.5em 0.3em;
-            }                            
+            }
             .arglists {
                 background-color: #f5f5f5;
                 margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
-            }                            
+            }
             .arglist {
                 background-color: #f5f5f5;
                 margin: 0.5em 0 0.5em 0;
                 padding: 0;
-            }                            
+            }
             .descr {
                 background-color: #f5f5f5;
                 margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
-            }                            
+            }
             .examples {
                 background-color: #f5f5f5;
                 margin: 0;
@@ -210,7 +210,7 @@
 
     <body>
         <div class="main">
-            <div class="header" id="top">    
+            <div class="header" id="top">
                  <h1>Venice ${ (kira/escape-xml version) }$ Cheat Sheet</h1>
             </div>
             
@@ -218,8 +218,8 @@
                  ${ (kira/docoll left (fn [s1] (kira/emit }$
                  <div class="section" id="${ (kira/emit (:id s1)) }$">
                     <h2>${ (kira/escape-xml (:title s1)) }$</h2>
-                    ${ (kira/docoll (:sections s1) (fn [s2] (kira/emit }$                  
-                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$                   
+                    ${ (kira/docoll (:sections s1) (fn [s2] (kira/emit }$
+                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$
                     <table>
                         <tbody>
                             ${ (kira/docoll (:sections s2) (fn [s3] (kira/emit }$
@@ -239,8 +239,8 @@
                 ${ (kira/docoll right (fn [s1] (kira/emit }$
                 <div class="section" id="${ (kira/emit (:id s1)) }$">
                     <h2>${ (kira/escape-xml (:title s1)) }$</h2>
-                    ${ (kira/docoll (:sections s1) (fn [s2] (kira/emit }$                  
-                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$                   
+                    ${ (kira/docoll (:sections s1) (fn [s2] (kira/emit }$
+                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$
                     <table>
                         <tbody>
                             ${ (kira/docoll (:sections s2) (fn [s3] (kira/emit }$
@@ -255,16 +255,16 @@
                 </div>
                 ${ ))) }$
             </div>
- 
- 			<div style="clear: both;"></div>
- 			
+
+            <div style="clear: both;"></div>
+
             <div class="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
                
                ${ (kira/docoll snippets (fn [s] (kira/emit }$ 
                <h2>${ (kira/escape-xml (:title s)) }$</h2>
                <div class="code-snippet">
-                   <code>${ (kira/escape-xml (:code s)) }$</code>                
+                   <code>${ (kira/escape-xml (:code s)) }$</code>
                </div>
                ${ ))) }$
             </div>
@@ -292,7 +292,7 @@
                     </div>
                 </div>
                 ${ )) }$
-                ${ ))) }$             
+                ${ ))) }$
             </div>
         </div>
     </body>
