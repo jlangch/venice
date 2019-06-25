@@ -69,7 +69,7 @@ public class DocGenerator {
 			final List<DocSection> right = getRightSections();
 			
 			final Map<String,Object> data = new HashMap<>();
-			data.put("author", "Venice/Kira");
+			data.put("meta-author", "Venice");
 			data.put("version", Version.VERSION);
 			data.put("sections", concat(left, right));
 			data.put("left", left);
