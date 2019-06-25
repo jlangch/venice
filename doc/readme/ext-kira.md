@@ -14,10 +14,9 @@ For example:
 (do
   (load-module :kira)
 
-  (kira/eval """<% (docoll #(print (str %>foo<% % " ")) xs)%>""" 
-             {:xs [1 2 3]}))
+  (kira/eval "Hello <% (kira/emit name) %>" {:name "Alice"}))
 
-;;=> "foo1 foo2 foo3 "
+;;=> "Hello Alice"
 ```
 
 The `<%= %>` tags will be substituted for the value of the expression within them. 
@@ -42,7 +41,7 @@ The delimiters can be customized:
 (do
   (load-module :kira)
 
-  (kira/eval """Hello ${= name }$""" ["${" "}$"] {:name "Alice"}))
+  (kira/eval "Hello $(= name )$" ["$(" ")$"] {:name "Alice"}))
   
 ;;=> "Hello Alice"
 ```
@@ -140,8 +139,7 @@ Example:
 (do
   (load-module :kira)
   
-  (def template
-       "<formula><% (kira/escape-xml formula) %></formula>")
+  (def template "<formula><% (kira/escape-xml formula) %></formula>")
 
   (def data { :formula "x > 100" })
   
