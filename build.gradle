@@ -164,12 +164,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
 
-    // required for json module unit tests
-    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.9'
-    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-core:2.9.9'
-    testRuntimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
-    testRuntimeOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9'
-
     // required for cheatsheet generation
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.18'
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18'
