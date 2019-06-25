@@ -81,7 +81,7 @@ Example of use:
 (kira/fn args source delimiters)
 ```
 
-Compile a template source into a anonymous function. This is a lot faster than `kira/eval` 
+Compiles a template source into an anonymous function. This is a lot faster than `kira/eval` 
 for repeated calls, as the template source is only parsed when the function is created.
 
 Examples of use:
