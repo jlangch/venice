@@ -32,13 +32,13 @@ Controls the code profiling.
 - `(prof :on)`   turn profiler on  
 - `(prof :off)`   turn profiler off  
 - `(prof :status)`   returns the profiler on/off staus  
-- `(prof :clear)`   clear profiler data captured so far  
-- `(prof :data)`   returns the profiler data as map  
-- `(prof :data-formatted)`   returns the profiler data as formatted text  
-- `(prof :data-formatted "Metrics test")`   returns the profiler data as formatted text with a title  
+- `(prof :clear)`   clear profiling data captured so far  
+- `(prof :data)`   returns the profiling data as map  
+- `(prof :data-formatted)`   returns the profiling data as formatted text  
+- `(prof :data-formatted "Metrics test")`   returns the profiling data as formatted text with a title  
 
 
-## Example profiling a loop
+## Example: profiling a loop
 
 The profiler runs the sum function 100 times as warm-up followed by 100 times to profile it. 
 
