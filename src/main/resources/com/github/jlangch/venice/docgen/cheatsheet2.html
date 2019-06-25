@@ -4,7 +4,7 @@
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
-            <% (when pdf-mode (kira/emit %>
+            <% (when pdfmode (kira/emit %>
              @font-face {
                 font-family: 'Open Sans';
                 src: url('OpenSans-Regular.ttf');
@@ -31,7 +31,7 @@
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
-                font-size: <% (print (if pdf-mode "10px" "16px")) %>;
+                font-size: <% (print (if pdfmode "10px" "16px")) %>;
                  line-height: 1.5em;
                 font-weight: 400;
             }            
@@ -44,7 +44,7 @@
                 font-weight: 300;
             }
             div.header h1 {
-                margin-top: <% (print (if pdf-mode "0.5em" "1.5em")) %>;
+                margin-top: <% (print (if pdfmode "0.5em" "1.5em")) %>;
                  font-weight: 500;
             }
             h2 {
@@ -127,7 +127,7 @@
             .embedding {
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: <% (print (if pdf-mode "0em" "10em")) %> 0.5em 0.5em;
+                padding: <% (print (if pdfmode "0em" "10em")) %> 0.5em 0.5em;
             }                            
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -159,7 +159,7 @@
                 clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: <% (print (if pdf-mode "0em" "20em")) %> 0.5em 0.5em;
+                padding: <% (print (if pdfmode "0em" "20em")) %> 0.5em 0.5em;
             }                            
             .detail {
                 background-color: #ebebeb;
@@ -193,7 +193,7 @@
                 padding: 0.5em;
             }
         </style>
-       <% (when-not pdf-mode (kira/emit %>
+       <% (when-not pdfmode (kira/emit %>
         <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500"/>
         <script>
@@ -209,21 +209,35 @@
     <body>
         <div class="main">
             <div class="header" id="top">    
-                 <h1>Venice $data.version; format="xml"$ Cheat Sheet</h1>
+                 <h1>Venice <% (kira/escape-xml version) %> Cheat Sheet</h1>
             </div>
             
             <div class="column">
                  <% (kira/docoll left (fn [s1] (kira/emit %>
-                 <div class="section" id="$s1.id$">
-                    <h2>$s1.title$</h2>
+                 <div class="section" id="<% (:id s1) %>">
+                    <h2><% (kira/escape-xml (:title s1)) %></h2>
                     <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
-                    $if(s2.title)$<h3>$s2.title; format="xml"$</h3>$endif$
+                    
+                    <% (when (some? (:title s2)) (kira/emit %>
+                    <h3><% (kira/escape-xml (:title s2)) %></h3>
+                    <% )) %>
+                    
                     <table>
                         <tbody>
                             <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
                             <tr>
-                                <td class="shrink">$s3.title; format="xml"$</td>
-                                <td class="expand"><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
+                                <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
+                                <td class="expand">
+                                	<code>
+                                	<% (kira/docoll (:items s3) (fn [it] (kira/emit %>
+	 	                              	<% (if (some? (:id it)) (kira/emit %>
+										<a href="#<% (:id it) %>"><% (kira/escape-xml (:name it)) %></a>
+										<% ) (kira/emit %>
+										<div><% (kira/escape-xml (:name it)) %></div>
+										<% )) %>
+                                 	<% ))) %>
+                                	</code>
+                                </td>
                             </tr>
                             <% ))) %>
                         </tbody>
@@ -235,16 +249,30 @@
             
             <div class="column">
                 <% (kira/docoll right (fn [s1] (kira/emit %>
-                <div class="section" id="$s1.id$">
-                    <h2>$s1.title$</h2>
+                <div class="section" id="<% (:id s1) %>">
+                    <h2><% (kira/escape-xml (:title s1)) %></h2>
                     <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
-                    $if(s2.title)$<h3>$s2.title; format="xml"$</h3>$endif$
+                    
+                    <% (when (some? (:title s2)) (kira/emit %>
+                    <h3><% (kira/escape-xml (:title s2)) %></h3>
+                    <% )) %>
+                    
                     <table>
                         <tbody>
                             <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
                             <tr>
-                                <td class="shrink">$s3.title; format="xml"$</td>
-                                <td class="expand"><code>$s3.items:{it|$if(it.id)$<a href="#$it.id$">$it.name; format="xml"$</a> $else$<div>$it.name; format="xml"$</div>$endif$}$</code></td>
+                                <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
+                                <td class="expand">
+                                	<code>
+                                	<% (kira/docoll (:items s3) (fn [it] (kira/emit %>
+	 	                              	<% (if (some? (:id it)) (kira/emit %>
+										<a href="#<% (:id it) %>"><% (kira/escape-xml (:name it)) %></a>
+										<% ) (kira/emit %>
+										<div><% (kira/escape-xml (:name it)) %></div>
+										<% )) %>
+                                 	<% ))) %>
+                                	</code>
+                                </td>
                             </tr>
                             <% ))) %>
                         </tbody>
@@ -260,9 +288,9 @@
                <h1>Embedding in Java</h1>
                
                <% (kira/docoll snippets (fn [s] (kira/emit %> 
-               <h2>$s.title; format="xml"$</h2>
+               <h2><% (kira/escape-xml (:title s)) %></h2>
                <div class="code-snippet">
-                   <code>$s.code; format="xml:multiline"$</code>                
+                   <code><% (kira/escape-xml-multiline (:code s)) %></code>                
                </div>
                <% ))) %>
             </div>
@@ -271,20 +299,22 @@
                 <h1>Function details</h1>
                 
                 <% (kira/docoll details (fn [it] (kira/emit %> 
-                <% (when it.id (kira/emit %>
-                <div class="detail" id="$it.id$">
+                <% (when (some? (:id it)) (kira/emit %>
+                <div class="detail" id="<% (:id it) %>">
                     <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>$it.name; format="xml"$</h1>
+                    <h1><% (kira/escape-xml (:name it)) %></h1>
                      <div class="arglists">
                         <div class="arglist">
-                         $it.signatures:{sig|<code>$sig; format="xml"$</code>}$                          
+                           <% (kira/docoll details (fn [sig] (kira/emit %>
+                           <code><% (kira/escape-xml sig) %></code>
+                           <% ))) %>
                         </div>
                     </div>
                     <div class="descr">
-                        <code>$it.description; format="xml:multiline"$</code>
+                        <code><% (kira/escape-xml-multiline (:description it)) %></code>
                     </div>
                     <div class="examples">
-                        <code>$it.examples; format="xml:multiline"$</code>
+                        <code><% (kira/escape-xml-multiline (:examples it)) %></code>
                     </div>
                 </div>
                 <% )) %>
