@@ -69,6 +69,7 @@ public class DocGenerator {
 			final List<DocSection> right = getRightSections();
 			
 			final Map<String,Object> data = new HashMap<>();
+			data.put("author", "Venice/Kira");
 			data.put("version", Version.VERSION);
 			data.put("sections", concat(left, right));
 			data.put("left", left);
@@ -78,12 +79,12 @@ public class DocGenerator {
 			
 			// HTML
 			data.put("pdfmode", false);
-			final String html = HtmlRenderer.renderCheatSheet(data);
+			final String html = HtmlRenderer2.renderCheatSheet(data);
 			save(new File(getUserDir(), "cheatsheet.html"), html);
 			
 			// PDF
 			data.put("pdfmode", true);
-			final String xhtml = HtmlRenderer.renderCheatSheet(data);
+			final String xhtml = HtmlRenderer2.renderCheatSheet(data);
 			final byte[] pdf = PdfRenderer.renderCheatSheet(xhtml);
 			save(new File(getUserDir(), "cheatsheet.pdf"), pdf);
 			

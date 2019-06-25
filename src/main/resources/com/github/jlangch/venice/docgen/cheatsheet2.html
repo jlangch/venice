@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
     <head>
+   		<meta name="author" content="<% (kira/escape-xml author) %>"/>
+        
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
@@ -216,18 +218,14 @@
                  <% (kira/docoll left (fn [s1] (kira/emit %>
                  <div class="section" id="<% (kira/emit (:id s1)) %>">
                     <h2><% (kira/escape-xml (:title s1)) %></h2>
-                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
-                    
-                    <% (when (:title s2) (kira/emit %>
-                    <h3><% (kira/escape-xml (:title s2)) %></h3>
-                    <% )) %>
-                    
+                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>                  
+                    <% (when (:title s2) (kira/emit %><h3><% (kira/escape-xml (:title s2)) %></h3><% )) %>                   
                     <table>
                         <tbody>
                             <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
                             <tr>
                                 <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
-                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a><% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div> <% )) %><% ))) %></code></td>
+                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a> <% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div><% )) %><% ))) %></code></td>
                             </tr>
                             <% ))) %>
                         </tbody>
@@ -241,18 +239,14 @@
                 <% (kira/docoll right (fn [s1] (kira/emit %>
                 <div class="section" id="<% (kira/emit (:id s1)) %>">
                     <h2><% (kira/escape-xml (:title s1)) %></h2>
-                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>
-                    
-                    <% (when (:title s2) (kira/emit %>
-                    <h3><% (kira/escape-xml (:title s2)) %></h3>
-                    <% )) %>
-                    
+                    <% (kira/docoll (:sections s1) (fn [s2] (kira/emit %>                  
+                    <% (when (:title s2) (kira/emit %><h3><% (kira/escape-xml (:title s2)) %></h3><% )) %>                   
                     <table>
                         <tbody>
                             <% (kira/docoll (:sections s2) (fn [s3] (kira/emit %>
                             <tr>
                                 <td class="shrink"><% (kira/escape-xml (:title s3)) %></td>
-                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a><% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div> <% )) %><% ))) %></code></td>
+                                <td class="expand"><code><% (kira/docoll (:items s3) (fn [it] (kira/emit %><% (if (:id it) (kira/emit %><a href="#<% (kira/emit (:id it)) %>"><% (kira/escape-xml (:name it)) %></a> <% ) (kira/emit %><div><% (kira/escape-xml (:name it)) %></div><% )) %><% ))) %></code></td>
                             </tr>
                             <% ))) %>
                         </tbody>
