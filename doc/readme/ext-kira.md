@@ -140,8 +140,8 @@ Example:
 (do
   (load-module :kira)
   
-  (def template (str/strip-indent """\
-       <formula><% (kira/escape-xml formula) %></formula>"""))
+  (def template
+       "<formula><% (kira/escape-xml formula) %></formula>")
 
   (def data { :formula "x > 100" })
   
@@ -169,8 +169,8 @@ Example:
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
-  (def template (str/strip-indent """\
-       <birthdate><% (kira/escape-xml (:birth-date data) format-ts) %></birthdate>"""))
+  (def template
+       "<birthdate><% (kira/escape-xml (:birth-date data) format-ts) %></birthdate>")
 
   (def data { :birth-date (time/local-date 2000 8 1) })
   
@@ -201,7 +201,7 @@ Example:
   
   (defn format-ts [t] (print (time/format t "yyyy-MM-dd HH:mm:ss")))
   
-  (def template """timestamp: <% (format-ts timestamp) %>""")
+  (def template "timestamp: <% (format-ts timestamp) %>")
 
   (def data { :timestamp (time/local-date-time) })
   
