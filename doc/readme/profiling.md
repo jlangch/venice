@@ -13,9 +13,9 @@ the gathered profile metrics.
 (perf expr warmup-iterations test-iterations)
 ```
 
-Runs a performance test on the given expression. 
+Runs a profiling session on the given expression. 
 
-Runs the test in 3 phases: 
+Runs in 3 phases: 
    1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. 
    2. Runs the garbage collector 
    3. Runs the expression under profiling.
