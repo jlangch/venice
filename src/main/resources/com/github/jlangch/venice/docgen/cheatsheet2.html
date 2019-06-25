@@ -225,7 +225,7 @@
                             ${ (kira/docoll (:sections s2) (fn [s3] (kira/emit }$
                             <tr>
                                 <td class="shrink">${ (kira/escape-xml (:title s3)) }$</td>
-                                <td class="expand"><code>${ (kira/docoll (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:name it)) }$</a> ${ ) (kira/emit }$<div>${ (kira/escape-xml (:name it)) }$</div>${ )) }$${ ))) }$</code></td>
+                                <td class="expand"><code>${ (kira/docoll (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:name it)) }$</a> ${ ) (kira/emit }$<span>${ (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ))) }$</code></td>
                             </tr>
                             ${ ))) }$
                         </tbody>
@@ -246,7 +246,7 @@
                             ${ (kira/docoll (:sections s2) (fn [s3] (kira/emit }$
                             <tr>
                                 <td class="shrink">${ (kira/escape-xml (:title s3)) }$</td>
-                                <td class="expand"><code>${ (kira/docoll (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:name it)) }$</a> ${ ) (kira/emit }$<div>${ (kira/escape-xml (:name it)) }$</div>${ )) }$${ ))) }$</code></td>
+                                <td class="expand"><code>${ (kira/docoll (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:name it)) }$</a> ${ ) (kira/emit }$<span>${ (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ))) }$</code></td>
                             </tr>
                             ${ ))) }$
                         </tbody>
