@@ -44,7 +44,7 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 	public PdfMetaDataCreationListener() {
 	}
 
-	public void parseMetaTags(final Document sourceXHTML) {
+	public PdfMetaDataCreationListener parseMetaTags(final Document sourceXHTML) {
 		final Element headTag = (Element)sourceXHTML.getDocumentElement()
 													.getElementsByTagName("head")
 													.item(0);
@@ -64,6 +64,8 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 			final Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
 			headMetaTags.setProperty("title", titleTag.getTextContent());
 		}
+		
+		return this;
 	}
 
 	@Override

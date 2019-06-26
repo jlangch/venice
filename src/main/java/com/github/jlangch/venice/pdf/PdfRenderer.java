@@ -59,8 +59,8 @@ public class PdfRenderer {
 			renderer.getSharedContext().setUserAgentCallback(userAgent);
 
             // PDF meta data creation listener
-			final PdfMetaDataCreationListener mcl = new PdfMetaDataCreationListener();
-			mcl.parseMetaTags(parseXHTML(xhtml));
+			final PdfMetaDataCreationListener mcl = new PdfMetaDataCreationListener()
+															.parseMetaTags(parseXHTML(xhtml));
 			renderer.setListener(mcl);
 
 			renderer.setDocumentFromString(xhtml, baseUrl);
