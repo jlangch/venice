@@ -528,7 +528,8 @@ public class MathFunctions {
 					.arglists("(rand-long)", "(rand-long max)")		
 					.doc(
 						"Without argument returns a random long between 0 and MAX_LONG. " +
-						"With argument max returns a random long between 0 and max exclusive.")
+						"With argument max returns a random long between 0 and max exclusive.\n" + 
+						"This function provides a cryptographically strong random number generator (RNG).")
 					.examples("(rand-long)", "(rand-long 100)")
 					.build()
 		) {		
@@ -560,7 +561,8 @@ public class MathFunctions {
 					.arglists("(rand-double)", "(rand-double max)")		
 					.doc(
 						"Without argument returns a double between 0.0 and 1.0. " +
-						"With argument max returns a random double between 0.0 and max.")
+						"With argument max returns a random double between 0.0 and max.\n" + 
+						"This function provides a cryptographically strong random number generator (RNG).")
 					.examples("(rand-double)", "(rand-double 100.0)")
 					.build()
 		) {		
