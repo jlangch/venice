@@ -24,6 +24,7 @@ package com.github.jlangch.venice.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -41,7 +42,7 @@ import com.github.jlangch.venice.impl.util.Tuple2;
 
 public class PdfRenderer {
 
-	public static byte[] render(
+	public static ByteBuffer render(
 			final String xhtml,  
 			final String baseUrl,
 			final List<String> alternateBasePaths
@@ -67,7 +68,7 @@ public class PdfRenderer {
 			renderer.createPDF(os);
 			os.flush();
 
-			return os.toByteArray();
+			return ByteBuffer.wrap(os.toByteArray());
 		}
 		catch(Exception ex) {
 			throw new RuntimeException("Failed to render PDF cheatsheet.", ex);

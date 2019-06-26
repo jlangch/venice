@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.docgen;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import com.github.jlangch.venice.pdf.PdfRenderer;
@@ -28,7 +29,7 @@ import com.github.jlangch.venice.pdf.PdfRenderer;
 
 public class PdfCheatsheetRenderer {
 
-	public static byte[] render(final String xhtml) {
+	public static ByteBuffer render(final String xhtml) {
 		return PdfRenderer.render(
 				xhtml, 
 				"classpath:///", 

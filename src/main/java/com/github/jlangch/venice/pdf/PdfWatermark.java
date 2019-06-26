@@ -23,6 +23,7 @@ package com.github.jlangch.venice.pdf;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 import com.lowagie.text.Element;
 import com.lowagie.text.Image;
@@ -41,8 +42,8 @@ public class PdfWatermark {
 	public PdfWatermark() {
 	}
 	
-	public byte[] addWatermarkImage(
-			final byte[] pdf, 
+	public ByteBuffer addWatermarkImage(
+			final ByteBuffer pdf, 
 			final String imgResourceName,
 			final int skipTopPages, 
 			final int skipBottomPages
@@ -54,7 +55,7 @@ public class PdfWatermark {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			
-			PdfReader reader = new PdfReader(pdf);
+			PdfReader reader = new PdfReader(pdf.array());
 			int numPages = reader.getNumberOfPages();
 			PdfStamper stamper = new PdfStamper(reader, os);
 			Image watermark_image = Image.getInstance(imgResourceName);
@@ -70,15 +71,15 @@ public class PdfWatermark {
 			
 			stamper.close();
 			
-			return os.toByteArray();
+			return ByteBuffer.wrap(os.toByteArray());
 		}
 		catch(Exception ex) {
 			throw new RuntimeException("Failed to add watermarks to the PDF", ex);
 		}		
 	}
 
-	public byte[] addWatermarkText(
-			final byte[] pdf, 
+	public ByteBuffer addWatermarkText(
+			final ByteBuffer pdf, 
 			final String text,
 			final float fontSize,
 			final float fontCharacterSpacing,
@@ -96,7 +97,7 @@ public class PdfWatermark {
 		try {
 			final ByteArrayOutputStream os = new ByteArrayOutputStream();
 			
-			final PdfReader reader = new PdfReader(pdf);
+			final PdfReader reader = new PdfReader(pdf.array());
 			final int numPages = reader.getNumberOfPages();
 			final PdfStamper stamper = new PdfStamper(reader, os);
 			final int startPage = 1 + skipTopPages;
@@ -137,7 +138,7 @@ public class PdfWatermark {
 			
 			stamper.close();
 			
-			return os.toByteArray();
+			return ByteBuffer.wrap(os.toByteArray());
 		}
 		catch(Exception ex) {
 			throw new RuntimeException("Failed to add watermarks to the PDF", ex);

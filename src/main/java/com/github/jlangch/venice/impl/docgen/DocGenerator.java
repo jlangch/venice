@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.docgen;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -86,8 +87,8 @@ public class DocGenerator {
 			// PDF
 			data.put("pdfmode", true);
 			final String xhtml = HtmlCheatsheetRenderer.render(data);
-			final byte[] pdf = PdfCheatsheetRenderer.render(xhtml);
-			save(new File(getUserDir(), "cheatsheet.pdf"), pdf);
+			final ByteBuffer pdf = PdfCheatsheetRenderer.render(xhtml);
+			save(new File(getUserDir(), "cheatsheet.pdf"), pdf.array());
 			
 			System.out.println("Generated Cheat Sheet at: " + getUserDir());
 		}
