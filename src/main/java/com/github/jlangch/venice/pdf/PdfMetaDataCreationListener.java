@@ -55,24 +55,24 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 			final String name = tag.getAttribute("name");
 			final String content = tag.getAttribute("content");
 			if (!name.isEmpty() && !content.isEmpty()) {
-				this.headMetaTags.setProperty(name, content);
+				headMetaTags.setProperty(name, content);
 			}
 		}
 
 		// No title meta tag given --> take it from title tag
-		if (this.headMetaTags.getProperty("title") == null) {
+		if (headMetaTags.getProperty("title") == null) {
 			final Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
-			this.headMetaTags.setProperty("title", titleTag.getTextContent());
+			headMetaTags.setProperty("title", titleTag.getTextContent());
 		}
 	}
 
 	@Override
 	public void preOpen(final ITextRenderer iTextRenderer) {
-		final Enumeration<?> e = this.headMetaTags.propertyNames();
+		final Enumeration<?> e = headMetaTags.propertyNames();
         
 		while (e.hasMoreElements()) {
 			final String key = (String)e.nextElement();
-			final PdfString val = new PdfString(this.headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
+			final PdfString val = new PdfString(headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
 			iTextRenderer.getWriter().setViewerPreferences(PdfWriter.DisplayDocTitle);
 
 			if ("title".equals(key)) {
