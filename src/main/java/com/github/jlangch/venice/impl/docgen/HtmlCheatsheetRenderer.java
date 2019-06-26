@@ -43,6 +43,7 @@ public class HtmlCheatsheetRenderer {
 			
 			final Venice venice = new Venice();
 			
+			// apply the template
 			return (String)venice.eval(
 							script,
 							Parameters.of("template", template, "data", data));
