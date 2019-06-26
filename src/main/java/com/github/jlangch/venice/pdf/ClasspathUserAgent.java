@@ -79,7 +79,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		return this;
 	}
 
-	public ClasspathUserAgent addResource(final String name, final byte[] data) {
+	public ClasspathUserAgent addResource(final String name, final ByteBuffer data) {
 		if (StringUtil.isBlank(name)) {
 			throw new IllegalArgumentException("A 'resource' name must not be blank");
 		}
@@ -87,7 +87,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
 			throw new IllegalArgumentException("A 'resource' data must not be null");
 		}
 		
-		cachedResources.put(name, ByteBuffer.wrap(data));
+		cachedResources.put(name, data);
 		
 		return this;
 	}

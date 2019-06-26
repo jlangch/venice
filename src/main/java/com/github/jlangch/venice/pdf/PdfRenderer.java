@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -47,18 +48,34 @@ public class PdfRenderer {
 			final String baseUrl,
 			final List<String> alternateBasePaths
 	) {
+		return render(xhtml, baseUrl, alternateBasePaths, null);
+	}
+	
+	public static ByteBuffer render(
+			final String xhtml,  
+			final String baseUrl,
+			final List<String> alternateBasePaths,
+			final Map<String,ByteBuffer> resources
+	) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {			
 			final ITextRenderer renderer = new ITextRenderer(DOTS_PER_POINT, DOTS_PER_PIXEL);
 
 			final ClasspathUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice());
-			for(String path : alternateBasePaths) {
-				userAgent.addAlternateBasePath(path);
+			if (alternateBasePaths != null) {
+				for(String path : alternateBasePaths) {
+					userAgent.addAlternateBasePath(path);
+				}
+			}
+			if (resources != null) {
+				for(Map.Entry<String,ByteBuffer> entry : resources.entrySet()) {
+					userAgent.addResource(entry.getKey(), entry.getValue());
+				}
 			}
 
 			userAgent.setSharedContext(renderer.getSharedContext());
 			renderer.getSharedContext().setUserAgentCallback(userAgent);
 
-            // PDF meta data creation listener
+			// PDF meta data creation listener
 			final PdfMetaDataCreationListener mcl = new PdfMetaDataCreationListener()
 															.parseMetaTags(parseXHTML(xhtml));
 			renderer.setListener(mcl);
