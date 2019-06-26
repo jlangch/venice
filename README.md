@@ -51,6 +51,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/ac5e91f/cheatsheet.htm
 * [Exception handling](doc/readme/exceptions.md)
 * [Sandbox](doc/readme/sandbox.md)
 * [JSON](doc/readme/json.md)
+* [Gnerate PDFs](doc/readme/pdf.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * See a larger [example](doc/readme/large-example.md)
 * [Profiling](doc/readme/profiling.md)
