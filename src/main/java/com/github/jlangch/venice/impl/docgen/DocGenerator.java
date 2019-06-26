@@ -80,13 +80,13 @@ public class DocGenerator {
 			
 			// HTML
 			data.put("pdfmode", false);
-			final String html = HtmlRenderer.renderCheatSheet(data);
+			final String html = HtmlCheatsheetRenderer.render(data);
 			save(new File(getUserDir(), "cheatsheet.html"), html);
 			
 			// PDF
 			data.put("pdfmode", true);
-			final String xhtml = HtmlRenderer.renderCheatSheet(data);
-			final byte[] pdf = PdfRenderer.renderCheatSheet(xhtml);
+			final String xhtml = HtmlCheatsheetRenderer.render(data);
+			final byte[] pdf = PdfCheatsheetRenderer.render(xhtml);
 			save(new File(getUserDir(), "cheatsheet.pdf"), pdf);
 			
 			System.out.println("Generated Cheat Sheet at: " + getUserDir());

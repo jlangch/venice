@@ -1,4 +1,4 @@
-package com.github.jlangch.venice.impl.docgen.util;
+package com.github.jlangch.venice.pdf;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
