@@ -1319,11 +1319,10 @@ public class DocGenerator {
 
 	private List<String> toStringList(final VncList list) {
 		try {
-			return list
-					.getList()
-					.stream()
-					.map(s -> ((VncString)s).getValue())
-					.collect(Collectors.toList());
+			return list.getList()
+					   .stream()
+					   .map(s -> ((VncString)s).getValue())
+					   .collect(Collectors.toList());
 		}
 		catch(Exception ex) {
 			throw ex;
