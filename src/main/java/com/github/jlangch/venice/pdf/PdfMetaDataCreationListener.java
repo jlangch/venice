@@ -75,27 +75,29 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 			final PdfString val = new PdfString(headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
 			iTextRenderer.getWriter().setViewerPreferences(PdfWriter.DisplayDocTitle);
 
-			if ("title".equals(key)) {
-				iTextRenderer.getWriter().getInfo().put(PdfName.TITLE, val);
-			} 
-			else if ("author".equals(key)) {
-				iTextRenderer.getWriter().getInfo().put(PdfName.AUTHOR, val);
-			} 
-			else if ("subject".equals(key)) {
-				iTextRenderer.getWriter().getInfo().put(PdfName.SUBJECT, val);
-			} 
-			else if ("creator".equals(key)) {
-				iTextRenderer.getWriter().getInfo().put(PdfName.CREATOR, val);
-			} 
-			else if ("description".equals(key)) {
-				iTextRenderer.getWriter().getInfo().put(PdfName.DESC, val);
-			} 
-			else if ("keywords".equals(key)) {
-				iTextRenderer.getWriter().getInfo().put(PdfName.KEYWORDS, val);
-			} 
-			else {
-				/* This line allows for arbitrary meta tags. */
-				iTextRenderer.getWriter().getInfo().put(new PdfName(key), val);
+			switch(key) {
+				case "title":
+					iTextRenderer.getWriter().getInfo().put(PdfName.TITLE, val);
+					break;
+				case "author":
+					iTextRenderer.getWriter().getInfo().put(PdfName.AUTHOR, val);
+					break;
+				case "subject":
+					iTextRenderer.getWriter().getInfo().put(PdfName.SUBJECT, val);
+					break;
+				case "creator":
+					iTextRenderer.getWriter().getInfo().put(PdfName.CREATOR, val);
+					break;
+				case "description":
+					iTextRenderer.getWriter().getInfo().put(PdfName.DESC, val);
+					break;
+				case "keywords":
+					iTextRenderer.getWriter().getInfo().put(PdfName.KEYWORDS, val);
+					break;
+				default:
+					/* This allows for arbitrary meta tags. */
+					iTextRenderer.getWriter().getInfo().put(new PdfName(key), val);
+					break;
 			}
 		}
 	}
