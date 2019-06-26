@@ -3,7 +3,7 @@
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
  - org.knowm.xchart:xchart:3.5.4
- 
+
 
 #### Line Chart Example
 
@@ -161,3 +161,15 @@ Venice supports rendering charts if the [XChart](https://knowm.org/open-source/x
       120  ;; render with 120 dpi
       (io/file "pie-chart.png")))
 ```
+
+
+
+#### Download required 3rd party libs
+
+```clojure
+(do
+  (load-module :maven)
+  
+  (maven/download "org.knowm.xchart:xchart:3.5.4")
+```
+

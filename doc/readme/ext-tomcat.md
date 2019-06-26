@@ -59,3 +59,14 @@ Type `ctrl-c` in the REPL to shutdown the server.
 ; run Tomcat
 (tc/run-tomcat (my-hello-world-servlet) {:await? false})
 ```
+
+
+## Download required 3rd party libs
+
+```clojure
+(do
+  (load-module :maven)
+  
+  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.19")
+  (maven/download "javax.annotation:javax.annotation-api:1.3.2")
+```
