@@ -45,15 +45,15 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 	}
 
 	public void parseMetaTags(final Document sourceXHTML) {
-		Element headTag = (Element)sourceXHTML.getDocumentElement()
-										.getElementsByTagName("head")
-										.item(0);
-		NodeList metaTags = headTag.getElementsByTagName("meta");
+		final Element headTag = (Element)sourceXHTML.getDocumentElement()
+													.getElementsByTagName("head")
+													.item(0);
+		final NodeList metaTags = headTag.getElementsByTagName("meta");
 
 		for (int ii=0; ii<metaTags.getLength(); ++ii) {
-			Element tag = (Element)metaTags.item(ii);
-			String name = tag.getAttribute("name");
-			String content = tag.getAttribute("content");
+			final Element tag = (Element)metaTags.item(ii);
+			final String name = tag.getAttribute("name");
+			final String content = tag.getAttribute("content");
 			if (!name.isEmpty() && !content.isEmpty()) {
 				this.headMetaTags.setProperty(name, content);
 			}
@@ -61,18 +61,18 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 
 		// No title meta tag given --> take it from title tag
 		if (this.headMetaTags.getProperty("title") == null) {
-			Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
+			final Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
 			this.headMetaTags.setProperty("title", titleTag.getTextContent());
 		}
 	}
 
 	@Override
 	public void preOpen(final ITextRenderer iTextRenderer) {
-		Enumeration<?> e = this.headMetaTags.propertyNames();
+		final Enumeration<?> e = this.headMetaTags.propertyNames();
         
 		while (e.hasMoreElements()) {
-			String key = (String)e.nextElement();
-			PdfString val = new PdfString(this.headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
+			final String key = (String)e.nextElement();
+			final PdfString val = new PdfString(this.headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
 			iTextRenderer.getWriter().setViewerPreferences(PdfWriter.DisplayDocTitle);
 
 			if ("title".equals(key)) {
