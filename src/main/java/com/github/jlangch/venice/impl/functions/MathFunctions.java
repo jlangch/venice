@@ -529,7 +529,8 @@ public class MathFunctions {
 					.doc(
 						"Without argument returns a random long between 0 and MAX_LONG. " +
 						"With argument max returns a random long between 0 and max exclusive.\n" + 
-						"This function provides a cryptographically strong random number generator (RNG).")
+						"This function is based on a cryptographically strong random number " +
+						"generator (RNG).")
 					.examples("(rand-long)", "(rand-long 100)")
 					.build()
 		) {		
@@ -562,7 +563,8 @@ public class MathFunctions {
 					.doc(
 						"Without argument returns a double between 0.0 and 1.0. " +
 						"With argument max returns a random double between 0.0 and max.\n" + 
-						"This function provides a cryptographically strong random number generator (RNG).")
+						"This function is based on a cryptographically strong random number " +
+						"generator (RNG).")
 					.examples("(rand-double)", "(rand-double 100.0)")
 					.build()
 		) {		
@@ -597,7 +599,9 @@ public class MathFunctions {
 						"Without argument returns a Gaussion distributed double value with " +
 						"mean 0.0 and standard deviation 1.0. " +
 						"With argument mean and stddev returns a Gaussion distributed double " +
-						"value with the given mean and standard deviation.")
+						"value with the given mean and standard deviation.\n" + 
+						"This function is based on a cryptographically strong random number " +
+						"generator (RNG)")
 					.examples("(rand-gaussian)", "(rand-gaussian 0.0 5.0)")
 					.build()
 		) {		
