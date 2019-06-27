@@ -10,7 +10,7 @@ libs are on the runtime classpath:
 Flying Saucer is a pure-Java library for rendering arbitrary well-formed XML (or XHTML) 
 using CSS 2.1 for layout and formatting, output to Swing panels, PDF, and images.
 
-Documentation is available in Flying Saucer user guide, linked from their website at [Flying Saucer](https://code.google.com/archive/p/flying-saucer/)
+Flying Saucer Documentation is available in the user guide, linked from their website at [Flying Saucer](https://code.google.com/archive/p/flying-saucer/)
 
 
  
