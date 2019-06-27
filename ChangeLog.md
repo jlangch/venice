@@ -7,11 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.5.11] - 2019-06-xx
-
-### Added
-
-- ...
+## [1.5.11] - 2019-06-27
 
 ### Changed
 
@@ -19,7 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- maven extension module 
+- _maven_ extension module group-id handling
+
 
 
 ## [1.5.10] - 2019-06-24
