@@ -37,7 +37,7 @@ t.b.d.
 (do
   (load-module :maven)
   
-  (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.18")
-  (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18")
-  (maven/download "com.github.librepdf:openpdf:1.2.18"))
+  (maven/download "org/xhtmlrenderer:flying-saucer-core:9.1.18")
+  (maven/download "org/xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18")
+  (maven/download "com/github/librepdf:openpdf:1.2.18"))
 ```
