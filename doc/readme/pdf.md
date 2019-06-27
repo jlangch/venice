@@ -19,7 +19,7 @@ t.b.d.
 
 
 
-## Generate PDF with image resource
+## Generate PDF with embedded images
 
 t.b.d.
 
