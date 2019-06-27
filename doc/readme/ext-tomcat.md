@@ -67,6 +67,6 @@ Type `ctrl-c` in the REPL to shutdown the server.
 (do
   (load-module :maven)
   
-  (maven/download "org/apache/tomcat/embed:tomcat-embed-core:9.0.19")
-  (maven/download "javax/annotation:javax.annotation-api:1.3.2"))
+  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.19")
+  (maven/download "javax.annotation:javax.annotation-api:1.3.2"))
 ```

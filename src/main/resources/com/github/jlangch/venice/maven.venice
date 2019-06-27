@@ -17,8 +17,9 @@
         group-id (first elements)
         artefact-id (second elements)
         version (third elements)
+        group-path (str/replace-all group-id "." "/")
         file-name-base (str artefact-id "-" version)
-        uri (str/join "/" [repo group-id artefact-id version file-name-base])]
+        uri (str/join "/" [repo group-path artefact-id version file-name-base])]
     [uri file-name-base]))
 
 (defn-
@@ -33,11 +34,11 @@
   ^{ :arglists '("(maven/download artefact options*)")
      :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from a Maven repository. "
      :examples '(
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\")"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\")"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
-       "(maven/download \"com/vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
+       "(maven/download \"com.vaadin:vaadin-client:8.7.2\")"
+       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
+       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :dir \".\")"
+       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
+       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
   maven/download
   [artefact & options]
   (let [opts (apply hash-map options)
