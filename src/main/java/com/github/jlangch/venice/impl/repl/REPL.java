@@ -174,6 +174,10 @@ public class REPL {
 						handleEnvCommand(params, terminal, env);
 						continue;
 					}
+					else if (cmd.startsWith("java-ex")) {
+						printJavaEx = true;
+						continue;
+					}
 					else if (cmd.equals("sandbox")) {
 						handleSandboxCommand(new String[0], terminal, env);
 						continue;
@@ -473,7 +477,12 @@ public class REPL {
 				println(terminal, colorID, "Thrown value: " + Printer.pr_str(((ValueException)ex).getValue(), false));			
 			}
 			else if (ex instanceof VncException) {
-				print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+				if (printJavaEx) {
+					print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
+				}
+				else {
+					print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+				}
 			}
 			else {
 				print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
@@ -514,6 +523,7 @@ public class REPL {
 			"                !sandbox reject-all\n" +	
 			"                !sandbox customized\n" +	
 			"                !sandbox add-rule rule\n" +
+			"  !java-ex    print Java exception\n" +	
 			"  !exit       quit the REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
@@ -556,4 +566,5 @@ public class REPL {
 	private ReplConfig config;
 	private IInterceptor interceptor;
 	private VeniceInterpreter venice;
+	private boolean printJavaEx = false;
 }
