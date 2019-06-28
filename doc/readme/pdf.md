@@ -15,7 +15,50 @@ Flying Saucer documentation is available in the user guide, linked from their we
  
 ## Generate PDF
 
-t.b.d.
+... work in progress ...
+
+```clojure
+(do 
+  (import :com.github.jlangch.venice.pdf.PdfRenderer)
+  
+  (load-module :kira)
+  
+  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+  
+  ; define the template
+  (def template (str/strip-indent """\
+     <?xml version="1.0" encoding="UTF-8"?>
+     <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+       <head>
+         <style type="text/css">
+           @page {
+             size: A4 portrait;
+             margin: 2cm 1.0cm;
+             padding: 0;
+           }
+         
+           div.title  {
+           }
+           div.date  {
+           }
+         </style>
+       </head>
+       
+       <body>
+         <div class="title">${ (kira/escape-xml title) }$</div>
+         <div class="date">${ (kira/escape-xml timestamp format-ts) }$</div>
+       </body>
+     </html>
+     """))
+
+  (def data { :title "Hello, world"
+              :timestamp (time/local-date 2000 8 1) })
+ 
+  (def xhtml (kira/eval template ["${" "}$"] data))
+  
+  (io/spit "test.pdf" (. :PdfRenderer :render xhtml))
+)
+```
 
 
 

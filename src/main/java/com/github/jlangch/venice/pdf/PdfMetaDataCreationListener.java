@@ -48,7 +48,14 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 		final Element headTag = (Element)sourceXHTML.getDocumentElement()
 													.getElementsByTagName("head")
 													.item(0);
+		if (headTag == null) {
+			return this;
+		}
+		
 		final NodeList metaTags = headTag.getElementsByTagName("meta");
+		if (metaTags == null) {
+			return this;
+		}
 
 		for (int ii=0; ii<metaTags.getLength(); ++ii) {
 			final Element tag = (Element)metaTags.item(ii);

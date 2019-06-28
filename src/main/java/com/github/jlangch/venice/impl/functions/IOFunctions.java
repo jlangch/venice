@@ -941,7 +941,8 @@ public class IOFunctions {
 					.arglists("(io/spit f content & options)")		
 					.doc(
 						"Opens f, writes content, and then closes f. " +
-						"f may be a file or a string (file path). \n\n" +
+						"f may be a file or a string (file path). " +
+						"The content may be a string or a bytebuf.\n\n" +
 						"Options: \n" +
 						"  :append true/false - e.g :append true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")

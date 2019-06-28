@@ -44,6 +44,12 @@ import com.github.jlangch.venice.impl.util.Tuple2;
 public class PdfRenderer {
 
 	public static ByteBuffer render(
+			final String xhtml
+	) {
+		return render(xhtml, null, null, null);
+	}
+
+	public static ByteBuffer render(
 			final String xhtml,  
 			final String baseUrl,
 			final List<String> alternateBasePaths
