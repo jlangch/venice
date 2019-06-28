@@ -484,8 +484,10 @@ public class ReflectionAccessor {
 			throw new JavaMethodInvocationException(
 					target == null
 						? String.format(
-							"Failed to invoke static method %s",
-							method.getName())
+							"Failed to invoke static method %s::%s(%s)",
+							method.getDeclaringClass().getName(),
+							method.getName(),
+							formatMethodArgTypes(method.getParameterTypes()))
 						: String.format(
 							"Failed to invoke method %s on target %s",
 							method.getName(),
@@ -999,6 +1001,14 @@ public class ReflectionAccessor {
 		return Arrays
 				.stream(args)
 				.map(o -> o.getClass().getSimpleName())
+				.collect(Collectors.joining(", "));
+	}
+	
+	
+	private static String formatMethodArgTypes(final Class<?>[] args) {
+		return Arrays
+				.stream(args)
+				.map(o -> o.getSimpleName())
 				.collect(Collectors.joining(", "));
 	}
 
