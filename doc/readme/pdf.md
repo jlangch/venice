@@ -40,11 +40,11 @@ Flying Saucer documentation is available in the user guide, linked from their we
              background-color: white;
              font-family: sans-serif;
              font-weight: 400;
-           }         
+           }
            div.title  {
              margin-top: 3cm;
              text-align: center;
-           }         
+           }
            div.date  {
              margin-top: 1cm;
              text-align: center;
