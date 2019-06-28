@@ -69,7 +69,9 @@ public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 		// No title meta tag given --> take it from title tag
 		if (headMetaTags.getProperty("title") == null) {
 			final Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
-			headMetaTags.setProperty("title", titleTag.getTextContent());
+			if (titleTag != null) {
+				headMetaTags.setProperty("title", titleTag.getTextContent());
+			}
 		}
 		
 		return this;
