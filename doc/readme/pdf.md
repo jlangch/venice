@@ -52,8 +52,8 @@ Flying Saucer documentation is available in the user guide, linked from their we
      """))
 
   (def data { :title "Hello, world"
-              :timestamp (time/local-date 2000 8 1) }
-              
+              :timestamp (time/local-date 2000 8 1) } )
+
   ; evaluate the template, render it as PDF, and save it
   (->> data
        (kira/eval template ["${" "}$"])
