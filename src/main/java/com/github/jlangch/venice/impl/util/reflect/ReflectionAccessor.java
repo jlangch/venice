@@ -484,13 +484,14 @@ public class ReflectionAccessor {
 			throw new JavaMethodInvocationException(
 					target == null
 						? String.format(
-							"Failed to invoke static method %s::%s(%s)",
-							method.getDeclaringClass().getName(),
+							"Failed to invoke static method %s(%s) on class %s",
 							method.getName(),
-							formatMethodArgTypes(method.getParameterTypes()))
+							formatMethodArgTypes(method.getParameterTypes()),
+							method.getDeclaringClass().getName())
 						: String.format(
-							"Failed to invoke method %s on target %s",
+							"Failed to invoke instance method %s(%s) on target %s",
 							method.getName(),
+							formatMethodArgTypes(method.getParameterTypes()),
 							target.getClass().getName()),
 					ex);
 		}
