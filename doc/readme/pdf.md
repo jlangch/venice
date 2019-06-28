@@ -83,6 +83,16 @@ t.b.d.
 t.b.d.
 
 
+## Custom fonts
+
+t.b.d.
+
+
+## Page footers
+
+t.b.d.
+
+
 ## Download required 3rd party libs
 
 ```clojure
