@@ -463,15 +463,21 @@ public class REPL {
 			final String colorID,
 			final Exception ex
 	) {
-		if (ex instanceof ValueException) {
-			print(terminal, colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
-			println(terminal, colorID, "Thrown value: " + Printer.pr_str(((ValueException)ex).getValue(), false));			
+		try {
+			if (ex instanceof ValueException) {
+				print(terminal, colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
+				println(terminal, colorID, "Thrown value: " + Printer.pr_str(((ValueException)ex).getValue(), false));			
+			}
+			else if (ex instanceof VncException) {
+				print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+			}
+			else {
+				print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
+			}
 		}
-		else if (ex instanceof VncException) {
-			print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
-		}
-		else {
-			print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
+		catch(Exception e) {
+			System.out.println("Internal REPL error while printing exception.");
+			e.printStackTrace();
 		}
 	}
 	
