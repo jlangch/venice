@@ -63,7 +63,7 @@ public class PdfRenderer {
 			final List<String> alternateBasePaths,
 			final Map<String,ByteBuffer> resources
 	) {
-		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {			
+		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			final ITextRenderer renderer = new ITextRenderer(DOTS_PER_POINT, DOTS_PER_PIXEL);
 
 			final ClasspathUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice());
@@ -109,7 +109,7 @@ public class PdfRenderer {
 		catch(SAXParseException ex) {
 			// Get an extract of the failure to simplify error analysis (+/- 10 lines)
 			final int lineNr = ex.getLineNumber();
-			final String excerpt = (lineNr == -1) ? null : extractLines(xhtml, Math.max(0, lineNr-10), lineNr+10);			
+			final String excerpt = (lineNr == -1) ? null : extractLines(xhtml, Math.max(0, lineNr-10), lineNr+10);
 			throw new RuntimeException(
 					String.format(
 							"Invalid XHTML template regarding XML validation.\nXML parser error: %s %s",
