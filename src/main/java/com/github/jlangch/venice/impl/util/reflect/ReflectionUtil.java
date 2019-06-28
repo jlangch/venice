@@ -54,7 +54,7 @@ public class ReflectionUtil {
 			try {
 				return Class.forName(name, true, contextClassLoader);
 			}
-			catch(Exception ex) {
+			catch(Throwable ex) {
 				// try next with current class loader
 			}
 		}
@@ -63,7 +63,7 @@ public class ReflectionUtil {
 		try {
 			return Class.forName(name);
 		}
-		catch(Exception ex) {
+		catch(Throwable ex) {
 			throw new RuntimeException(String.format("Failed to load class '%s'", name));
 		}
 	}	

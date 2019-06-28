@@ -250,6 +250,10 @@ public class REPL {
 				printex(terminal, "error", ex);
 				continue;
 			}
+			catch (Throwable ex) {
+				System.out.println("Error.");
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -475,7 +479,7 @@ public class REPL {
 				print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
 			}
 		}
-		catch(Exception e) {
+		catch(Throwable e) {
 			System.out.println("Internal REPL error while printing exception.");
 			e.printStackTrace();
 		}
