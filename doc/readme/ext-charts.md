@@ -2,8 +2,9 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
- - org.knowm.xchart:xchart:3.5.4
+- org.knowm.xchart:xchart:3.5.4
 
+Examples:
 
 - [Line Chart Example](#line-chart-example)
 - [Area Chart Example](#area-chart-example)
