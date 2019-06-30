@@ -5,6 +5,15 @@ Venice supports rendering charts if the [XChart](https://knowm.org/open-source/x
  - org.knowm.xchart:xchart:3.5.4
 
 
+- [Line Chart Example](#line-chart-example)
+- [Area Chart Example](#area-chart-example)
+- [Scatter Chart Example](#scatter-chart-example)
+- [Bubble Chart Example](#bubble-chart-example)
+- [Bar Chart Example](#bar-chart-example)
+- [Pie Chart Example](#pie-chart-example)
+- [Download Libraries](#download-required-3rd-party-libs)
+
+
 #### Line Chart Example
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/line-chart.png" width="300">
