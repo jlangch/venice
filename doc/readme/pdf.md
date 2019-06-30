@@ -14,7 +14,8 @@ Flying Saucer documentation is available in the user guide, linked from their we
 - [Introduction Example](#introduction-example)
 - [Tables](#tables)
 - [Embedded Images](#embedded-images)
-- [Fonts](#custom-fonts)
+- [Custom Fonts](#custom-fonts)
+- [Table of Content](#table-of-content)
 - [Page Footers](#page-footers)
 - [Watermarks](#watermarks)
 - [Download Libraries](#download-required-3rd-party-libs)
@@ -91,6 +92,11 @@ t.b.d.
 
 
 ## Custom Fonts
+
+t.b.d.
+
+
+## Table of Content
 
 t.b.d.
 
