@@ -14,14 +14,24 @@ Flying Saucer documentation is available in the user guide, linked from their we
 
 ## PDF Generation
 
-- [Introduction Example](#introduction-example)
-- [Tables](#tables)
-- [Embedded Images](#embedded-images)
-- [Custom Fonts](#custom-fonts)
-- [Table of Content](#table-of-content)
-- [Page Footers](#page-footers)
-- [Watermarks](#watermarks)
-- [Download Libraries](#download-required-3rd-party-libs)
+The PDF generation workflow is built on two steps:
+
+1. Build the document's XHTML representation. The XHTML can be easily produced by Venice's Kira template engine
+
+2. Generate the PDF from the XHTML
+
+
+References:
+
+* [Kira Template](ext-kira.md)
+* [Introduction Example](#introduction-example)
+* [Tables](#tables)
+* [Embedded Images](#embedded-images)
+* [Custom Fonts](#custom-fonts)
+* [Table of Content](#table-of-content)
+* [Page Footers](#page-footers)
+* [Watermarks](#watermarks)
+* [Download Libraries](#download-required-3rd-party-libs)
 
 
 
