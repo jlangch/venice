@@ -12,7 +12,7 @@ Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layou
 Flying Saucer documentation is available in the user guide, linked from their website at [Flying Saucer](https://code.google.com/archive/p/flying-saucer/)
 
 
-## PDF Generator
+## PDF Generation
 
 - [Introduction Example](#introduction-example)
 - [Tables](#tables)
