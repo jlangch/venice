@@ -27,7 +27,7 @@ References:
 * [Introduction Example](#introduction-example)
 * [Tables](#tables)
 * [Embedded Images](#embedded-images)
-* [Custom Fonts](#custom-fonts)
+* [Custom Embedded Fonts](#custom-embedded-fonts)
 * [Table of Content](#table-of-content)
 * [Page Footers](#page-footers)
 * [Watermarks](#watermarks)
@@ -104,7 +104,7 @@ t.b.d.
 t.b.d.
 
 
-## Custom Fonts
+## Custom Embedded Fonts
 
 t.b.d.
 
