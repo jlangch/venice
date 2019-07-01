@@ -2,15 +2,16 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
- - org.knowm.xchart:xchart:3.5.4
+- org.knowm.xchart:xchart:3.5.4
 
+Examples:
 
-- [Line Chart Example](#line-chart-example)
-- [Area Chart Example](#area-chart-example)
-- [Scatter Chart Example](#scatter-chart-example)
-- [Bubble Chart Example](#bubble-chart-example)
-- [Bar Chart Example](#bar-chart-example)
-- [Pie Chart Example](#pie-chart-example)
+- [Line Chart](#line-chart-example)
+- [Area Chart](#area-chart-example)
+- [Scatter Chart](#scatter-chart-example)
+- [Bubble Chart](#bubble-chart-example)
+- [Bar Chart](#bar-chart-example)
+- [Pie Chart](#pie-chart-example)
 - [Download Libraries](#download-required-3rd-party-libs)
 
 
