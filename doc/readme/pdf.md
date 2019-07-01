@@ -187,7 +187,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
            div.title  {
              font-family: sans-serif;
              margin-top: 3cm;
-             font-weight: 800;
+             font-weight: 700;
            }
            div.serif  {
              font-family: serif;
