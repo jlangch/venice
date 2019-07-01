@@ -84,7 +84,10 @@ public class LoremIpsum {
 		final StringBuilder sb = new StringBuilder();		
 		for(int ii=0; ii<len; ii++) {
 			sb.append(LOREM_IPSUM[ii % LOREM_IPSUM.length]);
-			sb.append("\n");
+			
+			if (ii < (len-1)) {
+				sb.append("\n");
+			}
 		}
 		
 		return sb.toString();
