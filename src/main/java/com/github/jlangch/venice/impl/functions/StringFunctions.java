@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
@@ -53,6 +54,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.HexFormatter;
 import com.github.jlangch.venice.impl.util.HexUtil;
+import com.github.jlangch.venice.impl.util.LoremIpsum;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.Tuple2;
 
@@ -1096,6 +1098,48 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_lorem_ipsum = 
+			new VncFunction(
+					"str/lorem-ipsum", 
+					VncFunction
+						.meta()
+						.module("str")
+						.arglists("(str/lorem-ipsum & options)")		
+						.doc(
+							"Creates an arbitrary length Lorem Ipsum text. \n\n" +
+							"Options: \n" +
+							"  :chars n - returns n characters (limited to " + LoremIpsum.getMaxChars() + ") \n" +
+							"  :paragraphs n - returns n paragraphs (limited to " + LoremIpsum.getMaxParagraphs())
+						.examples
+							("(str/lorem-ipsum :chars 250)",
+							 "(str/lorem-ipsum :paragraphs 1)")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertMinArity("str/lorem-ipsum", args, 0);
+	
+					final VncHashMap options = VncHashMap.ofAll(args);
+
+					final VncVal chars = options.get(new VncKeyword("chars"));
+					if (Types.isVncLong(chars)) {
+						return new VncString(
+								LoremIpsum.loremIpsum_Chars(
+										Coerce.toVncLong(chars).getValue().intValue()));
+					}
+
+					final VncVal paragraphs = options.get(new VncKeyword("paragraphs"));
+					if (Types.isVncLong(paragraphs)) {
+						return new VncString(
+								LoremIpsum.loremIpsum_Paragraphs(
+										Coerce.toVncLong(paragraphs).getValue().intValue()));
+					}
+										
+					throw new VncException("Function 'str/lorem-ipsum' invalid options");
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction str_bytebuf_to_hex = 
 		new VncFunction(
 				"str/bytebuf-to-hex", 
@@ -1421,6 +1465,7 @@ public class StringFunctions {
 					Tuple2.of("'", "&apos;"),
 					Tuple2.of("\u00A0", "&nbsp;"));
 
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1459,6 +1504,7 @@ public class StringFunctions {
 					.put("str/strip-margin",		  str_strip_margin)
 					.put("str/repeat",				  str_repeat)
 					.put("str/char",				  str_char)
+					.put("str/lorem-ipsum",			  str_lorem_ipsum)				
 					.put("str/hex-to-bytebuf",		  str_hex_to_bytebuf)
 					.put("str/bytebuf-to-hex",		  str_bytebuf_to_hex)					
 					.put("str/format-bytebuf",		  str_format_bytebuf)					

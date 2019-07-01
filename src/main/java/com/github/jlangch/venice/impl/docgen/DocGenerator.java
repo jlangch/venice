@@ -251,7 +251,8 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/truncate"));
 		use.addItem(getDocItem("str/char"));
-
+		use.addItem(getDocItem("str/lorem-ipsum"));
+		
 		final DocSection regex = new DocSection("Regex");
 		strings.addSection(regex);
 		regex.addItem(getDocItem("match?"));
