@@ -151,9 +151,17 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
          <style type="text/css">
-            @font-face {
+           @font-face {
               font-family: 'Open Sans';
               src: url('OpenSans-Regular.ttf');
+              font-style: normal;
+              font-weight: normal;
+              -fs-pdf-font-embed: embed;
+              -fs-pdf-font-encoding: Identity-H;
+           }
+           @font-face {
+              font-family: 'Open Sans Bold';
+              src: url('OpenSans-Bold.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -189,7 +197,10 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
            }
            div.open-sans  {
              font-family: 'Open Sans', sans-serif;
-          }
+           }
+           div.open-sans-bold  {
+             font-family: 'Open Sans Bold', sans-serif;
+           }
            div.source-code-pro  {
              font-family: 'Source Code Pro', sans-serif;
            }
@@ -205,6 +216,9 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
          
          <div class="title">Open Sans</div>
          <div class="open-sans">${ (kira/escape-xml text) }$</div>
+         
+         <div class="title">Open Sans Bold</div>
+         <div class="open-sans-bold">${ (kira/escape-xml text) }$</div>
         
          <div class="title">Source Code Pro</div>
          <div class="source-code-pro">${ (kira/escape-xml text) }$</div>
