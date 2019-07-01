@@ -104,6 +104,37 @@ t.b.d.
 
 ## Custom Embedded Fonts
 
+The PDF renderer loads custom True-Type fonts from the classpath.
+
+To load fonts from classpath root `classpath:///` or from an alternative 
+base path `/fonts` call the renderer:
+
+```clojure
+(. :PdfRenderer :render xhtml "classpath:///" ["fonts" "images"])
+```
+
+It's best to package the font files in a JAR like `fonts.jar` and place the JAR
+on the Venice classpath.
+
+A `fonts.jar` file containing the OFL fonts 'Open Sans' and 'Source Code Pro'
+may look like:
+
+```text
+   Length         Date/Time Name
+----------  ---------------- ----
+         0  2019-07-01 13:20 fonts/
+    213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
+    212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
+    212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
+    224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
+    217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
+    211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
+```
+
+A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub 
+[Demo Fonts](https://github.com/jlangch/venice/blob/master/doc/pdfs/fonts.jar)
+
+
 ```clojure
 (do 
   (import :com.github.jlangch.venice.pdf.PdfRenderer)
@@ -179,26 +210,13 @@ t.b.d.
      </html>
      """))
 
+  ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
   
-  ; Evaluate the template, render it as PDF, and save it.
-  ; Loads the True-Type fonts form the classpath: /fonts/*.ttf
-  ;
-  ; Create a 'fonts.jar' with the content:
-  ;         Length         Date/Time Name
-  ;     ----------  ---------------- ----
-  ;              0  2019-07-01 13:20 fonts/
-  ;         213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
-  ;         212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
-  ;         212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
-  ;         224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
-  ;         217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
-  ;         211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
-  ; and put it on the classpath
-  
+  ; Evaluate the template, render it as PDF, and save it.  
   (-<> data
        (kira/eval template ["${" "}$"] <>)
-       (. :PdfRenderer :render <> "classpath:///" ["fonts"])
+       (. :PdfRenderer :render <> "classpath:///" ["fonts" "images"])
        (io/spit "test.pdf" <>))
 )
 ```
