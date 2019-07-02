@@ -89,10 +89,10 @@ References:
   (def data { :title "Hello, world"
               :timestamp (time/local-date 2000 8 1) } )
 
-  ; evaluate the template, render it as PDF, and save it
+  ; evaluate the template, render, and save it
   (->> data
        (kira/eval template ["${" "}$"])
-       (. :PdfRenderer :render)
+       (pdf/render)
        (io/spit "test.pdf"))
 )
 ```
@@ -246,10 +246,10 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
   
-  ; Evaluate the template, render it as PDF, and save it.  
+  ; Evaluate the template, render, and save it.  
   (-<> data
        (kira/eval template ["${" "}$"] <>)
-       (. :PdfRenderer :render <> "classpath:///" ["fonts" "images"])
+       (pdf/render <> "classpath:///" ["fonts" "images"])
        (io/spit "test.pdf" <>))
 )
 ```

@@ -59,5 +59,8 @@ public class Modules {
 	}
 
 	private static final Set<String> reserved = 
-			new HashSet<>(Arrays.asList("core", "time", "str", "io", "shell", "system", "venice"));
+			new HashSet<>(Arrays.asList(
+					"core", "time", "str", "io", 
+					"json", "pdf", "shell", "system", 
+					"venice"));
 }

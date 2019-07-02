@@ -52,6 +52,7 @@ public class Functions {
 		functions.putAll(ScheduleFunctions.ns);
 		functions.putAll(ConcurrencyFunctions.ns);
 		functions.putAll(JsonFunctions.ns);
+		functions.putAll(PdfFunctions.ns);
 	}
 
 }
