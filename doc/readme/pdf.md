@@ -62,7 +62,13 @@ References:
              font-weight: 400;
            }
            div.title  {
-             margin-top: 3cm;
+             margin: 3cm 0 5cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.head  {
+             margin-top: 1cm;
              text-align: center;
            }
            div.date  {
@@ -73,7 +79,8 @@ References:
        </head>
        
        <body>
-         <div class="title">${ (kira/escape-xml title) }$</div>
+         <div class="title">Introduction Example</div>
+         <div class="head">${ (kira/escape-xml title) }$</div>
          <div class="date">${ (kira/escape-xml timestamp format-ts) }$</div>
        </body>
      </html>
@@ -90,6 +97,7 @@ References:
 )
 ```
 
+[PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/introduction-example.pdf)
 
 
 ## Tables
@@ -182,11 +190,18 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
            }
            body {
              background-color: white;
+             font-family: sans-serif;
              font-weight: 400;
            }
            div.title  {
+             margin: 3cm 0 5cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.head  {
              font-family: sans-serif;
-             margin-top: 3cm;
+             margin-top: 1cm;
              font-weight: 700;
            }
            div.serif  {
@@ -208,19 +223,21 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
        </head>
        
        <body>
-         <div class="title">Sans Serif</div>
+         <div class="title">Custom Embedded Fonts</div>
+
+         <div class="head">Sans Serif</div>
          <div class="sans-serif">${ (kira/escape-xml text) }$</div>
 
-         <div class="title">Serif</div>
+         <div class="head">Serif</div>
          <div class="serif">${ (kira/escape-xml text) }$</div>
          
-         <div class="title">Open Sans</div>
+         <div class="head">Open Sans</div>
          <div class="open-sans">${ (kira/escape-xml text) }$</div>
          
-         <div class="title">Open Sans Bold</div>
+         <div class="head">Open Sans Bold</div>
          <div class="open-sans-bold">${ (kira/escape-xml text) }$</div>
         
-         <div class="title">Source Code Pro</div>
+         <div class="head">Source Code Pro</div>
          <div class="source-code-pro">${ (kira/escape-xml text) }$</div>
        </body>
      </html>
@@ -236,6 +253,10 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
        (io/spit "test.pdf" <>))
 )
 ```
+
+[PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/custom-embedded-fonts.pdf)
+
+
 
 
 ## Table of Content
