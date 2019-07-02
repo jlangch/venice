@@ -97,7 +97,7 @@ References:
 )
 ```
 
-[PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/introduction-example.pdf)
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/introduction-example.pdf)
 
 
 ## Tables
@@ -254,7 +254,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
 )
 ```
 
-[PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/custom-embedded-fonts.pdf)
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/custom-embedded-fonts.pdf)
 
 
 
