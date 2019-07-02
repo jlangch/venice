@@ -114,14 +114,17 @@ t.b.d.
 
 The PDF renderer loads custom True-Type fonts from the classpath.
 
-To load fonts from classpath root path `classpath:///` or from an alternative 
-base path `/fonts` call the renderer:
+The font files are search on the specified base-url `classpath:///` and 
+optional alternative base paths `fonts`.
+
+_Note: alternative base paths are always relative to the specified root path_
+
+Search on  classpath `/`, `/fonts`, and `/images`:
 
 ```clojure
 (. :PdfRenderer :render xhtml "classpath:///" ["fonts" "images"])
 ```
 
-_Note: alternative base paths are always relative to the root path_
 
 It's best to package the font files in a JAR like `fonts.jar` and place the JAR
 on the Venice classpath.
