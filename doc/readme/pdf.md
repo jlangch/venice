@@ -119,7 +119,7 @@ optional alternative base paths (e.g. `fonts`).
 
 _Note: alternative base paths are always relative to the specified base url_
 
-Search on  classpath `/*.ttf`, `/fonts/*.ttf`, and `/images/*.ttf`:
+Render the _xhtml_ and search font files on the classpath `/*.ttf`, `/fonts/*.ttf`, and `/images/*.ttf`:
 
 ```clojure
 (. :PdfRenderer :render xhtml "classpath:///" ["fonts" "images"])
