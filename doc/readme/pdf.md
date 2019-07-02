@@ -114,8 +114,8 @@ t.b.d.
 
 The PDF renderer loads custom True-Type fonts from the classpath.
 
-The font files are search on the specified base-url `classpath:///` and 
-optional alternative base paths `fonts`.
+The font files are searched on the specified base-url (e.g. `classpath:///`) and 
+optional alternative base paths (e.g. `fonts`).
 
 _Note: alternative base paths are always relative to the specified root path_
 
