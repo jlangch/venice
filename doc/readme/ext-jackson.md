@@ -26,3 +26,18 @@ The Jackson _jdk8_ module is loaded automatically if it is available
    (jackson/parse """{"a": 100, "b": 100, "c": [10,20,30]}""")
    (jackson/parse """[{"a": 100,"b": 100}, {"a": 200, "b": 200}]"""))
 ```
+
+
+
+#### Download required 3rd party libs
+
+```clojure
+(do
+  (load-module :maven)
+  
+  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9"))
+  (maven/download "com.fasterxml.jackson.core:jackson-databind:2.9.9"))
+  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9"))
+  (maven/download "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9"))
+```
+
