@@ -421,8 +421,6 @@ t.b.d.
 (do 
   (load-module :kira)
   
-  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
-  
   ; define the template
   (def template (str/strip-indent """\
      <?xml version="1.0" encoding="UTF-8"?>
@@ -446,20 +444,20 @@ t.b.d.
              font-weight: 600;
            }
            div.text  {
-             margin-top: 3cm;
+             margin-top: 4cm;
            }
          </style>
        </head>
        
        <body>
          <div class="title">Watermark Example</div>
-    		<div style="page-break-before: always;"/>
+         <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
-    		<div style="page-break-before: always;"/>
+         <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
-    		<div style="page-break-before: always;"/>
+         <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
-    		<div style="page-break-before: always;"/>
+         <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
        </body>
      </html>
