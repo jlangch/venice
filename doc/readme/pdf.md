@@ -318,7 +318,7 @@ References:
 
   (def data { :title "Hello, world" } )
   
-  (def memory-resources { "/chart_1" (chart) }} )
+  (def memory-resources { "/chart_1" (chart) } )
 
   ; evaluate the template, render, and save it
   (-<> data
@@ -338,7 +338,7 @@ References:
 
 The PDF renderer loads custom True-Type fonts from the classpath.
 
-The font files are searched on the specified base url (e.g. `classpath:///`) 
+The font files are searched on the specified base url (e.g. `classpath:/`) 
 and on optional alternative base paths (e.g. `fonts`).
 
 _Note: alternative base paths are always relative to the specified base url_
@@ -347,7 +347,7 @@ To render an _xhtml_ and search font files on the classpath `/*.ttf`, `/fonts/*.
 and `/images/*.ttf` run:
 
 ```clojure
-(pdf/render xhtml "classpath:///" ["fonts" "images"])
+(pdf/render xhtml "classpath:/" ["fonts" "images"])
 ```
 
 
@@ -475,7 +475,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
   ; Evaluate the template, render, and save it.  
   (-<> data
        (kira/eval template ["${" "}$"] <>)
-       (pdf/render <> "classpath:///" ["fonts" "images"])
+       (pdf/render <> "classpath:/" ["fonts" "images"])
        (io/spit "fonts-example.pdf" <>))
 )
 ```

@@ -201,7 +201,7 @@ public class PdfFunctions {
 		return paths
 			      .getList()
 			      .stream()
-			      .map(i -> i.toString())
+			      .map(i -> Coerce.toVncString(i).getValue())
 			      .collect(Collectors.toList());
 	}
 		
