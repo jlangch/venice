@@ -430,9 +430,9 @@ public class CoreFunctions {
 					.arglists("(string? x)")		
 					.doc("Returns true if x is a string")
 					.examples(
-						"(bytebuf? (bytebuf [1 2]))",
-						"(bytebuf? [1 2])",
-						"(bytebuf? nil)")
+						"(string? \"abc\")",
+						"(string? 1)",
+						"(string? nil)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
