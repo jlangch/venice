@@ -40,7 +40,9 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.pdf.HtmlColor;
 import com.github.jlangch.venice.pdf.PdfRenderer;
@@ -106,10 +108,13 @@ public class PdfFunctions {
 				VncFunction
 					.meta()
 					.module("pdf")
-					.arglists("(pdf/watermark pdf text & options)")		
+					.arglists(
+						"(pdf/watermark pdf options-map)",		
+						"(pdf/watermark pdf & options)")		
 					.doc(
 						"Adds a watermark text to the PDF pages.\n\n" +
 						"Options: \n" +
+						"  :text t              - watermark text (string), defaults to \"WATERMARK\" \n" +
 						"  :font-size n         - font size (double), defaults to 24.0 \n" +
 						"  :font-char-spacing n - font character spacing (double), defaults to 0.0 \n" +
 						"  :color c             - font color (HTML color string), defaults to #000000 \n" +
@@ -124,10 +129,12 @@ public class PdfFunctions {
 				assertMinArity("pdf/watermark", args, 2);
 				
 				final VncVal pdf = args.first();
-				final VncVal text = args.second();
+				
+				final VncMap options = Types.isVncMap(args.second())
+										? Coerce.toVncMap(args.second())
+										: VncHashMap.ofAll(args.slice(1));
 
-				final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-
+				final VncVal text = options.get(new VncKeyword("text", new VncString("WATERMARK"))); 
 				final VncVal fontSize = options.get(new VncKeyword("font-size", new VncDouble(24.0))); 
 				final VncVal fontCharSpacing = options.get(new VncKeyword("font-char-spacing", new VncDouble(0.0))); 
 				final VncVal color = options.get(new VncKeyword("color", new VncString("#000000"))); 

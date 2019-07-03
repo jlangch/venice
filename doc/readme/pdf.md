@@ -91,7 +91,7 @@ References:
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
-       (io/spit "inroduction-example.pdf"))
+       (io/spit "introduction-example.pdf"))
 )
 ```
 
@@ -417,7 +417,79 @@ t.b.d.
 
 ## Watermarks
 
-t.b.d.
+```clojure
+(do 
+  (load-module :kira)
+  
+  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+  
+  ; define the template
+  (def template (str/strip-indent """\
+     <?xml version="1.0" encoding="UTF-8"?>
+     <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+       <head>
+         <style type="text/css">
+           @page {
+             size: A4 portrait;
+             margin: 2cm 1.0cm;
+             padding: 0;
+           }
+           body {
+             background-color: white;
+             font-family: sans-serif;
+             font-weight: 400;
+           }
+           div.title  {
+             margin: 3cm 0 5cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.text  {
+             margin-top: 3cm;
+           }
+         </style>
+       </head>
+       
+       <body>
+         <div class="title">Watermark Example</div>
+    		<div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+    		<div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+    		<div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+    		<div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+       </body>
+     </html>
+     """))
+
+  ; create a Lorem Ipsum text block
+  (def data { :text (str/lorem-ipsum :paragraphs 1) } )
+  
+  (def watermark { :text              "CONFIDENTIAL"
+                   :font-size         64.0
+                   :font-char-spacing 10.0
+                   :color             "#000000"
+                   :opacity           0.4
+                   :angle             45.0
+                   :over-content      true
+                   :skip-top-pages    1
+                   :skip-bottom-pages 0 })
+
+  ; evaluate the template, render, and save it
+  (-<> data
+       (kira/eval template ["${" "}$"] <>)
+       (pdf/render <>)
+       (pdf/watermark <> watermark)
+       (io/spit "watermark-example.pdf" <>))
+)
+```
+
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/watermark-example.pdf)
+
+[top](#pdf-generation)
 
 
 ## Download required 3rd party libs
