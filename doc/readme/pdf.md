@@ -51,7 +51,7 @@ References:
          <style type="text/css">
            @page {
              size: A4 portrait;
-             margin: 2cm 1.0cm;
+             margin: 2cm 1cm;
              padding: 0;
            }
            body {
@@ -329,7 +329,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
            }
            @page {
              size: A4 portrait;
-             margin: 2cm 1.0cm;
+             margin: 2cm 1cm;
              padding: 0;
            }
            body {
@@ -424,14 +424,14 @@ t.b.d.
          <style type="text/css">
            @page :first {
              size: A4 portrait;
-             margin: 2cm 1.0cm;
+             margin: 2cm 1cm;
              padding: 0;
              @bottom-left { content: element(footer_first); }
              @bottom-right { }
            }
            @page {
              size: A4 portrait;
-             margin: 2cm 1.0cm;
+             margin: 2cm 1cm;
              padding: 0;
              @bottom-left { content: element(footer_left); }
              @bottom-right { content: element(footer_right); }
@@ -534,7 +534,7 @@ t.b.d.
          <style type="text/css">
            @page {
              size: A4 portrait;
-             margin: 2cm 1.0cm;
+             margin: 2cm 1cm;
              padding: 0;
            }
            body {
