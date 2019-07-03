@@ -156,7 +156,7 @@ References:
                <td>${ (kira/escape-xml (nth p 1)) }$</td>
                <td>${ (kira/escape-xml (nth p 2)) }$</td>
                <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4) format-ts) }$</td>
+               <td>${ (kira/escape-xml (nth p 4) (if (string? (nth p 4)) identity format-ts)) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
@@ -182,7 +182,7 @@ References:
 )
 ```
 
-[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/introduction-example.pdf)
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/tables-example.pdf)
 
 [top](#pdf-generation)
 
