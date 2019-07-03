@@ -480,7 +480,7 @@ t.b.d.
          <div id="footer_left"><hr/>${ (kira/escape-xml footer-left) }$</div>
          <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
 
-         <div class="title">Watermark Example</div>
+         <div class="title">Footer Example</div>
          
          <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
@@ -511,7 +511,7 @@ t.b.d.
   (-<> data
        (kira/eval template ["${" "}$"] <>)
        (pdf/render <>)
-        (io/spit "footer-example.pdf" <>))
+       (io/spit "footer-example.pdf" <>))
 )
 ```
 
