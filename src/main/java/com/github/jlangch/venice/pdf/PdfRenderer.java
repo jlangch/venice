@@ -48,6 +48,13 @@ public class PdfRenderer {
 	) {
 		return render(xhtml, null, null, null);
 	}
+	
+	public static ByteBuffer render(
+			final String xhtml,
+			final Map<String,ByteBuffer> resources
+	) {
+		return render(xhtml, null, null, resources);
+	}
 
 	public static ByteBuffer render(
 			final String xhtml,  

@@ -26,10 +26,12 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinAr
 
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -41,6 +43,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -64,12 +68,14 @@ public class PdfFunctions {
 					.arglists(
 						"(pdf/render xhtml)",
 						"(pdf/render xhtml base-url)",
-						"(pdf/render xhtml base-url alternate-base-paths)")		
+						"(pdf/render xhtml resources)",
+						"(pdf/render xhtml base-url alternate-base-paths)",
+						"(pdf/render xhtml base-url alternate-base-paths resources)")		
 					.doc("Renders a PDF.")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/render", args, 1, 2, 3);
+				assertArity("pdf/render", args, 1, 2, 3, 4);
 				
 				if (args.size() == 1) {
 					return new VncByteBuffer(
@@ -77,25 +83,39 @@ public class PdfFunctions {
 											Coerce.toVncString(args.first()).getValue()));
 				}
 				else if (args.size() == 2) {
-					return new VncByteBuffer(
-									PdfRenderer.render(
-											Coerce.toVncString(args.first()).getValue(),
-											Coerce.toVncString(args.second()).getValue(),
-											null));
+					if (Types.isVncMap(args.second())) {
+						return new VncByteBuffer(
+								PdfRenderer.render(
+										Coerce.toVncString(args.first()).getValue(),
+										mapResources((VncMap)args.second())));
+					}
+					else if (Types.isVncString(args.second())) {
+						return new VncByteBuffer(
+								PdfRenderer.render(
+										Coerce.toVncString(args.first()).getValue(),
+										Coerce.toVncString(args.second()).getValue(),
+										null));
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'pdf/render' does not allow %s as 2nd argument",
+								Types.getType(args.second())));
+					}
 				}
-				else {
-					final List<String> alternateBasePaths = 
-							Coerce.toVncSequence(args.third())
-							      .getList()
-							      .stream()
-							      .map(i -> i.toString())
-							      .collect(Collectors.toList());
-					
+				else if (args.size() == 3) {
 					return new VncByteBuffer(
 							PdfRenderer.render(
 									Coerce.toVncString(args.first()).getValue(),
 									Coerce.toVncString(args.second()).getValue(),
-									alternateBasePaths));
+									mapAlternateBasePaths(Coerce.toVncSequence(args.third()))));
+				}
+				else {	
+					return new VncByteBuffer(
+							PdfRenderer.render(
+									Coerce.toVncString(args.first()).getValue(),
+									Coerce.toVncString(args.second()).getValue(),
+									mapAlternateBasePaths(Coerce.toVncSequence(args.third())),
+									mapResources(Coerce.toVncMap(args.nth(3)))));
 				}
 			}
 	
@@ -177,7 +197,24 @@ public class PdfFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+	private static List<String> mapAlternateBasePaths(final VncSequence paths) {
+		return paths
+			      .getList()
+			      .stream()
+			      .map(i -> i.toString())
+			      .collect(Collectors.toList());
+	}
 		
+	private static Map<String,ByteBuffer> mapResources(final VncMap resourceMap) {
+		final Map<String,ByteBuffer> resources = new HashMap<>();
+		for (VncMapEntry entry : resourceMap.entries()) {
+			resources.put(
+				Coerce.toVncString(entry.getKey()).getValue(), 
+				Coerce.toVncByteBuffer(entry.getValue()).getValue());
+		}		
+		return resources;
+	}
+	
 		
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
