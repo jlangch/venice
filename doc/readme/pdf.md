@@ -412,7 +412,112 @@ t.b.d.
 
 ## Page Footers
 
-t.b.d.
+```clojure
+(do 
+  (load-module :kira)
+  
+  ; define the template
+  (def template (str/strip-indent """\
+     <?xml version="1.0" encoding="UTF-8"?>
+     <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+       <head>
+         <style type="text/css">
+           @page :first {
+             size: A4 portrait;
+             margin: 2cm 1.0cm;
+             padding: 0;
+             @bottom-left { content: element(footer_first); }
+             @bottom-right { }
+           }
+           @page {
+             size: A4 portrait;
+             margin: 2cm 1.0cm;
+             padding: 0;
+             @bottom-left { content: element(footer_left); }
+             @bottom-right { content: element(footer_right); }
+           }
+           body {
+             background-color: white;
+             font-family: sans-serif;
+             font-weight: 400;
+           }
+           div.title  {
+             margin: 3cm 0 5cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.text  {
+             margin-top: 1cm;
+           }
+           span.page:before {
+             content: counter(page);
+           }
+           span.pagecount:before {
+             content: counter(pages); 
+           }
+           #footer_first {
+             position: running(footer_first);
+             font-size: 8pt;
+             text-align: center;
+           }
+           #footer_left {
+             position: running(footer_left);
+             text-align: left; 
+           }
+
+           #footer_right {
+             position: running(footer_right);
+             text-align: right; 
+             padding-right: 2mm;
+           }
+         </style>
+       </head>
+       
+       <body>
+         <!-- Footer -->
+         <div id="footer_first"><hr/>${ (kira/escape-xml footer-front-page) }$</div>
+         <div id="footer_left"><hr/>${ (kira/escape-xml footer-left) }$</div>
+         <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
+
+         <div class="title">Watermark Example</div>
+         
+         <div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         
+         <div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         
+         <div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         
+         <div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+       </body>
+     </html>
+     """))
+
+  ; create a Lorem Ipsum text block
+  (def data { :footer-front-page "Aarestrasse 51, 3012 Bern, Tel. 099 100 20 30, Fax 099 100 20 31, info@foo.ch, www.foo.ch"
+              :footer-left "Demo"
+              :text (str/lorem-ipsum :paragraphs 1) } )
+  
+
+  ; evaluate the template, render, and save it
+  (-<> data
+       (kira/eval template ["${" "}$"] <>)
+       (pdf/render <>)
+        (io/spit "footer-example.pdf" <>))
+)
+```
+
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/footer-example.pdf)
+
+[top](#pdf-generation)
 
 
 ## Watermarks
@@ -444,20 +549,28 @@ t.b.d.
              font-weight: 600;
            }
            div.text  {
-             margin-top: 4cm;
+             margin-top: 1cm;
            }
          </style>
        </head>
        
        <body>
          <div class="title">Watermark Example</div>
+         
          <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         
          <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         
          <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${ (kira/escape-xml text) }$</div>
+         
          <div style="page-break-before: always;"/>
+         <div class="text">${ (kira/escape-xml text) }$</div>
          <div class="text">${ (kira/escape-xml text) }$</div>
        </body>
      </html>
