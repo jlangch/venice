@@ -144,7 +144,8 @@ References:
                <td>${ (kira/escape-xml (nth p 1)) }$</td>
                <td>${ (kira/escape-xml (nth p 2)) }$</td>
                <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4) format-birth-date) }$</td>
+               <td>${ (kira/escape-xml (nth p 4) str) }$</td>
+               <td>${ (kira/escape-xml (nth p 5) format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
