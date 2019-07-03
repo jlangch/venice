@@ -93,16 +93,99 @@ References:
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
-       (io/spit "test.pdf"))
+       (io/spit "inroduction-example.pdf"))
 )
 ```
 
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/introduction-example.pdf)
 
+[top](#pdf-generation)
+
+
 
 ## Tables
 
-t.b.d.
+```clojure
+(do 
+  (import :com.github.jlangch.venice.pdf.PdfRenderer)
+  
+  (load-module :kira)
+
+  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+  
+  ; define the template
+  (def template (str/strip-indent """\
+     <?xml version="1.0" encoding="UTF-8"?>
+     <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+       <head>
+         <style type="text/css">
+           @page {
+             size: A4 portrait;
+             margin: 2cm 1.0cm;
+             padding: 0;
+           }
+           body {
+             background-color: white;
+             font-family: sans-serif;
+             font-weight: 400;
+           }
+           div.title  {
+             margin: 3cm 0 5cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.head  {
+             margin-top: 1cm;
+             text-align: center;
+           }
+           div.date  {
+             margin-top: 1cm;
+             text-align: center;
+           }
+         </style>
+       </head>
+       
+       <body>
+         <div class="title">Tables</div>
+         <table class="people">
+           <tbody>
+             ${ (kira/docoll persons (fn [p] (kira/emit }$
+             <tr>
+               <td>${ (kira/escape-xml (nth p 0)) }$</td>
+               <td>${ (kira/escape-xml (nth p 1)) }$</td>
+               <td>${ (kira/escape-xml (nth p 2)) }$</td>
+               <td>${ (kira/escape-xml (nth p 3)) }$</td>
+               <td>${ (kira/escape-xml (nth p 4) format-ts) }$</td>
+             </tr>
+             ${ ))) }$
+           </tbody>
+         </table>
+       </body>
+     </html>
+     """))
+
+  (def data {
+       :persons
+	       [ [ "Last Name" "First Name" "City"     "Gender" "Age" "Birthdate"]
+	         [ "Meier"     "Peter"      "Bern"       "m"     42    (time/local-date 1977 10 1) ] 
+	         [ "Schmid"    "Hans"       "Luzern"     "m"     56    (time/local-date 1963 8 12) ] 
+	         [ "Winter"    "Maria"      "Aarau"      "f"     23    (time/local-date 1996 4 8)  ] 
+	         [ "Halter"    "Carla"      "Zürich"     "f"      9    (time/local-date 2010 9 28) ] 
+	       ] } )
+
+  ; evaluate the template, render, and save it
+  (->> data
+       (kira/eval template ["${" "}$"])
+       (pdf/render)
+       (io/spit "tables-example.pdf"))
+)
+```
+
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/introduction-example.pdf)
+
+[top](#pdf-generation)
+
 
 
 ## Embedded Images
@@ -254,11 +337,13 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
   (-<> data
        (kira/eval template ["${" "}$"] <>)
        (pdf/render <> "classpath:///" ["fonts" "images"])
-       (io/spit "test.pdf" <>))
+       (io/spit "fonts-example.pdf" <>))
 )
 ```
 
-[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/custom-embedded-fonts.pdf)
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/fonts-example.pdf)
+
+[top](#pdf-generation)
 
 
 
