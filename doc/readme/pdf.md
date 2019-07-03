@@ -117,7 +117,7 @@ References:
          <style type="text/css">
            @page {
              size: A4 portrait;
-             margin: 2cm 1.0cm;
+             margin: 2cm 1cm;
              padding: 0;
            }
            body {
@@ -131,12 +131,82 @@ References:
              font-size: 24pt;
              font-weight: 600;
            }
+           table.people {
+             margin-top: 2cm;
+             width: 100%;
+             border-collapse: collapse;
+             border-spacing: 0px;
+             empty-cells: show;
+             vertical-align: top;
+             border: 1px solid #808080;
+             table-layout: fixed;
+             font-size: 9pt;
+           }
+           table.people > tbody > tr > td {
+             padding: 1mm;
+             word-wrap: break-word;
+             vertical-align: top;
+           }
+           table.people > tbody > tr:first-child {
+             font-weight: 600;
+             padding: 1mm;
+           }
+           table.people > tbody > tr > td:first-child {
+             width: 20%;
+           }
+           table.people > tbody > tr > td:nth-child(2) {
+             width: 20%;
+           }
+           table.people > tbody > tr > td:nth-child(3) {
+             width: 20%;
+           }
+           table.people > tbody > tr > td:nth-child(4) {
+             width: 10%;
+             text-align: center;
+           }
+           table.people > tbody > tr > td:nth-child(5) {
+             width: 10%;
+             text-align: right;
+           }
+           table.people > tbody > tr > td:nth-child(6) {
+             width: 20%;
+             text-align: right;
+           }
+           table.people1 > tbody > tr:first-child {
+             background-color: #E0E0E0;
+           }
+           table.people1 > tbody > tr > td {
+             border: 1px solid #CBCBCB;
+           }
+           table.people2 > tbody > tr > td {
+             border: 1px solid #CBCBCB;
+           }
+           table.people2 > tbody > tr:nth-child(2n+1) {
+             background-color: #F0F0F0;
+           }
+           table.people2 > tbody > tr:first-child {
+             background-color: #C0C0C0;
+           }
          </style>
        </head>
        
        <body>
          <div class="title">Tables</div>
-         <table class="people">
+         <table class="people people1">
+           <tbody>
+             ${ (kira/docoll persons (fn [p] (kira/emit }$
+             <tr>
+               <td>${ (kira/escape-xml (nth p 0)) }$</td>
+               <td>${ (kira/escape-xml (nth p 1)) }$</td>
+               <td>${ (kira/escape-xml (nth p 2)) }$</td>
+               <td>${ (kira/escape-xml (nth p 3)) }$</td>
+               <td>${ (kira/escape-xml (nth p 4)) }$</td>
+               <td>${ (kira/escape-xml (nth p 5) format-birth-date) }$</td>
+             </tr>
+             ${ ))) }$
+           </tbody>
+         </table>
+         <table class="people people2">
            <tbody>
              ${ (kira/docoll persons (fn [p] (kira/emit }$
              <tr>
