@@ -404,10 +404,153 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
 
 
 
-
 ## Table of Content
 
-t.b.d.
+```clojure
+(do 
+  (load-module :kira)
+  
+  ; define the template
+  (def template (str/strip-indent """\
+     <?xml version="1.0" encoding="UTF-8"?>
+     <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+       <head>
+         <!-- Bookmarks -->
+         <bookmarks>
+           <bookmark name="Chapter 1" href="#xil_1"/>   
+           <bookmark name="Chapter 2" href="#xil_2"/>
+           <bookmark name="Chapter 3" href="#xil_3"/>
+           <bookmark name="Chapter 4" href="#xil_4"/>
+         </bookmarks>
+       
+         <style type="text/css">
+           @page {
+             size: A4 portrait;
+             margin: 2cm 1cm;
+             padding: 0;
+           }
+           body {
+             background-color: white;
+             font-family: sans-serif;
+             font-weight: 400;
+           }
+           a:link, a:visited, a:hover, a:active {
+             text-decoration: none;
+             background-color: transparent;
+             color: #000000;
+           }
+           h2 {
+             color: #000000;
+             font-size: 18pt;
+             margin: 0 0 1cm 0;
+             padding: 0;
+           }
+           ol.toc {
+            list-style-type: none;
+           }
+           ol.toc ol,
+           ol.toc ol ol,
+           ol.toc ol ol ol,
+           ol.toc ol ol ol ol,
+           ol.toc ol ol ol ol ol,
+           ol.toc ol ol ol ol ol ol {
+             list-style-type: none;
+             padding-left: 0;
+             margin-left: 0;
+           }
+           .toc-title {
+             margin-top: 4cm;
+           }
+           .toc {
+             margin-top: 2cm;
+           }
+           .toc a::after {
+             content: leader('.') target-counter(attr(href), page);
+           }
+           .toc li {
+             padding-bottom: 6pt;
+           }
+           .toc li li,
+           .toc li li li,
+           .toc li li li li,
+           .toc li li li li li,
+           .toc li li li li li li {
+             padding-left: 0.6cm;
+             padding-bottom: 0;
+           }
+           div.page {
+             page-break-before: always;
+             margin: 0;
+             padding: 0;
+           }
+           div.title  {
+             margin: 3cm 0 5cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.text  {
+             margin-top: 1cm;
+           }
+         </style>
+       </head>
+       
+       <body>
+         <div class="title">Table of Content</div>
+
+         <div class="page">
+           <h2 class="toc-title">Content</h2>
+           <ol class="toc">
+             <li><a href="#xil_1">Chapter 1</a></li>
+             <li><a href="#xil_2">Chapter 2</a></li>
+             <li><a href="#xil_3">Chapter 3</a></li>
+             <li><a href="#xil_4">Chapter 4</a></li>
+           </ol>
+         </div>
+          
+         <div class="page">
+           <h2 id="xil_1">Chapter 1</h2>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+         </div>
+         
+         <div class="page">
+           <h2 id="xil_2">Chapter 2</h2>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+         </div>
+         
+         <div class="page">
+           <h2 id="xil_3">Chapter 3</h2>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+         </div>
+         
+         <div class="page">
+           <h2 id="xil_4">Chapter 4</h2>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${ (kira/escape-xml text) }$</div>
+         </div>
+       </body>
+     </html>
+     """))
+
+  ; create a Lorem Ipsum text block
+  (def data { :text (str/lorem-ipsum :paragraphs 1) } )
+  
+
+  ; evaluate the template, render, and save it
+  (-<> data
+       (kira/eval template ["${" "}$"] <>)
+       (pdf/render <>)
+       (io/spit "toc-example.pdf" <>))
+)
+```
+
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/toc-example.pdf)
+
+[top](#pdf-generation)
+
 
 
 ## Page Footers
@@ -465,7 +608,6 @@ t.b.d.
              position: running(footer_left);
              text-align: left; 
            }
-
            #footer_right {
              position: running(footer_right);
              text-align: right; 
@@ -518,6 +660,7 @@ t.b.d.
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/footer-example.pdf)
 
 [top](#pdf-generation)
+
 
 
 ## Watermarks
@@ -601,6 +744,7 @@ t.b.d.
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/watermark-example.pdf)
 
 [top](#pdf-generation)
+
 
 
 ## Download required 3rd party libs
