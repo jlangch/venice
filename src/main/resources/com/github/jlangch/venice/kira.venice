@@ -65,8 +65,10 @@
 
 (defn
   ^{ :doc (str/strip-indent """\
-        XML escapes a string and emits it. An optional function f transforms
-        the string before being escaped.""" ) }
+        XML escapes a string and emits it. If the passed data is not of 
+        type string it will be converted first to a string using the
+        'str' function.
+        An optional function f transforms the string before being escaped.""" ) }
   kira/escape-xml
   ([s]   (kira/escape-xml s identity))
   ([s f] (kira/emit (str/escape-xml (str (f s))))))
