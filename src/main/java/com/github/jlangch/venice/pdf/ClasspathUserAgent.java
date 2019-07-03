@@ -124,6 +124,17 @@ public class ClasspathUserAgent extends ITextUserAgent {
 			// [4] the resource has not been found
 			return null;
 		}
+		else if (isMemoryScheme(uri)) {
+			final String resource = stripMemoryScheme(uri);
+			
+			// try to get the resource from the cached resources
+			ByteBuffer data = cachedResources.get(resource);
+			if (data != null) {
+				return new ByteArrayInputStream(data.array());
+			}	
+			
+			return null; // the resource has not been found
+		}
 		else {
 			return super.resolveAndOpenStream(uri);
 		}
@@ -136,6 +147,14 @@ public class ClasspathUserAgent extends ITextUserAgent {
 	
 	private String stripClasspathScheme(final String uri) {
 		return uri.replaceFirst("^classpath:/*", "");
+	}
+
+	private boolean isMemoryScheme(final String uri) {
+		return uri.startsWith("memory:");
+	}
+	
+	private String stripMemoryScheme(final String uri) {
+		return uri.replaceFirst("^memory:", "");
 	}
 	
 	private String stripLeadingTrailingSlash(final String path) {

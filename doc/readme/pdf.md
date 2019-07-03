@@ -294,31 +294,37 @@ References:
              font-size: 24pt;
              font-weight: 600;
            }
-           div.head  {
+           div.chart {
              margin-top: 1cm;
-             text-align: center;
-           }
-           div.date  {
-             margin-top: 1cm;
-             text-align: center;
+             margin-left: 4cm;
+             margin-right: 4cm;
+             padding: 2mm;
+             border: 1px solid #C0C0C0;
+           }         
+           div.chart img {
+             width: 100%;
            }
          </style>
        </head>
        
        <body>
          <div class="title">Image Example</div>
-         <div class="head">${ (kira/escape-xml title) }$</div>
+         <div class="chart">
+           <img src="memory:/chart_1"/>
+         </div>
        </body>
      </html>
      """))
 
   (def data { :title "Hello, world" } )
+  
+  (def memory-resources { "/chart_1" (chart) }} )
 
   ; evaluate the template, render, and save it
-  (->> data
-       (kira/eval template ["${" "}$"])
-       (pdf/render)
-       (io/spit "image-example.pdf"))
+  (-<> data
+       (kira/eval template ["${" "}$"] <>)
+       (pdf/render <> memory-resources)
+       (io/spit "image-example.pdf" <>))
 )
 ```
 
