@@ -39,8 +39,6 @@ References:
 
 ```clojure
 (do 
-  (import :com.github.jlangch.venice.pdf.PdfRenderer)
-  
   (load-module :kira)
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
@@ -107,11 +105,9 @@ References:
 
 ```clojure
 (do 
-  (import :com.github.jlangch.venice.pdf.PdfRenderer)
-  
   (load-module :kira)
 
-  (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+  (defn format-birth-date [s] (if (string? s) s (time/format s "yyyy-MM-dd")))
   
   ; define the template
   (def template (str/strip-indent """\
@@ -135,14 +131,6 @@ References:
              font-size: 24pt;
              font-weight: 600;
            }
-           div.head  {
-             margin-top: 1cm;
-             text-align: center;
-           }
-           div.date  {
-             margin-top: 1cm;
-             text-align: center;
-           }
          </style>
        </head>
        
@@ -156,9 +144,9 @@ References:
                <td>${ (kira/escape-xml (nth p 1)) }$</td>
                <td>${ (kira/escape-xml (nth p 2)) }$</td>
                <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4) (if (string? (nth p 4)) identity format-ts)) }$</td>
+               <td>${ (kira/escape-xml (nth p 4) format-birth-date) }$</td>
              </tr>
-             ${ ))) }$
+             ${ ))) }$
            </tbody>
          </table>
        </body>
@@ -167,12 +155,12 @@ References:
 
   (def data {
        :persons
-	       [ [ "Last Name" "First Name" "City"     "Gender" "Age" "Birthdate"]
-	         [ "Meier"     "Peter"      "Bern"       "m"     42    (time/local-date 1977 10 1) ] 
-	         [ "Schmid"    "Hans"       "Luzern"     "m"     56    (time/local-date 1963 8 12) ] 
-	         [ "Winter"    "Maria"      "Aarau"      "f"     23    (time/local-date 1996 4 8)  ] 
-	         [ "Halter"    "Carla"      "Zürich"     "f"      9    (time/local-date 2010 9 28) ] 
-	       ] } )
+           [ [ "Last Name" "First Name" "City"     "Gender" "Age" "Birthdate"                  ]
+             [ "Meier"     "Peter"      "Bern"       "m"     42    (time/local-date 1977 10 1) ] 
+             [ "Schmid"    "Hans"       "Luzern"     "m"     56    (time/local-date 1963 8 12) ] 
+             [ "Winter"    "Maria"      "Aarau"      "f"     23    (time/local-date 1996 4 8)  ] 
+             [ "Halter"    "Carla"      "Zürich"     "f"      9    (time/local-date 2010 9 28) ] ]
+      } )
 
   ; evaluate the template, render, and save it
   (->> data
@@ -234,8 +222,6 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
 
 ```clojure
 (do 
-  (import :com.github.jlangch.venice.pdf.PdfRenderer)
-  
   (load-module :kira)
   
   (def text (str/lorem-ipsum :paragraphs 1))
