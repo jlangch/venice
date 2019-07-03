@@ -69,7 +69,7 @@
         the string before being escaped.""" ) }
   kira/escape-xml
   ([s]   (kira/escape-xml s identity))
-  ([s f] (kira/emit (str/escape-xml (f s)))))
+  ([s f] (kira/emit (str/escape-xml (str (f s))))))
 
 (defn
   ^{ :doc (str/strip-indent """\
