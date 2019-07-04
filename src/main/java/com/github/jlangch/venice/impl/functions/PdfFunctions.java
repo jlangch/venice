@@ -29,6 +29,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Parameters;
@@ -49,6 +52,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.pdf.HtmlColor;
@@ -272,16 +276,13 @@ public class PdfFunctions {
 					final Map<String,Object> data = new HashMap<>();		
 					data.put("lines", lines);
 
-					final String script = "(do                                           \n" +
-										  "   (load-module :kira)                        \n" +
-										  "   (kira/eval template [\"${\" \"}$\"] data))   ";
+					final String template = loadText2PdfTemplate();
 					
-					final String xhtml = (String)new Venice().eval(
-											script,
-											Parameters.of(
-												"template", TEXT_TO_PDF, 
-												"data", data));
-
+					// Need to run the template evaluation in its own thread because 
+					// it runs a Venice interpreter, that must not conflict with this 
+					// Venice interpreter.
+					final String xhtml = runAsync(() -> evaluateTemplate(template, data));
+	
 					return new VncByteBuffer(PdfRenderer.render(xhtml));
 				}
 				catch(VncException ex) {
@@ -314,7 +315,36 @@ public class PdfFunctions {
 		return resources;
 	}
 	
-		
+	private static String loadText2PdfTemplate() {
+		return new ClassPathResource("com/github/jlangch/venice/templates/text-2-pdf.kira")
+						.getResourceAsString();
+	}
+	
+	private static String evaluateTemplate(
+			final String template, 
+			final Map<String,Object> data
+	) {
+		final String script = 
+				"(do                                           \n" +
+				"   (load-module :kira)                        \n" +
+				"   (kira/eval template [\"${\" \"}$\"] data))   ";
+
+		return (String)new Venice().eval(
+							script,
+							Parameters.of("template", template, "data", data));
+	}
+	
+	private static <T> T runAsync(final Callable<T> callable) throws Exception {
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		try {
+			return executor.submit(callable).get();
+		}
+		finally {
+			executor.shutdownNow();
+		}
+	}
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -326,34 +356,4 @@ public class PdfFunctions {
 					.put("pdf/watermark", pdf_watermark)
 					.put("pdf/text-to-pdf", pdf_text_to_pdf)
 					.toMap();	
-	
-	
-	private static final String TEXT_TO_PDF =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>                \n" +
-		"<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"> \n" +
-		"  <head>                                                  \n" +
-		"    <title>Text to PDF</title>                            \n" +
-		"                                                          \n" +
-		"    <!-- Local styles -->                                 \n" +
-		"    <style type=\"text/css\">                             \n" +
-		"      @page {                                             \n" +
-		"        size: A4 portrait;                                \n" +
-		"        margin: 2cm 1.5cm;                                \n" +
-		"        padding: 0;                                       \n" +
-		"      }                                                   \n" +
-		"                                                          \n" +
-		"      body {                                              \n" +
-		"        font-family: Helvetica, Sans-Serif;               \n" +
-		"        font-size: 9pt;                                   \n" +
-		"        font-weight: 200;                                 \n" +
-		"      }                                                   \n" +
-		"    </style>                                              \n" +
-		"  </head>                                                 \n" +
-		"                                                          \n" +
-		"  <body>                                                  \n" +
-		"    ${ (kira/docoll lines (fn [l] (kira/emit }$           \n" +
-		"      <div>${ (kira/escape-xml l) }$</div>                \n" +
-		"    ${ ))) }$                                             \n" +
-		"  </body>                                                 \n" +
-		"</html>                                                     ";
 }

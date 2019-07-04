@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Text to PDF</title>
+
+    <style type="text/css">
+      @page {
+        size: A4 portrait;
+        margin: 2cm 1.5cm;
+        padding: 0;
+      }
+
+      body {
+        font-family: Helvetica, Sans-Serif;
+        font-size: 9pt;
+        font-weight: 200;
+      }
+    </style>
+  </head>
+
+  <body>
+    ${ (kira/docoll lines (fn [l] (kira/emit }$
+    <div>${ (kira/escape-xml l) }$</div>
+    ${ ))) }$
+  </body>
+</html>
