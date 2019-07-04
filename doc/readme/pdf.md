@@ -32,6 +32,8 @@ References:
 * [Page Footers](#page-footers)
 * [Watermarks](#watermarks)
 * [Text to PDF](#text-to-pdf)
+* [Merge PDFs](#merge-pdfs)
+* [Copy PDF](#copy-pdf)
 * [Download Libraries](#download-required-3rd-party-libs)
 
 
@@ -891,6 +893,44 @@ Venice supports simplified text to PDF
 ```
 
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/text2pdf-example.pdf)
+
+[top](#pdf-generation)
+
+
+
+## Merge PDFs
+
+Merge multiple PDFs into a single one
+
+```clojure
+(do 
+  (->> (pdf/merge (pdf/text-to-pdf "PDF #1")
+                  (pdf/text-to-pdf "PDF #2")
+                  (pdf/text-to-pdf "PDF #3")
+                  (pdf/text-to-pdf "PDF #4")
+                  (pdf/text-to-pdf "PDF #5"))
+       (io/spit "merge-example.pdf")))
+```
+
+
+[top](#pdf-generation)
+
+
+
+## Copy PDF
+
+Copy pages from a PDF to a new PDF
+
+```clojure
+(do 
+  (-<> (pdf/merge (pdf/text-to-pdf "PDF #1")
+                  (pdf/text-to-pdf "PDF #2")
+                  (pdf/text-to-pdf "PDF #3")
+                  (pdf/text-to-pdf "PDF #4")
+                  (pdf/text-to-pdf "PDF #5"))
+       (pdf/copy <> :1 :1 :1 :2-4 :-1 :-2 :-3)
+       (io/spit "copy-example.pdf" <>)))
+```
 
 [top](#pdf-generation)
 
