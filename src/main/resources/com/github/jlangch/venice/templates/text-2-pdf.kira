@@ -11,7 +11,7 @@
       }
 
       body {
-        font-family: Helvetica, Sans-Serif;
+        font-family: ${ (kira/escape-xml fontFamiliy) }$;
         font-size: ${ (kira/escape-xml fontSize) }$pt;
         font-weight: ${ (kira/escape-xml fontWeight) }$;
       }
@@ -20,20 +20,22 @@
         margin: 0;
         padding: 0;
       }
+      div.line {
+      }
     </style>
   </head>
 
   <body>
     <div>
       ${ (kira/docoll (first pages) (fn [l] (kira/emit }$
-      <div>${ (kira/escape-xml l) }$</div>
+      <div class="line">${ (kira/escape-xml l) }$</div>
       ${ ))) }$
     </div>
  
     ${ (kira/docoll (rest pages) (fn [lines] (kira/emit }$
     <div class="page">
       ${ (kira/docoll lines (fn [l] (kira/emit }$
-      <div>${ (kira/escape-xml l) }$</div>
+      <div class="line">${ (kira/escape-xml l) }$</div>
       ${ ))) }$
     </div>
     ${ ))) }$

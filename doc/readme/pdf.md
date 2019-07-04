@@ -869,7 +869,9 @@ Venice supports simplified text to PDF
 
   ; render the PDF, and save it
   (-<> text
-       (pdf/text-to-pdf <> :font-size 10 :font-weight 300)
+       (pdf/text-to-pdf <> :font-size 10 
+                           :font-weight 300 
+                           :font-monospace false)
        (io/spit "text2pdf-example.pdf" <>))
 )
 ```

@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.awt.Color;
 import java.nio.ByteBuffer;
@@ -40,6 +42,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -176,7 +179,7 @@ public class PdfFunctions {
 				final VncVal color = options.get(new VncKeyword("color", new VncString("#000000"))); 
 				final VncDouble opacity = getVncDoubleOption("opacity", options, 0.4); 
 				final VncDouble angle = getVncDoubleOption("angle", options, 45.0); 
-				final VncVal overContent = options.get(new VncKeyword("over-content", Constants.True)); 
+				final VncConstant overContent = getBooleanOption("over-content", options, true); 
 				final VncLong skipTopPages = getVncLongOption("skip-top-pages", options, 0); 
 				final VncLong skipBottomPages = getVncLongOption("skip-bottom-pages", options, 0); 
 
@@ -260,8 +263,9 @@ public class PdfFunctions {
 						"and form-feeds. To start a new page just insert a form-feed " +
 						"marker \"<form-feed>\".\n\n" +
 						"Options: \n" +
-						"  :font-size n - font size in pt (double), defaults to 9.0\n" +
-						"  :font-weight n - font weight (0...1000) (long), defaults to 200")
+						"  :font-size n      - font size in pt (double), defaults to 9.0\n" +
+						"  :font-weight n    - font weight (0...1000) (long), defaults to 200\n" +
+						"  :font-monospace b - monospaced font (true/false) (boolean), defaults to false")
 
 					.examples(
 						"(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
@@ -277,6 +281,8 @@ public class PdfFunctions {
 					final VncMap options = VncHashMap.ofAll(args.slice(1));
 					final VncDouble fontSize = getVncDoubleOption("font-size", options, 9.0); 
 					final VncLong fontWeight = getVncLongOption("font-weight", options, 200); 
+					final VncConstant fontMonoSpace = getBooleanOption("font-monospace", options, false); 
+
 
 					final List<List<String>> pages = splitIntoPages(text)
 														.stream()
@@ -287,6 +293,7 @@ public class PdfFunctions {
 					data.put("pages", pages);
 					data.put("fontSize", fontSize.getValue().toString());
 					data.put("fontWeight", fontWeight.getValue().toString());
+					data.put("fontFamiliy", fontMonoSpace == True ? "Courier" : "Helvetica, Sans-Serif");
 
 					final String template = loadText2PdfTemplate();
 					
@@ -381,40 +388,53 @@ public class PdfFunctions {
 		return StringUtil
 					.splitIntoLines(text)
 					.stream()
-					.map(s -> StringUtil.isBlank(s) ? " " : s)
+					.map(s -> StringUtil.isBlank(s) ? "\u2002" : s)
 					.map(s -> StringUtil.replaceLeadingSpaces(s, '\u00A0'))
 					.collect(Collectors.toList());
 	}
 	
-	private static VncDouble getVncDoubleOption(final String optName, final VncMap options, final double defaultFontSize) {
-		final VncVal fontSize = options.get(new VncKeyword(optName), new VncDouble(defaultFontSize));
-		if (Types.isVncLong(fontSize)) {
-			return new VncDouble(((VncLong)fontSize).getValue().doubleValue());
+	private static VncDouble getVncDoubleOption(final String optName, final VncMap options, final double defaultVal) {
+		final VncVal val = options.get(new VncKeyword(optName), new VncDouble(defaultVal));
+		if (Types.isVncLong(val)) {
+			return new VncDouble(((VncLong)val).getValue().doubleValue());
 		}
-		else if (Types.isVncInteger(fontSize)) {
-			return new VncDouble(((VncInteger)fontSize).getValue().doubleValue());
+		else if (Types.isVncInteger(val)) {
+			return new VncDouble(((VncInteger)val).getValue().doubleValue());
 		}
-		else if (Types.isVncDouble(fontSize)) {
-			return (VncDouble)fontSize;
+		else if (Types.isVncDouble(val)) {
+			return (VncDouble)val;
 		}
 		else {
-			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(fontSize));
+			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(val));
 		}
 	}
 	
-	private static VncLong getVncLongOption(final String optName, final VncMap options, final long defaultFontWeight) {
-		final VncVal fontWeight = options.get(new VncKeyword(optName), new VncLong(defaultFontWeight));
-		if (Types.isVncLong(fontWeight)) {
-			return (VncLong)fontWeight;
+	private static VncLong getVncLongOption(final String optName, final VncMap options, final long defaultVal) {
+		final VncVal val = options.get(new VncKeyword(optName), new VncLong(defaultVal));
+		if (Types.isVncLong(val)) {
+			return (VncLong)val;
 		}
-		else if (Types.isVncInteger(fontWeight)) {
-			return new VncLong(((VncInteger)fontWeight).getValue().longValue());
+		else if (Types.isVncInteger(val)) {
+			return new VncLong(((VncInteger)val).getValue().longValue());
 		}
-		else if (Types.isVncDouble(fontWeight)) {
-			return new VncLong(((VncDouble)fontWeight).getValue().longValue());
+		else if (Types.isVncDouble(val)) {
+			return new VncLong(((VncDouble)val).getValue().longValue());
 		}
 		else {
-			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(fontWeight));
+			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(val));
+		}
+	}
+	
+	private static VncConstant getBooleanOption(final String optName, final VncMap options, final boolean defaultVal) {
+		final VncVal val = options.get(new VncKeyword(optName), defaultVal ? True : False);
+		if (val == True) {
+			return True;
+		}
+		else if (val == False) {
+			return False;
+		}
+		else {
+			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(val));
 		}
 	}
 

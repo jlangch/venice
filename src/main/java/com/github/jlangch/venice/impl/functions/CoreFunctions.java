@@ -3420,7 +3420,7 @@ public class CoreFunctions {
 					.module("core")
 					.arglists("(empty? x)")		
 					.doc("Returns true if x is empty")
-					.examples("(empty? {})", "(empty? [])", "(empty? '())")
+					.examples("(empty? {})", "(empty? [])", "(empty? '())", "(empty? \"\")")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
