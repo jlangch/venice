@@ -337,6 +337,19 @@ References:
 
 ## Custom Embedded Fonts
 
+PDF supports 14 standard fonts:
+
+- Times (v3) (in regular, italic, bold, and bold italic)
+- Courier (in regular, oblique, bold and bold oblique)
+- Helvetica (v3) (in regular, oblique, bold and bold oblique)
+- Symbol
+- Zapf Dingbats
+
+Other fonts have to be made explicitly available to the renderer.
+The PDF renderer supports any number of additional True-Type fonts. 
+These fonts can be embedded into the PDF to be available on all client 
+platforms regardless whether the font is locally installed or not.
+
 The PDF renderer loads custom True-Type fonts from the classpath.
 
 The font files are searched on the specified base url (e.g. `classpath:/`) 
@@ -372,6 +385,7 @@ may look like:
 
 A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub 
 [Demo Fonts](https://github.com/jlangch/venice/blob/master/doc/pdfs/fonts.jar)
+
 
 
 ```clojure
