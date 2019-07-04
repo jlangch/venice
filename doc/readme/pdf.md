@@ -904,14 +904,15 @@ Merge multiple PDFs into a single one
 
 ```clojure
 (do 
-  (->> (pdf/merge (pdf/text-to-pdf "PDF #1")
-                  (pdf/text-to-pdf "PDF #2")
-                  (pdf/text-to-pdf "PDF #3")
-                  (pdf/text-to-pdf "PDF #4")
-                  (pdf/text-to-pdf "PDF #5"))
+  (->> (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
+                  (pdf/text-to-pdf "PDF #2" :font-size 64)
+                  (pdf/text-to-pdf "PDF #3" :font-size 64)
+                  (pdf/text-to-pdf "PDF #4" :font-size 64)
+                  (pdf/text-to-pdf "PDF #5" :font-size 64))
        (io/spit "merge-example.pdf")))
 ```
 
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/merge-example.pdf)
 
 [top](#pdf-generation)
 
@@ -923,14 +924,16 @@ Copy pages from a PDF to a new PDF
 
 ```clojure
 (do 
-  (-<> (pdf/merge (pdf/text-to-pdf "PDF #1")
-                  (pdf/text-to-pdf "PDF #2")
-                  (pdf/text-to-pdf "PDF #3")
-                  (pdf/text-to-pdf "PDF #4")
-                  (pdf/text-to-pdf "PDF #5"))
+  (-<> (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
+                  (pdf/text-to-pdf "PDF #2" :font-size 64)
+                  (pdf/text-to-pdf "PDF #3" :font-size 64)
+                  (pdf/text-to-pdf "PDF #4" :font-size 64)
+                  (pdf/text-to-pdf "PDF #5" :font-size 64))
        (pdf/copy <> :1 :1 :1 :2-4 :-1 :-2 :-3)
        (io/spit "copy-example.pdf" <>)))
 ```
+
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/copy-example.pdf)
 
 [top](#pdf-generation)
 
