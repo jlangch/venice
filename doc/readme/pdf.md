@@ -31,6 +31,7 @@ References:
 * [Table of Content](#table-of-content)
 * [Page Footers](#page-footers)
 * [Watermarks](#watermarks)
+* [Text to PDF](#text-to-pdf)
 * [Download Libraries](#download-required-3rd-party-libs)
 
 
@@ -824,6 +825,56 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
 ```
 
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/watermark-example.pdf)
+
+[top](#pdf-generation)
+
+
+
+## Text to PDF
+
+Venice supports simplified text to PDF
+
+```clojure
+(do 
+  (load-module :kira)
+  
+  ; define the template
+  (def text (str/strip-indent """\
+     Lorem Ipsum is simply dummy text of the printing and typesetting
+     industry. Lorem Ipsum has been the industry's standard dummy
+     text ever since the 1500s, when an unknown printer took a galley
+     of type and scrambled it to make a type specimen book. It has
+     survived not only five centuries, but also the leap into electronic
+     typesetting, remaining essentially unchanged. It was popularised in
+     the 1960s with the release of Letraset sheets containing Lorem
+     Ipsum passages, and more recently with desktop publishing
+     software like Aldus PageMaker including versions of Lorem Ipsum.
+     
+     x
+      x x
+       x x
+        x x
+         x x
+          x x x
+     <form-feed>
+     Lorem Ipsum is simply dummy text of the printing and typesetting
+     industry. Lorem Ipsum has been the industry's standard dummy
+     text ever since the 1500s, when an unknown printer took a galley
+     of type and scrambled it to make a type specimen book. It has
+     survived not only five centuries, but also the leap into electronic
+     typesetting, remaining essentially unchanged. It was popularised in
+     the 1960s with the release of Letraset sheets containing Lorem
+     Ipsum passages, and more recently with desktop publishing
+     software like Aldus PageMaker including versions of Lorem Ipsum."""))
+
+  ; evaluate the template, render, and save it
+  (-<> text
+       (pdf/text-to-pdf <> :font-size 10 :font-weight 300)
+       (io/spit "text2pdf-example.pdf" <>))
+)
+```
+
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/text2pdf.pdf)
 
 [top](#pdf-generation)
 
