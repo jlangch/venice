@@ -15,12 +15,27 @@
         font-size: 9pt;
         font-weight: 200;
       }
+      div.page {
+        page-break-before: always;
+        margin: 0;
+        padding: 0;
+      }
     </style>
   </head>
 
   <body>
-    ${ (kira/docoll lines (fn [l] (kira/emit }$
-    <div>${ (kira/escape-xml l) }$</div>
+    <div>
+      ${ (kira/docoll (first pages) (fn [l] (kira/emit }$
+      <div>${ (kira/escape-xml l) }$</div>
+      ${ ))) }$
+    </div>
+ 
+    ${ (kira/docoll (rest pages) (fn [lines] (kira/emit }$
+    <div class="page">
+      ${ (kira/docoll lines (fn [l] (kira/emit }$
+      <div>${ (kira/escape-xml l) }$</div>
+      ${ ))) }$
+    </div>
     ${ ))) }$
   </body>
 </html>

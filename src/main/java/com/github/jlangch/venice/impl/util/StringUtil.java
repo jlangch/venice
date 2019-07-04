@@ -53,7 +53,6 @@ public class StringUtil {
 		}
 	}
 
-
 	/**
 	 * Escapes a text
 	 * 
@@ -140,7 +139,6 @@ public class StringUtil {
 					.collect(Collectors.joining("\n"));
 		}
 	}
-
 	
 	public static String stripMargin(final String text, final char margin) {
 		if (text == null || text.isEmpty()) {

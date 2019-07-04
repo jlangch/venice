@@ -26,6 +26,7 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinAr
 
 import java.awt.Color;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -253,7 +254,10 @@ public class PdfFunctions {
 					.meta()
 					.module("pdf")
 					.arglists("pdf/text-to-pdf text")
-					.doc("Creates a PDF from simple text.")
+					.doc(
+						"Creates a PDF from simple text. The tool process line-feeds '\\n' " +
+						"and form-feeds. To start a new page just insert a form-feed " +
+						"marker \"<form-feed>\".")
 					.examples(
 						"(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
 						"     (io/spit \"text.pdf\"))                  ")
@@ -265,16 +269,13 @@ public class PdfFunctions {
 				try {
 					final String text = Coerce.toVncString(args.first()).getValue();
 
-					final List<String> lines = 
-							StringUtil
-								.splitIntoLines(text)
-								.stream()
-								.map(s -> StringUtil.isBlank(s) ? " " : s)
-								.map(s -> StringUtil.replaceLeadingSpaces(s, '\u00A0'))
-								.collect(Collectors.toList());
+					final List<List<String>> pages = splitIntoPages(text)
+														.stream()
+														.map(p -> splitIntoLines(p))
+														.collect(Collectors.toList());
 
 					final Map<String,Object> data = new HashMap<>();		
-					data.put("lines", lines);
+					data.put("pages", pages);
 
 					final String template = loadText2PdfTemplate();
 					
@@ -343,7 +344,37 @@ public class PdfFunctions {
 			executor.shutdownNow();
 		}
 	}
+
+	private static List<String> splitIntoPages(final String text) {
+		final List<String> pages = new ArrayList<>();
+		
+		if (text != null && !text.isEmpty()) {
+			int lastPos = 0;
+			while(lastPos < text.length()) {
+				int pos = text.indexOf("<form-feed>", lastPos);
+				if (pos < 0) {
+					pages.add(text.substring(lastPos));
+					break;
+				}
+				else {
+					pages.add(text.substring(lastPos, pos));
+					lastPos = pos + "<form-feed>".length();
+				}
+			}
+		}
+		
+		return pages;
+	}
 	
+	private static List<String> splitIntoLines(final String text) {
+		return StringUtil
+					.splitIntoLines(text)
+					.stream()
+					.map(s -> StringUtil.isBlank(s) ? " " : s)
+					.map(s -> StringUtil.replaceLeadingSpaces(s, '\u00A0'))
+					.collect(Collectors.toList());
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
