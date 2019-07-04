@@ -31,11 +31,10 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -326,11 +325,14 @@ public class PdfFunctions {
 					.arglists("pdf/copy pdf & page-nr")
 					.doc("Copies pages from a PDF to a new PDF.")
 					.examples(
-						"; copy the pages 1, 2, 6-10, and 12 \n" +
-						"(pdf/copy pdf :1 :2 :6-10 :12)",
+						"; copy the first and second page \n" +
+						"(pdf/copy pdf :1 :2)",
 						
 						"; copy the last and second last page \n" +
-						"(pdf/copy pdf :-1 :-2)")
+						"(pdf/copy pdf :-1 :-2)",
+						
+						"; copy the pages 1, 2, 6-10, and 12 \n" +
+						"(pdf/copy pdf :1 :2 :6-10 :12)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -338,22 +340,25 @@ public class PdfFunctions {
 
 				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 
-				final Set<Long> pages = new HashSet<>();
+				final List<List<Integer>> pages = new ArrayList<>();
+				
 				for(VncVal p : args.rest().getList()) {
 					final String spec = Coerce.toVncKeyword(p).getValue();
 					if (spec.matches("^[0-9]+$")) {
-						pages.add(Long.parseLong(spec));
+						pages.add(Arrays.asList(Integer.parseInt(spec)));
 					}
 					else if (spec.matches("^-[0-9]+$")) {
-						pages.add(Long.parseLong(spec));
+						pages.add(Arrays.asList(Integer.parseInt(spec)));
 					}
 					else if (spec.matches("^[0-9]+-[0-9]+$")) {
 						final String[] range = spec.split("-");
-						final long start = Long.parseLong(range[0]);
-						final long end = Long.parseLong(range[1]);
-						for(long ii=start; ii<=end; ii++) {
-							pages.add(ii);
+						final int start = Integer.parseInt(range[0]);
+						final int end = Integer.parseInt(range[1]);
+						final List<Integer> specs = new ArrayList<>();
+						for(int ii=start; ii<=end; ii++) {
+							specs.add(ii);
 						}
+						pages.add(specs);
 					}
 					else {
 						throw new VncException("pdf/copy: Invalid page specifier " + spec);
@@ -369,14 +374,16 @@ public class PdfFunctions {
 		        	
 		            final PdfReader reader = new PdfReader(pdf.array());
 		            final int numPages = reader.getNumberOfPages();
-		            for (long ii=1; ii<=numPages; ii++){
-		            	// 1: first page     -1: last page
-		            	// 2: second page    -2: second last page
-		            	// 3: second page    -3: third last page
-		            	if (pages.contains(ii) || pages.contains(ii-numPages)) {
-		            		copy.addPage(copy.getImportedPage(reader, (int)ii));
+		            
+		            for(List<Integer> specs : pages) {
+		            	for(int p : specs) {
+		            		int page = (p < 0) ? numPages + p + 1 : p;
+		            		if (page > 0 && page <= numPages) {
+			            		copy.addPage(copy.getImportedPage(reader, page));
+		            		}
 		            	}
 		            }
+		            
 		            copy.freeReader(reader);
 		            reader.close();
 
