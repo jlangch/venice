@@ -87,12 +87,12 @@ public class ReflectionAccessor {
 		}
 	}
 
-	public static Class<?> classExists(final String className) {
+	public static boolean classExists(final String className) {
 		try {
-			return memoizedClassForName(className);
+			return memoizedClassForName(className) != null;
 		}
 		catch (Exception ex) {
-			return null;
+			return false;
 		}
 	}
 

@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.pdf.HtmlColor;
 import com.github.jlangch.venice.pdf.PdfRenderer;
 import com.github.jlangch.venice.pdf.PdfWatermark;
@@ -134,10 +135,10 @@ public class PdfFunctions {
 					.doc(
 						"Adds a watermark text to the PDF pages.\n\n" +
 						"Options: \n" +
-						"  :text t              - watermark text (string), defaults to \"WATERMARK\" \n" +
+						"  :text s              - watermark text (string), defaults to \"WATERMARK\" \n" +
 						"  :font-size n         - font size (double), defaults to 24.0 \n" +
 						"  :font-char-spacing n - font character spacing (double), defaults to 0.0 \n" +
-						"  :color c             - font color (HTML color string), defaults to #000000 \n" +
+						"  :color s             - font color (HTML color string), defaults to #000000 \n" +
 						"  :opacity n           - opacity 0.0 ... 1.0 (double), defaults to 0.8 \n" +
 						"  :angle n             - angle 0.0 ... 360.0 (double), defaults to 45.0 \n" +
 						"  :over-content b      - print text over the content (boolean), defaults to true \n" +
@@ -196,7 +197,42 @@ public class PdfFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction pdf_available_Q = 
+		new VncFunction(
+				"pdf/available?", 
+				VncFunction
+					.meta()
+					.module("pdf")
+					.arglists("(pdf/available?)")
+					.doc("Checks if the 3rd party libraries required for generating PDFs are available.")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("pdf/available?", args, 0);
+				
+				// com.github.librepdf:openpdf:xxx
+				if (!ReflectionAccessor.classExists("com.lowagie.text.Anchor")) {
+					return Constants.False;
+				}
+				
+				// org.xhtmlrenderer:flying-saucer-core:xxx
+				if (!ReflectionAccessor.classExists("org.xhtmlrenderer.DefaultCSSMarker")) {
+					return Constants.False;
+				}
+				
+				// org.xhtmlrenderer:flying-saucer-pdf-openpdf:xxx
+				if (!ReflectionAccessor.classExists("org.xhtmlrenderer.pdf.AbstractFormField")) {
+					return Constants.False;
+				}
+
+				return Constants.True;
+			}
 	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 	private static List<String> mapAlternateBasePaths(final VncSequence paths) {
 		return paths
 			      .getList()
@@ -221,7 +257,8 @@ public class PdfFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
+			new VncHashMap.Builder()			
+					.put("pdf/available?", pdf_available_Q)
 					.put("pdf/render", pdf_render)
 					.put("pdf/watermark", pdf_watermark)
 					.toMap();	

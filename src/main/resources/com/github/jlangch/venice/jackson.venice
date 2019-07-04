@@ -1,20 +1,20 @@
 ;; Jackson JSON utils (requires the Jackson JSON libs on the classpath)
 
 (defn
-   ^{ :arglists '("(jackson/avail?)")
+   ^{ :arglists '("(jackson/available?)")
       :doc "Returns true if Jackson JSON is available (libs on classpath) otherwise false"
-      :examples '("(jackson/avail?)") }
+      :examples '("(jackson/available?)") }
 
-   jackson/avail?
+   jackson/available?
 
    [] (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class)))
 
 (defn
-  ^{ :arglists '("(jackson/avail-jdk8-module?)")
+  ^{ :arglists '("(jackson/available-jdk8-module?)")
      :doc "Returns true if Jackson JSON jdk8 is available otherwise false"
-     :examples '("(jackson/avail-jdk8-module?)") }
+     :examples '("(jackson/available-jdk8-module?)") }
 
-   jackson/avail-jdk8-module?
+   jackson/available-jdk8-module?
 
    [] (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class)))
 
@@ -35,7 +35,7 @@
    jackson/to-json
 
    [val] (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-           (when (jackson/avail-jdk8-module?)
+           (when (jackson/available-jdk8-module?)
                (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
@@ -49,7 +49,7 @@
    jackson/to-pretty-json
 
    [val] (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (jackson/avail-jdk8-module?)
+            (when (jackson/available-jdk8-module?)
                   (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :disable :com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -65,7 +65,7 @@
    jackson/parse
 
    [text] (let [ mapper (. :com.fasterxml.jackson.databind.ObjectMapper :new) ]
-            (when (jackson/avail-jdk8-module?)
+            (when (jackson/available-jdk8-module?)
                   (. mapper :registerModule (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :new)))
             (-> mapper
                 (. :disable :com.fasterxml.jackson.databind.DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)

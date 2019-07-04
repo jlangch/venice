@@ -1197,6 +1197,12 @@ public class DocGenerator {
 		xml.addItem(getDocItem("xml/children"));
 		xml.addItem(getDocItem("xml/text"));
 		
+		final DocSection pdf = new DocSection("PDF");
+		all.addSection(pdf);
+		pdf.addItem(getDocItem("pdf/available?"));
+		pdf.addItem(getDocItem("pdf/render"));
+		pdf.addItem(getDocItem("pdf/watermark"));
+		
 		final DocSection crypt = new DocSection("Cryptography");
 		all.addSection(crypt);
 		crypt.addItem(getDocItem("crypt/md5-hash"));
