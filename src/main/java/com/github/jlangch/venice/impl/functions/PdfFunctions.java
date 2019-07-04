@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -133,17 +135,24 @@ public class PdfFunctions {
 						"(pdf/watermark pdf options-map)",		
 						"(pdf/watermark pdf & options)")		
 					.doc(
-						"Adds a watermark text to the PDF pages.\n\n" +
+						"Adds a watermark text to the pages of a PDF. The passed PDF pdf is " +
+						"a bytebuf. Returns the new PDF as a bytebuf.\n\n" +
 						"Options: \n" +
 						"  :text s              - watermark text (string), defaults to \"WATERMARK\" \n" +
 						"  :font-size n         - font size (double), defaults to 24.0 \n" +
 						"  :font-char-spacing n - font character spacing (double), defaults to 0.0 \n" +
 						"  :color s             - font color (HTML color string), defaults to #000000 \n" +
-						"  :opacity n           - opacity 0.0 ... 1.0 (double), defaults to 0.8 \n" +
+						"  :opacity n           - opacity 0.0 ... 1.0 (double), defaults to 0.4 \n" +
 						"  :angle n             - angle 0.0 ... 360.0 (double), defaults to 45.0 \n" +
 						"  :over-content b      - print text over the content (boolean), defaults to true \n" +
 						"  :skip-top-pages n    - the number of top pages to skip (long), defaults to 0 \n" +
 						"  :skip-bottom-pages n - the number of bottom pages to skip (long), defaults to 0")
+					.examples(
+						"(pdf/watermark pdf :text \"CONFIDENTIAL\" :font-size 64 :font-char-spacing 10.0)",							
+						"(let [watermark { :text \"CONFIDENTIAL\"      \n" +
+						"                  :font-size 64               \n" +
+						"                  :font-char-spacing 10.0 } ] \n" +
+						"   (pdf/watermark pdf watermark))                ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -159,7 +168,7 @@ public class PdfFunctions {
 				final VncVal fontSize = options.get(new VncKeyword("font-size", new VncDouble(24.0))); 
 				final VncVal fontCharSpacing = options.get(new VncKeyword("font-char-spacing", new VncDouble(0.0))); 
 				final VncVal color = options.get(new VncKeyword("color", new VncString("#000000"))); 
-				final VncVal opacity = options.get(new VncKeyword("opacity", new VncDouble(0.8))); 
+				final VncVal opacity = options.get(new VncKeyword("opacity", new VncDouble(0.4))); 
 				final VncVal angle = options.get(new VncKeyword("angle", new VncDouble(45.0))); 
 				final VncVal overContent = options.get(new VncKeyword("over-content", Constants.True)); 
 				final VncVal skipTopPages = options.get(new VncKeyword("skip-top-pages", new VncLong(0))); 
@@ -206,6 +215,7 @@ public class PdfFunctions {
 					.module("pdf")
 					.arglists("(pdf/available?)")
 					.doc("Checks if the 3rd party libraries required for generating PDFs are available.")
+					.examples("(pdf/available?)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -227,6 +237,59 @@ public class PdfFunctions {
 				}
 
 				return Constants.True;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction pdf_text_to_pdf = 
+		new VncFunction(
+				"pdf/text-to-pdf", 
+				VncFunction
+					.meta()
+					.module("pdf")
+					.arglists("pdf/text-to-pdf text")
+					.doc("Creates a PDF from simple text.")
+					.examples(
+						"(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
+						"     (io/spit \"text.pdf\"))                  ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("pdf/text-to-pdf", args, 1);
+
+				try {
+					final String text = Coerce.toVncString(args.first()).getValue();
+
+					final List<String> lines = 
+							StringUtil
+								.splitIntoLines(text)
+								.stream()
+								.map(s -> StringUtil.isBlank(s) ? " " : s)
+								.map(s -> StringUtil.replaceLeadingSpaces(s, '\u00A0'))
+								.collect(Collectors.toList());
+
+					final Map<String,Object> data = new HashMap<>();		
+					data.put("lines", lines);
+
+					final String script = "(do                                           \n" +
+										  "   (load-module :kira)                        \n" +
+										  "   (kira/eval template [\"${\" \"}$\"] data))   ";
+					
+					final String xhtml = (String)new Venice().eval(
+											script,
+											Parameters.of(
+												"template", TEXT_TO_PDF, 
+												"data", data));
+
+					return new VncByteBuffer(PdfRenderer.render(xhtml));
+				}
+				catch(VncException ex) {
+					throw ex;
+				}
+				catch(Exception ex) {
+					throw new VncException("Failed to render text PDF", ex);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -261,6 +324,36 @@ public class PdfFunctions {
 					.put("pdf/available?", pdf_available_Q)
 					.put("pdf/render", pdf_render)
 					.put("pdf/watermark", pdf_watermark)
+					.put("pdf/text-to-pdf", pdf_text_to_pdf)
 					.toMap();	
 	
+	
+	private static final String TEXT_TO_PDF =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>                \n" +
+		"<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"> \n" +
+		"  <head>                                                  \n" +
+		"    <title>Text to PDF</title>                            \n" +
+		"                                                          \n" +
+		"    <!-- Local styles -->                                 \n" +
+		"    <style type=\"text/css\">                             \n" +
+		"      @page {                                             \n" +
+		"        size: A4 portrait;                                \n" +
+		"        margin: 2cm 1.5cm;                                \n" +
+		"        padding: 0;                                       \n" +
+		"      }                                                   \n" +
+		"                                                          \n" +
+		"      body {                                              \n" +
+		"        font-family: Helvetica, Sans-Serif;               \n" +
+		"        font-size: 9pt;                                   \n" +
+		"        font-weight: 200;                                 \n" +
+		"      }                                                   \n" +
+		"    </style>                                              \n" +
+		"  </head>                                                 \n" +
+		"                                                          \n" +
+		"  <body>                                                  \n" +
+		"    ${ (kira/docoll lines (fn [l] (kira/emit }$           \n" +
+		"      <div>${ (kira/escape-xml l) }$</div>                \n" +
+		"    ${ ))) }$                                             \n" +
+		"  </body>                                                 \n" +
+		"</html>                                                     ";
 }

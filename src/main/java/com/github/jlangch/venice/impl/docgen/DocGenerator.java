@@ -733,10 +733,10 @@ public class DocGenerator {
 
 		final DocSection shell = new DocSection("Shell");
 		all.addSection(shell);
-		shell.addItem(getDocItem("sh", false, false));
-		shell.addItem(getDocItem("with-sh-dir", false, false));
-		shell.addItem(getDocItem("with-sh-env", false, false));
-		shell.addItem(getDocItem("with-sh-throw", false, false));
+		shell.addItem(getDocItem("sh", false));
+		shell.addItem(getDocItem("with-sh-dir", false));
+		shell.addItem(getDocItem("with-sh-env", false));
+		shell.addItem(getDocItem("with-sh-throw", false));
 				
 		return section;
 	}
@@ -803,7 +803,7 @@ public class DocGenerator {
 		final DocSection profil = new DocSection("Profiling");
 		all.addSection(profil);
 		profil.addItem(getDocItem("time"));
-		profil.addItem(getDocItem("perf", false, false));
+		profil.addItem(getDocItem("perf", false));
 		
 		return section;
 	}
@@ -860,15 +860,15 @@ public class DocGenerator {
 		agents.addItem(getDocItem("agent-error"));
 		agents.addItem(getDocItem("await"));
 		agents.addItem(getDocItem("await-for"));
-		agents.addItem(getDocItem("shutdown-agents", false, false));
-		agents.addItem(getDocItem("shutdown-agents?", false, false));
-		agents.addItem(getDocItem("await-termination-agents", false, false));
-		agents.addItem(getDocItem("await-termination-agents?", false, false));
+		agents.addItem(getDocItem("shutdown-agents", false));
+		agents.addItem(getDocItem("shutdown-agents?", false));
+		agents.addItem(getDocItem("await-termination-agents", false));
+		agents.addItem(getDocItem("await-termination-agents?", false));
 		
 		final DocSection sched = new DocSection("Scheduler");
 		all.addSection(sched);
-		sched.addItem(getDocItem("schedule-delay", false, false));
-		sched.addItem(getDocItem("schedule-at-fixed-rate", false, false));
+		sched.addItem(getDocItem("schedule-delay", false));
+		sched.addItem(getDocItem("schedule-at-fixed-rate", false));
 		
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);
@@ -941,10 +941,10 @@ public class DocGenerator {
 		io_test.addItem(getDocItem("io/file?"));
 		io_test.addItem(getDocItem("io/exists-file?"));
 		io_test.addItem(getDocItem("io/exists-dir?"));
-		io_test.addItem(getDocItem("io/file-can-read?", false, false));
-		io_test.addItem(getDocItem("io/file-can-write?", false, false));
-		io_test.addItem(getDocItem("io/file-can-execute?", false, false));
-		io_test.addItem(getDocItem("io/file-hidden?", false, false));
+		io_test.addItem(getDocItem("io/file-can-read?", false));
+		io_test.addItem(getDocItem("io/file-can-write?", false));
+		io_test.addItem(getDocItem("io/file-can-execute?", false));
+		io_test.addItem(getDocItem("io/file-hidden?", false));
 
 		final DocSection stream = new DocSection("stream-io");
 		all.addSection(stream);
@@ -958,21 +958,21 @@ public class DocGenerator {
 
 		final DocSection zip = new DocSection("zip");
 		all.addSection(zip);
-		zip.addItem(getDocItem("io/zip", false, false));
-		zip.addItem(getDocItem("io/zip-file", false, false));
-		zip.addItem(getDocItem("io/zip-list", false, false));
-		zip.addItem(getDocItem("io/zip-append", false, false));
-		zip.addItem(getDocItem("io/zip-remove", false, false));
+		zip.addItem(getDocItem("io/zip", false));
+		zip.addItem(getDocItem("io/zip-file", false));
+		zip.addItem(getDocItem("io/zip-list", false));
+		zip.addItem(getDocItem("io/zip-append", false));
+		zip.addItem(getDocItem("io/zip-remove", false));
 		zip.addItem(getDocItem("io/zip?"));
 		zip.addItem(getDocItem("io/unzip"));
 		zip.addItem(getDocItem("io/unzip-first"));
 		zip.addItem(getDocItem("io/unzip-nth"));
 		zip.addItem(getDocItem("io/unzip-all"));
-		zip.addItem(getDocItem("io/unzip-to-dir", false, false));
+		zip.addItem(getDocItem("io/unzip-to-dir", false));
 
 		final DocSection gzip = new DocSection("gzip");
 		all.addSection(gzip);
-		gzip.addItem(getDocItem("io/gzip", false, false));
+		gzip.addItem(getDocItem("io/gzip", false));
 		gzip.addItem(getDocItem("io/gzip-to-stream"));
 		gzip.addItem(getDocItem("io/gzip?"));
 		gzip.addItem(getDocItem("io/ungzip"));
@@ -1199,9 +1199,10 @@ public class DocGenerator {
 		
 		final DocSection pdf = new DocSection("PDF");
 		all.addSection(pdf);
-		pdf.addItem(getDocItem("pdf/available?"));
-		pdf.addItem(getDocItem("pdf/render"));
-		pdf.addItem(getDocItem("pdf/watermark"));
+		pdf.addItem(getDocItem("pdf/available?", false));
+		pdf.addItem(getDocItem("pdf/render", false));
+		pdf.addItem(getDocItem("pdf/watermark", false));
+		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
 		
 		final DocSection crypt = new DocSection("Cryptography");
 		all.addSection(crypt);
@@ -1216,6 +1217,10 @@ public class DocGenerator {
 
 	private DocItem getDocItem(final String name) {
 		return getDocItem(name, true, false);
+	}
+
+	private DocItem getDocItem(final String name, final boolean runExamples) {
+		return getDocItem(name, runExamples, false);
 	}
 
 	private DocItem getDocItem(final String name, final boolean runExamples, final boolean catchEx) {
