@@ -290,4 +290,23 @@ public class StringUtil {
 	public static String quote(final String str, final char quote) {
 		return new StringBuilder().append(quote).append(str).append(quote).toString();
 	}
+	
+	public static String replaceLeadingSpaces(final String text, final char replaceChar) {
+		if (text == null) {
+			return null;
+		}
+		
+		final int count = StringUtil.indexNotOf(text, " ", 0);
+		
+	    if (count > 0) {
+			final StringBuilder sb = new StringBuilder();		
+	    	sb.append(repeat(replaceChar, count));
+	    	sb.append(text.substring(count));
+		    return sb.toString();
+	    }
+	    else {
+    		return text;
+	    }
+	}
+
 }
