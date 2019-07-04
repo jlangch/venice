@@ -874,7 +874,7 @@ Venice supports simplified text to PDF
 )
 ```
 
-[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/text2pdf.pdf)
+[Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/text2pdf-example.pdf)
 
 [top](#pdf-generation)
 
