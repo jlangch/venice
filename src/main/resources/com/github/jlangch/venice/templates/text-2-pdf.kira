@@ -12,8 +12,8 @@
 
       body {
         font-family: Helvetica, Sans-Serif;
-        font-size: 9pt;
-        font-weight: 200;
+        font-size: ${ (kira/escape-xml fontSize) }$pt;
+        font-weight: ${ (kira/escape-xml fontWeight) }$;
       }
       div.page {
         page-break-before: always;

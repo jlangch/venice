@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -144,7 +145,7 @@ public class PdfFunctions {
 						"a bytebuf. Returns the new PDF as a bytebuf.\n\n" +
 						"Options: \n" +
 						"  :text s              - watermark text (string), defaults to \"WATERMARK\" \n" +
-						"  :font-size n         - font size (double), defaults to 24.0 \n" +
+						"  :font-size n         - font size in pt (double), defaults to 24.0 \n" +
 						"  :font-char-spacing n - font character spacing (double), defaults to 0.0 \n" +
 						"  :color s             - font color (HTML color string), defaults to #000000 \n" +
 						"  :opacity n           - opacity 0.0 ... 1.0 (double), defaults to 0.4 \n" +
@@ -170,14 +171,14 @@ public class PdfFunctions {
 										: VncHashMap.ofAll(args.slice(1));
 
 				final VncVal text = options.get(new VncKeyword("text", new VncString("WATERMARK"))); 
-				final VncVal fontSize = options.get(new VncKeyword("font-size", new VncDouble(24.0))); 
-				final VncVal fontCharSpacing = options.get(new VncKeyword("font-char-spacing", new VncDouble(0.0))); 
+				final VncDouble fontSize = getVncDoubleOption("font-size", options, 24.0); 
+				final VncDouble fontCharSpacing = getVncDoubleOption("font-char-spacing", options, 0.0); 
 				final VncVal color = options.get(new VncKeyword("color", new VncString("#000000"))); 
-				final VncVal opacity = options.get(new VncKeyword("opacity", new VncDouble(0.4))); 
-				final VncVal angle = options.get(new VncKeyword("angle", new VncDouble(45.0))); 
+				final VncDouble opacity = getVncDoubleOption("opacity", options, 0.4); 
+				final VncDouble angle = getVncDoubleOption("angle", options, 45.0); 
 				final VncVal overContent = options.get(new VncKeyword("over-content", Constants.True)); 
-				final VncVal skipTopPages = options.get(new VncKeyword("skip-top-pages", new VncLong(0))); 
-				final VncVal skipBottomPages = options.get(new VncKeyword("skip-bottom-pages", new VncLong(0))); 
+				final VncLong skipTopPages = getVncLongOption("skip-top-pages", options, 0); 
+				final VncLong skipBottomPages = getVncLongOption("skip-bottom-pages", options, 0); 
 
 				final ByteBuffer pdf_ = Coerce.toVncByteBuffer(pdf).getValue();
 				final String text_ = Coerce.toVncString(text).getValue();
@@ -253,21 +254,29 @@ public class PdfFunctions {
 				VncFunction
 					.meta()
 					.module("pdf")
-					.arglists("pdf/text-to-pdf text")
+					.arglists("pdf/text-to-pdf text & options")
 					.doc(
 						"Creates a PDF from simple text. The tool process line-feeds '\\n' " +
 						"and form-feeds. To start a new page just insert a form-feed " +
-						"marker \"<form-feed>\".")
+						"marker \"<form-feed>\".\n\n" +
+						"Options: \n" +
+						"  :font-size n - font size in pt (double), defaults to 9.0\n" +
+						"  :font-weight n - font weight (0...1000) (long), defaults to 200")
+
 					.examples(
 						"(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
 						"     (io/spit \"text.pdf\"))                  ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/text-to-pdf", args, 1);
+				assertMinArity("pdf/text-to-pdf", args, 1);
 
 				try {
 					final String text = Coerce.toVncString(args.first()).getValue();
+					
+					final VncMap options = VncHashMap.ofAll(args.slice(1));
+					final VncDouble fontSize = getVncDoubleOption("font-size", options, 9.0); 
+					final VncLong fontWeight = getVncLongOption("font-weight",options, 200); 
 
 					final List<List<String>> pages = splitIntoPages(text)
 														.stream()
@@ -276,6 +285,8 @@ public class PdfFunctions {
 
 					final Map<String,Object> data = new HashMap<>();		
 					data.put("pages", pages);
+					data.put("fontSize", fontSize.getValue().toString());
+					data.put("fontWeight", fontWeight.getValue().toString());
 
 					final String template = loadText2PdfTemplate();
 					
@@ -373,6 +384,38 @@ public class PdfFunctions {
 					.map(s -> StringUtil.isBlank(s) ? " " : s)
 					.map(s -> StringUtil.replaceLeadingSpaces(s, '\u00A0'))
 					.collect(Collectors.toList());
+	}
+	
+	private static VncDouble getVncDoubleOption(final String optName, final VncMap options, final double defaultFontSize) {
+		final VncVal fontSize = options.get(new VncKeyword(optName, new VncDouble(defaultFontSize)));
+		if (Types.isVncLong(fontSize)) {
+			return new VncDouble(((VncLong)fontSize).getValue().doubleValue());
+		}
+		else if (Types.isVncInteger(fontSize)) {
+			return new VncDouble(((VncInteger)fontSize).getValue().doubleValue());
+		}
+		else if (Types.isVncDouble(fontSize)) {
+			return (VncDouble)fontSize;
+		}
+		else {
+			throw new VncException("Invalid '" + optName + "' option");
+		}
+	}
+	
+	private static VncLong getVncLongOption(final String optName, final VncMap options, final long defaultFontWeight) {
+		final VncVal fontWeight = options.get(new VncKeyword(optName, new VncLong(defaultFontWeight)));
+		if (Types.isVncLong(fontWeight)) {
+			return (VncLong)fontWeight;
+		}
+		else if (Types.isVncInteger(fontWeight)) {
+			return new VncLong(((VncInteger)fontWeight).getValue().longValue());
+		}
+		else if (Types.isVncDouble(fontWeight)) {
+			return new VncLong(((VncDouble)fontWeight).getValue().longValue());
+		}
+		else {
+			throw new VncException("Invalid '" + optName + "' option");
+		}
 	}
 
 	
