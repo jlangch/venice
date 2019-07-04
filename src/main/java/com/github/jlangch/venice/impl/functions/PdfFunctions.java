@@ -323,9 +323,14 @@ public class PdfFunctions {
 				VncFunction
 					.meta()
 					.module("pdf")
-					.arglists("pdf/copy pdf")
+					.arglists("pdf/copy pdf & page-nr")
 					.doc("Copies pages from a PDF to a new PDF.")
-					.examples("(pdf/copy pdf :1 :2 :6-10 :12)")
+					.examples(
+						"; copy the pages 1, 2, 6-10, and 12 \n" +
+						"(pdf/copy pdf :1 :2 :6-10 :12)",
+						
+						"; copy the last and second last page \n" +
+						"(pdf/copy pdf :-1 :-2)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -336,10 +341,13 @@ public class PdfFunctions {
 				final Set<Long> pages = new HashSet<>();
 				for(VncVal p : args.rest().getList()) {
 					final String spec = Coerce.toVncKeyword(p).getValue();
-					if (spec.matches("[0-9]+^$")) {
+					if (spec.matches("^[0-9]+$")) {
 						pages.add(Long.parseLong(spec));
 					}
-					else if (spec.matches("[0-9]+-[0-9]+^$")) {
+					else if (spec.matches("^-[0-9]+$")) {
+						pages.add(Long.parseLong(spec));
+					}
+					else if (spec.matches("^[0-9]+-[0-9]+$")) {
 						final String[] range = spec.split("-");
 						final long start = Long.parseLong(range[0]);
 						final long end = Long.parseLong(range[1]);
@@ -360,9 +368,13 @@ public class PdfFunctions {
 			        document.open();
 		        	
 		            final PdfReader reader = new PdfReader(pdf.array());
-		            for (int ii=1; ii<=reader.getNumberOfPages(); ii++){
-		            	if (pages.contains((long)ii)) {
-		            		copy.addPage(copy.getImportedPage(reader, ii));
+		            final int numPages = reader.getNumberOfPages();
+		            for (long ii=1; ii<=numPages; ii++){
+		            	// 1: first page     -1: last page
+		            	// 2: second page    -2: second last page
+		            	// 3: second page    -3: third last page
+		            	if (pages.contains(ii) || pages.contains(ii-numPages)) {
+		            		copy.addPage(copy.getImportedPage(reader, (int)ii));
 		            	}
 		            }
 		            copy.freeReader(reader);
