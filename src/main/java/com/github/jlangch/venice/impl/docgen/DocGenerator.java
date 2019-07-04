@@ -1202,6 +1202,9 @@ public class DocGenerator {
 		pdf.addItem(getDocItem("pdf/available?", false));
 		pdf.addItem(getDocItem("pdf/render", false));
 		pdf.addItem(getDocItem("pdf/watermark", false));
+		pdf.addItem(getDocItem("pdf/merge", false));
+		pdf.addItem(getDocItem("pdf/copy", false));
+		pdf.addItem(getDocItem("pdf/pages", false));
 		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
 		
 		final DocSection crypt = new DocSection("Cryptography");

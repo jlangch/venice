@@ -24,14 +24,18 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,6 +67,9 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.pdf.HtmlColor;
 import com.github.jlangch.venice.pdf.PdfRenderer;
 import com.github.jlangch.venice.pdf.PdfWatermark;
+import com.lowagie.text.Document;
+import com.lowagie.text.pdf.PdfCopy;
+import com.lowagie.text.pdf.PdfReader;
 
 
 public class PdfFunctions {
@@ -246,6 +253,160 @@ public class PdfFunctions {
 				}
 
 				return Constants.True;
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction pdf_merge = 
+		new VncFunction(
+				"pdf/merge", 
+				VncFunction
+					.meta()
+					.module("pdf")
+					.arglists("pdf/merge pdfs")
+					.doc("Merge multiple PDFs into a single PDF.")
+					.examples(
+						"(pdf/merge pdf1 pdf2)",
+						"(pdf/merge pdf1 pdf2 pdf3)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertMinArity("pdf/merge", args, 1);
+
+				final List<VncVal> pdfs = args.getList();
+
+				if (pdfs.isEmpty()) {
+					throw new VncException("pdf/merge: A PDF list must not be empty");
+				}
+				else if (pdfs.size() == 1) {
+					return pdfs.get(0);
+				}
+				else {
+					try {
+						final ByteArrayOutputStream os = new ByteArrayOutputStream();
+						final Document document = new Document();
+				        final PdfCopy copy = new PdfCopy(document, os);
+				
+				        document.open();
+				        for (VncVal val : pdfs){
+				        	if (val == Nil) continue;
+				        	
+				        	final ByteBuffer pdf = Coerce.toVncByteBuffer(val).getValue();
+				        	
+				            final PdfReader reader = new PdfReader(pdf.array());
+				            for (int ii=1; ii<=reader.getNumberOfPages(); ii++){
+				                copy.addPage(copy.getImportedPage(reader, ii));
+				            }
+				            copy.freeReader(reader);
+				            reader.close();
+				        }
+				        document.close();
+				        copy.close();
+				        
+				        return new VncByteBuffer(os.toByteArray());
+					}
+					catch(Exception ex) {
+						throw new VncException(
+								String.format("pdf/merge: Failed to merge %d PDFs", pdfs.size()),
+								ex);
+					}
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction pdf_copy = 
+		new VncFunction(
+				"pdf/copy", 
+				VncFunction
+					.meta()
+					.module("pdf")
+					.arglists("pdf/copy pdf")
+					.doc("Copies pages from a PDF to a new PDF.")
+					.examples("(pdf/copy pdf :1 :2 :6-10 :12)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertMinArity("pdf/copy", args, 1);
+
+				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+				final Set<Long> pages = new HashSet<>();
+				for(VncVal p : args.rest().getList()) {
+					final String spec = Coerce.toVncKeyword(p).getValue();
+					if (spec.matches("[0-9]+^$")) {
+						pages.add(Long.parseLong(spec));
+					}
+					else if (spec.matches("[0-9]+-[0-9]+^$")) {
+						final String[] range = spec.split("-");
+						final long start = Long.parseLong(range[0]);
+						final long end = Long.parseLong(range[1]);
+						for(long ii=start; ii<=end; ii++) {
+							pages.add(ii);
+						}
+					}
+					else {
+						throw new VncException("pdf/copy: Invalid page specifier " + spec);
+					}
+				}
+				
+				try {
+					final ByteArrayOutputStream os = new ByteArrayOutputStream();
+					final Document document = new Document();
+			        final PdfCopy copy = new PdfCopy(document, os);
+			
+			        document.open();
+		        	
+		            final PdfReader reader = new PdfReader(pdf.array());
+		            for (int ii=1; ii<=reader.getNumberOfPages(); ii++){
+		            	if (pages.contains((long)ii)) {
+		            		copy.addPage(copy.getImportedPage(reader, ii));
+		            	}
+		            }
+		            copy.freeReader(reader);
+		            reader.close();
+
+			        document.close();
+			        copy.close();
+			        
+			        return new VncByteBuffer(os.toByteArray());
+				}
+				catch(Exception ex) {
+					throw new VncException("pdf/copy: Failed to copy PDFs", ex);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction pdf_pages = 
+		new VncFunction(
+				"pdf/pages", 
+				VncFunction
+					.meta()
+					.module("pdf")
+					.arglists("pdf/pages pdf")
+					.doc("Returns the number of pages of a PDF.")
+					.examples("(pdf/pages pdf)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("pdf/pages", args, 1);
+
+				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
+				
+				try {
+		            final PdfReader reader = new PdfReader(pdf.array());
+		            final int pages = reader.getNumberOfPages();
+			        reader.close();
+			        
+			        return new VncLong(pages);
+				}
+				catch(Exception ex) {
+					throw new VncException("pdf/pages: Failed to count the PDF's pages", ex);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -448,6 +609,9 @@ public class PdfFunctions {
 					.put("pdf/available?", pdf_available_Q)
 					.put("pdf/render", pdf_render)
 					.put("pdf/watermark", pdf_watermark)
+					.put("pdf/merge", pdf_merge)
+					.put("pdf/copy", pdf_copy)
+					.put("pdf/pages", pdf_pages)
 					.put("pdf/text-to-pdf", pdf_text_to_pdf)
 					.toMap();	
 }
