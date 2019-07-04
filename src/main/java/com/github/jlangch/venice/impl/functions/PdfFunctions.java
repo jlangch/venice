@@ -276,7 +276,7 @@ public class PdfFunctions {
 					
 					final VncMap options = VncHashMap.ofAll(args.slice(1));
 					final VncDouble fontSize = getVncDoubleOption("font-size", options, 9.0); 
-					final VncLong fontWeight = getVncLongOption("font-weight",options, 200); 
+					final VncLong fontWeight = getVncLongOption("font-weight", options, 200); 
 
 					final List<List<String>> pages = splitIntoPages(text)
 														.stream()
@@ -387,7 +387,7 @@ public class PdfFunctions {
 	}
 	
 	private static VncDouble getVncDoubleOption(final String optName, final VncMap options, final double defaultFontSize) {
-		final VncVal fontSize = options.get(new VncKeyword(optName, new VncDouble(defaultFontSize)));
+		final VncVal fontSize = options.get(new VncKeyword(optName), new VncDouble(defaultFontSize));
 		if (Types.isVncLong(fontSize)) {
 			return new VncDouble(((VncLong)fontSize).getValue().doubleValue());
 		}
@@ -398,12 +398,12 @@ public class PdfFunctions {
 			return (VncDouble)fontSize;
 		}
 		else {
-			throw new VncException("Invalid '" + optName + "' option");
+			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(fontSize));
 		}
 	}
 	
 	private static VncLong getVncLongOption(final String optName, final VncMap options, final long defaultFontWeight) {
-		final VncVal fontWeight = options.get(new VncKeyword(optName, new VncLong(defaultFontWeight)));
+		final VncVal fontWeight = options.get(new VncKeyword(optName), new VncLong(defaultFontWeight));
 		if (Types.isVncLong(fontWeight)) {
 			return (VncLong)fontWeight;
 		}
@@ -414,7 +414,7 @@ public class PdfFunctions {
 			return new VncLong(((VncDouble)fontWeight).getValue().longValue());
 		}
 		else {
-			throw new VncException("Invalid '" + optName + "' option");
+			throw new VncException("Invalid '" + optName + "' option type " + Types.getType(fontWeight));
 		}
 	}
 
