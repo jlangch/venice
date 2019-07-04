@@ -867,7 +867,7 @@ Venice supports simplified text to PDF
      Ipsum passages, and more recently with desktop publishing
      software like Aldus PageMaker including versions of Lorem Ipsum."""))
 
-  ; evaluate the template, render, and save it
+  ; render the PDF, and save it
   (-<> text
        (pdf/text-to-pdf <> :font-size 10 :font-weight 300)
        (io/spit "text2pdf-example.pdf" <>))
