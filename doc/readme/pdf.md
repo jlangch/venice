@@ -27,7 +27,7 @@ References:
 * [Introduction Example](#introduction-example)
 * [Tables](#tables)
 * [Images](#images)
-* [Custom Embedded Fonts](#custom-embedded-fonts)
+* [Fonts](#fonts)
 * [Table of Content](#table-of-content)
 * [Page Footers](#page-footers)
 * [Watermarks](#watermarks)
@@ -252,8 +252,8 @@ References:
 
 ## Images
 
-Images can be loaded from the classpath or from a memory resource pool. The memory
-resource pool is used when resources are created dynamically like charts.
+Images can be loaded from the classpath or from a memory resource pool. The ladder
+is used with dynamically created resources like charts.
 
 #### Classpath (static images)
 
@@ -266,8 +266,8 @@ on the Venice's classpath. Refer to the image via a classpath URI:
 
 #### Memory Pool (dynamic images)
 
-Dynamically created images can be passed to render as an in-memory resources. 
-These images are referred then as:
+Dynamically created images can be passed to the renderer as in-memory resources. 
+These images are the referred as:
 
 ```html
 <img src="memory:/images/chart.png"/>
@@ -370,7 +370,7 @@ These images are referred then as:
 
 
 
-## Custom Embedded Fonts
+## Fonts
 
 PDF supports 14 standard fonts:
 
