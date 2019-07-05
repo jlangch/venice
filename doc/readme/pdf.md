@@ -26,7 +26,7 @@ References:
 * [Kira Template](ext-kira.md)
 * [Introduction Example](#introduction-example)
 * [Tables](#tables)
-* [Embedded Images](#embedded-images)
+* [Images](#images)
 * [Custom Embedded Fonts](#custom-embedded-fonts)
 * [Table of Content](#table-of-content)
 * [Page Footers](#page-footers)
@@ -250,7 +250,9 @@ References:
 
 
 
-## Embedded Images
+## Images
+
+Demonstrates adding an image from the classpath and a dynamically created chart.
 
 ```clojure
 (do 
@@ -291,8 +293,15 @@ References:
              font-family: sans-serif;
              font-weight: 400;
            }
+           .logo {
+             margin-top: 2cm;
+             text-align: right;
+           }
+           .logo img {
+              width: 7cm;
+           }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 5cm 0 3cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -311,9 +320,12 @@ References:
        </head>
        
        <body>
+         <div class="logo">
+           <img src="classpath:/images/venice.png"/>
+         </div>
          <div class="title">Image Example</div>
          <div class="chart">
-           <img src="memory:/chart_1"/>
+           <img src="memory:/chart_1.png"/>
          </div>
        </body>
      </html>
@@ -321,7 +333,7 @@ References:
 
   (def data { :title "Hello, world" } )
   
-  (def memory-resources { "/chart_1" (chart) } )
+  (def memory-resources { "/chart_1.png" (chart) } )
 
   ; evaluate the template, render, and save it
   (-<> data
