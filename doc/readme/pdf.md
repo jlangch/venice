@@ -86,7 +86,7 @@ References:
        </head>
        
        <body>
-         <div class="title">Introduction Example</div>
+         <div class="title">Venice PDF Introduction</div>
          <div class="subtitle">Example</div>
          
          <div class="head">${ (kira/escape-xml title) }$</div>
@@ -208,7 +208,7 @@ References:
        </head>
        
        <body>
-         <div class="title">Tables</div>
+         <div class="title">Venice PDF Tables</div>
          <div class="subtitle">Example</div>
          
          <table class="people people1">
@@ -362,8 +362,8 @@ These images are then referred as:
            }
            div.chart {
              margin-top: 1cm;
-             margin-left: 4cm;
-             margin-right: 4cm;
+             margin-left: 2cm;
+             margin-right: 2cm;
              padding: 2mm;
              border: 1px solid #C0C0C0;
            }         
@@ -378,7 +378,7 @@ These images are then referred as:
            <img src="classpath:/images/venice.png"/>
          </div>
         
-         <div class="title">Image Example</div>
+         <div class="title">Venice PDF Images</div>
          <div class="subtitle">Example</div>
 
          <div class="chart">
@@ -547,7 +547,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
        </head>
        
        <body>
-         <div class="title">Custom Embedded Fonts</div>
+         <div class="title">Venice PDF Fonts</div>
          <div class="subtitle">Example</div>
 
          <div class="head">Sans Serif</div>
@@ -683,7 +683,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
        </head>
        
        <body>
-         <div class="title">Table of Content</div>
+         <div class="title">Venice PDF Table of Content</div>
          <div class="subtitle">Example</div>
 
          <div class="page">
@@ -816,7 +816,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
          <div id="footer_left"><hr/>${ (kira/escape-xml footer-left) }$</div>
          <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
 
-         <div class="title">Footer Example</div>
+         <div class="title">Venice PDF Footer</div>
          <div class="subtitle">Example</div>
          
          <div style="page-break-before: always;"/>
@@ -899,7 +899,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
        </head>
        
        <body>
-         <div class="title">Watermark Example</div>
+         <div class="title">Venice PDF Watermarks</div>
          <div class="subtitle">Example</div>
          
          <div style="page-break-before: always;"/>
