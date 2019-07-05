@@ -57,7 +57,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
-import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
@@ -87,13 +86,12 @@ public class PdfFunctions {
 						"(pdf/render xhtml)",
 						"(pdf/render xhtml base-url)",
 						"(pdf/render xhtml resources)",
-						"(pdf/render xhtml base-url alternate-base-paths)",
-						"(pdf/render xhtml base-url alternate-base-paths resources)")		
+						"(pdf/render xhtml base-url resources)")		
 					.doc("Renders a PDF.")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/render", args, 1, 2, 3, 4);
+				assertArity("pdf/render", args, 1, 2, 3);
 				
 				if (args.size() == 1) {
 					return new VncByteBuffer(
@@ -111,8 +109,7 @@ public class PdfFunctions {
 						return new VncByteBuffer(
 								PdfRenderer.render(
 										Coerce.toVncString(args.first()).getValue(),
-										Coerce.toVncString(args.second()).getValue(),
-										null));
+										Coerce.toVncString(args.second()).getValue()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -120,19 +117,11 @@ public class PdfFunctions {
 								Types.getType(args.second())));
 					}
 				}
-				else if (args.size() == 3) {
+				else {
 					return new VncByteBuffer(
 							PdfRenderer.render(
 									Coerce.toVncString(args.first()).getValue(),
 									Coerce.toVncString(args.second()).getValue(),
-									mapAlternateBasePaths(Coerce.toVncSequence(args.third()))));
-				}
-				else {	
-					return new VncByteBuffer(
-							PdfRenderer.render(
-									Coerce.toVncString(args.first()).getValue(),
-									Coerce.toVncString(args.second()).getValue(),
-									mapAlternateBasePaths(Coerce.toVncSequence(args.third())),
 									mapResources(Coerce.toVncMap(args.nth(3)))));
 				}
 			}
@@ -495,14 +484,6 @@ public class PdfFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-		
-	private static List<String> mapAlternateBasePaths(final VncSequence paths) {
-		return paths
-			      .getList()
-			      .stream()
-			      .map(i -> Coerce.toVncString(i).getValue())
-			      .collect(Collectors.toList());
-	}
 		
 	private static Map<String,ByteBuffer> mapResources(final VncMap resourceMap) {
 		final Map<String,ByteBuffer> resources = new HashMap<>();

@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
@@ -46,17 +45,6 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  *   renderer.getSharedContext().setUserAgentCallback(userAgent);
  *   renderer.setDocument(doc, "classpath:/templates/pdf/");
  * </pre>
- * 
- * <p>With alternate base paths
- * <pre>
- *   ITextRenderer renderer = new ITextRenderer(..);
- *   ITextUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice()) 
- *                                      .addAlternateBasePath("templates/pdf")
- *                                      .addAlternateBasePath("fonts");
- *   userAgent.setSharedContext(renderer.getSharedContext());
- *   renderer.getSharedContext().setUserAgentCallback(userAgent);
- *   renderer.setDocument(doc, "classpath:/");
- * </pre>
  */
 public class ClasspathUserAgent extends ITextUserAgent {
 
@@ -64,19 +52,6 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		final ITextOutputDevice outputDevice
 	) {
 		super(outputDevice);
-	}
-
-	public ClasspathUserAgent addAlternateBasePath(final String path) {
-		if (StringUtil.isBlank(path)) {
-			throw new IllegalArgumentException("A path must not be blank");
-		}
-
-		final String altPath = stripLeadingTrailingSlash(path);
-		if (StringUtil.isNotBlank(altPath)) {
-			alternateBasePaths.add(altPath);
-		}
-		
-		return this;
 	}
 
 	public ClasspathUserAgent addResource(final String name, final ByteBuffer data) {
@@ -100,55 +75,43 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		
 		if (isClasspathScheme(uri)) {
 			log(debug, "FlyingSaucer: Classpath URI=" + uri);
-			final String cpResource = stripClasspathScheme(uri);
 			
 			// [1] try to get the resource from the cached resources
-			ByteBuffer data = cachedResources.get(cpResource);
+			ByteBuffer data = cachedResources.get(uri);
 			if (data != null) {
-				log(debug, "FlyingSaucer: Resolved '" + cpResource + "' from cache.");
+				log(debug, "FlyingSaucer: Resolved '" + uri + "' from cache.");
 
 				return new ByteArrayInputStream(data.array());
 			}
 			
 			// [2] try to get the resource from the classpath (root)
-			data = slurp(new ClassPathResource(cpResource));
+			final String path = stripLeadingSlashes(stripScheme(uri));
+			data = slurp(new ClassPathResource(path));
 			if (data != null) {
-				log(debug, "FlyingSaucer: Resolved '" + cpResource + "' from classpath.");
+				log(debug, "FlyingSaucer: Resolved reource '" + path + "' from classpath.");
 				
-				cachedResources.put(cpResource, data);
+				cachedResources.put(uri, data);
 				return new ByteArrayInputStream(data.array());
-			}
-
-			// [3] try to get the resource from the alternate classpaths
-			for(String path : alternateBasePaths) {
-				log(debug, "FlyingSaucer: Checking alternate classpath '" + path + "/" + cpResource + "'...");
-
-				data = slurp(new ClassPathResource(path + "/" + cpResource));
-				if (data != null) {
-					log(debug, "FlyingSaucer: Resolved '" + path + "/" + cpResource + "' from classpath.");
-					
-					cachedResources.put(cpResource, data);
-					return new ByteArrayInputStream(data.array());
-				}
 			}
 			
 			// [4] the resource has not been found
-			log(debug, "FlyingSaucer: Resource '" + cpResource + "' not found on classpath.");
+			log(debug, "FlyingSaucer: Resource '" + path + "' not found on classpath.");
 			return null;
 		}
 		else if (isMemoryScheme(uri)) {
 			log(debug, "FlyingSaucer: Memory URI=" + uri);
-			final String resource = stripMemoryScheme(uri);
-			
+
+			final String path = stripScheme(uri);
+
 			// try to get the resource from the cached resources
-			ByteBuffer data = cachedResources.get(resource);
+			ByteBuffer data = cachedResources.get(path);
 			if (data != null) {
-				log(debug, "FlyingSaucer: Resolved '" + resource + "' from memory.");
+				log(debug, "FlyingSaucer: Resolved '" + path + "' from memory.");
 				
 				return new ByteArrayInputStream(data.array());
 			}	
 			
-			log(debug, "FlyingSaucer: Resource '" + resource + "' not found in memory.");
+			log(debug, "FlyingSaucer: Resource '" + path + "' not found in memory.");
 			return null; // the resource has not been found
 		}
 		else {
@@ -165,32 +128,26 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		return uri.startsWith("classpath:") || uri.startsWith("classpath-debug:");
 	}
 	
-	private String stripClasspathScheme(final String uri) {
-		return uri
-				.replaceFirst("^classpath-debug:/*", "")
-				.replaceFirst("^classpath:/*", "");
+	private String stripScheme(final String uri) {
+		final int pos = uri.indexOf(':');
+		return pos < 0 ? uri : uri.substring(pos+1);
 	}
 
-	private boolean isMemoryScheme(final String uri) {
-		return uri.startsWith("memory:") || uri.startsWith("memory-debug:");
-	}
-	
-	private String stripMemoryScheme(final String uri) {
-		return uri
-				.replaceFirst("^memory-debug:", "")
-				.replaceFirst("^memory:", "");
-	}
-	
-	private String stripLeadingTrailingSlash(final String path) {
+	private String stripLeadingSlashes(final String path) {
 		if (StringUtil.isBlank(path)) {
 			return path;
 		}
 		else {
 			String p = path.trim();
-			p = StringUtil.removeStart(p, "/");
-			p = StringUtil.removeEnd(p, "/");
+			while(p.startsWith("/")) {
+				p = StringUtil.removeStart(p, "/");
+			}
 			return p;
 		}
+	}
+
+	private boolean isMemoryScheme(final String uri) {
+		return uri.startsWith("memory:") || uri.startsWith("memory-debug:");
 	}
 	
 	private ByteBuffer slurp(final ClassPathResource cpResource) {
@@ -204,6 +161,5 @@ public class ClasspathUserAgent extends ITextUserAgent {
 	}
 	
 	
-	private final ConcurrentLinkedQueue<String> alternateBasePaths = new ConcurrentLinkedQueue<>();
 	private final Map<String, ByteBuffer> cachedResources = new ConcurrentHashMap<>();
 }
