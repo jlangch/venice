@@ -10,9 +10,9 @@ a safe scripting language.
 
 ## Overview
 
-Venice's goal is not to build just another Lisp, it's born from the need of 
-having a safe, powerful scripting and expression language that can be used 
-to implement scriptable extension points and rules for applications.
+Venice is a Lisp dialect born from the need for a safe, powerful scripting 
+and expression language that can be used to implement scriptable extension 
+points and rules for applications.
 
 Venice supports macros, tail-recursion, dynamic code loading, dynamic 
 (thread-local) binding. It comes with excellent Java interoperability, and a 
@@ -58,4 +58,3 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/0c23ff0/cheatsheet.htm
 * [Change Log](ChangeLog.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
 * [3rd Party Libs](doc/readme/3rdparty-lic.md)
-
