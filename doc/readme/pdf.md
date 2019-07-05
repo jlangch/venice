@@ -364,23 +364,27 @@ The PDF renderer supports any number of additional True-Type fonts.
 These fonts can be embedded into the PDF to be available on all client 
 platforms regardless whether the font is locally installed or not.
 
-The PDF renderer loads custom True-Type fonts from the classpath.
+The PDF renderer loads custom True-Type fonts from URIs. The custom 
+schema `classpath:/` allows the renderer to load the font files from
+the class path:
+- `classpath:/OpenSans-Regular.ttf`
+- `classpath:/fonts/OpenSans-Regular.ttf`
 
-The font files are searched on the specified base url (e.g. `classpath:/`) 
-and on optional alternative base paths (e.g. `fonts`).
+A font definition that embeds the font in the PDF looks like:
 
-_Note: alternative base paths are always relative to the specified base url_
-
-To render an _xhtml_ and search font files on the classpath `/*.ttf`, `/fonts/*.ttf`, 
-and `/images/*.ttf` run:
-
-```clojure
-(pdf/render xhtml "classpath:/" ["fonts" "images"])
+```css
+   @font-face {
+      font-family: 'Open Sans';
+      src: url('classpath:/fonts/OpenSans-Regular.ttf');
+      font-style: normal;
+      font-weight: normal;
+      -fs-pdf-font-embed: embed;
+      -fs-pdf-font-encoding: Identity-H;
+   }
 ```
 
-
-It's best to package the font files in a JAR like `fonts.jar` and place the JAR
-on the Venice classpath.
+The font files can be packaged in a resource JAR like `fonts.jar` and be placed
+on the Venice's classpath.
 
 A `fonts.jar` file containing the OFL fonts 'Open Sans' and 'Source Code Pro'
 may look like:
@@ -416,7 +420,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
          <style type="text/css">
            @font-face {
               font-family: 'Open Sans';
-              src: url('OpenSans-Regular.ttf');
+              src: url('classpath:/fonts/OpenSans-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -424,7 +428,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
            }
            @font-face {
               font-family: 'Open Sans Bold';
-              src: url('OpenSans-Bold.ttf');
+              src: url('classpath:/fonts/OpenSans-Bold.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -432,7 +436,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
            }
            @font-face {
               font-family: 'Source Code Pro';
-              src: url('SourceCodePro-Regular.ttf');
+              src: url('classpath:/fonts/SourceCodePro-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -502,10 +506,10 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
   
   ; Evaluate the template, render, and save it.  
-  (-<> data
-       (kira/eval template ["${" "}$"] <>)
-       (pdf/render <> "classpath:/" ["fonts" "images"])
-       (io/spit "fonts-example.pdf" <>))
+  (->> data
+       (kira/eval template ["${" "}$"])
+       (pdf/render)
+       (io/spit "fonts-example.pdf"))
 )
 ```
 
