@@ -54,15 +54,22 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		super(outputDevice);
 	}
 
-	public ClasspathUserAgent addResource(final String name, final ByteBuffer data) {
-		if (StringUtil.isBlank(name)) {
-			throw new IllegalArgumentException("A 'resource' name must not be blank");
+	public ClasspathUserAgent addResource(final String path, final ByteBuffer data) {
+		if (StringUtil.isBlank(path)) {
+			throw new IllegalArgumentException("A 'resource' path must not be blank");
 		}
 		if (data == null) {
 			throw new IllegalArgumentException("A 'resource' data must not be null");
 		}
 		
-		cachedResources.put(name, data);
+		if (isClasspathScheme(path) || isMemoryScheme(path)) {
+			throw new RuntimeException(
+				"An in-memory resource path must not be an URI with a schema "
+				+ "like 'memory:/charts/001.png' just pass '/charts/001.png'. "
+				+ "Path was: " + path);
+		}
+		
+		cachedResources.put(path, data);
 		
 		return this;
 	}
@@ -127,6 +134,10 @@ public class ClasspathUserAgent extends ITextUserAgent {
 	private boolean isClasspathScheme(final String uri) {
 		return uri.startsWith("classpath:") || uri.startsWith("classpath-debug:");
 	}
+
+	private boolean isMemoryScheme(final String uri) {
+		return uri.startsWith("memory:") || uri.startsWith("memory-debug:");
+	}
 	
 	private String stripScheme(final String uri) {
 		final int pos = uri.indexOf(':');
@@ -144,10 +155,6 @@ public class ClasspathUserAgent extends ITextUserAgent {
 			}
 			return p;
 		}
-	}
-
-	private boolean isMemoryScheme(final String uri) {
-		return uri.startsWith("memory:") || uri.startsWith("memory-debug:");
 	}
 	
 	private ByteBuffer slurp(final ClassPathResource cpResource) {
