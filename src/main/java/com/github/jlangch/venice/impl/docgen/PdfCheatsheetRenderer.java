@@ -31,6 +31,6 @@ public class PdfCheatsheetRenderer {
 	public static ByteBuffer render(final String xhtml) {
 		return PdfRenderer.render(
 				xhtml, 
-				"classpath:/com/github/jlangch/venice/docgen/");
+				"classpath:/com/github/jlangch/venice/fonts/");
 	}
 }
