@@ -63,7 +63,13 @@ References:
              font-weight: 400;
            }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 3cm 0 0 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -81,6 +87,8 @@ References:
        
        <body>
          <div class="title">Introduction Example</div>
+         <div class="subtitle">Example</div>
+         
          <div class="head">${ (kira/escape-xml title) }$</div>
          <div class="date">${ (kira/escape-xml timestamp format-ts) }$</div>
        </body>
@@ -129,7 +137,13 @@ References:
              font-weight: 400;
            }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 3cm 0 0 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -195,6 +209,8 @@ References:
        
        <body>
          <div class="title">Tables</div>
+         <div class="subtitle">Example</div>
+         
          <table class="people people1">
            <tbody>
              ${ (kira/docoll persons (fn [p] (kira/emit }$
@@ -333,7 +349,13 @@ These images are then referred as:
              width: 7cm;
            }
            div.title  {
-             margin: 5cm 0 3cm 0;
+             margin: 3cm 0 0 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -355,7 +377,10 @@ These images are then referred as:
          <div class="logo">
            <img src="classpath:/images/venice.png"/>
          </div>
+        
          <div class="title">Image Example</div>
+         <div class="subtitle">Example</div>
+
          <div class="chart">
            <img src="memory:/chart_1.png"/>
          </div>
@@ -486,11 +511,18 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              font-weight: 400;
            }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+
            div.head  {
              font-family: sans-serif;
              margin-top: 1cm;
@@ -516,6 +548,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
        
        <body>
          <div class="title">Custom Embedded Fonts</div>
+         <div class="subtitle">Example</div>
 
          <div class="head">Sans Serif</div>
          <div class="sans-serif">${ (kira/escape-xml text) }$</div>
@@ -632,7 +665,13 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              padding: 0;
            }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 3cm 0 0 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -645,6 +684,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
        
        <body>
          <div class="title">Table of Content</div>
+         <div class="subtitle">Example</div>
 
          <div class="page">
            <h2 class="toc-title">Content</h2>
@@ -733,7 +773,13 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              font-weight: 400;
            }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 3cm 0 0 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -771,6 +817,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
          <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
 
          <div class="title">Footer Example</div>
+         <div class="subtitle">Example</div>
          
          <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
@@ -834,7 +881,13 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              font-weight: 400;
            }
            div.title  {
-             margin: 3cm 0 5cm 0;
+             margin: 3cm 0 0 0;
+             text-align: center;
+             font-size: 24pt;
+             font-weight: 600;
+           }
+           div.subtitle  {
+             margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
@@ -847,6 +900,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
        
        <body>
          <div class="title">Watermark Example</div>
+         <div class="subtitle">Example</div>
          
          <div style="page-break-before: always;"/>
          <div class="text">${ (kira/escape-xml text) }$</div>
