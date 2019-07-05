@@ -83,47 +83,34 @@ public class PdfFunctions {
 					.meta()
 					.module("pdf")
 					.arglists(
-						"(pdf/render xhtml)",
-						"(pdf/render xhtml base-url)",
-						"(pdf/render xhtml resources)",
-						"(pdf/render xhtml base-url resources)")		
-					.doc("Renders a PDF.")
+						"(pdf/render xhtml & options)")		
+					.doc(
+						"Renders a PDF.\n\n" + 
+						"Options: \n" + 
+						"  :base-url url        - a base url. E.g.: \"classpath:/\"\n" + 
+						"  :resources resmap    - a resource map for dynamic resources\n") 
+					.examples(
+						"(pdf/render xhtm :base-url \"classpath:/\")",							
+						"(pdf/render xhtm \n" +
+						"            :base-url \"classpath:/\"\n" +
+						"            :resources {\"/chart_1.png\" (chart-create :2018) \n" +							
+						"                        \"/chart_2.png\" (chart-create :2019) })")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/render", args, 1, 2, 3);
-				
-				if (args.size() == 1) {
-					return new VncByteBuffer(
-									PdfRenderer.render(
-											Coerce.toVncString(args.first()).getValue()));
-				}
-				else if (args.size() == 2) {
-					if (Types.isVncMap(args.second())) {
-						return new VncByteBuffer(
-								PdfRenderer.render(
-										Coerce.toVncString(args.first()).getValue(),
-										mapResources((VncMap)args.second())));
-					}
-					else if (Types.isVncString(args.second())) {
-						return new VncByteBuffer(
-								PdfRenderer.render(
-										Coerce.toVncString(args.first()).getValue(),
-										Coerce.toVncString(args.second()).getValue()));
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'pdf/render' does not allow %s as 2nd argument",
-								Types.getType(args.second())));
-					}
-				}
-				else {
-					return new VncByteBuffer(
-							PdfRenderer.render(
-									Coerce.toVncString(args.first()).getValue(),
-									Coerce.toVncString(args.second()).getValue(),
-									mapResources(Coerce.toVncMap(args.nth(3)))));
-				}
+				assertMinArity("pdf/render", args, 1);
+
+				final VncString xhtml = Coerce.toVncString(args.first()); 
+
+				final VncMap options = VncHashMap.ofAll(args.slice(1));
+				final VncVal baseUrl = options.get(new VncKeyword("base-url")); 
+				final VncVal resources = options.get(new VncKeyword("resources"));
+
+				return new VncByteBuffer(
+						PdfRenderer.render(
+								xhtml.getValue(),
+								baseUrl == Nil ? null : Coerce.toVncString(baseUrl).getValue(),
+								resources == Nil ? null : mapResources(Coerce.toVncMap(resources))));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -451,7 +438,6 @@ public class PdfFunctions {
 					final VncDouble fontSize = getVncDoubleOption("font-size", options, 9.0); 
 					final VncLong fontWeight = getVncLongOption("font-weight", options, 200); 
 					final VncConstant fontMonoSpace = getBooleanOption("font-monospace", options, false); 
-
 
 					final List<List<String>> pages = splitIntoPages(text)
 														.stream()

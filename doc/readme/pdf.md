@@ -390,12 +390,10 @@ These images are then referred as:
 
   (def data { :title "Hello, world" } )
   
-  (def memory-resources { "/chart_1.png" (chart) } )
-
   ; evaluate the template, render, and save it
   (-<> data
        (kira/eval template ["${" "}$"] <>)
-       (pdf/render <> memory-resources)
+       (pdf/render <> :resources { "/chart_1.png" (chart) })
        (io/spit "image-example.pdf" <>))
 )
 ```
@@ -728,10 +726,10 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
   
 
   ; evaluate the template, render, and save it
-  (-<> data
-       (kira/eval template ["${" "}$"] <>)
-       (pdf/render <>)
-       (io/spit "toc-example.pdf" <>))
+  (->> data
+       (kira/eval template ["${" "}$"])
+       (pdf/render)
+       (io/spit "toc-example.pdf"))
 )
 ```
 
