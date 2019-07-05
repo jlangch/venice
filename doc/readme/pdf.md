@@ -264,13 +264,24 @@ on the Venice's classpath. Refer to the image via a classpath URI:
 <img src="classpath:/images/logo.png"/>
 ```
 
-#### Memory Pool (dynamic images)
+#### Memory Resource Pool (dynamic images)
 
 Dynamically created images can be passed to the renderer as in-memory resources. 
-These images are the referred as:
+
+```clojure
+; compute the in-memory resources and give it a names as a reference
+(def resources { "/images/chart_2018.png" (create-chart  2018)
+                 "/images/chart_2019.png" (create-chart  2019) } )
+  ....
+  
+; pass the in-memory resources to the renderer
+(pdf/render xhtml resources)
+```
+
+These images are then referred as:
 
 ```html
-<img src="memory:/images/chart.png"/>
+<img src="memory:/images/chart_2018.png"/>
 ```
 
 #### Example
@@ -425,6 +436,7 @@ may look like:
 A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub 
 [Demo Fonts](https://github.com/jlangch/venice/blob/master/doc/pdfs/fonts.jar)
 
+Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
 
 
 ```clojure
@@ -497,7 +509,7 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
              font-family: 'Open Sans Bold', sans-serif;
            }
            div.source-code-pro  {
-             font-family: 'Source Code Pro', sans-serif;
+             font-family: 'Source Code Pro', monospace;
            }
          </style>
        </head>
