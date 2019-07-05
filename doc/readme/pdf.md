@@ -298,7 +298,7 @@ Demonstrates adding an image from the classpath and a dynamically created chart.
              text-align: right;
            }
            .logo img {
-              width: 7cm;
+             width: 7cm;
            }
            div.title  {
              margin: 5cm 0 3cm 0;
