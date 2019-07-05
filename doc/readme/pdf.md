@@ -252,7 +252,28 @@ References:
 
 ## Images
 
-Demonstrates adding an image from the classpath and a dynamically created chart.
+Images can be loaded from the classpath or from a memory resource pool. The memory
+resource pool is used when resources are created dynamically like charts.
+
+#### Classpath (static images)
+
+Package the static images in a resource JAR like `resource.jar` and place the JAR
+on the Venice's classpath. Refer to the image via a classpath URI:
+
+```html
+<img src="classpath:/images/logo.png"/>
+```
+
+#### Memory Pool (dynamic images)
+
+Dynamically created images can be passed to render as an in-memory resources. 
+These images are referred then as:
+
+```html
+<img src="memory:/images/chart.png"/>
+```
+
+#### Example
 
 ```clojure
 (do 
@@ -765,10 +786,10 @@ A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub
   
 
   ; evaluate the template, render, and save it
-  (-<> data
-       (kira/eval template ["${" "}$"] <>)
-       (pdf/render <>)
-       (io/spit "footer-example.pdf" <>))
+  (->> data
+       (kira/eval template ["${" "}$"])
+       (pdf/render)
+       (io/spit "footer-example.pdf"))
 )
 ```
 
