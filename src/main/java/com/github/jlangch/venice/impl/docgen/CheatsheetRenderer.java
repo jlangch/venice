@@ -23,17 +23,19 @@ package com.github.jlangch.venice.impl.docgen;
 
 import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.pdf.PdfRenderer;
 
 
-public class HtmlCheatsheetRenderer {
+public class CheatsheetRenderer {
 	
-	public static String render(final Map<String,Object> data) {
+	public static String renderXHTML(final Map<String,Object> data) {
 		try {
 			final String template = loadCheatSheetTemplate();
 			
@@ -58,7 +60,13 @@ public class HtmlCheatsheetRenderer {
 			throw new RuntimeException("Failed to render cheat sheet HTML", ex);
 		}
 	}
-	
+
+	public static ByteBuffer renderPDF(final String xhtml) {
+		return PdfRenderer.render(
+				xhtml, 
+				"classpath:/com/github/jlangch/venice/fonts/");
+	}
+
 	private static String loadCheatSheetTemplate() {
 		return new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet2.html")
 						.getResourceAsString("UTF-8");
