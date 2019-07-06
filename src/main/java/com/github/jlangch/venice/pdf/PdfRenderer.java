@@ -61,14 +61,24 @@ public class PdfRenderer {
 	) {
 		return render(xhtml, baseUrl, null);
 	}
-	
+
 	public static ByteBuffer render(
 			final String xhtml,  
 			final String baseUrl,
 			final Map<String,ByteBuffer> resources
 	) {
+		return render(xhtml, baseUrl, null, DOTS_PER_PIXEL, DOTS_PER_POINT);
+	}
+	
+	public static ByteBuffer render(
+			final String xhtml,  
+			final String baseUrl,
+			final Map<String,ByteBuffer> resources,
+			final int dotsPerPixel,
+			final float dotsPerPoint
+	) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			final ITextRenderer renderer = new ITextRenderer(DOTS_PER_POINT, DOTS_PER_PIXEL);
+			final ITextRenderer renderer = new ITextRenderer(dotsPerPoint, dotsPerPixel);
 
 			final ClasspathUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice());
 			if (resources != null) {
@@ -93,7 +103,7 @@ public class PdfRenderer {
 			return ByteBuffer.wrap(os.toByteArray());
 		}
 		catch(Exception ex) {
-			throw new RuntimeException("Failed to render PDF cheatsheet.", ex);
+			throw new RuntimeException("Failed to render PDF.", ex);
 		}		
 	}
 	
@@ -142,6 +152,6 @@ public class PdfRenderer {
 	}
 	
 
-	private static final int DOTS_PER_PIXEL = 20;
-	private static final float DOTS_PER_POINT = (float)DOTS_PER_PIXEL * 96f / 72f;
+	public static final int DOTS_PER_PIXEL = 20;
+	public static final float DOTS_PER_POINT = (float)DOTS_PER_PIXEL * 96f / 72f;
 }

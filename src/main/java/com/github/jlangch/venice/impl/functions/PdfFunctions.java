@@ -105,12 +105,19 @@ public class PdfFunctions {
 				final VncMap options = VncHashMap.ofAll(args.slice(1));
 				final VncVal baseUrl = options.get(new VncKeyword("base-url")); 
 				final VncVal resources = options.get(new VncKeyword("resources"));
+				
+				// undocumented options
+				// be careful with these options, know what you are doing!
+				final VncVal dotsPerPixel = getVncLongOption("dots-per-pixel", options, PdfRenderer.DOTS_PER_PIXEL);
+				final VncVal dotsPerPoint = getVncDoubleOption("dots-per-point", options, PdfRenderer.DOTS_PER_POINT);
 
 				return new VncByteBuffer(
 						PdfRenderer.render(
 								xhtml.getValue(),
 								baseUrl == Nil ? null : Coerce.toVncString(baseUrl).getValue(),
-								resources == Nil ? null : mapResources(Coerce.toVncMap(resources))));
+								resources == Nil ? null : mapResources(Coerce.toVncMap(resources)),
+								Coerce.toVncLong(dotsPerPixel).getValue().intValue(),
+								Coerce.toVncDouble(dotsPerPoint).getValue().floatValue()));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;

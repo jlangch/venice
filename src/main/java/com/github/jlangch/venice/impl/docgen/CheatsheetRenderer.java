@@ -43,21 +43,19 @@ public class CheatsheetRenderer {
 								  "   (load-module :kira)                        \n" +
 								  "   (kira/eval template [\"${\" \"}$\"] data))   ";
 			
-			final Venice venice = new Venice();
-			
 			// apply the template
-			return (String)venice.eval(
+			return (String)new Venice().eval(
 							script,
 							Parameters.of("template", template, "data", data));
 		}
 		catch(VncException ex) {
 			throw new RuntimeException(
-						"Failed to render cheat sheet HTML. \n" + 
+						"Failed to render cheatsheet XHTML. \n" + 
 						"Venice Callstack: \n" + ex.getCallStackAsString("   "),
 						ex);
 		}
 		catch(Exception ex) {
-			throw new RuntimeException("Failed to render cheat sheet HTML", ex);
+			throw new RuntimeException("Failed to render cheatsheet XHTML", ex);
 		}
 	}
 
