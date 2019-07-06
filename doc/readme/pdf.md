@@ -23,7 +23,6 @@ The PDF generation workflow is built on two steps:
 
 References:
 
-* [Kira Template](ext-kira.md)
 * [Introduction Example](#introduction-example)
 * [Tables](#tables)
 * [Images](#images)
@@ -34,6 +33,7 @@ References:
 * [Text to PDF](#text-to-pdf)
 * [Merge PDFs](#merge-pdfs)
 * [Copy PDF](#copy-pdf)
+* [Kira Template Engine](ext-kira.md)
 * [Download Libraries](#download-required-3rd-party-libs)
 
 
