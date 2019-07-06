@@ -6,8 +6,13 @@
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
+            ${ (when-not pdfmode (kira/emit }$
+            /* see https://fonts.google.com/ */ 
+            @import url('https://fonts.googleapis.com/css?family=Audiowide|Open+Sans|Source+Code+Pro&display=swap');
+            ${ )) }$
+           
             ${ (when pdfmode (kira/emit }$
-             @font-face {
+            @font-face {
                 font-family: 'Open Sans';
                 src: url('OpenSans-Regular.ttf');
                 font-style: normal;
@@ -23,7 +28,16 @@
                 -fs-pdf-font-embed: embed;
                 -fs-pdf-font-encoding: Identity-H;
             }
+            @font-face {
+                font-family: 'Audiowide';
+                src: url('Audiowide-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
             ${ )) }$
+            
             @page {
                 size: A4 portrait;
                 margin: 2cm 1.0cm;
@@ -105,11 +119,24 @@
             td.expand {
                 width: 95%;
             }
-            div.header h1 {
+            .title {
+                margin: 1.5em 0 1.5em 0;
+                padding: 0 0.5em 0.5em;
+                color: #507dca;
                 font-size: 3em;
+                line-height: 2em;
+                font-weight: 300;
+                with: 100%;
             }
-            .header {
-                margin: 0 0 0 0.5em;
+            .title-left {
+                float: left;
+                font-family: 'Audiowide', 'Open Sans', sans-serif;
+                font-weight: 300;
+            }
+            .title-right {
+                float: right;
+                font-weight: 500;
+                text-align: right;
             }
             .column:first-child {
                 clear: both;
@@ -195,23 +222,14 @@
                 padding: 0.5em;
             }
         </style>
-       ${ (when-not pdfmode (kira/emit }$
-        <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CPT+Serif:400,400italic,700,700italic%7CSource+Code+Pro:regular,500"/>
-        <script>
-            WebFont.load({
-                google: {
-                    families: ["Open Sans:300,300italic,400,400italic,600,600italic","PT Serif:400,400italic,700,700italic","Source Code Pro:regular,500"]
-                }
-            });
-        </script>
-        ${ )) }$
     </head>
 
     <body>
         <div class="main">
-            <div class="header" id="top">
-                 <h1>Venice ${ (kira/escape-xml version) }$ Cheat Sheet</h1>
+            <div class="title" id="top">
+                 <div class="title-left">Venice ${ (kira/escape-xml version) }$</div> 
+                 <div class="title-right">Cheat Sheet</div>
+                 <div style="clear: both;"></div>
             </div>
             
             <div class="column">
