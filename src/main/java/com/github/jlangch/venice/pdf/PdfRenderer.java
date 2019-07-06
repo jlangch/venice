@@ -98,6 +98,7 @@ public class PdfRenderer {
 			renderer.setDocumentFromString(xhtml, baseUrl);
 			renderer.layout();
 			renderer.createPDF(os);
+			renderer.finishPDF();
 			os.flush();
 
 			return ByteBuffer.wrap(os.toByteArray());
