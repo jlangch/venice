@@ -153,6 +153,7 @@ public class PdfRenderer {
 	}
 	
 
+	// see https://stackoverflow.com/questions/20495092/flying-saucer-set-custom-dpi-for-output-pdf
 	public static final int DOTS_PER_PIXEL = 20;
 	public static final float DOTS_PER_POINT = (float)DOTS_PER_PIXEL * 96f / 72f;
 }
