@@ -62,23 +62,23 @@ References:
              font-family: sans-serif;
              font-weight: 400;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.head  {
+           div.head {
              margin-top: 1cm;
              text-align: center;
            }
-           div.date  {
+           div.date {
              margin-top: 1cm;
              text-align: center;
            }
@@ -136,13 +136,13 @@ References:
              font-family: sans-serif;
              font-weight: 400;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
@@ -245,11 +245,11 @@ References:
 
   (def data {
        :persons
-           [ [ "Last Name" "First Name" "City"     "Gender" "Age" "Birthdate"                  ]
-             [ "Meier"     "Peter"      "Bern"       "m"     42    (time/local-date 1977 10 1) ] 
-             [ "Schmid"    "Hans"       "Luzern"     "m"     56    (time/local-date 1963 8 12) ] 
-             [ "Winter"    "Maria"      "Aarau"      "f"     23    (time/local-date 1996 4 8)  ] 
-             [ "Halter"    "Carla"      "Zürich"     "f"      9    (time/local-date 2010 9 28) ] ]
+           [ [ "Last Name" "First Name" "City"   "Gender" "Age" "Birthdate"                   ]
+             [ "Meier"     "Peter"      "Bern"    "m"      42    (time/local-date 1977 10  1) ] 
+             [ "Schmid"    "Hans"       "Luzern"  "m"      56    (time/local-date 1963  8 12) ] 
+             [ "Winter"    "Maria"      "Aarau"   "f"      23    (time/local-date 1996  4  8) ] 
+             [ "Halter"    "Carla"      "Zürich"  "f"       9    (time/local-date 2010  9 28) ] ]
       } )
 
   ; evaluate the template, render, and save it
@@ -348,13 +348,13 @@ These images are then referred as:
            .logo img {
              width: 7cm;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
@@ -508,37 +508,37 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              font-family: sans-serif;
              font-weight: 400;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
 
-           div.head  {
+           div.head {
              font-family: sans-serif;
              margin-top: 1cm;
              font-weight: 700;
            }
-           div.serif  {
+           div.serif {
              font-family: serif;
            }
-           div.sans-serif  {
+           div.sans-serif {
              font-family: sans-serif;
            }
-           div.open-sans  {
+           div.open-sans {
              font-family: 'Open Sans', sans-serif;
            }
-           div.open-sans-bold  {
+           div.open-sans-bold {
              font-family: 'Open Sans Bold', sans-serif;
            }
-           div.source-code-pro  {
+           div.source-code-pro {
              font-family: 'Source Code Pro', monospace;
            }
          </style>
@@ -662,19 +662,19 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              margin: 0;
              padding: 0;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.text  {
+           div.text {
              margin-top: 1cm;
            }
          </style>
@@ -770,19 +770,19 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              font-family: sans-serif;
              font-weight: 400;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.text  {
+           div.text {
              margin-top: 1cm;
            }
            span.page:before {
@@ -878,19 +878,19 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
              font-family: sans-serif;
              font-weight: 400;
            }
-           div.title  {
+           div.title {
              margin: 3cm 0 0 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.subtitle  {
+           div.subtitle {
              margin: 1cm 0 4cm 0;
              text-align: center;
              font-size: 24pt;
              font-weight: 600;
            }
-           div.text  {
+           div.text {
              margin-top: 1cm;
            }
          </style>
