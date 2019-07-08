@@ -323,7 +323,7 @@ These images are then referred as:
           :y-axis { :title "Y" :decimal-pattern "#0.#" }
           :theme :xchart } )
       :png
-      120))  
+      300))  
   
   ; define the template
   (def template (str/strip-indent """\
