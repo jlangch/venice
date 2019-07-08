@@ -286,12 +286,12 @@ Dynamically created images can be passed to the renderer as in-memory resources.
 
 ```clojure
 ; compute the in-memory resources and give it a names as a reference
-(def resources { "/images/chart_2018.png" (create-chart  2018)
-                 "/images/chart_2019.png" (create-chart  2019) } )
+(def images { "/images/chart_2018.png" (create-chart  2018)
+              "/images/chart_2019.png" (create-chart  2019) } )
   ....
   
 ; pass the in-memory resources to the renderer
-(pdf/render xhtml resources)
+(pdf/render xhtml :resources images)
 ```
 
 These images are then referred as:
