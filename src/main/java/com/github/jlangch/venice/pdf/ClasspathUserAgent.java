@@ -24,6 +24,7 @@ package com.github.jlangch.venice.pdf;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,11 +40,10 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * 
  * <pre>
  *   ITextRenderer renderer = new ITextRenderer(..);
- *   ITextUserAgent userAgent = new ClasspathUserAgent(
- *                                      renderer.getOutputDevice());
+ *   ITextUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice());
  *   userAgent.setSharedContext(renderer.getSharedContext());
  *   renderer.getSharedContext().setUserAgentCallback(userAgent);
- *   renderer.setDocument(doc, "classpath:/templates/pdf/");
+ *   renderer.setDocument(doc, "classpath:/");
  * </pre>
  */
 public class ClasspathUserAgent extends ITextUserAgent {
@@ -64,7 +64,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
 		
 		if (isClasspathScheme(path) || isMemoryScheme(path)) {
 			throw new RuntimeException(
-				"An in-memory resource path must not be an URI with a schema "
+				"An in-memory resource path must not be an URI with a scheme "
 				+ "like 'memory:/charts/001.png' just pass '/charts/001.png'. "
 				+ "Path was: " + path);
 		}
@@ -111,7 +111,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
 			final String path = stripScheme(uri);
 
 			// try to get the resource from the cached resources
-			ByteBuffer data = cachedResources.get(path);
+			final ByteBuffer data = cachedResources.get(path);
 			if (data != null) {
 				log(debug, "FlyingSaucer: Resolved '" + path + "' from memory.");
 				
@@ -128,17 +128,21 @@ public class ClasspathUserAgent extends ITextUserAgent {
     }
 	
 	private boolean isDebugScheme(final String uri) {
-		return uri.startsWith("classpath-debug:") || uri.startsWith("memory-debug:");
+		return isScheme(uri, "classpath-debug:", "memory-debug:");
 	}
 	
 	private boolean isClasspathScheme(final String uri) {
-		return uri.startsWith("classpath:") || uri.startsWith("classpath-debug:");
+		return isScheme(uri, "classpath:", "classpath-debug:");
 	}
 
 	private boolean isMemoryScheme(final String uri) {
-		return uri.startsWith("memory:") || uri.startsWith("memory-debug:");
+		return isScheme(uri, "memory:", "memory-debug:");
 	}
-	
+
+	private boolean isScheme(final String uri, final String ... scheme) {
+		return Arrays.stream(scheme).anyMatch(s -> uri.startsWith(s));
+	}
+
 	private String stripScheme(final String uri) {
 		final int pos = uri.indexOf(':');
 		return pos < 0 ? uri : uri.substring(pos+1);

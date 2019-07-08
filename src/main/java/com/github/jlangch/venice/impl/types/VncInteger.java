@@ -45,6 +45,10 @@ public class VncInteger extends VncVal {
 	public VncInteger withMeta(final VncVal meta) {
 		return new VncInteger(value, meta);
 	}
+	
+	public VncInteger negate() { 
+		return new VncInteger(value * -1); 
+	}
 
 	public Integer getValue() { 
 		return value; 

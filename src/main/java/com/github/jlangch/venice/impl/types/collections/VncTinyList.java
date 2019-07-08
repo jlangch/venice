@@ -36,7 +36,8 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 /**
- * An experimental VncList optimized for keeping 1 to 3 values.
+ * An immutable list optimized for keeping 1 to 3 values.
+ * Returns a VncList if the list grows beyond its max length.
  */
 public class VncTinyList extends VncList {
 

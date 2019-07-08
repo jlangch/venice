@@ -45,6 +45,10 @@ public class VncLong extends VncVal {
 	public VncLong withMeta(final VncVal meta) {
 		return new VncLong(value, meta);
 	}
+	
+	public VncLong negate() { 
+		return new VncLong(value * -1L); 
+	}
 
 	public Long getValue() { 
 		return value; 

@@ -45,6 +45,10 @@ public class VncDouble extends VncVal {
 	public VncDouble withMeta(final VncVal meta) {
 		return new VncDouble(value, meta);
 	}
+	
+	public VncDouble negate() { 
+		return new VncDouble(value * -1.0D); 
+	}
 
 	public Double getValue() { 
 		return value; 

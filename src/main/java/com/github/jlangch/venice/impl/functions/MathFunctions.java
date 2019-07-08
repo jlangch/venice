@@ -95,16 +95,16 @@ public class MathFunctions {
 					case 1: 
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
-							return new VncLong(((VncLong)first).getValue() * -1L);
+							return ((VncLong)first).negate();
 						}
 						else if (Types.isVncInteger(first)) {
-							return new VncInteger(((VncInteger)first).getValue() * -1);
+							return ((VncInteger)first).negate();
 						}
 						else if (Types.isVncDouble(first)) {
-							return new VncDouble(((VncDouble)first).getValue() * -1D);
+							return ((VncDouble)first).negate();
 						}
 						else if (Types.isVncBigDecimal(first)) {
-							return new VncBigDecimal(((VncBigDecimal)first).getValue().negate());
+							return ((VncBigDecimal)first).negate();
 						}
 						else {
 							return first;

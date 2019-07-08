@@ -44,13 +44,13 @@ public class VncBigDecimal extends VncVal {
 	public VncBigDecimal withMeta(final VncVal meta) {
 		return new VncBigDecimal(value, meta);
 	}
+	
+	public VncBigDecimal negate() { 
+		return new VncBigDecimal(value.negate()); 
+	}
 
 	public BigDecimal getValue() { 
 		return value; 
-	}
-
-	public static RoundingMode toRoundingMode(final VncString val) {
-		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
 	}
 	
 	@Override 
@@ -114,6 +114,9 @@ public class VncBigDecimal extends VncVal {
 		return value.toString() + "M";
 	}
 
+	public static RoundingMode toRoundingMode(final VncString val) {
+		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
+	}
 
     private static final long serialVersionUID = -1848883965231344442L;
 

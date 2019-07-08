@@ -1158,7 +1158,7 @@ public class CoreFunctions {
 				}
 				catch(Exception ex) {
 					throw new VncException(String.format(
-							"Function 'long': the string %s can not be converted to an int", 
+							"Function 'int': the string %s can not be converted to an int", 
 							s));
 				}
 			}
