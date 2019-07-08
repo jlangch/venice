@@ -785,6 +785,11 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
            div.text {
              margin-top: 1cm;
            }
+           hr {
+             border: none;
+             height: 1px;
+             background-color: #303030;
+           }
            span.page:before {
              content: counter(page);
            }
