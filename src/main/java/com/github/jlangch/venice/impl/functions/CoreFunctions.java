@@ -5990,6 +5990,7 @@ public class CoreFunctions {
 					for(VncVal v : coll.getList()) {
 						ret = tf.apply(VncList.of(ret, v));
 						if (Types.isVncJavaObject(ret, Reduced.class)) {
+							ret = Coerce.toVncJavaObject(ret, Reduced.class).deref();
 							break;
 						}
 					}
