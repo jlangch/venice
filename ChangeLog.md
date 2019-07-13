@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - [PDF renderer & tools](doc/readme/pdf.md) 
 
+### Fixed
+
+- `(conj nil item)` to return `(item)`
+
 
 
 ## [1.5.11] - 2019-06-27

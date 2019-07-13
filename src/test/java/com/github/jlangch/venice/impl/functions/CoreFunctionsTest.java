@@ -315,6 +315,11 @@ public class CoreFunctionsTest {
 	public void test_conj() {
 		final Venice venice = new Venice();
 
+		assertEquals("[]", venice.eval("(str (conj))"));
+		assertEquals("1", venice.eval("(str (conj 1))"));
+		assertEquals("(1)", venice.eval("(str (conj nil 1))"));
+		assertEquals("(2 1)", venice.eval("(str (conj nil 1 2))"));
+
 		// List
 		assertEquals("(1)", venice.eval("(str (conj '() 1))"));
 		assertEquals("(1 2)", venice.eval("(str (conj '(2) 1))"));

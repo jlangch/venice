@@ -5470,7 +5470,10 @@ public class CoreFunctions {
 					return args.first();
 				}
 				else {
-					final VncVal coll = args.first();
+					VncVal coll = args.first();
+					if (coll == Nil) {
+						coll = new VncList();
+					}
 	
 					if (Types.isVncVector(coll)) {
 						return ((VncVector)coll).addAllAtEnd(args.rest());
