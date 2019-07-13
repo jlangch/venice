@@ -6030,10 +6030,13 @@ public class CoreFunctions {
 					VncVal ret = init;
 
 					for(VncVal v : coll.getList()) {
-						ret = tf.apply(VncList.of(ret, v));
-						if (Types.isVncJavaObject(ret, Reduced.class)) {
-							ret = Coerce.toVncJavaObject(ret, Reduced.class).deref();
+						final VncVal ret_ = tf.apply(VncList.of(ret, v));
+						if (Types.isVncJavaObject(ret_, Reduced.class)) {
+							ret = Coerce.toVncJavaObject(ret_, Reduced.class).deref();
 							break;
+						}
+						else {
+							ret = ret_;
 						}
 					}
 					
