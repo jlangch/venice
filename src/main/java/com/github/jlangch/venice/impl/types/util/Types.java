@@ -306,6 +306,12 @@ public class Types {
 		else if (Types.isVncMap(val)) {
 			return new VncKeyword("venice.Map");
 		}
+		else if (Types.isVncStack(val)) {
+			return new VncKeyword("venice.Stack");
+		}
+		else if (Types.isVncQueue(val)) {
+			return new VncKeyword("venice.Queue");
+		}
 		else {
 			return new VncKeyword(val.getClass().getName());
 		}

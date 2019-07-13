@@ -5445,7 +5445,11 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(conj coll x)", "(conj coll x & xs)")		
+					.arglists(
+						"(conj)", 
+						"(conj x)", 
+						"(conj coll x)", 
+						"(conj coll x & xs)")		
 					.doc(
 						"Returns a new collection with the x, xs " + 
 						"'added'. (conj nil item) returns (item).  The 'addition' may " + 
@@ -5453,45 +5457,53 @@ public class CoreFunctions {
 					.examples(
 						"(conj [1 2 3] 4)",
 						"(conj '(1 2 3) 4)",
-						"(conj (set 1 2 3) 4)")
+						"(conj (set 1 2 3) 4)",
+						"(conj )",
+						"(conj 4)")
 					.build()
 		) {
-			public VncVal apply(final VncList args) {			
-				assertMinArity("conj", args, 2);
-
-				final VncVal coll = args.first();
-
-				if (Types.isVncVector(coll)) {
-					return ((VncVector)coll).addAllAtEnd(args.rest());
-				} 
-				else if (Types.isVncList(coll)) {
-					return ((VncList)coll).addAllAtStart(args.rest());
+			public VncVal apply(final VncList args) {
+				if (args.isEmpty()) {
+					return new VncVector();
 				}
-				else if (Types.isVncSet(coll)) {
-					return ((VncSet)coll).addAll(args.rest());
+				else if (args.size() == 1) {
+					return args.first();
 				}
-				else if (Types.isVncMap(coll)) {
-					final VncMap map = (VncMap)coll;			
-					final VncVal second = args.second();
-					if (Types.isVncVector(second) && ((VncVector)second).size() == 2) {
-						return map.assoc(
-									VncList.of(
-										((VncVector)second).first(),
-										((VncVector)second).second()));
+				else {
+					final VncVal coll = args.first();
+	
+					if (Types.isVncVector(coll)) {
+						return ((VncVector)coll).addAllAtEnd(args.rest());
+					} 
+					else if (Types.isVncList(coll)) {
+						return ((VncList)coll).addAllAtStart(args.rest());
 					}
-					else if (Types.isVncMap(second)) {
-						return map.putAll((VncMap)second);
+					else if (Types.isVncSet(coll)) {
+						return ((VncSet)coll).addAll(args.rest());
+					}
+					else if (Types.isVncMap(coll)) {
+						final VncMap map = (VncMap)coll;			
+						final VncVal second = args.second();
+						if (Types.isVncVector(second) && ((VncVector)second).size() == 2) {
+							return map.assoc(
+										VncList.of(
+											((VncVector)second).first(),
+											((VncVector)second).second()));
+						}
+						else if (Types.isVncMap(second)) {
+							return map.putAll((VncMap)second);
+						}
+						else {
+							throw new VncException(String.format(
+									"Invalid x %s while calling function 'conj'",
+									Types.getType(args.second())));
+						}
 					}
 					else {
 						throw new VncException(String.format(
-								"Invalid x %s while calling function 'conj'",
-								Types.getType(args.second())));
+								"Invalid coll %s while calling function 'conj'",
+								Types.getType(coll)));
 					}
-				}
-				else {
-					throw new VncException(String.format(
-							"Invalid coll %s while calling function 'conj'",
-							Types.getType(coll)));
 				}
 			}
 	
