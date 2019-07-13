@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
@@ -4088,24 +4089,65 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("dedupe", args, 1);
-	
-				if (args.first() == Nil) {
-					return new VncList();
-				}
+				assertArity("dedupe", args, 0, 1);
+
+				if (args.isEmpty()) {
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("dedupe:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final AtomicReference<VncVal> seen = new AtomicReference<>(new VncKeyword("::none"));
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("dedupe:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										if (!input.equals(seen.get())) {
+											seen.set(input);
+											return rf.apply(VncList.of(result, input));
+										}
+										else {
+											return result;
+										}
+									}
+								}
 				
-				VncVal seen = null;
-	
-				final List<VncVal> items = new ArrayList<>();
-	
-				for(VncVal val : Coerce.toVncSequence(args.first()).getList()) {
-					if (seen == null || !val.equals(seen)) {
-						items.add(val);
-						seen = val;
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};
+				}
+				else {
+					if (args.first() == Nil) {
+						return new VncList();
 					}
+					
+					VncVal seen = new VncKeyword("::none");
+		
+					final List<VncVal> items = new ArrayList<>();
+		
+					for(VncVal val : Coerce.toVncSequence(args.first()).getList()) {
+						if (!val.equals(seen)) {
+							items.add(val);
+							seen = val;
+						}
+					}
+					
+					return ((VncSequence)args.first()).withValues(items);
 				}
-				
-				return ((VncSequence)args.first()).withValues(items);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
