@@ -150,6 +150,11 @@ public class VncVector extends VncSequence {
 	}
 
 	@Override
+	public VncVal fourth() {
+		return nthOrDefault(3, Constants.Nil);
+	}
+
+	@Override
 	public VncVal last() {
 		return isEmpty() ? Constants.Nil : value.last();
 	}

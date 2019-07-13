@@ -137,6 +137,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
+	public VncVal fourth() {
+		return nthOrDefault(3, Constants.Nil);
+	}
+
+	@Override
 	public VncVal last() {
 		return nthOrDefault(value.size()-1, Constants.Nil);
 	}

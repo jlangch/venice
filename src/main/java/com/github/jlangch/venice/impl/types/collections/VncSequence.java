@@ -58,6 +58,8 @@ public abstract class VncSequence extends VncCollection {
 
 	public abstract VncVal third();
 
+	public abstract VncVal fourth();
+
 	public abstract VncVal last();
 
 	public abstract VncSequence rest();
