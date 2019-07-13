@@ -89,6 +89,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
+import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
 public class CoreFunctions {
@@ -4970,49 +4971,84 @@ public class CoreFunctions {
 					.doc(
 						"Applys f to the set of first items of each coll, followed by applying " + 
 						"f to the set of second items in each coll, until any one of the colls " + 
-						"is exhausted.  Any remaining items in other colls are ignored. ")
+						"is exhausted. Any remaining items in other colls are ignored. ")
 					.examples(
 						"(map inc [1 2 3 4])",
 						"(map + [1 2 3 4] [10 20 30 40])")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				if (args.size() < 2) {
+				if (args.size() == 0) {
 					return Nil;
 				}
+				else if (args.size() == 1) {
+					final VncFunction fn = Coerce.toVncFunction(args.first());
+
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("map:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("map:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncList inputs = args.slice(1);
+										
+										return rf.apply(VncList.of(result, fn.apply(inputs)));
+									}
+								}
 				
-				final VncFunction fn = Coerce.toVncFunction(args.first());
-				final VncList lists = removeNilValues((VncList)args.rest());
-				final List<VncVal> result = new ArrayList<>();
-							
-				if (lists.isEmpty()) {
-					return Nil;
-				}
-				
-				int index = 0;
-				boolean hasMore = true;
-				while(hasMore) {
-					final List<VncVal> fnArgs = new ArrayList<>();
-					
-					for(int ii=0; ii<lists.size(); ii++) {
-						final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
-						if (nthList.size() > index) {
-							fnArgs.add(nthList.nth(index));
+							    private static final long serialVersionUID = -1L;
+							};
 						}
-						else {
-							hasMore = false;
-							break;
-						}
-					}
-	
-					if (hasMore) {
-						final VncVal val = fn.apply(new VncList(fnArgs));
-						result.add(val);			
-						index += 1;
-					}
-				}
 		
-				return new VncList(result);
+					    private static final long serialVersionUID = -1L;
+					};
+				}
+				else {
+					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final VncList lists = removeNilValues((VncList)args.rest());
+					final List<VncVal> result = new ArrayList<>();
+								
+					if (lists.isEmpty()) {
+						return Nil;
+					}
+					
+					int index = 0;
+					boolean hasMore = true;
+					while(hasMore) {
+						final List<VncVal> fnArgs = new ArrayList<>();
+						
+						for(int ii=0; ii<lists.size(); ii++) {
+							final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
+							if (nthList.size() > index) {
+								fnArgs.add(nthList.nth(index));
+							}
+							else {
+								hasMore = false;
+								break;
+							}
+						}
+		
+						if (hasMore) {
+							final VncVal val = fn.apply(new VncList(fnArgs));
+							result.add(val);			
+							index += 1;
+						}
+					}
+			
+					return new VncList(result);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5029,7 +5065,7 @@ public class CoreFunctions {
 						"Returns a vector consisting of the result of applying f " +
 						"to the set of first items of each coll, followed by applying " + 
 						"f to the set of second items in each coll, until any one of the colls " + 
-						"is exhausted.  Any remaining items in other colls are ignored. ")
+						"is exhausted. Any remaining items in other colls are ignored. ")
 					.examples(
 						"(mapv inc [1 2 3 4])",
 						"(mapv + [1 2 3 4] [10 20 30 40])")
@@ -5081,8 +5117,8 @@ public class CoreFunctions {
 					.arglists("(keep f coll)")		
 					.doc(
 						"Returns a sequence of the non-nil results of (f item). Note, " + 
-						"this means false return values will be included. f must be free of " + 
-						"side-effects.")
+						"this means false return values will be included. f must be " + 
+						"free of side-effects.")
 					.examples(
 						"(keep even? (range 1 4))",
 						"(keep (fn [x] (if (odd? x) x)) (range 4))")
@@ -5091,11 +5127,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("keep", args, 2);
 				
+				// use 'map' to apply the mapping function
 				final VncVal result = map.apply(args);
 	
-				return result == Nil
-						? Nil
-						: removeNilValues(Coerce.toVncList(result));
+				return result == Nil ? Nil : removeNilValues(Coerce.toVncList(result));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5209,22 +5244,60 @@ public class CoreFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("filter", args, 2);
+				assertArity("filter", args, 1, 2);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				final List<VncVal> items = new ArrayList<>();
 				
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal val = coll.nth(i);
-					final VncVal keep = predicate.apply(VncList.of(val));
-					if (!(keep == False || keep == Nil)) {
-						items.add(val);
-					}
+				if (args.size() == 1) {
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("filter:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("filter:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										final VncVal cond = predicate.apply(VncList.of(input));
+										return (cond != False && cond != Nil)
+													? rf.apply(VncList.of(result, input))
+													: result;
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;
+							};
+						}
+		
+					    private static final long serialVersionUID = -1L;
+					};
 				}
-				
-				return coll.withValues(items);
+				else {
+					final VncSequence coll = Coerce.toVncSequence(args.second());
+		
+					final List<VncVal> items = new ArrayList<>();
+					
+					for(int i=0; i<coll.size(); i++) {
+						final VncVal val = coll.nth(i);
+						final VncVal keep = predicate.apply(VncList.of(val));
+						if (keep != False && keep != Nil) {
+							items.add(val);
+						}
+					}
+					
+					return coll.withValues(items);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5371,7 +5444,7 @@ public class CoreFunctions {
 						"and f is not called. Note that reduce-kv is supported on vectors, " + 
 						"where the keys will be the ordinals.")
 					.examples(
-							"(reduce-kv (fn [x y z] (assoc x z y)) {} {:a 1 :b 2 :c 3})")
+						"(reduce-kv (fn [x y z] (assoc x z y)) {} {:a 1 :b 2 :c 3})")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -5867,7 +5940,68 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction transduce = 
+		new VncFunction(
+				"transduce", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(transduce xform f coll)", 
+						"(transduce xform f init coll)")		
+					.doc("todo")
+					.examples()
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("transduce", args, 3, 4);
+				
+				// --------------------------------------------------------------
+				//              W O R K   I N   P R O G R E S S
+				// --------------------------------------------------------------
+				
+				// (def xf (map #(+ % 1)))
+				// (transduce xf + [1 2 3 4])  ;; => 14
+				// (transduce xf conj [1 2 3 4])  ;; => [2 3 4 5]
 	
+				// Returns the result of applying (the transformed) xf to init and 
+				// the first item in coll, then applying xf to that result and the 
+				// 2nd item, etc. If coll contains no items, returns init and f is 
+				// not called. Note that certain transforms may inject or skip items.
+				 
+				final VncFunction xform = Coerce.toVncFunction(args.first());
+				final VncFunction f = Coerce.toVncFunction(args.second());
+				final VncVal init = args.size() == 4
+										? args.third()
+										: f.apply(new VncList());
+				final VncSequence coll = args.size() == 4
+										? (VncSequence)args.fourth()
+										: (VncSequence)args.third();
+				
+				if (coll.isEmpty()) {
+					return init;
+				}
+				else {
+					final VncFunction tf = (VncFunction)xform.apply(VncList.of(f));
+	
+					VncVal ret = init;
+
+					for(VncVal v : coll.getList()) {
+						ret = tf.apply(VncList.of(ret, v));
+						if (Types.isVncJavaObject(ret, Reduced.class)) {
+							break;
+						}
+					}
+					
+					// cleanup
+					return tf.apply(VncList.of(ret));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction java_obj_Q = 
 		new VncFunction(
 				"java-obj?", 
@@ -6067,6 +6201,7 @@ public class CoreFunctions {
 	}
 	
 	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -6235,6 +6370,8 @@ public class CoreFunctions {
 				.put("seq",					seq)
 				.put("repeat",				repeat)
 				.put("repeatedly",			repeatedly)
+				
+				.put("transduce",			transduce)
 		
 				.put("meta",				meta)
 				.put("with-meta",			with_meta)

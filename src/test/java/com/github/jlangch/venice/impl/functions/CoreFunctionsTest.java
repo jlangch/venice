@@ -3032,6 +3032,33 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_transducer() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (map #(+ % 1)))              \n" +
+				"  (def coll [1 2 3 4 5 6])             \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (map #(+ % 1)))              \n" +
+				"  (def coll [1 2 3 4 5 6])             \n" +
+				"  (str (transduce xf conj coll)))        ";
+		
+		final String script3 =
+				"(do                                              \n" +
+				"  (def xf (comp (map #(+ % 10)) (filter odd?)))  \n" +
+				"  (def coll [1 2 3 4 5 6])                       \n" +
+				"  (str (transduce xf conj coll)))                 ";
+
+		assertEquals("27", venice.eval(script1));	
+		assertEquals("[2 3 4 5 6 7]", venice.eval(script2));	
+		assertEquals("[11 13 15]", venice.eval(script3));	
+	}
+
+	@Test
 	public void test_true_Q() {
 		final Venice venice = new Venice();
 
