@@ -7,10 +7,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.5.12] - 2019-07-xx
+## [1.6.0] - 2019-07-14
 
 ### Added
 
+- Transducers 
 - [PDF renderer & tools](doc/readme/pdf.md) 
 
 ### Fixed
