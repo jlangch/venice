@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
@@ -90,7 +89,6 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
-import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
 public class CoreFunctions {
@@ -4075,83 +4073,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction dedupe = 
-		new VncFunction(
-				"dedupe", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(dedupe coll)")		
-					.doc("Returns a collection with all consecutive duplicates removed")
-					.examples(
-						"(dedupe [1 2 2 2 3 4 4 2 3])",
-						"(dedupe '(1 2 2 2 3 4 4 2 3))")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("dedupe", args, 0, 1);
-
-				if (args.isEmpty()) {
-					// return a transducer
-					return new VncFunction() {
-						public VncVal apply(final VncList args) {
-							assertArity("dedupe:transducer", args, 1);
-							final VncFunction rf = Coerce.toVncFunction(args.first());
-						    final AtomicReference<VncVal> seen = new AtomicReference<>(new VncKeyword("::none"));
-
-							return new VncFunction() {
-								public VncVal apply(final VncList args) {
-									assertArity("dedupe:transducer", args, 1, 2, 3);
-									if (args.size() == 0) {
-										return rf.apply(new VncList());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-										
-										if (!input.equals(seen.get())) {
-											seen.set(input);
-											return rf.apply(VncList.of(result, input));
-										}
-										else {
-											return result;
-										}
-									}
-								}
-				
-							    private static final long serialVersionUID = -1L;						    
-							};
-						}
-							
-					    private static final long serialVersionUID = -1L;
-					};
-				}
-				else {
-					if (args.first() == Nil) {
-						return new VncList();
-					}
-					
-					VncVal seen = new VncKeyword("::none");
-		
-					final List<VncVal> items = new ArrayList<>();
-		
-					for(VncVal val : Coerce.toVncSequence(args.first()).getList()) {
-						if (!val.equals(seen)) {
-							items.add(val);
-							seen = val;
-						}
-					}
-					
-					return ((VncSequence)args.first()).withValues(items);
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
 
 	public static VncFunction partition = 
 		new VncFunction(
@@ -4529,118 +4450,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
-	public static VncFunction take_while = 
-		new VncFunction(
-				"take-while", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(take-while predicate coll)")		
-					.doc(
-						"Returns a list of successive items from coll while " + 
-						"(predicate item) returns logical true.")
-					.examples("(take-while neg? [-2 -1 0 1 2 3])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("take-while", args, 2);
-				
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-				
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
-					if (take == False) {
-						return coll.slice(0, i);
-					}
-				}
-				return coll;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-	
-	public static VncFunction take = 
-		new VncFunction(
-				"take", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(take n coll)")		
-					.doc(
-						"Returns a collection of the first n items in coll, or all items if " + 
-						"there are fewer than n.")
-					.examples(
-						"(take 3 [1 2 3 4 5])", 
-						"(take 10 [1 2 3 4 5])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("take", args, 2);
-				
-				final VncLong n = Coerce.toVncLong(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-	
-	public static VncFunction drop_while = 
-		new VncFunction(
-				"drop-while", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(drop-while predicate coll)")		
-					.doc(
-						"Returns a list of the items in coll starting from the " + 
-						"first item for which (predicate item) returns logical false.")
-					.examples("(drop-while neg? [-2 -1 0 1 2 3])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("drop-while", args, 2);
-				
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-				
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
-					if (take == False) {
-						return coll.slice(i);
-					}
-				}
-				return coll.empty();
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-	
-	public static VncFunction drop = 
-		new VncFunction(
-				"drop", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(drop n coll)")		
-					.doc("Returns a collection of all but the first n items in coll")
-					.examples("(drop 3 [1 2 3 4 5])", "(drop 10 [1 2 3 4 5])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("drop", args, 2);
-				
-				final VncLong n = Coerce.toVncLong(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-	
 	public static VncFunction flatten = 
 		new VncFunction(
 				"flatten", 
@@ -5003,99 +4812,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction map = 
-		new VncFunction(
-				"map", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(map f coll colls*)")		
-					.doc(
-						"Applys f to the set of first items of each coll, followed by applying " + 
-						"f to the set of second items in each coll, until any one of the colls " + 
-						"is exhausted. Any remaining items in other colls are ignored. ")
-					.examples(
-						"(map inc [1 2 3 4])",
-						"(map + [1 2 3 4] [10 20 30 40])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				if (args.size() == 0) {
-					return Nil;
-				}
-				else if (args.size() == 1) {
-					final VncFunction fn = Coerce.toVncFunction(args.first());
-
-					// return a transducer
-					return new VncFunction() {
-						public VncVal apply(final VncList args) {
-							assertArity("map:transducer", args, 1);
-							final VncFunction rf = Coerce.toVncFunction(args.first());
-
-							return new VncFunction() {
-								public VncVal apply(final VncList args) {
-									assertArity("map:transducer", args, 1, 2, 3);
-									if (args.size() == 0) {
-										return rf.apply(new VncList());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncList inputs = args.slice(1);
-										
-										return rf.apply(VncList.of(result, fn.apply(inputs)));
-									}
-								}
-				
-							    private static final long serialVersionUID = -1L;
-							};
-						}
-		
-					    private static final long serialVersionUID = -1L;
-					};
-				}
-				else {
-					final VncFunction fn = Coerce.toVncFunction(args.first());
-					final VncList lists = removeNilValues((VncList)args.rest());
-					final List<VncVal> result = new ArrayList<>();
-								
-					if (lists.isEmpty()) {
-						return Nil;
-					}
-					
-					int index = 0;
-					boolean hasMore = true;
-					while(hasMore) {
-						final List<VncVal> fnArgs = new ArrayList<>();
-						
-						for(int ii=0; ii<lists.size(); ii++) {
-							final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
-							if (nthList.size() > index) {
-								fnArgs.add(nthList.nth(index));
-							}
-							else {
-								hasMore = false;
-								break;
-							}
-						}
-		
-						if (hasMore) {
-							final VncVal val = fn.apply(new VncList(fnArgs));
-							result.add(val);			
-							index += 1;
-						}
-					}
-			
-					return new VncList(result);
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
 	public static VncFunction mapv = 
 		new VncFunction(
 				"mapv", 
@@ -5145,34 +4861,6 @@ public class CoreFunctions {
 				}
 		
 				return new VncVector(result);
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction keep = 
-		new VncFunction(
-				"keep", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(keep f coll)")		
-					.doc(
-						"Returns a sequence of the non-nil results of (f item). Note, " + 
-						"this means false return values will be included. f must be " + 
-						"free of side-effects.")
-					.examples(
-						"(keep even? (range 1 4))",
-						"(keep (fn [x] (if (odd? x) x)) (range 4))")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("keep", args, 2);
-				
-				// use 'map' to apply the mapping function
-				final VncVal result = map.apply(args);
-	
-				return result == Nil ? Nil : removeNilValues(Coerce.toVncList(result));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5237,7 +4925,7 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				return concat.apply(Coerce.toVncList(map.apply(args)));
+				return concat.apply(Coerce.toVncList(TransducerFunctions.map.apply(args)));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5271,114 +4959,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction filter = 
-		new VncFunction(
-				"filter", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(filter predicate coll)")		
-					.doc(
-						"Returns a collection of the items in coll for which " + 
-						"(predicate item) returns logical true. ")
-					.examples(
-						"(filter even? [1 2 3 4 5 6 7])")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("filter", args, 1, 2);
-				
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				
-				if (args.size() == 1) {
-					// return a transducer
-					return new VncFunction() {
-						public VncVal apply(final VncList args) {
-							assertArity("filter:transducer", args, 1);
-							final VncFunction rf = Coerce.toVncFunction(args.first());
-
-							return new VncFunction() {
-								public VncVal apply(final VncList args) {
-									assertArity("filter:transducer", args, 1, 2, 3);
-									if (args.size() == 0) {
-										return rf.apply(new VncList());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-										
-										final VncVal cond = predicate.apply(VncList.of(input));
-										return (cond != False && cond != Nil)
-													? rf.apply(VncList.of(result, input))
-													: result;
-									}
-								}
-				
-							    private static final long serialVersionUID = -1L;
-							};
-						}
-		
-					    private static final long serialVersionUID = -1L;
-					};
-				}
-				else {
-					final VncSequence coll = Coerce.toVncSequence(args.second());
-		
-					final List<VncVal> items = new ArrayList<>();
-					
-					for(int i=0; i<coll.size(); i++) {
-						final VncVal val = coll.nth(i);
-						final VncVal keep = predicate.apply(VncList.of(val));
-						if (keep != False && keep != Nil) {
-							items.add(val);
-						}
-					}
-					
-					return coll.withValues(items);
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction remove = 
-		new VncFunction(
-				"remove", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(remove predicate coll)")		
-					.doc(
-						"Returns a collection of the items in coll for which " + 
-						"(predicate item) returns logical false. ")
-					.examples(
-						"(remove even? [1 2 3 4 5 6 7])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("remove", args, 2);
-				
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				final List<VncVal> items = new ArrayList<>();
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal val = coll.nth(i);
-					final VncVal keep = predicate.apply(VncList.of(val));
-					if (keep == False) {
-						items.add(val);
-					}				
-				}
-				
-				return coll.withValues(items);
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
 	
 	public static VncFunction reduce = 
 		new VncFunction(
@@ -5983,71 +5563,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction transduce = 
-		new VncFunction(
-				"transduce", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists(
-						"(transduce xform f coll)", 
-						"(transduce xform f init coll)")		
-					.doc("todo")
-					.examples()
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("transduce", args, 3, 4);
-				
-				// --------------------------------------------------------------
-				//              W O R K   I N   P R O G R E S S
-				// --------------------------------------------------------------
-				
-				// (def xf (map #(+ % 1)))
-				// (transduce xf + [1 2 3 4])  ;; => 14
-				// (transduce xf conj [1 2 3 4])  ;; => [2 3 4 5]
-	
-				// Returns the result of applying (the transformed) xf to init and 
-				// the first item in coll, then applying xf to that result and the 
-				// 2nd item, etc. If coll contains no items, returns init and f is 
-				// not called. Note that certain transforms may inject or skip items.
-				 
-				final VncFunction xform = Coerce.toVncFunction(args.first());
-				final VncFunction f = Coerce.toVncFunction(args.second());
-				final VncVal init = args.size() == 4
-										? args.third()
-										: f.apply(new VncList());
-				final VncSequence coll = args.size() == 4
-										? (VncSequence)args.fourth()
-										: (VncSequence)args.third();
-				
-				if (coll.isEmpty()) {
-					return init;
-				}
-				else {
-					final VncFunction tf = (VncFunction)xform.apply(VncList.of(f));
-	
-					VncVal ret = init;
-
-					for(VncVal v : coll.getList()) {
-						final VncVal ret_ = tf.apply(VncList.of(ret, v));
-						if (Types.isVncJavaObject(ret_, Reduced.class)) {
-							ret = Coerce.toVncJavaObject(ret_, Reduced.class).deref();
-							break;
-						}
-						else {
-							ret = ret_;
-						}
-					}
-					
-					// cleanup
-					return tf.apply(VncList.of(ret));
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
 	public static VncFunction java_obj_Q = 
 		new VncFunction(
 				"java-obj?", 
@@ -6360,7 +5875,6 @@ public class CoreFunctions {
 				.put("interleave",			interleave)
 				.put("mapcat",				mapcat)
 				.put("map-invert",			map_invert)
-				.put("keep",				keep)
 				.put("docoll",				docoll)
 				.put("nth",					nth)
 				.put("first",				first)
@@ -6389,19 +5903,11 @@ public class CoreFunctions {
 				.put("apply",				apply)
 				.put("comp",				comp)
 				.put("partial",				partial)
-				.put("map",					map)
 				.put("mapv",				mapv)
-				.put("filter",				filter)
 				.put("distinct",			distinct)
-				.put("dedupe",				dedupe)
 				.put("partition",			partition)
-				.put("remove",				remove)
 				.put("reduce",				reduce)
 				.put("reduce-kv",			reduce_kv)
-				.put("take",				take)
-				.put("take-while",			take_while)
-				.put("drop",				drop)
-				.put("drop-while",			drop_while)
 				.put("flatten",				flatten)
 				.put("reverse",				reverse)
 				.put("replace",				replace)
@@ -6416,8 +5922,6 @@ public class CoreFunctions {
 				.put("seq",					seq)
 				.put("repeat",				repeat)
 				.put("repeatedly",			repeatedly)
-				
-				.put("transduce",			transduce)
 		
 				.put("meta",				meta)
 				.put("with-meta",			with_meta)
