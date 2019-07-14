@@ -598,14 +598,6 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_distinct() {
-		final Venice venice = new Venice();
-
-		assertEquals("(0 1 2 3)", venice.eval("(str (distinct '(0 1 2 1 3 3)))"));
-		assertEquals("[0 1 2 3]", venice.eval("(str (distinct [0 1 2 1 3 3]))"));
-	}
-
-	@Test
 	public void test_difference() {
 		final Venice venice = new Venice();
 

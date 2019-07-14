@@ -28,11 +28,14 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -778,6 +781,82 @@ public class TransducerFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction distinct = 
+		new VncFunction(
+				"distinct", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(distinct coll)")		
+					.doc(
+						"Returns a collection with all duplicates removed. " +
+						"Returns a stateful transducer when no collection is provided.")
+					.examples(
+						"(distinct [1 2 3 4 2 3 4])",
+						"(distinct '(1 2 3 4 2 3 4))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("distinct", args, 0, 1);
+	
+				if (args.isEmpty()) {
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("distinct:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final Set<VncVal> seen = new HashSet<>();
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("distinct:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										if (seen.contains(input)) {
+											return result;
+										}
+										else {
+											seen.add(input);
+											return rf.apply(VncList.of(result, input));
+										}
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};					
+				}
+				else {
+					if (args.first() == Nil) {
+						return new VncList();
+					}
+					
+					return ((VncSequence)args.first()).withValues(
+														Coerce
+															.toVncSequence(args.first())
+															.getList()
+															.stream()
+															.distinct()
+															.collect(Collectors.toList()));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 		
 	private static VncVal reduced(final VncVal val) {
 		return new VncJavaObject(new Reduced(val));
@@ -800,5 +879,6 @@ public class TransducerFunctions {
 					.put("keep",		keep)
 					.put("dedupe",		dedupe)
 					.put("remove",		remove)
+					.put("distinct",	distinct)
 					.toMap();	
 }

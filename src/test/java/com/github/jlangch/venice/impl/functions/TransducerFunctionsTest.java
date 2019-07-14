@@ -238,6 +238,26 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_distinct() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (distinct))                  \n" +
+				"  (def coll [1 2 2 2 3 4 4 2 5])       \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (distinct))                  \n" +
+				"  (def coll [1 2 2 2 3 4 4 2 5])       \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("15", venice.eval(script1));	
+		assertEquals("[1 2 3 4 5]", venice.eval(script2));	
+	}
+	
+	@Test
 	public void test_map() {
 		final Venice venice = new Venice();
 
@@ -438,6 +458,14 @@ public class TransducerFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("(1 3 5 7 9)", venice.eval("(str (remove even? (range 1 10 1)))"));
+	}
+
+	@Test
+	public void test_distinct() {
+		final Venice venice = new Venice();
+
+		assertEquals("(0 1 2 3)", venice.eval("(str (distinct '(0 1 2 1 3 3)))"));
+		assertEquals("[0 1 2 3]", venice.eval("(str (distinct [0 1 2 1 3 3]))"));
 	}
 	
 }

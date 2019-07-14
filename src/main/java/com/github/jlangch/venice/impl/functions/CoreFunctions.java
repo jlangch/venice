@@ -4041,39 +4041,6 @@ public class CoreFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
-	public static VncFunction distinct = 
-		new VncFunction(
-				"distinct", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(distinct coll)")		
-					.doc("Returns a collection with all duplicates removed")
-					.examples(
-						"(distinct [1 2 3 4 2 3 4])",
-						"(distinct '(1 2 3 4 2 3 4))")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("distinct", args, 1);
-	
-				if (args.first() == Nil) {
-					return new VncList();
-				}
-				
-				return ((VncSequence)args.first()).withValues(
-													Coerce
-														.toVncSequence(args.first())
-														.getList()
-														.stream()
-														.distinct()
-														.collect(Collectors.toList()));
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-
 	public static VncFunction partition = 
 		new VncFunction(
 				"partition", 
@@ -5904,7 +5871,6 @@ public class CoreFunctions {
 				.put("comp",				comp)
 				.put("partial",				partial)
 				.put("mapv",				mapv)
-				.put("distinct",			distinct)
 				.put("partition",			partition)
 				.put("reduce",				reduce)
 				.put("reduce-kv",			reduce_kv)
