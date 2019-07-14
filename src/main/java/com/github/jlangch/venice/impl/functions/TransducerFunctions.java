@@ -25,13 +25,17 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -55,7 +59,7 @@ public class TransducerFunctions {
 						"(transduce xform f coll)", 
 						"(transduce xform f init coll)")		
 					.doc(
-						"Reduce with a transformation of f (xf). If init is not " +
+						"Reduce with a transformation of a reduction function f (xf). If init is not " +
 						"supplied, (f) will be called to produce it. f should be a reducing " +
 						"step function that accepts both 1 and 2 arguments. Returns the result " +
 						"of applying (the transformed) xf to init and the first item in coll, " +
@@ -75,38 +79,29 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("transduce", args, 3, 4);
 				
-				// --------------------------------------------------------------
-				//              W O R K   I N   P R O G R E S S
-				// --------------------------------------------------------------
-				
 				// (def xf (map #(+ % 1)))
 				// (transduce xf + [1 2 3 4])  ;; => 14
 				// (transduce xf conj [1 2 3 4])  ;; => [2 3 4 5]
-	
-				// Returns the result of applying (the transformed) xf to init and 
-				// the first item in coll, then applying xf to that result and the 
-				// 2nd item, etc. If coll contains no items, returns init and f is 
-				// not called. Note that certain transforms may inject or skip items.
-				 
+					 
 				final VncFunction xform = Coerce.toVncFunction(args.first());
 				final VncFunction reduction_fn = Coerce.toVncFunction(args.second());
+				
 				final VncVal init = args.size() == 4
 										? args.third()
 										: reduction_fn.apply(new VncList());
-				final VncSequence coll = args.size() == 4
-										? (VncSequence)args.fourth()
-										: (VncSequence)args.third();
+				
+				final VncSequence coll = (VncSequence)args.last();
 				
 				if (coll.isEmpty()) {
 					return init;
 				}
 				else {
-					final VncFunction tf = (VncFunction)xform.apply(VncList.of(reduction_fn));
+					final VncFunction xf = (VncFunction)xform.apply(VncList.of(reduction_fn));
 	
 					VncVal ret = init;
 
 					for(VncVal v : coll.getList()) {
-						final VncVal ret_ = tf.apply(VncList.of(ret, v));
+						final VncVal ret_ = xf.apply(VncList.of(ret, v));
 						if (Types.isVncJavaObject(ret_, Reduced.class)) {
 							ret = Coerce.toVncJavaObject(ret_, Reduced.class).deref();
 							break;
@@ -117,7 +112,7 @@ public class TransducerFunctions {
 					}
 					
 					// cleanup
-					return tf.apply(VncList.of(ret));
+					return xf.apply(VncList.of(ret));
 				}
 			}
 	
@@ -307,12 +302,54 @@ public class TransducerFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("drop", args, 2);
+				assertArity("drop", args, 1, 2);
 				
-				final VncLong n = Coerce.toVncLong(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
+				if (args.size() == 1) {				    
+					final long n = Coerce.toVncLong(args.first()).getValue();
+
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("drop:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final AtomicLong nn = new AtomicLong(n);
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("drop:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										if (nn.getAndDecrement() > 0) {
+											return result;
+										}
+										else {
+											return rf.apply(VncList.of(result, input));
+										}
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};					
+				}
+				else {
+					final VncLong n = Coerce.toVncLong(args.first());
+					final VncSequence coll = Coerce.toVncSequence(args.second());
+		
+					return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -333,18 +370,66 @@ public class TransducerFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("drop-while", args, 2);
-				
+				assertArity("drop-while", args, 1, 2);
+
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
+
+				if (args.size() == 1) {				    
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("drop-while:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final AtomicBoolean take = new AtomicBoolean(false);
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("drop-while:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										if (take.get()) {
+											return rf.apply(VncList.of(result, input));
+										}
+										else {
+											final VncVal drop = predicate.apply(VncList.of(input));										
+											if (drop == True) {
+												return result;
+											}
+											else {
+												take.set(true);
+												return rf.apply(VncList.of(result, input));
+											}
+										}
+									}
+								}
 				
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
-					if (take == False) {
-						return coll.slice(i);
-					}
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};					
 				}
-				return coll.empty();
+				else {				
+					final VncSequence coll = Coerce.toVncSequence(args.second());
+					
+					for(int i=0; i<coll.size(); i++) {
+						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
+						if (take == False) {
+							return coll.slice(i);
+						}
+					}
+					return coll.empty();
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -367,12 +452,55 @@ public class TransducerFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("take", args, 2);
+				assertArity("take", args, 1, 2);
 				
-				final VncLong n = Coerce.toVncLong(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
+				if (args.size() == 1) {				    
+					final long n = Coerce.toVncLong(args.first()).getValue();
+
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("take:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final AtomicLong nn = new AtomicLong(n);
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("take:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										if (nn.getAndDecrement() > 0) {
+											return rf.apply(VncList.of(result, input));
+										}
+										else {
+											return reduced(result);
+										}
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};
+					
+				}
+				else {				
+					final VncLong n = Coerce.toVncLong(args.first());
+					final VncSequence coll = Coerce.toVncSequence(args.second());
+		
+					return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -393,18 +521,60 @@ public class TransducerFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("take-while", args, 2);
-				
+				assertArity("take-while", args, 1, 2);
+
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
+
+				if (args.size() == 1) {				    
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("take-while:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("take-while:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										final VncVal take = predicate.apply(VncList.of(input));										
+										if (take == True) {
+											return rf.apply(VncList.of(result, input));
+										}
+										else {
+											return reduced(result);
+										}
+									}
+								}
 				
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
-					if (take == False) {
-						return coll.slice(0, i);
-					}
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};
+					
 				}
-				return coll;
+				else {				
+					final VncSequence coll = Coerce.toVncSequence(args.second());
+					
+					for(int i=0; i<coll.size(); i++) {
+						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
+						if (take == False) {
+							return coll.slice(0, i);
+						}
+					}
+					return coll;
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -428,12 +598,50 @@ public class TransducerFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("keep", args, 2);
+				assertArity("keep", args, 1, 2);
+
+				if (args.size() == 1) {				    
+					final VncFunction fn = Coerce.toVncFunction(args.first());
+ 
+					// return a transducer
+					return new VncFunction() {
+						public VncVal apply(final VncList args) {
+							assertArity("take-while:transducer", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+
+							return new VncFunction() {
+								public VncVal apply(final VncList args) {
+									assertArity("take-while:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										final VncVal val = fn.apply(VncList.of(input));										
+										return val == Nil ? result : rf.apply(VncList.of(result, input));
+									}
+								}
 				
-				// use 'map' to apply the mapping function
-				final VncVal result = TransducerFunctions.map.apply(args);
-	
-				return result == Nil ? Nil : removeNilValues(Coerce.toVncList(result));
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};
+					
+				}
+				else {					
+					// use 'map' to apply the mapping function
+					final VncVal result = TransducerFunctions.map.apply(args);
+		
+					return result == Nil ? Nil : removeNilValues(Coerce.toVncList(result));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -555,6 +763,10 @@ public class TransducerFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+		
+	private static VncVal reduced(final VncVal val) {
+		return new VncJavaObject(new Reduced(val));
+	}
 		
 	
 	///////////////////////////////////////////////////////////////////////////

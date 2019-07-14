@@ -35,6 +35,33 @@ public class TransducerFunctionsTest {
 		final Venice venice = new Venice();
 		
 		final String script1 =
+				"(do                                              \n" +
+				"  (def xf (comp (map #(+ % 10)) (filter odd?)))  \n" +
+				"  (def coll [1 2 3 4 5 6])                       \n" +
+				"  (str (transduce xf conj coll)))                 ";
+		
+		final String script2 =
+				"(do                                              \n" +
+				"  (def xf (comp (take 3) (drop 2)))              \n" +
+				"  (def coll [1 2 3 4 5 6])                       \n" +
+				"  (str (transduce xf conj coll)))                 ";
+		
+		final String script3 =
+				"(do                                              \n" +
+				"  (def xf (comp (drop 2) (take 3)))              \n" +
+				"  (def coll [1 2 3 4 5 6])                       \n" +
+				"  (str (transduce xf conj coll)))                 ";
+
+		assertEquals("[11 13 15]", venice.eval(script1));	
+		assertEquals("[3]", venice.eval(script2));	
+		assertEquals("[3 4 5]", venice.eval(script3));	
+	}
+	
+	@Test
+	public void test_transduce_map() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
 				"(do                                    \n" +
 				"  (def xf (map #(+ % 1)))              \n" +
 				"  (def coll [1 2 3 4 5 6])             \n" +
@@ -45,16 +72,149 @@ public class TransducerFunctionsTest {
 				"  (def xf (map #(+ % 1)))              \n" +
 				"  (def coll [1 2 3 4 5 6])             \n" +
 				"  (str (transduce xf conj coll)))        ";
-		
-		final String script3 =
-				"(do                                              \n" +
-				"  (def xf (comp (map #(+ % 10)) (filter odd?)))  \n" +
-				"  (def coll [1 2 3 4 5 6])                       \n" +
-				"  (str (transduce xf conj coll)))                 ";
 
 		assertEquals("27", venice.eval(script1));	
 		assertEquals("[2 3 4 5 6 7]", venice.eval(script2));	
-		assertEquals("[11 13 15]", venice.eval(script3));	
+	}
+	
+	@Test
+	public void test_transduce_filter() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (filter odd?))               \n" +
+				"  (def coll [1 2 3 4 5 6])             \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (filter odd?))               \n" +
+				"  (def coll [1 2 3 4 5 6])             \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("9", venice.eval(script1));	
+		assertEquals("[1 3 5]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_keep() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (keep identity))             \n" +
+				"  (def coll [1 nil 3 nil 5 6])         \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (keep identity))             \n" +
+				"  (def coll [1 nil 3 nil 5 6])         \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("15", venice.eval(script1));	
+		assertEquals("[1 3 5 6]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_dedupe() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (dedupe))                    \n" +
+				"  (def coll [1 2 2 2 3])               \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (dedupe))                    \n" +
+				"  (def coll [1 2 2 2 3])               \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("6", venice.eval(script1));	
+		assertEquals("[1 2 3]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_drop() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (drop 2))                    \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (drop 2))                    \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("12", venice.eval(script1));	
+		assertEquals("[3 4 5]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_drop_while() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (drop-while neg?))           \n" +
+				"  (def coll [-2 -1 0 1 2 3])           \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (drop-while neg?))           \n" +
+				"  (def coll [-2 -1 0 1 2 3])           \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("6", venice.eval(script1));	
+		assertEquals("[0 1 2 3]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_take() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (take 3))                    \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (take 3))                    \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("6", venice.eval(script1));	
+		assertEquals("[1 2 3]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_take_while() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (take-while neg?))           \n" +
+				"  (def coll [-2 -1 0 1 2 3])           \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (take-while neg?))           \n" +
+				"  (def coll [-2 -1 0 1 2 3])           \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("-3", venice.eval(script1));	
+		assertEquals("[-2 -1]", venice.eval(script2));	
 	}
 	
 	@Test
