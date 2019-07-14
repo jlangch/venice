@@ -104,6 +104,7 @@ public class DocGenerator {
 				getTimeSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
+				getTransducersSection(),
 				getSpecialFormsSection(),
 				getMiscellaneousSection());
 	}
@@ -804,6 +805,30 @@ public class DocGenerator {
 		all.addSection(profil);
 		profil.addItem(getDocItem("time"));
 		profil.addItem(getDocItem("perf", false));
+		
+		return section;
+	}
+
+	private DocSection getTransducersSection() {
+		final DocSection section = new DocSection("Transducers", id());
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection run = new DocSection("Run");
+		all.addSection(run);		
+		run.addItem(getDocItem("transduce"));
+
+		final DocSection func = new DocSection("Functions");
+		all.addSection(func);		
+		func.addItem(getDocItem("map"));
+		func.addItem(getDocItem("filter"));
+		func.addItem(getDocItem("drop"));
+		func.addItem(getDocItem("drop-while"));
+		func.addItem(getDocItem("take"));
+		func.addItem(getDocItem("take-while"));
+		func.addItem(getDocItem("keep"));
+		func.addItem(getDocItem("dedupe"));
 		
 		return section;
 	}

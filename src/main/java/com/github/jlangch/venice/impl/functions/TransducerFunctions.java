@@ -64,16 +64,17 @@ public class TransducerFunctions {
 						"step function that accepts both 1 and 2 arguments. Returns the result " +
 						"of applying (the transformed) xf to init and the first item in coll, " +
 						"then applying xf to that result and the 2nd item, etc. If coll " +
-						"contains no items, returns init and f is not called. \n" +
-						"map, filter, drop, drop-while, take, take-while, keep, dedupe, " + 
-						"and remove are transducing functions.")
+						"contains no items, returns init and f is not called.")
 					.examples(
-						"(do                               \n" +
-						"  (def xf (map #(+ % 1)))         \n" +
-						"  (transduce xf + [1 2 3 4]))       ",
-						"(do                               \n" +
-						"  (def xf (map #(+ % 1)))         \n" +
-						"  (transduce xf conj [1 2 3 4]))  \n")
+						"(do                                    \n" +
+						"  (def xf (map #(+ % 1)))              \n" +
+						"  (transduce xf + [1 2 3 4]))            ",
+						"(do                                    \n" +
+						"  (def xf (map #(+ % 1)))              \n" +
+						"  (transduce xf conj [1 2 3 4]))         ",
+						"(do                                    \n" +
+						"  (def xf (comp (drop 2) (take 3)))    \n" +
+						"  (transduce xf conj [1 2 3 4 5 6]))    ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
