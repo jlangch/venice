@@ -218,6 +218,26 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_remove() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (remove odd?))               \n" +
+				"  (def coll [1 2 3 4 5 6])             \n" +
+				"  (str (transduce xf + coll)))           ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (remove odd?))               \n" +
+				"  (def coll [1 2 3 4 5 6])             \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("12", venice.eval(script1));	
+		assertEquals("[2 4 6]", venice.eval(script2));	
+	}
+	
+	@Test
 	public void test_map() {
 		final Venice venice = new Venice();
 

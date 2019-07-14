@@ -744,21 +744,35 @@ public class TransducerFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("remove", args, 2);
-				
+				assertArity("remove", args, 1, 2);
+
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
-				final List<VncVal> items = new ArrayList<>();
-				for(int i=0; i<coll.size(); i++) {
-					final VncVal val = coll.nth(i);
-					final VncVal keep = predicate.apply(VncList.of(val));
-					if (keep == False) {
-						items.add(val);
-					}				
+
+				if (args.size() == 1) {
+					// return a transducer
+					final VncFunction fn = 
+							new VncFunction() {
+								public VncVal apply(final VncList args) {
+									return predicate.apply(args) == True ? False : True;
+								}
+								private static final long serialVersionUID = -1;
+							};
+					return filter.apply(VncList.of(fn));
 				}
-				
-				return coll.withValues(items);
+				else {
+					final VncSequence coll = Coerce.toVncSequence(args.second());
+					
+					final List<VncVal> items = new ArrayList<>();
+					for(int i=0; i<coll.size(); i++) {
+						final VncVal val = coll.nth(i);
+						final VncVal keep = predicate.apply(VncList.of(val));
+						if (keep == False) {
+							items.add(val);
+						}				
+					}
+					
+					return coll.withValues(items);
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;

@@ -63,7 +63,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0: return new VncLong(0);
-					case 1: return args.first();
+					case 1: return validateNumber("+", args.first());
 					case 2: return Numeric.calc(MathOp.ADD, args.first(), args.second());
 					default:
 						VncVal val = args.first();
@@ -107,7 +107,7 @@ public class MathFunctions {
 							return ((VncBigDecimal)first).negate();
 						}
 						else {
-							return first;
+							return validateNumber("-", first);
 						}	
 					case 2: 
 						return Numeric.calc(MathOp.SUB, args.first(), args.second());
@@ -135,7 +135,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0: return new VncLong(1);
-					case 1: return args.first();
+					case 1: return validateNumber("*", args.first());
 					case 2: return Numeric.calc(MathOp.MUL, args.first(), args.second());
 					default:
 						VncVal val = args.first();
@@ -179,7 +179,7 @@ public class MathFunctions {
 							return Numeric.calc(MathOp.DIV, new VncBigDecimal(BigDecimal.ONE), first);
 						}
 						else {
-							return first;
+							return validateNumber("/", first);
 						}	
 					case 2: 
 						return Numeric.calc(MathOp.DIV, args.first(), args.second());
@@ -1035,7 +1035,18 @@ public class MathFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
+
+	public static VncVal validateNumber(final String fnName, final VncVal val) {
+		if (!Types.isVncNumber(val)) {
+			throw new VncException(String.format(
+					"%s: Not a number. Got a %s", 
+					fnName,
+					Types.getType(val)));
+		}
+		
+		return val;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
