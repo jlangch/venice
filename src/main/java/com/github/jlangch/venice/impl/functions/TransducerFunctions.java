@@ -54,8 +54,22 @@ public class TransducerFunctions {
 					.arglists(
 						"(transduce xform f coll)", 
 						"(transduce xform f init coll)")		
-					.doc("todo")
-					.examples()
+					.doc(
+						"Reduce with a transformation of f (xf). If init is not " +
+						"supplied, (f) will be called to produce it. f should be a reducing " +
+						"step function that accepts both 1 and 2 arguments. Returns the result " +
+						"of applying (the transformed) xf to init and the first item in coll, " +
+						"then applying xf to that result and the 2nd item, etc. If coll " +
+						"contains no items, returns init and f is not called. \n" +
+						"map, filter, drop, drop-while, take, take-while, keep, dedupe, " + 
+						"and remove are transducing functions.")
+					.examples(
+						"(do                               \n" +
+						"  (def xf (map #(+ % 1)))         \n" +
+						"  (transduce xf + [1 2 3 4]))       ",
+						"(do                               \n" +
+						"  (def xf (map #(+ % 1)))         \n" +
+						"  (transduce xf conj [1 2 3 4]))  \n")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -75,10 +89,10 @@ public class TransducerFunctions {
 				// not called. Note that certain transforms may inject or skip items.
 				 
 				final VncFunction xform = Coerce.toVncFunction(args.first());
-				final VncFunction f = Coerce.toVncFunction(args.second());
+				final VncFunction reduction_fn = Coerce.toVncFunction(args.second());
 				final VncVal init = args.size() == 4
 										? args.third()
-										: f.apply(new VncList());
+										: reduction_fn.apply(new VncList());
 				final VncSequence coll = args.size() == 4
 										? (VncSequence)args.fourth()
 										: (VncSequence)args.third();
@@ -87,7 +101,7 @@ public class TransducerFunctions {
 					return init;
 				}
 				else {
-					final VncFunction tf = (VncFunction)xform.apply(VncList.of(f));
+					final VncFunction tf = (VncFunction)xform.apply(VncList.of(reduction_fn));
 	
 					VncVal ret = init;
 
@@ -120,7 +134,8 @@ public class TransducerFunctions {
 					.doc(
 						"Applys f to the set of first items of each coll, followed by applying " + 
 						"f to the set of second items in each coll, until any one of the colls " + 
-						"is exhausted. Any remaining items in other colls are ignored. ")
+						"is exhausted. Any remaining items in other colls are ignored. " +
+						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(map inc [1 2 3 4])",
 						"(map + [1 2 3 4] [10 20 30 40])")
@@ -212,7 +227,8 @@ public class TransducerFunctions {
 					.arglists("(filter predicate coll)")		
 					.doc(
 						"Returns a collection of the items in coll for which " + 
-						"(predicate item) returns logical true. ")
+						"(predicate item) returns logical true. " + 
+						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(filter even? [1 2 3 4 5 6 7])")
 					.build()
@@ -284,7 +300,9 @@ public class TransducerFunctions {
 					.meta()
 					.module("core")
 					.arglists("(drop n coll)")		
-					.doc("Returns a collection of all but the first n items in coll")
+					.doc(
+						"Returns a collection of all but the first n items in coll. " +
+						"Returns a transducer when no collection is provided.")
 					.examples("(drop 3 [1 2 3 4 5])", "(drop 10 [1 2 3 4 5])")
 					.build()
 		) {		
@@ -309,7 +327,8 @@ public class TransducerFunctions {
 					.arglists("(drop-while predicate coll)")		
 					.doc(
 						"Returns a list of the items in coll starting from the " + 
-						"first item for which (predicate item) returns logical false.")
+						"first item for which (predicate item) returns logical false. " +
+						"Returns a transducer when no collection is provided.")
 					.examples("(drop-while neg? [-2 -1 0 1 2 3])")
 					.build()
 		) {		
@@ -340,7 +359,8 @@ public class TransducerFunctions {
 					.arglists("(take n coll)")		
 					.doc(
 						"Returns a collection of the first n items in coll, or all items if " + 
-						"there are fewer than n.")
+						"there are fewer than n. " +
+						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(take 3 [1 2 3 4 5])", 
 						"(take 10 [1 2 3 4 5])")
@@ -367,7 +387,8 @@ public class TransducerFunctions {
 					.arglists("(take-while predicate coll)")		
 					.doc(
 						"Returns a list of successive items from coll while " + 
-						"(predicate item) returns logical true.")
+						"(predicate item) returns logical true. " +
+						"Returns a transducer when no collection is provided.")
 					.examples("(take-while neg? [-2 -1 0 1 2 3])")
 					.build()
 		) {		
@@ -399,7 +420,8 @@ public class TransducerFunctions {
 					.doc(
 						"Returns a sequence of the non-nil results of (f item). Note, " + 
 						"this means false return values will be included. f must be " + 
-						"free of side-effects.")
+						"free of side-effects. " +
+						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(keep even? (range 1 4))",
 						"(keep (fn [x] (if (odd? x) x)) (range 4))")
@@ -424,7 +446,9 @@ public class TransducerFunctions {
 					.meta()
 					.module("core")
 					.arglists("(dedupe coll)")		
-					.doc("Returns a collection with all consecutive duplicates removed")
+					.doc(
+						"Returns a collection with all consecutive duplicates removed. " +
+						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(dedupe [1 2 2 2 3 4 4 2 3])",
 						"(dedupe '(1 2 2 2 3 4 4 2 3))")
@@ -504,7 +528,8 @@ public class TransducerFunctions {
 					.arglists("(remove predicate coll)")		
 					.doc(
 						"Returns a collection of the items in coll for which " + 
-						"(predicate item) returns logical false. ")
+						"(predicate item) returns logical false. " +
+						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(remove even? [1 2 3 4 5 6 7])")
 					.build()
