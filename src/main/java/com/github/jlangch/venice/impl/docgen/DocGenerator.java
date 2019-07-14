@@ -829,6 +829,7 @@ public class DocGenerator {
 		func.addItem(getDocItem("take"));
 		func.addItem(getDocItem("take-while"));
 		func.addItem(getDocItem("keep"));
+		func.addItem(getDocItem("remove"));
 		func.addItem(getDocItem("dedupe"));
 		
 		return section;
