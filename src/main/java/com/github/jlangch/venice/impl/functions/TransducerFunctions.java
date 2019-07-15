@@ -147,13 +147,13 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("map:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("map:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 
 							return new VncFunction(createAnonymousFuncName("map:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("map:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -240,13 +240,13 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("filter:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("filter:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 
 							return new VncFunction(createAnonymousFuncName("filter:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("filter:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -315,14 +315,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("drop:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("drop:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final AtomicLong nn = new AtomicLong(n);
 
 							return new VncFunction(createAnonymousFuncName("drop:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("drop:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -385,14 +385,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("drop-while:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("drop-while:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final AtomicBoolean take = new AtomicBoolean(false);
 
 							return new VncFunction(createAnonymousFuncName("drop-while:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("drop-while:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -469,14 +469,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("take:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("take:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final AtomicLong nn = new AtomicLong(n);
 
 							return new VncFunction(createAnonymousFuncName("take:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("take:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -540,13 +540,13 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("take-while:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("take-while:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 
 							return new VncFunction(createAnonymousFuncName("take-while:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("take-while:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -619,13 +619,13 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("keep:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("keep:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 
 							return new VncFunction(createAnonymousFuncName("keep:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("keep:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -684,14 +684,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("dedupe:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("dedupe:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final AtomicReference<VncVal> seen = new AtomicReference<>(new VncKeyword("::none"));
 
 							return new VncFunction(createAnonymousFuncName("dedupe:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("dedupe:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -816,14 +816,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("distinct:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("distinct:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final Set<VncVal> seen = new HashSet<>();
 
 							return new VncFunction(createAnonymousFuncName("distinct:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("distinct:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -896,14 +896,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("sorted:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("sorted:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final List<VncVal> list = new ArrayList<>();
 
 							return new VncFunction(createAnonymousFuncName("sorted:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("sorted:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
@@ -959,14 +959,14 @@ public class TransducerFunctions {
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("reverse:transducer:wrapped")) {
 						public VncVal apply(final VncList args) {
-							assertArity("reverse:transducer:wrapped", args, 1);
+							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
 						    final List<VncVal> list = new ArrayList<>();
 
 							return new VncFunction(createAnonymousFuncName("reverse:transducer")) {
 								public VncVal apply(final VncList args) {
-									assertArity("reverse:transducer", args, 1, 2, 3);
+									assertArity(this.getName(), args, 1, 2, 3);
 									
 									if (args.size() == 0) {
 										return rf.apply(new VncList());
