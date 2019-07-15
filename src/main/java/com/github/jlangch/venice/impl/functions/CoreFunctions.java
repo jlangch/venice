@@ -4678,7 +4678,7 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("comp", args, 1);
+				assertMinArity("comp", args, 0);
 				
 				final List<VncFunction> fns = 
 						args.getList()
@@ -4686,16 +4686,21 @@ public class CoreFunctions {
 							.map(v -> Coerce.toVncFunction(v))
 							.collect(Collectors.toList());
 				
+				// the functions are applied right to left
 				return new VncFunction() {
 					public VncVal apply(final VncList args) {
-						VncList args_ = args;
-						VncVal result = Nil;
-						for(int ii=fns.size()-1; ii>=0; ii--) {
-							final VncFunction fn = fns.get(ii);
-							result = fn.apply(args_);
-							args_ = VncList.of(result);
+						if (fns.isEmpty()) {
+							return args.first();
 						}
-						return result;
+						else {
+							VncList args_ = args;
+							VncVal result = Nil;
+							for(int ii=fns.size()-1; ii>=0; ii--) {
+								result = fns.get(ii).apply(args_);
+								args_ = VncList.of(result);
+							}
+							return result;
+						}
 					}
 	
 				    private static final long serialVersionUID = -1L;

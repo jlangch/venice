@@ -260,6 +260,8 @@ public class CoreFunctionsTest {
 								"(do " +
 								"   (def fifth (comp first rest rest rest rest)) " +
 								"   (str (fifth [1 2 3 4 5])))"));
+
+		assertEquals("(1 2 3 4)", venice.eval("(str (map (comp) [1 2 3 4]))"));
 	}
 	
 	@Test

@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - ...
 
+### Fixed
+
+- `comp` function to allow 0-arity: `(map (comp) [1 2 3 4])` => (1 2 3 4)
+
 
 
 ## [1.6.0] - 2019-07-14
