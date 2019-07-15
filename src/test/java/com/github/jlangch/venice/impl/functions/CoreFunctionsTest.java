@@ -2397,23 +2397,6 @@ public class CoreFunctionsTest {
 		assertEquals("[2]", venice.eval("(str (rest [1 2]))"));
 		assertEquals("[2 3]", venice.eval("(str (rest [1 2 3]))"));
 	}
-
-	@Test
-	public void test_reverse() {
-		final Venice venice = new Venice();
-
-		assertEquals("()", venice.eval("(str (reverse '()))"));
-		assertEquals("(1)", venice.eval("(str (reverse '(1)))"));
-		assertEquals("(2 1)", venice.eval("(str (reverse '(1 2)))"));
-		assertEquals("(3 2 1)", venice.eval("(str (reverse '(1 2 3)))"));
-
-		assertEquals("[]", venice.eval("(str (reverse []))"));
-		assertEquals("[1]", venice.eval("(str (reverse [1]))"));
-		assertEquals("[2 1]", venice.eval("(str (reverse [1 2]))"));
-		assertEquals("[3 2 1]", venice.eval("(str (reverse [1 2 3]))"));
-		
-		assertEquals("[[9 8 7] [6 5 4] [3 2 1 0]]", venice.eval("(str (reverse [[3 2 1 0] [6 5 4] [9 8 7]]))"));
-	}
 	
 	@Test
 	public void test_second() {

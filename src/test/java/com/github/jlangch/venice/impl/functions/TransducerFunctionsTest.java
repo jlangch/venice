@@ -94,6 +94,21 @@ public class TransducerFunctionsTest {
 
 		assertEquals("[35 45]", venice.eval(script));	
 	}
+	
+	@Test
+	public void test_transduce_4() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
+				"            (reverse)                            \n" +
+				"            (sorted compare)))                   \n" +
+				"  (def coll [1 2 3 4 5])                         \n" +
+				"  (str (transduce xf conj coll)))                 ";
+
+		assertEquals("[1 2 3 4 5]", venice.eval(script));	
+	}
 
 	@Test
 	public void test_transduce_map() {
@@ -306,6 +321,19 @@ public class TransducerFunctionsTest {
 				"  (str (transduce xf conj coll)))        ";
 
 		assertEquals("[1 2 3 4 5]", venice.eval(script));	
+	}
+	
+	@Test
+	public void test_transduce_reverse() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                    \n" +
+				"  (def xf (reverse))                   \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("[5 4 3 2 1]", venice.eval(script));	
 	}
 	
 	@Test
@@ -578,4 +606,20 @@ public class TransducerFunctionsTest {
 		assertEquals("([:a 1] [:b 2] [:c 3])", venice.eval("(str (sorted compare {:c 3 :b 2 :a 1}))"));
 	}
 
+	@Test
+	public void test_reverse() {
+		final Venice venice = new Venice();
+
+		assertEquals("()", venice.eval("(str (reverse '()))"));
+		assertEquals("(1)", venice.eval("(str (reverse '(1)))"));
+		assertEquals("(2 1)", venice.eval("(str (reverse '(1 2)))"));
+		assertEquals("(3 2 1)", venice.eval("(str (reverse '(1 2 3)))"));
+
+		assertEquals("[]", venice.eval("(str (reverse []))"));
+		assertEquals("[1]", venice.eval("(str (reverse [1]))"));
+		assertEquals("[2 1]", venice.eval("(str (reverse [1 2]))"));
+		assertEquals("[3 2 1]", venice.eval("(str (reverse [1 2 3]))"));
+		
+		assertEquals("[[9 8 7] [6 5 4] [3 2 1 0]]", venice.eval("(str (reverse [[3 2 1 0] [6 5 4] [9 8 7]]))"));
+	}
 }

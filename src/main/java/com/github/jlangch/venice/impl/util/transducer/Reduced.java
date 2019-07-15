@@ -23,7 +23,10 @@ package com.github.jlangch.venice.impl.util.transducer;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.IDeref;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class Reduced implements IDeref {
@@ -46,6 +49,20 @@ public class Reduced implements IDeref {
 		return "(reduced :value " + Printer.pr_str(val, print_readably) + ")";
 	}
 
-	
+	public static boolean isReduced(final VncVal val) {
+		return Types.isVncJavaObject(val, Reduced.class);
+	}
+
+	public static VncVal reduced(final VncVal val) {
+		return new VncJavaObject(new Reduced(val));
+	}
+		
+	public static VncVal unreduced(final VncVal val) {
+		return Types.isVncJavaObject(val, Reduced.class)
+				? Coerce.toVncJavaObject(val, Reduced.class).deref()
+				: val;
+	}
+
+
 	private final VncVal val;
 }

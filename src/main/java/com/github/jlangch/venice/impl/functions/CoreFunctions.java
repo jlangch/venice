@@ -89,6 +89,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
+import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
 public class CoreFunctions {
@@ -4444,33 +4445,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
-	public static VncFunction reverse = 
-		new VncFunction(
-				"reverse", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(reverse coll)")		
-					.doc("Returns a collection of the items in coll in reverse order")
-					.examples("(reverse [1 2 3 4 5 6])")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				assertArity("reverse", args, 1);
-				
-				final VncSequence coll = Coerce.toVncSequence(args.first());
-				
-				final List<VncVal> reversed = new ArrayList<>();
-				for(int ii=coll.size()-1; ii>=0; ii--) {
-					reversed.add(coll.nth(ii));
-				}	
-				
-				return coll.withValues(reversed);
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-	
 	public static VncFunction sort = 
 		new VncFunction(
 				"sort", 
@@ -4970,6 +4944,9 @@ public class CoreFunctions {
 						VncVal value = coll.get(0);
 						for(int ii=1; ii<coll.size(); ii++) {
 							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
+							if (Reduced.isReduced(value)) {
+								return Reduced.unreduced(value);
+							}
 						}
 						return value;
 					}
@@ -4999,6 +4976,9 @@ public class CoreFunctions {
 						VncVal value = args.second();
 						for(int ii=0; ii<coll.size(); ii++) {
 							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
+							if (Reduced.isReduced(value)) {
+								return Reduced.unreduced(value);
+							}
 						}
 						return value;
 					}
@@ -5864,7 +5844,6 @@ public class CoreFunctions {
 				.put("reduce",				reduce)
 				.put("reduce-kv",			reduce_kv)
 				.put("flatten",				flatten)
-				.put("reverse",				reverse)
 				.put("replace",				replace)
 				.put("group-by",			group_by)
 				.put("sort",				sort)

@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncFunction;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -46,7 +46,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
@@ -111,21 +110,11 @@ public class TransducerFunctions {
 				else {
 					final VncFunction xf = (VncFunction)xform.apply(VncList.of(reduction_fn));
 	
-					VncVal ret = init;
-
-					for(VncVal v : coll.getList()) {
-						final VncVal ret_ = xf.apply(VncList.of(ret, v));
-						if (Types.isVncJavaObject(ret_, Reduced.class)) {
-							ret = Coerce.toVncJavaObject(ret_, Reduced.class).deref();
-							break;
-						}
-						else {
-							ret = ret_;
-						}
-					}
+					// reduce the collection
+					final VncVal ret = CoreFunctions.reduce.apply(VncList.of(xf, init, coll));
 
 					// cleanup
-					return unreduced(xf.apply(VncList.of(ret)));
+					return Reduced.unreduced(xf.apply(VncList.of(ret)));
 				}
 			}
 	
@@ -495,7 +484,7 @@ public class TransducerFunctions {
 											return rf.apply(VncList.of(result, input));
 										}
 										else {
-											return reduced(result);
+											return Reduced.reduced(result);
 										}
 									}
 								}
@@ -564,7 +553,7 @@ public class TransducerFunctions {
 											return rf.apply(VncList.of(result, input));
 										}
 										else {
-											return reduced(result);
+											return Reduced.reduced(result);
 										}
 									}
 								}
@@ -931,19 +920,68 @@ public class TransducerFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-		
-		
-	private static VncVal reduced(final VncVal val) {
-		return new VncJavaObject(new Reduced(val));
-	}
-		
-	private static VncVal unreduced(final VncVal val) {
-		return Types.isVncJavaObject(val, Reduced.class)
-				? Coerce.toVncJavaObject(val, Reduced.class).deref()
-				: val;
-	}
+	public static VncFunction reverse = 
+		new VncFunction(
+				"reverse", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(reverse coll)")		
+					.doc("Returns a collection of the items in coll in reverse order")
+					.examples("(reverse [1 2 3 4 5 6])")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("reverse", args, 0, 1);
 
+				if (args.size() == 0) {
+					// return a transducer
+					return new VncFunction(createAnonymousFuncName("reverse:transducer:wrapped")) {
+						public VncVal apply(final VncList args) {
+							assertArity("reverse:transducer:wrapped", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final List<VncVal> list = new ArrayList<>();
+
+							return new VncFunction(createAnonymousFuncName("reverse:transducer")) {
+								public VncVal apply(final VncList args) {
+									assertArity("reverse:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										Collections.reverse(list);
+										return CoreFunctions.reduce.apply(VncList.of(rf, result, new VncList(list)));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										list.add(input);
+										return result;
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};					
+				}
+				else {
+					final VncSequence coll = Coerce.toVncSequence(args.first());
+					
+					final List<VncVal> reversed = coll.getList();
+					Collections.reverse(reversed);
+					return coll.withValues(reversed);
+				}
+			}
 	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+			
+			
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -962,5 +1000,6 @@ public class TransducerFunctions {
 					.put("remove",		remove)
 					.put("distinct",	distinct)
 					.put("sorted",		sorted)
+					.put("reverse",		reverse)
 					.toMap();	
 }
