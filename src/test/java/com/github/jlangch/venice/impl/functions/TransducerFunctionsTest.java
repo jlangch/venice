@@ -61,15 +61,40 @@ public class TransducerFunctionsTest {
 	public void test_transduce_2() {
 		final Venice venice = new Venice();
 				
-		final String script =
+		final String script1 =
 				"(do                                              \n" +
 				"  (def xf (comp (drop 2) (take 3)))              \n" +
 				"  (def coll [1 2 3 4 5 6])                       \n" +
 				"  (str (transduce xf conj coll)))                 ";
+		
+		final String script2 =
+				"(do                                                   \n" +
+				"  (def xf (comp (drop 2) (take 3) (drop 1) (take 1))) \n" +
+				"  (def coll [1 2 3 4 5 6])                            \n" +
+				"  (str (transduce xf conj coll)))                       ";
 
-		assertEquals("[3 4 5]", venice.eval(script));	
+		assertEquals("[3 4 5]", venice.eval(script1));	
+		assertEquals("[4]", venice.eval(script2));	
 	}
 	
+	@Test
+	public void test_transduce_3() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
+				"            (map #(* % 10))                      \n" +
+				"            (map #(- % 5))                       \n" +
+				"            (sorted compare)                     \n" +
+				"            (drop 3)                             \n" +
+				"            (take 2)))                           \n" +
+				"  (def coll [5 2 1 6 4 3])                       \n" +
+				"  (str (transduce xf conj coll)))                 ";
+
+		assertEquals("[35 45]", venice.eval(script));	
+	}
+
 	@Test
 	public void test_transduce_map() {
 		final Venice venice = new Venice();
@@ -268,6 +293,19 @@ public class TransducerFunctionsTest {
 
 		assertEquals("15", venice.eval(script1));	
 		assertEquals("[1 2 3 4 5]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_sorted() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                    \n" +
+				"  (def xf (sorted compare))            \n" +
+				"  (def coll [5 3 2 4 1])               \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("[1 2 3 4 5]", venice.eval(script));	
 	}
 	
 	@Test
@@ -480,5 +518,64 @@ public class TransducerFunctionsTest {
 		assertEquals("(0 1 2 3)", venice.eval("(str (distinct '(0 1 2 1 3 3)))"));
 		assertEquals("[0 1 2 3]", venice.eval("(str (distinct [0 1 2 1 3 3]))"));
 	}
+
+	@Test
+	public void test_sorted() {
+		final Venice venice = new Venice();
+
+		// list
+		assertEquals("()", venice.eval("(str (sorted compare '()))"));
+		assertEquals("(1)", venice.eval("(str (sorted compare '(1)))"));
+		assertEquals("(1 2)", venice.eval("(str (sorted compare '(2 1)))"));
+		assertEquals("(1 2 3)", venice.eval("(str (sorted compare '(3 2 1)))"));
+
+		assertEquals("()", venice.eval("(str (sorted compare '()))"));
+		assertEquals("(1.0)", venice.eval("(str (sorted compare '(1.0)))"));
+		assertEquals("(1.0 2.0)", venice.eval("(str (sorted compare '(2.0 1.0)))"));
+		assertEquals("(1.0 2.0 3.0)", venice.eval("(str (sorted compare '(3.0 2.0 1.0)))"));
+
+		assertEquals("()", venice.eval("(str (sorted compare '()))"));
+		assertEquals("(a)", venice.eval("(str (sorted compare '(\"a\")))"));
+		assertEquals("(a b)", venice.eval("(str (sorted compare '(\"b\" \"a\")))"));
+		assertEquals("(a b c)", venice.eval("(str (sorted compare '(\"c\" \"b\" \"a\")))"));
+
+		assertEquals("(1)", venice.eval("(str (sorted compare '(1)))"));
+		assertEquals("(1 2)", venice.eval("(str (sorted compare '(2 1)))"));
+		assertEquals("(1 2 3)", venice.eval("(str (sorted compare '(3 2 1)))"));
+
+		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2))", venice.eval("(str (sorted compare '((1 2) (1 1) (2 1) (1 3) (2 2))))"));
+
+		assertEquals("(3 2 1)", venice.eval("(str (sorted (comp (partial * -1) compare) '(2 3 1)))"));
+
+		// vector
+		assertEquals("[]", venice.eval("(str (sorted compare []))"));
+		assertEquals("[1]", venice.eval("(str (sorted compare [1]))"));
+		assertEquals("[1 2]", venice.eval("(str (sorted compare [2 1]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (sorted compare [3 2 1]))"));
+
+		assertEquals("[]", venice.eval("(str (sorted compare []))"));
+		assertEquals("[1.0]", venice.eval("(str (sorted compare [1.0]))"));
+		assertEquals("[1.0 2.0]", venice.eval("(str (sorted compare [2.0 1.0]))"));
+		assertEquals("[1.0 2.0 3.0]", venice.eval("(str (sorted compare [3.0 2.0 1.0]))"));
+
+		assertEquals("[]", venice.eval("(str (sorted compare []))"));
+		assertEquals("[a]", venice.eval("(str (sorted compare [\"a\"]))"));
+		assertEquals("[a b]", venice.eval("(str (sorted compare [\"b\" \"a\"]))"));
+		assertEquals("[a b c]", venice.eval("(str (sorted compare [\"c\" \"b\" \"a\"]))"));
 	
+		
+		// set
+		assertEquals("()", venice.eval("(str (sorted compare (set )))"));
+		assertEquals("(1)", venice.eval("(str (sorted compare (set 1)))"));
+		assertEquals("(1 2)", venice.eval("(str (sorted compare (set 2 1)))"));
+		assertEquals("(1 2 3 4 5)", venice.eval("(str (sorted compare (set 5 4 3 2 1)))"));
+	
+		
+		// map
+		assertEquals("()", venice.eval("(str (sorted compare {}))"));
+		assertEquals("([:a 1])", venice.eval("(str (sorted compare {:a 1}))"));
+		assertEquals("([:a 1] [:b 2])", venice.eval("(str (sorted compare {:b 2 :a 1}))"));
+		assertEquals("([:a 1] [:b 2] [:c 3])", venice.eval("(str (sorted compare {:c 3 :b 2 :a 1}))"));
+	}
+
 }

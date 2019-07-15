@@ -832,6 +832,7 @@ public class DocGenerator {
 		func.addItem(getDocItem("remove"));
 		func.addItem(getDocItem("dedupe"));
 		func.addItem(getDocItem("distinct"));
+		func.addItem(getDocItem("sorted"));
 		
 		return section;
 	}

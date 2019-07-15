@@ -77,7 +77,16 @@ public class TransducerFunctions {
 						"  (transduce xf conj [1 2 3 4]))         ",
 						"(do                                    \n" +
 						"  (def xf (comp (drop 2) (take 3)))    \n" +
-						"  (transduce xf conj [1 2 3 4 5 6]))    ")
+						"  (transduce xf conj [1 2 3 4 5 6]))     ",
+						"(do                                    \n" +
+						"  (def xf (comp                        \n" +
+						"            (map #(* % 10))            \n" +
+						"            (map #(- % 5))             \n" +
+						"            (sorted compare)           \n" +
+						"            (drop 3)                   \n" +
+						"            (take 2)))                 \n" +
+						"  (def coll [5 2 1 6 4 3])             \n" +
+						"  (str (transduce xf conj coll)))        ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -114,9 +123,9 @@ public class TransducerFunctions {
 							ret = ret_;
 						}
 					}
-					
+
 					// cleanup
-					return xf.apply(VncList.of(ret));
+					return unreduced(xf.apply(VncList.of(ret)));
 				}
 			}
 	
@@ -856,12 +865,84 @@ public class TransducerFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction sorted = 
+		new VncFunction(
+				"sorted", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(sorted cmp coll)")		
+					.doc(
+						"Returns a sorted collection using the compare function cmp. " +
+						"The compare function takes two arguments and returns -1, 0, or 1. " +
+						"Returns a stateful transducer when no collection is provided.")
+					.examples(
+						"(sorted compare [4 2 1 5 6 3])",
+						"(sorted (comp (partial * -1) compare) [4 2 1 5 6 3])")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("sorted", args, 1, 2);
+	
+				final VncFunction compfn = Coerce.toVncFunction(args.first());
+
+				if (args.size() == 1) {
+					// return a transducer
+					return new VncFunction(createAnonymousFuncName("sorted:transducer:wrapped")) {
+						public VncVal apply(final VncList args) {
+							assertArity("sorted:transducer:wrapped", args, 1);
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final List<VncVal> list = new ArrayList<>();
+
+							return new VncFunction(createAnonymousFuncName("sorted:transducer")) {
+								public VncVal apply(final VncList args) {
+									assertArity("sorted:transducer", args, 1, 2, 3);
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										final VncVal sortedList = CoreFunctions.sort.apply(VncList.of(compfn, new VncList(list)));
+										
+										return CoreFunctions.reduce.apply(VncList.of(rf, result, sortedList));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										list.add(input);
+										return result;
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};					
+				}
+				else {
+					// delegate to core functions sort
+					return CoreFunctions.sort.apply(args);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 		
 		
 	private static VncVal reduced(final VncVal val) {
 		return new VncJavaObject(new Reduced(val));
 	}
 		
+	private static VncVal unreduced(final VncVal val) {
+		return Types.isVncJavaObject(val, Reduced.class)
+				? Coerce.toVncJavaObject(val, Reduced.class).deref()
+				: val;
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -880,5 +961,6 @@ public class TransducerFunctions {
 					.put("dedupe",		dedupe)
 					.put("remove",		remove)
 					.put("distinct",	distinct)
+					.put("sorted",		sorted)
 					.toMap();	
 }
