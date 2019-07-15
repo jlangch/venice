@@ -49,6 +49,7 @@ public class Reduced implements IDeref {
 		return "(reduced :value " + Printer.pr_str(val, print_readably) + ")";
 	}
 
+	
 	public static boolean isReduced(final VncVal val) {
 		return Types.isVncJavaObject(val, Reduced.class);
 	}
