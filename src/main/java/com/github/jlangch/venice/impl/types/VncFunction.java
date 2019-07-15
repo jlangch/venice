@@ -112,6 +112,10 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return "anonymous-" + UUID.randomUUID().toString();
 	}
 
+	public static String createAnonymousFuncName(final String name) {
+		return "anonymous-" + name + "-" + UUID.randomUUID().toString();
+	}
+
 	public VncList getArgLists() { 
 		return (VncList)getMetaVal(MetaUtil.ARGLIST, new VncList());
 	}

@@ -4493,26 +4493,16 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("sort", args, 1, 2);
 	
-				if (args.size() == 1) {
-					// no compare function -> sort by natural order
-					return sort(
-							"sort", 
-							args, 
-							args.first(), 
-							(x,y) -> Coerce.toVncLong(compare.apply(VncList.of(x,y))).getIntValue());
-				}
-				else if (args.size() == 2) {
-					final VncFunction compfn = Coerce.toVncFunction(args.first());
-					
-					return sort(
-							"sort", 
-							args, 
-							args.second(), 
-							(x,y) -> Coerce.toVncLong(compfn.apply(VncList.of(x,y))).getIntValue());
-				}
-				else {
-					throw new VncException("sort: args not supported");
-				}			
+				final VncFunction compfn = args.size() == 1 
+											? compare // -> sort by natural order
+											: Coerce.toVncFunction(args.first());
+				
+				final VncVal coll = args.last();
+
+				return sort(
+						"sort", 
+						coll, 
+						(x,y) -> Coerce.toVncLong(compfn.apply(VncList.of(x,y))).getIntValue());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -4549,7 +4539,6 @@ public class CoreFunctions {
 	
 					return sort(
 							"sort-by", 
-							args, 
 							args.second(), 
 							(x,y) -> Coerce.toVncLong(
 										compare.apply(
@@ -4564,7 +4553,6 @@ public class CoreFunctions {
 	
 					return sort(
 							"sort-by", 
-							args, 
 							args.nth(2), 
 							(x,y) -> Coerce.toVncLong(
 										compfn.apply(
@@ -4689,18 +4677,15 @@ public class CoreFunctions {
 				// the functions are applied right to left
 				return new VncFunction() {
 					public VncVal apply(final VncList args) {
-						if (fns.isEmpty()) {
-							return args.first();
+						VncVal result = args.first();
+
+						VncList args_ = args;
+						for(int ii=fns.size()-1; ii>=0; ii--) {
+							result = fns.get(ii).apply(args_);
+							args_ = VncList.of(result);
 						}
-						else {
-							VncList args_ = args;
-							VncVal result = Nil;
-							for(int ii=fns.size()-1; ii>=0; ii--) {
-								result = fns.get(ii).apply(args_);
-								args_ = VncList.of(result);
-							}
-							return result;
-						}
+						
+						return result;
 					}
 	
 				    private static final long serialVersionUID = -1L;
@@ -5681,7 +5666,6 @@ public class CoreFunctions {
 	
 	private static VncVal sort(
 			final String fnName, 
-			final VncVal fnArgs, 
 			final VncVal coll, 
 			final Comparator<VncVal> c
 	) {

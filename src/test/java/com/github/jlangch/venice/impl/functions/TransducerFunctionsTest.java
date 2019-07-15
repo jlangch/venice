@@ -58,6 +58,19 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_2() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                              \n" +
+				"  (def xf (comp (drop 2) (take 3)))              \n" +
+				"  (def coll [1 2 3 4 5 6])                       \n" +
+				"  (str (transduce xf conj coll)))                 ";
+
+		assertEquals("[3 4 5]", venice.eval(script));	
+	}
+	
+	@Test
 	public void test_transduce_map() {
 		final Venice venice = new Venice();
 		
