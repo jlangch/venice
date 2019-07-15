@@ -89,7 +89,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
-import com.github.jlangch.venice.impl.util.transducer.Reduced;
+import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
 
 public class CoreFunctions {
@@ -4919,68 +4919,42 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reduce", args, 2, 3);
 				
-				final boolean twoArguments = args.size() < 3;
+				final boolean noInitValue = args.size() < 3;
 				final VncFunction reduceFn = Coerce.toVncFunction(args.first());
-	
-				if (twoArguments) {
-					List<VncVal> coll;
-					
-					if (Types.isVncSequence(args.second())) {
-						coll = Coerce.toVncSequence(args.second()).getList();
-					}
-					else if (Types.isVncMap(args.second())) {
-						coll = Coerce.toVncMap(args.second()).toVncList().getList();
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'reduce' does not allow %s as coll parameter", 
-								Types.getType(args.second())));
-					}
-					
+
+				List<VncVal> coll;
+				
+				if (Types.isVncSequence(args.last())) {
+					coll = Coerce.toVncSequence(args.last()).getList();
+				}
+				else if (Types.isVncMap(args.last())) {
+					coll = Coerce.toVncMap(args.last()).toVncList().getList();
+				}
+				else {
+					throw new VncException(String.format(
+							"reduce: collection type %s not supported", 
+							Types.getType(args.last())));
+				}
+				
+				if (noInitValue) {
 					if (coll.isEmpty()) {
 						return reduceFn.apply(new VncList());
 					}
+					else if (coll.size() == 1) {
+						return coll.get(0);
+					}
 					else {
-						VncVal value = coll.get(0);
-						for(int ii=1; ii<coll.size(); ii++) {
-							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
-							if (Reduced.isReduced(value)) {
-								return Reduced.unreduced(value);
-							}
-						}
-						return value;
+						return Reducer.reduce(reduceFn, coll.get(0), coll.subList(1, coll.size()));
 					}
 				}
 				else {
-					List<VncVal> coll;
-					
-					if (Types.isVncSequence(args.nth(2))) {
-						coll = Coerce.toVncSequence(args.nth(2)).getList();
-					}
-					else if (Types.isVncMap(args.nth(2))) {
-						coll = Coerce.toVncMap(args.nth(2)).toVncList().getList();
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'reduce' does not allow %s as coll parameter", 
-								Types.getType(args.nth(2))));
-					}
+					final VncVal init = args.second();
 					
 					if (coll.isEmpty()) {
-						return args.second();
-					}
-					else if (coll.size() == 1) {
-						return reduceFn.apply(VncList.of(args.second(), coll.get(0)));
+						return init;
 					}
 					else {
-						VncVal value = args.second();
-						for(int ii=0; ii<coll.size(); ii++) {
-							value = reduceFn.apply(VncList.of(value, coll.get(ii)));
-							if (Reduced.isReduced(value)) {
-								return Reduced.unreduced(value);
-							}
-						}
-						return value;
+						return Reducer.reduce(reduceFn, init, coll);
 					}
 				}
 			}
