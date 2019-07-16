@@ -83,7 +83,8 @@ public class TransducerFunctions {
 						"            (map #(- % 5))             \n" +
 						"            (sorted compare)           \n" +
 						"            (drop 3)                   \n" +
-						"            (take 2)))                 \n" +
+						"            (take 2)                   \n" +
+						"            (reverse)))                \n" +
 						"  (def coll [5 2 1 6 4 3])             \n" +
 						"  (str (transduce xf conj coll)))        ")
 					.build()
@@ -909,10 +910,11 @@ public class TransducerFunctions {
 										return rf.apply(new VncList());
 									}
 									else if (args.size() == 1) {
-										final VncVal result = args.first();
+										VncVal result = args.first();
 										final VncVal sortedList = CoreFunctions.sort.apply(VncList.of(compfn, new VncList(list)));
 										
-										return CoreFunctions.reduce.apply(VncList.of(rf, result, sortedList));
+										result = CoreFunctions.reduce.apply(VncList.of(rf, result, sortedList));
+										return rf.apply(VncList.of(result));
 									}
 									else {
 										final VncVal result = args.first();
@@ -972,9 +974,11 @@ public class TransducerFunctions {
 										return rf.apply(new VncList());
 									}
 									else if (args.size() == 1) {
-										final VncVal result = args.first();
+										VncVal result = args.first();
 										Collections.reverse(list);
-										return CoreFunctions.reduce.apply(VncList.of(rf, result, new VncList(list)));
+										
+										result = CoreFunctions.reduce.apply(VncList.of(rf, result, new VncList(list)));
+										return rf.apply(VncList.of(result));
 									}
 									else {
 										final VncVal result = args.first();

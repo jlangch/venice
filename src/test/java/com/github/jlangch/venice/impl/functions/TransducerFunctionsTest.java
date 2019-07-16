@@ -88,11 +88,12 @@ public class TransducerFunctionsTest {
 				"            (map #(- % 5))                       \n" +
 				"            (sorted compare)                     \n" +
 				"            (drop 3)                             \n" +
-				"            (take 2)))                           \n" +
+				"            (take 2)                             \n" +
+				"            (reverse)))                          \n" +
 				"  (def coll [5 2 1 6 4 3])                       \n" +
 				"  (str (transduce xf conj coll)))                 ";
 
-		assertEquals("[35 45]", venice.eval(script));	
+		assertEquals("[45 35]", venice.eval(script));	
 	}
 	
 	@Test
@@ -102,9 +103,10 @@ public class TransducerFunctionsTest {
 		final String script =
 				"(do                                              \n" +
 				"  (def xf (comp                                  \n" +
+				"            (sorted compare)                     \n" +
 				"            (reverse)                            \n" +
-				"            (sorted compare)))                   \n" +
-				"  (def coll [1 2 3 4 5])                         \n" +
+				"            (reverse)))                          \n" +
+				"  (def coll [3 2 5 4 1])                         \n" +
 				"  (str (transduce xf conj coll)))                 ";
 
 		assertEquals("[1 2 3 4 5]", venice.eval(script));	
