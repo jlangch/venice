@@ -1083,7 +1083,89 @@ public class TransducerFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
+
+	public static VncFunction halt_when = 
+		new VncFunction(
+				"halt-when", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(halt-when pred)",
+						"(halt-when pred retf)")		
+					.doc(
+						"Returns a transducer that ends transduction when pred returns true " + 
+						"for an input. When retf is supplied it must be a fn of 2 arguments - " + 
+						"it will be passed the (completed) result so far and the input that " + 
+						"triggered the predicate, and its return value (if it does not throw " + 
+						"an exception) will be the return value of the transducer. If retf " + 
+						"is not supplied, the input that triggered the predicate will be " + 
+						"returned. If the predicate never returns true the transduction is " + 
+						"unaffected.")
+					.examples()
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("halt-when", args, 1, 2);
+				
+				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final VncFunction return_fn = args.size() == 2 ? Coerce.toVncFunction(args.second()) : null;;
+
+				// return a transducer
+				return new VncFunction(createAnonymousFuncName("halt-when:transducer:wrapped")) {
+					public VncVal apply(final VncList args) {
+						assertArity(this.getName(), args, 1);
+						
+						final VncFunction rf = Coerce.toVncFunction(args.first());
+
+						return new VncFunction(createAnonymousFuncName("halt-when:transducer")) {
+							public VncVal apply(final VncList args) {
+								assertArity(this.getName(), args, 1, 2, 3);
+								
+								if (args.size() == 0) {
+									return rf.apply(new VncList());
+								}
+								else if (args.size() == 1) {
+									final VncVal result = args.first();
+									
+									if (Types.isVncMap(result) && ((VncMap)result).containsKey(HALT) == True) {
+										return ((VncMap)result).get(HALT);
+									}
+									else {
+										return rf.apply(VncList.of(result));
+									}
+								}
+								else {
+									final VncVal result = args.first();
+									final VncVal input = args.second();
+									
+									final VncVal cond = predicate.apply(VncList.of(input));
+									if (cond != False && cond != Nil) {
+										final VncVal haltVal = return_fn != null
+																? return_fn.apply(
+																		VncList.of(
+																			rf.apply(VncList.of(result)),
+																			input))
+																: input;
+										return Reduced.reduced(VncHashMap.of(HALT, haltVal));
+									}
+									else {
+										return rf.apply(VncList.of(result, input));
+									}
+								}
+							}
+			
+						    private static final long serialVersionUID = -1L;						    
+						};
+					}
+						
+				    private static final long serialVersionUID = -1L;
+				};					
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 		
 	private static List<VncVal> flatten(final VncVal value) {
 		final List<VncVal> list = new ArrayList<>();
@@ -1106,7 +1188,10 @@ public class TransducerFunctions {
 		}
 	}
 		
+	
+	private static final VncKeyword HALT = new VncKeyword("@halt");
 
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1127,5 +1212,6 @@ public class TransducerFunctions {
 					.put("sorted",		sorted)
 					.put("reverse",		reverse)
 					.put("flatten",		flatten)
+					.put("halt-when",	halt_when)
 					.toMap();	
 }
