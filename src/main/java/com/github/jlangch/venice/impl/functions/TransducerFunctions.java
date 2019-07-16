@@ -165,9 +165,9 @@ public class TransducerFunctions {
 									}
 									else {
 										final VncVal result = args.first();
-										final VncList inputs = args.slice(1);
+										final VncVal input = args.second();
 										
-										return rf.apply(VncList.of(result, fn.apply(inputs)));
+										return rf.apply(VncList.of(result, fn.apply(VncList.of(input))));
 									}
 								}
 				
