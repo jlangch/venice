@@ -374,6 +374,26 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_halt_when() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                                     \n" +
+				"  (def xf (comp (halt-when #(== % 10)) (filter odd?)))  \n" +
+				"  (def coll [1 2 3 4 5 6 7 8 9])                        \n" +
+				"  (str (transduce xf conj coll)))                         ";
+		
+		final String script2 =
+				"(do                                                     \n" +
+				"  (def xf (comp (halt-when #(> % 5)) (filter odd?)))    \n" +
+				"  (def coll [1 2 3 4 5 6 7 8 9])                        \n" +
+				"  (str (transduce xf conj coll)))                         ";
+
+		assertEquals("[1 3 5 7 9]", venice.eval(script1));	
+		assertEquals("6", venice.eval(script2));	
+	}
+	
+	@Test
 	public void test_map() {
 		final Venice venice = new Venice();
 

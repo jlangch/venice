@@ -1102,7 +1102,13 @@ public class TransducerFunctions {
 						"is not supplied, the input that triggered the predicate will be " + 
 						"returned. If the predicate never returns true the transduction is " + 
 						"unaffected.")
-					.examples()
+					.examples(
+						"(do                                                     \n" +
+						"  (def xf (comp (halt-when #(== % 10)) (filter odd?)))  \n" +
+						"  (transduce xf conj [1 2 3 4 5 6 7 8 9]))                ",
+						"(do                                                     \n" +
+						"  (def xf (comp (halt-when #(> % 5)) (filter odd?)))    \n" +
+						"  (transduce xf conj [1 2 3 4 5 6 7 8 9]))                ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
