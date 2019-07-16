@@ -42,10 +42,14 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
@@ -950,7 +954,7 @@ public class TransducerFunctions {
 					.arglists("(reverse coll)")		
 					.doc(
 						"Returns a collection of the items in coll in reverse order. " +
-						"Returns a statefule transducer when no collection is provided.")
+						"Returns a stateful transducer when no collection is provided.")
 					.examples("(reverse [1 2 3 4 5 6])")
 					.build()
 		) {		
@@ -1007,8 +1011,102 @@ public class TransducerFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-			
-			
+		
+	public static VncFunction flatten = 
+		new VncFunction(
+				"flatten", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(flatten coll)")		
+					.doc(
+						"Takes any nested combination of collections (lists, vectors, " + 
+						"etc.) and returns their contents as a single, flat sequence. " + 
+						"(flatten nil) returns an empty list." +
+						"Returns a transducer when no collection is provided.")
+					.examples(
+						"(flatten [])", 
+						"(flatten [[1 2 3] [4 5 6] [7 8 9]])")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("flatten", args, 0, 1);
+
+				if (args.size() == 0) {
+					// return a transducer
+					return new VncFunction(createAnonymousFuncName("flatten:transducer:wrapped")) {
+						public VncVal apply(final VncList args) {
+							assertArity(this.getName(), args, 1);
+							
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+	
+							return new VncFunction(createAnonymousFuncName("flatten:transducer")) {
+								public VncVal apply(final VncList args) {
+									assertArity(this.getName(), args, 1, 2, 3);
+									
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										VncVal result = args.first();
+										final VncVal input = args.second();
+										
+										if (Types.isVncCollection(input)) {
+											for(VncVal v : flatten(Coerce.toVncCollection(input))) {
+												result = rf.apply(VncList.of(result, v));	
+											}
+											return result;
+										}
+										else {
+											return rf.apply(VncList.of(result, input));
+										}
+									}
+								}
+				
+							    private static final long serialVersionUID = -1L;						    
+							};
+						}
+							
+					    private static final long serialVersionUID = -1L;
+					};					
+				}
+				else {
+					final VncCollection coll = Coerce.toVncCollection(args.first());					
+					final List<VncVal> result = flatten(coll);
+					return Types.isVncVector(coll) ? new VncVector(result) : new VncList(result);
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
+	private static List<VncVal> flatten(final VncVal value) {
+		final List<VncVal> list = new ArrayList<>();
+		flatten(value, list);
+		return list;
+	}
+
+	private static void flatten(final VncVal value, final List<VncVal> result) {
+		if (Types.isVncSequence(value)) {
+			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
+		}
+		else if (Types.isVncMap(value)) {
+			((VncMap)value).entries().forEach(e -> {
+				result.add(e.getKey());
+				flatten(e.getValue(), result);
+			});
+		}
+		else {
+			result.add(value);
+		}
+	}
+		
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1028,5 +1126,6 @@ public class TransducerFunctions {
 					.put("distinct",	distinct)
 					.put("sorted",		sorted)
 					.put("reverse",		reverse)
+					.put("flatten",		flatten)
 					.toMap();	
 }

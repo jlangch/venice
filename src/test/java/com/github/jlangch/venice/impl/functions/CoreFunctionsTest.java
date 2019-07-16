@@ -786,49 +786,6 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(false? false)"));	
 		assertFalse((Boolean)venice.eval("(false? 1)"));	
 	}
-
-	@Test
-	public void test_flatten() {
-		final Venice venice = new Venice();
-
-		assertEquals("()", venice.eval("(str (flatten '()))"));
-		assertEquals("(1)", venice.eval("(str (flatten '(1)))"));
-		assertEquals("(1 2)", venice.eval("(str (flatten '(1 2)))"));
-
-		assertEquals("()", venice.eval("(str (flatten '(())))"));
-		assertEquals("(1)", venice.eval("(str (flatten '(1 ())))"));
-		assertEquals("(1 2)", venice.eval("(str (flatten '(1 2 ())))"));
-
-		assertEquals("(1 2)", venice.eval("(str (flatten '((1 2))))"));
-		assertEquals("(1 2 3)", venice.eval("(str (flatten '(1 (2 3))))"));
-		assertEquals("(1 2 3 4)", venice.eval("(str (flatten '(1 2 (3 4))))"));
-
-		assertEquals("(1 2 3 4 5 6)", venice.eval("(str (flatten '(1 2 (3 4 (5 6)))))"));
-
-		assertEquals("(:a 1 :b 2)", venice.eval("(str (flatten '({:a 1 :b 2})))"));
-		assertEquals("(1 :a 2 :b 3)", venice.eval("(str (flatten '(1 (:a 2 :b 3))))"));
-		assertEquals("(1 2 :a 3 :b 4)", venice.eval("(str (flatten '(1 2 (:a 3 :b 4))))"));
-		assertEquals("(1 2 :a 3 :b 4 5 6)", venice.eval("(str (flatten '(1 2 (:a 3 :b (4 5 6)))))"));
-
-		
-		assertEquals("[]", venice.eval("(str (flatten []))"));
-		assertEquals("[1]", venice.eval("(str (flatten [1]))"));
-		assertEquals("[1 2]", venice.eval("(str (flatten [1 2]))"));
-		
-		assertEquals("[]", venice.eval("(str (flatten [[]]))"));
-		assertEquals("[1]", venice.eval("(str (flatten [1 []]))"));
-		assertEquals("[1 2]", venice.eval("(str (flatten [1 2 []]))"));
-		
-		assertEquals("[1 2]", venice.eval("(str (flatten [[1 2]]))"));
-		assertEquals("[1 2 3]", venice.eval("(str (flatten [1 [2 3]]))"));
-		assertEquals("[1 2 3 4]", venice.eval("(str (flatten [1 2 [3 4]]))"));
-
-		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (flatten [1 2 [3 4 [5 6]]]))"));
-
-		assertEquals("[:a 1 :b 2]", venice.eval("(str (flatten [{:a 1 :b 2}]))"));
-		assertEquals("[1 :a 2 :b 3]", venice.eval("(str (flatten [1 {:a 2 :b 3}]))"));
-		assertEquals("[1 2 :a 3 :b 4 5 6]", venice.eval("(str (flatten [1 2 {:a 3 :b [4 5 6]}]))"));
-	}
 	
 	@Test
 	public void test_flush() {

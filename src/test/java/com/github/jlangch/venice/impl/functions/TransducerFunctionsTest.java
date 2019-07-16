@@ -103,6 +103,28 @@ public class TransducerFunctionsTest {
 		final String script =
 				"(do                                              \n" +
 				"  (def xf (comp                                  \n" +
+				"            (flatten)                            \n" +
+				"            (map #(* % 10))                      \n" +
+				"            (flatten)                            \n" +
+				"            (map #(- % 5))                       \n" +
+				"            (sorted compare)                     \n" +
+				"            (flatten)                            \n" +
+				"            (drop 3)                             \n" +
+				"            (take 2)                             \n" +
+				"            (reverse)))                          \n" +
+				"  (def coll [5 [2 1 6] '(4) 3])                  \n" +
+				"  (str (transduce xf conj coll)))                 ";
+
+		assertEquals("[45 35]", venice.eval(script));	
+	}
+	
+	@Test
+	public void test_transduce_5() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
 				"            (sorted compare)                     \n" +
 				"            (reverse)                            \n" +
 				"            (reverse)))                          \n" +
@@ -336,6 +358,19 @@ public class TransducerFunctionsTest {
 				"  (str (transduce xf conj coll)))        ";
 
 		assertEquals("[5 4 3 2 1]", venice.eval(script));	
+	}
+	
+	@Test
+	public void test_transduce_flatten() {
+		final Venice venice = new Venice();
+				
+		final String script =
+				"(do                                     \n" +
+				"  (def xf (flatten))                    \n" +
+				"  (def coll [1 [2 3] '(4) 5])           \n" +
+				"  (str (transduce xf conj coll)))        ";
+
+		assertEquals("[1 2 3 4 5]", venice.eval(script));	
 	}
 	
 	@Test
@@ -623,5 +658,48 @@ public class TransducerFunctionsTest {
 		assertEquals("[3 2 1]", venice.eval("(str (reverse [1 2 3]))"));
 		
 		assertEquals("[[9 8 7] [6 5 4] [3 2 1 0]]", venice.eval("(str (reverse [[3 2 1 0] [6 5 4] [9 8 7]]))"));
+	}
+
+	@Test
+	public void test_flatten() {
+		final Venice venice = new Venice();
+
+		assertEquals("()", venice.eval("(str (flatten '()))"));
+		assertEquals("(1)", venice.eval("(str (flatten '(1)))"));
+		assertEquals("(1 2)", venice.eval("(str (flatten '(1 2)))"));
+
+		assertEquals("()", venice.eval("(str (flatten '(())))"));
+		assertEquals("(1)", venice.eval("(str (flatten '(1 ())))"));
+		assertEquals("(1 2)", venice.eval("(str (flatten '(1 2 ())))"));
+
+		assertEquals("(1 2)", venice.eval("(str (flatten '((1 2))))"));
+		assertEquals("(1 2 3)", venice.eval("(str (flatten '(1 (2 3))))"));
+		assertEquals("(1 2 3 4)", venice.eval("(str (flatten '(1 2 (3 4))))"));
+
+		assertEquals("(1 2 3 4 5 6)", venice.eval("(str (flatten '(1 2 (3 4 (5 6)))))"));
+
+		assertEquals("(:a 1 :b 2)", venice.eval("(str (flatten '({:a 1 :b 2})))"));
+		assertEquals("(1 :a 2 :b 3)", venice.eval("(str (flatten '(1 (:a 2 :b 3))))"));
+		assertEquals("(1 2 :a 3 :b 4)", venice.eval("(str (flatten '(1 2 (:a 3 :b 4))))"));
+		assertEquals("(1 2 :a 3 :b 4 5 6)", venice.eval("(str (flatten '(1 2 (:a 3 :b (4 5 6)))))"));
+
+		
+		assertEquals("[]", venice.eval("(str (flatten []))"));
+		assertEquals("[1]", venice.eval("(str (flatten [1]))"));
+		assertEquals("[1 2]", venice.eval("(str (flatten [1 2]))"));
+		
+		assertEquals("[]", venice.eval("(str (flatten [[]]))"));
+		assertEquals("[1]", venice.eval("(str (flatten [1 []]))"));
+		assertEquals("[1 2]", venice.eval("(str (flatten [1 2 []]))"));
+		
+		assertEquals("[1 2]", venice.eval("(str (flatten [[1 2]]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (flatten [1 [2 3]]))"));
+		assertEquals("[1 2 3 4]", venice.eval("(str (flatten [1 2 [3 4]]))"));
+
+		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (flatten [1 2 [3 4 [5 6]]]))"));
+
+		assertEquals("[:a 1 :b 2]", venice.eval("(str (flatten [{:a 1 :b 2}]))"));
+		assertEquals("[1 :a 2 :b 3]", venice.eval("(str (flatten [1 {:a 2 :b 3}]))"));
+		assertEquals("[1 2 :a 3 :b 4 5 6]", venice.eval("(str (flatten [1 2 {:a 3 :b [4 5 6]}]))"));
 	}
 }

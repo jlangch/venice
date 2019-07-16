@@ -3657,7 +3657,7 @@ public class CoreFunctions {
 					.meta()
 					.module("core")
 					.arglists("(first coll)")		
-					.doc("Returns the first element of coll.")
+					.doc("Returns the first element of coll or nil if coll is nil or empty.")
 					.examples(
 						"(first nil)",
 						"(first [])",
@@ -3670,21 +3670,21 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("first", args, 1);
 	
-				final VncVal val = args.first();
-				if (val == Nil) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
 					return Nil;
 				}
 				
-				if (Types.isVncSequence(val)) {
-					return ((VncSequence)val).first();
+				if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).first();
 				}
-				else if (Types.isVncString(val)) {
-					return ((VncString)val).first();
+				else if (Types.isVncString(coll)) {
+					return ((VncString)coll).first();
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'first'",
-							Types.getType(val)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -3711,21 +3711,21 @@ public class CoreFunctions {
 				assertArity("second", args, 1);
 	
 	
-				final VncVal val = args.first();
-				if (val == Nil) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
 					return Nil;
 				}
 				
-				if (Types.isVncSequence(val)) {
-					return ((VncSequence)val).second();
+				if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).second();
 				}
-				else if (Types.isVncString(val)) {
-					return ((VncString)val).second();
+				else if (Types.isVncString(coll)) {
+					return ((VncString)coll).second();
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'second'",
-							Types.getType(val)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -3752,21 +3752,21 @@ public class CoreFunctions {
 				assertArity("third", args, 1);
 	
 	
-				final VncVal val = args.first();
-				if (val == Nil) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
 					return Nil;
 				}
 				
-				if (Types.isVncSequence(val)) {
-					return ((VncSequence)val).third();
+				if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).third();
 				}
-				else if (Types.isVncString(val)) {
-					return ((VncString)val).nth(2);
+				else if (Types.isVncString(coll)) {
+					return ((VncString)coll).nth(2);
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'third'",
-							Types.getType(val)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -3793,21 +3793,21 @@ public class CoreFunctions {
 	
 				final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 	
-				final VncVal val = args.first();
-				if (val == Nil) {
+				final VncVal coll = args.first();
+				if (coll == Nil) {
 					return Nil;
 				}
 				
-				if (Types.isVncSequence(val)) {
-					return ((VncSequence)val).nth(idx);
+				if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).nth(idx);
 				}
-				else if (Types.isVncString(val)) {
-					return ((VncString)val).nth(idx);
+				else if (Types.isVncString(coll)) {
+					return ((VncString)coll).nth(idx);
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'nth'",
-							Types.getType(val)));
+							Types.getType(coll)));
 				}
 			}
 	
@@ -4413,33 +4413,6 @@ public class CoreFunctions {
 							"peek: type %s not supported",
 							Types.getType(args.first())));
 				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-	
-	public static VncFunction flatten = 
-		new VncFunction(
-				"flatten", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(flatten coll)")		
-					.doc(
-						"Takes any nested combination of collections (lists, vectors, " + 
-						"etc.) and returns their contents as a single, flat sequence. " + 
-						"(flatten nil) returns an empty list.")
-					.examples("(flatten [])", "(flatten [[1 2 3] [4 5 6] [7 8 9]])")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("flatten", args, 1);
-				
-				final VncCollection coll = Coerce.toVncCollection(args.first());
-				
-				final List<VncVal> result = new ArrayList<>();
-				flatten(coll, result);			
-				return Types.isVncVector(coll) ? new VncVector(result) : new VncList(result);
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5603,21 +5576,6 @@ public class CoreFunctions {
 		};
 		
 		
-	private static void flatten(final VncVal value, final List<VncVal> result) {
-		if (Types.isVncSequence(value)) {
-			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
-		}
-		else if (Types.isVncMap(value)) {
-			((VncMap)value).entries().forEach(e -> {
-				result.add(e.getKey());
-				flatten(e.getValue(), result);
-			});
-		}
-		else {
-			result.add(value);
-		}
-	}
-	
 	private static VncVal sort(
 			final String fnName, 
 			final VncVal coll, 
@@ -5817,7 +5775,6 @@ public class CoreFunctions {
 				.put("partition",			partition)
 				.put("reduce",				reduce)
 				.put("reduce-kv",			reduce_kv)
-				.put("flatten",				flatten)
 				.put("replace",				replace)
 				.put("group-by",			group_by)
 				.put("sort",				sort)
