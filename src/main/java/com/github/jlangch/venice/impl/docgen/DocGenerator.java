@@ -833,6 +833,8 @@ public class DocGenerator {
 		func.addItem(getDocItem("dedupe"));
 		func.addItem(getDocItem("distinct"));
 		func.addItem(getDocItem("sorted"));
+		func.addItem(getDocItem("reverse"));
+		func.addItem(getDocItem("flatten"));
 		
 		return section;
 	}

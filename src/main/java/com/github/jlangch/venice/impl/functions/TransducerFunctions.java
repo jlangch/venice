@@ -1026,7 +1026,7 @@ public class TransducerFunctions {
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(flatten [])", 
-						"(flatten [[1 2 3] [4 5 6] [7 8 9]])")
+						"(flatten [[1 2 3] [4 [5 6]] [7 [8 [9]]]])")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
