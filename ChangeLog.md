@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- `remove`, `distinct`, `reverse`, `flatten`, and `sorted` to list of transducer functions
+- `remove`, `distinct`, `reverse`, `flatten`, and `sorted` to the list of transducer functions
 
 ### Fixed
 
