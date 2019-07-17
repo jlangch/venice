@@ -403,27 +403,32 @@ public class TransducerFunctionsTest {
 		
 		// find first even (found)
 		final String script3 =
-				"(do                                                                   \n" +
-				"  (def xf (comp                                                       \n" +
-				"            (filter long?)                                            \n" +
-				"            (halt-when #(even? %)(fn [res in] in))))                  \n" +
-				"  (pr-str (transduce xf conj [1 3 6 7 9])))                             ";
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
+				"            (filter long?)                       \n" +
+				"            (halt-when #(even? %)                \n" +
+				"                       (fn [res in] in))))       \n" +
+				"  (pr-str (transduce xf conj [1 3 6 7 9])))        ";
 		
 		// find first even (not found)
 		final String script4 =
-				"(do                                                                     \n" +
-				"  (def xf (comp                                                         \n" +
-				"            (filter long?)                                              \n" +
-				"            (halt-when #(even? %) (fn [res in] in) (constantly nil))))  \n" +
-				"  (pr-str (transduce xf conj [1 3 5 7 9])))                               ";
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
+				"            (filter long?)                       \n" +
+				"            (halt-when #(even? %)                \n" +
+				"                       (fn [res in] in)          \n" +
+				"                       (constantly nil))))       \n" +
+				"  (pr-str (transduce xf conj [1 3 5 7 9])))        ";
 
 		// all match odd (true)
 		final String script5 =
-				"(do                                                                        \n" +
-				"  (def xf (comp                                                            \n" +
-				"            (filter long?)                                                 \n" +
-				"            (halt-when #(even? %) (constantly false) (constantly true))))  \n" +
-				"  (pr-str (transduce xf conj [1 3 5 7 9])))                                  ";
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
+				"            (filter long?)                       \n" +
+				"            (halt-when #(even? %)                \n" +
+				"                       (constantly false)        \n" +
+				"                       (constantly true))))      \n" +
+				"  (pr-str (transduce xf conj [1 3 5 7 9])))        ";
 
 		// all match odd (false)
 		final String script6 =
