@@ -107,19 +107,15 @@ public class TransducerFunctions {
 				final VncVal init = args.size() == 4
 										? args.third()
 										: reduction_fn.apply(new VncList());
-								
-				if (coll.isEmpty()) {
-					return init;
-				}
-				else {
-					final VncFunction xf = (VncFunction)xform.apply(VncList.of(reduction_fn));
-	
-					// reduce the collection
-					final VncVal ret = CoreFunctions.reduce.apply(VncList.of(xf, init, coll));
+							
 
-					// cleanup
-					return Reduced.unreduced(xf.apply(VncList.of(ret)));
-				}
+				final VncFunction xf = (VncFunction)xform.apply(VncList.of(reduction_fn));
+
+				// reduce the collection
+				final VncVal ret = CoreFunctions.reduce.apply(VncList.of(xf, init, coll));
+
+				// cleanup
+				return Reduced.unreduced(xf.apply(VncList.of(ret)));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1048,7 +1044,7 @@ public class TransducerFunctions {
 										return rf.apply(new VncList());
 									}
 									else if (args.size() == 1) {
-										VncVal result = args.first();
+										final VncVal result = args.first();
 										return rf.apply(VncList.of(result));
 									}
 									else {
@@ -1175,8 +1171,9 @@ public class TransducerFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-
 		
+
+	
 	private static List<VncVal> flatten(final VncVal value) {
 		final List<VncVal> list = new ArrayList<>();
 		flatten(value, list);
