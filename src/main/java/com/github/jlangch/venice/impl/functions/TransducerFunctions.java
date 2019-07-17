@@ -1112,10 +1112,11 @@ public class TransducerFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("halt-when", args, 1, 2);
+				assertArity("halt-when", args, 1, 2, 3);
 				
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
-				final VncFunction return_fn = args.size() == 2 ? Coerce.toVncFunction(args.second()) : null;;
+				final VncFunction halt_return_fn = args.size() > 1 ? Coerce.toVncFunction(args.second()) : null;
+				final VncFunction no_halt_return_fn = args.size() > 2 ? Coerce.toVncFunction(args.third()) : null;
 
 				// return a transducer
 				return new VncFunction(createAnonymousFuncName("halt-when:transducer:wrapped")) {
@@ -1137,7 +1138,10 @@ public class TransducerFunctions {
 									if (Types.isVncMap(result) && ((VncMap)result).containsKey(HALT) == True) {
 										return ((VncMap)result).get(HALT);
 									}
-									else {
+									else if (no_halt_return_fn != null) {
+										return no_halt_return_fn.apply(VncList.of(result));
+									}
+									else {	
 										return rf.apply(VncList.of(result));
 									}
 								}
@@ -1147,8 +1151,8 @@ public class TransducerFunctions {
 									
 									final VncVal cond = predicate.apply(VncList.of(input));
 									if (cond != False && cond != Nil) {
-										final VncVal haltVal = return_fn != null
-																? return_fn.apply(
+										final VncVal haltVal = halt_return_fn != null
+																? halt_return_fn.apply(
 																		VncList.of(
 																			rf.apply(VncList.of(result)),
 																			input))

@@ -563,7 +563,7 @@
 
    [x] (if x false true))
 
-(defn 
+(defn
   ^{ :arglists '("(complement f)")
      :doc "Takes a fn f and returns a fn that takes the same arguments as f has the same effects, if any, and returns the opposite truth value."
      :examples '("(complement even?)"
@@ -587,6 +587,14 @@
 
    [x] x)
 
+(defn
+  ^{ :arglists '("(constantly x)")
+     :doc "Returns a function that takes any number of arguments and returns x."
+     :examples '("(do\n  (def fix (constantly 10))\n  (fix 1 2 3))") }
+
+  constantly
+
+  [x] (fn [& args] x))
 
 (defn
    ^{ :arglists '("(zipmap keys vals)")

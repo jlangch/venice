@@ -378,19 +378,87 @@ public class TransducerFunctionsTest {
 		final Venice venice = new Venice();
 		
 		final String script1 =
-				"(do                                                     \n" +
-				"  (def xf (comp (halt-when #(== % 10)) (filter odd?)))  \n" +
-				"  (def coll [1 2 3 4 5 6 7 8 9])                        \n" +
-				"  (str (transduce xf conj coll)))                         ";
+				"(do                                  \n" +
+				"  (def xf (comp                      \n" +
+				"            (halt-when #(== % 10))   \n" +
+				"            (filter odd?)))          \n" +
+				"  (def coll [1 2 3 4 5 6 7 8 9])     \n" +
+				"  (pr-str (transduce xf conj coll)))   ";
 		
-		final String script2 =
-				"(do                                                     \n" +
-				"  (def xf (comp (halt-when #(> % 5)) (filter odd?)))    \n" +
-				"  (def coll [1 2 3 4 5 6 7 8 9])                        \n" +
-				"  (str (transduce xf conj coll)))                         ";
+		final String script2a =
+				"(do                                  \n" +
+				"  (def xf (comp                      \n" +
+				"            (halt-when #(> % 5))     \n" +
+				"            (filter odd?)))          \n" +
+				"  (def coll [1 2 3 4 5 6 7 8 9])     \n" +
+				"  (pr-str (transduce xf conj coll)))   ";
+		
+		final String script2b =
+				"(do                                              \n" +
+				"  (def xf (comp                                  \n" +
+				"            (halt-when #(> % 5) #(identity %2))  \n" +
+				"            (filter odd?)))                      \n" +
+				"  (def coll [1 2 3 4 5 6 7 8 9])                 \n" +
+				"  (pr-str (transduce xf conj coll)))               ";
+		
+		// find first even (found)
+		final String script3 =
+				"(do                                                                   \n" +
+				"  (def xf (comp                                                       \n" +
+				"            (filter long?)                                            \n" +
+				"            (halt-when #(even? %)(fn [res in] in))))                  \n" +
+				"  (pr-str (transduce xf conj [1 3 6 7 9])))                             ";
+		
+		// find first even (not found)
+		final String script4 =
+				"(do                                                                     \n" +
+				"  (def xf (comp                                                         \n" +
+				"            (filter long?)                                              \n" +
+				"            (halt-when #(even? %) (fn [res in] in) (constantly nil))))  \n" +
+				"  (pr-str (transduce xf conj [1 3 5 7 9])))                               ";
+
+		// all match odd (true)
+		final String script5 =
+				"(do                                                                        \n" +
+				"  (def xf (comp                                                            \n" +
+				"            (filter long?)                                                 \n" +
+				"            (halt-when #(even? %) (constantly false) (constantly true))))  \n" +
+				"  (pr-str (transduce xf conj [1 3 5 7 9])))                                  ";
+
+		// all match odd (false)
+		final String script6 =
+				"(do                                                                        \n" +
+				"  (def xf (comp                                                            \n" +
+				"            (filter long?)                                                 \n" +
+				"            (halt-when #(even? %) (constantly false) (constantly true))))  \n" +
+				"  (pr-str (transduce xf conj [1 3 6 7 9])))                                  ";
+
+		// any match even (true)
+		final String script7 =
+				"(do                                                                        \n" +
+				"  (def xf (comp                                                            \n" +
+				"            (halt-when #(even? %) (constantly true) (constantly false))))  \n" +
+				"  (pr-str (transduce xf conj [1 3 5 7 9])))                                   ";
+
+		// any match even (false)
+		final String script8 =
+				"(do                                                                        \n" +
+				"  (def xf (comp                                                            \n" +
+				"            (halt-when #(even? %) (constantly true) (constantly false))))  \n" +
+				"  (pr-str (transduce xf conj [1 3 6 7 9])))                                  ";
 
 		assertEquals("[1 3 5 7 9]", venice.eval(script1));	
-		assertEquals("6", venice.eval(script2));	
+		assertEquals("6", venice.eval(script2a));	
+		assertEquals("6", venice.eval(script2b));	
+		
+		assertEquals("6", venice.eval(script3));	
+		assertEquals("nil", venice.eval(script4));	
+		
+		assertEquals("true", venice.eval(script5));	
+		assertEquals("false", venice.eval(script6));	
+		
+		assertEquals("false", venice.eval(script7));	
+		assertEquals("true", venice.eval(script8));	
 	}
 	
 	@Test

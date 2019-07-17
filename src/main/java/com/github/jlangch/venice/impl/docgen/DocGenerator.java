@@ -668,6 +668,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("partial"));
 		create.addItem(getDocItem("memoize"));
 		create.addItem(getDocItem("complement"));
+		create.addItem(getDocItem("constantly"));
 
 		final DocSection call = new DocSection("Call");
 		all.addSection(call);
