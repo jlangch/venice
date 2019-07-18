@@ -622,6 +622,8 @@
 
   rf-every?
 
+  ;;; TODO: optimize using (reduced x) if false
+
   [pred] (let [empty_ (atom true)]
             (fn
               ([] false)
