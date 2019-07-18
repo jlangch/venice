@@ -33,7 +33,7 @@ public class VncBigDecimal extends VncVal {
 	public VncBigDecimal(final BigDecimal v) { 
 		this(v, Constants.Nil); 
 	}
-	
+
 	public VncBigDecimal(final BigDecimal v, final VncVal meta) {
 		super(meta);
 		value = v; 

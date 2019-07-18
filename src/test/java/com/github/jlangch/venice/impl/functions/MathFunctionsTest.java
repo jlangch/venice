@@ -348,6 +348,77 @@ public class MathFunctionsTest {
 	}
 
 	@Test
+	public void test_avg() {
+		final Venice venice = new Venice();
+
+		// Integer
+		assertEquals(3.0, venice.eval("(avg (int 3))"));
+		assertEquals(2.0, venice.eval("(avg (int 1) (int 3))"));
+		assertEquals(2.0, venice.eval("(avg (int 1) (int 2) (int 3))"));
+		assertEquals(2.5, venice.eval("(avg (int 1) 2 (int 3) 4.0)"));
+		assertEquals(2.5, venice.eval("(double (avg (int 1) 2 (int 3) 4.0M))"));
+		assertEquals(2.0, venice.eval("(avg 1 2 (int 3))"));
+		assertEquals(4.0, venice.eval("(avg (int 4) 5 3.0)"));
+		assertEquals(4.5, venice.eval("(double (avg (int 4) 5 6.0 3.0M))"));
+
+		// Long
+		assertEquals(3.0, venice.eval("(avg 3)"));
+		assertEquals(2.0, venice.eval("(avg 1 3)"));
+		assertEquals(2.0, venice.eval("(avg 1 2 3)"));
+		assertEquals(2.0, venice.eval("(avg 1 2 3 2.0)"));
+		assertEquals(2.0, venice.eval("(double (avg 1 2 3 2.0M))"));
+		assertEquals(3.5, venice.eval("(avg 4 3.0)"));
+		assertEquals(4.0, venice.eval("(double (avg 4 5.0 3.0M))"));
+
+		// Double
+		assertEquals(3.0, venice.eval("(avg 3.0)"));
+		assertEquals(2.0, venice.eval("(avg 1.0 3.0)"));
+		assertEquals(2.0, venice.eval("(avg 1.0 2.0 3.0)"));
+		assertEquals(2.0, venice.eval("(avg 1.0 2.0 3.0 2)"));
+		assertEquals(2.0, venice.eval("(double (avg 1.0 2.0 3.0 2.0M))"));
+		assertEquals(3.5, venice.eval("(avg 4.0 3)"));
+		assertEquals(3.5, venice.eval("(double (avg 4.0 3.0M))"));
+
+		// Decimal
+		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(avg 3.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.000"), venice.eval("(dec/scale(avg 1.0M 3.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.000"), venice.eval("(dec/scale(avg 1.0M 2.0M 3.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.000"), venice.eval("(dec/scale(avg 1.0M 2.0M 3.0M 2) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.000"), venice.eval("(dec/scale(avg 1.0M 2.0M 3.0M 2.0) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("3.500"), venice.eval("(dec/scale(avg 4.0M 3) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("3.500"), venice.eval("(dec/scale(avg 4.0M 3.0) 3 :HALF_UP)"));
+	}
+
+	@Test
+	public void test_median() {
+		final Venice venice = new Venice();
+
+		// Integer
+		assertEquals(3, venice.eval("(median 3I)"));
+		assertEquals(3, venice.eval("(median 1I 3I 4I)"));
+		assertEquals(2.5, venice.eval("(median 1I 4I)"));
+		assertEquals(2.5, venice.eval("(median 1I 2I 3I 4I)"));
+
+		// Long
+		assertEquals(3L, venice.eval("(median 3)"));
+		assertEquals(3L, venice.eval("(median 1 3 4)"));
+		assertEquals(2.5, venice.eval("(median 1 4)"));
+		assertEquals(2.5, venice.eval("(median 1 2 3 4)"));
+
+		// Double
+		assertEquals(3.0, venice.eval("(median 3.0)"));
+		assertEquals(3.0, venice.eval("(median 1.0 3.0 4.0)"));
+		assertEquals(2.5, venice.eval("(median 1.0 4.0)"));
+		assertEquals(2.5, venice.eval("(median 1.0 2.0 3.0 4.0)"));
+
+		// Decimal
+		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(median 3.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(median 1.0M 3.0M 4.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.500"), venice.eval("(dec/scale(median 1.0M 4.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.500"), venice.eval("(dec/scale(median 1.0M 2.0M 3.0M 4.0M) 3 :HALF_UP)"));
+	}
+
+	@Test
 	public void test_mod() {
 		final Venice venice = new Venice();
 

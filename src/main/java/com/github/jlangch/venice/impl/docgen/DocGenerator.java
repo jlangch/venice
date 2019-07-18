@@ -167,6 +167,8 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("dec"));
 		arithmetic.addItem(getDocItem("min"));
 		arithmetic.addItem(getDocItem("max"));
+		arithmetic.addItem(getDocItem("avg"));
+		arithmetic.addItem(getDocItem("median"));
 		arithmetic.addItem(getDocItem("abs"));
 		arithmetic.addItem(getDocItem("negate"));
 		arithmetic.addItem(getDocItem("sqrt"));

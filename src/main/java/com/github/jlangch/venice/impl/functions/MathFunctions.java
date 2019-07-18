@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.math.BigDecimal;
@@ -34,7 +35,6 @@ import java.util.Map;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -339,16 +339,16 @@ public class MathFunctions {
 		) {	
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					return Constants.Nil;
+					return Nil;
 				}
 	
 				VncVal max = args.first();
 				for(VncVal op : args.rest().getList()) {
-					if (op == Constants.Nil) {
+					if (op == Nil) {
 						continue;
 					}
 					else if (Types.isVncNumber(op)) {
-						max = max == Constants.Nil 
+						max = max == Nil 
 								? op 
 								: (op.compareTo(max) > 0 ? op : max);
 					}
@@ -383,16 +383,16 @@ public class MathFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					return Constants.Nil;
+					return Nil;
 				}
 				
 				VncVal min = args.first();
 				for(VncVal op : args.rest().getList()) {
-					if (op == Constants.Nil) {
+					if (op == Nil) {
 						continue;
 					}
 					else if (Types.isVncNumber(op)) {
-						min = min == Constants.Nil
+						min = min == Nil
 								? op
 								: (op.compareTo(min) < 0 ? op : min);
 					}
@@ -485,44 +485,118 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction sqrt = 
+		public static VncFunction sqrt = 
+			new VncFunction(
+					"sqrt", 
+					VncFunction
+						.meta()
+						.module("core")
+						.arglists("(sqrt x)")		
+						.doc("Square root of x")
+						.examples("(sqrt 10)", "(sqrt (int 10))", "(sqrt 10.23)", "(sqrt 10.23M)")
+						.build()
+			) {	
+				public VncVal apply(final VncList args) {
+					assertArity("sqrt", args, 1);
+					
+					final VncVal arg = args.first();
+					
+					if (Types.isVncLong(arg)) {
+						return new VncDouble(Math.sqrt(((VncLong)arg).getValue().doubleValue()));
+					}
+					else if (Types.isVncInteger(arg)) {
+						return new VncDouble(Math.sqrt(((VncInteger)arg).getValue().doubleValue()));
+					}
+					else if (Types.isVncDouble(arg)) {
+						return new VncDouble(Math.sqrt(((VncDouble)arg).getValue()));
+					}
+					else if (Types.isVncBigDecimal(arg)) {
+						return new VncBigDecimal(
+									new BigDecimal(
+											Math.sqrt(
+												Coerce.toVncBigDecimal(args.first()).getValue().doubleValue())));
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid argument type %s while calling function 'sqrt'",
+								Types.getType(arg)));
+					}
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
+	public static VncFunction avg = 
 		new VncFunction(
-				"sqrt", 
+				"avg", 
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(sqrt x)")		
-					.doc("Square root of x")
-					.examples("(sqrt 10)", "(sqrt (int 10))", "(sqrt 10.23)", "(sqrt 10.23M)")
+					.arglists("(avg x)", "(avg x y)", "(avg x y & more)")		
+					.doc("Returns the average of the values")
+					.examples(
+						"(avg 10 20 30)", 
+						"(avg 1.4 3.6)", 
+						"(avg 2.8M 6.4M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("sqrt", args, 1);
+				final VncVal sum = add.apply(args);
 				
-				final VncVal arg = args.first();
-				
-				if (Types.isVncLong(arg)) {
-					return new VncDouble(Math.sqrt(((VncLong)arg).getValue().doubleValue()));
+				if (args.isEmpty()) {
+					return Nil;
 				}
-				else if (Types.isVncInteger(arg)) {
-					return new VncDouble(Math.sqrt(((VncInteger)arg).getValue().doubleValue()));
+				else if (Types.isVncBigDecimal(sum) ) {
+					return divide.apply(VncList.of(sum, new VncBigDecimal(BigDecimal.valueOf(args.size()))));
 				}
-				else if (Types.isVncDouble(arg)) {
-					return new VncDouble(Math.sqrt(((VncDouble)arg).getValue()));
-				}
-				else if (Types.isVncBigDecimal(arg)) {
-					return new VncBigDecimal(
-								new BigDecimal(
-										Math.sqrt(
-											Coerce.toVncBigDecimal(args.first()).getValue().doubleValue())));
-				}
-				else {
-					throw new VncException(String.format(
-							"Invalid argument type %s while calling function 'sqrt'",
-							Types.getType(arg)));
+				else  {
+					return divide.apply(VncList.of(sum, new VncDouble(args.size())));
 				}
 			}
-	
+			
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction median = 
+		new VncFunction(
+				"median", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(median x)", "(median x y)", "(median x y & more)")		
+					.doc("Returns the median of the values")
+					.examples(
+						"(median 3 1 2)", 
+						"(median 3 2 1 4)", 
+						"(median 3.6 1.4 4.8)", 
+						"(median 3.6M 1.4M 4.8M)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				if (args.isEmpty()) {
+					return Nil;
+				}
+				else {
+					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
+					
+					if (list.size() % 2 == 1) {
+						return list.nth(list.size() / 2);
+					}
+					else {
+						final VncVal lowerMedian = list.nth(list.size() / 2 - 1);
+						final VncVal upperMedian = list.nth(list.size() / 2);
+						final VncVal sum = add.apply(VncList.of(lowerMedian, upperMedian));
+						
+						if (Types.isVncBigDecimal(sum) ) {
+							return divide.apply(VncList.of(sum, new VncBigDecimal(BigDecimal.valueOf(2))));
+						}
+						else  {
+							return divide.apply(VncList.of(sum, new VncDouble(2.0)));
+						}
+					}
+				}
+			}
+			
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -1070,6 +1144,8 @@ public class MathFunctions {
 					.put("abs",					abs)
 					.put("min",					min)
 					.put("max",					max)
+					.put("avg",					avg)
+					.put("median",				median)
 					.put("negate",				negate)
 					.put("sqrt",				sqrt)
 					

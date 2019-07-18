@@ -35,6 +35,14 @@ public class VncDouble extends VncVal {
 		this(v.doubleValue(), Constants.Nil); 
 	}
 
+	public VncDouble(final Long v) { 
+		this(v.doubleValue(), Constants.Nil); 
+	}
+
+	public VncDouble(final Integer v) { 
+		this(v.doubleValue(), Constants.Nil); 
+	}
+
 	public VncDouble(final Double v, final VncVal meta) { 
 		super(meta);
 		value = v; 
