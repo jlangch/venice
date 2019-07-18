@@ -10,8 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- `remove`, `distinct`, `reverse`, `flatten`, `sorted`, `first`, `every?`, `any?`, 
-   and `halt-when` to the list of transducer functions
+- `remove`, `distinct`, `reverse`, `flatten`, `sorted`, and `halt-when` to the list of transducer functions
+- `rf-first`, `rf-every?`, `rf-any?` reducing functions to be used with `transduce`
 - function `constantly`
 
 ### Fixed

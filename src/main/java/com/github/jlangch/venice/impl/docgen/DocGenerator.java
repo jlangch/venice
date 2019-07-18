@@ -817,9 +817,11 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 
-		final DocSection run = new DocSection("Run");
+		final DocSection run = new DocSection("Process");
 		all.addSection(run);		
 		run.addItem(getDocItem("transduce"));
+		run.addItem(getDocItem("reduced"));
+		run.addItem(getDocItem("reduced?"));
 
 		final DocSection func = new DocSection("Functions");
 		all.addSection(func);		
@@ -837,9 +839,12 @@ public class DocGenerator {
 		func.addItem(getDocItem("reverse"));
 		func.addItem(getDocItem("flatten"));
 		func.addItem(getDocItem("halt-when"));
-		func.addItem(getDocItem("first"));
-		func.addItem(getDocItem("every?"));
-		func.addItem(getDocItem("any?"));
+
+		final DocSection red = new DocSection("Reductions");
+		all.addSection(red);		
+		red.addItem(getDocItem("rf-first"));
+		red.addItem(getDocItem("rf-every?"));
+		red.addItem(getDocItem("rf-any?"));
 		
 		return section;
 	}

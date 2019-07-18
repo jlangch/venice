@@ -587,6 +587,51 @@
 
    [x] x)
 
+
+(defn
+  ^{ :arglists '("(rf-first)")
+     :doc "Returns a reducing function for a transducer that returns the first item."
+     :examples '("""(transduce (filter number?) rf-first [false 1 2])""") }
+
+  rf-first
+
+  ([] nil)
+  ([x] x)
+  ([x y] (if (nil? x)
+             (if (nil? y) nil (reduced y))
+             nil)))
+
+
+(defn
+  ^{ :arglists '("(rf-any pos?)")
+     :doc "Returns a reducing function for a transducer that returns true if the predicate is true for at least one the items, false otherwise."
+     :examples '("""(transduce (filter number?) (rf-any? pos?) [true -1 1 2 false])""") }
+
+  rf-any?
+
+  [pred] (fn
+           ([] false)
+           ([x] x)
+           ([x y] (if (pred y) (reduced true) x))))
+
+
+(defn
+  ^{ :arglists '("(rf-every pos?)")
+     :doc "Returns a reducing function for a transducer that returns true if the predicate is true for all the items, false otherwise."
+     :examples '("""(transduce (filter number?) (rf-every? pos?) [1 2 3])""") }
+
+  rf-every?
+
+  [pred] (let [empty_ (atom true)]
+            (fn
+              ([] false)
+              ([x] x)
+              ([x y] (do
+                       (let [r (if @empty_ (pred y) (and x (pred y)))]
+                         (reset! empty_ false)
+                         r))))))
+
+
 (defn
   ^{ :arglists '("(constantly x)")
      :doc "Returns a function that takes any number of arguments and returns x."

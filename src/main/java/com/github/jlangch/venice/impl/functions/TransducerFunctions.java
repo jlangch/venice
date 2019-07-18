@@ -51,7 +51,6 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.transducer.Reduced;
-import com.github.jlangch.venice.impl.util.transducer.Transducer;
 
 
 public class TransducerFunctions {
@@ -117,6 +116,44 @@ public class TransducerFunctions {
 
 				// cleanup
 				return Reduced.unreduced(xf.apply(VncList.of(ret)));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction reduced = 
+		new VncFunction(
+				"reduced", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(reduced x)")		
+					.doc("Wraps x in a way such that a reduce will terminate with the value x.")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("reduced", args, 1);
+				
+				return Reduced.reduced(args.first());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction reduced_Q = 
+		new VncFunction(
+				"reduced?", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(reduced? x)")		
+					.doc("Returns true if x is the result of a call to reduced.")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("reduced?", args, 1);
+				
+				return Reduced.isReduced(args.first()) ? True : False;
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1095,7 +1132,7 @@ public class TransducerFunctions {
 						"for an input. When retf is supplied it must be a fn of 2 arguments - " + 
 						"it will be passed the (completed) result so far and the input that " + 
 						"triggered the predicate, and its return value (if it does not throw " + 
-						"an exception) will be the return value of the transducer. If retf " + 
+						"an exception) will be the return value of the  If retf " + 
 						"is not supplied, the input that triggered the predicate will be " + 
 						"returned. If the predicate never returns true the transduction is " + 
 						"unaffected.")
@@ -1132,8 +1169,8 @@ public class TransducerFunctions {
 								else if (args.size() == 1) {
 									final VncVal result = args.first();
 									
-									if (Types.isVncMap(result) && ((VncMap)result).containsKey(Transducer.HALT) == True) {
-										return ((VncMap)result).get(Transducer.HALT);
+									if (Types.isVncMap(result) && ((VncMap)result).containsKey(HALT) == True) {
+										return ((VncMap)result).get(HALT);
 									}
 									else if (no_halt_return_fn != null) {
 										return no_halt_return_fn.apply(VncList.of(result));
@@ -1154,7 +1191,7 @@ public class TransducerFunctions {
 																			rf.apply(VncList.of(result)),
 																			input))
 																: input;
-										return Reduced.reduced(VncHashMap.of(Transducer.HALT, haltVal));
+										return Reduced.reduced(VncHashMap.of(HALT, haltVal));
 									}
 									else {
 										return rf.apply(VncList.of(result, input));
@@ -1197,6 +1234,7 @@ public class TransducerFunctions {
 	}
 		
 	
+	public static final VncKeyword HALT = new VncKeyword("@halt");
 	private static final VncKeyword NONE = new VncKeyword("@none");
 
 	
@@ -1207,6 +1245,8 @@ public class TransducerFunctions {
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
 					.put("transduce",	transduce)
+					.put("reduced",		reduced)
+					.put("reduced?",	reduced_Q)
 					.put("map",			map)
 					.put("filter",		filter)
 					.put("drop",		drop)
