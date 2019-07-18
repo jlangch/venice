@@ -3179,7 +3179,12 @@ public class CoreFunctions {
 						"(every? number? [])",
 						"(every? number? [1 2 3 4])",
 						"(every? number? [1 2 3 :a])",
-						"(every? #(>= % 10) [10 11 12])")
+						"(every? #(>= % 10) [10 11 12])",
+						";; transducer                         \n" +
+						"(do                                   \n" +
+						"  (def xf (comp (filter number?)      \n" +
+						"                (every? pos?)))       \n" +
+						"  (transduce xf conj [1 2 3 false]))    ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -3301,7 +3306,12 @@ public class CoreFunctions {
 						"(any? number? [])",
 						"(any? number? [1 :a :b])",
 						"(any? number? [1 2 3])",
-						"(any? #(>= % 10) [1 5 10])")
+						"(any? #(>= % 10) [1 5 10])",
+						";; transducer                          \n" +
+						"(do                                    \n" +
+						"  (def xf (comp (filter number?)       \n" +
+						"                (any? pos?)))          \n" +
+						"  (transduce xf conj [-1 0 2 false]))    ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -3772,7 +3782,12 @@ public class CoreFunctions {
 						"(first [1 2 3])",
 						"(first '())",
 						"(first '(1 2 3))",
-						"(first \"abc\")")
+						"(first \"abc\")",
+						";; transducer                            \n" +
+						"(do                                      \n" +
+						"  (def xf (comp (filter number?)         \n" +
+						"                (first)))                \n" +
+						"  (transduce xf conj [false 1 2 true]))    ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

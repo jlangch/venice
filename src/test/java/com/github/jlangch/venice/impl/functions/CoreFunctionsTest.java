@@ -61,19 +61,19 @@ public class CoreFunctionsTest {
 		
 		// Transducer
 		final String script1 =
-				"(do                                          \n" +
-				"  (def xf (any? number?))                    \n" +
-				"  (pr-str (transduce xf conj [1 2 false])))    ";
+				"(do                                                  \n" +
+				"  (def xf (comp (filter number?) (any? pos?)))       \n" +
+				"  (pr-str (transduce xf conj [true -1 1 2 false])))    ";
 
 		final String script2 =
-				"(do                                           \n" +
-				"  (def xf (any? number?))                     \n" +
-				"  (pr-str (transduce xf conj [false true])))    ";
+				"(do                                                 \n" +
+				"  (def xf (comp (filter number?) (any? neg?)))      \n" +
+				"  (pr-str (transduce xf conj [true 1 2 3 false])))    ";
 
 		final String script3 =
-				"(do                                      \n" +
-				"  (def xf (any? number?))                \n" +
-				"  (pr-str (transduce xf conj [])))         ";
+				"(do                                             \n" +
+				"  (def xf (comp (filter number?) (any? neg?)))  \n" +
+				"  (pr-str (transduce xf conj [])))                ";
 
 		assertEquals("true", venice.eval(script1));	
 		assertEquals("false", venice.eval(script2));	
@@ -800,19 +800,19 @@ public class CoreFunctionsTest {
 		
 		// Transducer
 		final String script1 =
-				"(do                                      \n" +
-				"  (def xf (every? number?))              \n" +
-				"  (pr-str (transduce xf conj [1 2 3])))    ";
+				"(do                                                \n" +
+				"  (def xf (comp (filter number?) (every? pos?)))   \n" +
+				"  (pr-str (transduce xf conj [1 2 3])))              ";
 
 		final String script2 =
-				"(do                                      \n" +
-				"  (def xf (every? number?))              \n" +
-				"  (pr-str (transduce xf conj [1 2 3 false])))    ";
+				"(do                                                \n" +
+				"  (def xf (comp (filter number?) (every? neg?)))   \n" +
+				"  (pr-str (transduce xf conj [true 1 2 3 false])))   ";
 
 		final String script3 =
-				"(do                                      \n" +
-				"  (def xf (every? number?))              \n" +
-				"  (pr-str (transduce xf conj [])))         ";
+				"(do                                                \n" +
+				"  (def xf (comp (filter number?) (every? pos?)))   \n" +
+				"  (pr-str (transduce xf conj [])))                   ";
 
 		assertEquals("true", venice.eval(script1));	
 		assertEquals("false", venice.eval(script2));	
@@ -868,14 +868,14 @@ public class CoreFunctionsTest {
 		
 		// Transducer
 		final String script1 =
-				"(do                                      \n" +
-				"  (def xf (first))                       \n" +
-				"  (pr-str (transduce xf conj [1 2 3])))    ";
+				"(do                                            \n" +
+				"  (def xf (comp (filter number?) (first)))     \n" +
+				"  (pr-str (transduce xf conj [false 1 2 3])))    ";
 
 		final String script2 =
-				"(do                                      \n" +
-				"  (def xf (first))                       \n" +
-				"  (pr-str (transduce xf conj [])))         ";
+				"(do                                            \n" +
+				"  (def xf (comp (filter number?) (first)))     \n" +
+				"  (pr-str (transduce xf conj [])))               ";
 
 		assertEquals("1", venice.eval(script1));	
 		assertEquals("nil", venice.eval(script2));	
