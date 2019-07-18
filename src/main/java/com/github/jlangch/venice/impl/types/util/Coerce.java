@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
@@ -80,6 +81,18 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to atom. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
+	public static VncVolatile toVncVolatile(final VncVal val) {
+		if (val == null || Types.isVncVolatile(val)) {
+			return (VncVolatile)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to volatile. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

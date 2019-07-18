@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
@@ -80,6 +81,10 @@ public class Types {
 
 	public static boolean isVncAtom(final VncVal val) {
 		return val != null && (val instanceof VncAtom);
+	}
+
+	public static boolean isVncVolatile(final VncVal val) {
+		return val != null && (val instanceof VncVolatile);
 	}
 	
 	public static boolean isVncThreadLocal(final VncVal val) {
@@ -234,6 +239,9 @@ public class Types {
 		else if (Types.isVncAtom(val)) {
 			return new VncKeyword("venice.Atom");
 		}
+		else if (Types.isVncVolatile(val)) {
+			return new VncKeyword("venice.Volatile");
+		}
 		else if (Types.isVncThreadLocal(val)) {
 			return new VncKeyword("venice.ThreadLocal");
 		}
@@ -324,6 +332,7 @@ public class Types {
 			case "venice.Nil":			return val == Nil;
 			case "venice.Boolean":		return val == True || val == False;
 			case "venice.Atom":			return Types.isVncAtom(val);
+			case "venice.Volatile":		return Types.isVncVolatile(val);
 			case "venice.ThreadLocal":	return Types.isVncThreadLocal(val);
 			case "venice.Long":			return Types.isVncLong(val);
 			case "venice.Integer":		return Types.isVncInteger(val);

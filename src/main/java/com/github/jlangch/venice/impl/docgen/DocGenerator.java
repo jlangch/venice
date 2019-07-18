@@ -866,6 +866,14 @@ public class DocGenerator {
 		atoms.addItem(getDocItem("add-watch"));
 		atoms.addItem(getDocItem("remove-watch"));
 
+		final DocSection volatiles = new DocSection("Volatiles");
+		all.addSection(volatiles);
+		volatiles.addItem(getDocItem("volatile"));
+		volatiles.addItem(getDocItem("volatile?"));
+		volatiles.addItem(getDocItem("deref"));
+		volatiles.addItem(getDocItem("reset!"));
+		volatiles.addItem(getDocItem("swap!"));
+
 		final DocSection futures = new DocSection("Futures");
 		all.addSection(futures);
 		futures.addItem(getDocItem("future"));

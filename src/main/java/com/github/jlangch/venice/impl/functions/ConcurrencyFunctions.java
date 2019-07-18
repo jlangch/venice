@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -334,7 +335,10 @@ public class ConcurrencyFunctions {
 					.module("core")
 					.arglists("(atom x)")		
 					.doc("Creates an atom with the initial value x")
-					.examples("(do\n   (def counter (atom 0))\n   (deref counter))")
+					.examples(
+						"(do                       \n" +
+						"  (def counter (atom 0))  \n" +
+						"  (deref counter))          ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -354,7 +358,10 @@ public class ConcurrencyFunctions {
 					.module("core")
 					.arglists("(atom? x)")		
 					.doc("Returns true if x is an atom, otherwise false")
-					.examples("(do\n   (def counter (atom 0))\n   (atom? counter))")
+					.examples(
+						"(do                        \n" +
+						"   (def counter (atom 0))  \n" +
+						"   (atom? counter))          ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -376,14 +383,29 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Sets the value of atom to newval without regard for the " + 
 						"current value. Returns newval.")
-					.examples("(do\n   (def counter (atom 0))\n   (reset! counter 99)\n   (deref counter))")
+					.examples(
+						"(do                       \n" +
+						"  (def counter (atom 0))  \n" +
+						"  (reset! counter 99)     \n" +
+						"  (deref counter))          ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("reset!", args, 2);
 				
-				final VncAtom atm = Coerce.toVncAtom(args.first());
-				return atm.reset(args.second());
+				final VncVal val = args.first();
+				
+				if (Types.isVncAtom(val)) {
+					return ((VncAtom)val).reset(args.second());					
+				}
+				else if (Types.isVncVolatile(val)) {
+					return ((VncVolatile)val).reset(args.second());					
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'reset!' does not allow type %s as argument.",
+							Types.getType(val)));
+				}
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -401,17 +423,34 @@ public class ConcurrencyFunctions {
 						"(apply f current-value-of-atom args). Note that f may be called " + 
 						"multiple times, and thus should be free of side effects.  Returns " + 
 						"the value that was swapped in.")
-					.examples("(do\n   (def counter (atom 0))\n   (swap! counter inc)\n   (deref counter))")
+					.examples(
+						"(do                       \n" +
+						"   (def counter (atom 0)) \n" +
+						"   (swap! counter inc)    \n" +
+						"   (deref counter))         ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("swap!", args, 2);
 				
-				final VncAtom atm = Coerce.toVncAtom(args.first());		
-				final VncFunction fn = Coerce.toVncFunction(args.second());
-				final VncList swapArgs = args.slice(2);
+				final VncVal val = args.first();
 				
-				return atm.swap(fn, swapArgs);
+				if (Types.isVncAtom(val)) {
+					final VncFunction fn = Coerce.toVncFunction(args.second());
+					final VncList swapArgs = args.slice(2);					
+					return ((VncAtom)val).swap(fn, swapArgs);
+				}
+				else if (Types.isVncVolatile(val)) {
+					final VncFunction fn = Coerce.toVncFunction(args.second());
+					final VncList swapArgs = args.slice(2);					
+					return ((VncVolatile)val).swap(fn, swapArgs);
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'sawp!' does not allow type %s as argument.",
+							Types.getType(val)));
+				}
+
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -428,7 +467,11 @@ public class ConcurrencyFunctions {
 						"Atomically sets the value of atom to newval if and only if the " + 
 						"current value of the atom is identical to oldval. Returns true if " + 
 						"set happened, else false")
-					.examples("(do\n   (def counter (atom 2))\n   (compare-and-set! counter 2 4)\n   (deref counter))")
+					.examples(
+						"(do                               \n" +
+						"   (def counter (atom 2))         \n" +
+						"   (compare-and-set! counter 2 4) \n" +
+						"   (deref counter))                 ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -440,6 +483,58 @@ public class ConcurrencyFunctions {
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Volatile
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction new_volatile = 
+		new VncFunction(
+				"volatile", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(volatile x)")		
+					.doc("Creates a volatile with the initial value x")
+					.examples(
+						"(do                           \n" +
+						"  (def counter (volatile 0))  \n" +
+						"  (deref counter))              ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("volatile", args, 1);
+				
+				return new VncVolatile(args.first(), args.getMeta());
+			}
+			
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction volatile_Q = 
+		new VncFunction(
+				"volatile?", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(volatile? x)")		
+					.doc("Returns true if x is a volatile, otherwise false")
+					.examples(
+						"(do                            \n" +
+						"   (def counter (volatile 0))  \n" +
+						"   (volatile? counter))          ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("volatile?", args, 1);
+				
+				return Types.isVncVolatile(args.first()) ? True : False;
+			}
+			
+		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	
@@ -1474,7 +1569,10 @@ public class ConcurrencyFunctions {
 					.put("reset!",				reset_BANG)
 					.put("swap!",				swap_BANG)
 					.put("compare-and-set!", 	compare_and_set_BANG)
-					
+
+					.put("volatile",			new_volatile)
+					.put("volatile?",			volatile_Q)
+
 					.put("agent", 				agent)
 					.put("send",				send)
 					.put("send-off",			send_off)
