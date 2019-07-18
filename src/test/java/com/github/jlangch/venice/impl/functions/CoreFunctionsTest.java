@@ -57,6 +57,27 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(any? (fn [x] (number? x)) [1])"));	
 		assertTrue((Boolean)venice.eval("(any? (fn [x] (number? x)) [1 2])"));	
 		assertTrue((Boolean)venice.eval("(any? (fn [x] (number? x)) (set :a 1 2))"));	
+		
+		
+		// Transducer
+		final String script1 =
+				"(do                                          \n" +
+				"  (def xf (any? number?))                    \n" +
+				"  (pr-str (transduce xf conj [1 2 false])))    ";
+
+		final String script2 =
+				"(do                                           \n" +
+				"  (def xf (any? number?))                     \n" +
+				"  (pr-str (transduce xf conj [false true])))    ";
+
+		final String script3 =
+				"(do                                      \n" +
+				"  (def xf (any? number?))                \n" +
+				"  (pr-str (transduce xf conj [])))         ";
+
+		assertEquals("true", venice.eval(script1));	
+		assertEquals("false", venice.eval(script2));	
+		assertEquals("false", venice.eval(script3));	
 	}
 	
 	@Test
@@ -775,6 +796,27 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [1])"));	
 		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [1 2])"));	
 		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) (set 1 2))"));	
+		
+		
+		// Transducer
+		final String script1 =
+				"(do                                      \n" +
+				"  (def xf (every? number?))              \n" +
+				"  (pr-str (transduce xf conj [1 2 3])))    ";
+
+		final String script2 =
+				"(do                                      \n" +
+				"  (def xf (every? number?))              \n" +
+				"  (pr-str (transduce xf conj [1 2 3 false])))    ";
+
+		final String script3 =
+				"(do                                      \n" +
+				"  (def xf (every? number?))              \n" +
+				"  (pr-str (transduce xf conj [])))         ";
+
+		assertEquals("true", venice.eval(script1));	
+		assertEquals("false", venice.eval(script2));	
+		assertEquals("false", venice.eval(script3));	
 	}
 	
 	@Test
@@ -822,6 +864,21 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(1), venice.eval("(first [1])"));
 		assertEquals(Long.valueOf(1), venice.eval("(first [1 2])"));
 		assertEquals(Long.valueOf(1), venice.eval("(first [1 2 3])"));
+		
+		
+		// Transducer
+		final String script1 =
+				"(do                                      \n" +
+				"  (def xf (first))                       \n" +
+				"  (pr-str (transduce xf conj [1 2 3])))    ";
+
+		final String script2 =
+				"(do                                      \n" +
+				"  (def xf (first))                       \n" +
+				"  (pr-str (transduce xf conj [])))         ";
+
+		assertEquals("1", venice.eval(script1));	
+		assertEquals("nil", venice.eval(script2));	
 	}
 
 	@Test

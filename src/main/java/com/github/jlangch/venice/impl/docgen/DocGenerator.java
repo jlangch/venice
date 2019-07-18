@@ -837,6 +837,9 @@ public class DocGenerator {
 		func.addItem(getDocItem("reverse"));
 		func.addItem(getDocItem("flatten"));
 		func.addItem(getDocItem("halt-when"));
+		func.addItem(getDocItem("first"));
+		func.addItem(getDocItem("every?"));
+		func.addItem(getDocItem("any?"));
 		
 		return section;
 	}

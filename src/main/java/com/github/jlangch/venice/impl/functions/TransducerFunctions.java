@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.transducer.Reduced;
+import com.github.jlangch.venice.impl.util.transducer.Transducer;
 
 
 public class TransducerFunctions {
@@ -1131,8 +1132,8 @@ public class TransducerFunctions {
 								else if (args.size() == 1) {
 									final VncVal result = args.first();
 									
-									if (Types.isVncMap(result) && ((VncMap)result).containsKey(HALT) == True) {
-										return ((VncMap)result).get(HALT);
+									if (Types.isVncMap(result) && ((VncMap)result).containsKey(Transducer.HALT) == True) {
+										return ((VncMap)result).get(Transducer.HALT);
 									}
 									else if (no_halt_return_fn != null) {
 										return no_halt_return_fn.apply(VncList.of(result));
@@ -1153,7 +1154,7 @@ public class TransducerFunctions {
 																			rf.apply(VncList.of(result)),
 																			input))
 																: input;
-										return Reduced.reduced(VncHashMap.of(HALT, haltVal));
+										return Reduced.reduced(VncHashMap.of(Transducer.HALT, haltVal));
 									}
 									else {
 										return rf.apply(VncList.of(result, input));
@@ -1196,7 +1197,6 @@ public class TransducerFunctions {
 	}
 		
 	
-	private static final VncKeyword HALT = new VncKeyword("@halt");
 	private static final VncKeyword NONE = new VncKeyword("@none");
 
 	
