@@ -34,6 +34,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -338,15 +339,18 @@ public class MathFunctions {
 		) {	
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					throw new ArityException(0, "max");
+					return Constants.Nil;
 				}
 	
-				final VncVal op1 = args.first();
-				
-				VncVal max = op1;
+				VncVal max = args.first();
 				for(VncVal op : args.rest().getList()) {
-					if (Types.isVncNumber(op)) {
-						max = op.compareTo(max) > 0 ? op : max;
+					if (op == Constants.Nil) {
+						continue;
+					}
+					else if (Types.isVncNumber(op)) {
+						max = max == Constants.Nil 
+								? op 
+								: (op.compareTo(max) > 0 ? op : max);
 					}
 					else {
 						throw new VncException(String.format(
@@ -379,15 +383,18 @@ public class MathFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					throw new ArityException(0, "min");
+					return Constants.Nil;
 				}
 				
-				final VncVal op1 = args.first();
-				
-				VncVal min = op1;
+				VncVal min = args.first();
 				for(VncVal op : args.rest().getList()) {
-					if (Types.isVncNumber(op)) {
-						min = op.compareTo(min) < 0 ? op : min;
+					if (op == Constants.Nil) {
+						continue;
+					}
+					else if (Types.isVncNumber(op)) {
+						min = min == Constants.Nil
+								? op
+								: (op.compareTo(min) < 0 ? op : min);
 					}
 					else {
 						throw new VncException(String.format(

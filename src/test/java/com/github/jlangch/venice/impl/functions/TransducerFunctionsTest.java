@@ -579,6 +579,42 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_reduction_max() {
+		final Venice venice = new Venice();
+				
+		final String script1 =
+		    "(do                                       \n" +
+		    "  (def xf (comp (filter number?)))        \n" +
+		    "  (pr-str (transduce xf max [1 2 3])))      ";
+
+		final String script2 =
+		    "(do                                       \n" +
+		    "  (def xf (comp (filter number?)))        \n" +
+		    "  (pr-str (transduce xf max [])))           ";
+
+		assertEquals("3", venice.eval(script1));	
+		assertEquals("nil", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_reduction_min() {
+		final Venice venice = new Venice();
+				
+		final String script1 =
+		    "(do                                        \n" +
+		    "  (def xf (comp (filter number?)))         \n" +
+		    "  (pr-str (transduce xf min [1 2 3])))       ";
+
+		final String script2 =
+		    "(do                                        \n" +
+		    "  (def xf (comp (filter number?)))         \n" +
+		    "  (pr-str (transduce xf min [])))            ";
+
+		assertEquals("1", venice.eval(script1));	
+		assertEquals("nil", venice.eval(script2));	
+	}
+	
+	@Test
 	public void test_map() {
 		final Venice venice = new Venice();
 
