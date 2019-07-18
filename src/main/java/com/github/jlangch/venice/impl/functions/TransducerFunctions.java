@@ -688,7 +688,7 @@ public class TransducerFunctions {
 							assertArity(this.getName(), args, 1);
 							
 							final VncFunction rf = Coerce.toVncFunction(args.first());
-						    final AtomicReference<VncVal> seen = new AtomicReference<>(new VncKeyword("::none"));
+						    final AtomicReference<VncVal> seen = new AtomicReference<>(NONE);
 
 							return new VncFunction(createAnonymousFuncName("dedupe:transducer")) {
 								public VncVal apply(final VncList args) {
@@ -727,7 +727,7 @@ public class TransducerFunctions {
 						return new VncList();
 					}
 					
-					VncVal seen = new VncKeyword("::none");
+					VncVal seen = NONE;
 		
 					final List<VncVal> items = new ArrayList<>();
 		
@@ -1197,6 +1197,7 @@ public class TransducerFunctions {
 		
 	
 	private static final VncKeyword HALT = new VncKeyword("@halt");
+	private static final VncKeyword NONE = new VncKeyword("@none");
 
 	
 	///////////////////////////////////////////////////////////////////////////
