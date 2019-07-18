@@ -603,7 +603,7 @@
 
 
 (defn
-  ^{ :arglists '("(rf-any pos?)")
+  ^{ :arglists '("(rf-any pred)")
      :doc "Returns a reducing function for a transducer that returns true if the predicate is true for at least one the items, false otherwise."
      :examples '("""(transduce (filter number?) (rf-any? pos?) [true -1 1 2 false])""") }
 
@@ -616,7 +616,7 @@
 
 
 (defn
-  ^{ :arglists '("(rf-every pos?)")
+  ^{ :arglists '("(rf-every pred)")
      :doc "Returns a reducing function for a transducer that returns true if the predicate is true for all the items, false otherwise."
      :examples '("""(transduce (filter number?) (rf-every? pos?) [1 2 3])""") }
 
