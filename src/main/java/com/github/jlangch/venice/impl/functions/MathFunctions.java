@@ -45,7 +45,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -495,15 +494,17 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(square x)")
 					.doc("Square of x")
-					.examples("(square 10)", "(square (int 10))", "(square 10.23)", "(square 10.23M)")
+					.examples(
+						"(square 10)", 
+						"(square (int 10))", 
+						"(square 10.23)", 
+						"(square 10.23M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("square", args, 1);
 				
-				final VncVal arg = args.first();
-				
-				return Numeric.calc(MathOp.MUL, arg, arg);
+				return Numeric.square(args.first());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -517,34 +518,17 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(sqrt x)")
 					.doc("Square root of x")
-					.examples("(sqrt 10)", "(sqrt (int 10))", "(sqrt 10.23)", "(sqrt 10.23M)")
+					.examples(
+						"(sqrt 10)", 
+						"(sqrt (int 10))", 
+						"(sqrt 10.23)", 
+						"(sqrt 10.23M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity("sqrt", args, 1);
 				
-				final VncVal arg = args.first();
-				
-				if (Types.isVncLong(arg)) {
-					return new VncDouble(Math.sqrt(((VncLong)arg).getValue().doubleValue()));
-				}
-				else if (Types.isVncInteger(arg)) {
-					return new VncDouble(Math.sqrt(((VncInteger)arg).getValue().doubleValue()));
-				}
-				else if (Types.isVncDouble(arg)) {
-					return new VncDouble(Math.sqrt(((VncDouble)arg).getValue()));
-				}
-				else if (Types.isVncBigDecimal(arg)) {
-					return new VncBigDecimal(
-								new BigDecimal(
-										Math.sqrt(
-											Coerce.toVncBigDecimal(args.first()).getValue().doubleValue())));
-				}
-				else {
-					throw new VncException(String.format(
-							"Invalid argument type %s while calling function 'sqrt'",
-							Types.getType(arg)));
-				}
+				return Numeric.sqrt(args.first());
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -571,12 +555,11 @@ public class MathFunctions {
 				else {
 					final VncVal sum = add.apply(args);
 
-					if (Types.isVncBigDecimal(sum) ) {
-						return divide.apply(VncList.of(sum, new VncBigDecimal(BigDecimal.valueOf(args.size()))));
-					}
-					else  {
-						return divide.apply(VncList.of(sum, new VncDouble(args.size())));
-					}
+					final VncVal divisor = Types.isVncBigDecimal(sum) 
+												? new VncBigDecimal(args.size())
+												: new VncDouble(args.size());
+							
+					return Numeric.calc(MathOp.DIV, sum, divisor);
 				}
 			}
 			
@@ -603,6 +586,8 @@ public class MathFunctions {
 						"(standard-deviation :sample 2.8M 6.4M 2.0M 4.4M)")
 					.build()
 		) {	
+		    // see: https://www.calculator.net/standard-deviation-calculator.html
+		
 			public VncVal apply(final VncList args) {
 				assertMinArity("standard-deviation", args, 1);
 				
@@ -618,19 +603,19 @@ public class MathFunctions {
 					
 					VncVal deltaSum = new VncDouble(0.0);
 					for(VncVal v : data.getList()) {
-						VncVal delta = Numeric.calc(MathOp.SUB, v, average);
-						VncVal square = Numeric.calc(MathOp.MUL, delta, delta);
-						deltaSum = Numeric.calc(MathOp.ADD, deltaSum, square);
+						deltaSum = Numeric.calc(
+										MathOp.ADD, 
+										deltaSum, 
+										Numeric.square(
+											Numeric.calc(MathOp.SUB, v, average)));
 					}
 					
-					final VncVal sd = sqrt.apply(
-										VncTinyList.of(
-												Numeric.calc(
-													MathOp.DIV, 
-													deltaSum, 
-													new VncDouble(sample ? data.size() -1 : data.size()))));
-					
-					return CoreFunctions.double_cast.apply(VncTinyList.of(sd));
+					return Numeric.toDouble(
+								Numeric.sqrt(
+										Numeric.calc(
+											MathOp.DIV, 
+											deltaSum, 
+											new VncDouble(sample ? data.size() -1 : data.size()))));
 				}
 			}
 			
@@ -660,19 +645,20 @@ public class MathFunctions {
 					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
 					
 					if (list.size() % 2 == 1) {
+						// odd size
 						return list.nth(list.size() / 2);
 					}
 					else {
+						// even size
 						final VncVal lowerMedian = list.nth(list.size() / 2 - 1);
 						final VncVal upperMedian = list.nth(list.size() / 2);
-						final VncVal sum = add.apply(VncTinyList.of(lowerMedian, upperMedian));
+						final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
 						
-						if (Types.isVncBigDecimal(sum) ) {
-							return divide.apply(VncTinyList.of(sum, new VncBigDecimal(BigDecimal.valueOf(2))));
-						}
-						else  {
-							return divide.apply(VncTinyList.of(sum, new VncDouble(2.0)));
-						}
+						final VncVal divisor = Types.isVncBigDecimal(sum) 
+													? new VncBigDecimal(2L)
+													: new VncDouble(2.0D);
+								
+						return Numeric.calc(MathOp.DIV, sum, divisor);
 					}
 				}
 			}

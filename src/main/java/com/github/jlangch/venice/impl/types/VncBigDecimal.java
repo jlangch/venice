@@ -34,6 +34,14 @@ public class VncBigDecimal extends VncVal {
 		this(v, Constants.Nil); 
 	}
 
+	public VncBigDecimal(final double v) { 
+		this(BigDecimal.valueOf(v), Constants.Nil); 
+	}
+
+	public VncBigDecimal(final long v) { 
+		this(BigDecimal.valueOf(v), Constants.Nil); 
+	}
+
 	public VncBigDecimal(final BigDecimal v, final VncVal meta) {
 		super(meta);
 		value = v; 

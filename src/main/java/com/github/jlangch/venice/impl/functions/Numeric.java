@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
@@ -237,6 +238,33 @@ public class Numeric {
 		}
 		
 		throw new RuntimeException("Unexpected outcome");
+	}
+	
+	public static VncVal square(final VncVal val) {
+		return calc(MathOp.MUL, val, val);
+	}
+	
+	public static VncVal sqrt(final VncVal val) {
+		if (Types.isVncLong(val)) {
+			return new VncDouble(Math.sqrt(((VncLong)val).getValue().doubleValue()));
+		}
+		else if (Types.isVncInteger(val)) {
+			return new VncDouble(Math.sqrt(((VncInteger)val).getValue().doubleValue()));
+		}
+		else if (Types.isVncDouble(val)) {
+			return new VncDouble(Math.sqrt(((VncDouble)val).getValue()));
+		}
+		else if (Types.isVncBigDecimal(val)) {
+			return new VncBigDecimal(
+						new BigDecimal(
+								Math.sqrt(
+									Coerce.toVncBigDecimal(val).getValue().doubleValue())));
+		}
+		else {
+			throw new VncException(String.format(
+					"Invalid argument type %s while calling function 'sqrt'",
+					Types.getType(val)));
+		}
 	}
 	
 	private static VncInteger calcInteger(final MathOp op, final Integer op1, final Integer op2) {
