@@ -38,6 +38,111 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class ConcurrencyFunctionsTest {
 
 	@Test
+	public void test_atom() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (atom 100))        \n" +
+				"   @x)                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(100L, result);
+	}
+
+	@Test
+	public void test_atom_reset() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (atom 100))        \n" +
+				"   (reset! x 200)            \n" +
+				"   @x)                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(200L, result);
+	}
+
+	@Test
+	public void test_atom_swap() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (atom 100))        \n" +
+				"   (swap! x inc)             \n" +
+				"   @x)                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(101L, result);
+	}
+
+	@Test
+	public void test_atom_compareAndSet() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                               \n" +
+				"   (def x (atom 2))               \n" +
+				"   (compare-and-set! x 3 4)       \n" +
+				"   (compare-and-set! x 2 4)       \n" +
+				"   @x)                              ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(4L, result);
+	}
+
+
+	@Test
+	public void test_volatile() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (volatile 100))    \n" +
+				"   @x)                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(100L, result);
+	}
+
+	@Test
+	public void test_volatile_reset() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (volatile 100))    \n" +
+				"   (reset! x 200)            \n" +
+				"   @x)                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(200L, result);
+	}
+
+	@Test
+	public void test_volatile_swap() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          \n" +
+				"   (def x (volatile 100))    \n" +
+				"   (swap! x inc)             \n" +
+				"   @x)                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(101L, result);
+	}
+
+	@Test
 	public void test_agent() {
 		final Venice venice = new Venice();
 

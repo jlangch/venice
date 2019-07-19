@@ -622,7 +622,7 @@
 
   rf-every?
 
-  [pred] (let [empty_ (atom true)]
+  [pred] (let [empty_ (volatile true)]
             (fn
               ([] false)
               ([x] x)

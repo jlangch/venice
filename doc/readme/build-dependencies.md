@@ -5,7 +5,7 @@
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:1.6.0'
+    compile 'com.github.jlangch:venice:1.6.1'
 }
 ```
 
