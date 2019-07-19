@@ -174,7 +174,7 @@ public class DocGenerator {
 
 		final DocSection statistics = new DocSection("Statistics");
 		numbers.addSection(statistics);
-		statistics.addItem(getDocItem("avg"));
+		statistics.addItem(getDocItem("mean"));
 		statistics.addItem(getDocItem("median"));
 		statistics.addItem(getDocItem("standard-deviation"));
 

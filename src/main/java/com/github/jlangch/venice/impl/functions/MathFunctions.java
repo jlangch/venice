@@ -534,18 +534,18 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction avg = 
+	public static VncFunction mean = 
 		new VncFunction(
-				"avg", 
+				"mean", 
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(avg x)", "(avg x y)", "(avg x y & more)")
-					.doc("Returns the average of the values")
+					.arglists("(mean x)", "(mean x y)", "(mean x y & more)")
+					.doc("Returns the mean value of the values")
 					.examples(
-						"(avg 10 20 30)", 
-						"(avg 1.4 3.6)", 
-						"(avg 2.8M 6.4M)")
+						"(mean 10 20 30)", 
+						"(mean 1.4 3.6)", 
+						"(mean 2.8M 6.4M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {				
@@ -599,7 +599,7 @@ public class MathFunctions {
 					return new VncDouble(0.0);
 				}
 				else {
-					final VncVal average = avg.apply(data);
+					final VncVal average = mean.apply(data);
 					
 					VncVal deltaSum = new VncDouble(0.0);
 					for(VncVal v : data.getList()) {
@@ -628,7 +628,10 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(median x)", "(median x y)", "(median x y & more)")
+					.arglists(
+						"(median x)", 
+						"(median x y)", 
+						"(median x y & more)")
 					.doc("Returns the median of the values")
 					.examples(
 						"(median 3 1 2)", 
@@ -644,12 +647,11 @@ public class MathFunctions {
 				else {
 					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
 					
-					if (list.size() % 2 == 1) {
-						// odd size
-						return list.nth(list.size() / 2);
+					if (isOdd(list.size())) {
+						final VncVal median = list.nth(list.size() / 2);
+						return Types.isVncBigDecimal(median) ? median : Numeric.toDouble(median);
 					}
 					else {
-						// even size
 						final VncVal lowerMedian = list.nth(list.size() / 2 - 1);
 						final VncVal upperMedian = list.nth(list.size() / 2);
 						final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
@@ -659,6 +661,90 @@ public class MathFunctions {
 													: new VncDouble(2.0D);
 								
 						return Numeric.calc(MathOp.DIV, sum, divisor);
+					}
+				}
+			}
+			
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction first_quartile = 
+		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
+			
+		new VncFunction(
+				"first-quartile", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(first-quartile x)", 
+						"(first-quartile x y)", 
+						"(first-quartile x y & more)")
+					.doc("Returns the first quartile of the values")
+					.examples(
+						"(first-quartile 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
+						"(first-quartile 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				if (args.isEmpty()) {
+					return Nil;
+				}
+				else {
+					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
+					
+					if (isOdd(list.size())) {
+						// (3, 5, 7, 8), 12, (13, 14, 21, 18)
+						final int medianIdx = list.size() / 2;
+						final VncList lowerHalf = list.slice(0, medianIdx);
+						return median.apply(lowerHalf);
+					}
+					else {
+						// (3, 5, 7, 8, 12), (14, 14, 15, 21, 18)
+						final VncList lowerHalf = list.slice(0, (list.size() / 2));
+						return median.apply(lowerHalf);
+					}
+				}
+			}
+			
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction third_quartile = 
+		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
+			
+		new VncFunction(
+				"first-quartile", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(third-quartile x)", 
+						"(third-quartile x y)", 
+						"(third-quartile x y & more)")
+					.doc("Returns the third quartile of the values")
+					.examples(
+						"(third-quartile 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
+						"(third-quartile 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				if (args.isEmpty()) {
+					return Nil;
+				}
+				else {
+					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
+
+					if (isOdd(list.size())) {
+						// (3, 5, 7, 8), 12, (13, 14, 21, 18)
+						final int medianIdx = list.size() / 2;
+						final VncList upperHalf = list.slice(medianIdx+1);
+						return median.apply(upperHalf);
+					}
+					else {
+						// (3, 5, 7, 8, 12), (14, 14, 15, 21, 18)
+						final VncList upperHalf = list.slice(list.size() / 2);
+						return median.apply(upperHalf);
 					}
 				}
 			}
@@ -1183,7 +1269,8 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncVal validateNumber(final String fnName, final VncVal val) {
+		
+	private static VncVal validateNumber(final String fnName, final VncVal val) {
 		if (!Types.isVncNumber(val)) {
 			throw new VncException(String.format(
 					"%s: Not a number. Got a %s", 
@@ -1193,7 +1280,12 @@ public class MathFunctions {
 		
 		return val;
 	}
+	
+	private static boolean isOdd(final int val) {
+		return val % 2 == 1;
+	}
 
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1210,11 +1302,14 @@ public class MathFunctions {
 					.put("abs",					abs)
 					.put("min",					min)
 					.put("max",					max)
-					.put("avg",					avg)
 					.put("negate",				negate)
 					.put("square",				square)
 					.put("sqrt",				sqrt)
+	
+					.put("mean",				mean)
 					.put("median",				median)
+					.put("first-quartile",		first_quartile)
+					.put("third-quartile",		third_quartile)
 					.put("standard-deviation",	standard_deviation)
 					
 					
