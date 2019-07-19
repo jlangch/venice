@@ -687,20 +687,19 @@ public class MathFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
+				if (args.size() < 2) {
 					return Nil;
 				}
 				else {
 					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
 					
 					if (isOdd(list.size())) {
-						// (3, 5, 7, 8), 12, (13, 14, 21, 18)
-						final int medianIdx = list.size() / 2;
-						final VncList lowerHalf = list.slice(0, medianIdx);
+						// (3, 5, 7, 8), 12, (13, 14, 18, 21)
+						final VncList lowerHalf = list.slice(0, list.size() / 2);
 						return median.apply(lowerHalf);
 					}
 					else {
-						// (3, 5, 7, 8, 12), (14, 14, 15, 21, 18)
+						// (3, 5, 7, 8, 12), (14, 14, 15, 18, 21)
 						final VncList lowerHalf = list.slice(0, (list.size() / 2));
 						return median.apply(lowerHalf);
 					}
@@ -729,20 +728,19 @@ public class MathFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
+				if (args.size() < 2) {
 					return Nil;
 				}
 				else {
 					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
 
 					if (isOdd(list.size())) {
-						// (3, 5, 7, 8), 12, (13, 14, 21, 18)
-						final int medianIdx = list.size() / 2;
-						final VncList upperHalf = list.slice(medianIdx+1);
+						// (3, 5, 7, 8), 12, (13, 14, 18, 21)
+						final VncList upperHalf = list.slice((list.size() / 2) + 1);
 						return median.apply(upperHalf);
 					}
 					else {
-						// (3, 5, 7, 8, 12), (14, 14, 15, 21, 18)
+						// (3, 5, 7, 8, 12), (14, 14, 15, 18, 21)
 						final VncList upperHalf = list.slice(list.size() / 2);
 						return median.apply(upperHalf);
 					}
