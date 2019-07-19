@@ -622,8 +622,6 @@
 
   rf-every?
 
-  ;;; TODO: optimize using (reduced x) if false
-
   [pred] (let [empty_ (atom true)]
             (fn
               ([] false)
@@ -631,7 +629,7 @@
               ([x y] (do
                        (let [r (if @empty_ (pred y) (and x (pred y)))]
                          (reset! empty_ false)
-                         r))))))
+                         (if r r (reduced r))))))))
 
 
 (defn
