@@ -167,11 +167,16 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("dec"));
 		arithmetic.addItem(getDocItem("min"));
 		arithmetic.addItem(getDocItem("max"));
-		arithmetic.addItem(getDocItem("avg"));
-		arithmetic.addItem(getDocItem("median"));
 		arithmetic.addItem(getDocItem("abs"));
 		arithmetic.addItem(getDocItem("negate"));
 		arithmetic.addItem(getDocItem("sqrt"));
+		arithmetic.addItem(getDocItem("square"));
+
+		final DocSection statistics = new DocSection("Statistics");
+		numbers.addSection(statistics);
+		statistics.addItem(getDocItem("avg"));
+		statistics.addItem(getDocItem("median"));
+		statistics.addItem(getDocItem("standard-deviation"));
 
 		final DocSection convert = new DocSection("Convert");
 		numbers.addSection(convert);

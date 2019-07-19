@@ -419,6 +419,20 @@ public class MathFunctionsTest {
 	}
 
 	@Test
+	public void test_standard_deviation() {
+		final Venice venice = new Venice();
+
+		assertEquals(9.0553851381374, (Double)venice.eval("(standard-deviation :sample     10 8 30 22 15)"), 0.0000000000001);
+		assertEquals(8.0993826925266, (Double)venice.eval("(standard-deviation :population 10 8 30 22 15)"), 0.0000000000001);
+
+		assertEquals(9.0553851381374, (Double)venice.eval("(standard-deviation :sample     10.0 8.0 30.0 22 15.0)"), 0.0000000000001);
+		assertEquals(8.0993826925266, (Double)venice.eval("(standard-deviation :population 10.0 8.0 30.0 22.0 15.0)"), 0.0000000000001);
+
+		assertEquals(9.0553851381374, (Double)venice.eval("(standard-deviation :sample     10.0M 8.0M 30.0M 22M 15.0M)"), 0.0000000000001);
+		assertEquals(8.0993826925266, (Double)venice.eval("(standard-deviation :population 10.0M 8.0M 30.0M 22.0M 15.0M)"), 0.0000000000001);
+	}
+
+	@Test
 	public void test_mod() {
 		final Venice venice = new Venice();
 
