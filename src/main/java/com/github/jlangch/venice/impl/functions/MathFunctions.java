@@ -713,7 +713,7 @@ public class MathFunctions {
 		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
 			
 		new VncFunction(
-				"first-quartile", 
+				"third-quartile", 
 				VncFunction
 					.meta()
 					.module("core")
