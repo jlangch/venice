@@ -169,6 +169,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("max"));
 		arithmetic.addItem(getDocItem("abs"));
 		arithmetic.addItem(getDocItem("negate"));
+		arithmetic.addItem(getDocItem("floor"));
 		arithmetic.addItem(getDocItem("sqrt"));
 		arithmetic.addItem(getDocItem("square"));
 
@@ -176,6 +177,8 @@ public class DocGenerator {
 		numbers.addSection(statistics);
 		statistics.addItem(getDocItem("mean"));
 		statistics.addItem(getDocItem("median"));
+		statistics.addItem(getDocItem("first-quartile"));
+		statistics.addItem(getDocItem("third-quartile"));
 		statistics.addItem(getDocItem("standard-deviation"));
 
 		final DocSection convert = new DocSection("Convert");

@@ -59,7 +59,14 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(+)", "(+ x)", "(+ x y)", "(+ x y & more)")
 					.doc("Returns the sum of the numbers. (+) returns 0.")
-					.examples("(+)", "(+ 1)", "(+ 1 2)", "(+ 1 2 3 4)", "(+ (int 1) (int 2))", "(+ 1 2.5)", "(+ 1 2.5M)")
+					.examples(
+						"(+)", 
+						"(+ 1)", 
+						"(+ 1 2)", 
+						"(+ 1 2 3 4)", 
+						"(+ 1I 2I)", 
+						"(+ 1 2.5)", 
+						"(+ 1 2.5M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -87,7 +94,12 @@ public class MathFunctions {
 					.doc(
 						"If one number is supplied, returns the negation, else subtracts " +
 						"the numbers from x and returns the result.")
-					.examples("(- 4)", "(- 8 3 -2 -1)", "(- (int 5) (int 2))", "(- 8 2.5)", "(- 8 1.5M)")
+					.examples(
+						"(- 4)", 
+						"(- 8 3 -2 -1)", 
+						"(- 5I 2I)", 
+						"(- 8 2.5)",
+						"(- 8 1.5M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -131,7 +143,14 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(*)", "(* x)", "(* x y)", "(* x y & more)")
 					.doc("Returns the product of numbers. (*) returns 1")
-					.examples("(*)", "(* 4)", "(* 4 3)", "(* 4 3 2)", "(* (int 4) (int 3))", "(* 6.0 2)", "(* 6 1.5M)")
+					.examples(
+						"(*)", 
+						"(* 4)", 
+						"(* 4 3)", 
+						"(* 4 3 2)", 
+						"(* 4I 3I)", 
+						"(* 6.0 2)", 
+						"(* 6 1.5M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -159,7 +178,13 @@ public class MathFunctions {
 					.doc(
 						"If no denominators are supplied, returns 1/numerator, " + 
 						"else returns numerator divided by all of the denominators.")
-					.examples("(/ 2.0)", "(/ 12 2 3)", "(/ 12 3)", "(/ (int 12) (int 3))", "(/ 6.0 2)", "(/ 6 1.5M)")
+					.examples(
+							"(/ 2.0)", 
+							"(/ 12 2 3)", 
+							"(/ 12 3)", 
+							"(/ 12I 3I)", 
+							"(/ 6.0 2)", 
+							"(/ 6 1.5M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -203,7 +228,9 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(mod n d)")
 					.doc("Modulus of n and d.")
-					.examples("(mod 10 4)", "(mod (int 10) (int 4))")
+					.examples(
+						"(mod 10 4)", 
+						"(mod 10I 4I)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -256,7 +283,11 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(inc x)")
 					.doc("Increments the number x")
-					.examples("(inc 10)", "(inc (int 10))", "(inc 10.1)", "(inc 10.12M)")
+					.examples(
+						"(inc 10)", 
+						"(inc 10I)", 
+						"(inc 10.1)", 
+						"(inc 10.12M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -293,7 +324,11 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(dec x)")
 					.doc("Decrements the number x")
-					.examples("(dec 10)", "(dec (int 10))", "(dec 10.1)", "(dec 10.12M)")
+					.examples(
+						"(dec 10)", 
+						"(dec 10I)", 
+						"(dec 10.1)", 
+						"(dec 10.12M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -332,7 +367,7 @@ public class MathFunctions {
 					.doc("Returns the greatest of the values")
 					.examples(
 						"(max 1)", "(max 1 2)", "(max 4 3 2 1)",
-						"(max (int 1) (int 2))",
+						"(max 1I 2I)",
 						"(max 1.0)", "(max 1.0 2.0)", "(max 4.0 3.0 2.0 1.0)",
 						"(max 1.0M)", "(max 1.0M 2.0M)", "(max 4.0M 3.0M 2.0M 1.0M)",
 						"(max 1.0M 2)")
@@ -376,7 +411,7 @@ public class MathFunctions {
 					.doc("Returns the smallest of the values")
 					.examples(
 						"(min 1)", "(min 1 2)", "(min 4 3 2 1)",
-						"(min (int 1) (int 2))",
+						"(min 1I 2I)",
 						"(min 1.0)", "(min 1.0 2.0)", "(min 4.0 3.0 2.0 1.0)",
 						"(min 1.0M)", "(min 1.0M 2.0M)", "(min 4.0M 3.0M 2.0M 1.0M)",
 						"(min 1.0M 2)")
@@ -418,7 +453,12 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(abs x)")
 					.doc("Returns the absolute value of the number")
-					.examples("(abs 10)", "(abs -10)", "(abs (int -10))", "(abs -10.1)", "(abs -10.12M)")
+					.examples(
+						"(abs 10)", 
+						"(abs -10)", 
+						"(abs -10I)", 
+						"(abs -10.1)", 
+						"(abs -10.12M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -456,7 +496,11 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(negate x)")
 					.doc("Negates x")
-					.examples("(negate 10)", "(negate (int 10))", "(negate 1.23)", "(negate 1.23M)")
+					.examples(
+						"(negate 10)", 
+						"(negate 10I)", 
+						"(negate 1.23)", 
+						"(negate 1.23M)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -485,6 +529,52 @@ public class MathFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+	public static VncFunction floor = 
+		new VncFunction(
+				"floor", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(floor x)")
+					.doc("Returns the largest integer that is less than or equal to x")
+					.examples(
+						"(floor 1.4)", 
+						"(floor -1.4)", 
+						"(floor 1.23M)", 
+						"(floor -1.23M)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("negate", args, 1);
+				
+				final VncVal arg = args.first();
+				
+				if (Types.isVncLong(arg)) {
+					return arg;
+				}
+				else if (Types.isVncInteger(arg)) {
+					return arg;
+				}
+				else if (Types.isVncDouble(arg)) {
+					return new VncDouble(Math.floor(((VncDouble)arg).getValue().doubleValue()));
+				}
+				else if (Types.isVncBigDecimal(arg)) {
+					BigDecimal val = ((VncBigDecimal)arg).getValue();
+					final int scale = val.scale();
+					val = val.setScale(0, RoundingMode.FLOOR);
+					val = val.setScale(scale, RoundingMode.FLOOR);
+					return new VncBigDecimal(val);
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'floor'",
+							Types.getType(arg)));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction square = 
 		new VncFunction(
@@ -496,7 +586,7 @@ public class MathFunctions {
 					.doc("Square of x")
 					.examples(
 						"(square 10)", 
-						"(square (int 10))", 
+						"(square 10I)", 
 						"(square 10.23)", 
 						"(square 10.23M)")
 					.build()
@@ -520,7 +610,7 @@ public class MathFunctions {
 					.doc("Square root of x")
 					.examples(
 						"(sqrt 10)", 
-						"(sqrt (int 10))", 
+						"(sqrt 10I)", 
 						"(sqrt 10.23)", 
 						"(sqrt 10.23M)")
 					.build()
@@ -632,7 +722,8 @@ public class MathFunctions {
 						"(median x)", 
 						"(median x y)", 
 						"(median x y & more)")
-					.doc("Returns the median of the values")
+					.doc(
+						"Returns the median of the values")
 					.examples(
 						"(median 3 1 2)", 
 						"(median 3 2 1 4)", 
@@ -645,23 +736,7 @@ public class MathFunctions {
 					return Nil;
 				}
 				else {
-					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
-					
-					if (isOdd(list.size())) {
-						final VncVal median = list.nth(list.size() / 2);
-						return Types.isVncBigDecimal(median) ? median : Numeric.toDouble(median);
-					}
-					else {
-						final VncVal lowerMedian = list.nth(list.size() / 2 - 1);
-						final VncVal upperMedian = list.nth(list.size() / 2);
-						final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
-						
-						final VncVal divisor = Types.isVncBigDecimal(sum) 
-													? new VncBigDecimal(2L)
-													: new VncDouble(2.0D);
-								
-						return Numeric.calc(MathOp.DIV, sum, divisor);
-					}
+					return median((VncList)CoreFunctions.sort.apply(VncList.of(args)));
 				}
 			}
 			
@@ -680,7 +755,8 @@ public class MathFunctions {
 						"(first-quartile x)", 
 						"(first-quartile x y)", 
 						"(first-quartile x y & more)")
-					.doc("Returns the first quartile of the values")
+					.doc(
+						"Returns the first quartile of the values")
 					.examples(
 						"(first-quartile 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
 						"(first-quartile 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
@@ -693,16 +769,9 @@ public class MathFunctions {
 				else {
 					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
 					
-					if (isOdd(list.size())) {
-						// (3, 5, 7, 8), 12, (13, 14, 18, 21)
-						final VncList lowerHalf = list.slice(0, list.size() / 2);
-						return median.apply(lowerHalf);
-					}
-					else {
-						// (3, 5, 7, 8, 12), (14, 14, 15, 18, 21)
-						final VncList lowerHalf = list.slice(0, (list.size() / 2));
-						return median.apply(lowerHalf);
-					}
+					final VncList data = medianWithHalfs(list);
+					
+					return median((VncList)data.second());
 				}
 			}
 			
@@ -721,7 +790,8 @@ public class MathFunctions {
 						"(third-quartile x)", 
 						"(third-quartile x y)", 
 						"(third-quartile x y & more)")
-					.doc("Returns the third quartile of the values")
+					.doc(
+						"Returns the third quartile of the values")
 					.examples(
 						"(third-quartile 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
 						"(third-quartile 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
@@ -733,17 +803,10 @@ public class MathFunctions {
 				}
 				else {
 					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
-
-					if (isOdd(list.size())) {
-						// (3, 5, 7, 8), 12, (13, 14, 18, 21)
-						final VncList upperHalf = list.slice((list.size() / 2) + 1);
-						return median.apply(upperHalf);
-					}
-					else {
-						// (3, 5, 7, 8, 12), (14, 14, 15, 18, 21)
-						final VncList upperHalf = list.slice(list.size() / 2);
-						return median.apply(upperHalf);
-					}
+					
+					final VncList data = medianWithHalfs(list);
+					
+					return median((VncList)data.third());
 				}
 			}
 			
@@ -756,13 +819,17 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(rand-long)", "(rand-long max)")
+					.arglists(
+						"(rand-long)", 
+						"(rand-long max)")
 					.doc(
 						"Without argument returns a random long between 0 and MAX_LONG. " +
 						"With argument max returns a random long between 0 and max exclusive.\n" + 
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG).")
-					.examples("(rand-long)", "(rand-long 100)")
+					.examples(
+						"(rand-long)", 
+						"(rand-long 100)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -790,13 +857,17 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(rand-double)", "(rand-double max)")
+					.arglists(
+						"(rand-double)", 
+						"(rand-double max)")
 					.doc(
 						"Without argument returns a double between 0.0 and 1.0. " +
 						"With argument max returns a random double between 0.0 and max.\n" + 
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG).")
-					.examples("(rand-double)", "(rand-double 100.0)")
+					.examples(
+						"(rand-double)", 
+						"(rand-double 100.0)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -825,7 +896,9 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(rand-gaussian)", "(rand-gaussian mean stddev)")
+					.arglists(
+						"(rand-gaussian)", 
+						"(rand-gaussian mean stddev)")
 					.doc(
 						"Without argument returns a Gaussion distributed double value with " +
 						"mean 0.0 and standard deviation 1.0. " +
@@ -833,7 +906,9 @@ public class MathFunctions {
 						"value with the given mean and standard deviation.\n" + 
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG)")
-					.examples("(rand-gaussian)", "(rand-gaussian 0.0 5.0)")
+					.examples(
+						"(rand-gaussian)", 
+						"(rand-gaussian 0.0 5.0)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -860,7 +935,12 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(zero? x)")
 					.doc("Returns true if x zero else false")
-					.examples("(zero? 0)", "(zero? 2)", "(zero? (int 0))", "(zero? 0.0)", "(zero? 0.0M)")
+					.examples(
+						"(zero? 0)", 
+						"(zero? 2)", 
+						"(zero? (int 0))", 
+						"(zero? 0.0)", 
+						"(zero? 0.0M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -897,7 +977,12 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(pos? x)")
 					.doc("Returns true if x greater than zero else false")
-					.examples("(pos? 3)", "(pos? -3)", "(pos? (int 3))", "(pos? 3.2)", "(pos? 3.2M)")
+					.examples(
+						"(pos? 3)", 
+						"(pos? -3)", 
+						"(pos? (int 3))", 
+						"(pos? 3.2)", 
+						"(pos? 3.2M)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -934,7 +1019,12 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(neg? x)")
 					.doc("Returns true if x smaller than zero else false")
-					.examples("(neg? -3)", "(neg? 3)", "(neg? (int -3))", "(neg? -3.2)", "(neg? -3.2M)")
+					.examples(
+						"(neg? -3)", 
+						"(neg? 3)", 
+						"(neg? (int -3))", 
+						"(neg? -3.2)", 
+						"(neg? -3.2M)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -971,7 +1061,10 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(even? n)")
 					.doc("Returns true if n is even, throws an exception if n is not an integer")
-					.examples("(even? 4)", "(even? 3)", "(even? (int 3))")
+					.examples(
+						"(even? 4)", 
+						"(even? 3)", 
+						"(even? (int 3))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1002,7 +1095,10 @@ public class MathFunctions {
 					.module("core")
 					.arglists("(odd? n)")
 					.doc("Returns true if n is odd, throws an exception if n is not an integer")
-					.examples("(odd? 3)", "(odd? 4)", "(odd? (int 4))")
+					.examples(
+						"(odd? 3)", 
+						"(odd? 4)", 
+						"(odd? (int 4))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1032,11 +1128,13 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(dec/add x y scale rounding-mode)")
+					.arglists(
+						"(dec/add x y scale rounding-mode)")
 					.doc(
 						"Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
-					.examples("(dec/add 2.44697M 1.79882M 3 :HALF_UP)")
+					.examples(
+						"(dec/add 2.44697M 1.79882M 3 :HALF_UP)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1061,11 +1159,13 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(dec/sub x y scale rounding-mode)")
+					.arglists(
+						"(dec/sub x y scale rounding-mode)")
 					.doc(
 						"Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
-					.examples("(dec/sub 2.44697M 1.79882M 3 :HALF_UP)")
+					.examples(
+						"(dec/sub 2.44697M 1.79882M 3 :HALF_UP)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1088,11 +1188,13 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(dec/mul x y scale rounding-mode)")
+					.arglists(
+						"(dec/mul x y scale rounding-mode)")
 					.doc(
 						"Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
-					.examples("(dec/mul 2.44697M 1.79882M 5 :HALF_UP)")
+					.examples(
+						"(dec/mul 2.44697M 1.79882M 5 :HALF_UP)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1115,11 +1217,13 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(dec/div x y scale rounding-mode)")
+					.arglists(
+						"(dec/div x y scale rounding-mode)")
 					.doc(
 						"Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
-					.examples("(dec/div 2.44697M 1.79882M 5 :HALF_UP)")
+					.examples(
+						"(dec/div 2.44697M 1.79882M 5 :HALF_UP)")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1142,7 +1246,8 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(dec/scale x scale rounding-mode)")
+					.arglists(
+						"(dec/scale x scale rounding-mode)")
 					.doc(
 						"Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
@@ -1182,7 +1287,10 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.module("core")
-					.arglists("(range end)", "(range start end)", "(range start end step)")
+					.arglists(
+						"(range end)", 
+						"(range start end)", 
+						"(range start end step)")
 					.doc(
 						"Returns a collection of numbers from start (inclusive) to end " + 
 						"(exclusive), by step, where start defaults to 0 and step defaults to 1. " +
@@ -1283,6 +1391,50 @@ public class MathFunctions {
 		return val % 2 == 1;
 	}
 
+	private static VncList medianWithHalfs(final VncList sortedData) {
+		VncVal median;
+		VncList lowerHalf; 
+		VncList upperHalf; 
+		
+		if (isOdd(sortedData.size())) {
+			// (3, 5, 7, 8), 12, (13, 14, 18, 21)
+			median = median(sortedData);
+			lowerHalf = sortedData.slice(0, sortedData.size() / 2);
+			upperHalf = sortedData.slice((sortedData.size() / 2) + 1);
+		}
+		else {
+			// (3, 5, 7, 8, 12), (14, 14, 15, 18, 21)
+			median = median(sortedData);
+			lowerHalf = sortedData.slice(0, (sortedData.size() / 2));
+			upperHalf = sortedData.slice(sortedData.size() / 2);
+		}
+		
+		return VncList.of(median, lowerHalf, upperHalf);
+	}
+
+	private static VncVal median(final VncList sortedData) {
+		if (sortedData.isEmpty()) {
+			return Nil;
+		}
+		else {
+			if (isOdd(sortedData.size())) {
+				final VncVal median = sortedData.nth(sortedData.size() / 2);
+				return Types.isVncBigDecimal(median) ? median : Numeric.toDouble(median);
+			}
+			else {
+				final VncVal lowerMedian = sortedData.nth(sortedData.size() / 2 - 1);
+				final VncVal upperMedian = sortedData.nth(sortedData.size() / 2);
+				final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
+				
+				final VncVal divisor = Types.isVncBigDecimal(sum) 
+											? new VncBigDecimal(2L)
+											: new VncDouble(2.0D);
+						
+				return Numeric.calc(MathOp.DIV, sum, divisor);
+			}
+		}
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -1301,6 +1453,7 @@ public class MathFunctions {
 					.put("min",					min)
 					.put("max",					max)
 					.put("negate",				negate)
+					.put("floor",				floor)
 					.put("square",				square)
 					.put("sqrt",				sqrt)
 	
