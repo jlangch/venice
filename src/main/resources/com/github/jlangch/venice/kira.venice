@@ -1,8 +1,29 @@
-;; Kira - a simple templating library
+;;;   __    __         _
+;;;   \ \  / /__ _ __ (_) ___ ___
+;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;     \  /  __/ | | | | (_|  __/
+;;;      \/ \___|_| |_|_|\___\___|
+;;;
+;;;
+;;; Copyright 2017-2019 Venice
+;;;
+;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;; you may not use this file except in compliance with the License.
+;;; You may obtain a copy of the License at
+;;;
+;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;
+;;; Unless required by applicable law or agreed to in writing, software
+;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;; See the License for the specific language governing permissions and
+;;; limitations under the License.
 
-;; Thanks to James Reeves and his clojure 'comb' project
-;; (https://github.com/weavejester/comb). Venice's Kira
-;; templating library builds on the ideas of 'comb'.
+;;;  Kira - a simple templating library
+;;;
+;;; Thanks to James Reeves and his clojure 'comb' project
+;;; (https://github.com/weavejester/comb). Venice's Kira
+;;; templating library builds on the ideas of 'comb'.
 
 ;; -----------------------------------------------------------------------------
 ;; Framework functions
@@ -65,7 +86,7 @@
 
 (defn
   ^{ :doc (str/strip-indent """\
-        XML escapes a string and emits it. If the passed data is not of 
+        XML escapes a string and emits it. If the passed data is not of
         type string it will be converted first to a string using the
         'str' function.
         An optional function f transforms the string before being escaped.""" ) }
