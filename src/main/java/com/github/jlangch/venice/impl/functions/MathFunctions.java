@@ -765,24 +765,26 @@ public class MathFunctions {
 					.meta()
 					.module("core")
 					.arglists(
-						"(median x)", 
-						"(median x y)", 
-						"(median x y & more)")
+						"(median coll)")
 					.doc(
 						"Returns the median of the values")
 					.examples(
-						"(median 3 1 2)", 
-						"(median 3 2 1 4)", 
-						"(median 3.6 1.4 4.8)", 
-						"(median 3.6M 1.4M 4.8M)")
+						"(median '(3 1 2))", 
+						"(median '(3 2 1 4))", 
+						"(median '(3.6 1.4 4.8))", 
+						"(median '(3.6M 1.4M 4.8M))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
+				assertArity("median", args, 1);
+				
+				final VncList data = Coerce.toVncList(args.first());
+				
+				if (data.isEmpty()) {
 					return Nil;
 				}
 				else {
-					return median((VncList)CoreFunctions.sort.apply(VncList.of(args)));
+					return median((VncList)CoreFunctions.sort.apply(VncList.of(data)));
 				}
 			}
 			
@@ -798,63 +800,65 @@ public class MathFunctions {
 					.meta()
 					.module("core")
 					.arglists(
-						"(quartiles x)", 
-						"(quartiles x y)", 
-						"(quartiles x y & more)")
+						"(quartiles coll)")
 					.doc(
 						"Returns the quartiles (1st, 2nd, and 3rd) of the values")
 					.examples(
-						"(quartiles 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
-						"(quartiles 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
+						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 13, 18))", 
+						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				if (args.size() < 2) {
+				assertArity("quartiles", args, 1);
+				
+				final VncList list = Coerce.toVncList(args.first());
+
+				if (list.size() < 2) {
 					return Nil;
 				}
 				else {
-					final VncList sorted = (VncList)CoreFunctions.sort.apply(VncList.of(args));
+					final VncList sorted = (VncList)CoreFunctions.sort.apply(VncList.of(list));
 					
 					final VncList data = medianWithHalfs(sorted);
 					
 					return VncList.of(
-							median((VncList)data.second()), // median lower half
-							data.first(),                   // median
-							median((VncList)data.third())); // median upper half
+							median((VncList)data.second()), // Q1: median lower half
+							data.first(),                   // Q2: median
+							median((VncList)data.third())); // Q3: median upper half
 				}
 			}
 			
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction quantile = 
-			
+	public static VncFunction quantile = 		
 		new VncFunction(
 				"quantile", 
 				VncFunction
 					.meta()
 					.module("core")
 					.arglists(
-						"(quantile q x)", 
-						"(quantile q x y)", 
-						"(quantile q x y & more)")
+						"(quantile q coll)")
 					.doc(
 						"Returns the quantile [0.0 .. 1.0] of the values")
 					.examples(
-						"(quantile 0.5 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
-						"(quantile 0.5 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
+						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 13, 18))", 
+						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				// see: http://en.wikipedia.org/wiki/Quantile
+				assertArity("quantile", args, 2);
+				
+				final double q = Coerce.toVncDouble(args.first()).getValue();
+				final VncList list = Coerce.toVncList(args.second());
 					
-				if (args.size() < 2) {
+				if (list.size() < 2) {
 					return Nil;
 				}
 				else {
-					final VncList data = (VncList)CoreFunctions.sort.apply(VncList.of(args.slice(1)));
+					final VncList data = (VncList)CoreFunctions.sort.apply(VncList.of(list));
 					
-					final double q = Coerce.toVncDouble(args.first()).getValue();
 					if (q < 0.0D || q > 1.0D) {
 						throw new VncException("A quantile q must be in the range 0.0 .. 1.0");
 					}

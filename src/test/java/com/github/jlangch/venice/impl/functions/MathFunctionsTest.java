@@ -394,28 +394,28 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 
 		// Integer
-		assertEquals(3.0, venice.eval("(median 3I)"));
-		assertEquals(3.0, venice.eval("(median 1I 3I 4I)"));
-		assertEquals(2.5, venice.eval("(median 1I 4I)"));
-		assertEquals(2.5, venice.eval("(median 1I 2I 3I 4I)"));
+		assertEquals(3.0, venice.eval("(median '(3I))"));
+		assertEquals(3.0, venice.eval("(median '(1I 3I 4I))"));
+		assertEquals(2.5, venice.eval("(median '(1I 4I))"));
+		assertEquals(2.5, venice.eval("(median '(1I 2I 3I 4I))"));
 
 		// Long
-		assertEquals(3.0, venice.eval("(median 3)"));
-		assertEquals(3.0, venice.eval("(median 1 3 4)"));
-		assertEquals(2.5, venice.eval("(median 1 4)"));
-		assertEquals(2.5, venice.eval("(median 1 2 3 4)"));
+		assertEquals(3.0, venice.eval("(median '(3))"));
+		assertEquals(3.0, venice.eval("(median '(1 3 4))"));
+		assertEquals(2.5, venice.eval("(median '(1 4))"));
+		assertEquals(2.5, venice.eval("(median '(1 2 3 4))"));
 
 		// Double
-		assertEquals(3.0, venice.eval("(median 3.0)"));
-		assertEquals(3.0, venice.eval("(median 1.0 3.0 4.0)"));
-		assertEquals(2.5, venice.eval("(median 1.0 4.0)"));
-		assertEquals(2.5, venice.eval("(median 1.0 2.0 3.0 4.0)"));
+		assertEquals(3.0, venice.eval("(median '(3.0))"));
+		assertEquals(3.0, venice.eval("(median '(1.0 3.0 4.0))"));
+		assertEquals(2.5, venice.eval("(median '(1.0 4.0))"));
+		assertEquals(2.5, venice.eval("(median '(1.0 2.0 3.0 4.0))"));
 
 		// Decimal
-		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(median 3.0M) 3 :HALF_UP)"));
-		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(median 1.0M 3.0M 4.0M) 3 :HALF_UP)"));
-		assertEquals(new BigDecimal("2.500"), venice.eval("(dec/scale(median 1.0M 4.0M) 3 :HALF_UP)"));
-		assertEquals(new BigDecimal("2.500"), venice.eval("(dec/scale(median 1.0M 2.0M 3.0M 4.0M) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(median '(3.0M)) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("3.000"), venice.eval("(dec/scale(median '(1.0M 3.0M 4.0M)) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.500"), venice.eval("(dec/scale(median '(1.0M 4.0M)) 3 :HALF_UP)"));
+		assertEquals(new BigDecimal("2.500"), venice.eval("(dec/scale(median '(1.0M 2.0M 3.0M 4.0M)) 3 :HALF_UP)"));
 	}
 
 	@Test
@@ -423,20 +423,20 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 
 		// Integer
-		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles 3I 7I 8I 5I 12I 14I 21I 13I 18I))"));
-		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles 3I 7I 8I 5I 12I 14I 21I 15I 18I 14I))"));
+		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles '(3I 7I 8I 5I 12I 14I 21I 13I 18I)))"));
+		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles '(3I 7I 8I 5I 12I 14I 21I 15I 18I 14I)))"));
 
 		// Long
-		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles 3 7 8 5 12 14 21 13 18))"));
-		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles 3 7 8 5 12 14 21 15 18 14))"));
+		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles '(3 7 8 5 12 14 21 13 18)))"));
+		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles '(3 7 8 5 12 14 21 15 18 14)))"));
 
 		// Double
-		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles 3.0 7.0 8.0 5.0 12.0 14.0 21.0 13.0 18.0))"));
-		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles 3.0 7.0 8.0 5.0 12.0 14.0 21.0 15.0 18.0 14.0))"));
+		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles '(3.0 7.0 8.0 5.0 12.0 14.0 21.0 13.0 18.0)))"));
+		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles '(3.0 7.0 8.0 5.0 12.0 14.0 21.0 15.0 18.0 14.0)))"));
 
 		// Decimal
-		assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (quartiles 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M)))"));
-		assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (quartiles 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M)))"));
+		assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (quartiles '(3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M))))"));
+		assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (quartiles '(3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M))))"));
 	}
 
 	@Test
