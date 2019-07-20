@@ -179,6 +179,7 @@ public class DocGenerator {
 		statistics.addItem(getDocItem("mean"));
 		statistics.addItem(getDocItem("median"));
 		statistics.addItem(getDocItem("quartiles"));
+		statistics.addItem(getDocItem("quantile"));
 		statistics.addItem(getDocItem("standard-deviation"));
 
 		final DocSection convert = new DocSection("Convert");

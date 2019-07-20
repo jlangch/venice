@@ -827,6 +827,65 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction quantile = 
+			
+		new VncFunction(
+				"quantile", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(quantile q x)", 
+						"(quantile q x y)", 
+						"(quantile q x y & more)")
+					.doc(
+						"Returns the quantile [0.0 .. 1.0] of the values")
+					.examples(
+						"(quantile 0.5 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
+						"(quantile 0.5 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				// see: http://en.wikipedia.org/wiki/Quantile
+					
+				if (args.size() < 2) {
+					return Nil;
+				}
+				else {
+					final VncList data = (VncList)CoreFunctions.sort.apply(VncList.of(args.slice(1)));
+					
+					final double q = Coerce.toVncDouble(args.first()).getValue();
+					if (q < 0.0D || q > 1.0D) {
+						throw new VncException("A quantile q must be in the range 0.0 .. 1.0");
+					}
+					
+					if (q == 0.0D) {
+						return data.first();
+					}
+					else if (q == 1.0D) {
+						return data.last();
+					}
+					else {
+						final int n = data.size() - 1;
+						
+						final double x = q * (double)n;
+						
+						final double f = Math.floor(x);
+						final int idx = (int)f;
+						final double p = x - f;
+						
+						final double res = (p * toDouble(data.nth(idx + 1))) 
+											+ 
+									       ((1.0D - p) * toDouble(data.nth(idx)));
+
+						return new VncDouble(res);
+					}
+				}
+			}
+			
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction rand_long = 
 		new VncFunction(
 				"rand-long", 
@@ -1448,6 +1507,10 @@ public class MathFunctions {
 			}
 		}
 	}
+	
+	private static double toDouble(final VncVal val) {
+		return Numeric.toDouble(val).getValue().doubleValue();
+	}
 
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1475,6 +1538,7 @@ public class MathFunctions {
 					.put("mean",				mean)
 					.put("median",				median)
 					.put("quartiles",			quartiles)
+					.put("quantile",			quantile)
 					.put("standard-deviation",	standard_deviation)
 					
 					
