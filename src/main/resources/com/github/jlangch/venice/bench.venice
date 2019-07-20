@@ -1,0 +1,23 @@
+;; benchmarking
+
+(defn- warmup [iterations expr] (dorun iterations expr))
+
+(defn- run-gc [iterations] (dorun iterations (gc)))
+
+(defn- run-bench [iterations expr] (dorun iterations expr))
+
+(defn- print-stats [stats] nil)
+
+
+(defn
+   ^{ :arglists '("(bench expr warmup-iterations iterations)")
+      :doc "Benchmarks the given expression. \n\nRuns the benchmark in 4 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression benchmark. \n   4. Prints the benchmark statistics."
+      :examples '("(bench (+ 120 200) 12000 1000)") }
+
+   bench [expr warmup-iterations iterations]
+
+   (do
+     (warmup warmup-iterations expr)
+     (run-gc 2)
+     (->> (run-bench iterations expr)
+          (print-stats)))

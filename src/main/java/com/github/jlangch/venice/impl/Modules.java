@@ -60,7 +60,10 @@ public class Modules {
 
 	private static final Set<String> reserved = 
 			new HashSet<>(Arrays.asList(
-					"core", "time", "str", "io", 
-					"json", "pdf", "shell", "system", 
+					"core", "crypt", "io", "json", "pdf", "regex", 
+					"str", "time", "xml",
+					
+					"math", "shell", "statistics", "system", 
+					
 					"venice"));
 }
