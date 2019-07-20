@@ -170,6 +170,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("abs"));
 		arithmetic.addItem(getDocItem("negate"));
 		arithmetic.addItem(getDocItem("floor"));
+		arithmetic.addItem(getDocItem("ceil"));
 		arithmetic.addItem(getDocItem("sqrt"));
 		arithmetic.addItem(getDocItem("square"));
 

@@ -546,7 +546,7 @@ public class MathFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("negate", args, 1);
+				assertArity("floor", args, 1);
 				
 				final VncVal arg = args.first();
 				
@@ -569,6 +569,52 @@ public class MathFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'floor'",
+							Types.getType(arg)));
+				}
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction ceil = 
+		new VncFunction(
+				"ceil", 
+				VncFunction
+					.meta()
+					.module("ceil")
+					.arglists("(ceil x)")
+					.doc("Returns the largest integer that is greater than or equal to x")
+					.examples(
+						"(ceil 1.4)", 
+						"(ceil -1.4)", 
+						"(ceil 1.23M)", 
+						"(ceil -1.23M)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("ceil", args, 1);
+				
+				final VncVal arg = args.first();
+				
+				if (Types.isVncLong(arg)) {
+					return arg;
+				}
+				else if (Types.isVncInteger(arg)) {
+					return arg;
+				}
+				else if (Types.isVncDouble(arg)) {
+					return new VncDouble(Math.ceil(((VncDouble)arg).getValue().doubleValue()));
+				}
+				else if (Types.isVncBigDecimal(arg)) {
+					BigDecimal val = ((VncBigDecimal)arg).getValue();
+					final int scale = val.scale();
+					val = val.setScale(0, RoundingMode.CEILING);
+					val = val.setScale(scale, RoundingMode.CEILING);
+					return new VncBigDecimal(val);
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'ceil'",
 							Types.getType(arg)));
 				}
 			}
@@ -1454,6 +1500,7 @@ public class MathFunctions {
 					.put("max",					max)
 					.put("negate",				negate)
 					.put("floor",				floor)
+					.put("ceil",				ceil)
 					.put("square",				square)
 					.put("sqrt",				sqrt)
 	

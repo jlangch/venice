@@ -568,6 +568,28 @@ public class MathFunctionsTest {
 		assertFalse((Boolean)venice.eval("(neg? 0.0M)"));
 		assertFalse((Boolean)venice.eval("(neg? 3.0M)"));
 	}
+
+	@Test
+	public void test_floor() {
+		final Venice venice = new Venice();
+
+		assertEquals("1.0", venice.eval("(str (floor 1.23))"));
+		assertEquals("-2.0", venice.eval("(str (floor -1.23))"));
+
+		assertEquals("1.00M", venice.eval("(str (floor 1.23M))"));
+		assertEquals("-2.00M", venice.eval("(str (floor -1.23M))"));
+	}
+
+	@Test
+	public void test_ceil() {
+		final Venice venice = new Venice();
+
+		assertEquals("2.0", venice.eval("(str (ceil 1.23))"));
+		assertEquals("-1.0", venice.eval("(str (ceil -1.23))"));
+
+		assertEquals("2.00M", venice.eval("(str (ceil 1.23M))"));
+		assertEquals("-1.00M", venice.eval("(str (ceil -1.23M))"));
+	}
 	
 	@Test
 	public void test_odd_Q() {
