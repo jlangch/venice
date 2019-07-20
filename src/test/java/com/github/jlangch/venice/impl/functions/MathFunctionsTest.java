@@ -419,45 +419,24 @@ public class MathFunctionsTest {
 	}
 
 	@Test
-	public void test_first_quartile() {
+	public void test_quartiles() {
 		final Venice venice = new Venice();
 
 		// Integer
-		assertEquals(6.0, venice.eval("(first-quartile 3I 7I 8I 5I 12I 14I 21I 13I 18I)"));
-		assertEquals(7.0, venice.eval("(first-quartile 3I 7I 8I 5I 12I 14I 21I 15I 18I 14I)"));
+		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles 3I 7I 8I 5I 12I 14I 21I 13I 18I))"));
+		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles 3I 7I 8I 5I 12I 14I 21I 15I 18I 14I))"));
 
 		// Long
-		assertEquals(6.0, venice.eval("(first-quartile 3 7 8 5 12 14 21 13 18)"));
-		assertEquals(7.0, venice.eval("(first-quartile 3 7 8 5 12 14 21 15 18 14)"));
+		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles 3 7 8 5 12 14 21 13 18))"));
+		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles 3 7 8 5 12 14 21 15 18 14))"));
 
 		// Double
-		assertEquals(6.0, venice.eval("(first-quartile 3.0 7.0 8.0 5.0 12.0 14.0 21.0 13.0 18.0)"));
-		assertEquals(7.0, venice.eval("(first-quartile 3.0 7.0 8.0 5.0 12.0 14.0 21.0 15.0 18.0 14.0)"));
+		assertEquals("(6.0 12.0 16.0)", venice.eval("(str (quartiles 3.0 7.0 8.0 5.0 12.0 14.0 21.0 13.0 18.0))"));
+		assertEquals("(7.0 13.0 15.0)", venice.eval("(str (quartiles 3.0 7.0 8.0 5.0 12.0 14.0 21.0 15.0 18.0 14.0))"));
 
 		// Decimal
-		assertEquals(new BigDecimal("6.000"), venice.eval("(dec/scale(first-quartile 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M) 3 :HALF_UP)"));
-		assertEquals(new BigDecimal("7.000"), venice.eval("(dec/scale(first-quartile 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M) 3 :HALF_UP)"));
-	}
-
-	@Test
-	public void test_third_quartile() {
-		final Venice venice = new Venice();
-
-		// Integer
-		assertEquals(16.0, venice.eval("(third-quartile 3I 7I 8I 5I 12I 14I 21I 13I 18I)"));
-		assertEquals(15.0, venice.eval("(third-quartile 3I 7I 8I 5I 12I 14I 21I 15I 18I 14I)"));
-
-		// Long
-		assertEquals(16.0, venice.eval("(third-quartile 3 7 8 5 12 14 21 13 18)"));
-		assertEquals(15.0, venice.eval("(third-quartile 3 7 8 5 12 14 21 15 18 14)"));
-
-		// Double
-		assertEquals(16.0, venice.eval("(third-quartile 3.0 7.0 8.0 5.0 12.0 14.0 21.0 13.0 18.0)"));
-		assertEquals(15.0, venice.eval("(third-quartile 3.0 7.0 8.0 5.0 12.0 14.0 21.0 15.0 18.0 14.0)"));
-
-		// Decimal
-		assertEquals(new BigDecimal("16.000"), venice.eval("(dec/scale(third-quartile 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M) 3 :HALF_UP)"));
-		assertEquals(new BigDecimal("15.000"), venice.eval("(dec/scale(third-quartile 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M) 3 :HALF_UP)"));
+		assertEquals("(6.0M 12.0M 16.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (quartiles 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 13.0M 18.0M)))"));
+		assertEquals("(7.0M 13.0M 15.0M)", venice.eval("(str (map #(dec/scale %1 1 :HALF_UP) (quartiles 3.0M 7.0M 8.0M 5.0M 12.0M 14.0M 21.0M 15.0M 18.0M 14.0M)))"));
 	}
 
 	@Test

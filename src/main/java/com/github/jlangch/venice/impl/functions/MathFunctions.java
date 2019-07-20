@@ -789,23 +789,23 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction first_quartile = 
+	public static VncFunction quartiles = 
 		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
 			
 		new VncFunction(
-				"first-quartile", 
+				"quartiles", 
 				VncFunction
 					.meta()
 					.module("core")
 					.arglists(
-						"(first-quartile x)", 
-						"(first-quartile x y)", 
-						"(first-quartile x y & more)")
+						"(quartiles x)", 
+						"(quartiles x y)", 
+						"(quartiles x y & more)")
 					.doc(
-						"Returns the first quartile of the values")
+						"Returns the quartiles (1st, 2nd, and 3rd) of the values")
 					.examples(
-						"(first-quartile 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
-						"(first-quartile 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
+						"(quartiles 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
+						"(quartiles 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -813,46 +813,14 @@ public class MathFunctions {
 					return Nil;
 				}
 				else {
-					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
+					final VncList sorted = (VncList)CoreFunctions.sort.apply(VncList.of(args));
 					
-					final VncList data = medianWithHalfs(list);
+					final VncList data = medianWithHalfs(sorted);
 					
-					return median((VncList)data.second());
-				}
-			}
-			
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction third_quartile = 
-		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
-			
-		new VncFunction(
-				"third-quartile", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists(
-						"(third-quartile x)", 
-						"(third-quartile x y)", 
-						"(third-quartile x y & more)")
-					.doc(
-						"Returns the third quartile of the values")
-					.examples(
-						"(third-quartile 3, 7, 8, 5, 12, 14, 21, 13, 18)", 
-						"(third-quartile 3, 7, 8, 5, 12, 14, 21, 15, 18, 14)")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				if (args.size() < 2) {
-					return Nil;
-				}
-				else {
-					final VncList list = (VncList)CoreFunctions.sort.apply(VncList.of(args));
-					
-					final VncList data = medianWithHalfs(list);
-					
-					return median((VncList)data.third());
+					return VncList.of(
+							median((VncList)data.second()), // median lower half
+							data.first(),                   // median
+							median((VncList)data.third())); // median upper half
 				}
 			}
 			
@@ -1506,8 +1474,7 @@ public class MathFunctions {
 	
 					.put("mean",				mean)
 					.put("median",				median)
-					.put("first-quartile",		first_quartile)
-					.put("third-quartile",		third_quartile)
+					.put("quartiles",			quartiles)
 					.put("standard-deviation",	standard_deviation)
 					
 					

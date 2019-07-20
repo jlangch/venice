@@ -178,8 +178,7 @@ public class DocGenerator {
 		numbers.addSection(statistics);
 		statistics.addItem(getDocItem("mean"));
 		statistics.addItem(getDocItem("median"));
-		statistics.addItem(getDocItem("first-quartile"));
-		statistics.addItem(getDocItem("third-quartile"));
+		statistics.addItem(getDocItem("quartiles"));
 		statistics.addItem(getDocItem("standard-deviation"));
 
 		final DocSection convert = new DocSection("Convert");
