@@ -864,10 +864,10 @@ public class MathFunctions {
 					}
 					
 					if (q == 0.0D) {
-						return data.first();
+						return data.first(); // minimum value
 					}
 					else if (q == 1.0D) {
-						return data.last();
+						return data.last();  // maximum value
 					}
 					else {
 						final int n = data.size() - 1;
