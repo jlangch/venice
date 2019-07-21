@@ -65,7 +65,7 @@
 
    `(do
       (printf "Warmup...\n")
-      (dorun ~warmup-iterations ~expr)
+      (dobench ~warmup-iterations ~expr)
       (printf "GC...\n")
       (dorun 2 (gc))
       (let [_ (printf "Sampling...\n")

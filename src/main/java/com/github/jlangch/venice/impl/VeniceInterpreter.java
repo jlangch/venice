@@ -728,12 +728,21 @@ public class VeniceInterpreter implements Serializable  {
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
 
-		VncVal result = Nil;
-		for(int ii=0; ii<count; ii++) {
-			result = eval_ast(expr, env);
+		try {
+			final VncVal first =  eval_ast(expr, env);
+			
+			for(int ii=1; ii<count; ii++) {
+				final VncVal result = eval_ast(expr, env);
+				
+				// store value to a mutable place to prevent JIT from optimizing too much
+				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
+			}
+			
+			return first;
 		}
-		
-		return result;
+		finally {
+			ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
+		}
 	}
 
 	private VncVal dobench_(final VncList ast, final Env env) {
@@ -743,19 +752,26 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 		
-		final long count = Coerce.toVncLong(ast.second()).getValue();
-		final VncList expr = VncList.of(ast.third());
-		
-		final List<VncVal> elapsed = new ArrayList<>();
-		VncVal result = Nil;
-		for(int ii=0; ii<count; ii++) {
-			final long start = System.nanoTime();
-			result = eval_ast(expr, env);
-			final long end = System.nanoTime();
-			elapsed.add(new VncLong(end-start));
+		try {
+			final long count = Coerce.toVncLong(ast.second()).getValue();
+			final VncList expr = VncList.of(ast.third());
+			
+			final List<VncVal> elapsed = new ArrayList<>();
+			for(int ii=0; ii<count; ii++) {
+				final long start = System.nanoTime();
+				final VncVal result = eval_ast(expr, env);
+				final long end = System.nanoTime();
+				elapsed.add(new VncLong(end-start));
+				
+				// store value to a mutable place to prevent JIT from optimizing too much
+				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
+			}
+			
+			return new VncList(elapsed);
 		}
-		
-		return new VncList(elapsed);
+		finally {
+			ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
+		}
 	}
 
 	private VncFunction fn_(final VncList ast, final Env env) {
