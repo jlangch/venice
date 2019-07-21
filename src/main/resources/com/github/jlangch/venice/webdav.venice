@@ -1,47 +1,46 @@
-;;;   __    __         _
-;;;   \ \  / /__ _ __ (_) ___ ___
-;;;    \ \/ / _ \ '_ \| |/ __/ _ \
-;;;     \  /  __/ | | | | (_|  __/
-;;;      \/ \___|_| |_|_|\___\___|
-;;;
-;;;
-;;; Copyright 2017-2019 Venice
-;;;
-;;; Licensed under the Apache License, Version 2.0 (the "License");
-;;; you may not use this file except in compliance with the License.
-;;; You may obtain a copy of the License at
-;;;
-;;;     http://www.apache.org/licenses/LICENSE-2.0
-;;;
-;;; Unless required by applicable law or agreed to in writing, software
-;;; distributed under the License is distributed on an "AS IS" BASIS,
-;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-;;; See the License for the specific language governing permissions and
-;;; limitations under the License.
+;;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2019 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
 
-;;;  webDAV utils (requires Sardine library on classpath)
+;;;; webDAV utils (requires Sardine library on classpath)
 
-
-;; example
-;;
-;; (do
-;;   (load-module :webdav)
-;;
-;;   (webdav/with {}
-;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
-;;           (do
-;;              (webdav/exists? url)
-;;              (webdav/get-as-file url "download.doc")
-;;              (webdav/put-file! url "download.doc" "application/msword")))))
-;;
-;; (do
-;;   (load-module :webdav)
-;;
-;;   (webdav/with {:username "jon.doe" :password "123456"}
-;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
-;;           (do
-;;              (webdav/exists? url)
-;;              (webdav/get-as-file url "download.doc")))))
+;;;; example
+;;;;
+;;;; (do
+;;;;   (load-module :webdav)
+;;;;
+;;;;   (webdav/with {}
+;;;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
+;;;;           (do
+;;;;              (webdav/exists? url)
+;;;;              (webdav/get-as-file url "download.doc")
+;;;;              (webdav/put-file! url "download.doc" "application/msword")))))
+;;;;
+;;;; (do
+;;;;   (load-module :webdav)
+;;;;
+;;;;   (webdav/with {:username "jon.doe" :password "123456"}
+;;;;      (let [url "http://0.0.0.0:8080/foo/webdav/document.doc" ]
+;;;;           (do
+;;;;              (webdav/exists? url)
+;;;;              (webdav/get-as-file url "download.doc")))))
 
 (import :com.github.sardine.DavResource)
 (import :com.github.sardine.Sardine)
