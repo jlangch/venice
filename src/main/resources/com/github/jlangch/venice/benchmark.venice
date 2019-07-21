@@ -22,40 +22,39 @@
 ;;;; Venice benchmarking
 
 (defn
-  format-time
-  [t]
+  format-time [t]
   (cond (< t 1000) (str/format "%.3f ns" t)
         (< t 1000000) (str/format "%.3f µs" (/ t 1000.0))
         (< t 1000000000) (str/format "%.3f ms" (/ t 1000000.0))
         :else (str/format "%.3f s" (/ t 1000000000.0))))
 
 (defn
-  remove-outliers
-  [samples q1 q3]
+  remove-outliers [samples q1 q3]
   (let [iqr (- q3 q1)
         delta (long (* 3 iqr))
         low (- q1 delta)
         high (+ q3 delta)]
-     (->> samples
-         (filter #(not (< %1 low)))
-         (filter #(not (> %1 high))))))
+     (filter #(and (>= %1 low) (<= %1 high)) samples)))
 
 (defn
-  print-stats
-  [samples]
+  print-stats [samples]
   (let [q (quartiles samples)
         q1 (first q)
         q2 (second q)
         q3 (third q)
-        wo (remove-outliers samples q1 q3)
-        outliers (- (count samples) (count wo))
-        sd (standard-deviation :sample wo)]
+        lower-quantile (quantile 0.025 samples)
+        higher-quantile (quantile 0.975 samples)
+        cleaned-samples (remove-outliers samples q1 q3)
+        outliers-cnt (- (count samples) (count cleaned-samples))
+        sd (standard-deviation :sample cleaned-samples)]
       (printf "                      Samples : %d\n" (count samples))
       (printf "          Execution time mean : %s\n" (format-time q2))
       (printf " Execution time std-deviation : %s\n" (format-time sd))
       (printf "Execution time lower quartile : %s (25%%)\n" (format-time q1))
       (printf "Execution time upper quartile : %s (75%%)\n" (format-time q3))
-      (printf "                     Outliers : %d\n" outliers)))
+      (printf "Execution time lower quantile : %s (2.5%%)\n" (format-time lower-quantile))
+      (printf "Execution time upper quantile : %s (97.5%%)\n" (format-time higher-quantile))
+      (printf "                     Outliers : %d\n" outliers-cnt)))
 
 (defmacro
    ^{ :arglists '("(benchmark expr warmup-iterations iterations)")
@@ -69,7 +68,7 @@
       (dorun ~warmup-iterations ~expr)
       (printf "GC...\n")
       (dorun 2 (gc))
-      (printf "Benchmark...\n")
-      (let [samples (dobench ~iterations ~expr)]
+      (let [_ (printf "Sampling...\n")
+            samples (dobench ~iterations ~expr)]
         (printf "Analyzing...\n")
         (print-stats samples))))

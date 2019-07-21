@@ -724,12 +724,16 @@ public class VeniceInterpreter implements Serializable  {
 				throw new VncException("dorun requires two arguments a count and an expression to run");
 			}
 		}
+		
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
-		for(int ii=0; ii<count-1; ii++) {
-			eval_ast(expr, env);
+
+		VncVal result = Nil;
+		for(int ii=0; ii<count; ii++) {
+			result = eval_ast(expr, env);
 		}
-		return ((VncList)eval_ast(expr, env)).first();
+		
+		return result;
 	}
 
 	private VncVal dobench_(final VncList ast, final Env env) {
@@ -738,15 +742,19 @@ public class VeniceInterpreter implements Serializable  {
 				throw new VncException("dobench requires two arguments a count and an expression to run");
 			}
 		}
+		
 		final long count = Coerce.toVncLong(ast.second()).getValue();
 		final VncList expr = VncList.of(ast.third());
+		
 		final List<VncVal> elapsed = new ArrayList<>();
+		VncVal result = Nil;
 		for(int ii=0; ii<count; ii++) {
 			final long start = System.nanoTime();
-			eval_ast(expr, env);
+			result = eval_ast(expr, env);
 			final long end = System.nanoTime();
 			elapsed.add(new VncLong(end-start));
 		}
+		
 		return new VncList(elapsed);
 	}
 
