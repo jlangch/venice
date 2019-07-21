@@ -1190,6 +1190,7 @@ public class DocGenerator {
 		final DocSection profiling = new DocSection("Profiling");
 		all.addSection(profiling);
 
+		profiling.addItem(getDocItem("dobench"));
 		profiling.addItem(getDocItem("dorun"));
 		profiling.addItem(getDocItem("prof"));
 

@@ -343,7 +343,20 @@ public class SpecialForms {
 				.meta()
 				.arglists("(dorun count expr)")		
 				.doc("Runs the expr count times in the most effective way. It's main purpose is supporting performance test.")
-				.examples("(dorun 10 (+ 1 1))")
+				.examples("(dorun 10 '(+ 1 1))")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
+	public static VncFunction dobench = 
+		new SpecialFormsDocFunction(
+				"dobench",
+				VncFunction
+				.meta()
+				.arglists("(dobench count expr)")		
+				.doc("Runs the expr count times in the most effective way and returns a list of elapsed nano seconds. It's main purpose is supporting performance test.")
+				.examples("(dobench 10 '(+ 1 1))")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;
@@ -622,6 +635,7 @@ public class SpecialForms {
 					.put("defmacro",	defmacro)
 					.put("macroexpand",	macroexpand)
 					.put("import",		import_)
+					.put("dobench",		dobench)
 					.put("dorun",		dorun)
 					.put("prof",		prof)
 					.toMap();

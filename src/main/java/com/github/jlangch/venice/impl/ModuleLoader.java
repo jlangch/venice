@@ -92,5 +92,5 @@ public class ModuleLoader {
 							"core", "http", "jackson", "logger", 
 							"math", "webdav", "xchart", "test",
 							"tomcat", "ring", "maven" , "kira",
-							"xml", "crypt", "bench")));
+							"xml", "crypt", "benchmark")));
 }

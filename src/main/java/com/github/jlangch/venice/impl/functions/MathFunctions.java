@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
@@ -709,27 +708,24 @@ public class MathFunctions {
 					.meta()
 					.module("core")
 					.arglists(
-						"(standard-deviation type x)", 
-						"(standard-deviation type x y)", 
-						"(standard-deviation type x y & more)")
+						"(standard-deviation type coll)")
 					.doc(
 						"Returns the standard deviation of the values for data sample " +
 						"type :population or :sample.")
 					.examples(
-						"(standard-deviation :sample 10 8 30 22 15)", 
-						"(standard-deviation :population 10 8 30 22 15)", 
-						"(standard-deviation :sample 1.4 3.6 7.8 9.0 2.2)", 
-						"(standard-deviation :sample 2.8M 6.4M 2.0M 4.4M)")
+						"(standard-deviation :sample '(10 8 30 22 15))", 
+						"(standard-deviation :population '(10 8 30 22 15))", 
+						"(standard-deviation :sample '(1.4 3.6 7.8 9.0 2.2))", 
+						"(standard-deviation :sample '(2.8M 6.4M 2.0M 4.4M))")
 					.build()
 		) {	
 		    // see: https://www.calculator.net/standard-deviation-calculator.html
 		
 			public VncVal apply(final VncList args) {
-				assertMinArity("standard-deviation", args, 1);
+				assertArity("standard-deviation", args, 2);
 				
-				boolean sample = "sample".equals(Coerce.toVncKeyword(args.first()).getValue());
-				
-				VncList data = args.rest();
+				final boolean sample = "sample".equals(Coerce.toVncKeyword(args.first()).getValue());
+				final VncList data = Coerce.toVncList(args.second());
 				
 				if (data.isEmpty() || data.size() == 1) {
 					return new VncDouble(0.0);

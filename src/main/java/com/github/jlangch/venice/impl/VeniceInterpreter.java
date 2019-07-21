@@ -49,6 +49,7 @@ import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -464,6 +465,9 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "dorun":
 					return dorun_(ast, env);
+				
+				case "dobench":
+					return dobench_(ast, env);
 					
 				case "if": 
 					final VncVal cond = evaluate(ast.second(), env);
@@ -726,6 +730,24 @@ public class VeniceInterpreter implements Serializable  {
 			eval_ast(expr, env);
 		}
 		return ((VncList)eval_ast(expr, env)).first();
+	}
+
+	private VncVal dobench_(final VncList ast, final Env env) {
+		if (ast.size() != 3) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("dobench", ast))) {
+				throw new VncException("dobench requires two arguments a count and an expression to run");
+			}
+		}
+		final long count = Coerce.toVncLong(ast.second()).getValue();
+		final VncList expr = VncList.of(ast.third());
+		final List<VncVal> elapsed = new ArrayList<>();
+		for(int ii=0; ii<count; ii++) {
+			final long start = System.nanoTime();
+			eval_ast(expr, env);
+			final long end = System.nanoTime();
+			elapsed.add(new VncLong(end-start));
+		}
+		return new VncList(elapsed);
 	}
 
 	private VncFunction fn_(final VncList ast, final Env env) {

@@ -445,34 +445,34 @@ public class MathFunctionsTest {
 
 		assertEquals(
 				9.0553851381374, 
-				(Double)venice.eval("(standard-deviation :sample 10 8 30 22 15)"), 
+				(Double)venice.eval("(standard-deviation :sample '(10 8 30 22 15))"), 
 				0.0000000000001);
 		
 		assertEquals(
 				8.0993826925266, 
-				(Double)venice.eval("(standard-deviation :population 10 8 30 22 15)"), 
+				(Double)venice.eval("(standard-deviation :population '(10 8 30 22 15))"), 
 				0.0000000000001);
 
 		
 		assertEquals(
 				9.0553851381374, 
-				(Double)venice.eval("(standard-deviation :sample 10.0 8.0 30.0 22.0 15.0)"), 
+				(Double)venice.eval("(standard-deviation :sample '(10.0 8.0 30.0 22.0 15.0))"), 
 				0.0000000000001);
 		
 		assertEquals(
 				8.0993826925266, 
-				(Double)venice.eval("(standard-deviation :population 10.0 8.0 30.0 22.0 15.0)"), 
+				(Double)venice.eval("(standard-deviation :population '(10.0 8.0 30.0 22.0 15.0))"), 
 				0.0000000000001);
 
 		
 		assertEquals(
 				9.0553851381374, 
-				(Double)venice.eval("(standard-deviation :sample  10.0M 8.0M 30.0M 22.0M 15.0M)"), 
+				(Double)venice.eval("(standard-deviation :sample '(10.0M 8.0M 30.0M 22.0M 15.0M))"), 
 				0.0000000000001);
 		
 		assertEquals(
 				8.0993826925266, 
-				(Double)venice.eval("(standard-deviation :population 10.0M 8.0M 30.0M 22.0M 15.0M)"), 
+				(Double)venice.eval("(standard-deviation :population '(10.0M 8.0M 30.0M 22.0M 15.0M))"), 
 				0.0000000000001);
 	}
 
