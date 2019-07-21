@@ -65,6 +65,9 @@
    benchmark [expr warmup-iterations iterations]
 
    `(do
+      (printf "Warmup...\n")
+      (printf "GC...\n")
+      (printf "Benchmark...\n")
       (dorun ~warmup-iterations ~expr)
       (dorun 2 (gc))
       (->> (dobench ~iterations ~expr)
