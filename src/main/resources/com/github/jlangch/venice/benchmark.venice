@@ -66,9 +66,10 @@
 
    `(do
       (printf "Warmup...\n")
-      (printf "GC...\n")
-      (printf "Benchmark...\n")
       (dorun ~warmup-iterations ~expr)
+      (printf "GC...\n")
       (dorun 2 (gc))
-      (->> (dobench ~iterations ~expr)
-           (print-stats))))
+      (printf "Benchmark...\n")
+      (let [samples (dobench ~iterations ~expr)]
+        (printf "Analyzing...\n")
+        (print-stats samples))))
