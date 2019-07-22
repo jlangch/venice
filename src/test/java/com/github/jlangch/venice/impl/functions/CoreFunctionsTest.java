@@ -1271,6 +1271,13 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_juxt() {
+		final Venice venice = new Venice();
+
+		assertEquals("[1 4]", venice.eval("(str ((juxt first last) '(1 2 3 4)))))"));
+	}
+	
+	@Test
 	public void test_key() {
 		final Venice venice = new Venice();
 

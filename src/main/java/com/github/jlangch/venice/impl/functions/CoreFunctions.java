@@ -1929,6 +1929,53 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction juxt = 
+		new VncFunction(
+				"juxt", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(juxt f)", 
+						"(juxt f g)", 
+						"(juxt f g h)", 
+						"(juxt f g h & fs)")		
+					.doc(
+						"Takes a set of functions and returns a fn that is the juxtaposition " + 
+						"of those fns.  The returned fn takes a variable number of args, and " + 
+						"returns a vector containing the result of applying each fn to the " + 
+						"args (left-to-right).\n" + 
+						"((juxt a b c) x) => [(a x) (b x) (c x)]")
+					.examples(
+						"((juxt first last) '(1 2 3 4))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertMinArity("juxt", args, 1);
+				
+				final List<VncFunction> functions = 
+						args.getList()
+							.stream()
+							.map(v -> Coerce.toVncFunction(v))
+							.collect(Collectors.toList());
+				
+				return new VncFunction(createAnonymousFuncName("juxt:wrapped")) {
+					public VncVal apply(final VncList args) {
+						final List<VncVal> values = new ArrayList<>();
+						functions
+							.stream()
+							.forEach(f -> values.add(f.apply(args)));
+						
+						return new VncVector(values);
+					}
+					
+				    private static final long serialVersionUID = -1848883965231344442L;
+				};
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// HashMap functions
@@ -5731,6 +5778,7 @@ public class CoreFunctions {
 				.put("difference",			difference)
 				.put("union",				union)
 				.put("intersection",		intersection)
+				.put("juxt",				juxt)
 
 				.put("split-at",			split_at)
 				.put("split-with",			split_with)

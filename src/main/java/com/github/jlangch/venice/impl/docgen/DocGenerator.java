@@ -678,6 +678,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("comp"));
 		create.addItem(getDocItem("partial"));
 		create.addItem(getDocItem("memoize"));
+		create.addItem(getDocItem("juxt"));
 		create.addItem(getDocItem("complement"));
 		create.addItem(getDocItem("constantly"));
 
