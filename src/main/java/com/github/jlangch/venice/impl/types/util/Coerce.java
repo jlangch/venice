@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.util;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.IDeref;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -129,6 +130,18 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to symbol. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
+	public static IVncFunction toIVncFunction(final VncVal val) {
+		if (val == null || Types.isIVncFunction(val)) {
+			return (IVncFunction)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to function. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

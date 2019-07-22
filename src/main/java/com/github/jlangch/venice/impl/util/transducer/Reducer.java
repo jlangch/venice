@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.util.transducer;
 
 import java.util.List;
 
-import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 public class Reducer {
 
 	public static VncVal reduce(
-			final VncFunction reduceFn, 
+			final IVncFunction reduceFn, 
 			final VncVal init, 
 			final List<VncVal> coll
 	) {

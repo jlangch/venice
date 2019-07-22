@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -1929,6 +1930,62 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction juxt = 
+		new VncFunction(
+				"juxt", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(juxt f)", 
+						"(juxt f g)", 
+						"(juxt f g h)", 
+						"(juxt f g h & fs)")		
+					.doc(
+						"Takes a set of functions and returns a fn that is the juxtaposition " + 
+						"of those fns.  The returned fn takes a variable number of args, and " + 
+						"returns a vector containing the result of applying each fn to the " + 
+						"args (left-to-right).\n" + 
+						"((juxt a b c) x) => [(a x) (b x) (c x)]")
+					.examples(
+						"((juxt first last) '(1 2 3 4))",
+						
+						"(do                                                   \n" +
+						"  (defn index-by [coll key-fn]                        \n" +
+						"     (into {} (map (juxt key-fn identity) coll)))     \n" +
+						"                                                      \n" +
+						"  (index-by [{:id 1 :name \"foo\"}                    \n" + 
+						"             {:id 2 :name \"bar\"}                    \n" + 
+						"             {:id 3 :name \"baz\"}]                   \n" +
+						"            :id))                                       ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertMinArity("juxt", args, 1);
+				
+				final List<IVncFunction> functions = 
+						args.getList()
+							.stream()
+							.map(v -> Coerce.toIVncFunction(v))
+							.collect(Collectors.toList());
+				
+				return new VncFunction(createAnonymousFuncName("juxt:wrapped")) {
+					public VncVal apply(final VncList args) {
+						final List<VncVal> values = new ArrayList<>();
+						functions
+							.stream()
+							.forEach(f -> values.add(f.apply(args)));
+						
+						return new VncVector(values);
+					}
+					
+				    private static final long serialVersionUID = -1848883965231344442L;
+				};
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// HashMap functions
@@ -2809,7 +2866,7 @@ public class CoreFunctions {
 				if (Types.isVncSequence(args.first())) {
 					final VncSequence list = ((VncSequence)args.first());
 					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
-					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
+					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
 							
 					if (idx < 0 || idx > list.size()) {
 						throw new VncException(String.format(
@@ -2826,7 +2883,7 @@ public class CoreFunctions {
 				else if (Types.isVncMap(args.first())) {
 					final VncMap map = ((VncMap)args.first());
 					final VncVal key = args.second();
-					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
+					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
 					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
 				}
 				else {
@@ -2862,7 +2919,7 @@ public class CoreFunctions {
 				if (Types.isVncMutableMap(args.first())) {
 					final VncMutableMap map = (VncMutableMap)args.first();
 					final VncVal key = args.second();
-					final VncFunction fn = Coerce.toVncFunction(args.nth(2));
+					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
 					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
 				}
 				else {
@@ -2936,7 +2993,7 @@ public class CoreFunctions {
 					return VncVector.of(new VncList(), new VncList());
 				}
 				
-				final VncFunction pred = Coerce.toVncFunction(args.first());
+				final IVncFunction pred = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
 				
 				final List<VncVal> items = coll.getList();
@@ -3185,7 +3242,7 @@ public class CoreFunctions {
 					return False;
 				}
 				else {				
-					final VncFunction pred = Coerce.toVncFunction(args.first());
+					final IVncFunction pred = Coerce.toIVncFunction(args.first());
 					final VncCollection coll = Coerce.toVncCollection(args.second());
 	
 					if (coll.isEmpty()) {
@@ -3255,7 +3312,7 @@ public class CoreFunctions {
 					return False;
 				}
 				else {
-					final VncFunction pred = Coerce.toVncFunction(args.first());
+					final IVncFunction pred = Coerce.toIVncFunction(args.first());
 					final VncCollection coll = Coerce.toVncCollection(args.second());
 					
 					if (coll.isEmpty()) {
@@ -3321,7 +3378,7 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else {
-					final VncFunction pred = Coerce.toVncFunction(args.first());
+					final IVncFunction pred = Coerce.toIVncFunction(args.first());
 					final VncCollection coll = Coerce.toVncCollection(args.second());
 					
 					if (coll.isEmpty()) {
@@ -4441,9 +4498,9 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("sort", args, 1, 2);
 	
-				final VncFunction compfn = args.size() == 1 
+				final IVncFunction compfn = args.size() == 1 
 											? compare // -> sort by natural order
-											: Coerce.toVncFunction(args.first());
+											: Coerce.toIVncFunction(args.first());
 				
 				final VncVal coll = args.last();
 
@@ -4483,7 +4540,7 @@ public class CoreFunctions {
 				assertArity("sort-by", args, 2, 3);
 	
 				if (args.size() == 2) {
-					final VncFunction keyfn = Coerce.toVncFunction(args.first());
+					final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
 	
 					return sort(
 							"sort-by", 
@@ -4496,8 +4553,8 @@ public class CoreFunctions {
 									 ).getIntValue());
 				}
 				else if (args.size() == 3) {
-					final VncFunction keyfn = Coerce.toVncFunction(args.first());
-					final VncFunction compfn = Coerce.toVncFunction(args.second());
+					final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
+					final IVncFunction compfn = Coerce.toIVncFunction(args.second());
 	
 					return sort(
 							"sort-by", 
@@ -4537,7 +4594,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("group-by", args, 2);
 	
-				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
 	
 				VncMap map = new VncOrderedMap();
@@ -4575,7 +4632,7 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fn_args = args.slice(1,args.size()-1);
 				
 				final VncVal coll = args.last();
@@ -4616,10 +4673,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("comp", args, 0);
 				
-				final List<VncFunction> fns = 
+				final List<IVncFunction> fns = 
 						args.getList()
 							.stream()
-							.map(v -> Coerce.toVncFunction(v))
+							.map(v -> Coerce.toIVncFunction(v))
 							.collect(Collectors.toList());
 				
 				// the functions are applied right to left
@@ -4702,7 +4759,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("partial", args, 2);
 				
-				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fnArgs = args.rest();
 				
 				return new VncFunction() {
@@ -4735,7 +4792,7 @@ public class CoreFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList lists = removeNilValues((VncList)args.rest());
 				final List<VncVal> result = new ArrayList<>();
 	
@@ -4791,7 +4848,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("docoll", args, 2);
 	
-				final VncFunction fn = Coerce.toVncFunction(args.first());
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncVal coll = args.second();
 				
 				if (coll == Nil) {
@@ -4894,7 +4951,7 @@ public class CoreFunctions {
 				assertArity("reduce", args, 2, 3);
 				
 				final boolean noInitValue = args.size() < 3;
-				final VncFunction reduceFn = Coerce.toVncFunction(args.first());
+				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
 
 				List<VncVal> coll;
 				
@@ -4957,7 +5014,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reduce-kv", args, 3);
 				
-				final VncFunction reduceFn = Coerce.toVncFunction(args.first());		
+				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());		
 				final List<VncMapEntry> values = Coerce.toVncHashMap(args.nth(2)).entries();
 				
 				VncMap value = (VncMap)args.second();
@@ -5235,7 +5292,7 @@ public class CoreFunctions {
 	
 				
 				final long repeat = Coerce.toVncLong(args.first()).getValue();
-				final VncFunction fn = Coerce.toVncFunction(args.second());
+				final IVncFunction fn = Coerce.toIVncFunction(args.second());
 				
 				if (repeat < 0) {
 					throw new VncException("repeatedly: a count n must be grater or equal to 0");	
@@ -5310,7 +5367,7 @@ public class CoreFunctions {
 	
 				final VncVal obj = args.first();
 				final VncVal meta = obj.getMeta();
-				final VncFunction fn = Coerce.toVncFunction(args.second());
+				final IVncFunction fn = Coerce.toIVncFunction(args.second());
 				final VncList fnArgs = args.slice(2).addAtStart(meta == Nil ? new VncHashMap() : meta);
 				
 				return obj.withMeta(fn.apply(fnArgs));
@@ -5731,6 +5788,7 @@ public class CoreFunctions {
 				.put("difference",			difference)
 				.put("union",				union)
 				.put("intersection",		intersection)
+				.put("juxt",				juxt)
 
 				.put("split-at",			split_at)
 				.put("split-with",			split_with)
