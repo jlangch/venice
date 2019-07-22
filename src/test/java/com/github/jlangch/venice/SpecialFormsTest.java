@@ -58,25 +58,25 @@ public class SpecialFormsTest {
 	public void test_dorun() {
 		final Venice venice = new Venice();
 		
-		assertEquals(Long.valueOf(3), venice.eval("(dorun 4 (+ 1 2))"));
+		assertEquals(3L, venice.eval("(dorun 4 (+ 1 2))"));
 	}
 
 	@Test
 	public void test_def() {
 		final Venice venice = new Venice();
 		
-		assertEquals(Long.valueOf(4), venice.eval("(do (def x 1) (def y 3) (+ x y))"));
-		assertEquals(Long.valueOf(30), venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)))"));
-		assertEquals(Long.valueOf(4), venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
+		assertEquals(4L, venice.eval("(do (def x 1) (def y 3) (+ x y))"));
+		assertEquals(30L, venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)))"));
+		assertEquals(4L, venice.eval("(do (def x 1) (def y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
 	}
 
 	@Test
 	public void test_defonce() {
 		final Venice venice = new Venice();
 		
-		assertEquals(Long.valueOf(4), venice.eval("(do (defonce x 1) (defonce y 3) (+ x y))"));
-		assertEquals(Long.valueOf(30), venice.eval("(do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))"));
-		assertEquals(Long.valueOf(4), venice.eval("(do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
+		assertEquals(4L, venice.eval("(do (defonce x 1) (defonce y 3) (+ x y))"));
+		assertEquals(30L, venice.eval("(do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))"));
+		assertEquals(4L, venice.eval("(do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)) (+ x y))"));
 
 		assertThrows(VncException.class, () -> {
 			venice.eval("(do (defonce x 1) (def x 3) x)");

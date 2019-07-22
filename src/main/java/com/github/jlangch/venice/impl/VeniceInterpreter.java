@@ -729,7 +729,7 @@ public class VeniceInterpreter implements Serializable  {
 		final VncList expr = VncList.of(ast.third());
 
 		try {
-			final VncVal first =  eval_ast(expr, env);
+			final VncVal first = ((VncList)eval_ast(expr, env)).first();
 			
 			for(int ii=1; ii<count; ii++) {
 				final VncVal result = eval_ast(expr, env);
