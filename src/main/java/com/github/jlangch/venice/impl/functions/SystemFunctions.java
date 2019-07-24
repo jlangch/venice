@@ -275,7 +275,9 @@ public class SystemFunctions {
 					.meta()
 					.module("core")
 					.arglists("(gc)")		
-					.doc("Run the Java garbage collector. Runs the finalization methods of any objects pending finalization prior to the GC.")
+					.doc(
+						"Run the Java garbage collector. Runs the finalization methods " +
+						"of any objects pending finalization prior to the GC.")
 					.examples("(gc)")
 					.build()
 		) {		
