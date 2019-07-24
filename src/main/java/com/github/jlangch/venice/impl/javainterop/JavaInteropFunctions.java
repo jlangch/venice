@@ -25,9 +25,7 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -179,9 +177,13 @@ public class JavaInteropFunctions {
 
 			final List<Class<?>> classes = new ArrayList<>();
 
-			final List<Class<?>> superclasses = getAllSuperclasses(clazz);
+			final List<Class<?>> superclasses = ReflectionUtil.getAllSuperclasses(clazz);
+			final List<Class<?>> interfaces = ReflectionUtil.getAllInterfaces(superclasses);
+			
+			classes.addAll(superclasses);
+			classes.addAll(interfaces);
 	
-			return new VncList(JavaInteropUtil.toVncKeywords(distinct(classes)));
+			return new VncList(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
 		}
 
 		@Override
@@ -219,13 +221,13 @@ public class JavaInteropFunctions {
 			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), javaImports);
 						
 			final List<Class<?>> classes = new ArrayList<>();
-			final Class<?> superclass = getSuperclass(clazz);
+			final Class<?> superclass = ReflectionUtil.getSuperclass(clazz);
 			if (superclass != null) {
 				classes.add(superclass);
 			}
-			classes.addAll(getInterfaces(clazz));
+			classes.addAll(ReflectionUtil.getAllDirectInterfaces(clazz));
 	
-			return new VncList(JavaInteropUtil.toVncKeywords(distinct(classes)));
+			return new VncList(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
 		}
 
 		@Override
@@ -237,41 +239,5 @@ public class JavaInteropFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 
 		private final JavaImports javaImports;
-	}
-
-	
-	private static Class<?> getSuperclass(final Class<?> clazz) {
-		return ReflectionUtil.getSuperclass(clazz);
-	}
-
-	private static List<Class<?>> getAllSuperclasses(final Class<?> clazz) {
-		final List<Class<?>> superclasses = new ArrayList<>();
-		getAllSuperclasses(ReflectionUtil.getSuperclass(clazz), superclasses);
-		return superclasses;
-	}
-
-	private static void getAllSuperclasses(final Class<?> clazz, List<Class<?>> superclasses) {
-		if (clazz != null) {
-			superclasses.add(clazz);
-			getAllSuperclasses(ReflectionUtil.getSuperclass(clazz), superclasses);
-		}
-	}
-
-	private static List<Class<?>> getInterfaces(final Class<?> clazz) {
-		return ReflectionUtil.getAllDirectInterfaces(clazz);
-	}
-
-	private static List<Class<?>> distinct(final List<Class<?>> classes) {
-		final Set<Class<?>> visited = new HashSet<>();
-		
-		final List<Class<?>> distinct = new ArrayList<>();
-		classes.forEach(c -> {
-			if (!visited.contains(c)) {
-				visited.add(c);
-				distinct.add(c);
-			}
-		});
-		
-		return distinct;
 	}
 }

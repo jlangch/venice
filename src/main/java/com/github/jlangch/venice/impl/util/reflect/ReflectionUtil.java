@@ -30,7 +30,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -197,6 +199,53 @@ public class ReflectionUtil {
 		return Arrays.asList(type.getInterfaces());
 	}
 
+	public static List<Class<?>> getAllSuperclasses(final Class<?> clazz) {
+		final List<Class<?>> superclasses = new ArrayList<>();
+		getAllSuperclasses(ReflectionUtil.getSuperclass(clazz), superclasses);
+		return superclasses;
+	}
+
+	private static void getAllSuperclasses(final Class<?> clazz, final List<Class<?>> superclasses) {
+		if (clazz != null) {
+			superclasses.add(clazz);
+			getAllSuperclasses(ReflectionUtil.getSuperclass(clazz), superclasses);
+		}
+	}
+
+	public static List<Class<?>> getAllInterfaces(final List<Class<?>> classes) {
+		final List<Class<?>> interfaces = new ArrayList<>();
+		classes.forEach(c -> getAllInterfaces(c, interfaces));
+		return interfaces;
+	}
+	
+	private static void getAllInterfaces(final Class<?> clazz, final List<Class<?>> interfaces) {
+		ReflectionUtil
+			.getAllDirectInterfaces(clazz)
+			.forEach(c -> {
+				interfaces.add(c);
+				getAllInterfaces(c, interfaces);
+			});
+	}
+
+	public static List<Class<?>> distinct(final List<Class<?>> classes) {
+		final Set<Class<?>> visited = new HashSet<>();
+		
+		final List<Class<?>> distinct = new ArrayList<>();
+		classes.forEach(c -> {
+			if (!visited.contains(c)) {
+				visited.add(c);
+				distinct.add(c);
+			}
+		});
+		
+		return distinct;
+	}
+	
+	
+	
+	
+	
+	
 	public static boolean hasDefaultConstructor(final Class<?> type) {
 		try {
 			return type.getConstructor() != null;
