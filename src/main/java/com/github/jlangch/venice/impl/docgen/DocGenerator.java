@@ -826,11 +826,9 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 
-		final DocSection run = new DocSection("Process");
+		final DocSection run = new DocSection("Use");
 		all.addSection(run);		
 		run.addItem(getDocItem("transduce"));
-		run.addItem(getDocItem("reduced"));
-		run.addItem(getDocItem("reduced?"));
 
 		final DocSection func = new DocSection("Functions");
 		all.addSection(func);		
@@ -854,6 +852,12 @@ public class DocGenerator {
 		red.addItem(getDocItem("rf-first"));
 		red.addItem(getDocItem("rf-every?"));
 		red.addItem(getDocItem("rf-any?"));
+		
+		final DocSection early = new DocSection("Early");
+		all.addSection(early);		
+		early.addItem(getDocItem("reduced"));
+		early.addItem(getDocItem("reduced?"));
+		early.addItem(getDocItem("deref"));
 		
 		return section;
 	}
