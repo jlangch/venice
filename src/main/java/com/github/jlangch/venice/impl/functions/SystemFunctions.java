@@ -102,7 +102,7 @@ public class SystemFunctions {
 
 	public static VncFunction objid = 
 		new VncFunction(
-				"oobjid", 
+				"objid", 
 				VncFunction
 					.meta()
 					.module("core")
