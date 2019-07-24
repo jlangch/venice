@@ -79,6 +79,9 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return this;
 	}
 
+	@Override
+	public abstract VncVal apply(final VncList args);
+
 	public boolean isRedefinable() { 
 		return true; 
 	}

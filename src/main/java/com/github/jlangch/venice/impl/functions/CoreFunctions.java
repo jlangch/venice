@@ -35,10 +35,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +50,6 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
@@ -66,7 +63,6 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
-import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -88,7 +84,6 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
@@ -5504,134 +5499,6 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-
-	public static VncFunction java_obj_Q = 
-		new VncFunction(
-				"java-obj?", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(java-obj? obj)")		
-					.doc("Returns true if obj is a Java object")
-					.examples("(java-obj? (. :java.math.BigInteger :new \"0\"))")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("java-obj?", args, 1);
-				
-				return Types.isVncJavaObject(args.first()) ? True : False;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction java_enumeration_to_list = 
-		new VncFunction(
-				"java-enumeration-to-list", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(java-enumeration-to-list e)")		
-					.doc("Converts a Java enumeration to a list")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("java-enumeration-to-list", args, 1);
-				
-				if (Types.isVncJavaObject(args.first(), Enumeration.class)) {
-					final Enumeration<?> e = (Enumeration<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
-					final List<VncVal> list = StreamUtil
-													 .stream(e)
-													 .map(v -> JavaInteropUtil.convertToVncVal(v))
-													 .collect(Collectors.toList());
-					return new VncList(list); 
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'java-enumeration-to-list' does not allow %s as parameter", 
-							Types.getType(args.first())));
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction java_iterator_to_list = 
-		new VncFunction(
-				"java-iterator-to-list", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(java-iterator-to-list e)")		
-					.doc("Converts a Java iterator to a list")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("java-iterator-to-list", args, 1);
-				
-				if (Types.isVncJavaObject(args.first(), Iterator.class)) {
-					final Iterator<?> i = (Iterator<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
-					final List<VncVal> list = StreamUtil
-													.stream(i)
-													.map(v -> JavaInteropUtil.convertToVncVal(v))
-													.collect(Collectors.toList());
-					return new VncList(list); 
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'java-iterator-to-list' does not allow %s as parameter", 
-							Types.getType(args.first())));
-				}
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction java_wrap = 
-		new VncFunction(
-				"java-wrap", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(java-wrap val)")		
-					.doc("Wraps a venice value")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("java-wrap", args, 1);
-				
-				final VncVal arg = args.first();
-				
-				return arg instanceof VncTunnelAsJavaObject 
-						? arg 
-						: new VncTunnelAsJavaObject(arg);
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction java_unwrap = 
-		new VncFunction(
-				"java-unwrap", 
-				VncFunction
-					.meta()
-					.module("core")
-					.arglists("(java-unwrap val)")		
-					.doc("Unwraps a venice value")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				assertArity("java-unwrap", args, 1);
-				
-				final VncVal arg = args.first();
-				
-				return arg instanceof VncTunnelAsJavaObject
-						? ((VncTunnelAsJavaObject)arg).getDelegate()
-						: arg;
-			}
-	
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
 		
 		
 	private static VncVal sort(
@@ -5858,12 +5725,6 @@ public class CoreFunctions {
 				.put("module",				module)
 				.put("type",				type)
 				.put("instance?",			instance_Q)	
-
-				.put("java-obj?",					java_obj_Q)	
-				.put("java-iterator-to-list",		java_iterator_to_list)	
-				.put("java-enumeration-to-list",	java_enumeration_to_list)	
-				.put("java-wrap",					java_wrap)	
-				.put("java-unwrap",					java_unwrap)	
 					
 				.toMap();
 

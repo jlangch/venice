@@ -1200,8 +1200,7 @@ public class DocGenerator {
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
-		
-		
+			
 		final DocSection general = new DocSection("General");
 		all.addSection(general);
 		
