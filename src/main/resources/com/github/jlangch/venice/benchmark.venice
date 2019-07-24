@@ -58,7 +58,7 @@
 
 (defmacro
    ^{ :arglists '("(benchmark expr warmup-iterations iterations)")
-      :doc "Benchmarks the given expression. \n\nRuns the benchmark in 4 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression benchmark. \n   4. Prints the benchmark statistics."
+      :doc "Benchmarks the given expression. \n\nRuns the benchmark in 4 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression benchmark. \n   4. Analyzes and prints the benchmark statistics."
       :examples '("(benchmark (+ 1 2) 120000 10000)") }
 
    benchmark [expr warmup-iterations iterations]

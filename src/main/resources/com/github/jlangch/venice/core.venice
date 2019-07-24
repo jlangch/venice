@@ -157,7 +157,7 @@
 (defmacro
    ^{ :arglists '("(if-not test & body)")
       :doc "Evaluates test. If logical false, evaluates and returns then expr, otherwise else expr, if supplied, else nil."
-      :examples '("(if-not (== 1 2) 100 0)") }
+      :examples '("(if-not (== 1 2) 100 0)", "(if-not (== 1 2) 100)") }
 
    if-not
 
