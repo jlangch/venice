@@ -90,7 +90,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public boolean isRedefinable() { 
-			return false; 
+			return false;  // don't allow redefinition for security reasons
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -145,7 +145,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public boolean isRedefinable() { 
-			return false; 
+			return false;  // don't allow redefinition for security reasons
 		}
 		
 		
@@ -186,7 +186,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public boolean isRedefinable() { 
-			return false; 
+			return false;  // don't allow redefinition for security reasons
 		}
 		
 		
@@ -230,7 +230,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public boolean isRedefinable() { 
-			return false; 
+			return false;  // don't allow redefinition for security reasons
 		}
 		
 		
