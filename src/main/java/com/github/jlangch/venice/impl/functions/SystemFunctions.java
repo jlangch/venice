@@ -49,6 +49,7 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -172,12 +173,12 @@ public class SystemFunctions {
 						"(format-nano-time time)",
 						"(format-nano-time time & options)")		
 					.doc(
-						"Formats a time given in nanoseconds. \n\n" +
+						"Formats a time given in nanoseconds as long or double. \n\n" +
 						"Options: \n" +
 						"  :precision p - e.g :precision 4 (defaults to 3)")
 					.examples(
 						"(format-nano-time 203)",
-						"(format-nano-time 20389 :precision 2)",
+						"(format-nano-time 20389.0 :precision 2)",
 						"(format-nano-time 203898888)",
 						"(format-nano-time 20386766988 :precision 6)")
 					.build()
@@ -185,23 +186,35 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("format-nano-time", args, 1);
 				
-				final long time = Coerce.toVncLong(args.first()).getValue();
+				final VncVal val = args.first();
 				final VncHashMap options = VncHashMap.ofAll(args.rest());
 
 				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
 											.getIntValue(); 					
 
-				if (time < 1_000) {
-					return new VncString(String.format("%d ns", time));
+				if (Types.isVncLong(val) || Types.isVncInteger(val)) {
+					final long time = Numeric.toLong(val).getValue();
+					
+					if (time < 1_000) {
+						return new VncString(String.format("%d ns", time));
+					}
 				}
-				else if (time < 1_000_000) {
-					return new VncString(String.format("%." + precision + "f µs", time / 1_000.0D));
+
+				final double time = Numeric.toDouble(val).getValue();
+				
+				final String format = "%." + precision + "f";
+					
+				if (time < 1_000.0D) {
+					return new VncString(String.format(format + " ns", time));
 				}
-				else if (time < 1_000_000_000) {
-					return new VncString(String.format("%." + precision + "f ms", time / 1_000_000.0D));
+				else if (time < 1_000_000.0D) {
+					return new VncString(String.format(format + " µs", time / 1_000.0D));
+				}
+				else if (time < 1_000_000_000.0D) {
+					return new VncString(String.format(format + " ms", time / 1_000_000.0D));
 				}
 				else {
-					return new VncString(String.format("%." + precision + "f s", time / 1_000_000_000.0D));
+					return new VncString(String.format(format + " s", time / 1_000_000_000.0D));
 				}
 			}
 	
