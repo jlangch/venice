@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
@@ -156,6 +157,52 @@ public class SystemFunctions {
 				assertArity("nano-time", args, 0);
 				
 				return new VncLong(System.nanoTime());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction format_nano_time = 
+		new VncFunction(
+				"format-nano-time", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists(
+						"(format-nano-time time)",
+						"(format-nano-time time & options)")		
+					.doc(
+						"Formats a time given in nanoseconds. \n\n" +
+						"Options: \n" +
+						"  :precision p - e.g :precision 4 (defaults to 3)")
+					.examples(
+						"(format-nano-time 203)",
+						"(format-nano-time 20389 :precision 2)",
+						"(format-nano-time 203898888)",
+						"(format-nano-time 20386766988 :precision 6)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("format-nano-time", args, 1);
+				
+				final long time = Coerce.toVncLong(args.first()).getValue();
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+
+				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
+											.getIntValue(); 					
+
+				if (time < 1_000) {
+					return new VncString(String.format("%d ns", time));
+				}
+				else if (time < 1_000_000) {
+					return new VncString(String.format("%." + precision + "f µs", time / 1_000.0D));
+				}
+				else if (time < 1_000_000_000) {
+					return new VncString(String.format("%." + precision + "f ms", time / 1_000_000.0D));
+				}
+				else {
+					return new VncString(String.format("%." + precision + "f s", time / 1_000_000_000.0D));
+				}
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -484,6 +531,7 @@ public class SystemFunctions {
 					.put("objid",				objid)
 					.put("current-time-millis",	current_time_millis)
 					.put("nano-time",			nano_time)
+					.put("format-nano-time", 	format_nano_time)
 					.put("pid",					pid)
 					.put("gc",					gc)
 					.put("shutdown-hook",		shutdown_hook)					

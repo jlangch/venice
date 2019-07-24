@@ -22,14 +22,7 @@
 ;;;; Venice benchmarking
 
 (defn
-  format-time [t]
-  (cond (< t 1000) (str/format "%.3f ns" t)
-        (< t 1000000) (str/format "%.3f µs" (/ t 1000.0))
-        (< t 1000000000) (str/format "%.3f ms" (/ t 1000000.0))
-        :else (str/format "%.3f s" (/ t 1000000000.0))))
-
-(defn
-  remove-outliers [samples q1 q3]
+  bench/remove-outliers [samples q1 q3]
   (let [iqr (- q3 q1)
         delta (long (* 3 iqr))
         low (- q1 delta)
@@ -37,23 +30,23 @@
      (filter #(and (>= %1 low) (<= %1 high)) samples)))
 
 (defn
-  print-stats [samples]
+  bench/print-stats [samples]
   (let [q (quartiles samples)
         q1 (first q)
         q2 (second q)
         q3 (third q)
         lower-quantile (quantile 0.025 samples)
         higher-quantile (quantile 0.975 samples)
-        cleaned-samples (remove-outliers samples q1 q3)
+        cleaned-samples (bench/remove-outliers samples q1 q3)
         outliers-cnt (- (count samples) (count cleaned-samples))
         sd (standard-deviation :sample cleaned-samples)]
       (printf "                      Samples : %d\n" (count samples))
-      (printf "          Execution time mean : %s\n" (format-time q2))
-      (printf " Execution time std-deviation : %s\n" (format-time sd))
-      (printf "Execution time lower quartile : %s (25%%)\n" (format-time q1))
-      (printf "Execution time upper quartile : %s (75%%)\n" (format-time q3))
-      (printf "Execution time lower quantile : %s (2.5%%)\n" (format-time lower-quantile))
-      (printf "Execution time upper quantile : %s (97.5%%)\n" (format-time higher-quantile))
+      (printf "          Execution time mean : %s\n" (format-nano-time q2))
+      (printf " Execution time std-deviation : %s\n" (format-nano-time sd))
+      (printf "Execution time lower quartile : %s (25%%)\n" (format-nano-time q1))
+      (printf "Execution time upper quartile : %s (75%%)\n" (format-nano-time q3))
+      (printf "Execution time lower quantile : %s (2.5%%)\n" (format-nano-time lower-quantile))
+      (printf "Execution time upper quantile : %s (97.5%%)\n" (format-nano-time higher-quantile))
       (printf "                     Outliers : %d\n" outliers-cnt)))
 
 (defmacro
@@ -61,7 +54,7 @@
       :doc "Benchmarks the given expression. \n\nRuns the benchmark in 4 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression benchmark. \n   4. Analyzes and prints the benchmark statistics."
       :examples '("(benchmark (+ 1 2) 120000 10000)") }
 
-   benchmark [expr warmup-iterations iterations]
+   bench/benchmark [expr warmup-iterations iterations]
 
    `(do
       (printf "Warmup...\n")
@@ -71,4 +64,4 @@
       (let [_ (printf "Sampling...\n")
             samples (dobench ~iterations ~expr)]
         (printf "Analyzing...\n")
-        (print-stats samples))))
+        (bench/print-stats samples))))

@@ -741,6 +741,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("shutdown-hook"));
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
+		util.addItem(getDocItem("format-nano-time"));
 		util.addItem(getDocItem("coalesce"));
 
 		final DocSection shell = new DocSection("Shell");
