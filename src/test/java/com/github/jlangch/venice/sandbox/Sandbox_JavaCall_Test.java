@@ -34,7 +34,7 @@ public class Sandbox_JavaCall_Test {
 	
 	@Test
 	public void testRedefineJavaFn() {
-		assertThrows(VncException.class, () -> {
+		assertThrows(SecurityException.class, () -> {
 			new Venice(new RejectAllInterceptor()).eval(
 					"(do                           \n" +
 					"  (defn . [x] x)              \n" +
@@ -44,7 +44,7 @@ public class Sandbox_JavaCall_Test {
 	
 	@Test
 	public void testRedefineJavaProxifyFn() {
-		assertThrows(VncException.class, () -> {
+		assertThrows(SecurityException.class, () -> {
 			new Venice(new RejectAllInterceptor()).eval(
 					"(do                           \n" +
 					"  (defn proxify [x] x)        \n" +

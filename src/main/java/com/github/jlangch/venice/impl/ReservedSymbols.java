@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 
 
@@ -37,8 +36,10 @@ public class ReservedSymbols {
 
 	public static void validate(final VncSymbol symbol) {
 		if (symbol != null && reserved.contains(symbol.getName())) {
-			throw new VncException(
-					String.format("Reserved symbol '%s'", symbol.getName()));
+			throw new SecurityException(
+					String.format(
+							"Reserved symbol '%s'. Redefinition is not allowed.", 
+							symbol.getName()));
 		}
 	}
 
