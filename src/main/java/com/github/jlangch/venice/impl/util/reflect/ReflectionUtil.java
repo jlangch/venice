@@ -193,6 +193,10 @@ public class ReflectionUtil {
 		}
 	}
 
+	public static List<Class<?>> getAllDirectInterfaces(final Class<?> type) {
+		return Arrays.asList(type.getInterfaces());
+	}
+
 	public static boolean hasDefaultConstructor(final Class<?> type) {
 		try {
 			return type.getConstructor() != null;

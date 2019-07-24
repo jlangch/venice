@@ -28,13 +28,16 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
-public class VncVector extends VncSequence {
+public class VncVector extends VncSequence implements IVncFunction {
 
 	public VncVector() {
 		this((io.vavr.collection.Seq<VncVal>)null, null);
@@ -70,6 +73,13 @@ public class VncVector extends VncSequence {
 		return new VncVector(io.vavr.collection.Vector.of(mvs), Constants.Nil);
 	}
 	
+
+	@Override
+	public VncVal apply(final VncList args) {
+		FunctionsUtil.assertArity("map", args, 1);
+		
+		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
+	}
 	
 	@Override
 	public VncVector empty() {

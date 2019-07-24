@@ -24,18 +24,25 @@ package com.github.jlangch.venice.impl.functions;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.javainterop.JavaImports;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class Functions {
 
-	public static VncFunction getFunction(final String name) {
-		return (VncFunction)functions.get(new VncSymbol(name));
+	public static Map<VncVal,VncVal> create(final JavaImports javaImports) {
+		final Map<VncVal,VncVal> fns = new HashMap<>();
+		fns.putAll(functions);
+		JavaInteropFunctions
+			.create(javaImports)
+			.forEach(f -> fns.put(new VncSymbol(f.getName()), f));
+		return fns;
 	}
 	
-	public static final Map<VncVal,VncVal> functions = new HashMap<>();
+	
+	private static final Map<VncVal,VncVal> functions = new HashMap<>();
 	
 	static {
 		functions.putAll(CoreFunctions.ns);

@@ -37,6 +37,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 		super(meta);
 	}
 
+	@Override
 	public VncVal apply(final VncList args) {
 		FunctionsUtil.assertArity("map", args, 1);
 		

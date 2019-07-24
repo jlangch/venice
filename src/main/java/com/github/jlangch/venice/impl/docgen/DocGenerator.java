@@ -39,9 +39,6 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -1205,27 +1202,14 @@ public class DocGenerator {
 		section.addSection(all);
 		
 		
-		final JavaImports javaImports = new JavaImports();
-		final VncFunction javaDot = JavaInteropFn.create(javaImports);
-		final VncFunction javaProxify = new JavaInteropProxifyFn(javaImports);
-		
 		final DocSection general = new DocSection("General");
 		all.addSection(general);
-		general.addItem(
-				new DocItem(
-						javaDot.getName(), 
-						toStringList(javaDot.getArgLists()), 
-						((VncString)javaDot.getDoc()).getValue(),
-						runExamples(javaDot.getName(), toStringList(javaDot.getExamples()), true, false),
-						id()));
-		general.addItem(
-				new DocItem(
-						javaProxify.getName(), 
-						toStringList(javaProxify.getArgLists()), 
-						((VncString)javaProxify.getDoc()).getValue(),
-						runExamples(javaProxify.getName(), toStringList(javaProxify.getExamples()), true, false),
-						id()));
+		
+		general.addItem(getDocItem("."));
+		general.addItem(getDocItem("proxify"));
 		general.addItem(getDocItem("import"));
+		general.addItem(getDocItem("supers"));
+		general.addItem(getDocItem("bases"));
 		general.addItem(getDocItem("java-obj?"));
 		general.addItem(getDocItem("java-iterator-to-list"));
 		general.addItem(getDocItem("java-enumeration-to-list"));

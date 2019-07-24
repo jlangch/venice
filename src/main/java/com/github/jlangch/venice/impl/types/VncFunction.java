@@ -79,6 +79,9 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return this;
 	}
 
+	public boolean isRedefinable() { 
+		return true; 
+	}
 	
 	public VncVal getAst() { 
 		return ast; 

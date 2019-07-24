@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -53,10 +54,12 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 public class JavaInteropUtil {
@@ -208,6 +211,23 @@ public class JavaInteropUtil {
 						"JavaInterop failure. %s", 
 						ErrorMessage.buildErrLocation(args)));
 		}
+	}
+	
+	public static Class<?> toClass(final VncVal vClass, final JavaImports javaImports) {
+		final VncVal clazzVal = vClass;
+		final String className = Types.isVncKeyword(clazzVal)
+									? Coerce.toVncKeyword(clazzVal).getValue()
+									: Coerce.toVncString(clazzVal).getValue();
+
+		return ReflectionUtil.classForName(javaImports.resolveClassName(className));
+	}
+	
+	public static VncKeyword toVncKeyword(final Class<?> clazz) {
+		return new VncKeyword(clazz.getName());
+	}
+	
+	public static List<VncKeyword> toVncKeywords(final List<Class<?>> classes) {
+		return classes.stream().map(c -> toVncKeyword(c)).collect(Collectors.toList());
 	}
 	
 	private static Object[] convertToJavaMethodArgs(final VncList params) {

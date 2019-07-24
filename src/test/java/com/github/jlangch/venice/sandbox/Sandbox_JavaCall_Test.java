@@ -26,10 +26,32 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
+
 public class Sandbox_JavaCall_Test {
-		
+	
+	@Test
+	public void testRedefineJavaFn() {
+		assertThrows(VncException.class, () -> {
+			new Venice(new RejectAllInterceptor()).eval(
+					"(do                           \n" +
+					"  (defn . [x] x)              \n" +
+					"  (. 12))                       ");
+		});
+	}
+	
+	@Test
+	public void testRedefineJavaProxifyFn() {
+		assertThrows(VncException.class, () -> {
+			new Venice(new RejectAllInterceptor()).eval(
+					"(do                           \n" +
+					"  (defn proxify [x] x)        \n" +
+					"  (. 12))                       ");
+		});
+	}
+
 	@Test
 	public void test_system_exit() {
 		assertThrows(SecurityException.class, () -> {

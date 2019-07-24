@@ -41,8 +41,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropFn;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropProxifyFn;
 import com.github.jlangch.venice.impl.javainterop.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -128,10 +126,8 @@ public class VeniceInterpreter implements Serializable  {
 			final String filename, 
 			final Env env
 	) {
-		final VncVal ast = READ(script, filename);	
-		
-		final VncVal result = EVAL(ast, env);
-		
+		final VncVal ast = READ(script, filename);			
+		final VncVal result = EVAL(ast, env);		
 		return result;
 	}
 	
@@ -142,14 +138,14 @@ public class VeniceInterpreter implements Serializable  {
 	public Env createEnv(final List<String> preloadedExtensionModules) {
 		final Env env = new Env(null);
 	
-		// core functions defined in Java
-		Functions.functions
-				 .keySet()
-				 .forEach(key -> env.setGlobal(new Var((VncSymbol)key, Functions.functions.get(key), true)));
-
-		// core functions Java interoperability
-		env.setGlobal(new Var(new VncSymbol("."), JavaInteropFn.create(javaImports), false));
-		env.setGlobal(new Var(new VncSymbol("proxify"), new JavaInteropProxifyFn(javaImports), false));
+		Functions
+			.create(javaImports)
+			.entrySet()
+			.forEach(e -> env.setGlobal(
+							new Var(
+								(VncSymbol)e.getKey(), 
+								e.getValue(), 
+								((VncFunction)e.getValue()).isRedefinable())));
 
 		// set Venice version
 		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
