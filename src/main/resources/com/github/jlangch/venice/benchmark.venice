@@ -74,7 +74,7 @@
      (printf "Quantization step with: %s \n" (format-nano-time (/ diff steps)))
      (bench/create-chart
        {:x (map #(/ %1 x-scale) (keys data)) :y (vals data)}
-       (str "Distribution (samples " (count samples) ")")
+       (str "Distribution (" (count samples) " samples)")
        x-unit
        "#"
        x-format)
@@ -122,4 +122,6 @@
              samples (dobench ~iterations ~expr)]
          (printf "Analyzing...\n")
          (bench/print-stats samples)
-         (when ~chart? (bench/chart samples ~step))))))
+         (when ~chart?
+           (printf "Generating chart...\n")
+           (bench/chart samples ~step))))))
