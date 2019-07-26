@@ -170,6 +170,9 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("ceil"));
 		arithmetic.addItem(getDocItem("sqrt"));
 		arithmetic.addItem(getDocItem("square"));
+		arithmetic.addItem(getDocItem("log"));
+		arithmetic.addItem(getDocItem("log10"));
+		arithmetic.addItem(getDocItem("pow"));
 
 		final DocSection statistics = new DocSection("Statistics");
 		numbers.addSection(statistics);

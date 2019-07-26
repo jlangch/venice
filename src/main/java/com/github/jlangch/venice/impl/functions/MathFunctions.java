@@ -669,6 +669,77 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction log = 
+		new VncFunction(
+				"log", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(log x)")
+					.doc("log x")
+					.examples(
+						"(log 10)", 
+						"(log 10.23)", 
+						"(log 10.23M)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("log", args, 1);
+				
+				return new VncDouble(Math.log(Numeric.toDouble(args.first()).getValue()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction log10 = 
+		new VncFunction(
+				"log10", 
+				VncFunction
+					.meta()
+					.module("core")
+					.arglists("(log10 x)")
+					.doc("log10 x")
+					.examples(
+						"(log10 10)", 
+						"(log10 10.23)", 
+						"(log10 10.23M)")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("log10", args, 1);
+				
+				return new VncDouble(Math.log10(Numeric.toDouble(args.first()).getValue()));
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		public static VncFunction pow = 
+			new VncFunction(
+					"pow", 
+					VncFunction
+						.meta()
+						.module("core")
+						.arglists("(pow x y)")
+						.doc("Returns the value of x raised to the power of y")
+						.examples(
+							"(pow 10 2)", 
+							"(pow 10.23 2)", 
+							"(pow 10.23 2.5)")
+						.build()
+			) {	
+				public VncVal apply(final VncList args) {
+					assertArity("pow", args, 2);
+					
+					return new VncDouble(Math.pow(
+											Numeric.toDouble(args.first()).getValue(),
+											Numeric.toDouble(args.second()).getValue()));
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction mean = 
 		new VncFunction(
 				"mean", 
@@ -1534,6 +1605,9 @@ public class MathFunctions {
 					.put("ceil",				ceil)
 					.put("square",				square)
 					.put("sqrt",				sqrt)
+					.put("log",					log)
+					.put("log10",				log10)
+					.put("pow",					pow)
 	
 					.put("mean",				mean)
 					.put("median",				median)
