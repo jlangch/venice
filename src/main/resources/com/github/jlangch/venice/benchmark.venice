@@ -32,14 +32,17 @@
 
 
 (defn
-   bench/create-chart [data]
+   bench/create-chart [data title x-axis-title y-axis-title x-axis-decimal-pattern]
      (xchart/write-to-file
         (xchart/xy-chart
            { "test" data }
-           { :title "Distribution"
+           { :title title
              :render-style :line   ; :step
-             :x-axis { :title "ns" :decimal-pattern "#0.00000" :tick-mark-spacing-hint  10}
-             :y-axis { :title "#" :decimal-pattern "#0"}
+             :x-axis { :title x-axis-title
+                       :decimal-pattern x-axis-decimal-pattern
+                       :tick-mark-spacing-hint 10 }
+             :y-axis { :title y-axis-title
+                       :decimal-pattern "#0" }
              :theme :xchart } )
         :png ; write as PNG
         300  ; render with 300 dpi
@@ -53,14 +56,28 @@
         min (first sorted)
         max (last sorted)
         diff (- max min)
-        normalize (fn [x] (-> x (- min) (* steps) (/ diff) (+ min)))
+        quantize (fn [x] (-> x (- min) (* steps) (/ diff) (+ min)))
         data (reduce
-               (fn [m x] (let [n (normalize x)]
+               (fn [m x] (let [n (quantize x)]
                            (assoc m n (inc (get m n 0)))))
                (sorted-map)
-               samples)]
-     (printf "step: %s \n" (format-nano-time (/ diff steps)))
-     (bench/create-chart {:x (keys data) :y (vals data)})
+               samples)
+        x-scale  (cond (< min 1000) 1.0
+                       (< min 1000000) 1000.0
+                       (< min 1000000000) 1000000.0
+                       :else 1000000000.0)
+        x-unit   (cond (< min 1000) "ns"
+                       (< min 1000000) "µs"
+                       (< min 1000000000) "ms"
+                       :else "s")
+        x-format (cond (< min 1000) "#0" :else "#0.000")]
+     (printf "Quantization step with: %s \n" (format-nano-time (/ diff steps)))
+     (bench/create-chart
+       {:x (map #(/ %1 x-scale) (keys data)) :y (vals data)}
+       (str "Distribution (samples " (count samples) ")")
+       x-unit
+       "#"
+       x-format)
      (printf "Saved 'benchmark.png' chart.\n")))
 
 
