@@ -21,6 +21,7 @@
 
 ;;;; Venice benchmarking
 
+
 (defn
   bench/remove-outliers [samples q1 q3]
   (let [iqr (- q3 q1)
@@ -28,6 +29,40 @@
         low (- q1 delta)
         high (+ q3 delta)]
      (filter #(and (>= %1 low) (<= %1 high)) samples)))
+
+
+(defn
+   bench/create-chart [data]
+     (xchart/write-to-file
+        (xchart/xy-chart
+           { "test" data }
+           { :title "Distribution"
+             :render-style :line   ; :step
+             :x-axis { :title "ns" :decimal-pattern "#0.00000" :tick-mark-spacing-hint  10}
+             :y-axis { :title "#" :decimal-pattern "#0"}
+             :theme :xchart } )
+        :png ; write as PNG
+        300  ; render with 300 dpi
+        (io/file "benchmark.png")))
+
+
+(defn
+  bench/chart [samples steps]
+  (load-module :xchart)
+  (let [sorted (sort samples)
+        min (first sorted)
+        max (last sorted)
+        diff (- max min)
+        normalize (fn [x] (-> x (- min) (* steps) (/ diff) (+ min)))
+        data (reduce
+               (fn [m x] (let [n (normalize x)]
+                           (assoc m n (inc (get m n 0)))))
+               (sorted-map)
+               samples)]
+     (printf "step: %s \n" (format-nano-time (/ diff steps)))
+     (bench/create-chart {:x (keys data) :y (vals data)})
+     (printf "Saved 'benchmark.png' chart.\n")))
+
 
 (defn
   bench/print-stats [samples]
@@ -49,19 +84,25 @@
       (printf "Execution time upper quantile : %s (97.5%%)\n" (format-nano-time higher-quantile))
       (printf "                     Outliers : %d\n" outliers-cnt)))
 
+
 (defmacro
    ^{ :arglists '("(benchmark expr warmup-iterations iterations)")
       :doc "Benchmarks the given expression. \n\nRuns the benchmark in 4 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression benchmark. \n   4. Analyzes and prints the benchmark statistics."
       :examples '("(benchmark (+ 1 2) 120000 10000)") }
 
-   bench/benchmark [expr warmup-iterations iterations]
+   bench/benchmark [expr warmup-iterations iterations & options]
 
-   `(do
-      (printf "Warmup...\n")
-      (dobench ~warmup-iterations ~expr)
-      (printf "GC...\n")
-      (dorun 2 (gc))
-      (let [_ (printf "Sampling...\n")
-            samples (dobench ~iterations ~expr)]
-        (printf "Analyzing...\n")
-        (bench/print-stats samples))))
+
+   (let [opts (apply hash-map options)
+         chart? (:chart opts false)
+         step (:step opts 100)]
+    `(do
+       (printf "Warmup...\n")
+       (dobench ~warmup-iterations ~expr)
+       (printf "GC...\n")
+       (dorun 2 (gc))
+       (let [_ (printf "Sampling...\n")
+             samples (dobench ~iterations ~expr)]
+         (printf "Analyzing...\n")
+         (bench/print-stats samples)
+         (when ~chart? (bench/chart samples ~step))))))

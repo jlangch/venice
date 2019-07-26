@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
@@ -58,19 +59,8 @@ public class ModuleFunctions {
 					try {	
 						assertArity("load-core-module", args, 1);
 						
-						final VncVal name = args.first();
-						
-						if (Types.isVncString(name)) {
-							final String module = ModuleLoader.load(((VncString)args.first()).getValue());
-							return new VncString(module);
-						}
-						else if (Types.isVncSymbol(name)) {
-							final String module = ModuleLoader.load(((VncSymbol)args.first()).getName());
-							return new VncString(module);
-						}
-						else {
-							return Nil;
-						}
+						final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
+						return new VncString(ModuleLoader.load(name));
 					} 
 					catch (Exception ex) {
 						throw new VncException(ex.getMessage(), ex);

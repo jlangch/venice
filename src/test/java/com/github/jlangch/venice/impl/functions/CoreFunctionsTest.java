@@ -1291,11 +1291,13 @@ public class CoreFunctionsTest {
 		assertEquals("()", venice.eval("(str (sort (keys {})))"));
 		assertEquals("(:a :b :c)", venice.eval("(str (sort (keys {:a 1 :b 2 :c 3})))"));
 
-		assertEquals("()", venice.eval("(str (sort (keys (ordered-map ))))"));
+		assertEquals("()", venice.eval("(str (keys (ordered-map )))"));
 		assertEquals("(:a :b :c)", venice.eval("(str (keys (ordered-map :a 1 :b 2 :c 3)))"));
 
-		assertEquals("()", venice.eval("(str (sort (keys (sorted-map ))))"));
+		assertEquals("()", venice.eval("(str (keys (sorted-map )))"));
 		assertEquals("(:a :b :c)", venice.eval("(str (keys (sorted-map :a 1 :b 2 :c 3)))"));
+		assertEquals("(:a :b :c)", venice.eval("(str (keys (sorted-map :b 2 :a 1 :c 3)))"));
+		assertEquals("(:a :b :c)", venice.eval("(str (keys (sorted-map :c 3 :a 1 :b 2)))"));
 	}
 	
 	@Test

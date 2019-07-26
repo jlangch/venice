@@ -155,7 +155,7 @@
 
 
 (defmacro
-   ^{ :arglists '("(if-not test & body)")
+   ^{ :arglists '("(if-not then)", "(if-not then else)")
       :doc "Evaluates test. If logical false, evaluates and returns then expr, otherwise else expr, if supplied, else nil."
       :examples '("(if-not (== 1 2) 100 0)", "(if-not (== 1 2) 100)") }
 
@@ -472,7 +472,10 @@
 
    load-module [s]
 
-   `(eval (read-string (str "(do " (load-core-module ~s) ")") ~s)))
+   `(when-not (contains? *loaded-modules* (keyword (name ~s)))
+      (let [module (read-string (str "(do " (load-core-module ~s) ")") ~s)]
+        (assoc! *loaded-modules* (keyword (name ~s)) (current-time-millis))
+        (eval module))))
 
 
 (defmacro
@@ -635,7 +638,7 @@
 
 
 (defn
-  ^{ :arglists '("(rf-any pred)")
+  ^{ :arglists '("(rf-any? pred)")
      :doc "Returns a reducing function for a transducer that returns true if the predicate is true for at least one the items, false otherwise."
      :examples '("""(transduce (filter number?) (rf-any? pos?) [true -1 1 2 false])""") }
 
@@ -648,7 +651,7 @@
 
 
 (defn
-  ^{ :arglists '("(rf-every pred)")
+  ^{ :arglists '("(rf-every? pred)")
      :doc "Returns a reducing function for a transducer that returns true if the predicate is true for all the items, false otherwise."
      :examples '("""(transduce (filter number?) (rf-every? pos?) [1 2 3])""") }
 

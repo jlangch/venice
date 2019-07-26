@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -138,6 +139,8 @@ public class VeniceInterpreter implements Serializable  {
 	public Env createEnv(final List<String> preloadedExtensionModules) {
 		final Env env = new Env(null);
 	
+		final VncMutableMap loadedModules = new VncMutableMap();
+		
 		Functions
 			.create(javaImports)
 			.entrySet()
@@ -152,6 +155,9 @@ public class VeniceInterpreter implements Serializable  {
 
 		// set system newline
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
+		
+		// loaded modules
+		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -162,6 +168,7 @@ public class VeniceInterpreter implements Serializable  {
 			final long nanos = System.nanoTime();
 			RE("(eval " + ModuleLoader.load(m) + ")", m, env);
 			meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos);
+			loadedModules.assoc(new VncKeyword(m), new VncLong(System.currentTimeMillis()));
 		});
 		
 		return env;

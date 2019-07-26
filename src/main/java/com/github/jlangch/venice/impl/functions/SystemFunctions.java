@@ -187,10 +187,6 @@ public class SystemFunctions {
 				assertMinArity("format-nano-time", args, 1);
 				
 				final VncVal val = args.first();
-				final VncHashMap options = VncHashMap.ofAll(args.rest());
-
-				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
-											.getIntValue(); 					
 
 				if (Types.isVncLong(val) || Types.isVncInteger(val)) {
 					final long time = Numeric.toLong(val).getValue();
@@ -200,22 +196,29 @@ public class SystemFunctions {
 					}
 				}
 
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
+											.getIntValue(); 					
+
 				final double time = Numeric.toDouble(val).getValue();
 				
-				final String format = "%." + precision + "f";
-					
+				String unit = "s";
+				double scale = 1_000_000_000.0D;
+				
 				if (time < 1_000.0D) {
-					return new VncString(String.format(format + " ns", time));
+					unit = "ns";
+					scale = 1.0D;
 				}
 				else if (time < 1_000_000.0D) {
-					return new VncString(String.format(format + " µs", time / 1_000.0D));
+					unit = "µs";
+					scale = 1_000.0D;
 				}
 				else if (time < 1_000_000_000.0D) {
-					return new VncString(String.format(format + " ms", time / 1_000_000.0D));
+					unit = "ms";
+					scale = 1_000_000.0D;
 				}
-				else {
-					return new VncString(String.format(format + " s", time / 1_000_000_000.0D));
-				}
+				
+				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
 			}
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
