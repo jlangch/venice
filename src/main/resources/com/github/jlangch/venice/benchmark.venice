@@ -33,10 +33,14 @@
 
 (defn
    bench/create-chart
-   [data params]
+   [data median params]
    (xchart/write-to-file
       (xchart/xy-chart
-         { "test" data }
+        { "samples" data
+          "median" {:x [median median]
+                    :y [0 (apply max (:y data))]
+                    :style {:render-style :line
+                            :marker-type :none }}}
          { :title (:title params)
            :render-style :line   ; :step
            :x-axis { :title (:x-axis-title params)
@@ -54,11 +58,13 @@
 (defn
   bench/chart [samples steps logarithmic?]
   (load-module :xchart)
-  (let [sorted (sort samples)
+  (let [samples (:samples stats)
+        sorted (sort samples)
         min (first sorted)
         max (last sorted)
         diff (- max min)
-        quantize (fn [x] (-> x (- min) (* steps) (/ diff) (+ min)))
+        step-width (/ diff steps)
+        quantize (fn [x] (-> x (- min) (/ step-width) (floor) (* step-width) (+ min) (long)))
         data (reduce
                (fn [m x] (let [n (quantize x)]
                            (assoc m n (inc (get m n 0)))))
@@ -72,11 +78,13 @@
                        (< min 1000000) "µs"
                        (< min 1000000000) "ms"
                        :else "s")
-        x-format (cond (< min 1000) "#0" :else "#0.000")]
-     (printf "Quantization step with: %s \n" (format-nano-time (/ diff steps)))
+        x-format (cond (< min 1000) "#0" :else "#0.000")
+        median (:q2 stats)]
+     (printf "Quantization step width: %s \n" (format-nano-time step-width))
      (bench/create-chart
        { :x (map #(/ %1 x-scale) (keys data))
          :y (vals data) }
+       (/ median x-scale)
        { :title (str "Distribution (" (count samples) " samples)")
          :x-axis-title x-unit
          :y-axis-title "#"
@@ -86,24 +94,32 @@
 
 
 (defn
-  bench/print-stats [samples]
+  bench/stats [samples]
   (let [q (quartiles samples)
         q1 (first q)
         q2 (second q)
         q3 (third q)
-        lower-quantile (quantile 0.025 samples)
-        higher-quantile (quantile 0.975 samples)
-        cleaned-samples (bench/remove-outliers samples q1 q3)
-        outliers-cnt (- (count samples) (count cleaned-samples))
-        sd (standard-deviation :sample cleaned-samples)]
-      (printf "                      Samples : %d\n" (count samples))
-      (printf "          Execution time mean : %s\n" (format-nano-time q2))
-      (printf " Execution time std-deviation : %s\n" (format-nano-time sd))
-      (printf "Execution time lower quartile : %s (25%%)\n" (format-nano-time q1))
-      (printf "Execution time upper quartile : %s (75%%)\n" (format-nano-time q3))
-      (printf "Execution time lower quantile : %s (2.5%%)\n" (format-nano-time lower-quantile))
-      (printf "Execution time upper quantile : %s (97.5%%)\n" (format-nano-time higher-quantile))
-      (printf "                     Outliers : %d\n" outliers-cnt)))
+        cleaned-samples (bench/remove-outliers samples q1 q3)]
+     { :samples samples
+       :q1 q1
+       :q2 q2
+       :q3 q3
+       :lower-quantile (quantile 0.025 samples)
+       :higher-quantile (quantile 0.975 samples)
+       :outliers-cnt (- (count samples) (count cleaned-samples))
+       :standard-deviation (standard-deviation :sample cleaned-samples) }))
+
+
+(defn
+  bench/print-stats [stats]
+  (printf "                      Samples : %d\n" (count (:samples stats)))
+  (printf "          Execution time mean : %s\n" (format-nano-time (:q2 stats)))
+  (printf " Execution time std-deviation : %s\n" (format-nano-time (:standard-deviation stats)))
+  (printf "Execution time lower quartile : %s (25%%)\n" (format-nano-time (:q1 stats)))
+  (printf "Execution time upper quartile : %s (75%%)\n" (format-nano-time (:q3 stats)))
+  (printf "Execution time lower quantile : %s (2.5%%)\n" (format-nano-time (:lower-quantile stats)))
+  (printf "Execution time upper quantile : %s (97.5%%)\n" (format-nano-time (:higher-quantile stats)))
+  (printf "                     Outliers : %d\n" (:outliers-cnt stats)))
 
 
 (defmacro
@@ -123,9 +139,10 @@
        (printf "GC...\n")
        (dorun 2 (gc))
        (let [_ (printf "Sampling...\n")
-             samples (dobench ~iterations ~expr)]
+             samples (dobench ~iterations ~expr)
+             stats (bench/stats samples)]
          (printf "Analyzing...\n")
-         (bench/print-stats samples)
+         (bench/print-stats stats)
          (when ~chart?
            (printf "Generating chart...\n")
            (bench/chart samples ~step logarithmic?))))))
