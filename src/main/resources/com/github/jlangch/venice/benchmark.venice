@@ -135,9 +135,31 @@
 
 
 (defmacro
-   ^{ :arglists '("(benchmark expr warmup-iterations iterations)")
-      :doc "Benchmarks the given expression. \n\nRuns the benchmark in 4 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression benchmark. \n   4. Analyzes and prints the benchmark statistics."
-      :examples '("(benchmark (+ 1 2) 120000 10000)") }
+   ^{ :arglists '("(benchmark expr warmup-iterations iterations & options)")
+      :doc (str/strip-indent """\
+         Benchmarks the given expression.
+
+         Runs the benchmark in 4 phases:
+            1. Runs the expr in a warmup phase to allow the HotSpot
+               compiler to do optimizations
+            2. Runs the garbage collector
+            3. Runs the expression benchmark
+            4. Analyzes and prints the benchmark statistics
+
+         Options:
+            :chart b     - generate a chart {true/false}, defaults
+                           to false
+            :steps n     - the number of steps for the quantization,
+                           defaults to 100
+            :median b    - show the median value in the chart {true/
+                           false}, defaults to false
+            :outliers b  - show the outlier range in the chart {true/
+                           false}, defaults to false""")
+      :examples '(
+        "(benchmark (+ 1 2) 120000 10000)",
+        "(benchmark (+ 1 2) 120000 10000) :chart true :median true",
+        "(benchmark (+ 1 2) 120000 10000) :chart true :outlier true",
+        "(benchmark (+ 1 2) 120000 10000) :chart true :steps 100" ) }
 
    bench/benchmark [expr warmup-iterations iterations & options]
 
