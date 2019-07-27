@@ -78,7 +78,7 @@
                        :else "s")
         x-format (cond (< min 1000) "#0" :else "#0.000")
         median (:q2 stats)]
-     (printf "Quantization step width: %s \n" (format-nano-time (/ diff steps)))
+     (printf "Quantization step width: %s \n" (format-nano-time step-width))
      (bench/create-chart
        {:x (map #(/ %1 x-scale) (keys data)) :y (vals data)}
        (/ median x-scale)
