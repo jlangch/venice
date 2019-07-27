@@ -63,18 +63,18 @@
 (defn
   bench/chart [stats steps median? outlier?]
   (load-module :xchart)
-  (let [samples (:samples stats)
-        sorted (sort samples)
-        min (first sorted)
-        max (last sorted)
-        diff (- max min)
+  (let [samples  (:samples stats)
+        sorted   (sort samples)
+        min      (first sorted)
+        max      (last sorted)
+        diff     (- max min)
         step-width (/ diff steps)
         quantize (fn [x] (-> x (- min) (/ step-width) (floor) (* step-width) (+ min) (long)))
-        data (reduce
-               (fn [m x] (let [n (quantize x)]
-                           (assoc m n (inc (get m n 0)))))
-               (sorted-map)
-               samples)
+        data     (reduce
+                   (fn [m x] (let [n (quantize x)]
+                                (assoc m n (inc (get m n 0)))))
+                   (sorted-map)
+                   samples)
         x-scale  (cond (< min 1000) 1.0
                        (< min 1000000) 1000.0
                        (< min 1000000000) 1000000.0
