@@ -32,25 +32,27 @@
 
 
 (defn
-   bench/create-chart [data title x-axis-title y-axis-title x-axis-decimal-pattern]
-     (xchart/write-to-file
-        (xchart/xy-chart
-           { "test" data }
-           { :title title
-             :render-style :line   ; :step
-             :x-axis { :title x-axis-title
-                       :decimal-pattern x-axis-decimal-pattern
-                       :tick-mark-spacing-hint 10 }
-             :y-axis { :title y-axis-title
-                       :decimal-pattern "#0" }
-             :theme :xchart } )
-        :png ; write as PNG
-        300  ; render with 300 dpi
-        (io/file "benchmark.png")))
+   bench/create-chart
+   [data params]
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "test" data }
+         { :title (:title params)
+           :render-style :line   ; :step
+           :x-axis { :title (:x-axis-title params)
+                     :decimal-pattern (:x-axis-decimal-pattern params)
+                     :tick-mark-spacing-hint 10 }
+           :y-axis { :title (:y-axis-title params)
+                     :decimal-pattern "#0"
+                     :logarithmic (:y-axis-logarithmic params) }
+           :theme :xchart } )
+      :png ; write as PNG
+      300  ; render with 300 dpi
+      (io/file "benchmark.png")))
 
 
 (defn
-  bench/chart [samples steps]
+  bench/chart [samples steps logarithmic?]
   (load-module :xchart)
   (let [sorted (sort samples)
         min (first sorted)
@@ -73,11 +75,13 @@
         x-format (cond (< min 1000) "#0" :else "#0.000")]
      (printf "Quantization step with: %s \n" (format-nano-time (/ diff steps)))
      (bench/create-chart
-       {:x (map #(/ %1 x-scale) (keys data)) :y (vals data)}
-       (str "Distribution (" (count samples) " samples)")
-       x-unit
-       "#"
-       x-format)
+       { :x (map #(/ %1 x-scale) (keys data))
+         :y (vals data) }
+       { :title (str "Distribution (" (count samples) " samples)")
+         :x-axis-title x-unit
+         :y-axis-title "#"
+         :x-axis-decimal-pattern x-format
+         :y-axis-logarithmic logarithmic? } )
      (printf "Saved 'benchmark.png' chart.\n")))
 
 
@@ -109,9 +113,9 @@
 
    bench/benchmark [expr warmup-iterations iterations & options]
 
-
    (let [opts (apply hash-map options)
          chart? (:chart opts false)
+         logarithmic? (:logarithmic opts false)
          step (:step opts 100)]
     `(do
        (printf "Warmup...\n")
@@ -124,4 +128,4 @@
          (bench/print-stats samples)
          (when ~chart?
            (printf "Generating chart...\n")
-           (bench/chart samples ~step))))))
+           (bench/chart samples ~step logarithmic?))))))
