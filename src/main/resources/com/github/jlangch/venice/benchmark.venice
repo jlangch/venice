@@ -23,40 +23,45 @@
 
 
 (defn
-  bench/remove-outliers [samples q1 q3]
-  (let [iqr (- q3 q1)
-        delta (long (* 3 iqr))
-        low (- q1 delta)
-        high (+ q3 delta)]
-     (filter #(and (>= %1 low) (<= %1 high)) samples)))
+  bench/remove-outliers [samples low high]
+     (filter #(and (>= %1 low) (<= %1 high)) samples))
 
+(defn
+  bench/chart-vert-line [name x y-max]
+  { name { :x [x x]
+           :y [0 y-max]
+           :style { :render-style :line
+                    :marker-type :none }}})
 
 (defn
    bench/create-chart
-   [data median params]
-   (xchart/write-to-file
-      (xchart/xy-chart
-        { "samples" data
-          "median" {:x [median median]
-                    :y [0 (apply max (:y data))]
-                    :style {:render-style :line
-                            :marker-type :none }}}
-         { :title (:title params)
-           :render-style :line   ; :step
-           :x-axis { :title (:x-axis-title params)
-                     :decimal-pattern (:x-axis-decimal-pattern params)
-                     :tick-mark-spacing-hint 10 }
-           :y-axis { :title (:y-axis-title params)
-                     :decimal-pattern "#0"
-                     :logarithmic (:y-axis-logarithmic params) }
-           :theme :xchart } )
-      :png ; write as PNG
-      300  ; render with 300 dpi
-      (io/file "benchmark.png")))
+   [data median outlier-low outlier-high params]
+   (let [ y-max (apply max (:y data))
+          median-line (bench/chart-vert-line "median" median y-max)
+          outlier-low-line (bench/chart-vert-line "outlier low" outlier-low y-max)
+          outlier-high-line (bench/chart-vert-line "outlier high" outlier-high y-max)
+          cdata { "samples" data }
+          cdata (if median (merge cdata median-line) cdata)
+          cdata (if outlier-low (merge cdata outlier-low-line) cdata)
+          cdata (if outlier-high (merge cdata outlier-high-line) cdata)]
+     (xchart/write-to-file
+        (xchart/xy-chart
+           cdata
+           { :title (:title params)
+             :render-style :line   ; :step
+             :x-axis { :title (:x-axis-title params)
+                       :decimal-pattern (:x-axis-decimal-pattern params)
+                       :tick-mark-spacing-hint 10 }
+             :y-axis { :title (:y-axis-title params)
+                       :decimal-pattern "#0" }
+             :theme :xchart } )
+        :png ; write as PNG
+        300  ; render with 300 dpi
+        (io/file "benchmark.png"))))
 
 
 (defn
-  bench/chart [samples steps logarithmic?]
+  bench/chart [stats steps median? outlier?]
   (load-module :xchart)
   (let [samples (:samples stats)
         sorted (sort samples)
@@ -78,18 +83,18 @@
                        (< min 1000000) "µs"
                        (< min 1000000000) "ms"
                        :else "s")
-        x-format (cond (< min 1000) "#0" :else "#0.000")
-        median (:q2 stats)]
+        x-format (cond (< min 1000) "#0" :else "#0.000")]
      (printf "Quantization step width: %s \n" (format-nano-time step-width))
      (bench/create-chart
        { :x (map #(/ %1 x-scale) (keys data))
          :y (vals data) }
-       (/ median x-scale)
-       { :title (str "Distribution (" (count samples) " samples)")
+       (if median? (/ (:median stats) x-scale) nil)
+       (if outlier? (/ (:outlier-low stats) x-scale) nil)
+       (if outlier? (/ (:outlier-high stats) x-scale) nil)
+       { :title (str "Benchmark (" (count samples) " samples)")
          :x-axis-title x-unit
          :y-axis-title "#"
-         :x-axis-decimal-pattern x-format
-         :y-axis-logarithmic logarithmic? } )
+         :x-axis-decimal-pattern x-format } )
      (printf "Saved 'benchmark.png' chart.\n")))
 
 
@@ -99,11 +104,18 @@
         q1 (first q)
         q2 (second q)
         q3 (third q)
-        cleaned-samples (bench/remove-outliers samples q1 q3)]
+        iqr (- q3 q1)
+        outlier-low (- q1 (long (* 3 iqr)))
+        outlier-high (+ q3 (long (* 3 iqr)))
+        cleaned-samples (bench/remove-outliers samples outlier-low outlier-high)]
      { :samples samples
        :q1 q1
        :q2 q2
        :q3 q3
+       :median q2
+       :iqr iqr
+       :outlier-low outlier-low
+       :outlier-high outlier-high
        :lower-quantile (quantile 0.025 samples)
        :higher-quantile (quantile 0.975 samples)
        :outliers-cnt (- (count samples) (count cleaned-samples))
@@ -131,7 +143,8 @@
 
    (let [opts (apply hash-map options)
          chart? (:chart opts false)
-         logarithmic? (:logarithmic opts false)
+         median? (:median opts false)
+         outlier? (:outlier opts false)
          step (:step opts 100)]
     `(do
        (printf "Warmup...\n")
@@ -145,4 +158,4 @@
          (bench/print-stats stats)
          (when ~chart?
            (printf "Generating chart...\n")
-           (bench/chart samples ~step logarithmic?))))))
+           (bench/chart stats ~step ~median? ~outlier?))))))
