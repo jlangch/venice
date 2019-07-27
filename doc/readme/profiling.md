@@ -43,6 +43,7 @@ _References:_
 - [Quartile](https://en.wikipedia.org/wiki/Quartile)
 - [Quantile](https://en.wikipedia.org/wiki/Quantile)
 - [Interquartile Range](https://en.wikipedia.org/wiki/Interquartile_range)
+- [Box Plot](https://en.wikipedia.org/wiki/Box_plot)
 
 
 # Profiling
