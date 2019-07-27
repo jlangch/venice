@@ -1,3 +1,44 @@
+# Benchmark
+
+Venice's *benchmark* module measures the computation time of an expression. 
+
+Benchmarking an expression incorporates 4 phases:
+   1. Run the expression in a warm-up phase to allow the JIT compiler to do optimizations. 
+   2. Run the garbage collector to isolate timings from GC state prior to testing 
+   3. Runs the expression
+   4. Statistically analyze the expression evaluations
+
+
+```clojure
+(do
+   (load-module :benchmark)
+   
+   (bench/benchmark (+ 1 2 3 4) 100000 3000))
+```
+
+The benchmark output: 
+
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples : 3000
+          Execution time mean : 825,000 ns
+ Execution time std-deviation : 50,529 ns
+Execution time lower quartile : 807,000 ns (25%)
+Execution time upper quartile : 904,000 ns (75%)
+Execution time lower quantile : 802,000 ns (2.5%)
+Execution time upper quantile : 943,000 ns (97.5%)
+                     Outliers : 25
+```
+
+
+A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * IQR` or greater than `Q3 + 3 * IRQ`. Q1 is the first or lower quartile, Q3 is the third or higher quartile and IQR (interquartile range) is defined as Q3 - Q1. 
+
+
+
+
 # Profiling
 
 Venice supports simple code profiling to analyze execution performance.
@@ -15,9 +56,9 @@ the gathered profile metrics.
 
 Runs a profiling session on the given expression. 
 
-Runs in 3 phases: 
-   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. 
-   2. Runs the garbage collector 
+Runs the profiling in 3 phases: 
+   1. Run the expression in a warm-up phase to allow the JIT compiler to do optimizations. 
+   2. Run the garbage collector to isolate timings from GC state prior to testing 
    3. Runs the expression under profiling.
 
 
