@@ -5,7 +5,7 @@
 
 Venice's *benchmark* module measures the computation time of an expression. 
 
-Benchmarking an expression incorporates 4 phases:
+Benchmarking an expression incorporates four phases:
    1. Run the expression in a warm-up phase to allow the JIT compiler to do optimizations. 
    2. Run the garbage collector to isolate timings from GC state prior to testing 
    3. Runs the expression
@@ -36,8 +36,19 @@ Execution time upper quantile : 943,000 ns (97.5%)
                      Outliers : 25
 ```
 
-
 A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * IQR` or greater than `Q3 + 3 * IQR`. Where Q1 is the first or lower quartile, Q3 is the third or higher quartile, and IQR (Interquartile Range) is defined as Q3 - Q1. 
+
+
+Create a distribution chart of the samples: 
+
+```clojure
+(do
+   (load-module :benchmark)
+   
+   (bench/benchmark (+ 1 2 3 4) 100000 3000 :chart true))
+```
+
+
 
 
 _References:_
@@ -66,7 +77,7 @@ the gathered profile metrics.
 
 Runs a profiling session on the given expression. 
 
-Runs the profiling in 3 phases: 
+Runs the profiling in three phases: 
    1. Run the expression in a warm-up phase to allow the JIT compiler to do optimizations. 
    2. Run the garbage collector to isolate timings from GC state prior to testing 
    3. Runs the expression under profiling.

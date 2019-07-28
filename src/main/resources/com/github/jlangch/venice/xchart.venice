@@ -124,6 +124,11 @@
          (== (get-in m ks ::not-found) ::not-found)
          (assoc-in ks v)))
 
+(defn xchart/available? []
+     (some? (. :org.knowm.xchart.XChartPanel :class)))
+
+
+
 
 ;; ---------------------------------------------------------------------------
 ;; export / view

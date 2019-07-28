@@ -63,6 +63,7 @@
 (defn
   bench/chart [stats steps median? outlier?]
   (load-module :xchart)
+  (assert (xchart/available?) "The xchart module (xchart libraries) is not available!")
   (let [samples  (:samples stats)
         sorted   (sort samples)
         min      (first sorted)
@@ -105,6 +106,8 @@
         q2 (second q)
         q3 (third q)
         iqr (- q3 q1)
+        outlier-low (- q1 (long (* 3 iqr)))
+        outlier-high (+ q3 (long (* 3 iqr)))
         cleaned-samples (bench/remove-outliers samples outlier-low outlier-high)]
      { :samples samples
        :q1 q1
@@ -112,8 +115,8 @@
        :q3 q3
        :median q2
        :iqr iqr
-       :outlier-low (- q1 (long (* 3 iqr)))
-       :outlier-high (+ q3 (long (* 3 iqr)))
+       :outlier-low outlier-low
+       :outlier-high outlier-high
        :lower-quantile (quantile 0.025 samples)
        :higher-quantile (quantile 0.975 samples)
        :outliers-cnt (- (count samples) (count cleaned-samples))
