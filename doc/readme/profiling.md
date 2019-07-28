@@ -12,6 +12,8 @@ Benchmarking an expression incorporates four phases:
    4. Statistically analyze the expression evaluations
 
 
+### Example
+
 ```clojure
 (do
    (load-module :benchmark)
@@ -36,22 +38,68 @@ Execution time upper quantile : 943,000 ns (97.5%)
                      Outliers : 25
 ```
 
+### Outliers
+
 A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * IQR` or greater than `Q3 + 3 * IQR`. Where Q1 is the first or lower quartile, Q3 is the third or higher quartile, and IQR (Interquartile Range) is defined as Q3 - Q1. 
 
 
-Create a distribution chart of the samples: 
+### Create a distribution chart 
+
+#### short warm-up phase
 
 ```clojure
-(do
-   (load-module :benchmark)
-   
-   (bench/benchmark (+ 1 2 3 4) 100000 3000 :chart true))
+   (bench/benchmark (+ 1 2 3 4) 1000 300 :chart true)
 ```
 
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples : 300
+          Execution time mean : 14,877 µs
+ Execution time std-deviation : 2,761 µs
+Execution time lower quartile : 14,230 µs (25%)
+Execution time upper quartile : 18,289 µs (75%)
+Execution time lower quantile : 13,790 µs (2.5%)
+Execution time upper quantile : 26,689 µs (97.5%)
+                     Outliers : 5
+Generating chart...
+Quantization step width: 4,757 µs 
+Saved chart to 'benchmark.png'.
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/benchmark1.png" width="300">
 
 
+#### long warm-up phase
 
-_References:_
+
+```clojure
+   (bench/benchmark (+ 1 2 3 4) 100000 30000 :chart true)
+```
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples : 30000
+          Execution time mean : 1,477 µs
+ Execution time std-deviation : 390,524 ns
+Execution time lower quartile : 806,000 ns (25%)
+Execution time upper quartile : 1,514 µs (75%)
+Execution time lower quantile : 795,000 ns (2.5%)
+Execution time upper quantile : 1,839 µs (97.5%)
+                     Outliers : 74
+Generating chart...
+Quantization step width: 33,200 µs 
+Saved chart to 'benchmark.png'.
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/benchmark2.png" width="300">
+
+
+### References
 
 - [Median](https://en.wikipedia.org/wiki/Median)
 - [Quartile](https://en.wikipedia.org/wiki/Quartile)

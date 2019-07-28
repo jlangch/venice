@@ -84,7 +84,7 @@
                        (< min 1000000) "µs"
                        (< min 1000000000) "ms"
                        :else "s")
-        x-format (cond (< min 1000) "#0" :else "#0.000")]
+        x-format (cond (< min 1000) "#0" :else "#0.00")]
      (printf "Quantization step width: %s \n" (format-nano-time step-width))
      (bench/create-chart
        { :x (map #(/ %1 x-scale) (keys data))
