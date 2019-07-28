@@ -45,7 +45,7 @@ A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * I
 
 ### Create a distribution chart 
 
-#### short warm-up phase
+#### Short warm-up phase
 
 ```clojure
    (bench/benchmark (+ 1 2 3 4) 1000 300 :chart true)
@@ -72,7 +72,7 @@ Saved chart to 'benchmark.png'.
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/benchmark1.png" width="300">
 
 
-#### long warm-up phase
+#### Long warm-up phase
 
 
 ```clojure
