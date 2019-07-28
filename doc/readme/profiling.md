@@ -37,7 +37,7 @@ Execution time upper quantile : 943,000 ns (97.5%)
 ```
 
 
-A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * IQR` or greater than `Q3 + 3 * IRQ`. Where Q1 is the first or lower quartile, Q3 is the third or higher quartile, and IQR (Interquartile Range) is defined as Q3 - Q1. 
+A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * IQR` or greater than `Q3 + 3 * IQR`. Where Q1 is the first or lower quartile, Q3 is the third or higher quartile, and IQR (Interquartile Range) is defined as Q3 - Q1. 
 
 
 _References:_
