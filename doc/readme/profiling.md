@@ -1,4 +1,7 @@
-# Benchmark
+# Benchmarks & Profiling
+
+
+## Benchmark
 
 Venice's *benchmark* module measures the computation time of an expression. 
 
@@ -46,7 +49,7 @@ _References:_
 - [Box Plot](https://en.wikipedia.org/wiki/Box_plot)
 
 
-# Profiling
+## Profiling
 
 Venice supports simple code profiling to analyze execution performance.
 
@@ -55,7 +58,7 @@ The `perf` macro profiles Venice functions and `prof` controls and prints
 the gathered profile metrics.
 
 
-## perf
+### perf
 
 ```clojure
 (perf expr warmup-iterations test-iterations)
@@ -69,7 +72,7 @@ Runs the profiling in 3 phases:
    3. Runs the expression under profiling.
 
 
-## prof
+### prof
 
 ```clojure
 (prof opts)
@@ -86,7 +89,7 @@ Controls the code profiling.
 - `(prof :data-formatted "Metrics test")`   returns the profiling data as formatted text with a title  
 
 
-## Example: profiling a loop
+### Example: profiling a loop
 
 The profiler runs the sum function 100 times as warm-up followed by 100 times to profile it. 
 
