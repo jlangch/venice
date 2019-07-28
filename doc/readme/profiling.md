@@ -84,15 +84,15 @@ GC...
 Sampling...
 Analyzing...
                       Samples : 30000
-          Execution time mean : 1,477 µs
- Execution time std-deviation : 390,524 ns
-Execution time lower quartile : 806,000 ns (25%)
-Execution time upper quartile : 1,514 µs (75%)
-Execution time lower quantile : 795,000 ns (2.5%)
-Execution time upper quantile : 1,839 µs (97.5%)
-                     Outliers : 74
+          Execution time mean : 801,000 ns
+ Execution time std-deviation : 7,907 ns
+Execution time lower quartile : 798,000 ns (25%)
+Execution time upper quartile : 805,000 ns (75%)
+Execution time lower quantile : 778,000 ns (2.5%)
+Execution time upper quantile : 905,000 ns (97.5%)
+                     Outliers : 4196
 Generating chart...
-Quantization step width: 33,200 µs 
+Quantization step width: 30,063 µs 
 Saved chart to 'benchmark.png'.
 ```
 
