@@ -51,9 +51,11 @@
              :render-style :line   ; :step
              :x-axis { :title (:x-axis-title params)
                        :decimal-pattern (:x-axis-decimal-pattern params)
-                       :tick-mark-spacing-hint 10 }
+                       :tick-mark-spacing-hint 10
+                       :logarithmic? (:x-axis-logarithmic? params false) }
              :y-axis { :title (:y-axis-title params)
-                       :decimal-pattern "#0" }
+                       :decimal-pattern "#0"
+                       :logarithmic? (:y-axis-logarithmic? params false) }
              :theme :xchart } )
         :png ; write as PNG
         300  ; render with 300 dpi
@@ -149,15 +151,15 @@
             4. Analyzes and prints the benchmark statistics
 
          Options:
-            :chart b     - generate a chart {true/false}, defaults
-                           to false
-                           Saves the chart as 'benchmark.png'
-            :steps n     - the number of steps for the quantization,
-                           defaults to 100
-            :median b    - show the median value in the chart {true/
-                           false}, defaults to false
-            :outliers b  - show the outlier range in the chart {true/
-                           false}, defaults to false""")
+            :chart b        - generate a chart {true/false}, defaults
+                              to false
+                              Saves the chart as 'benchmark.png'
+            :steps n        - the number of steps for the quantization,
+                              defaults to 100
+            :median b       - show the median value in the chart {true/
+                              false}, defaults to false
+            :outliers b     - show the outlier range in the chart {true/
+                              false}, defaults to false""")
       :examples '(
         "(benchmark (+ 1 2) 120000 10000)",
         "(benchmark (+ 1 2) 120000 10000) :chart true :median true",
