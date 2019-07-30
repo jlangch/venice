@@ -198,6 +198,26 @@ public class Env implements Serializable {
 		return Nil;
 	}
 
+	public Env setGlobalDynamic(final VncSymbol sym, final VncVal val) {
+		final Var dv = getGlobalVar(sym);
+		if (dv != null) {
+			if (dv instanceof DynamicVar) {
+				((DynamicVar)dv).setVal(val);
+			}
+			else {
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym));
+				}
+			}
+		}
+		else {
+			final DynamicVar nv = new DynamicVar(sym, Nil);
+			setGlobalVar(sym, nv);
+			nv.pushVal(val);
+		}
+		return this;
+	}
+
 	public boolean hasGlobalSymbol(final VncSymbol key) {
 		return hasGlobalVar(key);
 	}

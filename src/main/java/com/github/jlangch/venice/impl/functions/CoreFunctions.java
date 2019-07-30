@@ -5454,7 +5454,7 @@ public class CoreFunctions {
 				"module", 
 				VncFunction
 					.meta()
-					.module("module")
+					.module("core")
 					.arglists("(module fn)")		
 					.doc("Returns the module a function/macro has been defined in.")
 					.examples("(module +)")
@@ -5477,7 +5477,7 @@ public class CoreFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-
+		
 	public static VncFunction type = 
 		new VncFunction(
 				"type", 

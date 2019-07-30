@@ -136,7 +136,7 @@ public class VeniceInterpreter implements Serializable  {
 		return createEnv(null);
 	}
 
-	public Env createEnv(final List<String> preloadedExtensionModules) {
+	public Env createEnv(final List<String> preloadExtensionModules) {
 		final Env env = new Env(null);
 	
 		final VncMutableMap loadedModules = new VncMutableMap();
@@ -160,12 +160,12 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// current namespace
-		Namespace.setNamespace(Namespace.UNKNOWN);
+		env.pushGlobalDynamic(new VncSymbol("*ns*"), new VncSymbol("user"));
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
 		modules.add("core");
-		modules.addAll(toEmpty(preloadedExtensionModules));
+		modules.addAll(toEmpty(preloadExtensionModules));
 		
 		modules.forEach(m -> {
 			final long nanos = System.nanoTime();
@@ -320,7 +320,13 @@ public class VeniceInterpreter implements Serializable  {
 					orig_ast = VncList.of(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
 	
-				case "eval":
+				case "ns": { // (ns alpha)
+					final VncSymbol ns = (VncSymbol)ast.second();
+					env.setGlobalDynamic(new VncSymbol("*ns*"), ns);
+					return Nil;
+				}
+					
+				case "eval": 
 					orig_ast = Coerce.toVncSequence(eval_ast(ast.rest(), env)).last();
 					break;
 					

@@ -39,6 +39,10 @@ public class DynamicVar extends Var {
 	public VncVal getVal() {
 		return peekVal();
 	}
+	
+	public void setVal(final VncVal val) {
+		ThreadLocalMap.set(th_keyword, val == null ? Nil : val);
+	}
 
 	public void pushVal(final VncVal val) {
 		ThreadLocalMap.push(th_keyword, val == null ? Nil : val);

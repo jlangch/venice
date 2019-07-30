@@ -65,8 +65,7 @@ public class ThreadLocalMap {
 				get().values.put(key, val == null ? Nil : val);
 			}
 			else if (v instanceof VncStack) {
-				// TODO: maybe it's better to throw an exception to prevent
-				//       uncontrolled stack growing
+				((VncStack) v).clear();
 				((VncStack)v).push(val == null ? Nil : val);
 			}
 			else if (val instanceof VncMutableMap) {
