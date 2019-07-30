@@ -35,7 +35,21 @@ import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 
 public class ModuleLoader {
-	
+
+	public static String fileNameToModule(final String fileName) {
+		if (fileName == null) {
+			return null;
+		}
+		else if (fileName == "unknown") {
+			return "user";
+		}
+		else {
+			return fileName.endsWith(".venice") 
+						? fileName.substring(0, fileName.length() - 7) 
+						: fileName;
+		}
+	}
+
 	public static String load(final String module) {
 		if (!VALID_MODULES.contains(module)) {
 			throw new VncException(String.format(

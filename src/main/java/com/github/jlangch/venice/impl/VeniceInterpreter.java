@@ -159,6 +159,9 @@ public class VeniceInterpreter implements Serializable  {
 		// loaded modules
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
+		// current namespace
+		Namespace.setNamespace(Namespace.UNKNOWN);
+
 		// load modules
 		final List<String> modules = new ArrayList<>();
 		modules.add("core");
@@ -499,8 +502,9 @@ public class VeniceInterpreter implements Serializable  {
 				default:
 					final long nanos = System.nanoTime();
 					
-					final VncList el = (VncList)eval_ast(ast, env);
+					final VncList el = (VncList)eval_ast((VncList)ast, env);
 					final VncVal elFirst = el.first();
+					final VncList elArgs = el.rest();
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
@@ -509,10 +513,10 @@ public class VeniceInterpreter implements Serializable  {
 	
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						// private functions may be called from the same module only
-						if (fn.isPrivate()) {
-							validatePrivateFnCall(fn, a0, callStack);
-						}
+//						// private functions may be called from the same module only
+//						if (fn.isPrivate()) {
+//							validatePrivateFnCall(fn, a0, callStack);
+//						}
 						
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
@@ -521,7 +525,7 @@ public class VeniceInterpreter implements Serializable  {
 						try {
 							callStack.push(CallFrame.fromFunction(fn, a0));
 
-							final VncVal val = fn.apply(el.rest());
+							final VncVal val = fn.apply(elArgs);
 							
 							if (meterRegistry.enabled) {
 								meterRegistry.record(fn.getName(), System.nanoTime() - nanos);
@@ -538,7 +542,7 @@ public class VeniceInterpreter implements Serializable  {
 					else if (Types.isIVncFunction(elFirst)) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						return ((IVncFunction)elFirst).apply(el.rest());
+						return ((IVncFunction)elFirst).apply(elArgs);
 					}
 					else {
 						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
@@ -1146,26 +1150,26 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private void validatePrivateFnCall(
-			final VncFunction fn, 
-			final VncVal fnAst, 
-			final CallStack callStack
-	) {
-		final String callerModule = callStack.peekModule();
-		if (callerModule == null || !callerModule.equals(fn.getModule())) {
-			final CallFrame callFrame = callStack.peek();
-			final String callerFnName = callFrame == null ? null : callFrame.getFnName();								
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromFunction(fn, fnAst))) {
-				throw new VncException(String.format(
-						"Illegal call of private function %s (module %s). Called by %s (module %s).\n%s", 
-						fn.getName(),
-						fn.getModule(),
-						callerFnName,
-						callerModule,
-						callStack.toString()));
-			}
-		}
-	}
+//	private void validatePrivateFnCall(
+//			final VncFunction fn, 
+//			final VncVal fnAst, 
+//			final CallStack callStack
+//	) {
+//		final String callerModule = callStack.peekModule();
+//		if (callerModule == null || !callerModule.equals(fn.getModule())) {
+//			final CallFrame callFrame = callStack.peek();
+//			final String callerFnName = callFrame == null ? null : callFrame.getFnName();								
+//			try (WithCallStack cs = new WithCallStack(CallFrame.fromFunction(fn, fnAst))) {
+//				throw new VncException(String.format(
+//						"Illegal call of private function %s (module %s). Called by %s (module %s).\n%s", 
+//						fn.getName(),
+//						fn.getModule(),
+//						callerFnName,
+//						callerModule,
+//						callStack.toString()));
+//			}
+//		}
+//	}
 
 	/**
 	 * Resolves a class name.
