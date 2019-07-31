@@ -64,7 +64,7 @@ public class JsonLazyNumber extends Number {
 		return isDouble;
 	}
 
-	/**
+	/*
 	 * Avoid serializing {@link JsonLazyNumber}.
 	 */
 	private Object writeReplace() {

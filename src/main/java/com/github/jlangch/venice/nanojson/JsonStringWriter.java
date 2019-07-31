@@ -42,7 +42,7 @@ public final class JsonStringWriter extends JsonWriterBase<JsonStringWriter> {
 		super(new StringBuilder(), indent);
 	}
 
-	/**
+	/*
 	 * Completes this JSON writing session and returns the internal representation as a {@link String}.
 	 */
 	public String done() {

@@ -31,21 +31,21 @@ public class JsonParserException extends Exception {
 		this.charOffset = charOffset;
 	}
 
-	/**
+	/*
 	 * Gets the 1-based line position of the error.
 	 */
 	public int getLinePosition() {
 		return linePos;
 	}
 
-	/**
+	/*
 	 * Gets the 1-based character position of the error.
 	 */
 	public int getCharPosition() {
 		return charPos;
 	}
 	
-	/**
+	/*
 	 * Gets the 0-based character offset of the error from the beginning of the string.
 	 */
 	public int getCharOffset() {

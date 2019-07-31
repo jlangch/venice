@@ -51,7 +51,7 @@ public final class JsonParser {
 			this.clazz = clazz;
 		}
 
-		/**
+		/*
 		 * Parses numbers lazily, allowing us to defer some of the cost of
 		 * number construction until later.
 		 */
@@ -60,21 +60,21 @@ public final class JsonParser {
 			return this;
 		}
 
-		/**
+		/*
 		 * Parses the current JSON type from a {@link String}.
 		 */
 		public T from(String s) throws JsonParserException {
 			return new JsonParser(new JsonTokener(new StringReader(s)), lazyNumbers).parse(clazz);
 		}
 
-		/**
+		/*
 		 * Parses the current` JSON type from a {@link Reader}.
 		 */
 		public T from(Reader r) throws JsonParserException {
 			return new JsonParser(new JsonTokener(r), lazyNumbers).parse(clazz);
 		}
 
-		/**
+		/*
 		 * Parses the current JSON type from a {@link URL}.
 		 */
 		public T from(URL url) throws JsonParserException {
@@ -90,7 +90,7 @@ public final class JsonParser {
 			}
 		}
 
-		/**
+		/*
 		 * Parses the current JSON type from a {@link InputStream}. Detects the encoding from the input stream.
 		 */
 		public T from(InputStream stm) throws JsonParserException {
@@ -103,7 +103,7 @@ public final class JsonParser {
 		this.lazyNumbers = lazyNumbers;
 	}
 
-	/**
+	/*
 	 * Parses a {@link JsonObject} from a source.
 	 * 
 	 * <pre>
@@ -114,7 +114,7 @@ public final class JsonParser {
 		return new JsonParserContext<JsonObject>(JsonObject.class);
 	}
 
-	/**
+	/*
 	 * Parses a {@link JsonArray} from a source.
 	 * 
 	 * <pre>
@@ -125,7 +125,7 @@ public final class JsonParser {
 		return new JsonParserContext<JsonArray>(JsonArray.class);
 	}
 
-	/**
+	/*
 	 * Parses any object from a source. For any valid JSON, returns either a null (for the JSON string 'null'), a
 	 * {@link String}, a {@link Number}, a {@link Boolean}, a {@link JsonObject} or a {@link JsonArray}.
 	 * 
@@ -138,7 +138,7 @@ public final class JsonParser {
 		return new JsonParserContext<Object>(Object.class);
 	}
 
-	/**
+	/*
 	 * Parse a single JSON value from the string, expecting an EOF at the end.
 	 */
 	<T> T parse(Class<T> clazz) throws JsonParserException {
@@ -153,7 +153,7 @@ public final class JsonParser {
 		return clazz.cast(parsed);
 	}
 
-	/**
+	/*
 	 * Starts parsing a JSON value at the current token position.
 	 */
 	private Object currentValue() throws JsonParserException {
@@ -163,7 +163,7 @@ public final class JsonParser {
 		throw tokener.createParseException(null, "Expected JSON value, got " + token, true);
 	}
 
-	/**
+	/*
 	 * Consumes a token, first eating up any whitespace ahead of it. Note that number tokens are not necessarily valid
 	 * numbers.
 	 */

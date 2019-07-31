@@ -68,28 +68,28 @@ public final class JsonReader {
 		NULL,
 	};
 
-	/**
+	/*
 	 * Create a {@link JsonReader} from an {@link Reader}.
 	 */
 	public static JsonReader from(Reader in) throws JsonParserException {
 		return new JsonReader(new JsonTokener(in));
 	}
 
-	/**
+	/*
 	 * Create a {@link JsonReader} from an {@link InputStream}.
 	 */
 	public static JsonReader from(InputStream in) throws JsonParserException {
 		return new JsonReader(new JsonTokener(in));
 	}
 
-	/**
+	/*
 	 * Create a {@link JsonReader} from a {@link String}.
 	 */
 	public static JsonReader from(String s) throws JsonParserException {
 		return new JsonReader(new JsonTokener(new StringReader(s)));
 	}
 
-	/**
+	/*
 	 * Internal constructor.
 	 */
 	JsonReader(JsonTokener tokener) throws JsonParserException {
@@ -97,7 +97,7 @@ public final class JsonReader {
 		token = tokener.advanceToToken();
 	}
 
-	/**
+	/*
 	 * Returns to the array or object structure above the current one, and
 	 * advances to the next key or value.
 	 */
@@ -110,7 +110,7 @@ public final class JsonReader {
 		return token != JsonTokener.TOKEN_EOF;
 	}
 
-	/**
+	/*
 	 * Returns the current type of the value.
 	 */
 	public Type current() throws JsonParserException {
@@ -135,7 +135,7 @@ public final class JsonReader {
 		}
 	}
 
-	/**
+	/*
 	 * Starts reading an object at the current value.
 	 */
 	public void object() throws JsonParserException {
@@ -146,7 +146,7 @@ public final class JsonReader {
 		first = true;
 	}
 
-	/**
+	/*
 	 * Reads the key for the object at the current value. Does not advance to the next value.
 	 */
 	public String key() throws JsonParserException {
@@ -155,7 +155,7 @@ public final class JsonReader {
 		return key.toString();
 	}
 
-	/**
+	/*
 	 * Starts reading an array at the current value.
 	 */
 	public void array() throws JsonParserException {
@@ -166,7 +166,7 @@ public final class JsonReader {
 		first = true;
 	}
 
-	/**
+	/*
 	 * Returns the current value.
 	 */
 	public Object value() throws JsonParserException {
@@ -187,7 +187,7 @@ public final class JsonReader {
 		}
 	}
 
-	/**
+	/*
 	 * Parses the current value as a null.
 	 */
 	public void nul() throws JsonParserException {
@@ -195,7 +195,7 @@ public final class JsonReader {
 			throw createTokenMismatchException(JsonTokener.TOKEN_NULL);
 	}
 
-	/**
+	/*
 	 * Parses the current value as a string.
 	 */
 	public String string() throws JsonParserException {
@@ -206,7 +206,7 @@ public final class JsonReader {
 		return tokener.reusableBuffer.toString();
 	}
 
-	/**
+	/*
 	 * Parses the current value as a boolean.
 	 */
 	public boolean bool() throws JsonParserException {
@@ -218,7 +218,7 @@ public final class JsonReader {
 			throw createTokenMismatchException(JsonTokener.TOKEN_TRUE, JsonTokener.TOKEN_FALSE);
 	}
 
-	/**
+	/*
 	 * Parses the current value as a {@link Number}.
 	 */
 	public Number number() throws JsonParserException {
@@ -227,7 +227,7 @@ public final class JsonReader {
 		return new JsonLazyNumber(tokener.reusableBuffer.toString(), tokener.isDouble);
 	}
 
-	/**
+	/*
 	 * Parses the current value as a long.
 	 */
 	public long longVal() throws JsonParserException {
@@ -235,7 +235,7 @@ public final class JsonReader {
 		return tokener.isDouble ? (long)Double.parseDouble(s) : Long.parseLong(s);
 	}
 
-	/**
+	/*
 	 * Parses the current value as an integer.
 	 */
 	public int intVal() throws JsonParserException {
@@ -243,7 +243,7 @@ public final class JsonReader {
 		return tokener.isDouble ? (int)Double.parseDouble(s) : Integer.parseInt(s);
 	}
 
-	/**
+	/*
 	 * Parses the current value as a float.
 	 */
 	public float floatVal() throws JsonParserException {
@@ -251,7 +251,7 @@ public final class JsonReader {
 		return Float.parseFloat(s);
 	}
 
-	/**
+	/*
 	 * Parses the current value as a double.
 	 */
 	public double doubleVal() throws JsonParserException {
@@ -259,7 +259,7 @@ public final class JsonReader {
 		return Double.parseDouble(s);
 	}
 
-	/**
+	/*
 	 * Advance to the next value in this array or object. If no values remain,
 	 * return to the parent array or object.
 	 * 

@@ -34,7 +34,7 @@ public final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		json.push(root);
 	}
 
-	/**
+	/*
 	 * Completes this builder, closing any unclosed objects and returns the built object.
 	 */
 	public T done() {
