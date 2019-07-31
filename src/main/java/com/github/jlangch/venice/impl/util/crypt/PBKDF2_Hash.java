@@ -48,7 +48,7 @@ public class PBKDF2_Hash {
 	 * @param salt a salt
 	 * @param iterationCount the number of iterations (e.g. 1000)
 	 * @param keyLength the key length (e.g. 256)
-	 * @return
+	 * @return the hash
 	 */
 	public static byte[] hash(final String text, final String salt, int iterationCount, int keyLength) {
 		if (StringUtil.isEmpty(text)) {
