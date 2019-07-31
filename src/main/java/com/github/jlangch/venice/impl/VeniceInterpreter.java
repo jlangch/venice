@@ -160,7 +160,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// current namespace
-		env.pushGlobalDynamic(new VncSymbol("*ns*"), new VncSymbol("user"));
+		env.pushGlobalDynamic(NS_GLOBAL_SYMBOL, new VncSymbol("user"));
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -322,7 +322,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 				case "ns": { // (ns alpha)
 					final VncSymbol ns = (VncSymbol)ast.second();
-					env.setGlobalDynamic(new VncSymbol("*ns*"), ns);
+					env.setGlobalDynamic(NS_GLOBAL_SYMBOL, ns);
 					return Nil;
 				}
 					
@@ -1202,6 +1202,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
+	private static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
 	
 	private final JavaImports javaImports = new JavaImports();	
 	private final IInterceptor interceptor;	
