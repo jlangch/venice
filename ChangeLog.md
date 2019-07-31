@@ -7,17 +7,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.6.2] - 2019-07-xx
+## [1.6.2] - 2019-07-31
 
 ### Added
 
 - benchmark module
 - math functions `mean`, `median`, `quartiles`, `quantile`, `standard-deviation`
 - statistics functions `log`, `log10`, `pow`
-
-### Fixed
-
-- ...
 
 
 
