@@ -70,7 +70,6 @@ public class ShellFunctions {
 				"sh",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(sh & args)")		
 					.doc(
 						"Passes the given strings to Runtime.exec() to launch a sub-process.\n\n" +

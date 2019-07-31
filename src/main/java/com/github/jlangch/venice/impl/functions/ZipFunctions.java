@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -59,13 +59,12 @@ public class ZipFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 
-	public static VncFunction io_zip = 
+	public static VncFunction io_zip =
 		new VncFunction(
-				"io/zip", 
+				"io/zip",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip & entries)")		
+					.arglists("(io/zip & entries)")
 					.doc(
 						"Creates a zip containing the entries. An entry is given by a " +
 						"name and data. The entry data may be nil, a bytebuf, a file, " +
@@ -76,43 +75,43 @@ public class ZipFunctions {
 						"; single entry                                                   \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8))     \n" +
 						"     (io/spit \"test.zip\"))                                       ",
-						
+
 						"; multiple entries                                               \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
 						"             \"b.txt\" (bytebuf-from-string \"def\" :utf-8)      \n" +
 						"             \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8))     \n" +
 						"     (io/spit \"test.zip\"))                                       ",
-						
+
 						"; multiple entries with subdirectories                           \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
 						"             \"x/b.txt\" (bytebuf-from-string \"def\" :utf-8)    \n" +
 						"             \"x/y/c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"     (io/spit \"test.zip\"))                                       ",
-					
+
 						"; empty directory z/                                             \n" +
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
 						"             \"z/\" nil)                                         \n" +
 						"     (io/spit \"test.zip\"))                                       ")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip", args, 2);
-	
+
 				if (args.isEmpty()) {
 					return Nil;
 				}
-				
+
 				try {
 					if (args.size() % 2 == 1) {
 						throw new VncException("Function 'io/zip' requires an even number of arguments");
 					}
-					
+
 					int idx = 0;
 					final LinkedHashMap<String,Object> map = new LinkedHashMap<>();
-					
+
 					while (idx < args.size()) {
 						final String name = Coerce.toVncString(args.nth(idx++)).getValue();
-						
+
 						if (map.containsKey(name)) {
 							throw new VncException(String.format(
 									"Function 'io/zip' duplicate entry name %s", name));
@@ -142,34 +141,33 @@ public class ZipFunctions {
 									"Function 'io/zip' does not allow %s as f",
 									Types.getType(dataVal)));
 						}
-						
+
 						map.put(name, data);
 					}
-					
+
 					return new VncByteBuffer(Zipper.zip(map));
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_zip_append = 
+	public static VncFunction io_zip_append =
 		new VncFunction(
-				"io/zip-append", 
+				"io/zip-append",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip-append f & entries)")		
+					.arglists("(io/zip-append f & entries)")
 					.doc(
 						"Appends entries to an existing zip file f. Overwrites existing " +
 						"entries. An entry is given by a name and data. The entry data " +
 						"may be nil, a bytebuf, a file, a string (file path), or an " +
 						"InputStream." +
 						"An entry name with a trailing '/' creates a directory. ")
-					.examples( 
+					.examples(
 						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                  \n" +
 						"    ; create the zip with a first file                              \n" +
 						"    (->> (io/zip \"a.txt\" data)                                    \n" +
@@ -179,14 +177,14 @@ public class ZipFunctions {
 						"    ; add an empty directory                                        \n" +
 						"    (io/zip-append \"test.zip\" \"x/y/\" nil)))                       ")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip-append", args, 3);
-	
+
 				final File file = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/zip-append' does not allow %s as f");
-				
+
 				validateReadableFile(file);
 
 				final VncList entryArgs = args.slice(1);
@@ -194,13 +192,13 @@ public class ZipFunctions {
 					if (entryArgs.size() % 2 == 1) {
 						throw new VncException("Function 'io/zip-append' requires an even number of entry arguments");
 					}
-					
+
 					int idx = 0;
 					final LinkedHashMap<String,Object> map = new LinkedHashMap<>();
-					
+
 					while (idx < entryArgs.size()) {
 						final String name = Coerce.toVncString(entryArgs.nth(idx++)).getValue();
-						
+
 						if (map.containsKey(name)) {
 							throw new VncException(String.format(
 									"Function 'io/zip-append' duplicate entry name %s", name));
@@ -228,46 +226,45 @@ public class ZipFunctions {
 									"Function 'io/zip-append' does not allow %s as entry data",
 									Types.getType(dataVal)));
 						}
-						
+
 						map.put(name, data);
 					}
-					
+
 					Zipper.zipAppend(file, map);
-					
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_zip_remove = 
+	public static VncFunction io_zip_remove =
 		new VncFunction(
-				"io/zip-remove", 
+				"io/zip-remove",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip-remove f & entry-names)")		
+					.arglists("(io/zip-remove f & entry-names)")
 					.doc("Remove entries from a zip file f.")
-					.examples( 
+					.examples(
 						"; remove files from zip \n" +
 						"(io/zip-remove \"test.zip\" \"x/a.txt\" \"x/b.txt\")",
-						
+
 						"; remove directory from zip \n" +
 						"(io/zip-remove \"test.zip\" \"x/y/\")"
 						)
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip-remove", args, 2);
-	
+
 				final File file = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/zip-remove' does not allow %s as f");
-				
+
 				validateReadableFile(file);
 
 				try {
@@ -278,41 +275,40 @@ public class ZipFunctions {
 								.stream()
 								.map(e -> Coerce.toVncString(e).getValue())
 								.collect(Collectors.toList()));
-					
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_zip_size = 
+	public static VncFunction io_zip_size =
 		new VncFunction(
-				"io/zip-size", 
+				"io/zip-size",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip-size f)")		
+					.arglists("(io/zip-size f)")
 					.doc(
 						"Returns the number of entries in the zip f. f may be a bytebuf, " +
 						"a file, a string (file path) or an InputStream.")
 					.examples(
 						"(io/zip-size (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/zip-size", args, 1);
-	
+
 				if (args.isEmpty()) {
 					return new VncLong(0);
 				}
-				
+
 				try {
 					final VncVal data = args.first();
-					
+
 					if (Types.isVncByteBuffer(data)) {
 						return new VncLong(Zipper.listZipEntryNames(((VncByteBuffer)data).getValue().array()).size());
 					}
@@ -334,33 +330,32 @@ public class ZipFunctions {
 								"Function 'io/zip-size' does-size not allow %s as f",
 								Types.getType(data)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_unzip = 
+	public static VncFunction io_unzip =
 		new VncFunction(
-				"io/unzip", 
+				"io/unzip",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/unzip f entry-name)")		
+					.arglists("(io/unzip f entry-name)")
 					.doc(
-						"Unzips an entry from zip f the entry's data as a bytebuf. f may be a bytebuf, \n" + 
+						"Unzips an entry from zip f the entry's data as a bytebuf. f may be a bytebuf, \n" +
 						"a file, a string (file path) or an InputStream.")
 					.examples(
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
 						"    (io/unzip \"a.txt\"))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/unzip", args, 2);
-	
+
 				final VncVal buf = args.first();
 				final String entryName = Coerce.toVncString(args.second()).getValue();
 				try {
@@ -392,22 +387,21 @@ public class ZipFunctions {
 								"Function 'io/unzip' does not allow %s as f",
 								Types.getType(buf)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_unzip_first = 
+	public static VncFunction io_unzip_first =
 		new VncFunction(
-				"io/unzip-first", 
+				"io/unzip-first",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/unzip-first zip)")		
+					.arglists("(io/unzip-first zip)")
 					.doc(
 						"Unzips the first entry of the zip f returning its data as a bytebuf. " +
 						"f may be a bytebuf, a file, a string (file path) or an InputStream.")
@@ -416,10 +410,10 @@ public class ZipFunctions {
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)) \n" +
 						"    (io/unzip-first))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/unzip-first", args, 1);
-	
+
 				final VncVal buf = args.first();
 				try {
 					if (buf == Nil) {
@@ -450,22 +444,21 @@ public class ZipFunctions {
 								"Function 'io/unzip-first' does not allow %s as f",
 								Types.getType(buf)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_unzip_nth = 
+	public static VncFunction io_unzip_nth =
 		new VncFunction(
-				"io/unzip-nth", 
+				"io/unzip-nth",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/unzip-nth zip n)")		
+					.arglists("(io/unzip-nth zip n)")
 					.doc(
 						"Unzips the nth (zero.based) entry of the zip f returning its data as a bytebuf. " +
 						"f may be a bytebuf, a file, a string (file path) or an InputStream.")
@@ -475,10 +468,10 @@ public class ZipFunctions {
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-nth 1))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/unzip-nth", args, 2);
-	
+
 				final VncVal buf = args.first();
 				final int entryIdx = Coerce.toVncLong(args.second()).getIntValue();
 				try {
@@ -510,22 +503,21 @@ public class ZipFunctions {
 								"Function 'io/unzip-nth' does not allow %s as f",
 								Types.getType(buf)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_unzip_all = 
+	public static VncFunction io_unzip_all =
 		new VncFunction(
-				"io/unzip-all", 
+				"io/unzip-all",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/unzip-all f)")		
+					.arglists("(io/unzip-all f)")
 					.doc(
 						"Unzips all entries of the zip f returning a map with " +
 						"the entry names as key and the entry data as bytebuf values. " +
@@ -536,10 +528,10 @@ public class ZipFunctions {
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-all))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/unzip-all", args, 1);
-	
+
 				final VncVal buf = args.first();
 				try {
 					if (buf == Nil) {
@@ -547,7 +539,7 @@ public class ZipFunctions {
 					}
 					else {
 						final Map<String,byte[]> data;
-						
+
 						if (Types.isVncByteBuffer(buf)) {
 							data = Zipper.unzipAll(((VncByteBuffer)buf).getValue().array());
 						}
@@ -569,37 +561,36 @@ public class ZipFunctions {
 									"Function 'io/unzip-all' does not allow %s as f",
 									Types.getType(buf)));
 						}
-						
+
 						if (data == null) {
 							return Nil;
 						}
 						else {
-							final Map<VncString,VncByteBuffer> tmp = 
+							final Map<VncString,VncByteBuffer> tmp =
 								data.entrySet()
 									.stream()
 									.collect(Collectors.toMap(
-												e -> new VncString(e.getKey()), 
+												e -> new VncString(e.getKey()),
 												e -> new VncByteBuffer(e.getValue())));
 							return new VncHashMap(tmp);
 						}
 
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_zip_file = 
+	public static VncFunction io_zip_file =
 		new VncFunction(
-				"io/zip-file", 
+				"io/zip-file",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip-file options* zip-file & files)")		
+					.arglists("(io/zip-file options* zip-file & files)")
 					.doc(
 						"Zips files. The zip-file my be a file, a string (file path) or " +
 						"an OutputStream. \n\n" +
@@ -607,19 +598,19 @@ public class ZipFunctions {
 						"  :filter-fn fn - filters the files to be added to the zip.")
 					.examples(
 						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
-						
+
 						"(io/zip-file \"test.zip\" \"dir\")",
-						
+
 						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))  \n" +
 						"             \"test.zip\" \n" +
 						"             \"test-dir\")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip-file", args, 2);
-	
+
 				int ii = 0;
-				
+
 				// read options
 				VncHashMap options = new VncHashMap();
 				while (Types.isVncKeyword(args.nth(ii))) {
@@ -627,7 +618,7 @@ public class ZipFunctions {
 					final VncVal optVal = args.nth(ii++);
 					options = options.assoc(optName, optVal);
 				}
-	
+
 				// destination zip
 				final VncVal dest = args.nth(ii++);
 
@@ -635,8 +626,8 @@ public class ZipFunctions {
 				final VncList files = args.slice(ii);
 
 				// parse filter
-				final VncVal filterFnVal = options.get(new VncKeyword("filter-fn")); 					
-				final VncFunction filterFn = filterFnVal == Nil ? null : Coerce.toVncFunction(filterFnVal);				
+				final VncVal filterFnVal = options.get(new VncKeyword("filter-fn"));
+				final VncFunction filterFn = filterFnVal == Nil ? null : Coerce.toVncFunction(filterFnVal);
 
 				final FilenameFilter filter = filterFn == null
 												? null
@@ -653,10 +644,10 @@ public class ZipFunctions {
 				files.forEach(f -> {
 					final File file = convertToFile(
 											f, "Function 'io/zip-file' does not allow %s as file");
-					
+
 					validateReadableFileOrDirectory(file);
 
-					filesToZip.add(file);	
+					filesToZip.add(file);
 				});
 
 				try {
@@ -677,24 +668,23 @@ public class ZipFunctions {
 								"Function 'io/zip-file' does not allow %s as zip-file",
 								Types.getType(dest)));
 					}
-					
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_zip_list = 
+	public static VncFunction io_zip_list =
 		new VncFunction(
-				"io/zip-list", 
+				"io/zip-list",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip-list f & options)")		
+					.arglists("(io/zip-list f & options)")
 					.doc(
 						"List the content of a the zip f. f may be a bytebuf, a file, " +
 						"a string (file path), or an InputStream. \n" +
@@ -704,16 +694,16 @@ public class ZipFunctions {
 						"(io/zip-list \"test-file.zip\")",
 						"(io/zip-list \"test-file.zip\" :verbose true)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/zip-list", args, 1);
-				
+
 				try {
 					final VncVal f = args.first();
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-					
-					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false; 
+
+					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false;
 
 					if (Types.isVncByteBuffer(f)) {
 						Zipper.listZip(((VncByteBuffer)f).getValue().array(), System.out, verbose);
@@ -736,24 +726,23 @@ public class ZipFunctions {
 								"Function 'io/zip-list' does not allow %s as f",
 								Types.getType(f)));
 					}
-				
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_unzip_to_dir = 
+	public static VncFunction io_unzip_to_dir =
 		new VncFunction(
-				"io/unzip-to-dir", 
+				"io/unzip-to-dir",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/unzip-to-dir f dir)")		
+					.arglists("(io/unzip-to-dir f dir)")
 					.doc(
 						"Unzips f to a directory. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream.")
@@ -763,15 +752,15 @@ public class ZipFunctions {
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-to-dir \".\")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/unzip-to-dir", args, 2);
-	
+
 				final VncVal f = args.first();
 				final File dir = Coerce.toVncJavaObject(args.second(), File.class);
-				
+
 				validateReadableDirectory(dir);
-				
+
 				try {
 					if (Types.isVncByteBuffer(f)) {
 						Zipper.unzipToDir(((VncByteBuffer)f).getValue().array(), dir);
@@ -794,37 +783,36 @@ public class ZipFunctions {
 								"Function 'io/unzip-to-dir' does not allow %s as f",
 								Types.getType(f)));
 					}
-					
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_gzip = 
+	public static VncFunction io_gzip =
 		new VncFunction(
-				"io/gzip", 
+				"io/gzip",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/gzip f)")		
+					.arglists("(io/gzip f)")
 					.doc(
 						"gzips f. f may be a file, a string (file path), a bytebuf or an " +
 						"InputStream. Returns a bytebuf.")
 					.examples(
 						"(->> (io/gzip \"a.txt\")  \n" +
 						"     (io/spit \"a.gz\"))    ",
-						
+
 						"(io/gzip (bytebuf-from-string \"abcdef\" :utf-8))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/gzip", args, 1);
-	
+
 				final VncVal f = args.first();
 				try {
 					if (f == Nil) {
@@ -851,28 +839,27 @@ public class ZipFunctions {
 								"Function 'io/gzip' does not allow %s as f",
 								Types.getType(f)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_gzip_to_stream = 
+	public static VncFunction io_gzip_to_stream =
 		new VncFunction(
-				"io/gzip-to-stream", 
+				"io/gzip-to-stream",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/gzip f os)")		
+					.arglists("(io/gzip f os)")
 					.doc(
 						"gzips f to the OutputStream os. f may be a file, a string " +
 						"(file path), a bytebuf, or an InputStream.")
 					.examples(
 						"(do                                                 \n" +
-						"  (import :java.io.ByteArrayOutputStream)           \n" +						
+						"  (import :java.io.ByteArrayOutputStream)           \n" +
 						"  (try-with [os (. :ByteArrayOutputStream :new)]    \n" +
 						"      (-> (bytebuf-from-string \"abcdef\" :utf-8)   \n" +
 						"          (io/gzip-to-stream os))                   \n" +
@@ -880,10 +867,10 @@ public class ZipFunctions {
 						"          (io/ungzip)                               \n" +
 						"          (bytebuf-to-string :utf-8))))               ")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/gzip-to-stream", args, 2);
-	
+
 				final VncVal f = args.first();
 				final OutputStream os = (OutputStream)Coerce.toVncJavaObject(args.second()).getDelegate();
 				try {
@@ -915,34 +902,33 @@ public class ZipFunctions {
 								"Function 'io/gzip-to-stream' does not allow %s as f",
 								Types.getType(f)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_ungzip = 
+	public static VncFunction io_ungzip =
 		new VncFunction(
-				"io/ungzip", 
+				"io/ungzip",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/ungzip f)")		
+					.arglists("(io/ungzip f)")
 					.doc(
 						"ungzips f. f may be a file, a string (file path), a bytebuf, " +
 						"or an InputStream. Returns a bytebuf.")
 					.examples(
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/gzip) \n" +
-						"    (io/ungzip))")	
+						"    (io/ungzip))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/ungzip", args, 1);
-	
+
 				final VncVal f = args.first();
 				try {
 					if (f == Nil) {
@@ -969,22 +955,21 @@ public class ZipFunctions {
 								"Function 'io/ungzip' does not allow %s as f",
 								Types.getType(f)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction io_ungzip_to_stream = 
+
+	public static VncFunction io_ungzip_to_stream =
 		new VncFunction(
-				"io/ungzip-to-stream", 
+				"io/ungzip-to-stream",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/ungzip-to-stream buf)")		
+					.arglists("(io/ungzip-to-stream buf)")
 					.doc(
 						"ungzips a bytebuf returning an InputStream to read the deflated " +
 						"data from.")
@@ -992,12 +977,12 @@ public class ZipFunctions {
 							"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 							"    (io/gzip) \n" +
 							"    (io/ungzip-to-stream) \n" +
-							"    (io/slurp-stream :binary false :encoding :utf-8))")	
+							"    (io/slurp-stream :binary false :encoding :utf-8))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/ungzip-to-stream", args, 1);
-	
+
 				final VncVal buf = args.first();
 				try {
 					if (buf == Nil) {
@@ -1011,22 +996,21 @@ public class ZipFunctions {
 								"Function 'io/ungzip-to-stream' does not allow %s as f",
 								Types.getType(buf)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_zip_Q = 
+	public static VncFunction io_zip_Q =
 		new VncFunction(
-				"io/zip?", 
+				"io/zip?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/zip? f)")		
+					.arglists("(io/zip? f)")
 					.doc(
 						"Returns true if f is a zipped file. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream")
@@ -1034,17 +1018,17 @@ public class ZipFunctions {
 						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) " +
 						"    (io/zip?))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/zip?", args, 1);
-	
+
 				if (args.isEmpty()) {
 					return False;
 				}
-				
+
 				try {
 					final VncVal f = args.first();
-					
+
 					if (Types.isVncByteBuffer(f)) {
 						return Zipper.isZipFile(((VncByteBuffer)f).getValue().array()) ? True : False;
 					}
@@ -1066,22 +1050,21 @@ public class ZipFunctions {
 								"Function 'io/zip?' does not allow %s as f",
 								Types.getType(f)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_gzip_Q = 
+	public static VncFunction io_gzip_Q =
 		new VncFunction(
-				"io/gzip?", 
+				"io/gzip?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/gzip? f)")		
+					.arglists("(io/gzip? f)")
 					.doc(
 						"Returns true if f is a gzipped file. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream")
@@ -1089,17 +1072,17 @@ public class ZipFunctions {
 						"(-> (io/gzip (bytebuf-from-string \"abc\" :utf-8)) " +
 						"    (io/gzip?))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/gzip?", args, 1);
-	
+
 				if (args.isEmpty()) {
 					return False;
 				}
-				
+
 				try {
 					final VncVal f = args.first();
-					
+
 					if (Types.isVncByteBuffer(f)) {
 						return Zipper.isGZipFile(((VncByteBuffer)f).getValue().array()) ? True : False;
 					}
@@ -1121,16 +1104,16 @@ public class ZipFunctions {
 								"Function 'io/gzip?' does not allow %s as f",
 								Types.getType(f)));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	private static File convertToFile(final VncVal f, final String errFormat) {
 		if (Types.isVncString(f)) {
 			return new File(((VncString)f).getValue());
@@ -1142,7 +1125,7 @@ public class ZipFunctions {
 			throw new VncException(String.format(errFormat, f));
 		}
 	}
-	
+
 	private static void validateReadableFile(final File file) {
 		if (!file.isFile()) {
 			throw new VncException(String.format("'%s' is not a file", file.getPath()));
@@ -1151,7 +1134,7 @@ public class ZipFunctions {
 			throw new VncException(String.format("The file '%s' has no read permission", file.getPath()));
 		}
 	}
-	
+
 	private static void validateReadableDirectory(final File file) {
 		if (!file.isDirectory()) {
 			throw new VncException(String.format("'%s' is not a directory", file.getPath()));
@@ -1170,13 +1153,13 @@ public class ZipFunctions {
 		}
 	}
 
-	
-	
+
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static Map<VncVal, VncVal> ns = 
+	public static Map<VncVal, VncVal> ns =
 			new VncHashMap.Builder()
 					.put("io/zip",						io_zip)
 					.put("io/zip-append",				io_zip_append)

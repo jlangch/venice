@@ -87,7 +87,6 @@ public class JavaInteropFunctions {
 				".", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(. classname :new args)", 
 						"(. classname method-name args)",
@@ -170,7 +169,6 @@ public class JavaInteropFunctions {
 				"supers", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(supers class)")
 					.doc("Returns the immediate and indirect superclasses and interfaces of class, if any.")
 					.examples("(supers :java.util.ArrayList)")
@@ -204,7 +202,6 @@ public class JavaInteropFunctions {
 				"bases", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(bases class)")
 					.doc("Returns the immediate superclass and interfaces of class, if any.")
 					.examples("(bases :java.util.ArrayList)")
@@ -237,7 +234,6 @@ public class JavaInteropFunctions {
 				"java-obj?", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(java-obj? obj)")		
 					.doc("Returns true if obj is a Java object")
 					.examples("(java-obj? (. :java.math.BigInteger :new \"0\"))")
@@ -261,7 +257,6 @@ public class JavaInteropFunctions {
 				"java-enumeration-to-list", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(java-enumeration-to-list e)")		
 					.doc("Converts a Java enumeration to a list")
 					.build(),
@@ -296,7 +291,6 @@ public class JavaInteropFunctions {
 				"java-iterator-to-list", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(java-iterator-to-list e)")		
 					.doc("Converts a Java iterator to a list")
 					.build(),
@@ -331,7 +325,6 @@ public class JavaInteropFunctions {
 				"java-wrap", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(java-wrap val)")		
 					.doc("Wraps a venice value")
 					.build(),
@@ -358,7 +351,6 @@ public class JavaInteropFunctions {
 				"java-unwrap", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(java-unwrap val)")		
 					.doc("Unwraps a venice value")
 					.build(),

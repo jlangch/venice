@@ -56,7 +56,6 @@ public class ScheduleFunctions {
 				"schedule-delay", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(schedule-delay fn delay time-unit)")		
 					.doc(
 						"Creates and executes a one-shot action that becomes enabled " + 
@@ -133,7 +132,6 @@ public class ScheduleFunctions {
 				"schedule-at-fixed-rate", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(schedule-at-fixed-rate fn initial-delay period time-unit)")		
 					.doc(
 						"Creates and executes a periodic action that becomes enabled first " + 

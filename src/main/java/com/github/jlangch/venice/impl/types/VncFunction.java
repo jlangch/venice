@@ -66,16 +66,12 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		this.params = params;
 	
 		this.fnMeta.set(meta);
-		this._private = MetaUtil.isPrivate(meta);
-		this.module = MetaUtil.getModule(meta);
 	}
 
 	
 	@Override
 	public VncFunction withMeta(final VncVal meta) {
 		this.fnMeta.set(meta);
-		this._private = MetaUtil.isPrivate(meta);
-		this.module =  MetaUtil.getModule(meta);
 		return this;
 	}
 
@@ -162,14 +158,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	public VncVal getMeta() { 
 		return fnMeta.get(); 
 	}
-	
-	public boolean isPrivate() {
-		return _private;
-	}
-
-	public String getModule() {
-		return module;
-	}
 
 	public static MetaBuilder meta() {
 		return new MetaBuilder();
@@ -200,13 +188,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 			return this;
 		}
 		
-		public MetaBuilder module(final String module) { 
-			meta.put(
-				MetaUtil.MODULE, 
-				new VncString(module));
-			return this;
-		}
-		
 		public VncHashMap build() {
 			return new VncHashMap(meta);
 		}
@@ -225,6 +206,4 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
-	private volatile boolean _private;
-	private volatile String module;
 }

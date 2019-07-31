@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -50,24 +50,23 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 public class MathFunctions {
 
-	public static VncFunction add = 
+	public static VncFunction add =
 		new VncFunction(
-				"+", 
+				"+",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(+)", "(+ x)", "(+ x y)", "(+ x y & more)")
 					.doc("Returns the sum of the numbers. (+) returns 0.")
 					.examples(
-						"(+)", 
-						"(+ 1)", 
-						"(+ 1 2)", 
-						"(+ 1 2 3 4)", 
-						"(+ 1I 2I)", 
-						"(+ 1 2.5)", 
+						"(+)",
+						"(+ 1)",
+						"(+ 1 2)",
+						"(+ 1 2 3 4)",
+						"(+ 1I 2I)",
+						"(+ 1 2.5)",
 						"(+ 1 2.5M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0: return new VncLong(0);
@@ -79,33 +78,32 @@ public class MathFunctions {
 						return val;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction subtract = 
+
+	public static VncFunction subtract =
 		new VncFunction(
-				"-", 
+				"-",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(- x)", "(- x y)", "(- x y & more)")
 					.doc(
 						"If one number is supplied, returns the negation, else subtracts " +
 						"the numbers from x and returns the result.")
 					.examples(
-						"(- 4)", 
-						"(- 8 3 -2 -1)", 
-						"(- 5I 2I)", 
+						"(- 4)",
+						"(- 8 3 -2 -1)",
+						"(- 5I 2I)",
 						"(- 8 2.5)",
 						"(- 8 1.5M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
-					case 0: 
+					case 0:
 						throw new ArityException(0, "-");
-					case 1: 
+					case 1:
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
 							return ((VncLong)first).negate();
@@ -121,8 +119,8 @@ public class MathFunctions {
 						}
 						else {
 							return validateNumber("-", first);
-						}	
-					case 2: 
+						}
+					case 2:
 						return Numeric.calc(MathOp.SUB, args.first(), args.second());
 					default:
 						VncVal val = args.first();
@@ -130,28 +128,27 @@ public class MathFunctions {
 						return val;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction multiply = 
+
+	public static VncFunction multiply =
 		new VncFunction(
-				"*", 
+				"*",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(*)", "(* x)", "(* x y)", "(* x y & more)")
 					.doc("Returns the product of numbers. (*) returns 1")
 					.examples(
-						"(*)", 
-						"(* 4)", 
-						"(* 4 3)", 
-						"(* 4 3 2)", 
-						"(* 4I 3I)", 
-						"(* 6.0 2)", 
+						"(*)",
+						"(* 4)",
+						"(* 4 3)",
+						"(* 4 3 2)",
+						"(* 4I 3I)",
+						"(* 6.0 2)",
 						"(* 6 1.5M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0: return new VncLong(1);
@@ -163,34 +160,33 @@ public class MathFunctions {
 						return val;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction divide = 
+
+	public static VncFunction divide =
 		new VncFunction(
-				"/", 
+				"/",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(/ x)", "(/ x y)", "(/ x y & more)")
 					.doc(
-						"If no denominators are supplied, returns 1/numerator, " + 
+						"If no denominators are supplied, returns 1/numerator, " +
 						"else returns numerator divided by all of the denominators.")
 					.examples(
-							"(/ 2.0)", 
-							"(/ 12 2 3)", 
-							"(/ 12 3)", 
-							"(/ 12I 3I)", 
-							"(/ 6.0 2)", 
+							"(/ 2.0)",
+							"(/ 12 2 3)",
+							"(/ 12 3)",
+							"(/ 12I 3I)",
+							"(/ 6.0 2)",
 							"(/ 6 1.5M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
-					case 0: 
+					case 0:
 						throw new ArityException(0, "/");
-					case 1: 
+					case 1:
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
 							return Numeric.calc(MathOp.DIV, new VncLong(1L), first);
@@ -206,8 +202,8 @@ public class MathFunctions {
 						}
 						else {
 							return validateNumber("/", first);
-						}	
-					case 2: 
+						}
+					case 2:
 						return Numeric.calc(MathOp.DIV, args.first(), args.second());
 					default:
 						VncVal val = args.first();
@@ -215,83 +211,81 @@ public class MathFunctions {
 						return val;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction modulo = 
+
+	public static VncFunction modulo =
 		new VncFunction(
-				"mod", 
+				"mod",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(mod n d)")
 					.doc("Modulus of n and d.")
 					.examples(
-						"(mod 10 4)", 
+						"(mod 10 4)",
 						"(mod 10I 4I)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("mod", args, 2);
-	
+
 				final VncVal n = args.first();
 				final VncVal d = args.second();
 
 				if (Types.isVncLong(n)) {
 					if (Types.isVncLong(d)) {
 						return new VncLong(
-								((VncLong)n).getValue().longValue() 
-								% 
+								((VncLong)n).getValue().longValue()
+								%
 								((VncLong)d).getValue().longValue());
 					}
 					else {
 						throw new VncException(String.format(
-								"Function 'mod' does not allow %s as denominator if nominator is a long", 
+								"Function 'mod' does not allow %s as denominator if nominator is a long",
 								Types.getType(args.second())));
-					}					
+					}
 				}
 				else if (Types.isVncInteger(n)) {
 					if (Types.isVncInteger(d)) {
 						return new VncInteger(
-								((VncInteger)n).getValue().intValue() 
-								% 
+								((VncInteger)n).getValue().intValue()
+								%
 								((VncInteger)d).getValue().intValue());
 					}
 					else {
 						throw new VncException(String.format(
-								"Function 'mod' does not allow %s as denominator if nominator is an int", 
+								"Function 'mod' does not allow %s as denominator if nominator is an int",
 								Types.getType(args.second())));
 					}
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'mod' does not allow %s as numerator", 
+							"Function 'mod' does not allow %s as numerator",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction inc = 
+
+	public static VncFunction inc =
 		new VncFunction(
-				"inc", 
+				"inc",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(inc x)")
 					.doc("Increments the number x")
 					.examples(
-						"(inc 10)", 
-						"(inc 10I)", 
-						"(inc 10.1)", 
+						"(inc 10)",
+						"(inc 10I)",
+						"(inc 10.1)",
 						"(inc 10.12M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("inc", args, 1);
-	
+
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
 					return new VncLong(((VncLong)arg).getValue() + 1L);
@@ -311,28 +305,27 @@ public class MathFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction dec = 
+
+	public static VncFunction dec =
 		new VncFunction(
-				"dec", 
+				"dec",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(dec x)")
 					.doc("Decrements the number x")
 					.examples(
-						"(dec 10)", 
-						"(dec 10I)", 
-						"(dec 10.1)", 
+						"(dec 10)",
+						"(dec 10I)",
+						"(dec 10.1)",
 						"(dec 10.12M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("dec", args, 1);
-	
+
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
 					return new VncLong(((VncLong)arg).getValue() - 1L);
@@ -352,16 +345,15 @@ public class MathFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction max = 
+
+	public static VncFunction max =
 		new VncFunction(
-				"max", 
+				"max",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(max x)", "(max x y)", "(max x y & more)")
 					.doc("Returns the greatest of the values")
 					.examples(
@@ -371,41 +363,40 @@ public class MathFunctions {
 						"(max 1.0M)", "(max 1.0M 2.0M)", "(max 4.0M 3.0M 2.0M 1.0M)",
 						"(max 1.0M 2)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
 					return Nil;
 				}
-	
+
 				VncVal max = args.first();
 				for(VncVal op : args.rest().getList()) {
 					if (op == Nil) {
 						continue;
 					}
 					else if (Types.isVncNumber(op)) {
-						max = max == Nil 
-								? op 
+						max = max == Nil
+								? op
 								: (op.compareTo(max) > 0 ? op : max);
 					}
 					else {
 						throw new VncException(String.format(
-												"Function 'max' does not allow %s as operand", 
+												"Function 'max' does not allow %s as operand",
 												Types.getType(max)));
 					}
 				}
-				
-				return max;			
+
+				return max;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction min = 
+
+	public static VncFunction min =
 		new VncFunction(
-				"min", 
+				"min",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(min x)", "(min x y)", "(min x y & more)")
 					.doc("Returns the smallest of the values")
 					.examples(
@@ -415,12 +406,12 @@ public class MathFunctions {
 						"(min 1.0M)", "(min 1.0M 2.0M)", "(min 4.0M 3.0M 2.0M 1.0M)",
 						"(min 1.0M 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
 					return Nil;
 				}
-				
+
 				VncVal min = args.first();
 				for(VncVal op : args.rest().getList()) {
 					if (op == Nil) {
@@ -433,38 +424,37 @@ public class MathFunctions {
 					}
 					else {
 						throw new VncException(String.format(
-												"Function 'min' does not allow %s as operand", 
+												"Function 'min' does not allow %s as operand",
 												Types.getType(min)));
 					}
 				}
-				
-				return min;			
+
+				return min;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction abs = 
+
+	public static VncFunction abs =
 		new VncFunction(
-				"abs", 
+				"abs",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(abs x)")
 					.doc("Returns the absolute value of the number")
 					.examples(
-						"(abs 10)", 
-						"(abs -10)", 
-						"(abs -10I)", 
-						"(abs -10.1)", 
+						"(abs 10)",
+						"(abs -10)",
+						"(abs -10I)",
+						"(abs -10.1)",
 						"(abs -10.12M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("abs", args, 1);
-				
+
 				final VncVal arg = args.first();
-				
+
 				if (Types.isVncLong(arg)) {
 					return new VncLong(Math.abs(((VncLong)arg).getValue().longValue()));
 				}
@@ -483,30 +473,29 @@ public class MathFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction negate = 
+	public static VncFunction negate =
 		new VncFunction(
-				"negate", 
+				"negate",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(negate x)")
 					.doc("Negates x")
 					.examples(
-						"(negate 10)", 
-						"(negate 10I)", 
-						"(negate 1.23)", 
+						"(negate 10)",
+						"(negate 10I)",
+						"(negate 1.23)",
 						"(negate 1.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("negate", args, 1);
-				
+
 				final VncVal arg = args.first();
-				
+
 				if (Types.isVncLong(arg)) {
 					return new VncLong(Math.negateExact(((VncLong)arg).getValue().longValue()));
 				}
@@ -525,30 +514,29 @@ public class MathFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction floor = 
+
+	public static VncFunction floor =
 		new VncFunction(
-				"floor", 
+				"floor",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(floor x)")
 					.doc("Returns the largest integer that is less than or equal to x")
 					.examples(
-						"(floor 1.4)", 
-						"(floor -1.4)", 
-						"(floor 1.23M)", 
+						"(floor 1.4)",
+						"(floor -1.4)",
+						"(floor 1.23M)",
 						"(floor -1.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("floor", args, 1);
-				
+
 				final VncVal arg = args.first();
-				
+
 				if (Types.isVncLong(arg)) {
 					return arg;
 				}
@@ -571,30 +559,29 @@ public class MathFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction ceil = 
+
+	public static VncFunction ceil =
 		new VncFunction(
-				"ceil", 
+				"ceil",
 				VncFunction
 					.meta()
-					.module("ceil")
 					.arglists("(ceil x)")
 					.doc("Returns the largest integer that is greater than or equal to x")
 					.examples(
-						"(ceil 1.4)", 
-						"(ceil -1.4)", 
-						"(ceil 1.23M)", 
+						"(ceil 1.4)",
+						"(ceil -1.4)",
+						"(ceil 1.23M)",
 						"(ceil -1.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("ceil", args, 1);
-				
+
 				final VncVal arg = args.first();
-				
+
 				if (Types.isVncLong(arg)) {
 					return arg;
 				}
@@ -617,236 +604,228 @@ public class MathFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction square = 
+	public static VncFunction square =
 		new VncFunction(
-				"square", 
+				"square",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(square x)")
 					.doc("Square of x")
 					.examples(
-						"(square 10)", 
-						"(square 10I)", 
-						"(square 10.23)", 
+						"(square 10)",
+						"(square 10I)",
+						"(square 10.23)",
 						"(square 10.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("square", args, 1);
-				
+
 				return Numeric.square(args.first());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction sqrt = 
+	public static VncFunction sqrt =
 		new VncFunction(
-				"sqrt", 
+				"sqrt",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(sqrt x)")
 					.doc("Square root of x")
 					.examples(
-						"(sqrt 10)", 
-						"(sqrt 10I)", 
-						"(sqrt 10.23)", 
+						"(sqrt 10)",
+						"(sqrt 10I)",
+						"(sqrt 10.23)",
 						"(sqrt 10.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sqrt", args, 1);
-				
+
 				return Numeric.sqrt(args.first());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction log = 
+	public static VncFunction log =
 		new VncFunction(
-				"log", 
+				"log",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(log x)")
 					.doc("log x")
 					.examples(
-						"(log 10)", 
-						"(log 10.23)", 
+						"(log 10)",
+						"(log 10.23)",
 						"(log 10.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("log", args, 1);
-				
+
 				return new VncDouble(Math.log(Numeric.toDouble(args.first()).getValue()));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction log10 = 
+	public static VncFunction log10 =
 		new VncFunction(
-				"log10", 
+				"log10",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(log10 x)")
 					.doc("log10 x")
 					.examples(
-						"(log10 10)", 
-						"(log10 10.23)", 
+						"(log10 10)",
+						"(log10 10.23)",
 						"(log10 10.23M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("log10", args, 1);
-				
+
 				return new VncDouble(Math.log10(Numeric.toDouble(args.first()).getValue()));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-		public static VncFunction pow = 
+		public static VncFunction pow =
 			new VncFunction(
-					"pow", 
+					"pow",
 					VncFunction
 						.meta()
-						.module("core")
 						.arglists("(pow x y)")
 						.doc("Returns the value of x raised to the power of y")
 						.examples(
-							"(pow 10 2)", 
-							"(pow 10.23 2)", 
+							"(pow 10 2)",
+							"(pow 10.23 2)",
 							"(pow 10.23 2.5)")
 						.build()
-			) {	
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("pow", args, 2);
-					
+
 					return new VncDouble(Math.pow(
 											Numeric.toDouble(args.first()).getValue(),
 											Numeric.toDouble(args.second()).getValue()));
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction mean = 
+	public static VncFunction mean =
 		new VncFunction(
-				"mean", 
+				"mean",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(mean x)", "(mean x y)", "(mean x y & more)")
 					.doc("Returns the mean value of the values")
 					.examples(
-						"(mean 10 20 30)", 
-						"(mean 1.4 3.6)", 
+						"(mean 10 20 30)",
+						"(mean 1.4 3.6)",
 						"(mean 2.8M 6.4M)")
 					.build()
-		) {	
-			public VncVal apply(final VncList args) {				
+		) {
+			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
 					return Nil;
 				}
 				else {
 					final VncVal sum = add.apply(args);
 
-					final VncVal divisor = Types.isVncBigDecimal(sum) 
+					final VncVal divisor = Types.isVncBigDecimal(sum)
 												? new VncBigDecimal(args.size())
 												: new VncDouble(args.size());
-							
+
 					return Numeric.calc(MathOp.DIV, sum, divisor);
 				}
 			}
-			
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction standard_deviation = 
+	public static VncFunction standard_deviation =
 		new VncFunction(
-				"standard-deviation", 
+				"standard-deviation",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(standard-deviation type coll)")
 					.doc(
 						"Returns the standard deviation of the values for data sample " +
 						"type :population or :sample.")
 					.examples(
-						"(standard-deviation :sample '(10 8 30 22 15))", 
-						"(standard-deviation :population '(10 8 30 22 15))", 
-						"(standard-deviation :sample '(1.4 3.6 7.8 9.0 2.2))", 
+						"(standard-deviation :sample '(10 8 30 22 15))",
+						"(standard-deviation :population '(10 8 30 22 15))",
+						"(standard-deviation :sample '(1.4 3.6 7.8 9.0 2.2))",
 						"(standard-deviation :sample '(2.8M 6.4M 2.0M 4.4M))")
 					.build()
-		) {	
+		) {
 		    // see: https://www.calculator.net/standard-deviation-calculator.html
-		
+
 			public VncVal apply(final VncList args) {
 				assertArity("standard-deviation", args, 2);
-				
+
 				final boolean sample = "sample".equals(Coerce.toVncKeyword(args.first()).getValue());
 				final VncList data = Coerce.toVncList(args.second());
-				
+
 				if (data.isEmpty() || data.size() == 1) {
 					return new VncDouble(0.0);
 				}
 				else {
 					final VncVal average = mean.apply(data);
-					
+
 					VncVal deltaSum = new VncDouble(0.0);
 					for(VncVal v : data.getList()) {
 						deltaSum = Numeric.calc(
-										MathOp.ADD, 
-										deltaSum, 
+										MathOp.ADD,
+										deltaSum,
 										Numeric.square(
 											Numeric.calc(MathOp.SUB, v, average)));
 					}
-					
+
 					return Numeric.toDouble(
 								Numeric.sqrt(
 										Numeric.calc(
-											MathOp.DIV, 
-											deltaSum, 
+											MathOp.DIV,
+											deltaSum,
 											new VncDouble(sample ? data.size() -1 : data.size()))));
 				}
 			}
-			
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction median = 
+	public static VncFunction median =
 		new VncFunction(
-				"median", 
+				"median",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(median coll)")
 					.doc(
 						"Returns the median of the values")
 					.examples(
-						"(median '(3 1 2))", 
-						"(median '(3 2 1 4))", 
-						"(median '(3.6 1.4 4.8))", 
+						"(median '(3 1 2))",
+						"(median '(3 2 1 4))",
+						"(median '(3.6 1.4 4.8))",
 						"(median '(3.6M 1.4M 4.8M))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("median", args, 1);
-				
+
 				final VncList data = Coerce.toVncList(args.first());
-				
+
 				if (data.isEmpty()) {
 					return Nil;
 				}
@@ -854,30 +833,29 @@ public class MathFunctions {
 					return median((VncList)CoreFunctions.sort.apply(VncList.of(data)));
 				}
 			}
-			
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction quartiles = 
+	public static VncFunction quartiles =
 		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
-			
+
 		new VncFunction(
-				"quartiles", 
+				"quartiles",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(quartiles coll)")
 					.doc(
 						"Returns the quartiles (1st, 2nd, and 3rd) of the values")
 					.examples(
-						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 13, 18))", 
+						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
 						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("quartiles", args, 1);
-				
+
 				final VncList list = Coerce.toVncList(args.first());
 
 				if (list.size() < 2) {
@@ -885,51 +863,50 @@ public class MathFunctions {
 				}
 				else {
 					final VncList sorted = (VncList)CoreFunctions.sort.apply(VncList.of(list));
-					
+
 					final VncList data = medianWithHalfs(sorted);
-					
+
 					return VncList.of(
 							median((VncList)data.second()), // Q1: median lower half
 							data.first(),                   // Q2: median
 							median((VncList)data.third())); // Q3: median upper half
 				}
 			}
-			
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction quantile = 		
+	public static VncFunction quantile =
 		new VncFunction(
-				"quantile", 
+				"quantile",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(quantile q coll)")
 					.doc(
 						"Returns the quantile [0.0 .. 1.0] of the values")
 					.examples(
-						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 13, 18))", 
+						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
 						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				// see: http://en.wikipedia.org/wiki/Quantile
 				assertArity("quantile", args, 2);
-				
+
 				final double q = Coerce.toVncDouble(args.first()).getValue();
 				final VncList list = Coerce.toVncList(args.second());
-					
+
 				if (list.size() < 2) {
 					return Nil;
 				}
 				else {
 					final VncList data = (VncList)CoreFunctions.sort.apply(VncList.of(list));
-					
+
 					if (q < 0.0D || q > 1.0D) {
 						throw new VncException("A quantile q must be in the range 0.0 .. 1.0");
 					}
-					
+
 					if (q == 0.0D) {
 						return data.first(); // minimum value
 					}
@@ -938,47 +915,46 @@ public class MathFunctions {
 					}
 					else {
 						final int n = data.size() - 1;
-						
+
 						final double x = q * (double)n;
-						
+
 						final double f = Math.floor(x);
 						final int idx = (int)f;
 						final double p = x - f;
-						
-						final double res = (p * toDouble(data.nth(idx + 1))) 
-											+ 
+
+						final double res = (p * toDouble(data.nth(idx + 1)))
+											+
 									       ((1.0D - p) * toDouble(data.nth(idx)));
 
 						return new VncDouble(res);
 					}
 				}
 			}
-			
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction rand_long = 
+	public static VncFunction rand_long =
 		new VncFunction(
-				"rand-long", 
+				"rand-long",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
-						"(rand-long)", 
+						"(rand-long)",
 						"(rand-long max)")
 					.doc(
 						"Without argument returns a random long between 0 and MAX_LONG. " +
-						"With argument max returns a random long between 0 and max exclusive.\n" + 
+						"With argument max returns a random long between 0 and max exclusive.\n" +
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG).")
 					.examples(
-						"(rand-long)", 
+						"(rand-long)",
 						"(rand-long 100)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("rand-long", args, 0, 1);
-				
+
 				if (args.isEmpty()) {
 					return new VncLong(Math.abs(random.nextLong()));
 				}
@@ -986,37 +962,36 @@ public class MathFunctions {
 					final long max = Coerce.toVncLong(args.first()).getValue();
 					if (max < 2) {
 						throw new VncException("Function 'rand-long' does not allow negative max values");
-	
+
 					}
 					return new VncLong(Math.abs(random.nextLong()) % max);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction rand_double = 
+
+	public static VncFunction rand_double =
 		new VncFunction(
-				"rand-double", 
+				"rand-double",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
-						"(rand-double)", 
+						"(rand-double)",
 						"(rand-double max)")
 					.doc(
 						"Without argument returns a double between 0.0 and 1.0. " +
-						"With argument max returns a random double between 0.0 and max.\n" + 
+						"With argument max returns a random double between 0.0 and max.\n" +
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG).")
 					.examples(
-						"(rand-double)", 
+						"(rand-double)",
 						"(rand-double 100.0)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("rand-double", args, 0, 1);
-				
+
 				if (args.isEmpty()) {
 					return new VncDouble(random.nextDouble());
 				}
@@ -1025,39 +1000,38 @@ public class MathFunctions {
 					if (max < 0.0) {
 						throw new VncException(
 								"Function 'rand-double' does not allow negative max values");
-	
+
 					}
 					return new VncDouble(random.nextDouble() * max);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction rand_gaussian = 
+
+	public static VncFunction rand_gaussian =
 		new VncFunction(
-				"rand-gaussian", 
+				"rand-gaussian",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
-						"(rand-gaussian)", 
+						"(rand-gaussian)",
 						"(rand-gaussian mean stddev)")
 					.doc(
 						"Without argument returns a Gaussion distributed double value with " +
 						"mean 0.0 and standard deviation 1.0. " +
 						"With argument mean and stddev returns a Gaussion distributed double " +
-						"value with the given mean and standard deviation.\n" + 
+						"value with the given mean and standard deviation.\n" +
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG)")
 					.examples(
-						"(rand-gaussian)", 
+						"(rand-gaussian)",
 						"(rand-gaussian 0.0 5.0)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("rand-gaussian", args, 0, 2);
-				
+
 				if (args.isEmpty()) {
 					return new VncDouble(random.nextGaussian());
 				}
@@ -1067,29 +1041,28 @@ public class MathFunctions {
 					return new VncDouble(mean + stddev * random.nextGaussian());
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction zero_Q = 
+	public static VncFunction zero_Q =
 		new VncFunction(
-				"zero?", 
+				"zero?",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(zero? x)")
 					.doc("Returns true if x zero else false")
 					.examples(
-						"(zero? 0)", 
-						"(zero? 2)", 
-						"(zero? (int 0))", 
-						"(zero? 0.0)", 
+						"(zero? 0)",
+						"(zero? 2)",
+						"(zero? (int 0))",
+						"(zero? 0.0)",
 						"(zero? 0.0M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("zero?", args, 1);
-				
+
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() == 0L ? True : False;
@@ -1105,33 +1078,32 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'zero?' does not allow %s as operand 1", 
+											"Function 'zero?' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction pos_Q = 
+
+	public static VncFunction pos_Q =
 		new VncFunction(
-				"pos?", 
+				"pos?",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(pos? x)")
 					.doc("Returns true if x greater than zero else false")
 					.examples(
-						"(pos? 3)", 
-						"(pos? -3)", 
-						"(pos? (int 3))", 
-						"(pos? 3.2)", 
+						"(pos? 3)",
+						"(pos? -3)",
+						"(pos? (int 3))",
+						"(pos? 3.2)",
 						"(pos? 3.2M)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("pos?", args, 1);
-				
+
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() > 0L ? True : False;
@@ -1147,33 +1119,32 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'pos?' does not allow %s as operand 1", 
+											"Function 'pos?' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction neg_Q = 
+
+	public static VncFunction neg_Q =
 		new VncFunction(
-				"neg?", 
+				"neg?",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(neg? x)")
 					.doc("Returns true if x smaller than zero else false")
 					.examples(
-						"(neg? -3)", 
-						"(neg? 3)", 
-						"(neg? (int -3))", 
-						"(neg? -3.2)", 
+						"(neg? -3)",
+						"(neg? 3)",
+						"(neg? (int -3))",
+						"(neg? -3.2)",
 						"(neg? -3.2M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("neg?", args, 1);
-				
+
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() < 0L ? True : False;
@@ -1189,31 +1160,30 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'neg?' does not allow %s as operand 1s", 
+											"Function 'neg?' does not allow %s as operand 1s",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction even_Q = 
+
+	public static VncFunction even_Q =
 		new VncFunction(
-				"even?", 
+				"even?",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(even? n)")
 					.doc("Returns true if n is even, throws an exception if n is not an integer")
 					.examples(
-						"(even? 4)", 
-						"(even? 3)", 
+						"(even? 4)",
+						"(even? 3)",
 						"(even? (int 3))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("even?", args, 1);
-				
+
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() % 2L == 0L ? True : False;
@@ -1223,31 +1193,30 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'even?' does not allow %s as operand.", 
+											"Function 'even?' does not allow %s as operand.",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction odd_Q = 
+
+	public static VncFunction odd_Q =
 		new VncFunction(
-				"odd?", 
+				"odd?",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(odd? n)")
 					.doc("Returns true if n is odd, throws an exception if n is not an integer")
 					.examples(
-						"(odd? 3)", 
-						"(odd? 4)", 
+						"(odd? 3)",
+						"(odd? 4)",
 						"(odd? (int 4))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("odd?", args, 1);
-				
+
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
 					return ((VncLong)op1).getValue() % 2L == 1L ? True : False;
@@ -1257,21 +1226,20 @@ public class MathFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'odd?' does not allow %s as operand", 
+											"Function 'odd?' does not allow %s as operand",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	
-	public static VncFunction dec_add = 
+
+
+	public static VncFunction dec_add =
 		new VncFunction(
-				"dec/add", 
+				"dec/add",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(dec/add x y scale rounding-mode)")
 					.doc(
@@ -1280,29 +1248,28 @@ public class MathFunctions {
 					.examples(
 						"(dec/add 2.44697M 1.79882M 3 :HALF_UP)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("dec/add", args, 4);
-	
+
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
-					
+
 				return new VncBigDecimal(op1.getValue()
 								.add(op2.getValue())
 								.setScale(scale.getValue().intValue(), roundingMode));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction dec_sub = 
+
+	public static VncFunction dec_sub =
 		new VncFunction(
-				"dec/sub", 
+				"dec/sub",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(dec/sub x y scale rounding-mode)")
 					.doc(
@@ -1311,27 +1278,26 @@ public class MathFunctions {
 					.examples(
 						"(dec/sub 2.44697M 1.79882M 3 :HALF_UP)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("dec/sub", args, 4);
-	
+
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
-					
+
 				return new VncBigDecimal(op1.getValue().subtract(op2.getValue()).setScale(scale.getValue().intValue(), roundingMode));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction dec_mul = 
+
+	public static VncFunction dec_mul =
 		new VncFunction(
-				"dec/mul", 
+				"dec/mul",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(dec/mul x y scale rounding-mode)")
 					.doc(
@@ -1340,27 +1306,26 @@ public class MathFunctions {
 					.examples(
 						"(dec/mul 2.44697M 1.79882M 5 :HALF_UP)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("dec/mul", args, 4);
-	
+
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
-					
+
 				return new VncBigDecimal(op1.getValue().multiply(op2.getValue()).setScale(scale.getValue().intValue(), roundingMode));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction dec_div = 
+
+	public static VncFunction dec_div =
 		new VncFunction(
-				"dec/div", 
+				"dec/div",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(dec/div x y scale rounding-mode)")
 					.doc(
@@ -1369,27 +1334,26 @@ public class MathFunctions {
 					.examples(
 						"(dec/div 2.44697M 1.79882M 5 :HALF_UP)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("dec/div", args, 4);
-	
+
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
 				final VncLong scale = Coerce.toVncLong(args.nth(2));
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
-					
+
 				return new VncBigDecimal(op1.getValue().divide(op2.getValue(), scale.getValue().intValue(), roundingMode));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction dec_scale = 
+	public static VncFunction dec_scale =
 		new VncFunction(
-				"dec/scale", 
+				"dec/scale",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(dec/scale x scale rounding-mode)")
 					.doc(
@@ -1402,14 +1366,14 @@ public class MathFunctions {
 						"(dec/scale 2.44697M 3 :HALF_UP)",
 						"(dec/scale 2.44697M 10 :HALF_UP)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("dec/scale", args, 3);
-	
+
 				final VncVal arg = args.first();
 				final VncLong scale = Coerce.toVncLong(args.second());
 				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode((VncString)args.nth(2));
-							
+
 				if (Types.isVncBigDecimal(arg)) {
 					final BigDecimal val = ((VncBigDecimal)arg).getValue();
 					return new VncBigDecimal(val.setScale(scale.getValue().intValue(), roundingMode));
@@ -1420,23 +1384,22 @@ public class MathFunctions {
 											Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
-	public static VncFunction range = 
+	public static VncFunction range =
 		new VncFunction(
-				"range", 
+				"range",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
-						"(range end)", 
-						"(range start end)", 
+						"(range end)",
+						"(range start end)",
 						"(range start end step)")
 					.doc(
-						"Returns a collection of numbers from start (inclusive) to end " + 
+						"Returns a collection of numbers from start (inclusive) to end " +
 						"(exclusive), by step, where start defaults to 0 and step defaults to 1. " +
 						"When start is equal to end, returns empty list.")
 					.examples(
@@ -1448,14 +1411,14 @@ public class MathFunctions {
 						"(range 10 15 0.5)",
 						"(range 1.1M 2.2M 0.1M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("range", args, 1, 2, 3);
-	
+
 				VncVal start = null;
 				VncVal end = null;
 				VncVal step = null;
-	
+
 				switch(args.size()) {
 					case 1:
 						start = new VncLong(0);
@@ -1473,28 +1436,28 @@ public class MathFunctions {
 						step = args.nth(2);
 						break;
 				}
-							
+
 				if (!Types.isVncNumber(start)) {
 					throw new VncException("range: start value must be a number");
 				}
 				if (!Types.isVncNumber(end)) {
-					throw new VncException("range: end value must be a number");	
+					throw new VncException("range: end value must be a number");
 				}
 				if (!Types.isVncNumber(step)) {
-					throw new VncException("range: step value must be a number");	
+					throw new VncException("range: step value must be a number");
 				}
-	
+
 				final List<VncVal> values = new ArrayList<>();
-	
+
 				if (zero_Q.apply(VncList.of(step)) == True) {
-					throw new VncException("range: a step value must not be 0");	
+					throw new VncException("range: a step value must not be 0");
 				}
-				
+
 				if (MathFunctions.pos_Q.apply(VncList.of(step)) == True) {
 					if (CoreFunctions.lt.apply(VncList.of(end, start)) == True) {
-						throw new VncException("range positive step: end must not be lower than start");	
+						throw new VncException("range positive step: end must not be lower than start");
 					}
-					
+
 					VncVal val = start;
 					while(CoreFunctions.lt.apply(VncList.of(val, end)) == True) {
 						values.add(val);
@@ -1503,43 +1466,43 @@ public class MathFunctions {
 				}
 				else {
 					if (CoreFunctions.gt.apply(VncList.of(end, start)) == True) {
-						throw new VncException("range negative step: end must not be greater than start");	
+						throw new VncException("range negative step: end must not be greater than start");
 					}
-					
+
 					VncVal val = start;
 					while(CoreFunctions.gt.apply(VncList.of(val, end)) == True) {
 						values.add(val);
 						val = add.apply(VncList.of(val, step));
 					}
 				}
-				
+
 				return new VncList(values);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-		
+
 	private static VncVal validateNumber(final String fnName, final VncVal val) {
 		if (!Types.isVncNumber(val)) {
 			throw new VncException(String.format(
-					"%s: Not a number. Got a %s", 
+					"%s: Not a number. Got a %s",
 					fnName,
 					Types.getType(val)));
 		}
-		
+
 		return val;
 	}
-	
+
 	private static boolean isOdd(final int val) {
 		return val % 2 == 1;
 	}
 
 	private static VncList medianWithHalfs(final VncList sortedData) {
 		VncVal median;
-		VncList lowerHalf; 
-		VncList upperHalf; 
-		
+		VncList lowerHalf;
+		VncList upperHalf;
+
 		if (isOdd(sortedData.size())) {
 			// (3, 5, 7, 8), 12, (13, 14, 18, 21)
 			median = median(sortedData);
@@ -1552,7 +1515,7 @@ public class MathFunctions {
 			lowerHalf = sortedData.slice(0, (sortedData.size() / 2));
 			upperHalf = sortedData.slice(sortedData.size() / 2);
 		}
-		
+
 		return VncList.of(median, lowerHalf, upperHalf);
 	}
 
@@ -1569,26 +1532,26 @@ public class MathFunctions {
 				final VncVal lowerMedian = sortedData.nth(sortedData.size() / 2 - 1);
 				final VncVal upperMedian = sortedData.nth(sortedData.size() / 2);
 				final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
-				
-				final VncVal divisor = Types.isVncBigDecimal(sum) 
+
+				final VncVal divisor = Types.isVncBigDecimal(sum)
 											? new VncBigDecimal(2L)
 											: new VncDouble(2.0D);
-						
+
 				return Numeric.calc(MathOp.DIV, sum, divisor);
 			}
 		}
 	}
-	
+
 	private static double toDouble(final VncVal val) {
 		return Numeric.toDouble(val).getValue().doubleValue();
 	}
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static Map<VncVal, VncVal> ns = 
+	public static Map<VncVal, VncVal> ns =
 			new VncHashMap.Builder()
 					.put("+",					add)
 					.put("-",					subtract)
@@ -1608,20 +1571,20 @@ public class MathFunctions {
 					.put("log",					log)
 					.put("log10",				log10)
 					.put("pow",					pow)
-	
+
 					.put("mean",				mean)
 					.put("median",				median)
 					.put("quartiles",			quartiles)
 					.put("quantile",			quantile)
 					.put("standard-deviation",	standard_deviation)
-					
-					
+
+
 					.put("dec/add",				dec_add)
 					.put("dec/sub",				dec_sub)
 					.put("dec/mul",				dec_mul)
 					.put("dec/div",				dec_div)
 					.put("dec/scale",			dec_scale)
-					
+
 					.put("zero?",				zero_Q)
 					.put("pos?",				pos_Q)
 					.put("neg?",				neg_Q)
@@ -1631,10 +1594,10 @@ public class MathFunctions {
 					.put("rand-long",			rand_long)
 					.put("rand-double",			rand_double)
 					.put("rand-gaussian",		rand_gaussian)
-					
+
 					.put("range",				range)
 
-					.toMap();	
+					.toMap();
 
 
 	private static final SecureRandom random = new SecureRandom();

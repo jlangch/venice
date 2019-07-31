@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -76,13 +76,12 @@ public class IOFunctions {
 	// I/O functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction io_file = 
+	public static VncFunction io_file =
 		new VncFunction(
-				"io/file", 
+				"io/file",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file path) (io/file parent child)")		
+					.arglists("(io/file path) (io/file parent child)")
 					.doc(
 						"Returns a java.io.File. path, parent, may be a file or a string (file path) " +
 						"child must be a string")
@@ -92,377 +91,363 @@ public class IOFunctions {
 						"(io/file (io/file \"/temp\") \"test.txt\")",
 						"(io/file (. :java.io.File :new \"/temp/test.txt\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file", args, 1, 2);
-							
+
 				if (args.size() == 1) {
 					return new VncJavaObject(
 									convertToFile(
-											args.first(), 
+											args.first(),
 											"Function 'io/file' does not allow %s as path"));
 				}
 				else {
 					final File parent = convertToFile(
-											args.first(), 
+											args.first(),
 											"Function 'io/file' does not allow %s as parent");
-					
+
 					final String child = Coerce.toVncString(args.second()).getValue();
-					
+
 					return new VncJavaObject(new File(parent, child));
-				}		
+				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_size = 
+	public static VncFunction io_file_size =
 		new VncFunction(
-				"io/file-size", 
+				"io/file-size",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-size f)")		
+					.arglists("(io/file-size f)")
 					.doc("Returns the size of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-size \"/bin/sh\")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-size", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-size' does not allow %s as f");
 
 				validateReadableFile(f);
 
 				return new VncLong(f.length());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_path = 
+	public static VncFunction io_file_path =
 		new VncFunction(
-				"io/file-path", 
+				"io/file-path",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-path f)")		
+					.arglists("(io/file-path f)")
 					.doc("Returns the path of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-path", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-path' does not allow %s as f");
-						
+
 				return new VncString(f.getPath());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_canonical_path = 
+	public static VncFunction io_file_canonical_path =
 		new VncFunction(
-				"io/file-canonical-path", 
+				"io/file-canonical-path",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-canonical-path f)")		
+					.arglists("(io/file-canonical-path f)")
 					.doc("Returns the canonical path of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-canonical-path (io/file \"/tmp/test/../x.txt\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-canonical-path", args, 1);
 
 				try {
 					final File f = convertToFile(
-										args.first(), 
+										args.first(),
 										"Function 'io/file-canonical-path' does not allow %s as f");
-							
+
 					return new VncString(f.getCanonicalPath());
 				}
 				catch(IOException ex) {
 					throw new VncException("Failed to get canonical file path", ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_absolute_path = 
+	public static VncFunction io_file_absolute_path =
 		new VncFunction(
-				"io/file-absolute-path", 
+				"io/file-absolute-path",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-absolute-path f)")		
+					.arglists("(io/file-absolute-path f)")
 					.doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-absolute-path (io/file \"/tmp/test/x.txt\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-absolute-path", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-absolute-path' does not allow %s as f");
-						
+
 				return new VncString(f.getAbsolutePath());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_parent = 
+	public static VncFunction io_file_parent =
 		new VncFunction(
-				"io/file-parent", 
+				"io/file-parent",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-parent f)")		
+					.arglists("(io/file-parent f)")
 					.doc("Returns the parent file of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-parent", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-parent' does not allow %s as f");
-						
+
 				final File parent = f.getParentFile();
 				return parent == null ? Nil : new VncJavaObject(parent);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_name = 
+	public static VncFunction io_file_name =
 		new VncFunction(
-				"io/file-name", 
+				"io/file-name",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-name f)")		
+					.arglists("(io/file-name f)")
 					.doc("Returns the name of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-name", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-name' does not allow %s as f");
-						
+
 				return new VncString(f.getName());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_Q = 
+	public static VncFunction io_file_Q =
 		new VncFunction(
-				"io/file?", 
+				"io/file?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file? x)")		
+					.arglists("(io/file? x)")
 					.doc("Returns true if x is a java.io.File.")
 					.examples("(io/file? (io/file \"/temp/test.txt\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file?", args, 1);
-	
+
 				return Types.isVncJavaObject(args.first(), File.class) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_exists_file_Q = 
+	public static VncFunction io_exists_file_Q =
 		new VncFunction(
-				"io/exists-file?", 
+				"io/exists-file?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/exists-file? f)")		
+					.arglists("(io/exists-file? f)")
 					.doc("Returns true if the file f exists. f must be a file or a string (file path).")
 					.examples("(io/exists-file? \"/temp/test.txt\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/exists-file?", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/exists-file?' does not allow %s as x");
-						
+
 				return Constants.bool(f.isFile());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_exists_dir_Q = 
+	public static VncFunction io_exists_dir_Q =
 		new VncFunction(
-				"io/exists-dir?", 
+				"io/exists-dir?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/exists-dir? f)")		
+					.arglists("(io/exists-dir? f)")
 					.doc(
 						"Returns true if the file f exists and is a directory. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/exists-dir? (io/file \"/temp\"))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/exists-dir?", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/exists-dir?' does not allow %s as f");
-						
+
 				return Constants.bool(f.isDirectory());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_can_read_Q = 
+	public static VncFunction io_file_can_read_Q =
 		new VncFunction(
-				"io/file-can-read?", 
+				"io/file-can-read?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-can-read? f)")		
+					.arglists("(io/file-can-read? f)")
 					.doc(
 						"Returns true if the file or directory f exists and can be read. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-read? \"/temp/test.txt\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-can-read?", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-can-read?' does not allow %s as x");
-						
+
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.canRead());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_can_write_Q = 
+	public static VncFunction io_file_can_write_Q =
 		new VncFunction(
-				"io/file-can-write?", 
+				"io/file-can-write?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-can-write? f)")		
+					.arglists("(io/file-can-write? f)")
 					.doc(
 						"Returns true if the file or directory f exists and can be written. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-write? \"/temp/test.txt\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-can-write?", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-can-write?' does not allow %s as x");
-						
+
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.canWrite());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_can_execute_Q = 
+	public static VncFunction io_file_can_execute_Q =
 		new VncFunction(
-				"io/file-can-execute?", 
+				"io/file-can-execute?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-can-execute? f)")		
+					.arglists("(io/file-can-execute? f)")
 					.doc(
 						"Returns true if the file or directory f exists and can be executed. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-execute? \"/temp/test.txt\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-can-execute?", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-can-execute?' does not allow %s as x");
-						
+
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.canExecute());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_file_hidden_Q = 
+	public static VncFunction io_file_hidden_Q =
 		new VncFunction(
-				"io/file-hidden?", 
+				"io/file-hidden?",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/file-hidden? f)")		
+					.arglists("(io/file-hidden? f)")
 					.doc(
 						"Returns true if the file or directory f exists and is hidden. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-hidden? \"/temp/test.txt\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-hidden?", args, 1);
 
 				final File f = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/file-hidden?' does not allow %s as x");
-						
+
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.isHidden());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_delete_file = 
+	public static VncFunction io_delete_file =
 		new VncFunction(
-				"io/delete-file", 
+				"io/delete-file",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/delete-file f & files)")		
+					.arglists("(io/delete-file f & files)")
 					.doc(
 						"Deletes one or multiple files. Silently skips delete if the file " +
 						"does not exist. f must be a file or a string (file path)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/delete-file", args, 1);
-	
+
 				args.forEach(f -> {
 					try {
 						final File file = convertToFile(
-											f, 
+											f,
 											"Function 'io/delete-file' does not allow %s as f");
-								
+
 						Files.deleteIfExists(file.toPath());
 					}
 					catch(Exception ex) {
@@ -471,120 +456,117 @@ public class IOFunctions {
 								ex);
 					}
 				});
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_delete_file_on_exit = 
+	public static VncFunction io_delete_file_on_exit =
 		new VncFunction(
-				"io/delete-file-on-exit", 
+				"io/delete-file-on-exit",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/delete-file-on-exit f)")		
+					.arglists("(io/delete-file-on-exit f)")
 					.doc("Deletes a file on JVM exit. f must be a file or a string (file path).")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/delete-file-on-exit", args, 1);
-	
+
 				final File file = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/delete-file-on-exit' does not allow %s as f");
 
 				validateReadableFile(file);
 
 				try {
-					file.deleteOnExit();	
+					file.deleteOnExit();
 				}
 				catch(Exception ex) {
 					throw new VncException(
 							String.format(
-									"Failed to mark file %s to be deleted on exit", 
+									"Failed to mark file %s to be deleted on exit",
 									file.getPath()),
 							ex);
 				}
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_list_files = 
+	public static VncFunction io_list_files =
 		new VncFunction(
-				"io/list-files", 
+				"io/list-files",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/list-files dir filterFn?)")		
+					.arglists("(io/list-files dir filterFn?)")
 					.doc(
 						"Lists files in a directory. dir must be a file or a string (file path). " +
 						"filterFn is an optional filter that filters the files found.")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/list-files", args, 1, 2);
 
 				final File dir = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/list-files' does not allow %s as dir");
 
 				validateReadableDirectory(dir);
 
 				try {
 					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
-	
+
 					final List<VncVal> files = new ArrayList<>();
-	
+
 					for(File f : dir.listFiles()) {
-						final VncVal result = (filterFn == null) 
-												? True 
+						final VncVal result = (filterFn == null)
+												? True
 												: filterFn.apply(VncList.of(new VncJavaObject(f)));
 						if (result == True) {
 							files.add(new VncJavaObject(f));
 						}
 					}
-					
+
 					return new VncList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
-							String.format("Failed to list files %s", dir.getPath()), 
+							String.format("Failed to list files %s", dir.getPath()),
 							ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_copy_file = 
+	public static VncFunction io_copy_file =
 		new VncFunction(
-				"io/copy-file", 
+				"io/copy-file",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/copy-file source dest)")		
+					.arglists("(io/copy-file source dest)")
 					.doc(
-						"Copies source to dest. Returns nil or throws IOException. " + 
+						"Copies source to dest. Returns nil or throws IOException. " +
 						"Source must be a file or a string (file path), dest must be a file, " +
 						"a string (file path), or an OutputStream.")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/copy-file", args, 2);
 
 				final File source = convertToFile(
-										args.first(), 
+										args.first(),
 										"Function 'io/copy-file' does not allow %s as source");
-	
+
 				validateReadableFile(source);
 
 				final VncVal destVal = args.second();
-				
+
 				if (Types.isVncString(destVal) || Types.isVncJavaObject(destVal, File.class)) {
 					final File dest = Types.isVncString(destVal)
 										? new File(Coerce.toVncString(destVal).getValue())
@@ -596,21 +578,21 @@ public class IOFunctions {
 					catch(Exception ex) {
 						throw new VncException(
 								String.format(
-										"Failed to copy file %s to %s", 
+										"Failed to copy file %s to %s",
 										source.getPath(), dest.getPath()),
 								ex);
 					}
 				}
 				else if (Types.isVncJavaObject(destVal, OutputStream.class)) {
 					final OutputStream os = (OutputStream)((VncJavaObject)destVal).getDelegate();
-					
+
 					try {
 						IOStreamUtil.copyFileToOS(source, os);
 					}
 					catch(Exception ex) {
 						throw new VncException(
 								String.format(
-										"Failed to copy file %s to stream", 
+										"Failed to copy file %s to stream",
 										source.getPath()),
 								ex);
 					}
@@ -620,34 +602,33 @@ public class IOFunctions {
 							"Function 'io/copy-file' does not allow %s as dest",
 							Types.getType(destVal)));
 				}
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_move_file = 
+	public static VncFunction io_move_file =
 		new VncFunction(
-				"io/move-file", 
+				"io/move-file",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/move-file source target)")		
+					.arglists("(io/move-file source target)")
 					.doc(
-						"Moves source to target. Returns nil or throws IOException. " + 
+						"Moves source to target. Returns nil or throws IOException. " +
 						"Source and target must be a file or a string (file path).")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/move-file", args, 2);
 
 				final File from = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/move-file' does not allow %s as source");
 
 				final File to = convertToFile(
-									args.second(), 
+									args.second(),
 									"Function 'io/move-file' does not allow %s as target");
 
 				validateReadableFile(from);
@@ -661,28 +642,27 @@ public class IOFunctions {
 								"Failed to move file %s to %s", from.getPath(), to.getPath()),
 							ex);
 				}
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction io_mkdir = 
+
+	public static VncFunction io_mkdir =
 		new VncFunction(
-				"io/mkdir", 
+				"io/mkdir",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/mkdir dir)")		
+					.arglists("(io/mkdir dir)")
 					.doc("Creates the directory. dir must be a file or a string (file path).")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/mkdir", args, 1);
 
 				final File dir = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/mkdir' does not allow %s as dir");
 
 				try {
@@ -693,30 +673,29 @@ public class IOFunctions {
 							String.format("Failed to create dir %s", dir.getPath()),
 							ex);
 				}
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction io_mkdirs = 
+
+	public static VncFunction io_mkdirs =
 		new VncFunction(
-				"io/mkdir", 
+				"io/mkdir",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/mkdirs dir)")		
+					.arglists("(io/mkdirs dir)")
 					.doc(
 						"Creates the directory including any necessary but nonexistent " +
 						"parent directories. dir must be a file or a string (file path).")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/mkdirs", args, 1);
 
 				final File dir = convertToFile(
-									args.first(), 
+									args.first(),
 									"Function 'io/mkdirs' does not allow %s as dir");
 
 				try {
@@ -727,96 +706,93 @@ public class IOFunctions {
 							String.format("Failed to create dir %s",  dir.getPath()),
 							ex);
 				}
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_tmp_dir = 
+	public static VncFunction io_tmp_dir =
 		new VncFunction(
-				"io/tmp-dir", 
+				"io/tmp-dir",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/tmp-dir)")		
+					.arglists("(io/tmp-dir)")
 					.doc("Returns the tmp dir as a java.io.File.")
 					.examples("(io/tmp-dir )")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/tmp-dir", args, 0);
-	
+
 				return new VncJavaObject(new File(System.getProperty("java.io.tmpdir")));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_user_dir = 
+	public static VncFunction io_user_dir =
 		new VncFunction(
-				"io/user-dir", 
+				"io/user-dir",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/user-dir)")		
+					.arglists("(io/user-dir)")
 					.doc("Returns the user dir (current working dir) as a java.io.File.")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/user-dir", args, 0);
-	
+
 				return new VncJavaObject(new File(System.getProperty("user.dir")));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_slurp_lines = 
+	public static VncFunction io_slurp_lines =
 		new VncFunction(
-				"io/slurp-lines", 
+				"io/slurp-lines",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/slurp-lines file & options)")		
+					.arglists("(io/slurp-lines file & options)")
 					.doc(
 						"Read all lines from f. f may be a file, a string file path, " +
-						"a Java InputStream, or a Java Reader. \n\n" + 
+						"a Java InputStream, or a Java Reader. \n\n" +
 						"Options: \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/slurp-lines", args, 1);
-	
-				try {	
+
+				try {
 					final VncVal arg = args.first();
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-					
+
 					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-						final File file = Types.isVncString(arg) 
+						final File file = Types.isVncString(arg)
 											? new File(((VncString)arg).getValue())
 											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
 						validateReadableFile(file);
 
-						final VncVal encVal = options.get(new VncKeyword("encoding")); 					
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
 						final String encoding = encoding(encVal);
 
-						final List<VncString> lines = 
+						final List<VncString> lines =
 								Files.readAllLines(file.toPath(), Charset.forName(encoding))
 									 .stream()
 									 .map(s -> new VncString(s))
 									 .collect(Collectors.toList());
-						
+
 						return new VncList(lines);
 					}
 					else if (Types.isVncJavaObject(arg, InputStream.class)) {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
-						final VncVal encVal = options.get(new VncKeyword("encoding")); 					
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
 						final String encoding = encoding(encVal);
 
 						final BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding));
@@ -825,7 +801,7 @@ public class IOFunctions {
 					else if (Types.isVncJavaObject(arg, Reader.class)) {
 						final BufferedReader rd = new BufferedReader(
 														(Reader)(Coerce.toVncJavaObject(args.first()).getDelegate()));
-						
+
 						return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 					}
 					else {
@@ -833,22 +809,21 @@ public class IOFunctions {
 								"Function 'io/slurp-lines' does not allow %s as f",
 								Types.getType(args.first())));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_slurp = 
+	public static VncFunction io_slurp =
 		new VncFunction(
-				"io/slurp", 
+				"io/slurp",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/slurp f & options)")		
+					.arglists("(io/slurp f & options)")
 					.doc(
 						"Reads the content of file f as text (string) or binary (bytebuf). " +
 						"f may be a file, a string file path, a Java InputStream, " +
@@ -857,20 +832,20 @@ public class IOFunctions {
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/slurp", args, 1);
-	
-				try {	
+
+				try {
 					final VncVal arg = args.first();
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-					
-					final VncVal binary = options.get(new VncKeyword("binary")); 
+
+					final VncVal binary = options.get(new VncKeyword("binary"));
 
 
 					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-						final File file = Types.isVncString(arg) 
+						final File file = Types.isVncString(arg)
 											? new File(((VncString)arg).getValue())
 											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
@@ -881,11 +856,11 @@ public class IOFunctions {
 							return new VncByteBuffer(ByteBuffer.wrap(data));
 						}
 						else {
-							final VncVal encVal = options.get(new VncKeyword("encoding")); 						
+							final VncVal encVal = options.get(new VncKeyword("encoding"));
 							final String encoding = encoding(encVal);
-		
+
 							final byte[] data = Files.readAllBytes(file.toPath());
-							
+
 							return new VncString(new String(data, encoding));
 						}
 					}
@@ -897,9 +872,9 @@ public class IOFunctions {
 							return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 						}
 						else {
-							final VncVal encVal = options.get(new VncKeyword("encoding")); 							
+							final VncVal encVal = options.get(new VncKeyword("encoding"));
 							final String encoding = encoding(encVal);
-		
+
 							return new VncString(IOStreamUtil.copyIStoString(is, encoding));
 						}
 					}
@@ -907,38 +882,37 @@ public class IOFunctions {
 						final BufferedReader rd = new BufferedReader(
 														(Reader)(Coerce.toVncJavaObject(args.first()).getDelegate()));
 						final String s = rd.lines().collect(Collectors.joining(System.lineSeparator()));
-						
+
 						if (binary == True) {
-							final VncVal encVal = options.get(new VncKeyword("encoding")); 						
+							final VncVal encVal = options.get(new VncKeyword("encoding"));
 							final String encoding = encoding(encVal);
 
 							return new VncByteBuffer(s.getBytes(encoding));
 						}
 						else {
 							return new VncString(s);
-						}			
+						}
 					}
 					else {
 						throw new VncException(String.format(
 								"Function 'io/slurp' does not allow %s as f",
 								Types.getType(args.first())));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_spit = 
+	public static VncFunction io_spit =
 		new VncFunction(
-				"io/spit", 
+				"io/spit",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/spit f content & options)")		
+					.arglists("(io/spit f content & options)")
 					.doc(
 						"Opens f, writes content, and then closes f. " +
 						"f may be a file or a string (file path). " +
@@ -947,29 +921,29 @@ public class IOFunctions {
 						"  :append true/false - e.g :append true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/spit", args, 2);
-	
+
 				try {
 
 					final File file = convertToFile(
-										args.first(), 
+										args.first(),
 										"Function 'io/spit' does not allow %s as f");
-	
-			
+
+
 					final VncVal content = args.second();
-	
+
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-	
-					final VncVal append = options.get(new VncKeyword("append")); 
-					
-					final VncVal encVal = options.get(new VncKeyword("encoding")); 
-						
+
+					final VncVal append = options.get(new VncKeyword("append"));
+
+					final VncVal encVal = options.get(new VncKeyword("encoding"));
+
 					final String encoding = encoding(encVal);
-	
+
 					byte[] data;
-					
+
 					if (Types.isVncString(content)) {
 						data = ((VncString)content).getValue().getBytes(encoding);
 					}
@@ -981,40 +955,39 @@ public class IOFunctions {
 								"Function 'io/spit' does not allow %s as content",
 								Types.getType(content)));
 					}
-	
+
 					final List<OpenOption> openOptions = new ArrayList<>();
 					openOptions.add(StandardOpenOption.CREATE);
 					openOptions.add(StandardOpenOption.WRITE);
-					
+
 					if (append == True) {
 						openOptions.add(StandardOpenOption.APPEND);
 					}
 					else {
 						openOptions.add(StandardOpenOption.TRUNCATE_EXISTING);
 					}
-					
+
 					Files.write(
-							file.toPath(), 
-							data, 
+							file.toPath(),
+							data,
 							openOptions.toArray(new OpenOption[0]));
-					
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_download = 
+	public static VncFunction io_download =
 		new VncFunction(
-				"io/download", 
+				"io/download",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/download uri & options)")		
+					.arglists("(io/download uri & options)")
 					.doc(
 						"Downloads the content from the uri and reads it as text (string) " +
 						"or binary (bytebuf). \n\n" +
@@ -1022,18 +995,18 @@ public class IOFunctions {
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/download", args, 1);
-	
+
 				final String uri = Coerce.toVncString(args.first()).getValue();
 
-				try {	
+				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-					
-					final VncVal binary = options.get(new VncKeyword("binary")); 
 
-					final VncVal encVal = options.get(new VncKeyword("encoding")); 						
+					final VncVal binary = options.get(new VncKeyword("binary"));
+
+					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 
 					try (BufferedInputStream is = new BufferedInputStream(new URL(uri).openStream())) {
@@ -1043,33 +1016,32 @@ public class IOFunctions {
 								? new VncByteBuffer(ByteBuffer.wrap(data))
 								: new VncString(new String(data, encoding));
 					}
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_copy_stream = 
+	public static VncFunction io_copy_stream =
 		new VncFunction(
-				"io/copy-stream", 
+				"io/copy-stream",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/copy-file in-stream out-stream)")		
+					.arglists("(io/copy-file in-stream out-stream)")
 					.doc(
-						"Copies input stream to an output stream. Returns nil or throws IOException. " + 
+						"Copies input stream to an output stream. Returns nil or throws IOException. " +
 						"Input and output must be a java.io.InputStream and java.io.OutputStream.")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/copy-stream", args, 2);
-	
+
 				final Object is = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
-			
+
 				if (!(is instanceof InputStream)) {
 					throw new VncException(String.format(
 							"Function 'io/copy-stream' does not allow %s as in-stream",
@@ -1080,27 +1052,26 @@ public class IOFunctions {
 							"Function 'io/copy-stream' does not allow %s as out-stream",
 							Types.getType(args.second())));
 				}
-	
+
 				try {
 					IOStreamUtil.copy((InputStream)is, (OutputStream)os);
 				}
 				catch(Exception ex) {
 					throw new VncException("Failed to copy stream");
 				}
-				
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_slurp_stream = 
+	public static VncFunction io_slurp_stream =
 		new VncFunction(
-				"io/slurp-stream", 
+				"io/slurp-stream",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/slurp-stream is & options)")		
+					.arglists("(io/slurp-stream is & options)")
 					.doc(
 						"Slurps binary or string data from a Java InputStream. " +
 						"Supports the option :binary to either slurp binary or string data. " +
@@ -1118,29 +1089,29 @@ public class IOFunctions {
 						"           (io/slurp-stream is :binary false))) \n" +
 						")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/slurp-stream", args, 1);
-	
-				try {	
+
+				try {
 					final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-									
+
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-	
-					final VncVal binary = options.get(new VncKeyword("binary")); 
-	
+
+					final VncVal binary = options.get(new VncKeyword("binary"));
+
 					if (binary == True) {
 						final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 						return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 					}
 					else {
-						final VncVal encVal = options.get(new VncKeyword("encoding")); 
-						
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
+
 						final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-	
+
 						return new VncString(IOStreamUtil.copyIStoString(is, encoding));
 					}
-				} 
+				}
 				catch (VncException ex) {
 					throw ex;
 				}
@@ -1148,17 +1119,16 @@ public class IOFunctions {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_spit_stream = 
+	public static VncFunction io_spit_stream =
 		new VncFunction(
-				"io/spit-stream", 
+				"io/spit-stream",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/spit-stream os content & options)")		
+					.arglists("(io/spit-stream os content & options)")
 					.doc(
 						"Writes content (string or bytebuf) to the Java OutputStream os. " +
 						"If content is of type string an optional encoding (defaults to " +
@@ -1176,25 +1146,25 @@ public class IOFunctions {
 						"           (io/spit-stream os \"123456789\" :flush true))) \n" +
 						")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/spit-stream", args, 2);
-	
+
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-			
+
 					final VncVal content = args.second();
-	
+
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-	
-					final VncVal encVal = options.get(new VncKeyword("encoding")); 					
+
+					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
-	
-					final VncVal flushVal = options.get(new VncKeyword("flush")); 
+
+					final VncVal flushVal = options.get(new VncKeyword("flush"));
 					final boolean flush = flushVal == True ? true : false;
-	
+
 					byte[] data;
-					
+
 					if (Types.isVncString(content)) {
 						data = ((VncString)content).getValue().getBytes(encoding);
 					}
@@ -1206,56 +1176,54 @@ public class IOFunctions {
 								"Function 'spit-stream' does not allow %s as content",
 								Types.getType(content)));
 					}
-					
+
 					os.write(data);
-					
+
 					if (flush) {
 						os.flush();
 					}
-					
+
 					return Nil;
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_uri_stream = 
+	public static VncFunction io_uri_stream =
 			new VncFunction(
-					"io/uri-stream", 
+					"io/uri-stream",
 					VncFunction
 						.meta()
-						.module("io")
-						.arglists("(io/uri-stream uri)")		
+						.arglists("(io/uri-stream uri)")
 						.doc("Returns a Java InputStream from the uri.")
 						.build()
-			) {	
+			) {
 				public VncVal apply(final VncList args) {
 					assertMinArity("io/uri-stream", args, 1);
 
 					final String uri = Coerce.toVncString(args.first()).getValue();
-					
-					try {	
+
+					try {
 						return new VncJavaObject(new URL(uri).openStream());
 					}
 					catch (Exception ex) {
 						throw new VncException(ex.getMessage(), ex);
 					}
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction io_wrap_os_with_buffered_writer = 
+	public static VncFunction io_wrap_os_with_buffered_writer =
 		new VncFunction(
-				"io/wrap-os-with-buffered-writer", 
+				"io/wrap-os-with-buffered-writer",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")		
+					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")
 					.doc(
 						"Wraps an OutputStream with a BufferedWriter using an optional " +
 						"encoding (defaults to :utf-8).")
@@ -1270,31 +1238,30 @@ public class IOFunctions {
 						"      (. wr :flush)                                         \n" +
 						"      (. os :toByteArray)))                                   ")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/wrap-os-with-buffered-writer", args, 1, 2);
-	
+
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
-						
+
 					return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, encoding)));
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_wrap_os_with_print_writer = 
+	public static VncFunction io_wrap_os_with_print_writer =
 		new VncFunction(
-				"io/wrap-os-with-printwriter", 
+				"io/wrap-os-with-printwriter",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/wrap-os-with-print-writer os encoding?)")		
+					.arglists("(io/wrap-os-with-print-writer os encoding?)")
 					.doc(
 						"Wraps an OutputStream with a PrintWriter using an optional " +
 						"encoding (defaults to :utf-8).")
@@ -1308,79 +1275,77 @@ public class IOFunctions {
 						"      (. wr :flush)                                      \n" +
 						"      (. os :toByteArray)))                                ")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/wrap-os-with-print-writer", args, 1, 2);
-	
+
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
-						
+
 					return new VncJavaObject(new PrintWriter(new OutputStreamWriter(os, encoding)));
-				} 
+				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_wrap_is_with_buffered_reader = 
+	public static VncFunction io_wrap_is_with_buffered_reader =
 			new VncFunction(
-					"io/wrap-is-with-buffered-reader", 
+					"io/wrap-is-with-buffered-reader",
 					VncFunction
 						.meta()
-						.module("io")
-						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")		
+						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")
 						.doc(
 							"Wraps an InputStream with a BufferedReader using an optional " +
 							"encoding (defaults to :utf-8).")
 						.examples(
 							"(do                                                                          \n" +
-							"   (import :java.io.ByteArrayInputStream)                                    \n" +						
+							"   (import :java.io.ByteArrayInputStream)                                    \n" +
 							"   (let [data (byte-array [108 105 110 101 32 49 10 108 105 110 101 32 50])  \n" +
 							"         is (. :ByteArrayInputStream :new data)                              \n" +
 							"         rd (io/wrap-is-with-buffered-reader is :utf-8)]                     \n" +
 							"      (println (. rd :readLine))                                             \n" +
 							"      (println (. rd :readLine))))                                             ")
 						.build()
-			) {	
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("io/wrap-is-with-buffered-reader", args, 1, 2);
-		
+
 					try {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 						final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
-							
+
 						return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
-					} 
+					}
 					catch (Exception ex) {
 						throw new VncException(ex.getMessage(), ex);
 					}
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
-		
-	public static VncFunction io_mime_type = 
+
+	public static VncFunction io_mime_type =
 		new VncFunction(
-				"io/mime-type", 
+				"io/mime-type",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/mime-type file)")		
+					.arglists("(io/mime-type file)")
 					.doc("Returns the mime-type for the file if available else nil.")
 					.examples(
 						"(io/mime-type \"document.pdf\")",
 						"(io/mime-type (io/file \"document.pdf\"))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/mime-type", args, 1);
-	
+
 				final VncVal file = args.first();
-				
+
 				if (Types.isVncString(file)) {
 					return new VncString(
 								MimeTypes.getMimeTypeFromFileName(
@@ -1397,22 +1362,21 @@ public class IOFunctions {
 							Types.getType(file)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// IO TEMP functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction io_temp_file = 
+	public static VncFunction io_temp_file =
 		new VncFunction(
-				"io/temp-file", 
+				"io/temp-file",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/temp-file prefix suffix)")		
+					.arglists("(io/temp-file prefix suffix)")
 					.doc(
 						"Creates an empty temp file with prefix and suffix.")
 					.examples(
@@ -1422,10 +1386,10 @@ public class IOFunctions {
 						"        (io/slurp file :binary false :remove true)) \n" +
 						")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/temp-file", args, 2);
-	
+
 				final String prefix = Coerce.toVncString(args.first()).getValue();
 				final String suffix = Coerce.toVncString(args.second()).getValue();
 				try {
@@ -1435,24 +1399,23 @@ public class IOFunctions {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_temp_dir = 
+	public static VncFunction io_temp_dir =
 		new VncFunction(
-				"io/temp-dir", 
+				"io/temp-dir",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/temp-dir prefix)")		
+					.arglists("(io/temp-dir prefix)")
 					.doc("Creates a temp directory with prefix.")
 					.examples("(io/temp-dir \"test-\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/temp-dir", args, 1);
-	
+
 				final String prefix = Coerce.toVncString(args.first()).getValue();
 				try {
 					return new VncString(Files.createTempDirectory(prefix).normalize().toString());
@@ -1461,26 +1424,25 @@ public class IOFunctions {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_load_classpath_resource = 
+	public static VncFunction io_load_classpath_resource =
 		new VncFunction(
-				"io/load-classpath-resource", 
+				"io/load-classpath-resource",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/load-classpath-resource name)")		
+					.arglists("(io/load-classpath-resource name)")
 					.doc("Loads a classpath resource.")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
-				try {	
+				try {
 					assertArity("io/load-classpath-resource", args, 1);
-					
+
 					final VncVal name = args.first();
-					
+
 					if (Types.isVncString(name)) {
 						final String res = ((VncString)args.first()).getValue();
 						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
@@ -1499,7 +1461,7 @@ public class IOFunctions {
 					else {
 						return Nil;
 					}
-				} 
+				}
 				catch (SecurityException ex) {
 					throw ex;
 				}
@@ -1507,38 +1469,37 @@ public class IOFunctions {
 					throw new VncException(ex.getMessage(), ex);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction io_default_charset = 
+
+	public static VncFunction io_default_charset =
 		new VncFunction(
-				"io/default-charset", 
+				"io/default-charset",
 				VncFunction
 					.meta()
-					.module("io")
-					.arglists("(io/default-charset)")		
+					.arglists("(io/default-charset)")
 					.doc("Returns the default charset.")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/default-charset", args, 0);
-	
+
 				return new VncString(Charset.defaultCharset().name());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
+
 
 	private static String encoding(final VncVal enc) {
-		return enc == Nil 
-				? "UTF-8" 
+		return enc == Nil
+				? "UTF-8"
 				: Types.isVncKeyword(enc)
 					? Coerce.toVncKeyword(enc).getValue()
 					: Coerce.toVncString(enc).getValue();
 	}
-	
+
 	private static File convertToFile(final VncVal f, final String errFormat) {
 		if (Types.isVncString(f)) {
 			return new File(((VncString)f).getValue());
@@ -1553,7 +1514,7 @@ public class IOFunctions {
 			throw new VncException(String.format(errFormat, f));
 		}
 	}
-	
+
 	private static void validateReadableFile(final File file) {
 		if (!file.isFile()) {
 			throw new VncException(String.format("'%s' is not a file", file.getPath()));
@@ -1562,7 +1523,7 @@ public class IOFunctions {
 			throw new VncException(String.format("The file '%s' has no read permission", file.getPath()));
 		}
 	}
-	
+
 	private static void validateReadableDirectory(final File file) {
 		if (!file.isDirectory()) {
 			throw new VncException(String.format("'%s' is not a directory", file.getPath()));
@@ -1572,13 +1533,13 @@ public class IOFunctions {
 		}
 	}
 
-	
-	
+
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static Map<VncVal, VncVal> ns = 
+	public static Map<VncVal, VncVal> ns =
 			new VncHashMap.Builder()
 					.put("io/file",							io_file)
 					.put("io/file?",						io_file_Q)
@@ -1613,9 +1574,9 @@ public class IOFunctions {
 					.put("io/slurp-stream",					io_slurp_stream)
 					.put("io/spit-stream",					io_spit_stream)
 					.put("io/uri-stream",					io_uri_stream)
-					.put("io/wrap-os-with-buffered-writer",	io_wrap_os_with_buffered_writer)					
-					.put("io/wrap-os-with-print-writer",	io_wrap_os_with_print_writer)					
-					.put("io/wrap-is-with-buffered-reader",	io_wrap_is_with_buffered_reader)					
+					.put("io/wrap-os-with-buffered-writer",	io_wrap_os_with_buffered_writer)
+					.put("io/wrap-os-with-print-writer",	io_wrap_os_with_print_writer)
+					.put("io/wrap-is-with-buffered-reader",	io_wrap_is_with_buffered_reader)
 					.put("io/mime-type",					io_mime_type)
 					.put("io/default-charset",				io_default_charset)
 					.put("io/load-classpath-resource",		io_load_classpath_resource)

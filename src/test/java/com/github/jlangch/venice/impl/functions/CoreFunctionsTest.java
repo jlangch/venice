@@ -1883,19 +1883,6 @@ public class CoreFunctionsTest {
 		
 		assertEquals("{:a 1}", venice.eval("(str (meta (with-meta [1 2 3] { :a 1 })))"));
 	}
-	
-	@Test
-	public void test_module() {
-		final Venice venice = new Venice();
-
-		assertEquals("core", venice.eval("(module +)"));	
-		assertEquals("io",   venice.eval("(module io/file)"));	
-		assertEquals("str",  venice.eval("(module str/blank?)"));	
-		assertEquals("time", venice.eval("(module time/date)"));	
-		assertEquals("user", venice.eval("(do (defn x [] 100) (module x)))"));	
-		assertEquals("user", venice.eval("(let [x (fn [] 100)] (module x))"));	
-		assertEquals("user", venice.eval("(do (let [x (fn [] 100)] (module x)))"));	
-	}
 
 	@Test
 	public void test_name() {

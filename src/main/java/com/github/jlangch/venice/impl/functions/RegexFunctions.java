@@ -55,7 +55,6 @@ public class RegexFunctions {
 					"regex/pattern", 
 					VncFunction
 						.meta()
-						.module("regex")
 						.arglists("(regex/pattern s)")		
 						.doc("Returns an instance of java.util.regex.Pattern.")
 						.examples("(regex/pattern \"[0-9]+\")")
@@ -77,7 +76,6 @@ public class RegexFunctions {
 				"regex/matcher", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/matcher pattern str)")		
 					.doc(
 						"Returns an instance of java.util.regex.Matcher. The pattern can be " +
@@ -107,7 +105,6 @@ public class RegexFunctions {
 				"regex/find?", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/find matcher)")		
 					.doc(
 						"Attempts to find the next subsequence that matches the pattern. " +
@@ -135,7 +132,6 @@ public class RegexFunctions {
 				"regex/matches", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/matches pattern str)")		
 					.doc(
 						"Returns the match, if any, of string to pattern, using " + 
@@ -174,7 +170,6 @@ public class RegexFunctions {
 				"regex/matches?", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/matches matcher)")		
 					.doc(
 						"Attempts to match the entire region against the pattern. " +
@@ -202,7 +197,6 @@ public class RegexFunctions {
 				"regex/find", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/find matcher)")		
 					.doc("Returns the next regex match")
 					.examples(
@@ -234,7 +228,6 @@ public class RegexFunctions {
 				"regex/find-all", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/find-all matcher)")		
 					.doc("Returns all regex matches")
 					.examples(
@@ -261,7 +254,6 @@ public class RegexFunctions {
 				"regex/find-group", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/find-group matcher)")		
 					.doc("Returns the next regex match and returns the group")
 					.examples(
@@ -296,7 +288,6 @@ public class RegexFunctions {
 					"regex/find-all-groups", 
 					VncFunction
 						.meta()
-						.module("regex")
 						.arglists("(regex/find-all-groups matcher)")		
 						.doc("Returns the all regex matchws and returns the groups")
 						.examples(
@@ -327,7 +318,6 @@ public class RegexFunctions {
 				"regex/reset", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/reset matcher str)")		
 					.doc(
 						"Resets the matcher with a new string")
@@ -355,7 +345,6 @@ public class RegexFunctions {
 				"regex/group", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/group matcher group)")		
 					.doc(
 						"Returns the input subsequence captured by the given group during the" + 
@@ -391,7 +380,6 @@ public class RegexFunctions {
 				"regex/groupcount", 
 				VncFunction
 					.meta()
-					.module("regex")
 					.arglists("(regex/groupcount matcher)")		
 					.doc(
 						"Returns the matcher's group count.")

@@ -56,7 +56,6 @@ public class ArrayFunctions {
 				"aset", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(aset array idx val)")		
 					.doc("Sets the value at the index of an array")
 					.examples("(aset (long-array '(1 2 3 4 5)) 1 20)")
@@ -110,7 +109,6 @@ public class ArrayFunctions {
 					"aget", 
 					VncFunction
 						.meta()
-						.module("core")
 						.arglists("(aget array idx)")		
 						.doc("Returns the value at the index of an array of Java Objects")
 						.examples("(aget (long-array '(1 2 3 4 5)) 1)")
@@ -147,7 +145,6 @@ public class ArrayFunctions {
 					"alength", 
 					VncFunction
 						.meta()
-						.module("core")
 						.arglists("(alength array)")		
 						.doc("Returns the length of an array")
 						.examples("(alength (long-array '(1 2 3 4 5)))")
@@ -177,7 +174,6 @@ public class ArrayFunctions {
 					"asub", 
 					VncFunction
 						.meta()
-						.module("core")
 						.arglists("(asub array start len)")		
 						.doc("Returns a sub array")
 						.examples("(asub (long-array '(1 2 3 4 5)) 2 3)")
@@ -215,7 +211,6 @@ public class ArrayFunctions {
 				"amap", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists("(amap f arr)")		
 					.doc(
 						"Applys f to each item in the array arr. Returns a new array with " + 
@@ -307,7 +302,6 @@ public class ArrayFunctions {
 				"acopy", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(acopy src src-pos dest dest-pos dest-len)")		
 					.doc(
@@ -363,7 +357,6 @@ public class ArrayFunctions {
 				"make-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(make-array type len)",		
 						"(make-array type dim &more-dims)")		
@@ -413,7 +406,6 @@ public class ArrayFunctions {
 				"object-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(object-array coll)", 
 						"(object-array len)", 
@@ -462,7 +454,6 @@ public class ArrayFunctions {
 				"string-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(string-array coll)", 
 						"(string-array len)", 
@@ -515,7 +506,6 @@ public class ArrayFunctions {
 				"byte-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(byte-array coll)", 
 						"(byte-array len)", 
@@ -568,7 +558,6 @@ public class ArrayFunctions {
 				"int-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(int-array coll)", 
 						"(int-array len)", 
@@ -622,7 +611,6 @@ public class ArrayFunctions {
 				"long-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(long-array coll)", 
 						"(long-array len)", 
@@ -676,7 +664,6 @@ public class ArrayFunctions {
 				"float-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(float-array coll)", 
 						"(float-array len)", 
@@ -730,7 +717,6 @@ public class ArrayFunctions {
 				"double-array", 
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
 						"(double-array coll)", 
 						"(double-array len)", 

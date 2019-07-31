@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -89,48 +89,47 @@ import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
 
 public class CoreFunctions {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// Errors/Exceptions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction throw_ex = 
+	public static VncFunction throw_ex =
 		new VncFunction(
-				"throw", 
+				"throw",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(throw)", "(throw x)")		
+					.arglists("(throw)", "(throw x)")
 					.doc("Throws exception with passed value x")
 					.examples(
 						"(do                                                     \n" +
 						"   (try                                                 \n" +
 						"     (+ 100 200)                                        \n" +
 						"     (catch :Exception ex (:message ex))))                ",
-						
+
 						"(do                                                     \n" +
 						"   (try                                                 \n" +
 						"     (throw 100)                                        \n" +
 						"     (catch :ValueException ex (:value ex))))             ",
-						
+
 						"(do                                                     \n" +
 						"   (try                                                 \n" +
 						"      (throw [100 {:a 3}])                              \n" +
 						"      (catch :ValueException ex (:value ex))            \n" +
 						"      (finally (println \"#finally\"))))                  ",
-						
+
 						"(do                                                     \n" +
 						"   (import :java.lang.RuntimeException)                 \n" +
 						"   (try                                                 \n" +
-						"      (throw (. :RuntimeException :new \"#test\"))      \n" +  
+						"      (throw (. :RuntimeException :new \"#test\"))      \n" +
 						"      (catch :RuntimeException ex (:message ex))))        ",
-						
+
 						";; Venice wraps thrown checked exceptions with a RuntimeException! \n" +
 						"(do                                                                \n" +
 						"   (import :java.lang.RuntimeException)                            \n" +
 						"   (import :java.io.IOException)                                   \n" +
 						"   (try                                                            \n" +
-						"      (throw (. :IOException :new \"#test\"))                      \n" +  
+						"      (throw (. :IOException :new \"#test\"))                      \n" +
 						"      (catch :RuntimeException ex (:message (:cause ex)))))          ")
 					.build()
 		) {
@@ -154,7 +153,7 @@ public class CoreFunctions {
 					throw new ValueException("throw", args.first());
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -163,13 +162,12 @@ public class CoreFunctions {
 	// Scalar functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction nil_Q = 
+	public static VncFunction nil_Q =
 		new VncFunction(
-				"nil?", 
+				"nil?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(nil? x)")		
+					.arglists("(nil? x)")
 					.doc("Returns true if x is nil, false otherwise")
 					.examples(
 						"(nil? nil)",
@@ -179,20 +177,19 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("nil?", args, 1);
-				
+
 				return args.first() == Nil ? True : False;
 			}
-		
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction some_Q = 
+	public static VncFunction some_Q =
 		new VncFunction(
-				"some?", 
+				"some?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(some? x)")		
+					.arglists("(some? x)")
 					.doc("Returns true if x is not nil, false otherwise")
 					.examples(
 						"(some? nil)",
@@ -202,23 +199,22 @@ public class CoreFunctions {
 						"(some? [])",
 						"(some? {})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("some?", args, 1);
-				
+
 				return args.first() == Nil ? False : True;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction true_Q = 
+	public static VncFunction true_Q =
 		new VncFunction(
-				"true?", 
+				"true?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(true? x)")		
+					.arglists("(true? x)")
 					.doc("Returns true if x is true, false otherwise")
 					.examples(
 						"(true? true)",
@@ -227,23 +223,22 @@ public class CoreFunctions {
 						"(true? 0)",
 						"(true? (== 1 1))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("true?", args, 1);
-				
+
 				return args.first() == True ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction false_Q = 
+	public static VncFunction false_Q =
 		new VncFunction(
-				"false?", 
+				"false?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(false? x)")		
+					.arglists("(false? x)")
 					.doc("Returns true if x is false, false otherwise")
 					.examples(
 						"(false? true)",
@@ -252,23 +247,22 @@ public class CoreFunctions {
 						"(false? 0)",
 						"(false? (== 1 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("false?", args, 1);
-				
+
 				return args.first() == False ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction boolean_Q = 
+
+	public static VncFunction boolean_Q =
 		new VncFunction(
-				"boolean?", 
+				"boolean?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(boolean? n)")		
+					.arglists("(boolean? n)")
 					.doc("Returns true if n is a boolean")
 					.examples(
 						"(boolean? true)",
@@ -276,23 +270,22 @@ public class CoreFunctions {
 						"(boolean? nil)",
 						"(boolean? 0)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("boolean?", args, 1);
-				
+
 				return args.first() == True || args.first() == False ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction int_Q = 
+
+	public static VncFunction int_Q =
 		new VncFunction(
-				"int?", 
+				"int?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(int? n)")		
+					.arglists("(int? n)")
 					.doc("Returns true if n is an int")
 					.examples(
 						"(int? 4I)",
@@ -302,23 +295,22 @@ public class CoreFunctions {
 						"(int? nil)",
 						"(int? {})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("int?", args, 1);
-	
+
 				return Types.isVncInteger(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction long_Q = 
+	public static VncFunction long_Q =
 		new VncFunction(
-				"long?", 
+				"long?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(long? n)")		
+					.arglists("(long? n)")
 					.doc("Returns true if n is a long")
 					.examples(
 						"(long? 4)",
@@ -328,23 +320,22 @@ public class CoreFunctions {
 						"(long? nil)",
 						"(long? {})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("long?", args, 1);
-	
+
 				return Types.isVncLong(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction double_Q = 
+
+	public static VncFunction double_Q =
 		new VncFunction(
-				"double?", 
+				"double?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(double? n)")		
+					.arglists("(double? n)")
 					.doc("Returns true if n is a double")
 					.examples(
 						"(double? 4.0)",
@@ -355,23 +346,22 @@ public class CoreFunctions {
 						"(double? nil)",
 						"(double? {})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("double?", args, 1);
-				
+
 				return Types.isVncDouble(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction decimal_Q = 
+
+	public static VncFunction decimal_Q =
 		new VncFunction(
-				"decimal?", 
+				"decimal?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(decimal? n)")		
+					.arglists("(decimal? n)")
 					.doc("Returns true if n is a decimal")
 					.examples(
 						"(decimal? 4.0M)",
@@ -379,23 +369,22 @@ public class CoreFunctions {
 						"(decimal? 3)",
 						"(decimal? 3I)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("decimal?", args, 1);
-				
+
 				return Types.isVncBigDecimal(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction number_Q = 
+
+	public static VncFunction number_Q =
 		new VncFunction(
-				"number?", 
+				"number?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(number? n)")		
+					.arglists("(number? n)")
 					.doc("Returns true if n is a number (int, long, double, or decimal)")
 					.examples(
 						"(number? 4I))",
@@ -405,89 +394,86 @@ public class CoreFunctions {
 						"(number? true)",
 						"(number? \"a\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("number?", args, 1);
-				
-				return Types.isVncLong(args.first()) 
+
+				return Types.isVncLong(args.first())
 						|| Types.isVncInteger(args.first())
 						|| Types.isVncDouble(args.first())
 						|| Types.isVncBigDecimal(args.first())? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction string_Q = 
+	public static VncFunction string_Q =
 		new VncFunction(
-				"string?", 
+				"string?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(string? x)")		
+					.arglists("(string? x)")
 					.doc("Returns true if x is a string")
 					.examples(
 						"(string? \"abc\")",
 						"(string? 1)",
 						"(string? nil)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("string?", args, 1);
-				
-				if (args.first() instanceof VncKeyword) { 
-					return False; 
+
+				if (args.first() instanceof VncKeyword) {
+					return False;
 				}
-				else if (args.first() instanceof VncString) { 
-					return True; 
+				else if (args.first() instanceof VncString) {
+					return True;
 				}
 				else {
 					return False;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction symbol = 
+	public static VncFunction symbol =
 		new VncFunction(
-				"symbol", 
+				"symbol",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(symbol name)")		
+					.arglists("(symbol name)")
 					.doc("Returns a symbol from the given name")
 					.examples(
 						"(symbol \"a\")",
 						"(symbol 'a)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("symbol", args, 1);
-	
+
 				if (Types.isVncSymbol(args.first())) {
 					return args.first();
-				} 
+				}
 				else if (Types.isVncString(args.first())) {
 					return new VncSymbol((VncString)args.first());
-				} 
+				}
 				else {
 					throw new VncException(String.format(
 							"Function 'symbol' does not allow %s name.",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction symbol_Q = 
+
+	public static VncFunction symbol_Q =
 		new VncFunction(
-				"symbol?", 
+				"symbol?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(symbol? x)")		
+					.arglists("(symbol? x)")
 					.doc("Returns true if x is a symbol")
 					.examples(
 						"(symbol? (symbol \"a\"))",
@@ -495,55 +481,53 @@ public class CoreFunctions {
 						"(symbol? nil)",
 						"(symbol? :a)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("symbol?", args, 1);
-				
+
 				return Types.isVncSymbol(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction keyword = 
+	public static VncFunction keyword =
 		new VncFunction(
-				"keyword", 
+				"keyword",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(keyword name)")		
+					.arglists("(keyword name)")
 					.doc("Returns a keyword from the given name")
 					.examples(
 						"(keyword \"a\")",
 						"(keyword :a)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("keyword", args, 1);
-				
+
 				if (Types.isVncKeyword(args.first())) {
 					return args.first();
-				} 
+				}
 				else if (Types.isVncString(args.first())) {
 					return new VncKeyword(((VncString)args.first()).getValue());
-				} 
+				}
 				else {
 					throw new VncException(String.format(
 							"Function 'keyword' does not allow %s name",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction keyword_Q = 
+
+	public static VncFunction keyword_Q =
 		new VncFunction(
-				"keyword?", 
+				"keyword?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(keyword? x)")		
+					.arglists("(keyword? x)")
 					.doc("Returns true if x is a keyword")
 					.examples(
 						"(keyword? (keyword \"a\"))",
@@ -551,59 +535,57 @@ public class CoreFunctions {
 						"(keyword? nil)",
 						"(keyword? 'a)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("keyword?", args, 1);
-				
+
 				return Types.isVncKeyword(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction fn_Q = 
+
+	public static VncFunction fn_Q =
 		new VncFunction(
-				"fn?", 
+				"fn?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(fn? x)")		
+					.arglists("(fn? x)")
 					.doc("Returns true if x is a function")
 					.examples("(do \n   (def sum (fn [x] (+ 1 x)))\n   (fn? sum))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("fn?", args, 1);
-				
-				if (!Types.isVncFunction(args.first())) { 
-					return False; 
+
+				if (!Types.isVncFunction(args.first())) {
+					return False;
 				}
 				return ((VncFunction)args.first()).isMacro() ? False : True;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction macro_Q = 
+
+	public static VncFunction macro_Q =
 		new VncFunction(
-				"macro?", 
+				"macro?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(macro? x)")		
+					.arglists("(macro? x)")
 					.doc("Returns true if x is a macro")
 					.examples("(macro? and)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("macro?", args, 1);
-				
-				if (!Types.isVncFunction(args.first())) { 
-					return False; 
+
+				if (!Types.isVncFunction(args.first())) {
+					return False;
 				}
 				return ((VncFunction)args.first()).isMacro() ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -612,15 +594,14 @@ public class CoreFunctions {
 	// String functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction pr_str = 
+	public static VncFunction pr_str =
 		new VncFunction(
-				"pr-str", 
+				"pr-str",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(pr-str & xs)")		
+					.arglists("(pr-str & xs)")
 					.doc(
-						"With no args, returns the empty string. With one arg x, returns " + 
+						"With no args, returns the empty string. With one arg x, returns " +
 						"x.toString(). With more than one arg, returns the concatenation " +
 						"of the str values of the args with delimiter ' '.")
 					.examples("(pr-str )", "(pr-str 1 2 3)")
@@ -635,156 +616,150 @@ public class CoreFunctions {
 									.map(v -> Printer.pr_str(v, true))
 									.collect(Collectors.joining(" ")));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction str = 
+	public static VncFunction str =
 		new VncFunction(
-				"str", 
+				"str",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(str & xs)")		
+					.arglists("(str & xs)")
 					.doc(
-						"With no args, returns the empty string. With one arg x, returns " + 
-						"x.toString(). (str nil) returns the empty string. With more than " + 
+						"With no args, returns the empty string. With one arg x, returns " +
+						"x.toString(). (str nil) returns the empty string. With more than " +
 						"one arg, returns the concatenation of the str values of the args.")
 					.examples(
-						"(str )", 
-						"(str 1 2 3)", 
-						"(str +)", 
+						"(str )",
+						"(str 1 2 3)",
+						"(str +)",
 						"(str [1 2 3])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final StringBuilder sb = new StringBuilder();
 				for(VncVal v : args.getList()) {
 					if (v != Nil) {
 						sb.append(Printer.pr_str(v, false));
 					}
-				}		
+				}
 				return new VncString(sb.toString());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction readline = 
+	public static VncFunction readline =
 		new VncFunction(
-				"readline", 
+				"readline",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(readline prompt)")		
+					.arglists("(readline prompt)")
 					.doc("Reads the next line from stdin. The function is sandboxed")
 					.build()
 		) {
-			public VncVal apply(final VncList args) {			
+			public VncVal apply(final VncList args) {
 				final String prompt = Coerce.toVncString(args.first()).getValue();
 				try {
 					return new VncString(Readline.readline(prompt));
-				} 
+				}
 				catch (IOException ex) {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("readline", args))) {
 						throw new ValueException(new VncString(ex.getMessage()), ex);
 					}
-				} 
+				}
 				catch (EofException e) {
 					return Nil;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction read_string = 
+	public static VncFunction read_string =
 		new VncFunction(
-				"read-string", 
+				"read-string",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(read-string x)")		
+					.arglists("(read-string x)")
 					.doc("Reads from x")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				try {
 					assertArity("read-string", args, 1, 2);
-	
+
 					return Reader.read_str(
-							Coerce.toVncString(args.first()).getValue(), 
+							Coerce.toVncString(args.first()).getValue(),
 							args.size() == 2 ? Coerce.toVncString(args.second()).getValue() : "user");
-				} 
+				}
 				catch (ContinueException c) {
 					return Nil;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// Number functions
-	///////////////////////////////////////////////////////////////////////////	
+	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction equal_Q = 
+	public static VncFunction equal_Q =
 		new VncFunction(
-				"==", 
+				"==",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(== x y)")		
+					.arglists("(== x y)")
 					.doc("Returns true if both operands have the equivalent type")
 					.examples("(== 0 0)", "(== 0 1)", "(== 0 0.0)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("==", args, 2);
-				
+
 				return Types._equal_Q(args.first(), args.second()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction not_equal_Q = 
+	public static VncFunction not_equal_Q =
 		new VncFunction(
-				"!=", 
+				"!=",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(!= x y)")		
+					.arglists("(!= x y)")
 					.doc("Returns true if both operands do not have the equivalent type")
 					.examples("(!= 0 1)", "(!= 0 0)", "(!= 0 0.0)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("!=", args, 2);
-				
+
 				return Types._equal_Q(args.first(), args.second()) ? False : True;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction match_Q = 
+	public static VncFunction match_Q =
 		new VncFunction(
-				"match?", 
+				"match?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(match? s regex)")		
+					.arglists("(match? s regex)")
 					.doc("Returns true if the string s matches the regular expression regex")
 					.examples(
-							"(match? \"1234\" \"[0-9]+\")", 
+							"(match? \"1234\" \"[0-9]+\")",
 							"(match? \"1234ss\" \"[0-9]+\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("match?", args, 2);
-				
+
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
 							"Invalid first argument type %s while calling function 'match?'",
@@ -795,29 +770,28 @@ public class CoreFunctions {
 							"Invalid second argument type %s while calling function 'match?'",
 							Types.getType(args.second())));
 				}
-	
+
 				return Types._match_Q(args.first(), args.second()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction not_match_Q = 
+	public static VncFunction not_match_Q =
 		new VncFunction(
-				"not-match?", 
+				"not-match?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(not-match? s regex)")		
+					.arglists("(not-match? s regex)")
 					.doc("Returns true if the string s does not match the regular expression regex")
 					.examples(
-						"(not-match? \"1234\" \"[0-9]+\")", 
+						"(not-match? \"1234\" \"[0-9]+\")",
 						"(not-match? \"1234ss\" \"[0-9]+\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("not-match?", args, 2);
-				
+
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
 							"Invalid first argument type %s while calling function 'not-match?'",
@@ -828,205 +802,200 @@ public class CoreFunctions {
 							"Invalid second argument type %s while calling function 'not-match?'",
 							Types.getType(args.second())));
 				}
-				
+
 				return Types._match_Q(args.first(), args.second()) ? False : True;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction lt = 
+	public static VncFunction lt =
 		new VncFunction(
-				"<", 
+				"<",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(< x y)")		
+					.arglists("(< x y)")
 					.doc("Returns true if x is smaller than y")
 					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("<", args, 2);
-	
+
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
-				
+
 				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) < 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
-								"Function '<' with operand 1 of type %s does not allow %s as operand 2", 
+								"Function '<' with operand 1 of type %s does not allow %s as operand 2",
 								Types.getType(op1),
 								Types.getType(op2)));
 					}
-	
+
 					final String s1 = ((VncString)op1).getValue();
 					final String s2 = ((VncString)op2).getValue();
 					return s1.compareTo(s2) < 0 ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
-											"Function '<' does not allow %s as operand 1", 
+											"Function '<' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction lte = 
+
+	public static VncFunction lte =
 		new VncFunction(
-				"<=", 
+				"<=",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(<= x y)")		
+					.arglists("(<= x y)")
 					.doc("Returns true if x is smaller or equal to y")
 					.examples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("<=", args, 2);
-	
+
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
-				
+
 				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) <= 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
-								"Function '<=' with operand 1 of type %s does not allow %s as operand 2", 
+								"Function '<=' with operand 1 of type %s does not allow %s as operand 2",
 								Types.getType(op1),
 								Types.getType(op2)));
 					}
-	
+
 					final String s1 = ((VncString)op1).getValue();
 					final String s2 = ((VncString)op2).getValue();
 					return s1.compareTo(s2) <= 0 ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
-											"Function '<=' does not allow %s as operand 1", 
+											"Function '<=' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction gt = 
+
+	public static VncFunction gt =
 		new VncFunction(
-				">", 
+				">",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(> x y)")		
+					.arglists("(> x y)")
 					.doc("Returns true if x is greater than y")
 					.examples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity(">", args, 2);
-	
+
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
-				
+
 				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) > 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
-								"Function '>' with operand 1 of type %s does not allow %s as operand 2", 
+								"Function '>' with operand 1 of type %s does not allow %s as operand 2",
 								Types.getType(op1),
 								Types.getType(op2)));
 					}
-	
+
 					final String s1 = ((VncString)op1).getValue();
 					final String s2 = ((VncString)op2).getValue();
 					return s1.compareTo(s2) > 0 ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
-											"Function '>' does not allow %s as operand 1", 
+											"Function '>' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction gte = 
+
+	public static VncFunction gte =
 		new VncFunction(
-				">=", 
+				">=",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(>= x y)")		
+					.arglists("(>= x y)")
 					.doc("Returns true if x is greater or equal to y")
 					.examples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity(">=", args, 2);
-	
+
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
-				
+
 				if (Types.isVncNumber(op1)) {
 					return op1.compareTo(op2) >= 0 ? True : False;
 				}
 				else if (Types.isVncString(op1)) {
 					if (!Types.isVncString(op2)) {
 						throw new VncException(String.format(
-								"Function '>=' with operand 1 of type %s does not allow %s as operand 2", 
+								"Function '>=' with operand 1 of type %s does not allow %s as operand 2",
 								Types.getType(op1),
 								Types.getType(op2)));
 					}
-	
+
 					final String s1 = ((VncString)op1).getValue();
 					final String s2 = ((VncString)op2).getValue();
 					return s1.compareTo(s2) >= 0 ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
-											"Function '>=' does not allow %s as operand 1", 
+											"Function '>=' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
 
 
-	
+
+
 	///////////////////////////////////////////////////////////////////////////
 	// Casts
 	///////////////////////////////////////////////////////////////////////////
- 	
-	public static VncFunction boolean_cast = 
+
+	public static VncFunction boolean_cast =
 		new VncFunction(
-				"boolean", 
+				"boolean",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(boolean x)")		
+					.arglists("(boolean x)")
 					.doc("Converts to boolean. Everything except 'false' and 'nil' is true in boolean context.")
 					.examples(
 						"(boolean false)",
 						"(boolean true)",
 						"(boolean nil)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("boolean", args, 1);
-	
+
 				final VncVal arg = args.first();
 				if (arg == Nil) {
 					return False;
@@ -1038,17 +1007,16 @@ public class CoreFunctions {
 					return True;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
- 	
-	public static VncFunction long_cast = 
+
+	public static VncFunction long_cast =
 		new VncFunction(
-				"long", 
+				"long",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(long x)")		
+					.arglists("(long x)")
 					.doc("Converts to long")
 					.examples(
 						"(long 1)",
@@ -1059,10 +1027,10 @@ public class CoreFunctions {
 						"(long 1.2M)",
 						"(long \"1\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("long", args, 1);
-	
+
 				final VncVal op1 = args.first();
 				if (op1 == Nil) {
 					return new VncLong(0);
@@ -1092,26 +1060,26 @@ public class CoreFunctions {
 					}
 					catch(Exception ex) {
 						throw new VncException(String.format(
-								"Function 'long': the string %s can not be converted to a long", 
+								"Function 'long': the string %s can not be converted to a long",
 								s));
 					}
 				}
 				else {
 					throw new VncException(String.format(
-											"Function 'long' does not allow %s as operand 1", 
+											"Function 'long' does not allow %s as operand 1",
 											Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction int_cast = 
+	public static VncFunction int_cast =
 	new VncFunction(
-			"int", 
+			"int",
 			VncFunction
 				.meta()
-				.arglists("(int x)")		
+				.arglists("(int x)")
 				.doc("Converts to int")
 				.examples(
 					"(int 1)",
@@ -1122,7 +1090,7 @@ public class CoreFunctions {
 					"(int 1.2M)",
 					"(int \"1\")")
 				.build()
-	) {		
+	) {
 		public VncVal apply(final VncList args) {
 			assertArity("int", args, 1);
 
@@ -1155,13 +1123,13 @@ public class CoreFunctions {
 				}
 				catch(Exception ex) {
 					throw new VncException(String.format(
-							"Function 'int': the string %s can not be converted to an int", 
+							"Function 'int': the string %s can not be converted to an int",
 							s));
 				}
 			}
 			else {
 				throw new VncException(String.format(
-										"Function 'int' does not allow %s as operand 1", 
+										"Function 'int' does not allow %s as operand 1",
 										Types.getType(op1)));
 			}
 		}
@@ -1169,13 +1137,12 @@ public class CoreFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
-	public static VncFunction double_cast = 
+	public static VncFunction double_cast =
 		new VncFunction(
-				"double", 
+				"double",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(double x)")		
+					.arglists("(double x)")
 					.doc("Converts to double")
 					.examples(
 						"(double 1)",
@@ -1186,10 +1153,10 @@ public class CoreFunctions {
 						"(double 1.2M)",
 						"(double \"1.2\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("double", args, 1);
-	
+
 				final VncVal op1 = args.first();
 				if (op1 == Nil) {
 					return new VncDouble(0.0);
@@ -1219,50 +1186,49 @@ public class CoreFunctions {
 					}
 					catch(Exception ex) {
 						throw new VncException(String.format(
-								"Function 'double': the string %s can not be converted to a double", 
+								"Function 'double': the string %s can not be converted to a double",
 								s));
 					}
 				}
 				else {
 					throw new VncException(String.format(
-								"Function 'double' does not allow %s as operand 1", 
+								"Function 'double' does not allow %s as operand 1",
 								Types.getType(op1)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction decimal_cast = 
+
+	public static VncFunction decimal_cast =
 		new VncFunction(
-				"decimal", 
+				"decimal",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(decimal x) (decimal x scale rounding-mode)")		
+					.arglists("(decimal x) (decimal x scale rounding-mode)")
 					.doc(
 						"Converts to decimal. rounding-mode is one of (:CEILING, :DOWN, " +
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
 					.examples(
-						"(decimal 2)", 
-						"(decimal 2 3 :HALF_UP)", 
+						"(decimal 2)",
+						"(decimal 2 3 :HALF_UP)",
 						"(decimal 2.5787 3 :HALF_UP)",
 						"(decimal 2.5787M 3 :HALF_UP)",
 						"(decimal \"2.5787\" 3 :HALF_UP)",
 						"(decimal nil)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("decimal", args, 1, 3);
-	
+
 				if (args.isEmpty()) {
 					return new VncBigDecimal(BigDecimal.ZERO);
 				}
-				else {				
+				else {
 					final VncVal arg = args.first();
 					final VncLong scale = args.size() < 3 ? null : Coerce.toVncLong(args.second());
 					final RoundingMode roundingMode = args.size() < 3 ? null : VncBigDecimal.toRoundingMode((VncString)args.nth(2));
-	
+
 					if (arg == Constants.Nil) {
 						final BigDecimal dec = BigDecimal.ZERO;
 						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
@@ -1285,248 +1251,241 @@ public class CoreFunctions {
 					}
 					else {
 						throw new VncException(String.format(
-								"Function 'decimal' does not allow %s as operand 1", 
+								"Function 'decimal' does not allow %s as operand 1",
 								Types.getType(arg)));
 					}
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// List functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction new_list = 
+	public static VncFunction new_list =
 		new VncFunction(
-				"list", 
+				"list",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(list & items)")		
+					.arglists("(list & items)")
 					.doc("Creates a new list containing the items.")
 					.examples("(list )", "(list 1 2 3)", "(list 1 2 3 [:a :b])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				return new VncList(args.getList());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_list_ASTERISK = 
+	public static VncFunction new_list_ASTERISK =
 		new VncFunction(
-				"list*", 
+				"list*",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists(	
+					.arglists(
 				    	"(list* args)",
 				    	"(list* a args)",
 				    	"(list* a b args)",
 				    	"(list* a b c args)",
 				    	"(list* a b c d & more)")
 					.doc(
-						"Creates a new list containing the items prepended to the rest, the\n" + 
+						"Creates a new list containing the items prepended to the rest, the\n" +
 						"last of which will be treated as a collection.")
 					.examples(
-						"(list* 1 [2 3])", 
-						"(list* 1 2 3 [4])", 
-						"(list* '(1 2) 3 [4])", 
+						"(list* 1 [2 3])",
+						"(list* 1 2 3 [4])",
+						"(list* '(1 2) 3 [4])",
 						"(list* nil)",
 						"(list* nil [2 3])",
 						"(list* 1 2 nil)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("list*", args, 1);
-				
+
 				if (args.size() == 1 && args.first() == Nil) {
 					return Nil;
-				}			
+				}
 				else if (args.last() == Nil) {
 					return new VncList(args.slice(0, args.size()-1).getList());
 				}
 				else if (!Types.isVncSequence(args.last())) {
 					throw new VncException(String.format(
-							"Function 'list*' does not allow %s as last argument", 
+							"Function 'list*' does not allow %s as last argument",
 							Types.getType(args.last())));
 				}
-				else {			
+				else {
 					return new VncList()
 								.addAllAtEnd(args.slice(0, args.size()-1))
 								.addAllAtEnd((VncSequence)args.last());
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	static public boolean list_Q(VncVal mv) {
 		return Types.isVncList(mv);
 	}
-	
-	public static VncFunction list_Q = 
+
+	public static VncFunction list_Q =
 		new VncFunction(
-				"list?", 
+				"list?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(list? obj)")		
+					.arglists("(list? obj)")
 					.doc("Returns true if obj is a list")
 					.examples("(list? (list 1 2))", "(list? '(1 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("list?", args, 1);
-				
+
 				return list_Q(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// Vector functions
 	///////////////////////////////////////////////////////////////////////////
-	
-	public static VncFunction new_vector = 
+
+	public static VncFunction new_vector =
 		new VncFunction(
-				"vector", 
+				"vector",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(vector & items)")		
+					.arglists("(vector & items)")
 					.doc("Creates a new vector containing the items.")
 					.examples(
-						"(vector )", 
-						"(vector 1 2 3)", 
+						"(vector )",
+						"(vector 1 2 3)",
 						"(vector 1 2 3 [:a :b])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				return new VncVector(args.getList());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	static public boolean vector_Q(VncVal mv) {
 		return Types.isVncVector(mv);
 	}
-	
-	public static VncFunction vector_Q = 
+
+	public static VncFunction vector_Q =
 		new VncFunction(
-				"vector?", 
+				"vector?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(vector? obj)")		
+					.arglists("(vector? obj)")
 					.doc("Returns true if obj is a vector")
 					.examples(
-						"(vector? (vector 1 2))", 
+						"(vector? (vector 1 2))",
 						"(vector? [1 2])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("vector?", args, 1);
-				
+
 				return vector_Q(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction subvec = 
+
+	public static VncFunction subvec =
 		new VncFunction(
-				"subvec", 
+				"subvec",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(subvec v start) (subvec v start end)")		
+					.arglists("(subvec v start) (subvec v start end)")
 					.doc(
 						"Returns a vector of the items in vector from start (inclusive) "+
-						"to end (exclusive). If end is not supplied, defaults to " + 
+						"to end (exclusive). If end is not supplied, defaults to " +
 						"(count vector)")
 					.examples(
-						"(subvec [1 2 3 4 5 6] 2)", 
+						"(subvec [1 2 3 4 5 6] 2)",
 						"(subvec [1 2 3 4 5 6] 4)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("subvec", args, 2, 3);
-	
-				final VncVector vec = Coerce.toVncVector(args.first());		
+
+				final VncVector vec = Coerce.toVncVector(args.first());
 				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
-				
+
 				return new VncVector(
 								to == null
 									? vec.getList().subList(from.getValue().intValue(), vec.size())
 									: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction replace = 
+
+	public static VncFunction replace =
 		new VncFunction(
-				"replace", 
+				"replace",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(replace smap coll)")		
+					.arglists("(replace smap coll)")
 					.doc(
-						"Given a map of replacement pairs and a collection, returns a\n" + 
-						"collection with any elements that are a key in smap replaced with the\n" + 
+						"Given a map of replacement pairs and a collection, returns a\n" +
+						"collection with any elements that are a key in smap replaced with the\n" +
 						"corresponding value in smap.")
 					.examples(
 							"(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])",
 							"(replace {2 :two, 4 :four} #{1 2 3 4 5})",
 							"(replace {[:a 10] [:c 30]} {:a 10 :b 20})")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("replace", args, 2);
-	
+
 				final VncMap map = Coerce.toVncMap(args.first());
 				final VncVal coll = args.second();
-				
+
 				if (Types.isVncSequence(coll)) {
 					final VncSequence seq = (VncSequence)coll;
-					
+
 					final List<VncVal> vals = new ArrayList<>();
-							
+
 					for(VncVal v : seq.getList()) {
 						final VncVal r = map.get(v);
 						vals.add(r == Nil ? v : r);
 					}
-	
+
 					return seq.withValues(vals, coll.getMeta());
 				}
 				else if (Types.isVncSet(coll)) {
 					final VncSet set = (VncSet)coll;
-					
+
 					final List<VncVal> vals = new ArrayList<>();
-							
+
 					for(VncVal v : set.getList()) {
 						final VncVal r = map.get(v);
 						vals.add(r == Nil ? v : r);
 					}
-	
+
 					return set.withValues(vals, coll.getMeta());
 				}
 				else if (Types.isVncMap(coll)) {
 					VncMap mapc = (VncMap)coll;
-					
+
 					for(VncMapEntry e : map.entries()) {
 						final VncVal k = Coerce.toVncVector(e.getKey()).first();
 						final VncVal v = Coerce.toVncVector(e.getKey()).second();
-						
+
 						if (v.equals(mapc.get(k))) {
 							mapc = mapc.dissoc(k);
 							mapc = mapc.assoc(
@@ -1534,7 +1493,7 @@ public class CoreFunctions {
 										Coerce.toVncVector(e.getValue()).second());
 						}
 					}
-					
+
 					return mapc;
 				}
 				else {
@@ -1542,58 +1501,56 @@ public class CoreFunctions {
 							"Function 'repeat' requires a list, vector, set, or map as coll argument");
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// ByteBuf functions
 	///////////////////////////////////////////////////////////////////////////
-	
-	public static VncFunction bytebuf_Q = 
+
+	public static VncFunction bytebuf_Q =
 		new VncFunction(
-				"bytebuf?", 
+				"bytebuf?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(bytebuf? x)")		
+					.arglists("(bytebuf? x)")
 					.doc("Returns true if x is a bytebuf")
 					.examples(
 						"(bytebuf? (bytebuf [1 2]))",
 						"(bytebuf? [1 2])",
 						"(bytebuf? nil)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf?", args, 1);
-				
+
 				return Types.isVncByteBuffer(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction bytebuf_cast = 
+	public static VncFunction bytebuf_cast =
 		new VncFunction(
-				"bytebuf", 
+				"bytebuf",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(bytebuf x)")		
+					.arglists("(bytebuf x)")
 					.doc( "Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string")
 					.examples("(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf", args, 0, 1);
-	
+
 				if (args.isEmpty()) {
 					return new VncByteBuffer(ByteBuffer.wrap(new byte[0]));
 				}
-				
+
 				final VncVal arg = args.first();
-	
+
 				if (Types.isVncString(arg)) {
 					try {
 						return new VncByteBuffer(
@@ -1622,383 +1579,371 @@ public class CoreFunctions {
 						throw new VncException(String.format(
 								"Function 'bytebuf' a list as argument must contains long values"));
 					}
-					
+
 					final List<VncVal> list = ((VncSequence)arg).getList();
-					
+
 					final byte[] buf = new byte[list.size()];
 					for(int ii=0; ii<list.size(); ii++) {
 						buf[ii] = (byte)((VncLong)list.get(ii)).getValue().longValue();
 					}
-					
+
 					return new VncByteBuffer(ByteBuffer.wrap(buf));
 				}
-	
+
 				throw new VncException(String.format(
-							"Function 'bytebuf' does not allow %s as argument", 
+							"Function 'bytebuf' does not allow %s as argument",
 							Types.getType(arg)));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction bytebuf_from_string = 
+	public static VncFunction bytebuf_from_string =
 		new VncFunction(
-				"bytebuf-from-string", 
+				"bytebuf-from-string",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(bytebuf-from-string s encoding)")		
+					.arglists("(bytebuf-from-string s encoding)")
 					.doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to :UTF-8")
 					.examples("(bytebuf-from-string \"abcdef\" :UTF-8)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf-from-string", args, 1, 2);
-	
+
 				final String s = Coerce.toVncString(args.first()).getValue();
-	
+
 				final VncVal encVal = args.size() == 2 ? args.second() : Nil;
 				final String encoding = encoding(encVal);
-				
+
 				try {
-					return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(encoding)));				
+					return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(encoding)));
 				}
 				catch(Exception ex) {
 					throw new VncException(String.format(
 							"Failed to convert string to bytebuffer"));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction bytebuf_to_string = 
+	public static VncFunction bytebuf_to_string =
 		new VncFunction(
-				"bytebuf-to-string", 
+				"bytebuf-to-string",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(bytebuf-to-string buf encoding)")		
+					.arglists("(bytebuf-to-string buf encoding)")
 					.doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
 					.examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf-to-string", args, 1, 2);
-	
+
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
-	
+
 				final VncVal encVal = args.size() == 2 ? args.second() : Nil;
 				final String encoding = encoding(encVal);
-				
+
 				try {
-					return new VncString(new String(buf.array(), encoding));				
+					return new VncString(new String(buf.array(), encoding));
 				}
 				catch(Exception ex) {
 					throw new VncException(String.format(
 							"Failed to convert bytebuf to string"));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction bytebuf_sub = 
+	public static VncFunction bytebuf_sub =
 		new VncFunction(
-				"bytebuf-sub", 
+				"bytebuf-sub",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(bytebuf-sub x start) (bytebuf-sub x start end)")		
+					.arglists("(bytebuf-sub x start) (bytebuf-sub x start end)")
 					.doc(
 						"Returns a byte buffer of the items in buffer from start (inclusive) "+
-						"to end (exclusive). If end is not supplied, defaults to " + 
+						"to end (exclusive). If end is not supplied, defaults to " +
 						"(count bytebuffer)")
 					.examples(
-						"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 2)", 
+						"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 2)",
 						"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 4)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf-sub", args, 2, 3);
-	
-				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();		
+
+				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();
 				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
-				
-				
+
+
 				return new VncByteBuffer(
 								to == null
 									? ByteBuffer.wrap(
 											Arrays.copyOfRange(
-													buf, 
-													from.getValue().intValue(), 
+													buf,
+													from.getValue().intValue(),
 													buf.length))
 									:  ByteBuffer.wrap(
 											Arrays.copyOfRange(
-													buf, 
-													from.getValue().intValue(), 
+													buf,
+													from.getValue().intValue(),
 													to.getValue().intValue())));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// Set functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction new_set = 
+	public static VncFunction new_set =
 		new VncFunction(
-				"set", 
+				"set",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(set & items)")		
+					.arglists("(set & items)")
 					.doc("Creates a new set containing the items.")
 					.examples("(set )", "(set nil)", "(set 1)", "(set 1 2 3)", "(set [1 2] 3)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				return VncHashSet.ofAll(args);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_sorted_set = 
+	public static VncFunction new_sorted_set =
 		new VncFunction(
-				"sorted-set", 
+				"sorted-set",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sorted-set & items)")		
+					.arglists("(sorted-set & items)")
 					.doc("Creates a new sorted-set containing the items.")
 					.examples("(sorted-set )", "(sorted-set nil)", "(sorted-set 1)", "(sorted-set 6 2 4)", "(str (sorted-set [2 3] [1 2]))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				return VncSortedSet.ofAll(args);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction set_Q = 
+	public static VncFunction set_Q =
 		new VncFunction(
-				"set?", 
+				"set?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(set? obj)")		
+					.arglists("(set? obj)")
 					.doc("Returns true if obj is a set")
 					.examples("(set? (set 1))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("set?", args, 1);
-				
+
 				return Types.isVncHashSet(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction sorted_set_Q = 
+	public static VncFunction sorted_set_Q =
 		new VncFunction(
-				"sorted-set?", 
+				"sorted-set?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sorted-set? obj)")		
+					.arglists("(sorted-set? obj)")
 					.doc("Returns true if obj is a sorted-set")
 					.examples("(sorted-set? (set 1))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sorted-set?", args, 1);
-				
+
 				return Types.isVncSortedSet(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction difference = 
+	public static VncFunction difference =
 		new VncFunction(
-				"difference", 
+				"difference",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(difference s1)", "(difference s1 s2)", "(difference s1 s2 & sets)")		
+					.arglists("(difference s1)", "(difference s1 s2)", "(difference s1 s2 & sets)")
 					.doc("Return a set that is the first set without elements of the remaining sets")
 					.examples(
 						"(difference (set 1 2 3))",
 						"(difference (set 1 2) (set 2 3))",
 						"(difference (set 1 2) (set 1) (set 1 4) (set 3))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("difference", args, 1);
-				
+
 				Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
-				
+
 				for(int ii=1; ii<args.size(); ii++) {
 					set.removeAll(Coerce.toVncSet(args.nth(ii)).getSet());
 				}
-				
+
 				return VncHashSet.ofAll(set);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction union = 
+	public static VncFunction union =
 		new VncFunction(
-				"union", 
+				"union",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(union s1)", "(union s1 s2)", "(union s1 s2 & sets)")		
+					.arglists("(union s1)", "(union s1 s2)", "(union s1 s2 & sets)")
 					.doc("Return a set that is the union of the input sets")
 					.examples(
 						"(union (set 1 2 3))",
 						"(union (set 1 2) (set 2 3))",
 						"(union (set 1 2 3) (set 1 2) (set 1 4) (set 3))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("union", args, 1);
-				
+
 				final Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
-				
+
 				for(int ii=1; ii<args.size(); ii++) {
 					set.addAll(Coerce.toVncSet(args.nth(ii)).getSet());
 				}
-				
+
 				return VncHashSet.ofAll(set);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction intersection = 
+	public static VncFunction intersection =
 		new VncFunction(
-				"intersection", 
+				"intersection",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(intersection s1)", "(intersection s1 s2)", "(intersection s1 s2 & sets)")		
+					.arglists("(intersection s1)", "(intersection s1 s2)", "(intersection s1 s2 & sets)")
 					.doc("Return a set that is the intersection of the input sets")
 					.examples(
 						"(intersection (set 1))",
 						"(intersection (set 1 2) (set 2 3))",
 						"(intersection (set 1 2) (set 3 4))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("intersection", args, 1);
-				
+
 				final Set<VncVal> intersection = new HashSet<>();
-			
+
 				final Set<VncVal> first = Coerce.toVncSet(args.first()).getSet();
-				
+
 				first.forEach(v -> {
 					boolean intersect = true;
-					
+
 					for(int ii=1; ii<args.size(); ii++) {
 						if (!Coerce.toVncSet(args.nth(ii)).getSet().contains(v)) {
 							intersect = false;
 							break;
 						}
 					}
-				
+
 					if (intersect) {
 						intersection.add(v);
-					}	
+					}
 				});
-				
+
 				return VncHashSet.ofAll(intersection);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction juxt = 
+	public static VncFunction juxt =
 		new VncFunction(
-				"juxt", 
+				"juxt",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
-						"(juxt f)", 
-						"(juxt f g)", 
-						"(juxt f g h)", 
-						"(juxt f g h & fs)")		
+						"(juxt f)",
+						"(juxt f g)",
+						"(juxt f g h)",
+						"(juxt f g h & fs)")
 					.doc(
-						"Takes a set of functions and returns a fn that is the juxtaposition " + 
-						"of those fns.  The returned fn takes a variable number of args, and " + 
-						"returns a vector containing the result of applying each fn to the " + 
-						"args (left-to-right).\n" + 
+						"Takes a set of functions and returns a fn that is the juxtaposition " +
+						"of those fns.  The returned fn takes a variable number of args, and " +
+						"returns a vector containing the result of applying each fn to the " +
+						"args (left-to-right).\n" +
 						"((juxt a b c) x) => [(a x) (b x) (c x)]")
 					.examples(
 						"((juxt first last) '(1 2 3 4))",
-						
+
 						"(do                                                   \n" +
 						"  (defn index-by [coll key-fn]                        \n" +
 						"     (into {} (map (juxt key-fn identity) coll)))     \n" +
 						"                                                      \n" +
-						"  (index-by [{:id 1 :name \"foo\"}                    \n" + 
-						"             {:id 2 :name \"bar\"}                    \n" + 
+						"  (index-by [{:id 1 :name \"foo\"}                    \n" +
+						"             {:id 2 :name \"bar\"}                    \n" +
 						"             {:id 3 :name \"baz\"}]                   \n" +
 						"            :id))                                       ")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("juxt", args, 1);
-				
-				final List<IVncFunction> functions = 
+
+				final List<IVncFunction> functions =
 						args.getList()
 							.stream()
 							.map(v -> Coerce.toIVncFunction(v))
 							.collect(Collectors.toList());
-				
+
 				return new VncFunction(createAnonymousFuncName("juxt:wrapped")) {
 					public VncVal apply(final VncList args) {
 						final List<VncVal> values = new ArrayList<>();
 						functions
 							.stream()
 							.forEach(f -> values.add(f.apply(args)));
-						
+
 						return new VncVector(values);
 					}
-					
+
 				    private static final long serialVersionUID = -1848883965231344442L;
 				};
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// HashMap functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction new_hash_map = 
+	public static VncFunction new_hash_map =
 		new VncFunction(
-				"hash-map", 
+				"hash-map",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(hash-map & keyvals)", "(hash-map map)")		
+					.arglists("(hash-map & keyvals)", "(hash-map map)")
 					.doc("Creates a new hash map containing the items.")
 					.examples(
-						"(hash-map :a 1 :b 2)", 
+						"(hash-map :a 1 :b 2)",
 						"(hash-map (sorted-map :a 1 :b 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
 					return new VncHashMap(((VncMap)args.first()).getMap());
@@ -2010,23 +1955,22 @@ public class CoreFunctions {
 					return VncHashMap.ofAll(args);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_ordered_map = 
+	public static VncFunction new_ordered_map =
 		new VncFunction(
-				"ordered-map", 
+				"ordered-map",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(ordered-map & keyvals)", "(ordered-map map)")		
+					.arglists("(ordered-map & keyvals)", "(ordered-map map)")
 					.doc("Creates a new ordered map containing the items.")
 					.examples(
-						"(ordered-map :a 1 :b 2)", 
+						"(ordered-map :a 1 :b 2)",
 						"(ordered-map (hash-map :a 1 :b 2))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
 					return new VncOrderedMap(((VncMap)args.first()).getMap());
@@ -2035,23 +1979,22 @@ public class CoreFunctions {
 					return VncOrderedMap.ofAll(args);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_sorted_map = 
+	public static VncFunction new_sorted_map =
 		new VncFunction(
-				"sorted-map", 
+				"sorted-map",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sorted-map & keyvals)", "(sorted-map map)")		
+					.arglists("(sorted-map & keyvals)", "(sorted-map map)")
 					.doc("Creates a new sorted map containing the items.")
 					.examples(
-						"(sorted-map :a 1 :b 2)", 
+						"(sorted-map :a 1 :b 2)",
 						"(sorted-map (hash-map :a 1 :b 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
 					return new VncSortedMap(((VncMap)args.first()).getMap());
@@ -2060,59 +2003,56 @@ public class CoreFunctions {
 					return VncSortedMap.ofAll(args);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_mutable_map = 
+	public static VncFunction new_mutable_map =
 		new VncFunction(
-				"mutable-map", 
+				"mutable-map",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(mutable-map & keyvals)", "(mutable-map map)")		
+					.arglists("(mutable-map & keyvals)", "(mutable-map map)")
 					.doc("Creates a new mutable threadsafe map containing the items.")
 					.examples(
-						"(mutable-map :a 1 :b 2)", 
+						"(mutable-map :a 1 :b 2)",
 						"(mutable-map (hash-map :a 1 :b 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				return args.size() == 1 && Types.isVncMap(args.first())
 						? new VncMutableMap(((VncMap)args.first()).getMap())
 						: VncMutableMap.ofAll(args);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_stack = 
+	public static VncFunction new_stack =
 		new VncFunction(
-				"stack", 
+				"stack",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(stack )")		
+					.arglists("(stack )")
 					.doc("Creates a new mutable threadsafe stack.")
 					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("stack", args, 0);
-				
+
 				return new VncStack();
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_queue = 
+	public static VncFunction new_queue =
 		new VncFunction(
-				"queue", 
+				"queue",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(queue )", "(queue 100)")		
+					.arglists("(queue )", "(queue 100)")
 					.doc("Creates a new mutable threadsafe bounded or unbounded queue.")
 					.examples(
 						";unbounded queue   \n" +
@@ -2130,165 +2070,157 @@ public class CoreFunctions {
 						"  (poll! q 1000)      \n" +
 						"   q)                   ")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("queue", args, 0, 1);
-				
+
 				return args.isEmpty() ? new VncQueue() : new VncQueue(Coerce.toVncLong(args.first()).getIntValue());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction map_Q = 
+	public static VncFunction map_Q =
 		new VncFunction(
-				"map?", 
+				"map?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(map? obj)")		
+					.arglists("(map? obj)")
 					.doc("Returns true if obj is a map")
 					.examples("(map? {:a 1 :b 2})")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("map?", args, 1);
-				
+
 				return Types.isVncMap(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction hash_map_Q = 
+	public static VncFunction hash_map_Q =
 		new VncFunction(
-				"hash-map?", 
+				"hash-map?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(hash-map? obj)")		
+					.arglists("(hash-map? obj)")
 					.doc("Returns true if obj is a hash map")
 					.examples("(hash-map? (hash-map :a 1 :b 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("hash-map?", args, 1);
-				
+
 				return Types.isVncHashMap(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction ordered_map_Q = 
+	public static VncFunction ordered_map_Q =
 		new VncFunction(
-				"ordered-map?", 
+				"ordered-map?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(ordered-map? obj)")		
+					.arglists("(ordered-map? obj)")
 					.doc("Returns true if obj is an ordered map")
 					.examples("(ordered-map? (ordered-map :a 1 :b 2))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("ordered-map?", args, 1);
-				
+
 				return Types.isVncOrderedMap(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction sorted_map_Q = 
+	public static VncFunction sorted_map_Q =
 		new VncFunction(
-				"sorted-map?", 
+				"sorted-map?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sorted-map? obj)")		
+					.arglists("(sorted-map? obj)")
 					.doc("Returns true if obj is a sorted map")
 					.examples("(sorted-map? (sorted-map :a 1 :b 2))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sorted-map?", args, 1);
-				
+
 				return Types.isVncSortedMap(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction mutable_map_Q = 
+	public static VncFunction mutable_map_Q =
 		new VncFunction(
-				"mutable-map?", 
+				"mutable-map?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(mutable-map? obj)")		
+					.arglists("(mutable-map? obj)")
 					.doc("Returns true if obj is a mutable map")
 					.examples("(mutable-map? (mutable-map :a 1 :b 2))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("mutable-map?", args, 1);
-				
+
 				return Types.isVncMutableMap(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction stack_Q = 
+	public static VncFunction stack_Q =
 			new VncFunction(
-					"stack?", 
+					"stack?",
 					VncFunction
 						.meta()
-						.module("core")
-						.arglists("(stack? obj)")		
+						.arglists("(stack? obj)")
 						.doc("Returns true if obj is a stack")
 						.examples("(stack? (stack))")
 						.build()
-			) {	
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("stack?", args, 1);
-					
+
 					return Types.isVncStack(args.first()) ? True : False;
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction queue_Q = 
+	public static VncFunction queue_Q =
 		new VncFunction(
-				"queue?", 
+				"queue?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(queue? obj)")		
+					.arglists("(queue? obj)")
 					.doc("Returns true if obj is a queue")
 					.examples("(queue? (queue))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("queue?", args, 1);
-				
+
 				return Types.isVncQueue(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction contains_Q = 
+	public static VncFunction contains_Q =
 		new VncFunction(
-				"contains?", 
+				"contains?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(contains? coll key)")		
+					.arglists("(contains? coll key)")
 					.doc(
-						"Returns true if key is present in the given collection, otherwise " + 
+						"Returns true if key is present in the given collection, otherwise " +
 						"returns false.")
 					.examples(
 						"(contains? {:a 1 :b 2} :a)",
@@ -2297,13 +2229,13 @@ public class CoreFunctions {
 						"(contains? \"abc\" 1)",
 						"(contains? \"abc\" 5)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("contains?", args, 2);
-				
+
 				final VncVal coll = args.first();
 				final VncVal key = args.second();
-				
+
 				if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).containsKey(key);
 				}
@@ -2319,29 +2251,28 @@ public class CoreFunctions {
 				else if (Types.isVncString(coll)) {
 					final VncString s = (VncString)coll;
 					final VncLong k = (VncLong)key;
-					return s.getValue().length() > k.getValue().intValue() ? True : False;			
+					return s.getValue().length() > k.getValue().intValue() ? True : False;
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'contains?' does not allow %s as coll", 
+							"Function 'contains?' does not allow %s as coll",
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction assoc = 
+	public static VncFunction assoc =
 		new VncFunction(
-				"assoc", 
+				"assoc",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(assoc coll key val)", "(assoc coll key val & kvs)")		
+					.arglists("(assoc coll key val)", "(assoc coll key val & kvs)")
 					.doc(
-						"When applied to a map, returns a new map of the " + 
-						"same type, that contains the mapping of key(s) to " + 
-						"val(s). When applied to a vector, returns a new vector that " + 
+						"When applied to a map, returns a new map of the " +
+						"same type, that contains the mapping of key(s) to " +
+						"val(s). When applied to a vector, returns a new vector that " +
 						"contains val at index. Note - index must be <= (count vector).")
 					.examples(
 						"(assoc {} :a 1 :b 2)",
@@ -2349,7 +2280,7 @@ public class CoreFunctions {
 						"(assoc [1 2 3] 0 10)",
 						"(assoc [1 2 3] 3 10)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -2357,7 +2288,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncMutableMap(coll)) {
 					throw new VncException(String.format(
-							"Function 'assoc' can not be used with mutable maps use assoc!", 
+							"Function 'assoc' can not be used with mutable maps use assoc!",
 							Types.getType(coll)));
 				}
 				else if (Types.isVncMap(coll)) {
@@ -2365,7 +2296,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncVector(coll)) {
 					VncVector vec = ((VncVector)coll);
-					
+
 					final VncList keyvals = args.rest();
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
@@ -2405,32 +2336,31 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncThreadLocal(coll)) {
 					final VncThreadLocal th = (VncThreadLocal)coll;
-					
+
 					return th.assoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'assoc' does not allow %s as collection", 
+							"Function 'assoc' does not allow %s as collection",
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction assoc_BANG = 
+	public static VncFunction assoc_BANG =
 		new VncFunction(
-				"assoc!", 
+				"assoc!",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(assoc! coll key val)", "(assoc! coll key val & kvs)")		
+					.arglists("(assoc! coll key val)", "(assoc! coll key val & kvs)")
 					.doc("Associates key/vals with a mutable map, returns the map")
 					.examples(
 						"(assoc! (mutable-map ) :a 1 :b 2)",
 						"(assoc! nil :a 1 :b 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -2441,40 +2371,39 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'assoc!' does not allow %s as collection. It works with mutable maps only.", 
+							"Function 'assoc!' does not allow %s as collection. It works with mutable maps only.",
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction assoc_in = 
+	public static VncFunction assoc_in =
 		new VncFunction(
-				"assoc-in", 
+				"assoc-in",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(assoc-in m ks v)")		
+					.arglists("(assoc-in m ks v)")
 					.doc(
-						"Associates a value in a nested associative structure, where ks is a " + 
-						"sequence of keys and v is the new value and returns a new nested structure. " + 
+						"Associates a value in a nested associative structure, where ks is a " +
+						"sequence of keys and v is the new value and returns a new nested structure. " +
 						"If any levels do not exist, hash-maps or vectors will be created.")
 					.examples(
 						"(do\n   (def users [{:name \"James\" :age 26}  {:name \"John\" :age 43}])\n   (assoc-in users [1 :age] 44))",
 						"(do\n   (def users [{:name \"James\" :age 26}  {:name \"John\" :age 43}])\n   (assoc-in users [2] {:name \"Jack\" :age 19}) )")
-					.build()			
-		) {		
+					.build()
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("assoc-in", args, 3);
-							
+
 				final VncVal coll = args.first(); // may be Nil
 				final VncSequence keys = Coerce.toVncSequence(args.second());
 				final VncVal val = args.nth(2);
-				
+
 				final VncVal key = keys.first();
 				final VncSequence keyRest = keys.rest();
-				
+
 				if (keyRest.isEmpty()) {
 					return assoc.apply(VncList.of(coll, key, val));
 				}
@@ -2482,30 +2411,29 @@ public class CoreFunctions {
 					final VncVal childColl = get.apply(VncList.of(coll, key));
 					return assoc.apply(
 							VncList.of(
-									coll, 
-									key, 
+									coll,
+									key,
 									assoc_in.apply(VncList.of(childColl, keyRest, val))));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction dissoc = 
+
+	public static VncFunction dissoc =
 		new VncFunction(
-				"dissoc", 
+				"dissoc",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(dissoc coll key)", "(dissoc coll key & ks)")		
+					.arglists("(dissoc coll key)", "(dissoc coll key & ks)")
 					.doc(
-						"Returns a new coll of the same type, " + 
+						"Returns a new coll of the same type, " +
 						"that does not contain a mapping for key(s)")
 					.examples(
 						"(dissoc {:a 1 :b 2 :c 3} :b)",
 						"(dissoc {:a 1 :b 2 :c 3} :c :b)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -2513,7 +2441,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncMutableMap(coll)) {
 					throw new VncException(String.format(
-							"Function 'dissoc' can not be used with mutable maps use dissoc!", 
+							"Function 'dissoc' can not be used with mutable maps use dissoc!",
 							Types.getType(coll)));
 				}
 				else if (Types.isVncMap(coll)) {
@@ -2552,32 +2480,31 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncThreadLocal(coll)) {
 					final VncThreadLocal th = (VncThreadLocal)coll;
-					
+
 					return th.dissoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'dissoc' does not allow %s as coll", 
+							"Function 'dissoc' does not allow %s as coll",
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction dissoc_BANG = 
+	public static VncFunction dissoc_BANG =
 		new VncFunction(
-				"dissoc!", 
+				"dissoc!",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(dissoc! coll key)", "(dissoc! coll key & ks)")		
+					.arglists("(dissoc! coll key)", "(dissoc! coll key & ks)")
 					.doc("Dissociates keys from a mutable map, returns the map")
 					.examples(
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :b)",
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :c :b)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -2588,39 +2515,38 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'dissoc!' does not allow %s as coll. It works with mutable maps only.", 
+							"Function 'dissoc!' does not allow %s as coll. It works with mutable maps only.",
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction get = 
+	public static VncFunction get =
 		new VncFunction(
-				"get", 
+				"get",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(get map key)", "(get map key not-found)")		
+					.arglists("(get map key)", "(get map key not-found)")
 					.doc("Returns the value mapped to key, not-found or nil if key not present.")
 					.examples(
 						"(get {:a 1 :b 2} :b)",
 						";; keywords act like functions on maps \n(:b {:a 1 :b 2})")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("get", args, 2, 3);
-				
+
 				if (args.first() == Nil) {
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 					return key_not_found;
-				} 
+				}
 				else if (Types.isVncMap(args.first())) {
 					final VncMap mhm = Coerce.toVncMap(args.first());
 					final VncVal key = args.second();
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
-					
+
 					final VncVal value = mhm.get(key);
 					return value != Nil ? value : key_not_found;
 				}
@@ -2628,38 +2554,37 @@ public class CoreFunctions {
 					final VncVector vec = Coerce.toVncVector(args.first());
 					final int idx = Coerce.toVncLong(args.second()).getIntValue();
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
-					
+
 					return vec.nthOrDefault(idx, key_not_found);
 				}
 				else if (Types.isVncThreadLocal(args.first())) {
 					final VncThreadLocal th = Coerce.toVncThreadLocal(args.first());
-					
+
 					final VncKeyword key = Coerce.toVncKeyword(args.second());
 					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
-					
+
 					final VncVal value = th.get(key);
 					return value != Nil ? value : key_not_found;
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'get' does not allow %s as collection", 
+							"Function 'get' does not allow %s as collection",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction get_in = 
+	public static VncFunction get_in =
 		new VncFunction(
-				"get-in", 
+				"get-in",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(get-in m ks)", "(get-in m ks not-found)")		
+					.arglists("(get-in m ks)", "(get-in m ks not-found)")
 					.doc(
-						"Returns the value in a nested associative structure, " + 
-						"where ks is a sequence of keys. Returns nil if the key " + 
+						"Returns the value in a nested associative structure, " +
+						"where ks is a sequence of keys. Returns nil if the key " +
 						"is not present, or the not-found value if supplied.")
 					.examples(
 						"(get-in {:a 1 :b {:c 2 :d 3}} [:b :c])",
@@ -2667,18 +2592,18 @@ public class CoreFunctions {
 						"(get-in [:a :b [:c :d :e]] [2 1])",
 						"(get-in {:a 1 :b {:c [4 5 6]}} [:b :c 1])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("get-in", args, 2, 3);
-				
+
 				VncCollection coll = Coerce.toVncCollection(args.first());
 				VncSequence keys = Coerce.toVncSequence(args.second());
 				VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
-				
+
 				while(!keys.isEmpty()) {
 					final VncVal key = keys.first();
 					keys = keys.rest();
-						
+
 					if (Types.isVncMap(coll)) {
 						final VncVal val = ((VncMap)coll).get(key);
 						if (val == Nil) {
@@ -2716,135 +2641,129 @@ public class CoreFunctions {
 						}
 					}
 				}
-				
+
 				return key_not_found;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction find = 
+	public static VncFunction find =
 		new VncFunction(
-				"find", 
+				"find",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(find map key)")		
+					.arglists("(find map key)")
 					.doc("Returns the map entry for key, or nil if key not present.")
 					.examples("(find {:a 1 :b 2} :b)", "(find {:a 1 :b 2} :z)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("find", args, 2);
-				
+
 				if (args.first() == Nil) {
 					return Nil;
-				} 
+				}
 				else {
 					final VncMap mhm = Coerce.toVncMap(args.first());
 					final VncVal key = args.second();
-					
+
 					final VncVal value = mhm.get(key);
 					return value == Nil ? Nil : VncVector.of(key, value);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction key = 
+	public static VncFunction key =
 		new VncFunction(
-				"key", 
+				"key",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(key e)")		
+					.arglists("(key e)")
 					.doc("Returns the key of the map entry.")
 					.examples("(key (find {:a 1 :b 2} :b))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("key", args, 1);
-				
+
 				final VncSequence entry = Coerce.toVncSequence(args.first());
 				return entry.first();
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction keys = 
+	public static VncFunction keys =
 		new VncFunction(
-				"keys", 
+				"keys",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(keys map)")		
+					.arglists("(keys map)")
 					.doc("Returns a collection of the map's keys.")
 					.examples("(keys {:a 1 :b 2 :c 3})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("keys", args, 1);
-				
+
 				return Coerce.toVncMap(args.first()).keys();
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction val = 
+	public static VncFunction val =
 		new VncFunction(
-				"val", 
+				"val",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(val e)")		
+					.arglists("(val e)")
 					.doc("Returns the val of the map entry.")
 					.examples("(val (find {:a 1 :b 2} :b))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("val", args, 1);
-				
+
 				final VncSequence entry = Coerce.toVncSequence(args.first());
 				return entry.second();
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction vals = 
+	public static VncFunction vals =
 		new VncFunction(
-				"vals", 
+				"vals",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(vals map)")		
+					.arglists("(vals map)")
 					.doc("Returns a collection of the map's values.")
 					.examples("(vals {:a 1 :b 2 :c 3})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("vals", args, 1);
-				
+
 				final VncMap mhm = Coerce.toVncMap(args.first());
 				return new VncList(mhm.getMap().values());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction update = 
+	public static VncFunction update =
 		new VncFunction(
-				"update", 
+				"update",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(update m k f)")		
+					.arglists("(update m k f)")
 					.doc(
-						"Updates a value in an associative structure, where k is a " + 
-						"key and f is a function that will take the old value " + 
+						"Updates a value in an associative structure, where k is a " +
+						"key and f is a function that will take the old value " +
 						"return the new value. Returns a new structure.")
 					.examples(
 						"(update [] 0 (fn [x] 5))",
@@ -2854,15 +2773,15 @@ public class CoreFunctions {
 						"(update {:a 0} :b (fn [x] 5))",
 						"(update {:a 0 :b 1} :a (fn [x] 5))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("update", args, 3);
-				
+
 				if (Types.isVncSequence(args.first())) {
 					final VncSequence list = ((VncSequence)args.first());
 					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
-							
+
 					if (idx < 0 || idx > list.size()) {
 						throw new VncException(String.format(
 								"Function 'update' index %d out of bounds",
@@ -2873,7 +2792,7 @@ public class CoreFunctions {
 					}
 					else {
 						return list.addAtEnd(fn.apply(VncList.of(Nil)));
-					}			
+					}
 				}
 				else if (Types.isVncMap(args.first())) {
 					final VncMap map = ((VncMap)args.first());
@@ -2883,34 +2802,33 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"'update' does not allow %s as associative structure", 
+							"'update' does not allow %s as associative structure",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction update_BANG = 
+	public static VncFunction update_BANG =
 		new VncFunction(
-				"update!", 
+				"update!",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(update! m k f)")		
+					.arglists("(update! m k f)")
 					.doc(
-						"Updates a value in a mutable map, where k is a " + 
-						"key and f is a function that will take the old value " + 
+						"Updates a value in a mutable map, where k is a " +
+						"key and f is a function that will take the old value " +
 						"return the new value.")
 					.examples(
 						"(update! (mutable-map) :a (fn [x] 5))",
 						"(update! (mutable-map :a 0) :b (fn [x] 5))",
 						"(update! (mutable-map :a 0 :b 1) :a (fn [x] 5))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("update!", args, 3);
-				
+
 				if (Types.isVncMutableMap(args.first())) {
 					final VncMutableMap map = (VncMutableMap)args.first();
 					final VncVal key = args.second();
@@ -2919,81 +2837,79 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"'update!' does not allow %s as map. It works with mutable maps only.", 
+							"'update!' does not allow %s as map. It works with mutable maps only.",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// Sequence functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction split_at = 
+	public static VncFunction split_at =
 		new VncFunction(
-				"split-at", 
+				"split-at",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(split-at n coll)")		
+					.arglists("(split-at n coll)")
 					.doc("Returns a vector of [(take n coll) (drop n coll)]")
 					.examples(
 						"(split-at 2 [1 2 3 4 5])",
 						"(split-at 3 [1 2])")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("split-at", args, 2);
-				
+
 				if (args.second() == Nil) {
 					return VncVector.of(new VncList(), new VncList());
 				}
-				
+
 				final List<VncVal> items = Coerce.toVncSequence(args.second()).getList();
 				final int n = Math.min(
-								items.size(), 
+								items.size(),
 								Math.max(
-									0, 
+									0,
 									Coerce.toVncLong(args.first()).getValue().intValue()));
-				
+
 				return VncVector.of(
-						new VncList(items.subList(0, n)), 
+						new VncList(items.subList(0, n)),
 						new VncList(items.subList(n, items.size())));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction split_with = 
+	public static VncFunction split_with =
 		new VncFunction(
-				"split-with", 
+				"split-with",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(split-with pred coll)")		
+					.arglists("(split-with pred coll)")
 					.doc("Splits the collection at the first false/nil predicate result in a vector with two lists")
 					.examples(
 						"(split-with odd? [1 3 5 6 7 9])",
 						"(split-with odd? [1 3 5])",
 						"(split-with odd? [2 4 6])")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("split-with", args, 2);
-				
+
 				if (args.second() == Nil) {
 					return VncVector.of(new VncList(), new VncList());
 				}
-				
+
 				final IVncFunction pred = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
-				
+
 				final List<VncVal> items = coll.getList();
 				int splitPos = items.size();
-				
+
 				// find splitPos
 				for(int ii=0; ii<items.size(); ii++) {
 					final VncVal val = coll.nth(ii);
@@ -3001,34 +2917,33 @@ public class CoreFunctions {
 					if (match == False || match == Nil) {
 						splitPos = ii;
 						break;
-					}				
+					}
 				}
-				
+
 				if (splitPos == 0) {
 					return VncVector.of(new VncList(), new VncList(items));
 				}
 				else if (splitPos < items.size()) {
 					return VncVector.of(
-								new VncList(items.subList(0, splitPos)), 
+								new VncList(items.subList(0, splitPos)),
 								new VncList(items.subList(splitPos, items.size())));
 				}
 				else {
 					return VncVector.of(new VncList(items), new VncList());
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction into = 
+	public static VncFunction into =
 		new VncFunction(
-				"into", 
+				"into",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(into to-coll from-coll)")		
+					.arglists("(into to-coll from-coll)")
 					.doc(
-						"Returns a new coll consisting of to-coll with all of the items of" + 
+						"Returns a new coll consisting of to-coll with all of the items of" +
 						"from-coll conjoined.")
 					.examples(
 						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )",
@@ -3050,20 +2965,20 @@ public class CoreFunctions {
 						"   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
 						"         '(3 4)))\n")
 					.build()
-		) {		
+		) {
 			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {
 				assertArity("into", args, 2);
-				
+
 				if (args.second() == Nil) {
 					return args.first();
 				}
-		
+
 				final VncCollection to = Coerce.toVncCollection(args.first());
-	
+
 				if (Types.isVncByteBuffer(args.second())) {
 					final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
-				
+
 					if (Types.isVncSequence(to)) {
 						return ((VncSequence)to).addAllAtEnd(byteList);
 					}
@@ -3075,7 +2990,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncString(args.second())) {
 					final VncList charList = ((VncString)args.second()).toVncList();
-								
+
 					if (Types.isVncSequence(to)) {
 						return ((VncSequence)to).addAllAtEnd(charList);
 					}
@@ -3088,10 +3003,10 @@ public class CoreFunctions {
 								"is a string"));
 					}
 				}
-	
-	
+
+
 				final VncCollection from = Coerce.toVncCollection(args.second());
-				
+
 				if (Types.isVncVector(to)) {
 					return ((VncVector)to).addAllAtEnd(from.toVncList());
 				}
@@ -3103,7 +3018,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncMap(to)) {
 					if (Types.isVncSequence(from)) {
-						VncMap toMap = (VncMap)to;					
+						VncMap toMap = (VncMap)to;
 						for(VncVal it : ((VncSequence)from).getList()) {
 							if (Types.isVncSequence(it)) {
 								toMap = ((VncMap)toMap).assoc(((VncSequence)it).toVncList());
@@ -3112,7 +3027,7 @@ public class CoreFunctions {
 								toMap = ((VncMap)toMap).putAll((VncMap)it);
 							}
 						}
-						
+
 						return toMap;
 					}
 					else if (Types.isVncMap(from)) {
@@ -3120,7 +3035,7 @@ public class CoreFunctions {
 					}
 					else {
 						throw new VncException(String.format(
-								"Function 'into' does not allow %s as from-coll into a map", 
+								"Function 'into' does not allow %s as from-coll into a map",
 								Types.getType(from)));
 					}
 				}
@@ -3138,7 +3053,7 @@ public class CoreFunctions {
 						return to;
 					}
 					else {
-						return ((VncJavaList)to).addAllAtEnd(from.toVncList());					
+						return ((VncJavaList)to).addAllAtEnd(from.toVncList());
 					}
 				}
 				else if (Types.isVncJavaSet(to)) {
@@ -3155,70 +3070,67 @@ public class CoreFunctions {
 						return to;
 					}
 					else {
-						return ((VncJavaSet)to).addAll(from.toVncList());					
+						return ((VncJavaSet)to).addAll(from.toVncList());
 					}
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'into' does not allow %s as to-coll", 
+							"Function 'into' does not allow %s as to-coll",
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction sequential_Q = 
+	public static VncFunction sequential_Q =
 		new VncFunction(
-				"sequential?", 
+				"sequential?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sequential? obj)")		
+					.arglists("(sequential? obj)")
 					.doc("Returns true if obj is a sequential collection")
-					.examples("(sequential? '(1))", 
-						"(sequential? [1])", 
-						"(sequential? {:a 1})", 
-						"(sequential? nil)", 
+					.examples("(sequential? '(1))",
+						"(sequential? [1])",
+						"(sequential? {:a 1})",
+						"(sequential? nil)",
 						"(sequential? \"abc\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sequential?", args, 1);
-				
+
 				return Types.isVncSequence(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction coll_Q = 
+	public static VncFunction coll_Q =
 		new VncFunction(
-				"coll?", 
+				"coll?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(coll? obj)")		
+					.arglists("(coll? obj)")
 					.doc("Returns true if obj is a collection")
 					.examples("(coll? {:a 1})", "(coll? [1 2])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("coll?", args, 1);
-				
+
 				return Types.isVncCollection(args.first()) ? True : False;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction every_Q = 
+
+	public static VncFunction every_Q =
 		new VncFunction(
-				"every?", 
+				"every?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(every? pred coll)")		
+					.arglists("(every? pred coll)")
 					.doc(
 						"Returns true if the predicate is true for all collection items, " +
 						"false otherwise.")
@@ -3229,38 +3141,37 @@ public class CoreFunctions {
 						"(every? number? [1 2 3 :a])",
 						"(every? #(>= % 10) [10 11 12])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("every?", args, 1, 2);
-	
+
 				if (args.second() == Nil) {
 					return False;
 				}
-				else {				
+				else {
 					final IVncFunction pred = Coerce.toIVncFunction(args.first());
 					final VncCollection coll = Coerce.toVncCollection(args.second());
-	
+
 					if (coll.isEmpty()) {
 						return False;
 					}
-					
+
 					return coll.toVncList()
 							   .getList()
 							   .stream()
 							   .allMatch(v -> pred.apply(VncList.of(v)) == True) ? True : False;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction not_every_Q = 
+
+	public static VncFunction not_every_Q =
 		new VncFunction(
-				"not-every?", 
+				"not-every?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(not-every? pred coll)")		
+					.arglists("(not-every? pred coll)")
 					.doc(
 						"Returns false if the predicate is true for all collection items, " +
 						"true otherwise")
@@ -3271,23 +3182,22 @@ public class CoreFunctions {
 						"(not-every? number? [1 2 3 :a])",
 						"(not-every? #(>= % 10) [10 11 12])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("not-every?", args, 2);
-					
+
 				return every_Q.apply(args) == True ? False : True;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction any_Q = 
+
+	public static VncFunction any_Q =
 		new VncFunction(
-				"any?", 
+				"any?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(any? pred coll)")		
+					.arglists("(any? pred coll)")
 					.doc(
 						"Returns true if the predicate is true for at least one collection item, " +
 						"false otherwise.")
@@ -3298,7 +3208,7 @@ public class CoreFunctions {
 						"(any? number? [1 2 3])",
 						"(any? #(>= % 10) [1 5 10])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("any?", args, 1, 2);
 
@@ -3309,28 +3219,27 @@ public class CoreFunctions {
 				else {
 					final IVncFunction pred = Coerce.toIVncFunction(args.first());
 					final VncCollection coll = Coerce.toVncCollection(args.second());
-					
+
 					if (coll.isEmpty()) {
 						return False;
 					}
-									
+
 					return coll.toVncList()
 							   .getList()
 							   .stream()
 							   .anyMatch(v -> pred.apply(VncList.of(v)) == True) ? True : False;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction not_any_Q = 
+
+	public static VncFunction not_any_Q =
 		new VncFunction(
-				"not-any?", 
+				"not-any?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(not-any? pred coll)")		
+					.arglists("(not-any? pred coll)")
 					.doc(
 						"Returns false if the predicate is true for at least one collection item, " +
 						"true otherwise")
@@ -3341,78 +3250,76 @@ public class CoreFunctions {
 						"(not-any? number? [1 2 3])",
 						"(not-any? #(>= % 10) [1 5 10])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("not-any?", args, 2);
-				
+
 				return any_Q.apply(args) == True ? False : True;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction some = 
+	public static VncFunction some =
 		new VncFunction(
-				"some", 
+				"some",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(some? pred coll)")		
+					.arglists("(some? pred coll)")
 					.doc(
-						"Returns the first logical true value of (pred x) for any x in coll, " + 
+						"Returns the first logical true value of (pred x) for any x in coll, " +
 						"else nil.")
 					.examples(
 						"(some even? '(1 2 3 4))",
 						"(some even? '(1 3 5 7))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("some?", args, 2);
-				
+
 				if (args.second() == Nil) {
 					return Nil;
 				}
 				else {
 					final IVncFunction pred = Coerce.toIVncFunction(args.first());
 					final VncCollection coll = Coerce.toVncCollection(args.second());
-					
+
 					if (coll.isEmpty()) {
 						return Nil;
 					}
-									
+
 					return coll.toVncList()
 							   .getList()
 							   .stream()
 							   .anyMatch(v -> pred.apply(VncList.of(v)) == True) ? True : Nil;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction count = 
+	public static VncFunction count =
 		new VncFunction(
-				"count", 
+				"count",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(count coll)")		
+					.arglists("(count coll)")
 					.doc(
-						"Returns the number of items in the collection. (count nil) returns " + 
+						"Returns the number of items in the collection. (count nil) returns " +
 						"0. Also works on strings, and Java Collections")
 					.examples(
-						"(count {:a 1 :b 2})", 
-						"(count [1 2])", 
+						"(count {:a 1 :b 2})",
+						"(count [1 2])",
 						"(count \"abc\")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("count", args, 1);
-				
+
 				final VncVal arg = args.first();
 				if (arg == Nil) {
 					return new VncLong(0L);
-				} 
+				}
 				else if (Types.isVncString(arg)) {
 					return new VncLong(((VncString)arg).getValue().length());
 				}
@@ -3428,123 +3335,119 @@ public class CoreFunctions {
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction empty = 
+	public static VncFunction empty =
 		new VncFunction(
-				"empty", 
+				"empty",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(empty coll)")		
+					.arglists("(empty coll)")
 					.doc("Returns an empty collection of the same category as coll, or nil")
 					.examples("(empty {:a 1})", "(empty [1 2])", "(empty '(1 2))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("empty", args, 1);
-	
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
-				} 
+				}
 				else if (Types.isVncSequence(coll)) {
 					return ((VncSequence)coll).empty();
-				} 
+				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).empty();
-				} 
+				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'empty'",
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction empty_Q = 
+	public static VncFunction empty_Q =
 		new VncFunction(
-				"empty?", 
+				"empty?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(empty? x)")		
+					.arglists("(empty? x)")
 					.doc("Returns true if x is empty")
 					.examples("(empty? {})", "(empty? [])", "(empty? '())", "(empty? \"\")")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("empty?", args, 1);
-	
+
 				final VncVal val = args.first();
 				if (val == Nil) {
 					return True;
-				} 
+				}
 				else if (Types.isVncString(val)) {
 					return ((VncString)val).getValue().isEmpty() ? True : False;
-				} 
+				}
 				else if (Types.isVncCollection(val)) {
 					return ((VncCollection)val).isEmpty() ? True : False;
-				} 
+				}
 				else if (Types.isVncByteBuffer(val)) {
 					return ((VncByteBuffer)val).size() == 0 ? True : False;
-				} 
+				}
 				else {
 					return False;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction not_empty_Q = 
+	public static VncFunction not_empty_Q =
 		new VncFunction(
-				"not-empty?", 
+				"not-empty?",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(not-empty? x)")		
+					.arglists("(not-empty? x)")
 					.doc("Returns true if x is not empty")
 					.examples("(not-empty? {:a 1})", "(not-empty? [1 2])", "(not-empty? '(1 2))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("not-empty?", args, 1);
-	
+
 				final VncVal val = args.first();
 				if (val == Nil) {
 					return False;
-				} 
+				}
 				else if (Types.isVncString(val)) {
 					return ((VncString)val).getValue().isEmpty() ? False : True;
-				} 
+				}
 				else if (Types.isVncCollection(val)) {
 					return ((VncCollection)val).isEmpty() ? False : True;
-				} 
+				}
 				else if (Types.isVncByteBuffer(val)) {
 					return ((VncByteBuffer)val).size() == 0 ? False : True;
-				} 
+				}
 				else {
 					return True;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction cons = 
+	public static VncFunction cons =
 		new VncFunction(
-				"cons", 
+				"cons",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(cons x coll)")		
+					.arglists("(cons x coll)")
 					.doc(
-						"Returns a new collection where x is the first element and coll is " + 
+						"Returns a new collection where x is the first element and coll is " +
 						"the rest")
 					.examples(
 						"(cons 1 '(2 3 4 5 6))",
@@ -3575,17 +3478,16 @@ public class CoreFunctions {
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction concat = 
+	public static VncFunction concat =
 		new VncFunction(
-				"concat", 
+				"concat",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(concat coll)", "(concat coll & colls)")		
+					.arglists("(concat coll)", "(concat coll & colls)")
 					.doc( "Returns a collection of the concatenation of the elements " +
 					"in the supplied colls.")
 					.examples(
@@ -3598,10 +3500,10 @@ public class CoreFunctions {
 					"(concat \"abc\")",
 					"(concat \"abc\" \"def\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final List<VncVal> result = new ArrayList<>();
-				
+
 				args.getList().forEach(val -> {
 					if (val == Nil) {
 						// skip
@@ -3627,68 +3529,66 @@ public class CoreFunctions {
 								Types.getType(val)));
 					}
 				});
-				
+
 				return new VncList(result);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction interleave = 
+
+	public static VncFunction interleave =
 		new VncFunction(
-				"interleave", 
+				"interleave",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(interleave c1 c2)", "(interleave c1 c2 & colls)")		
+					.arglists("(interleave c1 c2)", "(interleave c1 c2 & colls)")
 					.doc("Returns a collection of the first item in each coll, then the second etc.")
 					.examples("(interleave [:a :b :c] [1 2])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("interleave", args, 2);
-	
+
 				int len = Coerce.toVncSequence(args.first()).size();
 				final List<VncSequence> lists = new ArrayList<>();
 				for(int ii=0; ii<args.size(); ii++) {
 					final VncSequence l = Coerce.toVncSequence(args.nth(ii));
 					lists.add(l);
-					len = Math.min(len, l.size());				
+					len = Math.min(len, l.size());
 				}
-	
+
 				final List<VncVal> result = new ArrayList<>();
-				
+
 				for(int nn=0; nn<len; nn++) {
 					for(int ii=0; ii<lists.size(); ii++) {
 						result.add(lists.get(ii).nth(nn));
 					}
 				}
-						
+
 				return new VncList(result);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction interpose = 
+	public static VncFunction interpose =
 		new VncFunction(
-				"interpose", 
+				"interpose",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(interpose sep coll)")		
-					.doc("Returns a collection of the elements of coll separated by sep.")						
+					.arglists("(interpose sep coll)")
+					.doc("Returns a collection of the elements of coll separated by sep.")
 					.examples("(interpose \", \" [1 2 3])", "(apply str (interpose \", \" [1 2 3]))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("interpose", args, 2);
-	
+
 				final VncVal sep = args.first();
 				final VncSequence coll = Coerce.toVncSequence(args.second());
-				
+
 				final List<VncVal> result = new ArrayList<>();
-		
+
 				if (!coll.isEmpty()) {
 					result.add(coll.first());
 					coll.rest().forEach(v -> {
@@ -3696,20 +3596,19 @@ public class CoreFunctions {
 						result.add(v);
 					});
 				}
-							
+
 				return new VncList(result);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction first = 
+	public static VncFunction first =
 		new VncFunction(
-				"first", 
+				"first",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(first coll)")		
+					.arglists("(first coll)")
 					.doc(
 						"Returns the first element of coll or nil if coll is nil or empty.")
 					.examples(
@@ -3720,10 +3619,10 @@ public class CoreFunctions {
 						"(first '(1 2 3))",
 						"(first \"abc\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("first", args, 0, 1);
-	
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
@@ -3740,17 +3639,16 @@ public class CoreFunctions {
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction second = 
+	public static VncFunction second =
 		new VncFunction(
-				"second", 
+				"second",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(second coll)")		
+					.arglists("(second coll)")
 					.doc("Returns the second element of coll.")
 					.examples(
 						"(second nil)",
@@ -3759,16 +3657,16 @@ public class CoreFunctions {
 						"(second '())",
 						"(second '(1 2 3))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("second", args, 1);
-	
-	
+
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
 				}
-				
+
 				if (Types.isVncSequence(coll)) {
 					return ((VncSequence)coll).second();
 				}
@@ -3781,17 +3679,16 @@ public class CoreFunctions {
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction third = 
+	public static VncFunction third =
 		new VncFunction(
-				"third", 
+				"third",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(third coll)")		
+					.arglists("(third coll)")
 					.doc("Returns the third element of coll.")
 					.examples(
 						"(third nil)",
@@ -3800,16 +3697,16 @@ public class CoreFunctions {
 						"(third '())",
 						"(third '(1 2 3))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("third", args, 1);
-	
-	
+
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
 				}
-				
+
 				if (Types.isVncSequence(coll)) {
 					return ((VncSequence)coll).third();
 				}
@@ -3822,17 +3719,16 @@ public class CoreFunctions {
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction nth = 
+	public static VncFunction nth =
 		new VncFunction(
-				"nth", 
+				"nth",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(nth coll idx)")		
+					.arglists("(nth coll idx)")
 					.doc("Returns the nth element of coll.")
 					.examples(
 						"(nth nil 1)",
@@ -3840,17 +3736,17 @@ public class CoreFunctions {
 						"(nth '(1 2 3) 1)",
 						"(nth \"abc\" 2)")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("nth", args, 2);
-	
+
 				final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
-	
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
 				}
-				
+
 				if (Types.isVncSequence(coll)) {
 					return ((VncSequence)coll).nth(idx);
 				}
@@ -3863,17 +3759,16 @@ public class CoreFunctions {
 							Types.getType(coll)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction last = 
+	public static VncFunction last =
 		new VncFunction(
-				"last", 
+				"last",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(last coll)")		
+					.arglists("(last coll)")
 					.doc("Returns the last element of coll.")
 					.examples(
 						"(last nil)",
@@ -3883,15 +3778,15 @@ public class CoreFunctions {
 						"(last '(1 2 3))",
 						"(last \"abc\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("last", args, 1);
-	
+
 				final VncVal val = args.first();
 				if (val == Nil) {
 					return Nil;
 				}
-				
+
 				if (Types.isVncSequence(val)) {
 					return ((VncSequence)val).last();
 				}
@@ -3904,17 +3799,16 @@ public class CoreFunctions {
 							Types.getType(val)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction rest = 
+	public static VncFunction rest =
 		new VncFunction(
-				"rest", 
+				"rest",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(rest coll)")		
+					.arglists("(rest coll)")
 					.doc("Returns a collection with second to list element")
 					.examples(
 						"(rest nil)",
@@ -3925,10 +3819,10 @@ public class CoreFunctions {
 						"(rest '(1))",
 						"(rest '(1 2 3))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("rest", args, 1);
-	
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
@@ -3948,17 +3842,16 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction butlast = 
+	public static VncFunction butlast =
 		new VncFunction(
-				"butlast", 
+				"butlast",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(butlast coll)")		
+					.arglists("(butlast coll)")
 					.doc("Returns a collection with all but the last list element")
 					.examples(
 						"(butlast nil)",
@@ -3969,25 +3862,25 @@ public class CoreFunctions {
 						"(butlast '(1))",
 						"(butlast '(1 2 3))")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("butlast", args, 1);
-	
+
 				final VncVal coll = args.first();
 				if (coll == Nil) {
 					return Nil;
 				}
 				else if (Types.isVncVector(coll)) {
 					final VncVector vec = (VncVector)coll;
-					return vec.size() > 1 ? vec.slice(0, vec.size()-1) : new VncVector(); 
+					return vec.size() > 1 ? vec.slice(0, vec.size()-1) : new VncVector();
 				}
 				else if (Types.isVncList(coll)) {
 					final VncList list = (VncList)coll;
-					return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList(); 
+					return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList();
 				}
 				else if (Types.isVncJavaList(coll)) {
 					final VncList list = ((VncJavaList)coll).toVncList();
-					return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList(); 
+					return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList();
 				}
 				else {
 					throw new VncException(String.format(
@@ -3995,17 +3888,16 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction nfirst = 
+	public static VncFunction nfirst =
 		new VncFunction(
-				"nfirst", 
+				"nfirst",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(nfirst coll n)")		
+					.arglists("(nfirst coll n)")
 					.doc("Returns a collection of the first n items")
 					.examples(
 						"(nfirst nil 2)",
@@ -4016,25 +3908,25 @@ public class CoreFunctions {
 						"(nfirst '(1) 2)",
 						"(nfirst '(1 2 3) 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("nfirst", args, 2);
-	
+
 				if (args.first() == Nil) {
 					return new VncList();
 				}
 				else if (Types.isVncVector(args.first())) {
-					final VncVector vec = Coerce.toVncVector(args.first());		
-					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
-					return vec.isEmpty() 
-							? new VncVector() 
+					final VncVector vec = Coerce.toVncVector(args.first());
+					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+					return vec.isEmpty()
+							? new VncVector()
 							: new VncVector(vec.getList().subList(0, n));
 				}
 				else if (Types.isVncList(args.first()) || Types.isVncJavaList(args.first())) {
-					final VncSequence list = Coerce.toVncSequence(args.first());		
-					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
-					return list.isEmpty() 
-							? new VncList() 
+					final VncSequence list = Coerce.toVncSequence(args.first());
+					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+					return list.isEmpty()
+							? new VncList()
 							: new VncList(list.getList().subList(0, n));
 				}
 				else {
@@ -4043,17 +3935,16 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction nlast = 
+	public static VncFunction nlast =
 		new VncFunction(
-				"nlast", 
+				"nlast",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(nlast coll n)")		
+					.arglists("(nlast coll n)")
 					.doc("Returns a collection of the last n items")
 					.examples(
 						"(nlast nil 2)",
@@ -4064,25 +3955,25 @@ public class CoreFunctions {
 						"(nlast '(1) 2)",
 						"(nlast '(1 2 3) 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("nlast", args, 2);
-	
+
 				if (args.first() == Nil) {
 					return new VncList();
 				}
 				else if (Types.isVncVector(args.first())) {
-					final VncVector vec = Coerce.toVncVector(args.first());		
-					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
-					return vec.isEmpty() 
-							? new VncVector() 
+					final VncVector vec = Coerce.toVncVector(args.first());
+					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+					return vec.isEmpty()
+							? new VncVector()
 							: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 				}
 				else if (Types.isVncList(args.first()) || Types.isVncJavaList(args.first())) {
-					final VncList list = Coerce.toVncList(args.first());		
-					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));				
-					return list.isEmpty() 
-							? new VncList() 
+					final VncList list = Coerce.toVncList(args.first());
+					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+					return list.isEmpty()
+							? new VncList()
 							: new VncList(list.getList().subList(list.size()-n, list.size()));
 				}
 				else {
@@ -4095,18 +3986,17 @@ public class CoreFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	};
 
-	public static VncFunction partition = 
+	public static VncFunction partition =
 		new VncFunction(
-				"partition", 
+				"partition",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(partition n coll)", "(partition n step coll)", "(partition n step padcoll coll)")		
+					.arglists("(partition n coll)", "(partition n step coll)", "(partition n step padcoll coll)")
 					.doc(
-						"Returns a collection of lists of n items each, at offsets step " + 
-						"apart. If step is not supplied, defaults to n, i.e. the partitions " + 
-						"do not overlap. If a padcoll collection is supplied, use its elements as " + 
-						"necessary to complete last partition upto n items. In case there are " + 
+						"Returns a collection of lists of n items each, at offsets step " +
+						"apart. If step is not supplied, defaults to n, i.e. the partitions " +
+						"do not overlap. If a padcoll collection is supplied, use its elements as " +
+						"necessary to complete last partition upto n items. In case there are " +
 						"not enough padding elements, return a partition with less than n items.")
 					.examples(
 						"(partition 4 (range 20))",
@@ -4114,15 +4004,15 @@ public class CoreFunctions {
 						"(partition 3 6 [\"a\"] (range 20))",
 						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("partition", args, 2, 3 ,4);
-	
+
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
 				final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)).getList() : new ArrayList<>();
 				final List<VncVal> coll = Coerce.toVncSequence(args.nth(args.size()-1)).getList();
-				
+
 				if (n <= 0) {
 					throw new VncException(String.format(
 							"partition: n must be a positive number"));
@@ -4131,13 +4021,13 @@ public class CoreFunctions {
 					throw new VncException(String.format(
 							"partition: step must be a positive number"));
 				}
-				
+
 				// split at 'step'
 				final List<List<VncVal>> splits = new ArrayList<>();
-				for (int ii=0; ii<coll.size(); ii += step) {			
+				for (int ii=0; ii<coll.size(); ii += step) {
 					splits.add(coll.subList(ii, Math.min(ii + step, coll.size())));
 				}
-				
+
 				VncList result = new VncList();
 				for(List<VncVal> split : splits) {
 					if (n == split.size()) {
@@ -4156,17 +4046,16 @@ public class CoreFunctions {
 				}
 				return result;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction coalesce = 
+	public static VncFunction coalesce =
 		new VncFunction(
-				"coalesce", 
+				"coalesce",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(coalesce args*)")		
+					.arglists("(coalesce args*)")
 					.doc("Returns the first non nil arg")
 					.examples(
 						"(coalesce )",
@@ -4174,24 +4063,23 @@ public class CoreFunctions {
 						"(coalesce nil)",
 						"(coalesce nil 1 2)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				return args.stream()
 						   .filter(v -> v != Nil)
 						   .findFirst()
 						   .orElse(Nil);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction emptyToNil = 
+	public static VncFunction emptyToNil =
 		new VncFunction(
-				"empty-to-nil", 
+				"empty-to-nil",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(empty-to-nil x)")		
+					.arglists("(empty-to-nil x)")
 					.doc("Returns nil if x is empty")
 					.examples(
 						"(empty-to-nil \"\")",
@@ -4199,10 +4087,10 @@ public class CoreFunctions {
 						"(empty-to-nil '())",
 						"(empty-to-nil {})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("empty-to-nil", args, 1);
-				
+
 				final VncVal arg = args.first();
 				if (Types.isVncString(arg)) {
 					return ((VncString)arg).getValue().isEmpty() ? Nil : arg;
@@ -4220,50 +4108,48 @@ public class CoreFunctions {
 					return arg;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction instance_Q = 
+
+	public static VncFunction instance_Q =
 			new VncFunction(
-					"instance?", 
+					"instance?",
 					VncFunction
 						.meta()
-					.module("core")
-						.arglists("(instance? type x)")		
+						.arglists("(instance? type x)")
 						.doc("Returns true if x is an instance of the given type")
 						.examples(
 							"(instance? :venice.Long 500)",
 							"(instance? :java.math.BigInteger 500)")
 						.build()
-			) {		
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("instance?", args, 2);
-					
+
 					final VncKeyword type = Coerce.toVncKeyword(args.first());
 					final VncVal x = args.second();
-					
+
 					return Types.isInstanceOf(type, x) ? True : False;
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction pop = 
+	public static VncFunction pop =
 		new VncFunction(
-				"pop", 
+				"pop",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(pop coll)")		
+					.arglists("(pop coll)")
 					.doc(
-						"For a list, returns a new list without the first item, " + 
+						"For a list, returns a new list without the first item, " +
 						"for a vector, returns a new vector without the last item.")
 					.examples(
 						"(pop '(1 2 3 4))",
 						"(pop [1 2 3 4])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("pop", args, 1);
 
@@ -4271,7 +4157,7 @@ public class CoreFunctions {
 				if (val == Nil) {
 					return Nil;
 				}
-	
+
 				if (Types.isVncVector(val)) {
 					final VncVector vec = (VncVector)val;
 					return vec.size() < 2 ? new VncVector() : vec.slice(0, vec.size()-1);
@@ -4286,21 +4172,20 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction pop_BANG = 
+	public static VncFunction pop_BANG =
 		new VncFunction(
-				"pop!", 
+				"pop!",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(pop! stack)")		
+					.arglists("(pop! stack)")
 					.doc("Pops an item from a stack.")
 					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("pop!", args, 1);
 
@@ -4308,7 +4193,7 @@ public class CoreFunctions {
 				if (val == Nil) {
 					return Nil;
 				}
-	
+
 				if (Types.isVncStack(val)) {
 					return ((VncStack)val).pop();
 				}
@@ -4318,21 +4203,20 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction push_BANG = 
+	public static VncFunction push_BANG =
 			new VncFunction(
-					"push!", 
+					"push!",
 					VncFunction
 						.meta()
-						.module("core")
-						.arglists("(push! stack v)")		
+						.arglists("(push! stack v)")
 						.doc("Pushes an item to a stack.")
 						.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 						.build()
-			) {		
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("push!", args, 2);
 
@@ -4340,7 +4224,7 @@ public class CoreFunctions {
 					if (val == Nil) {
 						return Nil;
 					}
-		
+
 					if (Types.isVncStack(val)) {
 						return ((VncStack)val).push(args.second());
 					}
@@ -4350,21 +4234,20 @@ public class CoreFunctions {
 								Types.getType(args.first())));
 					}
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction offer_BANG = 
+	public static VncFunction offer_BANG =
 			new VncFunction(
-					"offer!", 
+					"offer!",
 					VncFunction
 						.meta()
-						.module("core")
-						.arglists("(offer! queue v)", "(offer! queue timeout v)")		
+						.arglists("(offer! queue v)", "(offer! queue timeout v)")
 						.doc("Offers an item to a queue with an optional timeout in milliseconds.")
 						.examples("(let [s (queue)]\n   (offer! s 4)\n   (offer! s 3)\n   (poll! s)\n   s)")
 						.build()
-			) {		
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("offer!", args, 2, 3);
 
@@ -4372,7 +4255,7 @@ public class CoreFunctions {
 					if (val == Nil) {
 						return Nil;
 					}
-		
+
 					if (Types.isVncQueue(val)) {
 						if (args.size() == 2) {
 							return ((VncQueue)val).offer(args.second());
@@ -4387,21 +4270,20 @@ public class CoreFunctions {
 								Types.getType(args.first())));
 					}
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction poll_BANG = 
+	public static VncFunction poll_BANG =
 			new VncFunction(
-					"poll!", 
+					"poll!",
 					VncFunction
 						.meta()
-						.module("core")
-						.arglists("(poll! queue)", "(poll! queue timeout)")		
+						.arglists("(poll! queue)", "(poll! queue timeout)")
 						.doc("Polls an item from a queue with an optional timeout in milliseconds.")
 						.examples("(let [s (queue)]\n   (offer! s 4)\n   (offer! s 3)\n   (poll! s)\n   s)")
 						.build()
-			) {		
+			) {
 				public VncVal apply(final VncList args) {
 					assertArity("poll!", args, 1, 2);
 
@@ -4409,7 +4291,7 @@ public class CoreFunctions {
 					if (val == Nil) {
 						return Nil;
 					}
-		
+
 					if (Types.isVncQueue(val)) {
 						if (args.size() == 1) {
 							return ((VncQueue)val).poll();
@@ -4424,32 +4306,31 @@ public class CoreFunctions {
 								Types.getType(args.first())));
 					}
 				}
-		
+
 			    private static final long serialVersionUID = -1848883965231344442L;
 			};
 
-	public static VncFunction peek = 
+	public static VncFunction peek =
 		new VncFunction(
-				"peek", 
+				"peek",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(peek coll)")		
+					.arglists("(peek coll)")
 					.doc("For a list, same as first, for a vector, same as last, for a stack the top element")
 					.examples(
 						"(peek '(1 2 3 4))",
 						"(peek [1 2 3 4])",
 						"(let [s (stack)]\n   (push! s 4)\n  (peek s))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("peek", args, 1);
-				
+
 				final VncVal val = args.first();
 				if (val == Nil) {
 					return Nil;
 				}
-	
+
 				if (Types.isVncVector(val)) {
 					final VncVector vec = (VncVector)val;
 					return vec.isEmpty() ? Nil : vec.nth(vec.size()-1);
@@ -4467,62 +4348,60 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction sort = 
+
+	public static VncFunction sort =
 		new VncFunction(
-				"sort", 
+				"sort",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sort coll)", "(sort comparefn coll)")		
+					.arglists("(sort coll)", "(sort comparefn coll)")
 					.doc(
-						"Returns a sorted list of the items in coll. If no compare function " + 
-						"comparefn is supplied, uses the natural compare. The compare function " + 
+						"Returns a sorted list of the items in coll. If no compare function " +
+						"comparefn is supplied, uses the natural compare. The compare function " +
 						"takes two arguments and returns -1, 0, or 1")
 					.examples(
-						"(sort [3 2 5 4 1 6])", 
-						"(sort compare [3 2 5 4 1 6])", 
+						"(sort [3 2 5 4 1 6])",
+						"(sort compare [3 2 5 4 1 6])",
 						"; reversed\n" +
-						"(sort (comp (partial * -1) compare) [3 2 5 4 1 6])", 
+						"(sort (comp (partial * -1) compare) [3 2 5 4 1 6])",
 						"(sort {:c 3 :a 1 :b 2})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sort", args, 1, 2);
-	
-				final IVncFunction compfn = args.size() == 1 
+
+				final IVncFunction compfn = args.size() == 1
 											? compare // -> sort by natural order
 											: Coerce.toIVncFunction(args.first());
-				
+
 				final VncVal coll = args.last();
 
 				return sort(
-						"sort", 
-						coll, 
+						"sort",
+						coll,
 						(x,y) -> Coerce.toVncLong(compfn.apply(VncList.of(x,y))).getIntValue());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction sort_by = 
+	public static VncFunction sort_by =
 		new VncFunction(
-				"sort-by", 
+				"sort-by",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)")		
+					.arglists("(sort-by keyfn coll)", "(sort-by keyfn compfn coll)")
 					.doc(
-						"Returns a sorted sequence of the items in coll, where the sort " + 
-						"order is determined by comparing (keyfn item).  If no comparator is " + 
+						"Returns a sorted sequence of the items in coll, where the sort " +
+						"order is determined by comparing (keyfn item).  If no comparator is " +
 						"supplied, uses compare.")
 					.examples(
-						"(sort-by count [\"aaa\" \"bb\" \"c\"])", 
+						"(sort-by count [\"aaa\" \"bb\" \"c\"])",
 						"; reversed\n" +
-						"(sort-by count (comp (partial * -1) compare) [\"aaa\" \"bb\" \"c\"])", 
+						"(sort-by count (comp (partial * -1) compare) [\"aaa\" \"bb\" \"c\"])",
 						"(sort-by first [[1 2] [3 4] [2 3]])",
 						"; reversed\n" +
 						"(sort-by first (comp (partial * -1) compare) [[1 2] [3 4] [2 3]])",
@@ -4533,13 +4412,13 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sort-by", args, 2, 3);
-	
+
 				if (args.size() == 2) {
 					final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
-	
+
 					return sort(
-							"sort-by", 
-							args.second(), 
+							"sort-by",
+							args.second(),
 							(x,y) -> Coerce.toVncLong(
 										compare.apply(
 												VncList.of(
@@ -4550,10 +4429,10 @@ public class CoreFunctions {
 				else if (args.size() == 3) {
 					final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
 					final IVncFunction compfn = Coerce.toIVncFunction(args.second());
-	
+
 					return sort(
-							"sort-by", 
-							args.nth(2), 
+							"sort-by",
+							args.nth(2),
 							(x,y) -> Coerce.toVncLong(
 										compfn.apply(
 												VncList.of(
@@ -4564,22 +4443,21 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException("sort-by: args not supported");
-				}			
+				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction group_by = 
+
+	public static VncFunction group_by =
 		new VncFunction(
-				"group-by", 
+				"group-by",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(group-by f coll)")		
+					.arglists("(group-by f coll)")
 					.doc(
-						"Returns a map of the elements of coll keyed by the result of " + 
-						"f on each element. The value at each key will be a vector of the " + 
+						"Returns a map of the elements of coll keyed by the result of " +
+						"f on each element. The value at each key will be a vector of the " +
 						"corresponding elements, in the order they appeared in coll.")
 					.examples(
 						"(group-by count [\"a\" \"as\" \"asd\" \"aa\" \"asdf\" \"qwer\"])",
@@ -4588,12 +4466,12 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("group-by", args, 2);
-	
+
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
-	
+
 				VncMap map = new VncOrderedMap();
-				
+
 				for(VncVal v : coll.getList()) {
 					final VncVal key = fn.apply(VncList.of(v));
 					final VncSequence val = Coerce.toVncSequence(map.getMap().get(key));
@@ -4604,76 +4482,74 @@ public class CoreFunctions {
 						map = map.assoc(key, val.addAtEnd(v));
 					}
 				}
-				
+
 				return map;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	// General sequence functions
-	public static VncFunction apply = 
+	public static VncFunction apply =
 		new VncFunction(
-				"apply", 
+				"apply",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(apply f args* coll)")		
+					.arglists("(apply f args* coll)")
 					.doc("Applies f to all arguments composed of args and coll")
 					.examples(
 						"(apply + [1 2 3])",
 						"(apply + 1 2 [3 4 5])",
 						"(apply str [1 2 3 4 5])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fn_args = args.slice(1,args.size()-1);
-				
+
 				final VncVal coll = args.last();
 				if (coll == Nil) {
 					return fn.apply(fn_args.addAtEnd(Nil));
 				}
 				else {
 					final VncSequence tailArgs = Coerce.toVncSequence(args.last());
-					return fn.apply(fn_args.addAllAtEnd(tailArgs));				
+					return fn.apply(fn_args.addAllAtEnd(tailArgs));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction comp = 
+
+	public static VncFunction comp =
 		new VncFunction(
-				"comp", 
+				"comp",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(comp f*)")		
+					.arglists("(comp f*)")
 					.doc(
-						"Takes a set of functions and returns a fn that is the composition " + 
-						"of those fns. The returned fn takes a variable number of args, " + 
-						"applies the rightmost of fns to the args, the next " + 
+						"Takes a set of functions and returns a fn that is the composition " +
+						"of those fns. The returned fn takes a variable number of args, " +
+						"applies the rightmost of fns to the args, the next " +
 						"fn (right-to-left) to the result, etc. ")
 					.examples(
-						"((comp str +) 8 8 8)", 
-						"(map (comp - (partial + 3) (partial * 2)) [1 2 3 4])", 
+						"((comp str +) 8 8 8)",
+						"(map (comp - (partial + 3) (partial * 2)) [1 2 3 4])",
 						"((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)",
-						"(filter (comp not zero?) [0 1 0 2 0 3 0 4])", 
+						"(filter (comp not zero?) [0 1 0 2 0 3 0 4])",
 						"(do \n" +
 						"   (def fifth (comp first rest rest rest rest)) \n" +
 						"   (fifth [1 2 3 4 5]))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("comp", args, 0);
-				
-				final List<IVncFunction> fns = 
+
+				final List<IVncFunction> fns =
 						args.getList()
 							.stream()
 							.map(v -> Coerce.toIVncFunction(v))
 							.collect(Collectors.toList());
-				
+
 				// the functions are applied right to left
 				return new VncFunction() {
 					public VncVal apply(final VncList args) {
@@ -4684,122 +4560,119 @@ public class CoreFunctions {
 							result = fns.get(ii).apply(args_);
 							args_ = VncList.of(result);
 						}
-						
+
 						return result;
 					}
-	
+
 				    private static final long serialVersionUID = -1L;
 				};
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction compare = 
+
+	public static VncFunction compare =
 		new VncFunction(
-				"compare", 
+				"compare",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(compare x y)")		
+					.arglists("(compare x y)")
 					.doc(
 						"Comparator. Returns -1, 0, or 1 when x is logically 'less than', " +
-						"'equal to', or 'greater than' y. For list and vectors the longer " + 
+						"'equal to', or 'greater than' y. For list and vectors the longer " +
 						"sequence is always 'greater' regardless of its contents. " +
 						"For sets and maps only the size of the collection is compared.")
 					.examples(
-						"(compare nil 0)", 
-						"(compare 0 nil)", 
-						"(compare 1 0)", 
-						"(compare 1 1)", 
-						"(compare 1M 2M)", 
-						"(compare 1 nil)", 
-						"(compare nil 1)", 
-						"(compare \"aaa\" \"bbb\")", 
-						"(compare [0 1 2] [0 1 2])", 
-						"(compare [0 1 2] [0 9 2])", 
-						"(compare [0 9 2] [0 1 2])", 
-						"(compare [1 2 3] [0 1 2 3])", 
+						"(compare nil 0)",
+						"(compare 0 nil)",
+						"(compare 1 0)",
+						"(compare 1 1)",
+						"(compare 1M 2M)",
+						"(compare 1 nil)",
+						"(compare nil 1)",
+						"(compare \"aaa\" \"bbb\")",
+						"(compare [0 1 2] [0 1 2])",
+						"(compare [0 1 2] [0 9 2])",
+						"(compare [0 9 2] [0 1 2])",
+						"(compare [1 2 3] [0 1 2 3])",
 						"(compare [0 1 2] [3 4])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("compare", args, 2);
-	
-				return new VncLong(args.first().compareTo(args.second()));				
+
+				return new VncLong(args.first().compareTo(args.second()));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction partial = 
+
+	public static VncFunction partial =
 		new VncFunction(
-				"partial", 
+				"partial",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(partial f args*)")		
+					.arglists("(partial f args*)")
 					.doc(
-						"Takes a function f and fewer than the normal arguments to f, and " + 
-						"returns a fn that takes a variable number of additional args. When " + 
+						"Takes a function f and fewer than the normal arguments to f, and " +
+						"returns a fn that takes a variable number of additional args. When " +
 						"called, the returned function calls f with args + additional args.")
 					.examples(
-						"((partial * 2) 3)", 
-						"(map (partial * 2) [1 2 3 4])", 
+						"((partial * 2) 3)",
+						"(map (partial * 2) [1 2 3 4])",
 						"(do \n" +
 						"   (def hundred-times (partial * 100)) \n" +
 						"   (hundred-times 5))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("partial", args, 2);
-				
+
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fnArgs = args.rest();
-				
+
 				return new VncFunction() {
 					public VncVal apply(final VncList args) {
 						return fn.apply(fnArgs.addAllAtEnd(args));
 					}
-	
+
 				    private static final long serialVersionUID = -1L;
 				};
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction mapv = 
+	public static VncFunction mapv =
 		new VncFunction(
-				"mapv", 
+				"mapv",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(mapv f coll colls*)")		
+					.arglists("(mapv f coll colls*)")
 					.doc(
 						"Returns a vector consisting of the result of applying f " +
-						"to the set of first items of each coll, followed by applying " + 
-						"f to the set of second items in each coll, until any one of the colls " + 
+						"to the set of first items of each coll, followed by applying " +
+						"f to the set of second items in each coll, until any one of the colls " +
 						"is exhausted. Any remaining items in other colls are ignored. ")
 					.examples(
 						"(mapv inc [1 2 3 4])",
 						"(mapv + [1 2 3 4] [10 20 30 40])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList lists = removeNilValues((VncList)args.rest());
 				final List<VncVal> result = new ArrayList<>();
-	
+
 				if (lists.isEmpty()) {
 					return Nil;
 				}
-				
+
 				int index = 0;
 				boolean hasMore = true;
 				while(hasMore) {
 					final List<VncVal> fnArgs = new ArrayList<>();
-					
+
 					for(int ii=0; ii<lists.size(); ii++) {
 						final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
 						if (nthList.size() > index) {
@@ -4810,26 +4683,25 @@ public class CoreFunctions {
 							break;
 						}
 					}
-	
+
 					if (hasMore) {
-						result.add(fn.apply(new VncList(fnArgs)));			
+						result.add(fn.apply(new VncList(fnArgs)));
 						index += 1;
 					}
 				}
-		
+
 				return new VncVector(result);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction docoll = 
+	public static VncFunction docoll =
 		new VncFunction(
-				"docoll", 
+				"docoll",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(docoll f coll)")		
+					.arglists("(docoll f coll)")
 					.doc(
 						"Applies f to the items of the collection presumably for side effects. " +
 						"Returns nil. ")
@@ -4839,13 +4711,13 @@ public class CoreFunctions {
 						"    (fn [[k v]] (println (pr-str k v)))  \n" +
 						"    {:a 1 :b 2 :c 3 :d 4})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("docoll", args, 2);
-	
+
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncVal coll = args.second();
-				
+
 				if (coll == Nil) {
 					// ok do nothing
 				}
@@ -4860,79 +4732,76 @@ public class CoreFunctions {
 							"docoll: collection type %s not supported",
 							Types.getType(coll)));
 				}
-					
+
 				return Nil;
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction mapcat = 
+	public static VncFunction mapcat =
 		new VncFunction(
-				"mapcat", 
+				"mapcat",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(mapcat fn & colls)")		
+					.arglists("(mapcat fn & colls)")
 					.doc(
-						"Returns the result of applying concat to the result of applying map " + 
+						"Returns the result of applying concat to the result of applying map " +
 						"to fn and colls. Thus function fn should return a collection.")
 					.examples(
 						"(mapcat reverse [[3 2 1 0] [6 5 4] [9 8 7]])")
 					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
+		) {
+			public VncVal apply(final VncList args) {
 				return concat.apply(Coerce.toVncList(TransducerFunctions.map.apply(args)));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction map_invert = 
+	public static VncFunction map_invert =
 		new VncFunction(
-				"map-invert", 
+				"map-invert",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(map-invert m)")		
+					.arglists("(map-invert m)")
 					.doc(
 						"Returns the map with the vals mapped to the keys.")
 					.examples(
 						"(map-invert {:a 1 :b 2 :c 3})")
 					.build()
-		) {		
-			public VncVal apply(final VncList args) {			
+		) {
+			public VncVal apply(final VncList args) {
 				assertArity("map-invert", args, 1);
 
 				final VncMap m = Coerce.toVncMap(args.first());
-				
+
 				final Map<VncVal,VncVal> inverted = new HashMap<>();
 				for(VncMapEntry e : m.entries()) {
 					inverted.put(e.getValue(), e.getKey());
 				}
 				return m.withValues(inverted, m.getMeta());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
-	public static VncFunction reduce = 
+
+	public static VncFunction reduce =
 		new VncFunction(
-				"reduce", 
+				"reduce",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(reduce f coll)", "(reduce f val coll)")		
+					.arglists("(reduce f coll)", "(reduce f val coll)")
 					.doc(
-						"f should be a function of 2 arguments. If val is not supplied, " + 
-						"returns the result of applying f to the first 2 items in coll, then " + 
-						"applying f to that result and the 3rd item, etc. If coll contains no " + 
-						"items, f must accept no arguments as well, and reduce returns the " + 
-						"result of calling f with no arguments.  If coll has only 1 item, it " + 
-						"is returned and f is not called.  If val is supplied, returns the " + 
-						"result of applying f to val and the first item in coll, then " + 
-						"applying f to that result and the 2nd item, etc. If coll contains no " + 
+						"f should be a function of 2 arguments. If val is not supplied, " +
+						"returns the result of applying f to the first 2 items in coll, then " +
+						"applying f to that result and the 3rd item, etc. If coll contains no " +
+						"items, f must accept no arguments as well, and reduce returns the " +
+						"result of calling f with no arguments.  If coll has only 1 item, it " +
+						"is returned and f is not called.  If val is supplied, returns the " +
+						"result of applying f to val and the first item in coll, then " +
+						"applying f to that result and the 2nd item, etc. If coll contains no " +
 						"items, returns val and f is not called.")
 					.examples(
 						"(reduce (fn [x y] (+ x y)) [1 2 3 4 5 6 7])",
@@ -4941,15 +4810,15 @@ public class CoreFunctions {
 						"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
 						"(reduce (fn [m c] (assoc m (first c) c)) {} [[:a 1] [:b 2] [:c 3]])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("reduce", args, 2, 3);
-				
+
 				final boolean noInitValue = args.size() < 3;
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
 
 				List<VncVal> coll;
-				
+
 				if (Types.isVncSequence(args.last())) {
 					coll = Coerce.toVncSequence(args.last()).getList();
 				}
@@ -4958,10 +4827,10 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"reduce: collection type %s not supported", 
+							"reduce: collection type %s not supported",
 							Types.getType(args.last())));
 				}
-				
+
 				if (noInitValue) {
 					if (coll.isEmpty()) {
 						return reduceFn.apply(new VncList());
@@ -4975,7 +4844,7 @@ public class CoreFunctions {
 				}
 				else {
 					final VncVal init = args.second();
-					
+
 					if (coll.isEmpty()) {
 						return init;
 					}
@@ -4984,36 +4853,35 @@ public class CoreFunctions {
 					}
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
-	public static VncFunction reduce_kv = 
+
+	public static VncFunction reduce_kv =
 		new VncFunction(
-				"reduce-kv", 
+				"reduce-kv",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(reduce-kv f init coll))")		
+					.arglists("(reduce-kv f init coll))")
 					.doc(
-						"Reduces an associative collection. f should be a function of 3 " + 
-						"arguments. Returns the result of applying f to init, the first key " + 
-						"and the first value in coll, then applying f to that result and the " + 
-						"2nd key and value, etc. If coll contains no entries, returns init " + 
-						"and f is not called. Note that reduce-kv is supported on vectors, " + 
+						"Reduces an associative collection. f should be a function of 3 " +
+						"arguments. Returns the result of applying f to init, the first key " +
+						"and the first value in coll, then applying f to that result and the " +
+						"2nd key and value, etc. If coll contains no entries, returns init " +
+						"and f is not called. Note that reduce-kv is supported on vectors, " +
 						"where the keys will be the ordinals.")
 					.examples(
 						"(reduce-kv (fn [x y z] (assoc x z y)) {} {:a 1 :b 2 :c 3})")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("reduce-kv", args, 3);
-				
-				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());		
+
+				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
 				final List<VncMapEntry> values = Coerce.toVncHashMap(args.nth(2)).entries();
-				
+
 				VncMap value = (VncMap)args.second();
-				
+
 				if (values.isEmpty()) {
 					return value;
 				}
@@ -5021,24 +4889,23 @@ public class CoreFunctions {
 					for(VncMapEntry entry : values) {
 						final VncVal key = entry.getKey();
 						final VncVal val = entry.getValue();
-						
+
 						value = Coerce.toVncMap(reduceFn.apply(VncList.of(value, key, val)));
 					}
-					
+
 					return value;
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction merge = 
+	public static VncFunction merge =
 		new VncFunction(
-				"merge", 
+				"merge",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(merge & maps)")		
+					.arglists("(merge & maps)")
 					.doc(
 						"Returns a map that consists of the rest of the maps conj-ed onto " +
 						"the first.  If a key occurs in more than one map, the mapping from " +
@@ -5050,14 +4917,14 @@ public class CoreFunctions {
 						"(merge nil nil)")
 					.build()
 		) {
-			public VncVal apply(final VncList args) {	
+			public VncVal apply(final VncList args) {
 				assertMinArity("merge", args, 1);
-				
-				// remove Nil		
+
+				// remove Nil
 				final List<VncVal> maps = args.stream()
 											  .filter(v -> v != Nil)
 											  .collect(Collectors.toList());
-				
+
 				if (maps.isEmpty()) {
 					return Nil;
 				}
@@ -5067,24 +4934,23 @@ public class CoreFunctions {
 					return new VncHashMap(map);
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction conj = 
+	public static VncFunction conj =
 		new VncFunction(
-				"conj", 
+				"conj",
 				VncFunction
 					.meta()
-					.module("core")
 					.arglists(
-						"(conj)", 
-						"(conj x)", 
-						"(conj coll x)", 
-						"(conj coll x & xs)")		
+						"(conj)",
+						"(conj x)",
+						"(conj coll x)",
+						"(conj coll x & xs)")
 					.doc(
-						"Returns a new collection with the x, xs " + 
-						"'added'. (conj nil item) returns (item).  The 'addition' may " + 
+						"Returns a new collection with the x, xs " +
+						"'added'. (conj nil item) returns (item).  The 'addition' may " +
 						"happen at different 'places' depending on the concrete type.")
 					.examples(
 						"(conj [1 2 3] 4)",
@@ -5106,10 +4972,10 @@ public class CoreFunctions {
 					if (coll == Nil) {
 						coll = new VncList();
 					}
-	
+
 					if (Types.isVncVector(coll)) {
 						return ((VncVector)coll).addAllAtEnd(args.rest());
-					} 
+					}
 					else if (Types.isVncList(coll)) {
 						return ((VncList)coll).addAllAtStart(args.rest());
 					}
@@ -5117,7 +4983,7 @@ public class CoreFunctions {
 						return ((VncSet)coll).addAll(args.rest());
 					}
 					else if (Types.isVncMap(coll)) {
-						final VncMap map = (VncMap)coll;			
+						final VncMap map = (VncMap)coll;
 						final VncVal second = args.second();
 						if (Types.isVncVector(second) && ((VncVector)second).size() == 2) {
 							return map.assoc(
@@ -5141,24 +5007,23 @@ public class CoreFunctions {
 					}
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction disj = 
+	public static VncFunction disj =
 		new VncFunction(
-				"disj", 
+				"disj",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(disj coll x)", "(disj coll x & xs)")		
+					.arglists("(disj coll x)", "(disj coll x & xs)")
 					.doc( "Returns a new set with the x, xs removed.")
 					.examples("(disj (set 1 2 3) 3)")
 					.build()
 		) {
-			public VncVal apply(final VncList args) {			
+			public VncVal apply(final VncList args) {
 				assertMinArity("disj", args, 2);
-				
+
 				if (args.first() instanceof VncHashSet) {
 					return ((VncHashSet)args.first()).removeAll(args.rest());
 				}
@@ -5168,20 +5033,19 @@ public class CoreFunctions {
 							Types.getType(args.first())));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction seq = 
+	public static VncFunction seq =
 		new VncFunction(
-				"seq", 
+				"seq",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(seq coll)")		
+					.arglists("(seq coll)")
 					.doc(
-						"Returns a seq on the collection. If the collection is " + 
-						"empty, returns nil. (seq nil) returns nil. seq also works on " + 
+						"Returns a seq on the collection. If the collection is " +
+						"empty, returns nil. (seq nil) returns nil. seq also works on " +
 						"Strings.")
 					.examples(
 						"(seq nil)",
@@ -5193,11 +5057,11 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("seq", args, 1);
-	
+
 				final VncVal val = args.first();
 				if (Types.isVncMap(val)) {
-					if (((VncMap)val).isEmpty()) { 
-						return Nil; 
+					if (((VncMap)val).isEmpty()) {
+						return Nil;
 					}
 					return new VncList(
 							((VncMap)val)
@@ -5205,75 +5069,73 @@ public class CoreFunctions {
 								.stream()
 								.map(e -> VncVector.of(e.getKey(), e.getValue()))
 								.collect(Collectors.toList()));
-				} 
+				}
 				if (Types.isVncVector(val)) {
 					return ((VncVector)val).isEmpty() ? Nil : ((VncVector)val).toVncList();
-				} 
+				}
 				else if (Types.isVncList(val)) {
 					return ((VncList)val).isEmpty() ? Nil :  val;
-				} 
+				}
 				else if (Types.isVncString(val)) {
 					final String s = ((VncString)val).getValue();
-					if (s.length() == 0) { 
-						return Nil; 
+					if (s.length() == 0) {
+						return Nil;
 					}
-					
+
 					final List<VncVal> lst = new ArrayList<VncVal>();
 					for (char c : s.toCharArray()) {
 						lst.add(new VncString(String.valueOf(c)));
 					}
 					return new VncList(lst);
-				} 
+				}
 				else if (val == Nil) {
 					return Nil;
-				} 
+				}
 				else {
 					throw new VncException("seq: called on non-sequence");
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction repeat = 
+	public static VncFunction repeat =
 		new VncFunction(
-				"repeat", 
+				"repeat",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(repeat n x)")		
+					.arglists("(repeat n x)")
 					.doc("Returns a collection with the value x repeated n times")
 					.examples("(repeat 5 [1 2])")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("repeat", args, 2);
-					
+
 				final long repeat = Coerce.toVncLong(args.first()).getValue();
 				if (repeat < 0) {
-					throw new VncException("repeat: a count n must be grater or equal to 0");	
+					throw new VncException("repeat: a count n must be grater or equal to 0");
 				}
-	
+
 				final VncVal val = args.second();
 				final List<VncVal> values = new ArrayList<>();
 				for(int ii=0; ii<repeat; ii++) {
 					values.add(val);
-				}			
+				}
 				return new VncList(values);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction repeatedly = 
+	public static VncFunction repeatedly =
 		new VncFunction(
-				"repeatedly", 
+				"repeatedly",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(repeatedly n fn)")		
+					.arglists("(repeatedly n fn)")
 					.doc(
-						"Takes a function of no args, presumably with side effects, and " + 
+						"Takes a function of no args, presumably with side effects, and " +
 						"returns a collection of n calls to it")
 					.examples(
 						"(repeatedly 5 #(rand-long 11))",
@@ -5281,149 +5143,144 @@ public class CoreFunctions {
 						";; function once, repeating the value five times. \n" +
 						"(repeat 5 (rand-long 11))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("repeatedly", args, 2);
-	
-				
+
+
 				final long repeat = Coerce.toVncLong(args.first()).getValue();
 				final IVncFunction fn = Coerce.toIVncFunction(args.second());
-				
+
 				if (repeat < 0) {
-					throw new VncException("repeatedly: a count n must be grater or equal to 0");	
+					throw new VncException("repeatedly: a count n must be grater or equal to 0");
 				}
-	
+
 				final List<VncVal> values = new ArrayList<>();
 				for(int ii=0; ii<repeat; ii++) {
 					values.add(fn.apply(new VncList()));
-				}			
+				}
 				return new VncList(values);
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
 
-	
+
+
 	///////////////////////////////////////////////////////////////////////////
 	// Meta functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction meta = 
+	public static VncFunction meta =
 		new VncFunction(
-				"meta", 
+				"meta",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(meta obj)")		
+					.arglists("(meta obj)")
 					.doc("Returns the metadata of obj, returns nil if there is no metadata.")
 					.build()
-		) {	
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("meta", args, 1);
-	
+
 				return args.first().getMeta();
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction with_meta = 
+	public static VncFunction with_meta =
 		new VncFunction(
-				"with-meta", 
+				"with-meta",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(with-meta obj m)")		
+					.arglists("(with-meta obj m)")
 					.doc("Returns a copy of the object obj, with a map m as its metadata.")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("meta", args, 2);
-	
+
 				return args.first().withMeta(Coerce.toVncMap(args.second()));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction vary_meta = 
+	public static VncFunction vary_meta =
 		new VncFunction(
-				"vary-meta", 
+				"vary-meta",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(vary-meta obj f & args)")		
+					.arglists("(vary-meta obj f & args)")
 					.doc("Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("vary-meta", args, 2);
-	
+
 				final VncVal obj = args.first();
 				final VncVal meta = obj.getMeta();
 				final IVncFunction fn = Coerce.toIVncFunction(args.second());
 				final VncList fnArgs = args.slice(2).addAtStart(meta == Nil ? new VncHashMap() : meta);
-				
+
 				return obj.withMeta(fn.apply(fnArgs));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
-	
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// Utilities
 	///////////////////////////////////////////////////////////////////////////
 
 
-	public static VncFunction gensym = 
+	public static VncFunction gensym =
 		new VncFunction(
-				"gensym", 
+				"gensym",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(gensym)", "(gensym prefix)")		
+					.arglists("(gensym)", "(gensym prefix)")
 					.doc("Generates a symbol.")
 					.examples("(gensym )", "(gensym \"prefix_\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("gensym", args, 0, 1);
-				
-				final String prefix = args.isEmpty() 
-										? "G__" 
+
+				final String prefix = args.isEmpty()
+										? "G__"
 										: Types.isVncSymbol(args.first())
 											? Coerce.toVncSymbol(args.first()).getName()
 											: Coerce.toVncString(args.first()).getValue();
-				
+
 				return new VncSymbol(prefix + String.valueOf(gensymValue.incrementAndGet()));
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction name = 
+	public static VncFunction name =
 		new VncFunction(
-				"name", 
+				"name",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(name x)")		
+					.arglists("(name x)")
 					.doc("Returns the name String of a string, symbol, keyword, or function/macro.")
 					.examples(
 						"(name :x)",
 						"(name 'x)",
 						"(name \"x\")")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("name", args, 1);
-				
+
 				final VncVal arg = args.first();
-				
+
 				if (arg == Nil) {
 					return Nil;
 				}
@@ -5441,69 +5298,67 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'name' does not allow %s as parameter", 
+							"Function 'name' does not allow %s as parameter",
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction module = 
+
+	public static VncFunction module =
 		new VncFunction(
-				"module", 
+				"module",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(module fn)")		
+					.arglists("(module fn)")
 					.doc("Returns the module a function/macro has been defined in.")
 					.examples("(module +)")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("module", args, 1);
-				
+
 				final VncVal arg = args.first();
-				
+
 				if (Types.isVncFunction(arg)) {
 					return new VncString(((VncFunction)arg).getModule());
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'module' does not allow %s as parameter", 
+							"Function 'module' does not allow %s as parameter",
 							Types.getType(arg)));
 				}
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-	public static VncFunction type = 
+
+	public static VncFunction type =
 		new VncFunction(
-				"type", 
+				"type",
 				VncFunction
 					.meta()
-					.module("core")
-					.arglists("(type x)")		
+					.arglists("(type x)")
 					.doc("Returns the type of x.")
 					.examples(
 						"(type 5)",
 						"(type [1 2])",
 						"(type (. :java.math.BigInteger :valueOf 100))")
 					.build()
-		) {		
+		) {
 			public VncVal apply(final VncList args) {
 				assertArity("type", args, 1);
 				return Types.getType(args.first());
 			}
-	
+
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-		
+
+
 	private static VncVal sort(
-			final String fnName, 
-			final VncVal coll, 
+			final String fnName,
+			final VncVal coll,
 			final Comparator<VncVal> c
 	) {
 		if (Types.isVncVector(coll)) {
@@ -5547,23 +5402,23 @@ public class CoreFunctions {
 	}
 
 	private static String encoding(final VncVal enc) {
-		return enc == Nil 
-				? "UTF-8" 
+		return enc == Nil
+				? "UTF-8"
 				: Types.isVncKeyword(enc)
 					? Coerce.toVncKeyword(enc).getValue()
 					: Coerce.toVncString(enc).getValue();
 	}
-	
-	
-	
+
+
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static Map<VncVal, VncVal> ns = 
+	public static Map<VncVal, VncVal> ns =
 			new VncHashMap.Builder()
 				.put("throw",				throw_ex)
-				
+
 				.put("nil?",				nil_Q)
 				.put("some?",				some_Q)
 				.put("true?",				true_Q)
@@ -5582,12 +5437,12 @@ public class CoreFunctions {
 				.put("keyword?",			keyword_Q)
 				.put("fn?",					fn_Q)
 				.put("macro?",				macro_Q)
-		
+
 				.put("pr-str",				pr_str)
 				.put("str",					str)
 				.put("readline",			readline)
 				.put("read-string",			read_string)
-				
+
 				.put("==",					equal_Q)
 				.put("!=",					not_equal_Q)
 				.put("<",					lt)
@@ -5601,7 +5456,7 @@ public class CoreFunctions {
 				// deprecated (just for compatibility)
 				.put("match",				match_Q)
 				.put("match-not",			not_match_Q)
-				
+
 				.put("boolean",				boolean_cast)
 				.put("int",					int_cast)
 				.put("long",				long_cast)
@@ -5610,7 +5465,7 @@ public class CoreFunctions {
 				.put("bytebuf",				bytebuf_cast)
 				.put("bytebuf-to-string",	bytebuf_to_string)
 				.put("bytebuf-from-string",	bytebuf_from_string)
-				
+
 				.put("list",				new_list)
 				.put("list*",				new_list_ASTERISK)
 				.put("list?",				list_Q)
@@ -5706,28 +5561,28 @@ public class CoreFunctions {
 				.put("sort",				sort)
 				.put("sort-by",				sort_by)
 				.put("some",				some)
-		
+
 				.put("merge",				merge)
 				.put("conj",				conj)
 				.put("disj",				disj)
 				.put("seq",					seq)
 				.put("repeat",				repeat)
 				.put("repeatedly",			repeatedly)
-		
+
 				.put("meta",				meta)
 				.put("with-meta",			with_meta)
 				.put("vary-meta",			vary_meta)
-				
+
 				.put("coalesce",			coalesce)
-				
+
 				.put("gensym",				gensym)
 				.put("name",				name)
 				.put("module",				module)
 				.put("type",				type)
-				.put("instance?",			instance_Q)	
-					
+				.put("instance?",			instance_Q)
+
 				.toMap();
 
-	
+
 	private static final AtomicLong gensymValue = new AtomicLong(0);
 }

@@ -81,7 +81,6 @@ public class PdfFunctions {
 				"pdf/render", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists(
 						"(pdf/render xhtml & options)")		
 					.doc(
@@ -128,7 +127,6 @@ public class PdfFunctions {
 				"pdf/watermark", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists(
 						"(pdf/watermark pdf options-map)",		
 						"(pdf/watermark pdf & options)")		
@@ -210,7 +208,6 @@ public class PdfFunctions {
 				"pdf/available?", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists("(pdf/available?)")
 					.doc("Checks if the 3rd party libraries required for generating PDFs are available.")
 					.examples("(pdf/available?)")
@@ -245,7 +242,6 @@ public class PdfFunctions {
 				"pdf/merge", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists("pdf/merge pdfs")
 					.doc("Merge multiple PDFs into a single PDF.")
 					.examples(
@@ -304,7 +300,6 @@ public class PdfFunctions {
 				"pdf/copy", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists("pdf/copy pdf & page-nr")
 					.doc("Copies pages from a PDF to a new PDF.")
 					.examples(
@@ -388,7 +383,6 @@ public class PdfFunctions {
 				"pdf/pages", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists("pdf/pages pdf")
 					.doc("Returns the number of pages of a PDF.")
 					.examples("(pdf/pages pdf)")
@@ -419,7 +413,6 @@ public class PdfFunctions {
 				"pdf/text-to-pdf", 
 				VncFunction
 					.meta()
-					.module("pdf")
 					.arglists("pdf/text-to-pdf text & options")
 					.doc(
 						"Creates a PDF from simple text. The tool process line-feeds '\\n' " +

@@ -63,7 +63,6 @@ public class JsonFunctions {
 				"json/write-str", 
 				VncFunction
 					.meta()
-					.module("json")
 					.arglists(
 						"(json/write-str val & options)")		
 					.doc(
@@ -113,7 +112,6 @@ public class JsonFunctions {
 				"json/spit", 
 				VncFunction
 					.meta()
-					.module("json")
 					.arglists(
 						"(json/spit out val & options)")		
 					.doc(
@@ -186,7 +184,6 @@ public class JsonFunctions {
 				"json/read-str", 
 				VncFunction
 					.meta()
-					.module("json")
 					.arglists("(json/read-str s & options)")		
 					.doc(
 						"Reads a JSON string and returns it as a Venice datatype.\n\n" + 
@@ -252,7 +249,6 @@ public class JsonFunctions {
 				"json/slurp", 
 				VncFunction
 					.meta()
-					.module("json")
 					.arglists("(json/slurp in & options)")		
 					.doc(
 						"Slurps a JSON string from the input and returns it as a Venice datatype.\n" +
@@ -328,7 +324,6 @@ public class JsonFunctions {
 				"json/pretty-print", 
 				VncFunction
 					.meta()
-					.module("json")
 					.arglists("(json/pretty-print s)")		
 					.doc("Pretty prints a JSON string")
 					.examples("(json/pretty-print (json/write-str {:a 100 :b 100}))")
