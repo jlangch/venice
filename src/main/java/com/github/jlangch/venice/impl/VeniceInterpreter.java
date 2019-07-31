@@ -179,7 +179,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public List<String> getAvailableModules() {
 		final List<String> modules = new ArrayList<>(ModuleLoader.VALID_MODULES);
-		modules.removeAll(Arrays.asList("core", "test", "http", "jackson", "logger"));
+		modules.removeAll(Arrays.asList("core", "test", "http", "jackson"));
 		Collections.sort(modules);
 		return modules;
 	}
