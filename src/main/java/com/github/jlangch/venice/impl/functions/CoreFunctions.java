@@ -5306,34 +5306,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction module =
-		new VncFunction(
-				"module",
-				VncFunction
-					.meta()
-					.arglists("(module fn)")
-					.doc("Returns the module a function/macro has been defined in.")
-					.examples("(module +)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("module", args, 1);
-
-				final VncVal arg = args.first();
-
-				if (Types.isVncFunction(arg)) {
-					return new VncString(((VncFunction)arg).getModule());
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'module' does not allow %s as parameter",
-							Types.getType(arg)));
-				}
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
 	public static VncFunction type =
 		new VncFunction(
 				"type",
@@ -5577,7 +5549,6 @@ public class CoreFunctions {
 
 				.put("gensym",				gensym)
 				.put("name",				name)
-				.put("module",				module)
 				.put("type",				type)
 				.put("instance?",			instance_Q)
 
