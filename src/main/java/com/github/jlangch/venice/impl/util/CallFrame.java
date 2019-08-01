@@ -35,35 +35,25 @@ import com.github.jlangch.venice.util.StackFrame;
 
 public class CallFrame {
 
-	private CallFrame(final String fnName, final String module, final VncVal meta) {
+	private CallFrame(final String fnName, final VncVal meta) {
 		this.fnName = fnName;
-		this.module = module;
 		this.meta = meta;
 	}
 
 	public static CallFrame fromVal(final String fnName, final VncVal val) {
-		return new CallFrame(fnName, null, val.getMeta());
+		return new CallFrame(fnName, val.getMeta());
 	}
 	
 	public static CallFrame fromVal(final VncVal val) {
-		return new CallFrame(null, null, val.getMeta());
+		return new CallFrame(null, val.getMeta());
 	}
 
 	public static CallFrame fromFunction(final VncFunction fn, final VncVal fnSym) {
-		return new CallFrame(fn.getName(), fn.getModule(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
-	}
-
-	
-	public CallFrame withModule(final String module) {
-		return new CallFrame(this.fnName, module, this.meta);
+		return new CallFrame(fn.getName(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
 	}
 	
 	public String getFnName() {
 		return fnName;
-	}
-	
-	public String getModule() {
-		return module;
 	}
 	
 	public String getFile() {
@@ -99,6 +89,5 @@ public class CallFrame {
 
 	
 	private final String fnName;
-	private final String module;
 	private final VncVal meta; 
 }

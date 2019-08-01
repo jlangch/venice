@@ -144,11 +144,17 @@ public class VeniceInterpreter implements Serializable  {
 		Functions
 			.create(javaImports)
 			.entrySet()
-			.forEach(e -> env.setGlobal(
-							new Var(
-								(VncSymbol)e.getKey(), 
-								e.getValue(), 
-								((VncFunction)e.getValue()).isRedefinable())));
+			.forEach(e -> {
+				final VncSymbol sym = (VncSymbol)e.getKey();
+				VncFunction fn = (VncFunction)e.getValue();
+				fn = fn.withMeta(
+						MetaUtil.addMetaVal(
+								fn.getMeta(), 
+								MetaUtil.NS, 
+								new VncString(fn.getNamespace())));
+				
+				env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
+			});
 
 		// set Venice version
 		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
@@ -1198,6 +1204,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static <T> List<T> toEmpty(final List<T> list) {
 		return list == null ? new ArrayList<T>() : list;
 	}
+	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 

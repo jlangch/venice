@@ -375,7 +375,7 @@ public class Env implements Serializable {
 					final VncFunction fn = (VncFunction)e.getValue().getVal();
 					return e.getKey()
 							.withMeta(VncHashMap.of(
-								new VncKeyword("group"), new VncString(fn.getModule()),
+								new VncKeyword("group"), new VncString(fn.getNamespace()),
 								new VncKeyword("arglists"), fn.getArgLists(),
 								new VncKeyword("doc"), fn.getDoc()));
 				 })

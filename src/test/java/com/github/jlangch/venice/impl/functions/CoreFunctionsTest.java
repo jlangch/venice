@@ -1852,32 +1852,32 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals(
-				"{column=7, file=unknown, line=1, module=user}", 
+				"{column=7, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta 3)")).toString());
 		
 		assertEquals(
-				"{column=8, file=unknown, line=1, module=user}", 
+				"{column=8, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta '(1 2 3))")).toString());
 		
 		assertEquals(
-				"{column=7, file=unknown, line=1, module=user}", 
+				"{column=7, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta [1 2 3])")).toString());
 		
 		assertEquals(
-				"{column=7, file=unknown, line=1, module=user}", 
+				"{column=7, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta { :a 1 })")).toString());
 	
 		
 		assertEquals(
-				"{column=11, file=unknown, line=1, module=user}", 
+				"{column=11, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (defn x [] 100) (meta x)))")).toString());
 		
 		assertEquals(
-				"{column=7, file=unknown, line=1, module=user}", 
+				"{column=7, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(let [x (fn [] 100)] (meta x))")).toString());
 		
 		assertEquals(
-				"{column=11, file=unknown, line=1, module=user}", 
+				"{column=11, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (let [x (fn [] 100)] (meta x)))")).toString());
 
 		

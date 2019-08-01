@@ -34,19 +34,7 @@ public class CallStack {
 	
 	
 	public void push(final CallFrame frame) {
-		if (frame.getModule() == null) {
-			if (queue.isEmpty()) {
-				// default to "user"
-				queue.push(frame.withModule("user"));
-			}
-			else {
-				// inherit module
-				queue.push(frame.withModule(queue.peek().getModule()));
-			}
-		}
-		else {
-			queue.push(frame);
-		}
+		queue.push(frame);
 	}
 	
 	public CallFrame pop() {
@@ -80,10 +68,6 @@ public class CallStack {
 
 	public List<CallFrame> callstack() {
 		return Arrays.asList(queue.toArray(new CallFrame[] {}));
-	}
-	
-	public String peekModule() {
-		return queue.isEmpty() ? "user" : queue.peek().getModule();
 	}
 
 	@Override

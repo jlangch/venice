@@ -38,7 +38,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	public VncVal(final VncVal meta) {	
 		this.meta = meta;
 		this._private = MetaUtil.isPrivate(meta);
-		this.module =  MetaUtil.getModule(meta);
+		this.ns =  MetaUtil.getNamespace(meta);
 	}
 	
 	abstract public VncVal withMeta(final VncVal meta);
@@ -74,8 +74,8 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return _private;
 	}
 
-	public String getModule() {
-		return module;
+	public String getNamespace() {
+		return ns;
 	}
 
 	@Override
@@ -105,5 +105,5 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	private final VncVal meta;
 	private final boolean _private;
-	private final String module;
+	private final String ns;
 }

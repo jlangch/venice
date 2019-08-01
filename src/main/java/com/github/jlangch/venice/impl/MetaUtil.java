@@ -55,7 +55,6 @@ public class MetaUtil {
 	
 	public static VncVal toMeta(final Token token) {
 		return VncHashMap.of(
-					MODULE, new VncString(ModuleLoader.fileNameToModule(token.getFile())),
 					FILE, new VncString(token.getFile()),
 					LINE, new VncLong(token.getLine()),
 					COLUMN, new VncLong(token.getColumn()));
@@ -106,12 +105,12 @@ public class MetaUtil {
 		}
 	}
 
-	public static String getModule(final VncVal meta) {
+	public static String getNamespace(final VncVal meta) {
 		if (meta == Nil) {
 			return null;
 		}
 		else if (meta instanceof VncHashMap) {
-			final VncVal file = ((VncHashMap)meta).get(MODULE);
+			final VncVal file = ((VncHashMap)meta).get(NS);
 			return file == Nil ? null : ((VncString)file).getValue();
 		}
 		else {
@@ -130,6 +129,6 @@ public class MetaUtil {
 	public static final VncKeyword LINE = new VncKeyword(":line"); 
 	public static final VncKeyword COLUMN = new VncKeyword(":column"); 
 	
-	public static final VncKeyword MODULE = new VncKeyword(":module"); 
+	public static final VncKeyword NS = new VncKeyword(":ns"); 
     public static final VncKeyword PRIVATE = new VncKeyword(":private");
 }

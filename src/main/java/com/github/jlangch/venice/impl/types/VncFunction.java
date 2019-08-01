@@ -66,12 +66,15 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		this.params = params;
 	
 		this.fnMeta.set(meta);
+		this._private = MetaUtil.isPrivate(meta);
+		this.ns = getNamespace(name);
 	}
 
 	
 	@Override
 	public VncFunction withMeta(final VncVal meta) {
 		this.fnMeta.set(meta);
+		this._private = MetaUtil.isPrivate(meta);
 		return this;
 	}
 
@@ -150,13 +153,34 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 					.append("{")
 					.append("visibility ")
 					.append(isPrivate() ? ":private" : ":public")
-					.append(", module ")
-					.append(StringUtil.quote(getModule() == null ? "" : getModule(), '\"'))
+					.append(", ns ")
+					.append(StringUtil.quote(getNamespace() == null ? "" : getNamespace(), '\"'))
 					.append("}"));
 	}
 
+	@Override
 	public VncVal getMeta() { 
 		return fnMeta.get(); 
+	}
+	
+	@Override
+	public boolean isPrivate() {
+		return _private;
+	}
+	
+	@Override
+	public String getNamespace() {
+		return ns;
+	}
+
+	public static String getNamespace(final String fullyQualifiedName) {
+		if (StringUtil.isEmpty(fullyQualifiedName)) {
+			return "anonymous";
+		}
+		else {
+			final int pos = fullyQualifiedName.indexOf("/");
+			return pos < 1 ? "core" : fullyQualifiedName.substring(0, pos);
+		}
 	}
 
 	public static MetaBuilder meta() {
@@ -187,7 +211,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 				new VncList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
 			return this;
 		}
-		
+			
 		public VncHashMap build() {
 			return new VncHashMap(meta);
 		}
@@ -206,4 +230,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
+	private volatile boolean _private;
+	private volatile String ns;
 }
