@@ -77,5 +77,6 @@ public class ReservedSymbols {
 					".",
 					"proxify",
 					"*version*",
-					"*newline*"));
+					"*newline*",
+					"*ns*"));
 }

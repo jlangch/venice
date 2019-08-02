@@ -223,9 +223,7 @@ public class VeniceInterpreter implements Serializable  {
 				case "def": { // (def name value)
 					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
 
-					VncSymbol defName = Coerce.toVncSymbol(ast.second());
-					defName = defName.withMeta(evaluate(defName.getMeta(), env));
-					ReservedSymbols.validate(defName);
+					final VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
 					final VncVal defVal = ast.third();
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, true));
@@ -233,19 +231,29 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defonce": { // (defonce name value)
-					VncSymbol defName = Coerce.toVncSymbol(ast.second());
-					defName = defName.withMeta(evaluate(defName.getMeta(), env));
-					ReservedSymbols.validate(defName);
+					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
+
+					final VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
 					final VncVal defVal = ast.third();
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, false));
 					return res;
 				}
 				
+				case "def-dynamic": { // (def-dynamic name value)
+					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
+				
+					final VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);				
+					final VncVal defVal = ast.third();
+					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
+					env.setGlobal(new DynamicVar(defName, res));
+					return res;
+				}
+				
 				case "defmulti": { // (defmulti name dispatch-fn)
-					VncSymbol multiFnName = Coerce.toVncSymbol(ast.second());
-					multiFnName = multiFnName.withMeta(evaluate(multiFnName.getMeta(), env));
-					ReservedSymbols.validate(multiFnName);
+					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
+
+					final VncSymbol multiFnName = evaluateSymbolMetaData(ast.second(), env);
 					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
 					final VncMultiFunction multiFn = new VncMultiFunction(multiFnName.getName(), dispatchFn);
 					env.setGlobal(new Var(multiFnName, multiFn, false));
@@ -279,16 +287,6 @@ public class VeniceInterpreter implements Serializable  {
 					final VncFunction fn = buildFunction(multiFnName.getName(), params, body, preConditions, env);
 
 					return multiFn.addFn(dispatchVal, fn);
-				}
-								
-				case "def-dynamic": { // (def-dynamic name value)
-					VncSymbol defName = Coerce.toVncSymbol(ast.second());
-					defName = defName.withMeta(evaluate(defName.getMeta(), env));
-					ReservedSymbols.validate(defName);
-					final VncVal defVal = ast.third();
-					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
-					env.setGlobal(new DynamicVar(defName, res));
-					return res;
 				}
 				
 				case "resolve": { // (resolve sym)
@@ -1201,6 +1199,12 @@ public class VeniceInterpreter implements Serializable  {
 		if (Thread.currentThread().isInterrupted()) {
 			throw new com.github.jlangch.venice.InterruptedException("interrupted");
 		}
+	}
+	
+	private VncSymbol evaluateSymbolMetaData(final VncVal symVal, final Env env) {
+		final VncSymbol sym = Coerce.toVncSymbol(symVal);
+		ReservedSymbols.validate(sym);
+		return sym.withMeta(evaluate(sym.getMeta(), env));
 	}
 
 	private static <T> List<T> toEmpty(final List<T> list) {
