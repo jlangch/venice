@@ -38,6 +38,9 @@ public class Namespace {
 		return isQualified(sym.getName());
 	}
 
+	public static boolean on() {
+		return false;
+	}
 
 	public static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
 	public static final VncSymbol NS_DEFAULT = new VncSymbol("user");

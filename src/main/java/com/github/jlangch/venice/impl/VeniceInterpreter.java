@@ -224,31 +224,57 @@ public class VeniceInterpreter implements Serializable  {
 					VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
 					final VncVal defVal = ast.third();
 
-//					if (!Namespace.isQualified(defName)) {
-//						final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
-//						if (!Namespace.NS_CORE.equals(ns)) {
-//							defName = new VncSymbol(
-//											ns.getName() + "/" + defName.getName(), 
-//											defName.getMeta());
-//						}
-//					}
-
+					if (Namespace.on()) {
+						if (!Namespace.isQualified(defName)) {
+							final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+							if (!Namespace.NS_CORE.equals(ns)) {
+								defName = new VncSymbol(
+												ns.getName() + "/" + defName.getName(), 
+												defName.getMeta());
+							}
+						}
+					}
+					
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, true));
 					return res;
 				}
 				
 				case "defonce": { // (defonce name value)
-					final VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
+					VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
 					final VncVal defVal = ast.third();
+					
+					if (Namespace.on()) {
+						if (!Namespace.isQualified(defName)) {
+							final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+							if (!Namespace.NS_CORE.equals(ns)) {
+								defName = new VncSymbol(
+												ns.getName() + "/" + defName.getName(), 
+												defName.getMeta());
+							}
+						}
+					}
+
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, false));
 					return res;
 				}
 				
 				case "def-dynamic": { // (def-dynamic name value)
-					final VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);				
+					VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);				
 					final VncVal defVal = ast.third();
+
+					if (Namespace.on()) {
+						if (!Namespace.isQualified(defName)) {
+							final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+							if (!Namespace.NS_CORE.equals(ns)) {
+								defName = new VncSymbol(
+												ns.getName() + "/" + defName.getName(), 
+												defName.getMeta());
+							}
+						}
+					}
+					
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new DynamicVar(defName, res));
 					return res;
@@ -262,11 +288,11 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal val = evaluate(expr, env).withMeta(name.getMeta());
 						
 						if (globVar instanceof DynamicVar) {
-							env.popGlobalDynamic(name);
-							env.pushGlobalDynamic(name, val);
+							env.popGlobalDynamic(globVar.getName());
+							env.pushGlobalDynamic(globVar.getName(), val);
 						}
 						else {
-							env.setGlobal(new Var(name, val));
+							env.setGlobal(new Var(globVar.getName(), val));
 						}
 						return val;
 					}

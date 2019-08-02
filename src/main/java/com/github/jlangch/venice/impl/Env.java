@@ -81,14 +81,6 @@ public class Env implements Serializable {
 			return val;
 		}
 
-//		final VncSymbol ns = (VncSymbol)peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
-//		if (!Namespace.isQualified(key)) {
-//			val = getOrNull(new VncSymbol(ns.getName() + "/" + key.getName()));
-//			if (val != null) {
-//				return val;
-//			}
-//		}
-
 		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(key))) {
 			throw new VncException(String.format("Symbol '%s' not found.", key.getName())); 
 		}
@@ -344,7 +336,30 @@ public class Env implements Serializable {
 			final Var v = coreGlobalSymbols.get(key);
 			if (v != null) return v;
 		}
-		return globalSymbols.get(key);
+		
+		final Var v = globalSymbols.get(key);
+		if (v != null) return v;
+		
+		if (Namespace.on()) {
+			if (!Namespace.isQualified(key) && !key.equals(Namespace.NS_GLOBAL_SYMBOL)) {
+				final VncVal nsVal = peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+				if (nsVal != Nil) {
+					final VncSymbol ns = (VncSymbol)nsVal;
+					
+					if (!Namespace.NS_CORE.equals(ns)) {
+						final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + key.getName());
+						if (coreGlobalSymbols != null) {
+							final Var v_ = coreGlobalSymbols.get(qualifiedKey);
+							if (v_ != null) return v_;
+						}
+
+						return globalSymbols.get(qualifiedKey);
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	private void setGlobalVar(final VncSymbol key, final Var value) {
