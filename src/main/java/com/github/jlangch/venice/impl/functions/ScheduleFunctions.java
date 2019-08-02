@@ -263,9 +263,10 @@ public class ScheduleFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
-					.put("schedule-delay",			schedule_delay)
-					.put("schedule-at-fixed-rate",	schedule_at_fixed_rate)
+			new VncHashMap
+					.Builder()
+					.add(schedule_delay)
+					.add(schedule_at_fixed_rate)
 					.toMap();	
 	
 	

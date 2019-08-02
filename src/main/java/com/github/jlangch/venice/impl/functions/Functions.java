@@ -26,7 +26,6 @@ import java.util.Map;
 
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -35,9 +34,7 @@ public class Functions {
 	public static Map<VncVal,VncVal> create(final JavaImports javaImports) {
 		final Map<VncVal,VncVal> fns = new HashMap<>();
 		fns.putAll(functions);
-		JavaInteropFunctions
-			.create(javaImports)
-			.forEach(f -> fns.put(new VncSymbol(f.getQualifiedName()), f));
+		fns.putAll(JavaInteropFunctions.create(javaImports));
 		return fns;
 	}
 	

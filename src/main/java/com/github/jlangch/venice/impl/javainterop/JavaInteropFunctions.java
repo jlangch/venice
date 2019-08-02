@@ -24,10 +24,10 @@ package com.github.jlangch.venice.impl.javainterop;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -47,17 +48,19 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 public class JavaInteropFunctions {
 
-	public static List<VncFunction> create(final JavaImports javaImports) {
-		return Arrays.asList(
-				new JavaFn(javaImports),
-				new ProxifyFn(javaImports),
-				new SupersFn(javaImports),
-				new BasesFn(javaImports),
-				new JavaObjQFn(javaImports),
-				new JavaEnumToListFn(javaImports),
-				new JavaIterToListFn(javaImports),
-				new JavaObjWrapFn(javaImports),
-				new JavaObjUnwrapFn(javaImports));
+	public static Map<VncVal, VncVal> create(final JavaImports javaImports) {
+		return new VncHashMap
+						.Builder()
+						.add(new JavaFn(javaImports))
+						.add(new ProxifyFn(javaImports))
+						.add(new SupersFn(javaImports))
+						.add(new BasesFn(javaImports))
+						.add(new JavaObjQFn(javaImports))
+						.add(new JavaEnumToListFn(javaImports))
+						.add(new JavaIterToListFn(javaImports))
+						.add(new JavaObjWrapFn(javaImports))
+						.add(new JavaObjUnwrapFn(javaImports))
+						.toMap();
 	}
 
 	private static abstract class AbstractJavaFn extends VncFunction {

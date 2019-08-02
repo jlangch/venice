@@ -591,13 +591,14 @@ public class PdfFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()			
-					.put("pdf/available?", pdf_available_Q)
-					.put("pdf/render", pdf_render)
-					.put("pdf/watermark", pdf_watermark)
-					.put("pdf/merge", pdf_merge)
-					.put("pdf/copy", pdf_copy)
-					.put("pdf/pages", pdf_pages)
-					.put("pdf/text-to-pdf", pdf_text_to_pdf)
+			new VncHashMap
+					.Builder()			
+					.add(pdf_available_Q)
+					.add(pdf_render)
+					.add(pdf_watermark)
+					.add(pdf_merge)
+					.add(pdf_copy)
+					.add(pdf_pages)
+					.add(pdf_text_to_pdf)
 					.toMap();	
 }

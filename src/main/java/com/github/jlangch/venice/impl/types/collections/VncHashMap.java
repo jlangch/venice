@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -307,7 +308,12 @@ public class VncHashMap extends VncMap {
 	public static class Builder {
 		public Builder() {
 		}
-		
+
+		public Builder add(final VncFunction fn) {
+			map.put(new VncSymbol(fn.getQualifiedName()), fn);
+			return this;
+		}
+
 		public Builder put(final String key, final VncVal val) {
 			map.put(new VncSymbol(key), val);
 			return this;

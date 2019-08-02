@@ -396,7 +396,8 @@ public class ShellFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
-					.put("sh",	sh)
+			new VncHashMap
+					.Builder()
+					.add(sh)
 					.toMap();	
 }

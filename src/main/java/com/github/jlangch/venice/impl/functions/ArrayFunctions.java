@@ -812,20 +812,21 @@ public class ArrayFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
-					.put("aget",			aget)
-					.put("aset",			aset)
-					.put("alength",			alength)
-					.put("asub",			asub)
-					.put("acopy",			acopy)
-					.put("amap",			amap)
-					.put("make-array",		make_array)
-					.put("object-array",	object_array)
-					.put("string-array",	string_array)
-					.put("byte-array",		byte_array)
-					.put("int-array",		int_array)
-					.put("long-array",		long_array)
-					.put("float-array",		float_array)
-					.put("double-array",	double_array)
+			new VncHashMap
+					.Builder()
+					.add(aget)
+					.add(aset)
+					.add(alength)
+					.add(asub)
+					.add(acopy)
+					.add(amap)
+					.add(make_array)
+					.add(object_array)
+					.add(string_array)
+					.add(byte_array)
+					.add(int_array)
+					.add(long_array)
+					.add(float_array)
+					.add(double_array)
 					.toMap();	
 }

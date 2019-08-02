@@ -528,23 +528,24 @@ public class SystemFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap.Builder()
-					.put("uuid",				uuid)
-					.put("objid",				objid)
-					.put("current-time-millis",	current_time_millis)
-					.put("nano-time",			nano_time)
-					.put("format-nano-time", 	format_nano_time)
-					.put("pid",					pid)
-					.put("gc",					gc)
-					.put("shutdown-hook",		shutdown_hook)
-					.put("sandboxed?",			sandboxed_Q)
-					.put("sleep",				sleep)
-					.put("callstack",			callstack)
-					.put("os-type",				os_type)
-					.put("os-type?",			os_type_Q)
-					.put("version",				version)
-					.put("system-prop",			system_prop)
-					.put("java-version",		java_version)
+			new VncHashMap
+					.Builder()
+					.add(uuid)
+					.add(objid)
+					.add(current_time_millis)
+					.add(nano_time)
+					.add(format_nano_time)
+					.add(pid)
+					.add(gc)
+					.add(shutdown_hook)
+					.add(sandboxed_Q)
+					.add(sleep)
+					.add(callstack)
+					.add(os_type)
+					.add(os_type_Q)
+					.add(version)
+					.add(system_prop)
+					.add(java_version)
 					.toMap();
 
 

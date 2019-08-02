@@ -114,8 +114,9 @@ public class ModuleFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
-					.put("load-core-module",		loadCoreModule)
-					.put("load-classpath-venice",	loadClasspathVenice)
+			new VncHashMap
+					.Builder()
+					.add(loadCoreModule)
+					.add(loadClasspathVenice)
 					.toMap();
 }

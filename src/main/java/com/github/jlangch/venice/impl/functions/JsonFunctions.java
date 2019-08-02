@@ -370,11 +370,12 @@ public class JsonFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
-					.put("json/write-str",		write_str)
-					.put("json/spit",			spit)
-					.put("json/read-str",		read_str)
-					.put("json/slurp",			slurp)
-					.put("json/pretty-print",	pretty_print)
+			new VncHashMap
+					.Builder()
+					.add(write_str)
+					.add(spit)
+					.add(read_str)
+					.add(slurp)
+					.add(pretty_print)
 					.toMap();	
 }

@@ -406,18 +406,19 @@ public class RegexFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap.Builder()
-					.put("regex/pattern",			pattern)
-					.put("regex/matcher",			matcher)
-					.put("regex/find",				find)
-					.put("regex/find-all",			find_all)
-					.put("regex/find-group",		find_group)
-					.put("regex/find-all-groups",	find_all_groups)
-					.put("regex/reset",				reset)
-					.put("regex/find?",				find_Q)
-					.put("regex/matches",			matches)
-					.put("regex/matches?",			matches_Q)
-					.put("regex/group",				group)
-					.put("regex/groupcount",		groupcount)
+			new VncHashMap
+					.Builder()
+					.add(pattern)
+					.add(matcher)
+					.add(find)
+					.add(find_all)
+					.add(find_group)
+					.add(find_all_groups)
+					.add(reset)
+					.add(find_Q)
+					.add(matches)
+					.add(matches_Q)
+					.add(group)
+					.add(groupcount)
 					.toMap();	
 }
