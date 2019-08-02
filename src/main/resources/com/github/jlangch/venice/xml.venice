@@ -28,10 +28,10 @@
         :java.io.StringReader
         :org.xml.sax.InputSource)
 
-(def-dynamic *stack*)
-(def-dynamic *current*)
-(def-dynamic *sb*)
-(def-dynamic *state*) ; :element :chars :between
+(def-dynamic xml/*stack*)
+(def-dynamic xml/*current*)
+(def-dynamic xml/*sb*)
+(def-dynamic xml/*state*) ; :element :chars :between
 
 (defn
   ^{ :arglists '("(xml/handler)")
@@ -42,9 +42,9 @@
                        (let [new (conj (or (:content elem) []) content)]
                           (assoc elem :content new)))
         push-chars (fn []
-                     (let [sb (str *sb*)]
-                       (when (and (== *state* :chars) (str/trim-to-nil sb))
-                         (set! *current* (push-content *current* sb)))))]
+                     (let [sb (str xml/*sb*)]
+                       (when (and (== xml/*state* :chars) (str/trim-to-nil sb))
+                         (set! xml/*current* (push-content xml/*current* sb)))))]
     (. :XMLHandler :new
       (proxify :IXMLHandler
         { :startElement
@@ -54,23 +54,23 @@
                              {:tag q-name }
                              {:tag q-name :attrs attr}) ]
                   (push-chars)
-                  (set! *stack* (conj *stack* *current*))
-                  (set! *current* elem)
-                  (set! *state* :element)
+                  (set! xml/*stack* (conj xml/*stack* xml/*current*))
+                  (set! xml/*current* elem)
+                  (set! xml/*state* :element)
                   nil))
           :endElement
               (fn [uri local-name q-name]
                 (push-chars)
-                (set! *current* (push-content (peek *stack*) *current*))
-                (set! *stack* (pop *stack*))
-                (set! *state* :between)
+                (set! xml/*current* (push-content (peek xml/*stack*) xml/*current*))
+                (set! xml/*stack* (pop xml/*stack*))
+                (set! xml/*state* :between)
                 nil)
           :characters
               (fn [chars]
-                (when-not (== *state* :chars)
-                  (set! *sb* (. :StringBuilder :new)))
-                (. *sb* :append chars)
-                (set! *state* :chars)
+                (when-not (== xml/*state* :chars)
+                  (set! xml/*sb* (. :StringBuilder :new)))
+                (. xml/*sb* :append chars)
+                (set! xml/*state* :chars)
                 nil)
           :setDocumentLocator (fn [locator] nil)
           :startDocument (fn [] nil)
@@ -92,12 +92,12 @@
   xml/parse
   ([s] (xml/parse s (xml/handler)))
   ([s handler]
-    (binding [*stack* []
-              *current* {}
-              *state* :between
-              *sb* nil]
+    (binding [xml/*stack* []
+              xml/*current* {}
+              xml/*state* :between
+              xml/*sb* nil]
       (. :XMLUtil :parse s false handler)
-      (first (:content *current*)))))
+      (first (:content xml/*current*)))))
 
 (defn
   ^{ :arglists '("(xml/parse-str s)" "(xml/parse-str s handler)")
