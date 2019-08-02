@@ -222,6 +222,11 @@ public class Env implements Serializable {
 		return hasGlobalVar(key);
 	}
 
+	public void removeGlobalSymbol(final VncSymbol key) {
+		coreGlobalSymbols.remove(key);
+		globalSymbols.remove(key);
+	}
+
 	public Env getLevelEnv(final int level) {
 		Env env = this;
 		if (env.level == level) {

@@ -88,7 +88,7 @@ public class VncMultiFunction extends VncFunction {
 	
 	@Override 
 	public String toString() {
-		return "multi-fn " + getName();
+		return "multi-fn " + getQualifiedName();
 	}
 		
 	private VncFunction findMethod(final VncVal dispatchVal) {
@@ -104,7 +104,7 @@ public class VncMultiFunction extends VncFunction {
 		
 		throw new VncException(String.format(
 					"No matching '%s' multifunction method defined for dispatch value %s", 
-					getName(),
+					getQualifiedName(),
 					Printer.pr_str(dispatchVal, true)));
 	}
 	

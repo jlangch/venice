@@ -81,7 +81,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				
 			final CallStack callStack = ThreadLocalMap.getCallStack();
 			final CallFrame callFrameMethod = CallFrame.fromVal(
-													"proxy(:" + method.getName() + ")->" + fn.getName(),
+													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
 			
 			// [SECURITY]

@@ -258,7 +258,7 @@ public class Agent implements IDeref {
 									String.format(
 											"agent->%s->%s", 
 											sendType.toString().toLowerCase(), 
-											fn.getName()),
+											fn.getQualifiedName()),
 									fnArgs));
 				JavaInterop.register(interceptor);	
 				

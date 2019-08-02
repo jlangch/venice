@@ -5294,7 +5294,7 @@ public class CoreFunctions {
 					return arg;
 				}
 				else if (Types.isVncFunction(arg)) {
-					return new VncString(((VncFunction)arg).getName());
+					return new VncString(((VncFunction)arg).getQualifiedName());
 				}
 				else {
 					throw new VncException(String.format(

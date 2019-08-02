@@ -44,7 +44,7 @@ public class BugsTest {
 		final Env env = new Env(null);
 		
 		// Add the 'meta' function
-		env.set(new VncSymbol(CoreFunctions.meta.getName()), CoreFunctions.meta);
+		env.set(new VncSymbol(CoreFunctions.meta.getQualifiedName()), CoreFunctions.meta);
 		
 		// Test...
 		final VncVal result = venice.RE("(meta [1 2 3])", null, env);		
@@ -58,7 +58,7 @@ public class BugsTest {
 		final Env env = new Env(null);
 		
 		// Add the 'meta' function
-		env.set(new VncSymbol(CoreFunctions.str.getName()), CoreFunctions.str);
+		env.set(new VncSymbol(CoreFunctions.str.getQualifiedName()), CoreFunctions.str);
 		
 		// Test...
 		final VncVal result = venice.RE("(str \"\\u0041\\u0042\\u0043\")", null, env);		

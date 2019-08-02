@@ -60,16 +60,17 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
-		this.name = name != null ? name : createAnonymousFuncName();
+		this.simpleName = name != null ? getSimpleName(name) : createAnonymousFuncName();
 		this.ast = ast;
 		this.env = env;
 		this.params = params;
 	
-		this.fnMeta.set(meta);
+		final String ns = getNamespace(name);
+		
+		this.fnMeta.set(MetaUtil.setNamespace(meta, ns));
 		this._private = MetaUtil.isPrivate(meta);
-		this.ns = getNamespace(name);
+		this.ns = ns;
 	}
-
 	
 	@Override
 	public VncFunction withMeta(final VncVal meta) {
@@ -80,6 +81,11 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	@Override
 	public abstract VncVal apply(final VncList args);
+
+	public void setNamespace(final String ns) { 
+		this.fnMeta.set(MetaUtil.setNamespace(fnMeta.get(), ns));
+		this.ns = ns;
+	}
 
 	public boolean isRedefinable() { 
 		return true; 
@@ -109,16 +115,22 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		macro = true; 
 	}
 	
-	public String getName() { 
-		return name; 
+	public String getSimpleName() { 
+		return simpleName; 
+	}
+	
+	public String getQualifiedName() { 
+		return "core".equals(ns) ? simpleName : ns + "/" + simpleName; 
 	}
 
 	public static String createAnonymousFuncName() {
-		return "anonymous-" + UUID.randomUUID().toString();
+		return createAnonymousFuncName(null);
 	}
 
 	public static String createAnonymousFuncName(final String name) {
-		return "anonymous-" + name + "-" + UUID.randomUUID().toString();
+		return StringUtil.isEmpty(name)
+				? "anonymous-" + UUID.randomUUID().toString()
+				: "anonymous-" + name + "-" + UUID.randomUUID().toString();
 	}
 
 	public VncList getArgLists() { 
@@ -148,13 +160,13 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return String.format(
 				"%s %s %s", 
 				isMacro() ? "macro" : "function", 
-				getName(),
+				getQualifiedName(),
 				new StringBuilder()
 					.append("{")
 					.append("visibility ")
 					.append(isPrivate() ? ":private" : ":public")
 					.append(", ns ")
-					.append(StringUtil.quote(getNamespace() == null ? "" : getNamespace(), '\"'))
+					.append(StringUtil.quote(ns == null ? "" : ns, '\"'))
 					.append("}"));
 	}
 
@@ -173,14 +185,19 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return ns;
 	}
 
-	public static String getNamespace(final String fullyQualifiedName) {
-		if (StringUtil.isEmpty(fullyQualifiedName)) {
+	private String getNamespace(final String qualifiedName) {
+		if (StringUtil.isEmpty(qualifiedName)) {
 			return "anonymous";
 		}
 		else {
-			final int pos = fullyQualifiedName.indexOf("/");
-			return pos < 1 ? "core" : fullyQualifiedName.substring(0, pos);
+			final int pos = qualifiedName.indexOf("/");
+			return pos < 1 ? "core" : qualifiedName.substring(0, pos);
 		}
+	}
+
+	private String getSimpleName(final String qualifiedName) {
+		final int pos = qualifiedName.indexOf("/");
+		return pos < 1 ? qualifiedName : qualifiedName.substring(pos+1);
 	}
 
 	public static MetaBuilder meta() {
@@ -226,7 +243,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	private final Env env;
 	private final VncVector params;
 	private volatile boolean macro = false;
-	private final String name;
+	private final String simpleName;
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);

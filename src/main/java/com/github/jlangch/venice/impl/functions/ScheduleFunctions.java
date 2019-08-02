@@ -81,7 +81,7 @@ public class ScheduleFunctions {
 				// VncVal -> Java Object conversions. Thus
 				// the function's return value is not touched (just 
 				// wrapped/unwrapped with a VncTunnelAsJavaObject)!			
-				final VncFunction wrapped = new VncFunction(fn.getName(), fn.getMeta()) {
+				final VncFunction wrapped = new VncFunction(fn.getQualifiedName(), fn.getMeta()) {
 					public VncVal apply(final VncList args) {
 						return new VncTunnelAsJavaObject(fn.apply(args));
 					}
@@ -161,7 +161,7 @@ public class ScheduleFunctions {
 				// VncVal -> Java Object conversions. Thus
 				// the function's return value is not touched (just 
 				// wrapped/unwrapped with a VncTunnelAsJavaObject)!			
-				final VncFunction wrapped = new VncFunction(fn.getName(), fn.getMeta()) {
+				final VncFunction wrapped = new VncFunction(fn.getQualifiedName(), fn.getMeta()) {
 					public VncVal apply(final VncList args) {
 						return new VncTunnelAsJavaObject(fn.apply(args));
 					}

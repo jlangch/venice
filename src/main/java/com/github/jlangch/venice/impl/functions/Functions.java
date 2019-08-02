@@ -37,7 +37,7 @@ public class Functions {
 		fns.putAll(functions);
 		JavaInteropFunctions
 			.create(javaImports)
-			.forEach(f -> fns.put(new VncSymbol(f.getName()), f));
+			.forEach(f -> fns.put(new VncSymbol(f.getQualifiedName()), f));
 		return fns;
 	}
 	

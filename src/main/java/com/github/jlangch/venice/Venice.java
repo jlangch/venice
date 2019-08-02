@@ -132,6 +132,10 @@ public class Venice {
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
+			// init current namespace
+			env.removeGlobalSymbol(VeniceInterpreter.NS_GLOBAL_SYMBOL);
+			env.setGlobalDynamic(VeniceInterpreter.NS_GLOBAL_SYMBOL, new VncSymbol("user"));
+			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 			}

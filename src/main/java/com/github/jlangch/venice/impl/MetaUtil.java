@@ -110,12 +110,16 @@ public class MetaUtil {
 			return null;
 		}
 		else if (meta instanceof VncHashMap) {
-			final VncVal file = ((VncHashMap)meta).get(NS);
-			return file == Nil ? null : ((VncString)file).getValue();
+			final VncVal ns = ((VncHashMap)meta).get(NS);
+			return ns == Nil ? null : ((VncString)ns).getValue();
 		}
 		else {
 			return null;
 		}
+	}
+	
+	public static VncVal setNamespace(final VncVal meta, final String ns) {
+		return MetaUtil.addMetaVal(meta, NS, new VncString(ns));
 	}
 	
 	

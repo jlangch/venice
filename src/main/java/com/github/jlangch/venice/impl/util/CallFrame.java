@@ -49,7 +49,7 @@ public class CallFrame {
 	}
 
 	public static CallFrame fromFunction(final VncFunction fn, final VncVal fnSym) {
-		return new CallFrame(fn.getName(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
+		return new CallFrame(fn.getQualifiedName(), Types.isVncSymbol(fnSym) ? fnSym.getMeta() : Nil);
 	}
 	
 	public String getFnName() {

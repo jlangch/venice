@@ -146,13 +146,7 @@ public class VeniceInterpreter implements Serializable  {
 			.entrySet()
 			.forEach(e -> {
 				final VncSymbol sym = (VncSymbol)e.getKey();
-				VncFunction fn = (VncFunction)e.getValue();
-				fn = fn.withMeta(
-						MetaUtil.addMetaVal(
-								fn.getMeta(), 
-								MetaUtil.NS, 
-								new VncString(fn.getNamespace())));
-				
+				final VncFunction fn = (VncFunction)e.getValue();			
 				env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
 			});
 
@@ -166,7 +160,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// current namespace
-		env.pushGlobalDynamic(NS_GLOBAL_SYMBOL, new VncSymbol("user"));
+		env.setGlobalDynamic(NS_GLOBAL_SYMBOL, new VncSymbol("user"));
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -227,6 +221,8 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "def": { // (def name value)
+					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
+
 					VncSymbol defName = Coerce.toVncSymbol(ast.second());
 					defName = defName.withMeta(evaluate(defName.getMeta(), env));
 					ReservedSymbols.validate(defName);
@@ -332,9 +328,15 @@ public class VeniceInterpreter implements Serializable  {
 					return Nil;
 				}
 					
-				case "eval": 
-					orig_ast = Coerce.toVncSequence(eval_ast(ast.rest(), env)).last();
-					break;
+				case "eval": {
+					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(NS_GLOBAL_SYMBOL);
+					try {
+						return evaluate(Coerce.toVncSequence(eval_ast(ast.rest(), env)).last(), env);
+					}
+					finally {
+						env.setGlobalDynamic(NS_GLOBAL_SYMBOL, ns);
+					}
+				}
 					
 				case "let":  { // (let [bindings*] exprs*)
 					env = new Env(env);
@@ -521,7 +523,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncFunction fn = (VncFunction)elFirst;
 						
 						// validate function call allowed by sandbox
-						interceptor.validateVeniceFunction(fn.getName());	
+						interceptor.validateVeniceFunction(fn.getQualifiedName());	
 	
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
@@ -540,7 +542,7 @@ public class VeniceInterpreter implements Serializable  {
 							final VncVal val = fn.apply(elArgs);
 							
 							if (meterRegistry.enabled) {
-								meterRegistry.record(fn.getName(), System.nanoTime() - nanos);
+								meterRegistry.record(fn.getQualifiedName(), System.nanoTime() - nanos);
 							}
 							
 							return val;
@@ -637,7 +639,7 @@ public class VeniceInterpreter implements Serializable  {
 			if (!Types.isVncMacro(fn)) break;
 			
 			// validate that the macro allowed by the sandbox
-			interceptor.validateVeniceFunction(((VncFunction)fn).getName());					
+			interceptor.validateVeniceFunction(((VncFunction)fn).getQualifiedName());					
 
 			expanded = true;
 			ast_ = ((VncFunction)fn).apply(((VncList)ast_).rest());
@@ -1209,7 +1211,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
-	private static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
+	public static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
 	
 	private final JavaImports javaImports = new JavaImports();	
 	private final IInterceptor interceptor;	
