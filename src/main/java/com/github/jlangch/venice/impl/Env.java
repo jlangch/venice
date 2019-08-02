@@ -76,10 +76,18 @@ public class Env implements Serializable {
 	}
 
 	public VncVal get(final VncSymbol key) {
-		final VncVal val = getOrNull(key);
+		VncVal val = getOrNull(key);
 		if (val != null) {
 			return val;
 		}
+
+//		final VncSymbol ns = (VncSymbol)peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+//		if (!Namespace.isQualified(key)) {
+//			val = getOrNull(new VncSymbol(ns.getName() + "/" + key.getName()));
+//			if (val != null) {
+//				return val;
+//			}
+//		}
 
 		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(key))) {
 			throw new VncException(String.format("Symbol '%s' not found.", key.getName())); 

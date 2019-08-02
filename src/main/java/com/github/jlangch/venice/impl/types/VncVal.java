@@ -38,7 +38,6 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	public VncVal(final VncVal meta) {	
 		this.meta = meta;
 		this._private = MetaUtil.isPrivate(meta);
-		this.ns =  MetaUtil.getNamespace(meta);
 	}
 	
 	abstract public VncVal withMeta(final VncVal meta);
@@ -74,10 +73,6 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return _private;
 	}
 
-	public String getNamespace() {
-		return ns;
-	}
-
 	@Override
 	public int compareTo(final VncVal o) {
 		final int c = Integer.valueOf(typeRank()).compareTo(Integer.valueOf(o.typeRank()));
@@ -105,5 +100,4 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	private final VncVal meta;
 	private final boolean _private;
-	private final String ns;
 }

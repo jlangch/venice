@@ -180,7 +180,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return _private;
 	}
 	
-	@Override
 	public String getNamespace() {
 		return ns;
 	}

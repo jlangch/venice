@@ -21,15 +21,25 @@
  */
 package com.github.jlangch.venice.impl;
 
+import com.github.jlangch.venice.impl.types.VncSymbol;
+
 public class Namespace {
 
-	public static String getNamespace(final String fullyQualifiedName) {
-		final int pos = fullyQualifiedName.indexOf("/");
-		return pos < 1 ? null : fullyQualifiedName.substring(0, pos);
+	public static String getNamespace(final String name) {
+		final int pos = name.indexOf("/");
+		return pos < 1 ? null : name.substring(0, pos);
 	}
 
-	public static boolean hasNamespace(final String fullyQualifiedName) {
-		return fullyQualifiedName.indexOf("/") >= 1;
+	public static boolean isQualified(final String name) {
+		return name.indexOf("/") >= 1;
 	}
 
+	public static boolean isQualified(final VncSymbol sym) {
+		return isQualified(sym.getName());
+	}
+
+
+	public static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
+	public static final VncSymbol NS_DEFAULT = new VncSymbol("user");
+	public static final VncSymbol NS_CORE = new VncSymbol("core");
 }

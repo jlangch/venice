@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
@@ -133,8 +134,8 @@ public class Venice {
 			final Env env = addParams(getPrecompiledEnv(), params);
 
 			// init current namespace
-			env.removeGlobalSymbol(VeniceInterpreter.NS_GLOBAL_SYMBOL);
-			env.setGlobalDynamic(VeniceInterpreter.NS_GLOBAL_SYMBOL, new VncSymbol("user"));
+			env.removeGlobalSymbol(Namespace.NS_GLOBAL_SYMBOL);
+			env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_DEFAULT);
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);
