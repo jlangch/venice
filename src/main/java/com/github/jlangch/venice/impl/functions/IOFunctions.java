@@ -682,7 +682,7 @@ public class IOFunctions {
 
 	public static VncFunction io_mkdirs =
 		new VncFunction(
-				"io/mkdir",
+				"io/mkdirs",
 				VncFunction
 					.meta()
 					.arglists("(io/mkdirs dir)")
@@ -1258,7 +1258,7 @@ public class IOFunctions {
 
 	public static VncFunction io_wrap_os_with_print_writer =
 		new VncFunction(
-				"io/wrap-os-with-printwriter",
+				"io/wrap-os-with-print-writer",
 				VncFunction
 					.meta()
 					.arglists("(io/wrap-os-with-print-writer os encoding?)")
