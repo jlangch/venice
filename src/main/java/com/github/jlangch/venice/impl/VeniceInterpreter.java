@@ -254,6 +254,31 @@ public class VeniceInterpreter implements Serializable  {
 					return res;
 				}
 				
+				case "set!": { // (set! name expr)
+					final VncSymbol name = evaluateSymbolMetaData(ast.second(), env);
+					final Var globVar = env.getGlobalVarOrNull(name);
+					if (globVar != null) {
+						final VncVal expr = ast.third();
+						final VncVal val = evaluate(expr, env).withMeta(name.getMeta());
+						
+						if (globVar instanceof DynamicVar) {
+							env.popGlobalDynamic(name);
+							env.pushGlobalDynamic(name, val);
+						}
+						else {
+							env.setGlobal(new Var(name, val));
+						}
+						return val;
+					}
+					else {
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(name))) {
+							throw new VncException(String.format(
+										"The global var or thread-local '%s' does not exist!", 
+										name.getName()));
+						}
+					}
+				}
+				
 				case "defmulti": { // (defmulti name dispatch-fn)
 					final VncSymbol multiFnName = evaluateSymbolMetaData(ast.second(), env);
 					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
@@ -439,32 +464,6 @@ public class VeniceInterpreter implements Serializable  {
 					orig_ast = recursionPoint.getLoopExpressions();
 					env = recur_env;
 					break;
-				}
-				
-				case "set!": { // (set! var-symbol expr)
-					VncSymbol sym = Coerce.toVncSymbol(ast.second());
-					sym = sym.withMeta(evaluate(sym.getMeta(), env));
-					final Var globVar = env.getGlobalVarOrNull(sym);
-					if (globVar != null) {
-						final VncVal expr = ast.third();
-						final VncVal res = evaluate(expr, env).withMeta(sym.getMeta());
-						
-						if (globVar instanceof DynamicVar) {
-							env.popGlobalDynamic(sym);
-							env.pushGlobalDynamic(sym, res);
-						}
-						else {
-							env.setGlobal(new Var(sym, res));
-						}
-						return res;
-					}
-					else {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-							throw new VncException(String.format(
-										"The global var or thread-local '%s' does not exist!", 
-										sym.getName()));
-						}
-					}
 				}
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
