@@ -304,13 +304,13 @@ public class ConcurrencyFunctionsTest {
 				"(do                                              \n" +
 				"   (def logger (agent (list)))                   \n" +
 				"                                                 \n" +
-				"   (defn log [msg]                               \n" +
+				"   (defn log* [msg]                              \n" +
 				"      (send logger #(cons %2 %1) msg))           \n" +
 				"                                                 \n" +
 				"   (def x (agent 100))                           \n" +
 				"                                                 \n" +
 				"   (defn err-handler-fn [ag ex]                  \n" +
-				"      (log (str \"error occured: \"              \n" +
+				"      (log* (str \"error occured: \"             \n" +
 				"                (:message ex)                    \n" +
 				"                \" and we still have value \"    \n" +
 				"                @ag)))                           \n" +
@@ -363,7 +363,7 @@ public class ConcurrencyFunctionsTest {
 				"(do                                                                         \n" +
 				"   (def logger (agent (list)))                                              \n" +
 				"                                                                            \n" +
-				"   (defn log [msg]                                                          \n" +
+				"   (defn log* [msg]                                                         \n" +
 				"      (send logger #(cons %2 %1) msg))                                      \n" +
 				"                                                                            \n" +
 				"   (defn create-relay [n]                                                   \n" +
@@ -373,10 +373,10 @@ public class ConcurrencyFunctionsTest {
 				"      (let [relay-fn (fn [next-actor hop msg]                               \n" +
 				"                         (if next-actor                                     \n" +
 				"                            (do                                             \n" +
-				"                               (log (list hop msg))                         \n" +
+				"                               (log* (list hop msg))                        \n" +
 				"                               (send next-actor relay-fn (inc hop) msg)     \n" +
 				"                               @next-actor)                                 \n" +
-				"                            (log \"finished relay\") ))]                    \n" +
+				"                            (log* \"finished relay\") ))]                   \n" +
 				"         (send relay relay-fn 0 msg)))                                      \n" +
 				"                                                                            \n" +
 				"   (process (create-relay 5) \"hello\")                                     \n" +
@@ -399,7 +399,7 @@ public class ConcurrencyFunctionsTest {
 				"                                                                            \n" +
 				"   (let [pwtr (. :PrintWriter :new *out* true)                              \n" +
 				"         wtr (agent (. :BufferedWriter :new pwtr))]                         \n" +
-				"      (defn log [msg]                                                       \n" +
+				"      (defn log* [msg]                                                      \n" +
 				"	      (let [write (fn [out msg] (do (. out :write msg) out))]            \n" +
 				"	         (send wtr write msg)))                                          \n" +
 				"	   (defn log-close []                                                    \n" +
@@ -407,8 +407,8 @@ public class ConcurrencyFunctionsTest {
 				"	            (send wtr (fn [out] (do (. out :flush) (. out :close) out))) \n" +
 				"	            (await-for 2000 wtr))))                                      \n" +
 				"                                                                            \n" +
-				"	(log \"test\n\")                                                         \n" +
-				"	(log \"another line\n\")                                                 \n" +
+				"	(log* \"test\n\")                                                        \n" +
+				"	(log* \"another line\n\")                                                \n" +
 				"	(log-close)                                                              \n" +
 				"	(println \"DONE.\"))                                                 ";
 

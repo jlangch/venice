@@ -75,32 +75,118 @@ public class Env implements Serializable {
 		return new Env(this.globalSymbols);
 	}
 
+	/**
+	 * Look up a local or global symbol's value
+	 * 
+	 * <p>Unqualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the local namespace</li>
+	 *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
+	 *  <li>try to resolve the symbol from the global 'core' namespace</li>
+	 * </ol>
+	 * 
+	 * <p>Qualified symbol resolution:
+	 * <ol>
+	 *  <li>qualified symbols are resolved exclusively from the global symbols</li>
+	 * </ol>
+	 * 
+	 * @param key a symbol
+	 * @return the value
+	 * @throws VncException if the symbol does not exist.
+	 */
 	public VncVal get(final VncSymbol key) {
-		VncVal val = getOrNull(key);
-		if (val != null) {
-			return val;
-		}
+		final VncVal val = getOrNull(key);
+		if (val != null) return val;
 
 		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(key))) {
 			throw new VncException(String.format("Symbol '%s' not found.", key.getName())); 
 		}
 	}
 
+	/**
+	 * Look up a local or global symbol's value
+	 * 
+	 * <p>Unqualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the local namespace</li>
+	 *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
+	 *  <li>try to resolve the symbol from the global 'core' namespace</li>
+	 * </ol>
+	 * 
+	 * <p>Qualified symbol resolution:
+	 * <ol>
+	 *  <li>qualified symbols are resolved exclusively from the global symbols</li>
+	 * </ol>
+	 * 
+	 * @param key a symbol
+	 * @return the value or <code>Nil</code> if not found
+	 */
 	public VncVal getOrNil(final VncSymbol key) {
 		final VncVal val = getOrNull(key);
-		return val == null ? Nil : val;
+		return val != null ? val : Nil;
 	}
 
+	/**
+	 * Look up a global symbol' value
+	 * 
+	 * <p>Unqualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
+	 *  <li>try to resolve the symbol from the global 'core' namespace</li>
+	 * </ol>
+	 * 
+	 * <p>Qualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the global namespace</li>
+	 * </ol>
+	 * 
+	 * @param key a symbol
+	 * @return the value or <code>Nil</code> if not found
+	 */
 	public VncVal getGlobalOrNil(final VncSymbol key) {
-		final Var glob = getGlobalVar(key);
-		return glob == null ? Nil : glob.getVal();
+		final Var v = getGlobalVar(key);
+		return v != null ? v.getVal() : Nil;
 	}
 
+	/**
+	 * Look up a global symbol's value
+	 * 
+	 * <p>Unqualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
+	 *  <li>try to resolve the symbol from the global 'core' namespace</li>
+	 * </ol>
+	 * 
+	 * <p>Qualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the global namespace</li>
+	 * </ol>
+	 * 
+	 * @param key a symbol
+	 * @return the value or <code>null</code> if not found
+	 */
 	public VncVal getGlobalOrNull(final VncSymbol key) {
-		final Var glob = getGlobalVar(key);
-		return glob == null ? null : glob.getVal();
+		final Var v = getGlobalVar(key);
+		return v != null ? v.getVal() : null;
 	}
 
+	/**
+	 * Look up a global symbol's var
+	 * 
+	 * <p>Unqualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
+	 *  <li>try to resolve the symbol from the global 'core' namespace</li>
+	 * </ol>
+	 * 
+	 * <p>Qualified symbol resolution:
+	 * <ol>
+	 *  <li>try to resolve the symbol from the global namespace</li>
+	 * </ol>
+	 * 
+	 * @param key a symbol
+	 * @return the value or <code>null</code> if not found
+	 */
 	public Var getGlobalVarOrNull(final VncSymbol key) {
 		return getGlobalVar(key);
 	}
@@ -218,10 +304,6 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public boolean hasGlobalSymbol(final VncSymbol key) {
-		return hasGlobalVar(key);
-	}
-
 	public void removeGlobalSymbol(final VncSymbol key) {
 		coreGlobalSymbols.remove(key);
 		globalSymbols.remove(key);
@@ -332,12 +414,7 @@ public class Env implements Serializable {
 	}
 	
 	private Var getGlobalVar(final VncSymbol key) {
-		if (coreGlobalSymbols != null) {
-			final Var v = coreGlobalSymbols.get(key);
-			if (v != null) return v;
-		}
-		
-		final Var v = globalSymbols.get(key);
+		final Var v = getGlobalVarRaw(key);
 		if (v != null) return v;
 		
 		if (Namespace.on()) {
@@ -348,12 +425,7 @@ public class Env implements Serializable {
 					
 					if (!Namespace.NS_CORE.equals(ns)) {
 						final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + key.getName());
-						if (coreGlobalSymbols != null) {
-							final Var v_ = coreGlobalSymbols.get(qualifiedKey);
-							if (v_ != null) return v_;
-						}
-
-						return globalSymbols.get(qualifiedKey);
+						return getGlobalVarRaw(qualifiedKey);
 					}
 				}
 			}
@@ -362,15 +434,17 @@ public class Env implements Serializable {
 		return null;
 	}
 
-	private void setGlobalVar(final VncSymbol key, final Var value) {
-		globalSymbols.put(key, value);
+	private Var getGlobalVarRaw(final VncSymbol key) {
+		if (coreGlobalSymbols != null) {
+			final Var v = coreGlobalSymbols.get(key);
+			if (v != null) return v;
+		}
+		
+		return globalSymbols.get(key);
 	}
 
-	private boolean hasGlobalVar(final VncSymbol key) {
-		if (coreGlobalSymbols != null && coreGlobalSymbols.containsKey(key)) {
-			return true;
-		}
-		return globalSymbols.containsKey(key);
+	private void setGlobalVar(final VncSymbol key, final Var value) {
+		globalSymbols.put(key, value);
 	}
 
 	private Var getLocalVar(final VncSymbol key) {

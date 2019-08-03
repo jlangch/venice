@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import com.github.jlangch.venice.impl.types.VncSymbol;
 
+
 public class Namespace {
 
 	public static String getNamespace(final String name) {
@@ -42,7 +43,9 @@ public class Namespace {
 		return false;
 	}
 
+	
 	public static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
-	public static final VncSymbol NS_DEFAULT = new VncSymbol("user");
+	public static final VncSymbol NS_USER = new VncSymbol("user");
 	public static final VncSymbol NS_CORE = new VncSymbol("core");
+	public static final VncSymbol NS_ANONYMOUS = new VncSymbol("anonymous");
 }

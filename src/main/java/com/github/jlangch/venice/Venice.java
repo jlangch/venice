@@ -135,7 +135,7 @@ public class Venice {
 
 			// init current namespace
 			env.removeGlobalSymbol(Namespace.NS_GLOBAL_SYMBOL);
-			env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_DEFAULT);
+			env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_USER);
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);

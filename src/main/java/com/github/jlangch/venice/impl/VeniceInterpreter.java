@@ -160,7 +160,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// current namespace
-		env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_DEFAULT);
+		env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_USER);
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
