@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
@@ -171,7 +172,17 @@ public class ThreadLocalMap {
 
 	public static void clearValues() {
 		try {
-			get().values.clear();
+			// clear all values except the system values
+			
+			final Map<VncKeyword, VncVal> map = get().values;
+			
+			final VncVal v1 = map.get(new VncKeyword(Namespace.NS_SYMBOL_CURRENT.getName()));
+			final VncVal v2 = map.get(new VncKeyword(Namespace.NS_SYMBOL_LOOKUP.getName()));
+			
+			map.clear();
+			
+			map.put(new VncKeyword(Namespace.NS_SYMBOL_CURRENT.getName()), v1);
+			map.put(new VncKeyword(Namespace.NS_SYMBOL_LOOKUP.getName()), v2);
 		}
 		catch(Exception ex) {
 			// do not care
