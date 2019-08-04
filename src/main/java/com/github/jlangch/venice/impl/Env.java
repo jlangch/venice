@@ -419,8 +419,8 @@ public class Env implements Serializable {
 		if (v != null) return v;
 		
 		if (Namespace.on()) {
-			if (!Namespace.isQualified(key) && !key.equals(Namespace.NS_GLOBAL_SYMBOL)) {
-				final VncVal nsVal = peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+			if (!Namespace.isQualified(key) && !key.equals(Namespace.NS_SYMBOL_LOOKUP)) {
+				final VncVal nsVal = peekGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP);
 				if (nsVal != Nil) {
 					final VncSymbol ns = (VncSymbol)nsVal;
 					

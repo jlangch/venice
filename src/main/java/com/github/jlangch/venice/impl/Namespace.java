@@ -44,7 +44,10 @@ public class Namespace {
 	}
 
 	
-	public static final VncSymbol NS_GLOBAL_SYMBOL = new VncSymbol("*ns*");
+	public static final VncSymbol NS_SYMBOL_CURRENT = new VncSymbol("*ns*");
+	
+	public static final VncSymbol NS_SYMBOL_LOOKUP = new VncSymbol("*ns-sym-lookup*");
+	
 	public static final VncSymbol NS_USER = new VncSymbol("user");
 	public static final VncSymbol NS_CORE = new VncSymbol("core");
 	public static final VncSymbol NS_ANONYMOUS = new VncSymbol("anonymous");
