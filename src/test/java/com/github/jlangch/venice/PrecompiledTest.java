@@ -53,9 +53,18 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile(
 										"test", 
-										"(do (defn sum[a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
+										"(do (defn sum [a b] (+ a b z)) (sum x y))");
 		
 		assertEquals(103L, venice.eval(precomp, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
+	}
+
+	@Test
+	public void test_ns() throws Exception {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(do (defn x [] *ns*) (x))");
+		
+		assertEquals("user", venice.eval(precomp));
 	}
 
 	@Test
@@ -107,7 +116,7 @@ public class PrecompiledTest {
 	public void test_with_fn() {
 		final Venice venice = new Venice();
 		
-		final PreCompiled precomp = venice.precompile("test", "(do (defn sum[x y] (+ x y)) (sum 1 3))");
+		final PreCompiled precomp = venice.precompile("test", "(do (defn sum [x y] (+ x y)) (sum 1 3))");
 		
 		assertEquals(4L, venice.eval(precomp));
 	}
@@ -116,7 +125,7 @@ public class PrecompiledTest {
 	public void test_with_fn_serialize() {
 		final Venice venice = new Venice();
 		
-		final PreCompiled precomp = venice.precompile("test", "(do (defn sum[x y] (+ x y)) (sum 1 3))");
+		final PreCompiled precomp = venice.precompile("test", "(do (defn sum [x y] (+ x y)) (sum 1 3))");
 		
 		final byte[] data = precomp.serialize();
 		System.out.println("PreCompiled (defn) size: " + data.length);
@@ -173,7 +182,7 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile(
 										"test", 
-										"(do (defn sum[a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
+										"(do (defn sum [a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
 		for(long ii=0; ii<2000; ii++) {
@@ -205,7 +214,7 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile(
 										"test", 
-										"(do (defn sum[a b] (+ a b z)) (long (with-out-str (do (sleep (rand-long 50)) (print (sum x y))))))");
+										"(do (defn sum [a b] (+ a b z)) (long (with-out-str (do (sleep (rand-long 50)) (print (sum x y))))))");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
 		for(long ii=0; ii<2000; ii++) {
