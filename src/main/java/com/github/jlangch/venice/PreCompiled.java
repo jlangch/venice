@@ -29,19 +29,12 @@ import java.io.Serializable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import com.github.jlangch.venice.impl.Env;
-
 
 public class PreCompiled implements Serializable {
 	
 	public PreCompiled(final String name, final Object precompiled) {
-		this(name, precompiled, null);
-	}
-	
-	public PreCompiled(final String name, final Object precompiled, final Env env) {
 		this.name = name;
 		this.precompiled = precompiled;
-		this.env = env;
 		this.version = Version.VERSION;
 	}
 	
@@ -51,10 +44,6 @@ public class PreCompiled implements Serializable {
 	
 	public Object getPrecompiled() {
 		return precompiled;
-	}
-	
-	public Env getEnv() {
-		return env;
 	}
 	
 	public byte[] serialize() {
@@ -98,6 +87,5 @@ public class PreCompiled implements Serializable {
 
 	private final String name;
 	private final Object precompiled;
-	private final Env env;
 	private final String version;
 }

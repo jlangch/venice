@@ -39,36 +39,23 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class PrecompiledTest {
 
 	@Test
-	public void test_stdout() {
-		final Venice venice = new Venice();
-		
-		final PreCompiled precomp = venice.precompile("test", "(print 23)");
-		
-		final CapturingPrintStream ps = CapturingPrintStream.create();
-
-		venice.eval(precomp, Parameters.of("*out*", ps));
-		
-		assertEquals("23", ps.getOutput());
-	}
-	
-	@Test
-	public void test_with_stdout_str() {
-		final Venice venice = new Venice();
-		
-		final PreCompiled precomp = venice.precompile("test", "(with-out-str (print 23))");
-		
-		final CapturingPrintStream ps = CapturingPrintStream.create();
-
-		assertEquals("23", venice.eval(precomp, Parameters.of("*out*", ps)));
-	}
-
-	@Test
 	public void test_simple() {
 		final Venice venice = new Venice();
 		
 		final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ 1 3))");
 		
 		assertEquals(4L, venice.eval(precomp));
+	}
+
+	@Test
+	public void test_simple2() throws Exception {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile(
+										"test", 
+										"(do (defn sum[a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
+		
+		assertEquals(103L, venice.eval(precomp, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
 	}
 
 	@Test
@@ -90,6 +77,30 @@ public class PrecompiledTest {
 		final byte[] data = precomp.serialize();
 		System.out.println("PreCompiled (simple) size: " + data.length);
 		assertEquals(4L, venice.eval(PreCompiled.deserialize(data)));
+	}
+	
+	@Test
+	public void test_stdout() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(print 23)");
+		
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+
+		venice.eval(precomp, Parameters.of("*out*", ps));
+		
+		assertEquals("23", ps.getOutput());
+	}
+	
+	@Test
+	public void test_with_stdout_str() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(with-out-str (print 23))");
+		
+		final CapturingPrintStream ps = CapturingPrintStream.create();
+
+		assertEquals("23", venice.eval(precomp, Parameters.of("*out*", ps)));
 	}
 
 	@Test
