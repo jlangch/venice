@@ -160,7 +160,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// current namespace
-		env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_USER);
+		env.pushGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_USER);
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -226,7 +226,7 @@ public class VeniceInterpreter implements Serializable  {
 
 					if (Namespace.on()) {
 						if (!Namespace.isQualified(defName)) {
-							final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+							final VncSymbol ns = getCurrentNS(env);
 							if (!Namespace.NS_CORE.equals(ns)) {
 								defName = new VncSymbol(
 												ns.getName() + "/" + defName.getName(), 
@@ -246,7 +246,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 					if (Namespace.on()) {
 						if (!Namespace.isQualified(defName)) {
-							final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+							final VncSymbol ns = getCurrentNS(env);
 							if (!Namespace.NS_CORE.equals(ns)) {
 								defName = new VncSymbol(
 												ns.getName() + "/" + defName.getName(), 
@@ -266,7 +266,7 @@ public class VeniceInterpreter implements Serializable  {
 
 					if (Namespace.on()) {
 						if (!Namespace.isQualified(defName)) {
-							final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+							final VncSymbol ns = getCurrentNS(env);
 							if (!Namespace.NS_CORE.equals(ns)) {
 								defName = new VncSymbol(
 												ns.getName() + "/" + defName.getName(), 
@@ -374,18 +374,17 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 	
 				case "ns": { // (ns alpha)
-					final VncSymbol ns = (VncSymbol)ast.second();
-					env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, ns);
+					setCurrentNS(env, Coerce.toVncSymbol(ast.second()));
 					return Nil;
 				}
 					
 				case "eval": {
-					final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+					final VncSymbol ns = getCurrentNS(env);
 					try {
 						return evaluate(Coerce.toVncSequence(eval_ast(ast.rest(), env)).last(), env);
 					}
 					finally {
-						env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, ns);
+						setCurrentNS(env, ns);
 					}
 				}
 					
@@ -561,6 +560,7 @@ public class VeniceInterpreter implements Serializable  {
 						checkInterrupted();
 	
 						// invoke function with call frame
+						final VncSymbol ns = getCurrentNS(env);
 						try {
 							callStack.push(CallFrame.fromFunction(fn, a0));
 
@@ -576,6 +576,8 @@ public class VeniceInterpreter implements Serializable  {
 							callStack.pop();
 							checkInterrupted();
 							sandboxMaxExecutionTimeChecker.check();
+							
+							setCurrentNS(env, ns);
 						}
 					}
 					else if (Types.isIVncFunction(elFirst)) {
@@ -1237,6 +1239,17 @@ public class VeniceInterpreter implements Serializable  {
 
 	private static <T> List<T> toEmpty(final List<T> list) {
 		return list == null ? new ArrayList<T>() : list;
+	}
+	
+	private VncSymbol getCurrentNS(final Env env) {
+		final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL);
+		//System.out.println("GET NS: " + ns);
+		return ns;
+	}
+	
+	private void setCurrentNS(final Env env, final VncSymbol ns) {
+		env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, ns);
+		//System.out.println("SET NS: " + ns);
 	}
 	
 	

@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
@@ -129,13 +130,14 @@ public class Venice {
 		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
+			ThreadLocalMap.clear();
+			
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
 			// init current namespace
-			env.removeGlobalSymbol(Namespace.NS_GLOBAL_SYMBOL);
-			env.setGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_USER);
+			env.pushGlobalDynamic(Namespace.NS_GLOBAL_SYMBOL, Namespace.NS_USER);
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);
@@ -202,6 +204,8 @@ public class Venice {
 		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
+			ThreadLocalMap.clear();
+
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
 
 			final Env env = createEnv(venice, params);

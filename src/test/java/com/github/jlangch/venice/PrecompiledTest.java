@@ -50,12 +50,13 @@ public class PrecompiledTest {
 	@Test
 	public void test_simple2() throws Exception {
 		final Venice venice = new Venice();
+
+		final String script = "(do (defn sum [a b] (+ a b z)) (sum x y))";
 		
-		final PreCompiled precomp = venice.precompile(
-										"test", 
-										"(do (defn sum [a b] (+ a b z)) (sum x y))");
-		
+		final PreCompiled precomp = venice.precompile("test", script);		
 		assertEquals(103L, venice.eval(precomp, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
+
+//		assertEquals(103L, venice.eval(script, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
 	}
 
 	@Test
