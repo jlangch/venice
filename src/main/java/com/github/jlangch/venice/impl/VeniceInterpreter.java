@@ -666,7 +666,8 @@ public class VeniceInterpreter implements Serializable  {
 			// validate that the macro allowed by the sandbox
 			interceptor.validateVeniceFunction(((VncFunction)fn).getQualifiedName());					
 
-			expanded = true;
+			expanded = true; 
+
 			ast_ = ((VncFunction)fn).apply(((VncList)ast_).rest());
 		}
 	
@@ -735,7 +736,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 			macroFn.setMacro();
 			env.setGlobal(new Var((VncSymbol)macroName, macroFn.withMeta(macroName.getMeta()), false));
-			
+
 			return macroFn;
 		}
 		else {
@@ -1122,7 +1123,7 @@ public class VeniceInterpreter implements Serializable  {
 				localEnv.addAll(Destructuring.destructure(params, args));
 
 				validateFnPreconditions(name, preConditions, localEnv);
-				
+
 				return evaluateBody(body, localEnv);
 			}
 			

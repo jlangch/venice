@@ -230,6 +230,7 @@ public class Env implements Serializable {
 		}
 		
 		setGlobalVar(val.getName(), val);
+
 		return this;
 	}
 

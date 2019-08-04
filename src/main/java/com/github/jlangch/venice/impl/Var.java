@@ -58,18 +58,18 @@ public class Var implements Serializable {
 		return String.format(
 				"{%s %s %s :overwritable %b}",
 				this.getClass().getSimpleName(),
-				name.toString(), 
-				val.toString(), 
-				overwritable);
+				getName().toString(), 
+				getVal().toString(), 
+				isOverwritable());
 	}
 	
 	public String toString(final boolean print_readably) {
 		return String.format(
 				"{%s %s %s :overwritable %b}",
 				this.getClass().getSimpleName(),
-				name.toString(print_readably), 
-				val.toString(print_readably), 
-				overwritable);
+				getName().toString(print_readably), 
+				getVal().toString(print_readably), 
+				isOverwritable());
 	}
 	
 
