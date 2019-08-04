@@ -1252,8 +1252,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncSymbol getCurrentNS(final Env env) {
-		final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_SYMBOL_CURRENT);
-		return ns;
+		return (VncSymbol)env.peekGlobalDynamic(Namespace.NS_SYMBOL_CURRENT);
 	}
 	
 	private void setCurrentNS(final Env env, final VncSymbol ns) {
@@ -1261,8 +1260,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncSymbol getSymbolLookupNS(final Env env) {
-		final VncSymbol ns = (VncSymbol)env.peekGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP);
-		return ns;
+		return (VncSymbol)env.peekGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP);
 	}
 	
 	private void setSymbolLookupNS(final Env env, final VncSymbol ns) {
