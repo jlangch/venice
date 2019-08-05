@@ -159,9 +159,9 @@ public class VeniceInterpreter implements Serializable  {
 		// loaded modules
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
-		// current namespace
-		env.pushGlobalDynamic(Namespace.NS_SYMBOL_CURRENT, Namespace.NS_USER);
-		env.pushGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP, Namespace.NS_USER);
+		// init current namespaces
+		ThreadLocalMap.setCurrNS(Namespace.NS_USER);
+		ThreadLocalMap.setCurrFnSymLookupNS(Namespace.NS_USER);
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -222,19 +222,10 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "def": { // (def name value)
-					VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
+					VncSymbol defName = qualifySymbolWithCurrNS(
+											evaluateSymbolMetaData(ast.second(), env),
+											env);
 					final VncVal defVal = ast.third();
-
-					if (Namespace.on()) {
-						if (!Namespace.isQualified(defName)) {
-							final VncSymbol ns = getCurrentNS(env);
-							if (!Namespace.NS_CORE.equals(ns)) {
-								defName = new VncSymbol(
-												ns.getName() + "/" + defName.getName(), 
-												defName.getMeta());
-							}
-						}
-					}
 					
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, true));
@@ -242,19 +233,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defonce": { // (defonce name value)
-					VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);
+					VncSymbol defName = qualifySymbolWithCurrNS(
+											evaluateSymbolMetaData(ast.second(), env),
+											env);
 					final VncVal defVal = ast.third();
-					
-					if (Namespace.on()) {
-						if (!Namespace.isQualified(defName)) {
-							final VncSymbol ns = getCurrentNS(env);
-							if (!Namespace.NS_CORE.equals(ns)) {
-								defName = new VncSymbol(
-												ns.getName() + "/" + defName.getName(), 
-												defName.getMeta());
-							}
-						}
-					}
 
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new Var(defName, res, false));
@@ -262,19 +244,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "def-dynamic": { // (def-dynamic name value)
-					VncSymbol defName = evaluateSymbolMetaData(ast.second(), env);				
+					VncSymbol defName = qualifySymbolWithCurrNS(
+											evaluateSymbolMetaData(ast.second(), env),
+											env);				
 					final VncVal defVal = ast.third();
-
-					if (Namespace.on()) {
-						if (!Namespace.isQualified(defName)) {
-							final VncSymbol ns = getCurrentNS(env);
-							if (!Namespace.NS_CORE.equals(ns)) {
-								defName = new VncSymbol(
-												ns.getName() + "/" + defName.getName(), 
-												defName.getMeta());
-							}
-						}
-					}
 					
 					final VncVal res = evaluate(defVal, env).withMeta(defName.getMeta());
 					env.setGlobal(new DynamicVar(defName, res));
@@ -312,7 +285,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defmulti": { // (defmulti name dispatch-fn)
-					final VncSymbol multiFnName = evaluateSymbolMetaData(ast.second(), env);
+					final VncSymbol multiFnName = qualifySymbolWithCurrNS(
+													evaluateSymbolMetaData(ast.second(), env),
+													env);
+					
 					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
 					final VncMultiFunction multiFn = new VncMultiFunction(multiFnName.getName(), dispatchFn);
 					env.setGlobal(new Var(multiFnName, multiFn, false));
@@ -320,7 +296,9 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defmethod": { // (defmethod multifn-name dispatch-val & fn-tail)
-					final VncSymbol multiFnName = Coerce.toVncSymbol(ast.nth(1));
+					final VncSymbol multiFnName = qualifySymbolWithCurrNS(
+													Coerce.toVncSymbol(ast.nth(1)), 
+													env);
 					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 					if (multiFnVal == null) {
 						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
@@ -715,18 +693,25 @@ public class VeniceInterpreter implements Serializable  {
 	private VncFunction defmacro_(final VncList ast, final Env env) {
 		int argPos = 1;
 
-		VncSymbol macroName = Coerce.toVncSymbol(ast.nth(argPos++));
-		macroName = macroName.withMeta(evaluate(macroName.getMeta(), env));
+		VncSymbol macroName = evaluateSymbolMetaData(ast.nth(argPos++), env);
+		VncVal meta = macroName.getMeta();
 		
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
-
-		final String sMacroName = macroName.getName();
-									
-		String ns = Namespace.getNamespace(sMacroName);
-//		if (ns == null) ns = getCurrentNS(env).getName();	
-//		final VncVal meta = MetaUtil.setNamespace(macroName.getMeta(), ns);
+					
+		String name = macroName.getName();
+		String ns = Namespace.getNamespace(macroName.getName());
 		
-		final VncVal meta = macroName.getMeta();
+		if (Namespace.on()) {
+			if (ns == null) {
+				ns = getCurrentNS(env).getName();
+				if (!Namespace.NS_CORE.getName().equals(ns)) {
+					name = ns + "/" + name;
+				}
+			}
+		}
+		meta = MetaUtil.setNamespace(meta, ns);
+
+		final VncSymbol macroName_ = new VncSymbol(name, meta);
 
 		if (Types.isVncVector(paramsOrSig)) {
 			// single arity:
@@ -738,7 +723,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	
 			final VncFunction macroFn = buildFunction(
-											sMacroName, 
+											macroName_.getName(), 
 											macroParams, 
 											VncList.of(body), 
 											null, 
@@ -746,7 +731,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 			macroFn.setMacro();
 			macroFn.setNamespace(ns);
-			env.setGlobal(new Var((VncSymbol)macroName, macroFn.withMeta(meta), false));
+			env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
 
 			return macroFn;
 		}
@@ -764,14 +749,14 @@ public class VeniceInterpreter implements Serializable  {
 				
 				final VncList body = sig.slice(pos);
 				
-				fns.add(buildFunction(sMacroName, params, body, null, env));
+				fns.add(buildFunction(macroName_.getName(), params, body, null, env));
 			});
 
-			final VncFunction macroFn = new VncMultiArityFunction(sMacroName, fns).withMeta(meta);
+			final VncFunction macroFn = new VncMultiArityFunction(macroName_.getName(), fns).withMeta(meta);
 			
 			macroFn.setMacro();
 			macroFn.setNamespace(ns);
-			env.setGlobal(new Var((VncSymbol)macroName, macroFn, false));
+			env.setGlobal(new Var(macroName_, macroFn, false));
 
 			return macroFn;
 		}
@@ -1252,21 +1237,35 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncSymbol getCurrentNS(final Env env) {
-		return (VncSymbol)env.peekGlobalDynamic(Namespace.NS_SYMBOL_CURRENT);
+		return ThreadLocalMap.getCurrNS();
 	}
 	
 	private void setCurrentNS(final Env env, final VncSymbol ns) {
-		env.setGlobalDynamic(Namespace.NS_SYMBOL_CURRENT, ns);
+		ThreadLocalMap.setCurrNS(ns);
 	}
 	
 	private VncSymbol getSymbolLookupNS(final Env env) {
-		return (VncSymbol)env.peekGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP);
+		return ThreadLocalMap.getCurrFnSymLookupNS();
 	}
 	
 	private void setSymbolLookupNS(final Env env, final VncSymbol ns) {
-		env.setGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP, ns);
+		ThreadLocalMap.setCurrFnSymLookupNS(ns);
 	}
 	
+	private VncSymbol qualifySymbolWithCurrNS(final VncSymbol sym, final Env env) {
+		if (Namespace.on()) {
+			if (!Namespace.isQualified(sym)) {
+				final VncSymbol ns = getCurrentNS(env);
+				if (!Namespace.NS_CORE.equals(ns)) {
+					return new VncSymbol(
+									ns.getName() + "/" + sym.getName(), 
+									sym.getMeta());
+				}
+			}
+		}
+		
+		return sym;
+	}
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 

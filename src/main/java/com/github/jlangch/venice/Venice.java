@@ -136,9 +136,9 @@ public class Venice {
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
-			// init current namespace
-			env.pushGlobalDynamic(Namespace.NS_SYMBOL_CURRENT, Namespace.NS_USER);
-			env.pushGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP, Namespace.NS_USER);
+			// init current namespaces
+			ThreadLocalMap.setCurrNS(Namespace.NS_USER);
+			ThreadLocalMap.setCurrFnSymLookupNS(Namespace.NS_USER);
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);

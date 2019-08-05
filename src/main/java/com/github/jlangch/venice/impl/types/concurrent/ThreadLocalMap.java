@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.util.CallStack;
 public class ThreadLocalMap {
 	
 	public ThreadLocalMap() {
+		initNS();
 	}
 	
 	public static VncVal get(final VncKeyword key) {
@@ -170,19 +171,27 @@ public class ThreadLocalMap {
 		copyValues(newValues, get().values);
 	}
 
+
+	public static VncSymbol getCurrNS() {
+		return get().nsCurr;
+	}
+
+	public static void setCurrNS(final VncSymbol ns) {
+		get().nsCurr = ns;
+	}
+
+	public static VncSymbol getCurrFnSymLookupNS() {
+		return get().nsCurrFnSymLookup;
+	}
+
+	public static void setCurrFnSymLookupNS(final VncSymbol ns) {
+		get().nsCurrFnSymLookup = ns;
+	}
+
 	public static void clearValues() {
 		try {
 			// clear all values except the system values
-			
-			final Map<VncKeyword, VncVal> map = get().values;
-			
-			final VncVal v1 = map.get(new VncKeyword(Namespace.NS_SYMBOL_CURRENT.getName()));
-			final VncVal v2 = map.get(new VncKeyword(Namespace.NS_SYMBOL_LOOKUP.getName()));
-			
-			map.clear();
-			
-			map.put(new VncKeyword(Namespace.NS_SYMBOL_CURRENT.getName()), v1);
-			map.put(new VncKeyword(Namespace.NS_SYMBOL_LOOKUP.getName()), v2);
+			get().values.clear();
 		}
 		catch(Exception ex) {
 			// do not care
@@ -193,6 +202,7 @@ public class ThreadLocalMap {
 		try {
 			get().values.clear();
 			get().callStack.clear();
+			get().initNS();
 		}
 		catch(Exception ex) {
 			// do not care
@@ -202,7 +212,8 @@ public class ThreadLocalMap {
 	public static void remove() {
 		try {
 			get().values.clear();
-			get().callStack.clear();
+			get().callStack.clear();			
+			get().initNS();
 			
 			ThreadLocalMap.context.set(null);
 			ThreadLocalMap.context.remove();
@@ -233,10 +244,18 @@ public class ThreadLocalMap {
 			}
 		}
 	}
+	
+	private void initNS() {
+		nsCurr = new VncSymbol("user");
+		nsCurrFnSymLookup = new VncSymbol("user");
+	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
+	private VncSymbol nsCurr = new VncSymbol("user");
+	private VncSymbol nsCurrFnSymLookup = new VncSymbol("user");
+	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
 	//       to work in all cases!

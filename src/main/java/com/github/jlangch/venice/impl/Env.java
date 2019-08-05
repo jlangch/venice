@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.WithCallStack;
@@ -196,6 +197,10 @@ public class Env implements Serializable {
 	}
 
 	public Env set(final VncSymbol name, final VncVal val) {
+		if (name.equals(Namespace.NS_SYMBOL_CURRENT)) {
+			throw new VncException(String.format("Internal error setting var %s", name.getName()));
+		}
+
 		final Var v = getGlobalVar(name);
 
 		// allow shadowing of a global non function var by a local var
@@ -220,6 +225,10 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobal(final Var val) {
+		if (val.getName().equals(Namespace.NS_SYMBOL_CURRENT)) {
+			throw new VncException(String.format("Internal error setting var %s", val.getName().getName()));
+		}
+
 		final Var v = getGlobalVar(val.getName());
 		if (v != null && !v.isOverwritable()) {
 			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(val.getName()))) {
@@ -286,6 +295,10 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobalDynamic(final VncSymbol sym, final VncVal val) {
+		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
+			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
+		}
+
 		final Var dv = getGlobalVar(sym);
 		if (dv != null) {
 			if (dv instanceof DynamicVar) {
@@ -415,12 +428,16 @@ public class Env implements Serializable {
 	}
 	
 	private Var getGlobalVar(final VncSymbol key) {
+		if (key.equals(Namespace.NS_SYMBOL_CURRENT)) {
+			return new Var(Namespace.NS_SYMBOL_CURRENT, ThreadLocalMap.getCurrNS());
+		}
+		
 		final Var v = getGlobalVarRaw(key);
 		if (v != null) return v;
 		
 		if (Namespace.on()) {
-			if (!Namespace.isQualified(key) && !key.equals(Namespace.NS_SYMBOL_LOOKUP)) {
-				final VncVal nsVal = peekGlobalDynamic(Namespace.NS_SYMBOL_LOOKUP);
+			if (!Namespace.isQualified(key)) {
+				final VncVal nsVal = ThreadLocalMap.getCurrFnSymLookupNS();
 				if (nsVal != Nil) {
 					final VncSymbol ns = (VncSymbol)nsVal;
 					

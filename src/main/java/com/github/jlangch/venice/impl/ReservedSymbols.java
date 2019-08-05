@@ -66,8 +66,6 @@ public class ReservedSymbols {
 					"do",
 					"if",
 					"fn",
-					"prof",
-					"perf",
 					"resolve",
 					"defmulti",
 					"defmethod",
