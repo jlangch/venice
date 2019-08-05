@@ -123,16 +123,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return "core".equals(ns) ? simpleName : ns + "/" + simpleName; 
 	}
 
-	public static String createAnonymousFuncName() {
-		return createAnonymousFuncName(null);
-	}
-
-	public static String createAnonymousFuncName(final String name) {
-		return StringUtil.isEmpty(name)
-				? "anonymous-" + UUID.randomUUID().toString()
-				: "anonymous-" + name + "-" + UUID.randomUUID().toString();
-	}
-
 	public VncList getArgLists() { 
 		return (VncList)getMetaVal(MetaUtil.ARGLIST, new VncList());
 	}
@@ -143,6 +133,20 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 	public VncList getExamples() { 
 		return (VncList)getMetaVal(MetaUtil.EXAMPLES, new VncList());
+	}
+
+	@Override
+	public VncVal getMeta() { 
+		return fnMeta.get(); 
+	}
+	
+	@Override
+	public boolean isPrivate() {
+		return _private;
+	}
+	
+	public String getNamespace() {
+		return ns;
 	}
 	
 	@Override 
@@ -170,18 +174,15 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 					.append("}"));
 	}
 
-	@Override
-	public VncVal getMeta() { 
-		return fnMeta.get(); 
-	}
 	
-	@Override
-	public boolean isPrivate() {
-		return _private;
+	public static String createAnonymousFuncName() {
+		return createAnonymousFuncName(null);
 	}
-	
-	public String getNamespace() {
-		return ns;
+
+	public static String createAnonymousFuncName(final String name) {
+		return StringUtil.isEmpty(name)
+				? "anonymous-" + UUID.randomUUID().toString()
+				: "anonymous-" + name + "-" + UUID.randomUUID().toString();
 	}
 
 	private String getNamespace(final String qualifiedName) {
