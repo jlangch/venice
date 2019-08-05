@@ -160,8 +160,8 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// init current namespaces
-		ThreadLocalMap.setCurrNS(Namespace.NS_USER);
-		ThreadLocalMap.setCurrFnSymLookupNS(Namespace.NS_USER);
+		Namespace.setCurrentNS(Namespace.NS_USER);
+		Namespace.setCurrentSymbolLookupNS(Namespace.NS_USER);
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -353,17 +353,17 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 	
 				case "ns": { // (ns alpha)
-					setCurrentNS(env, Coerce.toVncSymbol(ast.second()));
+					Namespace.setCurrentNS(Coerce.toVncSymbol(ast.second()));
 					return Nil;
 				}
 					
 				case "eval": {
-					final VncSymbol ns = getCurrentNS(env);
+					final VncSymbol ns = Namespace.getCurrentNS();
 					try {
 						return evaluate(Coerce.toVncSequence(eval_ast(ast.rest(), env)).last(), env);
 					}
 					finally {
-						setCurrentNS(env, ns);
+						Namespace.setCurrentNS(ns);
 					}
 				}
 					
@@ -539,9 +539,9 @@ public class VeniceInterpreter implements Serializable  {
 						checkInterrupted();
 	
 						// invoke function with call frame
-						final VncSymbol ns = getSymbolLookupNS(env);
+						final VncSymbol ns = Namespace.getCurrentSymbolLookupNS();
 						try {
-							setSymbolLookupNS(env, new VncSymbol(fn.getNamespace()));
+							Namespace.setCurrentSymbolLookupNS(new VncSymbol(fn.getNamespace()));
 
 							callStack.push(CallFrame.fromFunction(fn, a0));
 
@@ -558,7 +558,7 @@ public class VeniceInterpreter implements Serializable  {
 							checkInterrupted();
 							sandboxMaxExecutionTimeChecker.check();
 							
-							setSymbolLookupNS(env, ns);
+							Namespace.setCurrentSymbolLookupNS(ns);
 						}
 					}
 					else if (Types.isIVncFunction(elFirst)) {
@@ -703,7 +703,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		if (Namespace.on()) {
 			if (ns == null) {
-				ns = getCurrentNS(env).getName();
+				ns = Namespace.getCurrentNS().getName();
 				if (!Namespace.NS_CORE.getName().equals(ns)) {
 					name = ns + "/" + name;
 				}
@@ -1236,26 +1236,10 @@ public class VeniceInterpreter implements Serializable  {
 		return list == null ? new ArrayList<T>() : list;
 	}
 	
-	private VncSymbol getCurrentNS(final Env env) {
-		return ThreadLocalMap.getCurrNS();
-	}
-	
-	private void setCurrentNS(final Env env, final VncSymbol ns) {
-		ThreadLocalMap.setCurrNS(ns);
-	}
-	
-	private VncSymbol getSymbolLookupNS(final Env env) {
-		return ThreadLocalMap.getCurrFnSymLookupNS();
-	}
-	
-	private void setSymbolLookupNS(final Env env, final VncSymbol ns) {
-		ThreadLocalMap.setCurrFnSymLookupNS(ns);
-	}
-	
 	private VncSymbol qualifySymbolWithCurrNS(final VncSymbol sym, final Env env) {
 		if (Namespace.on()) {
 			if (!Namespace.isQualified(sym)) {
-				final VncSymbol ns = getCurrentNS(env);
+				final VncSymbol ns = Namespace.getCurrentNS();
 				if (!Namespace.NS_CORE.equals(ns)) {
 					return new VncSymbol(
 									ns.getName() + "/" + sym.getName(), 
@@ -1266,6 +1250,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		return sym;
 	}
+	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl;
 
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
 public class Namespace {
@@ -41,6 +42,22 @@ public class Namespace {
 
 	public static boolean on() {
 		return false;
+	}
+
+	public static VncSymbol getCurrentNS() {
+		return ThreadLocalMap.getCurrNS();
+	}
+	
+	public static void setCurrentNS(final VncSymbol ns) {
+		ThreadLocalMap.setCurrNS(ns);
+	}
+	
+	public static VncSymbol getCurrentSymbolLookupNS() {
+		return ThreadLocalMap.getCurrFnSymLookupNS();
+	}
+	
+	public static void setCurrentSymbolLookupNS(final VncSymbol ns) {
+		ThreadLocalMap.setCurrFnSymLookupNS(ns);
 	}
 
 	

@@ -39,7 +39,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.WithCallStack;
@@ -429,7 +428,7 @@ public class Env implements Serializable {
 	
 	private Var getGlobalVar(final VncSymbol key) {
 		if (key.equals(Namespace.NS_SYMBOL_CURRENT)) {
-			return new Var(Namespace.NS_SYMBOL_CURRENT, ThreadLocalMap.getCurrNS());
+			return new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS());
 		}
 		
 		final Var v = getGlobalVarRaw(key);
@@ -437,7 +436,7 @@ public class Env implements Serializable {
 		
 		if (Namespace.on()) {
 			if (!Namespace.isQualified(key)) {
-				final VncVal nsVal = ThreadLocalMap.getCurrFnSymLookupNS();
+				final VncVal nsVal = Namespace.getCurrentSymbolLookupNS();
 				if (nsVal != Nil) {
 					final VncSymbol ns = (VncSymbol)nsVal;
 					
@@ -483,6 +482,7 @@ public class Env implements Serializable {
 			all.putAll(coreGlobalSymbols);
 		}
 		all.putAll(globalSymbols);
+		all.put(Namespace.NS_SYMBOL_CURRENT, new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS()));
 		return all;
 	}
 
@@ -502,6 +502,7 @@ public class Env implements Serializable {
 				.collect(Collectors.toList());
 	}
 
+	
 	private PrintStream nullPrintStream() {
 		return new PrintStream(new NullOutputStream(), true);
 	}
