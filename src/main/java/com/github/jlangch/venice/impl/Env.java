@@ -434,17 +434,11 @@ public class Env implements Serializable {
 		final Var v = getGlobalVarRaw(key);
 		if (v != null) return v;
 		
-		if (Namespace.on()) {
-			if (!Namespace.isQualified(key)) {
-				final VncVal nsVal = Namespace.getCurrentNS();
-				if (nsVal != Nil) {
-					final VncSymbol ns = (VncSymbol)nsVal;
-					
-					if (!Namespace.NS_CORE.equals(ns)) {
-						final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + key.getName());
-						return getGlobalVarRaw(qualifiedKey);
-					}
-				}
+		if (Namespace.on() && !Namespace.isQualified(key)) {
+			final VncSymbol ns = Namespace.getCurrentNS();
+			if (!Namespace.NS_CORE.equals(ns)) {
+				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + key.getName());
+				return getGlobalVarRaw(qualifiedKey);
 			}
 		}
 		
