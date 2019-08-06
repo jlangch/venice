@@ -475,7 +475,8 @@
    `(when-not (contains? *loaded-modules* (keyword (name ~s)))
       (let [module (read-string (str "(do " (load-core-module ~s) ")") ~s)]
         (assoc! *loaded-modules* (keyword (name ~s)) (current-time-millis))
-        (eval module))))
+        (eval module)
+        (keyword (name ~s)))))
 
 
 (defmacro

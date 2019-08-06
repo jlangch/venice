@@ -138,7 +138,6 @@ public class Venice {
 
 			// init current namespaces
 			Namespace.setCurrentNS(Namespace.NS_USER);
-			Namespace.setCurrentSymbolLookupNS(Namespace.NS_USER);
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);

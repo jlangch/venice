@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -187,7 +188,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	private String getNamespace(final String qualifiedName) {
 		if (StringUtil.isEmpty(qualifiedName)) {
-			return "anonymous";
+			return Namespace.getCurrentNS().getName();
 		}
 		else {
 			final int pos = qualifiedName.indexOf("/");

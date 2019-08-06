@@ -52,14 +52,6 @@ public class Namespace {
 		ThreadLocalMap.setCurrNS(ns);
 	}
 	
-	public static VncSymbol getCurrentSymbolLookupNS() {
-		return ThreadLocalMap.getCurrFnSymLookupNS();
-	}
-	
-	public static void setCurrentSymbolLookupNS(final VncSymbol ns) {
-		ThreadLocalMap.setCurrFnSymLookupNS(ns);
-	}
-
 	
 	public static final VncSymbol NS_SYMBOL_CURRENT = new VncSymbol("*ns*");
 	

@@ -436,7 +436,7 @@ public class Env implements Serializable {
 		
 		if (Namespace.on()) {
 			if (!Namespace.isQualified(key)) {
-				final VncVal nsVal = Namespace.getCurrentSymbolLookupNS();
+				final VncVal nsVal = Namespace.getCurrentNS();
 				if (nsVal != Nil) {
 					final VncSymbol ns = (VncSymbol)nsVal;
 					
