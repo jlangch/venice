@@ -284,19 +284,19 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defmulti": { // (defmulti name dispatch-fn)
-					final VncSymbol multiFnName = qualifySymbolWithCurrNS(
-													evaluateSymbolMetaData(ast.second(), env),
-													env);
+					final VncSymbol name = qualifySymbolWithCurrNS(
+												evaluateSymbolMetaData(ast.second(), env),
+												env);
 					
 					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
-					final VncMultiFunction multiFn = new VncMultiFunction(multiFnName.getName(), dispatchFn);
-					env.setGlobal(new Var(multiFnName, multiFn, false));
+					final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn);
+					env.setGlobal(new Var(name, multiFn, false));
 					return multiFn;
 				}
 				
 				case "defmethod": { // (defmethod multifn-name dispatch-val & fn-tail)
 					final VncSymbol multiFnName = qualifySymbolWithCurrNS(
-													Coerce.toVncSymbol(ast.nth(1)), 
+													Coerce.toVncSymbol(ast.second()), 
 													env);
 					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 					if (multiFnVal == null) {
@@ -307,9 +307,9 @@ public class VeniceInterpreter implements Serializable  {
 						}
 					}
 					final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
-					final VncVal dispatchVal = ast.nth(2);
+					final VncVal dispatchVal = ast.third();
 					
-					final VncVector params = Coerce.toVncVector(ast.nth(3));
+					final VncVector params = Coerce.toVncVector(ast.fourth());
 					if (params.size() != multiFn.getParams().size()) {
 						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
 							throw new VncException(String.format(
