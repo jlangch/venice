@@ -21,6 +21,9 @@
 
 ;;;; Venice crypt functions
 
+
+(ns crypt)
+
 (import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.SHA512_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.PBKDF2_Hash)

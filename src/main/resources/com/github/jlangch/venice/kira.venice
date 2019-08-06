@@ -25,6 +25,9 @@
 ;;;; (https://github.com/weavejester/comb). Venice's Kira
 ;;;; templating library builds on the ideas of 'comb'.
 
+
+(ns kira)
+
 ;; -----------------------------------------------------------------------------
 ;; Framework functions
 ;; -----------------------------------------------------------------------------

@@ -21,6 +21,9 @@
 
 ;;;; Test Venice classpath script
 
+
+(ns test)
+
 (defn test/test-fn [x]
   (str "test: " x))
 

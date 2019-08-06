@@ -34,6 +34,9 @@
 ;;;; builds heavily on this work.
 ;;;; https://github.com/marchrock/ring-tomcat-adapter/blob/master/src/ring/adapter/tomcat.clj
 
+
+(ns tomcat)
+
 (import :com.github.jlangch.venice.servlet.IVeniceServlet
         :com.github.jlangch.venice.servlet.VeniceServlet
         :java.lang.RuntimeException

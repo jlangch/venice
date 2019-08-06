@@ -35,6 +35,11 @@ public class KiraModuleTest {
 	// ------------------------------------------------------------------------
 	
 	@Test
+	public void test_load() {
+		assertEquals("kira", new Venice().eval("(load-module :kira)"));
+	}
+	
+	@Test
 	public void test_emit() {
 		final Venice venice = new Venice();
 

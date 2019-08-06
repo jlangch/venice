@@ -382,7 +382,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal val = evaluate(bindings.nth(i+1), env);
 
 						for(Binding b : Destructuring.destructure(sym, val)) {
-							env.set(b.sym, b.val);
+							env.setLocal(b.sym, b.val);
 						}
 					}
 						
@@ -410,7 +410,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = evaluate(bindings.nth(i+1), env);
 	
-						env.set((VncSymbol)sym, val);
+						env.setLocal((VncSymbol)sym, val);
 						bindingNames.add((VncSymbol)sym);
 	
 						//for(Binding b : Destructuring.destructure(sym, val)) {
@@ -444,14 +444,14 @@ public class VeniceInterpreter implements Serializable  {
 	
 					if (ast.size() == 2) {
 						// [1][2] calculate and bind the single new value
-						recur_env.set(bindingNames.get(0), evaluate(ast.second(), env));
+						recur_env.setLocal(bindingNames.get(0), evaluate(ast.second(), env));
 					}
 					else if (ast.size() == 3) {
 						// [1][2] calculate and bind the new values
 						final VncVal v1 = evaluate(ast.second(), env);
 						final VncVal v2 = evaluate(ast.third(), env);
-						recur_env.set(bindingNames.get(0), v1);
-						recur_env.set(bindingNames.get(1), v2);
+						recur_env.setLocal(bindingNames.get(0), v1);
+						recur_env.setLocal(bindingNames.get(1), v2);
 					}
 					else {
 						// [1] calculate new values
@@ -464,7 +464,7 @@ public class VeniceInterpreter implements Serializable  {
 						
 						// [2] bind the new values
 						for(int ii=0; ii<bindingNames.size(); ii++) {
-							recur_env.set(bindingNames.get(ii), newValues[ii]);
+							recur_env.setLocal(bindingNames.get(ii), newValues[ii]);
 						}
 					}
 					
@@ -948,7 +948,7 @@ public class VeniceInterpreter implements Serializable  {
 				throw th;
 			}
 			else {
-				env.set(catchBlock.getExSym(), new VncJavaObject(th));
+				env.setLocal(catchBlock.getExSym(), new VncJavaObject(th));
 				
 				return evaluateBody(catchBlock.getBody(), env);
 			}
@@ -972,7 +972,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal val = evaluate(bindings.nth(i+1), env);
 
 			if (Types.isVncSymbol(sym)) {
-				env.set((VncSymbol)sym, val);
+				env.setLocal((VncSymbol)sym, val);
 				boundResources.add(new Binding((VncSymbol)sym, val));
 			}
 			else {
@@ -995,7 +995,7 @@ public class VeniceInterpreter implements Serializable  {
 					throw th;
 				}
 				else {
-					env.set(catchBlock.getExSym(), new VncJavaObject(th));
+					env.setLocal(catchBlock.getExSym(), new VncJavaObject(th));
 				
 					return evaluateBody(catchBlock.getBody(), env);
 				}

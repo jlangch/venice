@@ -21,6 +21,9 @@
 
 ;;;; Venice core macros & functions
 
+
+(ns core)
+
 (import :java.lang.RuntimeException)
 (import :com.github.jlangch.venice.VncException)
 (import :com.github.jlangch.venice.AssertionException)

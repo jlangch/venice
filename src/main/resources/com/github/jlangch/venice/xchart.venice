@@ -25,6 +25,9 @@
 ;;;; (https://github.com/hypirion/clj-xchart). Venice's xchart
 ;;;; builds heavily on Jean Niklas smart work.
 
+
+(ns xchart)
+
 (import :com.github.jlangch.venice.impl.util.xchart.XChartEncoder)
 
 (import :org.knowm.xchart.BubbleChart)

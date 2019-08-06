@@ -21,6 +21,9 @@
 
 ;;;; Math utils
 
+
+(ns math)
+
 (defn
    ^{ :arglists '("(math/bigint x)")
       :doc "Creates a new big integer from a string, a long, or a double"

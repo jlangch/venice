@@ -21,6 +21,9 @@
 
 ;;;; Jackson JSON utils (requires the Jackson JSON libs on the classpath)
 
+
+(ns jackson)
+
 (defn
    ^{ :arglists '("(jackson/available?)")
       :doc "Returns true if Jackson JSON is available (libs on classpath) otherwise false"

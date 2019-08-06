@@ -24,6 +24,9 @@
 ;;;; Venice Ring is a port of Clojure's Ring web applications library
 ;;;; (https://github.com/ring-clojure/ring).
 
+
+(ns ring)
+
 (import :com.github.jlangch.venice.RingRedirectException
         :com.github.jlangch.venice.VncException
         :com.github.jlangch.venice.servlet.IVeniceServlet

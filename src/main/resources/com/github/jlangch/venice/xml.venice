@@ -21,6 +21,9 @@
 
 ;;;; XML parser
 
+
+(ns xml)
+
 (import :com.github.jlangch.venice.util.XMLHandler
         :com.github.jlangch.venice.util.IXMLHandler
         :com.github.jlangch.venice.util.XMLUtil

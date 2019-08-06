@@ -22,6 +22,8 @@
 ;;;; Venice benchmarking
 
 
+(ns bench)
+
 (defn
   bench/remove-outliers [samples low high]
      (filter #(and (>= %1 low) (<= %1 high)) samples))

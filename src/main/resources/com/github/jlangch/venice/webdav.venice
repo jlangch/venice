@@ -42,6 +42,9 @@
 ;;;;              (webdav/exists? url)
 ;;;;              (webdav/get-as-file url "download.doc")))))
 
+
+(ns webdav)
+
 (import :com.github.sardine.DavResource)
 (import :com.github.sardine.Sardine)
 (import :com.github.sardine.SardineFactory)

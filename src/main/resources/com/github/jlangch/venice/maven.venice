@@ -21,6 +21,9 @@
 
 ;;;; Maven utilities
 
+
+(ns maven)
+
 (defn-
   maven/download-artefact-file
   [uri target-dir target-file]

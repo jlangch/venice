@@ -195,7 +195,7 @@ public class Env implements Serializable {
 		return level;
 	}
 
-	public Env set(final VncSymbol name, final VncVal val) {
+	public Env setLocal(final VncSymbol name, final VncVal val) {
 		if (name.equals(Namespace.NS_SYMBOL_CURRENT)) {
 			throw new VncException(String.format("Internal error setting var %s", name.getName()));
 		}
@@ -218,7 +218,7 @@ public class Env implements Serializable {
 	
 	public Env addAll(final List<Binding> bindings) {
 		for(Binding b : bindings) {
-			set(b.sym, b.val);
+			setLocal(b.sym, b.val);
 		}
 		return this;
 	}
@@ -398,20 +398,14 @@ public class Env implements Serializable {
 	
 	private VncVal getOrNull(final VncSymbol key) {
 		final Env e = findEnv(key);
-		if (e == null) {
-			final Var glob = getGlobalVar(key);
-			if (glob != null) {
-				return glob.getVal();
-			}
+		if (e != null) {
+			final Var loc = e.getLocalVar(key);
+			return loc == null ? null : loc.getVal();
 		}
 		else {
-			final Var loc = e.getLocalVar(key);
-			if (loc != null) {
-				return loc.getVal();
-			}
+			final Var glob = getGlobalVar(key);
+			return glob == null ? null : glob.getVal();
 		}
-		
-		return null;
 	}
 	
 	private Env findEnv(final VncSymbol key) {		
@@ -431,18 +425,16 @@ public class Env implements Serializable {
 			return new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS());
 		}
 		
-		final Var v = getGlobalVarRaw(key);
-		if (v != null) return v;
-		
 		if (Namespace.on() && !Namespace.isQualified(key)) {
 			final VncSymbol ns = Namespace.getCurrentNS();
 			if (!Namespace.NS_CORE.equals(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + key.getName());
-				return getGlobalVarRaw(qualifiedKey);
+				final Var v = getGlobalVarRaw(qualifiedKey);
+				if (v != null) return v;
 			}
 		}
-		
-		return null;
+
+		return getGlobalVarRaw(key);
 	}
 
 	private Var getGlobalVarRaw(final VncSymbol key) {
