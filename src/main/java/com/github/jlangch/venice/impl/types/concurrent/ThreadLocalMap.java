@@ -180,14 +180,6 @@ public class ThreadLocalMap {
 		get().nsCurr = ns;
 	}
 
-	public static VncSymbol getCurrFnSymLookupNS() {
-		return get().nsCurrFnSymLookup;
-	}
-
-	public static void setCurrFnSymLookupNS(final VncSymbol ns) {
-		get().nsCurrFnSymLookup = ns;
-	}
-
 	public static void clearValues() {
 		try {
 			// clear all values except the system values
@@ -211,9 +203,7 @@ public class ThreadLocalMap {
 	
 	public static void remove() {
 		try {
-			get().values.clear();
-			get().callStack.clear();			
-			get().initNS();
+			clear();
 			
 			ThreadLocalMap.context.set(null);
 			ThreadLocalMap.context.remove();
@@ -247,14 +237,12 @@ public class ThreadLocalMap {
 	
 	private void initNS() {
 		nsCurr = new VncSymbol("user");
-		nsCurrFnSymLookup = new VncSymbol("user");
 	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
 	private VncSymbol nsCurr = new VncSymbol("user");
-	private VncSymbol nsCurrFnSymLookup = new VncSymbol("user");
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
