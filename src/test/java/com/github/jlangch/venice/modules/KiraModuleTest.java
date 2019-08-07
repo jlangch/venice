@@ -127,7 +127,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                            \n" +
 				"                                                  \n" +
 				"   (with-out-str                                  \n" +
-				"      (kira/docoll [1 2 3]                        \n" +
+				"      (kira/foreach [1 2 3]                       \n" +
 				"                   (fn [x] (kira/emit (+ x 1))))) \n" +
 				")";
 
@@ -138,7 +138,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                            \n" +
 				"                                                  \n" +
 				"   (with-out-str                                  \n" +
-				"      (kira/docoll []                             \n" +
+				"      (kira/foreach []                            \n" +
 				"                   (fn [x] (kira/emit (+ x 1))))) \n" +
 				")";
 
@@ -296,14 +296,14 @@ public class KiraModuleTest {
 
 		// (let [xs [1 2 3 4]] (docoll #(print (str "foo" % " ")) xs))
 		
-		// (kira/eval """<% (kira/docoll xs #(print (str %>foo<% % " ")))%>""" {:xs [1 2 3]})
+		// (kira/eval """<% (kira/foreach xs #(print (str %>foo<% % " ")))%>""" {:xs [1 2 3]})
 		
 		final String script =
 				"(do                                                                       \n" +
 				"   (load-module :kira)                                                    \n" +
 				"                                                                          \n" +
 				"   (kira/eval                                                             \n" + 
-				"       \"\"\"<% (kira/docoll xs #(print (str %>foo<% % \" \")))%>\"\"\"   \n" + 
+				"       \"\"\"<% (kira/foreach xs #(print (str %>foo<% % \" \")))%>\"\"\"  \n" + 
 				"      {:xs [1 2 3]})                                                      \n" + 
 				")";
 
@@ -316,14 +316,14 @@ public class KiraModuleTest {
 
 		// (let [xs [1 2 3 4]] (docoll #(print (str "foo" % " ")) xs))
 		
-		// (kira/eval """$ (kira/docoll xs #(print (str $foo$ % " ")))$""" ["$" "$"] {:xs [1 2 3]})
+		// (kira/eval """$ (kira/foreach xs #(print (str $foo$ % " ")))$""" ["$" "$"] {:xs [1 2 3]})
 		
 		final String script =
 				"(do                                                                       \n" +
 				"   (load-module :kira)                                                    \n" +
 				"                                                                          \n" +
 				"   (kira/eval                                                             \n" + 
-				"       \"\"\"$ (kira/docoll xs #(print (str $foo$ % \" \")))$\"\"\"       \n" + 
+				"       \"\"\"$ (kira/foreach xs #(print (str $foo$ % \" \")))$\"\"\"      \n" + 
 				"      [\"$\" \"$\"]                                                       \n" + 
 				"      {:xs [1 2 3]})                                                      \n" + 
 				")";

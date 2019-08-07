@@ -216,7 +216,7 @@ timestamp: 2019-06-22 19:21:07
 ### Loops
 
 ```text
-<% (kira/docoll coll (fn [item] (kira/emit %>
+<% (kira/foreach coll (fn [item] (kira/emit %>
    ...
 <% ))) %>
 ```
@@ -229,7 +229,7 @@ Loop over a collection of items:
   
   (def template (str/strip-indent """\
        <users>
-         <% (kira/docoll users (fn [user] (kira/emit %>
+         <% (kira/foreach users (fn [user] (kira/emit %>
          <user>
            <firstname><% (kira/escape-xml (:first user)) %></firstname>
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
@@ -280,7 +280,7 @@ Example:
   
   (def template (str/strip-indent """\
        <users>
-         <% (kira/docoll users (fn [user] (kira/emit %>
+         <% (kira/foreach users (fn [user] (kira/emit %>
          <user>
            <firstname><% (kira/escape-xml (:first user)) %></firstname>
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
@@ -453,7 +453,7 @@ Venice template:
   
   (def template (str/strip-indent """\
        <users>
-         <% (kira/docoll users (fn [user] (kira/emit %>
+         <% (kira/foreach users (fn [user] (kira/emit %>
          <user>
            <firstname><% (kira/escape-xml (:first user)) %></firstname>
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
@@ -465,7 +465,7 @@ Venice template:
            </address>
            <% (when add-emails (kira/emit %>
            <emails>
-             <% (kira/docoll (:emails user) (fn [[type email]] (kira/emit %>
+             <% (kira/foreach (:emails user) (fn [[type email]] (kira/emit %>
              <email type="<% (kira/escape-xml (name type)) %>"> <% (kira/escape-xml email) %></email>
              <% ))) %>
            </emails>

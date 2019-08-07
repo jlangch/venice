@@ -213,7 +213,7 @@ References:
          
          <table class="people people1">
            <tbody>
-             ${ (kira/docoll persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [p] (kira/emit }$
              <tr>
                <td>${ (kira/escape-xml (nth p 0)) }$</td>
                <td>${ (kira/escape-xml (nth p 1)) }$</td>
@@ -227,7 +227,7 @@ References:
          </table>
          <table class="people people2">
            <tbody>
-             ${ (kira/docoll persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [p] (kira/emit }$
              <tr>
                <td>${ (kira/escape-xml (nth p 0)) }$</td>
                <td>${ (kira/escape-xml (nth p 1)) }$</td>

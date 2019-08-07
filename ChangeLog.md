@@ -13,6 +13,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - ...
 
+### Fixed
+
+- an edge case with symbol lookup
+
+### Incompatible Changes
+
+- renamed 'kira/docoll' to 'kira/foreach'
+
+
 
 
 ## [1.6.2] - 2019-07-31
