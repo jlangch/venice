@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -39,10 +38,6 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public abstract class VncFunction extends VncVal implements IVncFunction {
 
-	public VncFunction() {
-		this(null, null, null, null);
-	}
-	
 	public VncFunction(final String name) {
 		this(name, null, null, null);
 	}
@@ -61,7 +56,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
-		this.simpleName = name != null ? getSimpleName(name) : createAnonymousFuncName();
+		this.simpleName = getSimpleName(name);
 		this.ast = ast;
 		this.env = env;
 		this.params = params;
@@ -187,13 +182,8 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 
 	private String getNamespace(final String qualifiedName) {
-		if (StringUtil.isEmpty(qualifiedName)) {
-			return Namespace.getCurrentNS().getName();
-		}
-		else {
-			final int pos = qualifiedName.indexOf("/");
-			return pos < 1 ? "core" : qualifiedName.substring(0, pos);
-		}
+		final int pos = qualifiedName.indexOf("/");
+		return pos < 1 ? "core" : qualifiedName.substring(0, pos);
 	}
 
 	private String getSimpleName(final String qualifiedName) {

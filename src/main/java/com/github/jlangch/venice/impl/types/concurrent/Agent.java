@@ -144,7 +144,7 @@ public class Agent implements IDeref {
 	public static boolean await(final List<Agent> agents, final long timeoutMillis) {		
 		final CountDownLatch latch = new CountDownLatch(agents.size() * 2);
 		
-		final VncFunction fn = new VncFunction() {
+		final VncFunction fn = new VncFunction(VncFunction.createAnonymousFuncName()) {
 			public VncVal apply(final VncList args) {
 				latch.countDown();
 				return args.first(); // return old value

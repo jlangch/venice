@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,8 +35,13 @@ public class ReservedSymbols {
 		return symbol != null && reserved.contains(symbol.getName());
 	}
 
+	public static boolean isSpecialForm(final VncSymbol symbol) {
+		return symbol != null && sepcial_forms.contains(symbol.getName());
+	}
+
+
 	public static void validate(final VncSymbol symbol) {
-		if (symbol != null && reserved.contains(symbol.getName())) {
+		if (symbol != null && isReserved(symbol)) {
 			throw new SecurityException(
 					String.format(
 							"Reserved symbol '%s'. Redefinition is not allowed.", 
@@ -43,14 +49,20 @@ public class ReservedSymbols {
 		}
 	}
 
+	private static<T> HashSet<T> merge(final Set<T> s1, final Collection<T> s2) {
+		final HashSet<T> s = new HashSet<>(s1);
+		s.addAll(s2);
+		return s;
+	}
 	
-	
-	private static final Set<String> reserved = 
+	private static final Set<String> sepcial_forms = 
 			new HashSet<>(Arrays.asList(
 					"def",
 					"defonce",
 					"def-dynamic",
+					"defmacro",
 					"doc",
+					"ns",
 					"eval",
 					"let",
 					"binding",
@@ -58,23 +70,33 @@ public class ReservedSymbols {
 					"recur",
 					"quote",
 					"quasiquote",
-					"defmacro",
 					"macroexpand",
 					"try",
 					"try-with",
 					"import",
 					"do",
+					"dorun",
+					"dobench",
 					"if",
 					"fn",
 					"resolve",
+					"set!",
+					"prof",
+					"var-get",
 					"defmulti",
 					"defmethod",
-					"deftype",
-					"defrecord",
 					
+					"deftype",
+					"defrecord"));
+	
+	private static final Set<String> reserved = 
+			merge(
+				sepcial_forms, 
+				Arrays.asList(
 					".",
 					"proxify",
 					"*version*",
 					"*newline*",
 					"*ns*"));
+	
 }

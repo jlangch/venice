@@ -34,6 +34,7 @@ public class KiraModuleTest {
 	// Utility functions
 	// ------------------------------------------------------------------------
 	
+
 	@Test
 	public void test_load() {
 		assertEquals("kira", new Venice().eval("(load-module :kira)"));
