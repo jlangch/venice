@@ -341,6 +341,62 @@ public class KiraModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
+				"(do                                                                           \n" +
+				"	(load-module :kira)                                                        \n" +
+				"	                                                                           \n" +
+				"	(def template \"\"\"<% (print (time/format ts \"yyyy-MM-dd\")) %>\"\"\")   \n" +
+				"	                                                                           \n" +
+				"	(def data { :ts (time/local-date 2000 8 1) })                              \n" +
+				"	                                                                           \n" +
+				"   (kira/eval template data)                                                  \n" + 
+				")";
+
+		assertEquals("2000-08-01", venice.eval(script));
+	}
+	
+	@Test
+	public void test_kira_formatter_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              \n" +
+				"	(load-module :kira)                                           \n" +
+				"	                                                              \n" +
+				"	(defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
+				"	                                                              \n" +
+				"	(def template \"<% (print (format-ts ts)) %>\")               \n" +
+				"	                                                              \n" +
+				"	(def data { :ts (time/local-date 2000 8 1) })                 \n" +
+				"	                                                              \n" +
+				"   (kira/eval template data)                                     \n" + 
+				")";
+
+		assertEquals("2000-08-01", venice.eval(script));
+	}
+	
+	@Test
+	public void test_kira_esc_xml_formatter_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                                             \n" +
+				"	(load-module :kira)                                                                          \n" +
+				"	                                                                                             \n" +
+				"	(def template \"\"\"<% (kira/escape-xml ts #(time/format %1 \"yyyy-MM-dd\")) %>\"\"\")       \n" +
+				"	                                                                                             \n" +
+				"	(def data { :ts (time/local-date 2000 8 1) })                                                \n" +
+				"	                                                                                             \n" +
+				"   (kira/eval template data)                                                                    \n" + 
+				")";
+
+		assertEquals("2000-08-01", venice.eval(script));
+	}
+	
+	@Test
+	public void test_kira_esc_xml_formatter_2() {
+		final Venice venice = new Venice();
+
+		final String script =
 				"(do                                                              \n" +
 				"	(load-module :kira)                                           \n" +
 				"	                                                              \n" +
