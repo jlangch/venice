@@ -33,10 +33,6 @@ import com.github.jlangch.venice.impl.util.Tuple3;
 
 public class VncMultiArityFunction extends VncFunction {
 
-	public VncMultiArityFunction(final List<VncFunction> functions) {
-		this(null, functions);
-	}
-	
 	public VncMultiArityFunction(final String name, final List<VncFunction> functions) {
 		super(name);
 		

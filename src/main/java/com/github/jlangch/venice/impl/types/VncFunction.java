@@ -27,8 +27,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.Destructuring;
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -39,26 +37,20 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	public VncFunction(final String name) {
-		this(name, null, null, null);
+		this(name, null, null);
 	}
 	
 	public VncFunction(final String name, final VncVal meta) {
-		this(name, null, null, null, meta);
+		this(name, null, meta);
 	}
 
-	public VncFunction(final VncVal ast, final Env env, final VncVector params) {
-		this(null, ast, env, params);
+	public VncFunction(final String name, final VncVector params) {
+		this(name, params, Constants.Nil);
 	}
 
-	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params) {
-		this(name, ast, env, params, Constants.Nil);
-	}
-
-	public VncFunction(final String name, final VncVal ast, final Env env, final VncVector params, final VncVal meta) {
+	public VncFunction(final String name, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
 		this.simpleName = getSimpleName(name);
-		this.ast = ast;
-		this.env = env;
 		this.params = params;
 	
 		final String ns = getNamespace(name);
@@ -87,20 +79,8 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return true; 
 	}
 	
-	public VncVal getAst() { 
-		return ast; 
-	}
-	
-	public Env getEnv() { 
-		return env; 
-	}
-	
 	public VncVector getParams() { 
 		return params; 
-	}
-	
-	public Env genEnv(final VncList args) {
-		return new Env(env).addAll(Destructuring.destructure(params, args));
 	}
 	
 	public boolean isMacro() { 
@@ -230,8 +210,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final VncVal ast;
-	private final Env env;
 	private final VncVector params;
 	private volatile boolean macro = false;
 	private final String simpleName;

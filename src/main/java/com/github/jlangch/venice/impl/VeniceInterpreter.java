@@ -649,7 +649,7 @@ public class VeniceInterpreter implements Serializable  {
 			
 			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);
 			if (!Types.isVncMacro(fn)) break;
-			
+
 			// validate that the macro allowed by the sandbox
 			interceptor.validateVeniceFunction(((VncFunction)fn).getQualifiedName());					
 
@@ -718,6 +718,10 @@ public class VeniceInterpreter implements Serializable  {
 		meta = MetaUtil.setNamespace(meta, ns);
 
 		final VncSymbol macroName_ = new VncSymbol(name, meta);
+		
+//		if (macroName_.getName().equals("test/fn")) {
+//			System.out.println();
+//		}
 
 		if (Types.isVncVector(paramsOrSig)) {
 			// single arity:
@@ -749,13 +753,13 @@ public class VeniceInterpreter implements Serializable  {
 			ast.slice(argPos).forEach(s -> {
 				int pos = 0;
 				
-				final VncList sig = Coerce.toVncList(s);
+				final VncList fnSig = Coerce.toVncList(s);
 				
-				final VncVector params = Coerce.toVncVector(sig.nth(pos++));
+				final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));
 				
-				final VncList body = sig.slice(pos);
+				final VncList fnBody = fnSig.slice(pos);
 				
-				fns.add(buildFunction(macroName_.getName(), params, body, null, env));
+				fns.add(buildFunction(macroName_.getName() + "-arity-" + fnParams.size(), fnParams, fnBody, null, env));
 			});
 
 			final VncFunction macroFn = new VncMultiArityFunction(macroName_.getName(), fns).withMeta(meta);
@@ -1126,7 +1130,7 @@ public class VeniceInterpreter implements Serializable  {
 	) {
 		final VncSymbol ns = Namespace.getCurrentNS();
 		
-		return new VncFunction(name, body, env, params) {
+		return new VncFunction(name, params) {
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 

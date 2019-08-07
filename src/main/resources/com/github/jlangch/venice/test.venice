@@ -24,6 +24,8 @@
 
 (ns test)
 
+(defmacro test/fn ([] `(+ 1 ~x)))
+
 (defn test/test-fn [x]
   (str "test: " x))
 
