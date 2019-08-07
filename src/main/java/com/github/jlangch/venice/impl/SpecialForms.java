@@ -115,6 +115,20 @@ public class SpecialForms {
 	    private static final long serialVersionUID = -1;
 	};
 
+	public static VncFunction var_get = 
+		new SpecialFormsDocFunction(
+				"var-get",
+				VncFunction
+				.meta()
+				.arglists("")		
+				.doc("Returns the var associated with a symbol")
+				.examples(
+					"(var-get +)")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
 	public static VncFunction fn = 
 		new SpecialFormsDocFunction(
 				"fn",
@@ -623,6 +637,7 @@ public class SpecialForms {
 					.put("fn", 			fn)
 					.put("eval",		eval)
 					.put("resolve",		resolve)				
+					.put("var-get",		var_get)				
 					.put("def",			def)
 					.put("defonce",		defonce)
 					.put("defmulti",	defmulti)

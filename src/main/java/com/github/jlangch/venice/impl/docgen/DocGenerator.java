@@ -706,6 +706,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
 		misc.addItem(getDocItem("resolve"));
+		misc.addItem(getDocItem("var-get"));
 		misc.addItem(getDocItem("callstack"));
 
 
