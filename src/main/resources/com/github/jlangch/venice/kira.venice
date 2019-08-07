@@ -111,7 +111,7 @@
 
 (defn
   ^{ :doc "Applies the function f to the items of the collection." }
-  kira/docoll [coll f] (docoll f coll))
+  kira/docoll [coll f] (core/docoll f coll))
 
 (defmacro
   ^{ :doc (str/strip-indent """\

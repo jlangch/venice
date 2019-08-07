@@ -333,6 +333,31 @@ public class KiraModuleTest {
 	
 	
 	// ------------------------------------------------------------------------
+	// Formatter
+	// ------------------------------------------------------------------------
+	
+	@Test
+	public void test_kira_formatter_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              \n" +
+				"	(load-module :kira)                                           \n" +
+				"	                                                              \n" +
+				"	(defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
+				"	                                                              \n" +
+				"	(def template \"<% (kira/escape-xml ts format-ts) %>\")       \n" +
+				"	                                                              \n" +
+				"	(def data { :ts (time/local-date 2000 8 1) })                 \n" +
+				"	                                                              \n" +
+				"   (kira/eval template data)                                     \n" + 
+				")";
+
+		assertEquals("2000-08-01", venice.eval(script));
+	}
+	
+	
+	// ------------------------------------------------------------------------
 	// Compiled
 	// ------------------------------------------------------------------------
 

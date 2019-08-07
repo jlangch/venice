@@ -90,16 +90,16 @@ public class Env implements Serializable {
 	 *  <li>qualified symbols are resolved exclusively from the global symbols</li>
 	 * </ol>
 	 * 
-	 * @param key a symbol
+	 * @param sym a symbol
 	 * @return the value
 	 * @throws VncException if the symbol does not exist.
 	 */
-	public VncVal get(final VncSymbol key) {
-		final VncVal val = getOrNull(key);
+	public VncVal get(final VncSymbol sym) {
+		final VncVal val = getOrNull(sym);
 		if (val != null) return val;
 
-		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(key))) {
-			throw new VncException(String.format("Symbol '%s' not found.", key.getName())); 
+		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+			throw new VncException(String.format("Symbol '%s' not found.", sym.getName())); 
 		}
 	}
 
@@ -118,11 +118,11 @@ public class Env implements Serializable {
 	 *  <li>qualified symbols are resolved exclusively from the global symbols</li>
 	 * </ol>
 	 * 
-	 * @param key a symbol
+	 * @param sym a symbol
 	 * @return the value or <code>Nil</code> if not found
 	 */
-	public VncVal getOrNil(final VncSymbol key) {
-		final VncVal val = getOrNull(key);
+	public VncVal getOrNil(final VncSymbol sym) {
+		final VncVal val = getOrNull(sym);
 		return val != null ? val : Nil;
 	}
 
@@ -140,11 +140,11 @@ public class Env implements Serializable {
 	 *  <li>try to resolve the symbol from the global namespace</li>
 	 * </ol>
 	 * 
-	 * @param key a symbol
+	 * @param sym a symbol
 	 * @return the value or <code>Nil</code> if not found
 	 */
-	public VncVal getGlobalOrNil(final VncSymbol key) {
-		final Var v = getGlobalVar(key);
+	public VncVal getGlobalOrNil(final VncSymbol sym) {
+		final Var v = getGlobalVar(sym);
 		return v != null ? v.getVal() : Nil;
 	}
 
@@ -162,11 +162,11 @@ public class Env implements Serializable {
 	 *  <li>try to resolve the symbol from the global namespace</li>
 	 * </ol>
 	 * 
-	 * @param key a symbol
+	 * @param sym a symbol
 	 * @return the value or <code>null</code> if not found
 	 */
-	public VncVal getGlobalOrNull(final VncSymbol key) {
-		final Var v = getGlobalVar(key);
+	public VncVal getGlobalOrNull(final VncSymbol sym) {
+		final Var v = getGlobalVar(sym);
 		return v != null ? v.getVal() : null;
 	}
 
@@ -184,35 +184,35 @@ public class Env implements Serializable {
 	 *  <li>try to resolve the symbol from the global namespace</li>
 	 * </ol>
 	 * 
-	 * @param key a symbol
+	 * @param sym a symbol
 	 * @return the value or <code>null</code> if not found
 	 */
-	public Var getGlobalVarOrNull(final VncSymbol key) {
-		return getGlobalVar(key);
+	public Var getGlobalVarOrNull(final VncSymbol sym) {
+		return getGlobalVar(sym);
 	}
 
 	public int level() {
 		return level;
 	}
 
-	public Env setLocal(final VncSymbol name, final VncVal val) {
-		if (name.equals(Namespace.NS_SYMBOL_CURRENT)) {
-			throw new VncException(String.format("Internal error setting var %s", name.getName()));
+	public Env setLocal(final VncSymbol sym, final VncVal val) {
+		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
+			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
-		final Var v = getGlobalVar(name);
+		final Var v = getGlobalVar(sym);
 
 		// allow shadowing of a global non function var by a local var
 		// e.g.:   (do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))
 		if (v != null && !v.isOverwritable() && Types.isVncFunction(v.getVal())) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(name))) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
 				throw new VncException(String.format(
-							"The global function '%s' must not be shadowed by a local var!", 
-							name));
+							"The global var '%s' must not be shadowed by a local var!", 
+							sym));
 			}
 		}
 
-		setLocalVar(name, new Var(name, val));
+		setLocalVar(sym, new Var(sym, val));
 		return this;
 	}
 	
@@ -317,9 +317,9 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public void removeGlobalSymbol(final VncSymbol key) {
-		coreGlobalSymbols.remove(key);
-		globalSymbols.remove(key);
+	public void removeGlobalSymbol(final VncSymbol sym) {
+		coreGlobalSymbols.remove(sym);
+		globalSymbols.remove(sym);
 	}
 
 	public Env getLevelEnv(final int level) {
@@ -396,70 +396,80 @@ public class Env implements Serializable {
 				   .collect(Collectors.joining("\n"));
 	}
 	
-	private VncVal getOrNull(final VncSymbol key) {
-		final Env e = findEnv(key);
+	private VncVal getOrNull(final VncSymbol sym) {
+		final Env e = findEnv(sym);
 		if (e != null) {
-			final Var loc = e.getLocalVar(key);
+			final Var loc = e.getLocalVar(sym);
 			return loc == null ? null : loc.getVal();
 		}
 		else {
-			final Var glob = getGlobalVar(key);
+			final Var glob = getGlobalVar(sym);
 			return glob == null ? null : glob.getVal();
 		}
 	}
 	
-	private Env findEnv(final VncSymbol key) {		
-		if (hasLocalVar(key)) {
+	private Env findEnv(final VncSymbol sym) {		
+		if (hasLocalVar(sym)) {
 			return this;
 		} 
 		else if (outer != null) {
-			return outer.findEnv(key);
+			return outer.findEnv(sym);
 		} 
 		else {
 			return null;
 		}
 	}
 	
-	private Var getGlobalVar(final VncSymbol key) {
-		if (key.equals(Namespace.NS_SYMBOL_CURRENT)) {
+	private Var getGlobalVar(final VncSymbol sym) {
+		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
 			return new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS());
 		}
 		
-		if (Namespace.on() && !Namespace.isQualified(key)) {
+		final String name = sym.getName();
+		
+		if (name.startsWith("core/")) {
+			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
+		}
+				
+		if (Namespace.on() && !Namespace.isQualified(sym)) {
+			if (ReservedSymbols.isSpecialForm(sym)) {
+				return null;
+			}
+
 			final VncSymbol ns = Namespace.getCurrentNS();
 			if (!Namespace.NS_CORE.equals(ns)) {
-				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + key.getName());
+				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
 				final Var v = getGlobalVarRaw(qualifiedKey);
 				if (v != null) return v;
 			}
 		}
 
-		return getGlobalVarRaw(key);
+		return getGlobalVarRaw(sym);
 	}
 
-	private Var getGlobalVarRaw(final VncSymbol key) {
+	private Var getGlobalVarRaw(final VncSymbol sym) {
 		if (coreGlobalSymbols != null) {
-			final Var v = coreGlobalSymbols.get(key);
+			final Var v = coreGlobalSymbols.get(sym);
 			if (v != null) return v;
 		}
 		
-		return globalSymbols.get(key);
+		return globalSymbols.get(sym);
 	}
 
-	private void setGlobalVar(final VncSymbol key, final Var value) {
-		globalSymbols.put(key, value);
+	private void setGlobalVar(final VncSymbol sym, final Var value) {
+		globalSymbols.put(sym, value);
 	}
 
-	private Var getLocalVar(final VncSymbol key) {
-		return localSymbols.get(key);
+	private Var getLocalVar(final VncSymbol sym) {
+		return localSymbols.get(sym);
 	}
 
-	private void setLocalVar(final VncSymbol key, final Var value) {
-		localSymbols.put(key, value);
+	private void setLocalVar(final VncSymbol sym, final Var value) {
+		localSymbols.put(sym, value);
 	}
 
-	private boolean hasLocalVar(final VncSymbol key) {
-		return localSymbols.containsKey(key);
+	private boolean hasLocalVar(final VncSymbol sym) {
+		return localSymbols.containsKey(sym);
 	}
 	
 	private Map<VncSymbol,Var> getAllGlobalSymbols() {

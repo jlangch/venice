@@ -35,4 +35,19 @@ public class TestModuleTest {
 		assertEquals("test", new Venice().eval("(load-module :test)"));
 	}
 
+	@Test
+	public void test_eval() {
+		final String script =
+			"(ns xxx)                            \n" +
+			"                                    \n" +
+			"(defmacro xxx/fn ([x] `(+ 1 ~x)))   \n" +
+			"                                    \n" +
+			"(defn xxx/test-fn [x]               \n" +
+			"  (str \"test: \" x))                 ";
+
+		assertEquals(
+			"xxx/test-fn", 
+			new Venice().eval("(load-string \"\"\"" + script + "\"\"\")"));
+	}
+
 }

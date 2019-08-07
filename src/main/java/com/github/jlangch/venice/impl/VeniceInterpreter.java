@@ -696,7 +696,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private VncFunction defmacro_(final VncList ast, final Env env) {
 		int argPos = 1;
-
+		
 		final VncSymbol macroName = qualifySymbolWithCurrNS(
 										evaluateSymbolMetaData(ast.nth(argPos++), env),
 										env);
@@ -706,7 +706,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 		String name = macroName.getName();
 		String ns = Namespace.getNamespace(macroName.getName());
-		
+
 		if (Namespace.on()) {
 			if (ns == null) {
 				ns = Namespace.getCurrentNS().getName();
@@ -718,10 +718,6 @@ public class VeniceInterpreter implements Serializable  {
 		meta = MetaUtil.setNamespace(meta, ns);
 
 		final VncSymbol macroName_ = new VncSymbol(name, meta);
-		
-//		if (macroName_.getName().equals("test/fn")) {
-//			System.out.println();
-//		}
 
 		if (Types.isVncVector(paramsOrSig)) {
 			// single arity:

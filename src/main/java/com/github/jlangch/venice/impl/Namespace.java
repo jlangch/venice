@@ -32,6 +32,11 @@ public class Namespace {
 		return pos < 1 ? null : name.substring(0, pos);
 	}
 
+	public static String getName(final String name) {
+		final int pos = name.indexOf("/");
+		return pos < 0 ? name : name.substring(pos+1);
+	}
+
 	public static boolean isQualified(final String name) {
 		return name.indexOf("/") >= 1;
 	}
