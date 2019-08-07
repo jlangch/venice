@@ -42,7 +42,7 @@ public class NamespaceTest {
 				"                                    \n" +
 				"   (def s1 1)                       \n" +
 				"   (def s2 s1)                      \n" +
-				"   (defn f1 [x] (+ x s1))           \n" +
+				"   (defn f1 [x] (+ x s1 s2))        \n" +
 				"   (defn f2 [x] (+ x (f1 x)))       \n" +
 				"                                    \n" +
 				"   (ns B)                           \n" +
@@ -50,6 +50,6 @@ public class NamespaceTest {
 				"   (str [(A/f1 100) (A/f2 100)])    \n" +
 				")";
 
-		assertEquals("[101 201]", venice.eval(script));
+		assertEquals("[102 202]", venice.eval(script));
 	}
 }
