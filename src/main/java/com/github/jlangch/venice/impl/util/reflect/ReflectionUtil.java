@@ -69,6 +69,21 @@ public class ReflectionUtil {
 			throw new RuntimeException(String.format("Failed to load class '%s'", name));
 		}
 	}	
+	
+	/**
+	 * Checks if the class for the given name exists. 
+	 * 
+	 * @param name the class's name
+	 * @return true if the class exists else false
+	 */
+	static public boolean isClassAvailable(final String name) {
+		try {
+			return classForName(name) != null;
+		}
+		catch(Throwable ex) {
+			return false;
+		}
+	}	
 
 	/**
 	 * Checks if a method is a getter method

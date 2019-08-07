@@ -23,8 +23,10 @@ package com.github.jlangch.venice.modules;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 public class XChartModuleTest {
@@ -251,7 +253,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
+	@EnabledIf("com.github.jlangch.venice.modules.XChartModuleTest.isXChartAvailable()")
 	public void test_encoder() {
 		final Venice venice = new Venice();
 
@@ -271,7 +273,7 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
+	@EnabledIf("com.github.jlangch.venice.modules.XChartModuleTest.isXChartAvailable()")
 	public void test_doto_cond() {
 		final Venice venice = new Venice();
 
@@ -294,4 +296,8 @@ public class XChartModuleTest {
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
 
+	
+	public static boolean isXChartAvailable() {
+		return ReflectionUtil.isClassAvailable("org.knowm.xchart.XChartPanel");
+	}
 }
