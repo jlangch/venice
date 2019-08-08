@@ -664,7 +664,9 @@ public class SpecialForms {
 				VncFunction
 				.meta()
 				.doc("The current namespace")
-				.examples("*ns*")
+				.examples(
+					"*ns*", 
+					"(do\n  (ns test)\n  *ns*)")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;
