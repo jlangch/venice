@@ -1069,5 +1069,6 @@ Copy pages from a PDF to a new PDF
   
   (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.18")
   (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18")
-  (maven/download "com.github.librepdf:openpdf:1.2.21"))
+  (maven/download "com.github.librepdf:openpdf:1.3.1"))
+  (maven/download "com.github.librepdf:pdf-toolbox:1.3.1"))
 ```
