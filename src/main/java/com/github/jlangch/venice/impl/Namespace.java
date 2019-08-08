@@ -46,7 +46,7 @@ public class Namespace {
 	}
 
 	public static boolean on() {
-		return false;
+		return true;
 	}
 
 	public static VncSymbol getCurrentNS() {

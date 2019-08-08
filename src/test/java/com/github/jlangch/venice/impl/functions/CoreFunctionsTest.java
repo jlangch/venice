@@ -1891,8 +1891,8 @@ public class CoreFunctionsTest {
 		assertEquals("alpha", venice.eval("(name :alpha)"));	
 		assertEquals("alpha", venice.eval("(name 'alpha)"));	
 		assertEquals("alpha", venice.eval("(name \"alpha\")"));	
-		assertEquals("alpha", venice.eval("(do (defn alpha [] 100) (name alpha)))"));	
-		assertEquals("alpha", venice.eval("(do (let [x (fn alpha [] 100)] (name x)))"));	
+		assertEquals("user/alpha", venice.eval("(do (defn alpha [] 100) (name alpha)))"));	
+		assertEquals("user/alpha", venice.eval("(do (let [x (fn alpha [] 100)] (name x)))"));	
 	}
 
 	@Test

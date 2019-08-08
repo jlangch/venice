@@ -33,7 +33,23 @@ public class NamespaceTest {
 
 	@Test
 	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
-	public void test_1() {
+	public void test_ns_1() {
+		final Venice venice = new Venice();
+
+		assertEquals("user", venice.eval("*ns*"));
+	}
+
+	@Test
+	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	public void test_ns_2() {
+		final Venice venice = new Venice();
+
+		assertEquals("B", venice.eval("(do (ns A) (ns B) *ns*)"));
+	}
+
+	@Test
+	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	public void test_def() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -51,5 +67,31 @@ public class NamespaceTest {
 				")";
 
 		assertEquals("[102 202]", venice.eval(script));
+	}
+
+	@Test
+	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	public void test_defmulti() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                             \n" +
+				"   (ns A)                                                       \n" +
+				"                                                                \n" +
+				"	(defmulti math-op (fn [s] (:op s)))                          \n" +
+				"                                                                \n" +
+				"	(defmethod math-op \"add\" [s] (+ (:op1 s) (:op2 s)))        \n" +
+				"	(defmethod math-op \"subtract\" [s] (- (:op1 s) (:op2 s)))   \n" +
+				"	(defmethod math-op :default [s] 0)                           \n" +
+				"                                                                \n" +
+				"   (ns B)                                                       \n" +
+				"                                                                \n" +
+				"   (str                                                         \n" +
+				"	   [ (A/math-op {:op \"add\"      :op1 1 :op2 5})            \n" +
+				"	     (A/math-op {:op \"subtract\" :op1 1 :op2 5})            \n" +
+				"	     (A/math-op {:op \"bogus\"    :op1 1 :op2 5}) ] ))       \n" +
+				")                                                                 ";
+
+		assertEquals("[6 -4 0]", venice.eval(script));
 	}
 }

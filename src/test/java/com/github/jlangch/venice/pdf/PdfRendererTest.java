@@ -34,6 +34,8 @@ public class PdfRendererTest {
 		
 		final String script = 
 				"(do                                                                \n" +
+				"	  (ns test)                                                     \n" +
+				"	                                                                \n" +
 				"	  (import :com.github.jlangch.venice.pdf.PdfRenderer)           \n" +
 				"	                                                                \n" +
 				"	  (load-module :kira)                                           \n" +
@@ -46,13 +48,13 @@ public class PdfRendererTest {
 				"	     <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
 				"	       <body>                                                   \n" +
 				"	         <div>${ (kira/escape-xml title) }$</div>               \n" +
-				"	         <div>${ (kira/escape-xml timestamp format-ts) }$</div> \n" +
+				"	         <div>${ (kira/escape-xml ts test/format-ts) }$</div>   \n" +
 				"	       </body>                                                  \n" +
 				"	     </html>                                                    \n" +
 				"	     \"\"\"))                                                   \n" +
 				"	                                                                \n" +
 				"	  (def data { :title \"Hello, world\"                           \n" +
-				"	              :timestamp (time/local-date 2000 8 1) })          \n" +
+				"	              :ts (time/local-date 2000 8 1) })                 \n" +
 				"	                                                                \n" +
 				"	  (def xhtml (kira/eval template [\"${\" \"}$\"] data))         \n" +
 				"	                                                                \n" +

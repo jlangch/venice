@@ -360,11 +360,13 @@ public class KiraModuleTest {
 
 		final String script =
 				"(do                                                              \n" +
+				"   (ns test)                                                     \n" +
+				"	                                                              \n" +
 				"	(load-module :kira)                                           \n" +
 				"	                                                              \n" +
 				"	(defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
 				"	                                                              \n" +
-				"	(def template \"<% (print (format-ts ts)) %>\")               \n" +
+				"	(def template \"<% (print (test/format-ts ts)) %>\")          \n" +
 				"	                                                              \n" +
 				"	(def data { :ts (time/local-date 2000 8 1) })                 \n" +
 				"	                                                              \n" +
@@ -398,11 +400,13 @@ public class KiraModuleTest {
 
 		final String script =
 				"(do                                                              \n" +
+				"   (ns test)                                                     \n" +
+				"	                                                              \n" +
 				"	(load-module :kira)                                           \n" +
 				"	                                                              \n" +
 				"	(defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
 				"	                                                              \n" +
-				"	(def template \"<% (kira/escape-xml ts format-ts) %>\")       \n" +
+				"	(def template \"<% (kira/escape-xml ts test/format-ts) %>\")  \n" +
 				"	                                                              \n" +
 				"	(def data { :ts (time/local-date 2000 8 1) })                 \n" +
 				"	                                                              \n" +

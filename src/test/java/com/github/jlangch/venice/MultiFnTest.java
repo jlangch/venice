@@ -38,7 +38,7 @@ public class MultiFnTest {
 				"   (defmulti math (fn [op _ _] op))  \n" +
 				")                                      ";
 	
-		assertEquals("multi-fn math", venice.eval("(str " + s + ")"));
+		assertEquals("multi-fn user/math", venice.eval("(str " + s + ")"));
 	}
 
 	@Test
