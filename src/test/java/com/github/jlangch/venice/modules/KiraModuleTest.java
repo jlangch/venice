@@ -110,7 +110,7 @@ public class KiraModuleTest {
 				"   (with-out-str                               \n" +
 				"      (kira/escape-xml-multiline               \n" +
 				"          \"line <1>\nline <2>\nline <3>\"     \n" +
-				"          #(str % \"<br/>\")))                     \n" + 
+				"          #(str % \"<br/>\")))                 \n" + 
 				")";
 
 		assertEquals(

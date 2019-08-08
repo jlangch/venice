@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.Env;
-import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
@@ -131,13 +130,13 @@ public class Venice {
 
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
-			
+
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
-			// init current namespaces
-			Namespaces.setCurrentNS(Namespaces.NS_USER);
+			// re-init namespaces!
+			venice.initNS();
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);

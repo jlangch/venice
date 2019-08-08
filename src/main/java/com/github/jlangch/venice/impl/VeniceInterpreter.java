@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -91,6 +92,9 @@ public class VeniceInterpreter implements Serializable  {
 		this.interceptor = interceptor;
 	}
 	
+	public void initNS() {
+		Namespaces.setCurrentNS(Namespaces.NS_USER);
+	}
 	
 	// read
 	public VncVal READ(final String script, final String filename) {
@@ -159,8 +163,8 @@ public class VeniceInterpreter implements Serializable  {
 		// loaded modules
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
-		// init current namespaces
-		Namespaces.setCurrentNS(Namespaces.NS_USER);
+		// init namespaces
+		initNS();
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -330,6 +334,29 @@ public class VeniceInterpreter implements Serializable  {
 					return multiFn.addFn(dispatchVal, fn);
 				}
 				
+				case "ns": { // (ns alpha)
+					final VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					Namespaces.setCurrentNS(ns);
+					return ns;
+				}
+				
+				case "import":
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
+						ast.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
+						return Nil;
+					}
+					
+				case "imports":
+//					return new VncList(Namespaces
+//										.getCurrentJavaImports()
+//										.list()
+//										.stream().map(s -> new VncKeyword(s))
+//										.collect(Collectors.toList()));
+					return new VncList(javaImports
+										.list()
+										.stream().map(s -> new VncKeyword(s))
+										.collect(Collectors.toList()));
+				
 				case "resolve": { // (resolve sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.getOrNil(sym);
@@ -360,11 +387,6 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					orig_ast = VncList.of(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
-	
-				case "ns": { // (ns alpha)
-					Namespaces.setCurrentNS(Coerce.toVncSymbol(ast.second()));
-					return Nil;
-				}
 					
 				case "eval": {
 					final VncSymbol ns = Namespaces.getCurrentNS();
@@ -487,12 +509,6 @@ public class VeniceInterpreter implements Serializable  {
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
 						return try_with_(ast, new Env(env));
-					}
-	
-				case "import":
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
-						ast.rest().forEach(i -> javaImports.add(Coerce.toVncString(i).getValue()));
-						return Nil;
 					}
 					
 				case "dorun":

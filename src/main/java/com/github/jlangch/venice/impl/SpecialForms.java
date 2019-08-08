@@ -612,6 +612,19 @@ public class SpecialForms {
 	) {
 	    private static final long serialVersionUID = -1;
 	};
+
+	public static VncFunction imports_ = 
+		new SpecialFormsDocFunction(
+				"imports",
+				VncFunction
+				.meta()
+				.arglists("(imports)")		
+				.doc("List the registered imports")
+				.examples("(do\n   (import :java.lang.Long)\n   (imports))")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
 	
 	
 	private static class SpecialFormsDocFunction extends VncFunction {
@@ -655,6 +668,7 @@ public class SpecialForms {
 					.put("defmacro",	defmacro)
 					.put("macroexpand",	macroexpand)
 					.put("import",		import_)
+					.put("imports",		imports_)
 					.put("dobench",		dobench)
 					.put("dorun",		dorun)
 					.put("prof",		prof)

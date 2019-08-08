@@ -32,7 +32,7 @@ import com.github.jlangch.venice.Venice;
 public class NamespaceTest {
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_ns_1() {
 		final Venice venice = new Venice();
 
@@ -40,7 +40,7 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_ns_2() {
 		final Venice venice = new Venice();
 
@@ -48,7 +48,7 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_def() {
 		final Venice venice = new Venice();
 
@@ -70,7 +70,7 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespace.on()")
+	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_defmulti() {
 		final Venice venice = new Venice();
 

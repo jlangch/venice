@@ -74,6 +74,7 @@ public class ReservedSymbols {
 					"try",
 					"try-with",
 					"import",
+					"imports",
 					"do",
 					"dorun",
 					"dobench",

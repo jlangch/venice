@@ -22,7 +22,11 @@
 package com.github.jlangch.venice.impl.javainterop;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.ValueException;
 
@@ -71,8 +75,14 @@ public class JavaImports implements Serializable {
 		imports.clear();
 	}
 	
+	public List<String> list() {
+		final ArrayList<String> items = new ArrayList<>(imports.values());
+		Collections.sort(items);	
+		return items;
+	}
+	
 	
 	private static final long serialVersionUID = 1784667662341909868L;
 
-	private final HashMap<String,String> imports = new HashMap<>();
+	private final Map<String,String> imports = new ConcurrentHashMap<>();
 }
