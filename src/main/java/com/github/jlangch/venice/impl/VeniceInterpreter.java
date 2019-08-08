@@ -347,11 +347,6 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					
 				case "imports":
-//					return new VncList(Namespaces
-//										.getCurrentJavaImports()
-//										.list()
-//										.stream().map(s -> new VncKeyword(s))
-//										.collect(Collectors.toList()));
 					return new VncList(javaImports
 										.list()
 										.stream().map(s -> new VncKeyword(s))

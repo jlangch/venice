@@ -23,6 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -81,6 +83,44 @@ public class JavaInteropTest {
 		finally {
 			JavaInterop.unregister();
 		}
+	}
+	
+	@Test
+	public void testImport() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"   (import :java.lang.Long)   \n" +
+				"   (. :Long :new 10))           ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"   (import :java.lang.Long)   \n" +
+				"   (import :java.lang.Long)   \n" +
+				"   (. :Long :new 10))           ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_failure() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"   (import :java.lang.Long)   \n" +
+				"   (import :foo.some.Long)    \n" +
+				"   (. :Long :new 10))           ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
 	}
 	
 	@Test

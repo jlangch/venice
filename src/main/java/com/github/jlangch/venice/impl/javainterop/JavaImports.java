@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ValueException;
 
 
@@ -62,13 +63,8 @@ public class JavaImports implements Serializable {
 	}
 
 	public void add(final String clazz) {
-		final int pos = clazz.lastIndexOf('.');
-		if (pos < 0) {
-			imports.put(clazz, clazz);
-		}
-		else {
-			imports.put(clazz.substring(pos+1), clazz);
-		}
+		validateNoDuplicate(clazz);
+		imports.put(getSimpleClassname(clazz), clazz);
 	}
 	
 	public void clear() {
@@ -79,6 +75,23 @@ public class JavaImports implements Serializable {
 		final ArrayList<String> items = new ArrayList<>(imports.values());
 		Collections.sort(items);	
 		return items;
+	}
+
+	
+	private String getSimpleClassname(final String clazz) {
+		final int pos = clazz.lastIndexOf('.');
+		return pos < 0 ? clazz : clazz.substring(pos+1);
+	}
+
+	private void validateNoDuplicate(final String clazz) {
+		final String cn = getSimpleClassname(clazz);
+		final String c = imports.get(cn);
+		
+		if (c != null && !c.equals(clazz)) {
+			throw new VncException(String.format(
+					"Failed to import class '%s'. There is a '%s' already imported as '%s'.",
+					clazz, c, cn));
+		}
 	}
 	
 	
