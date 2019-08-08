@@ -539,11 +539,6 @@ public class VeniceInterpreter implements Serializable  {
 	
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-//						// private functions may be called from the same module only
-//						if (fn.isPrivate()) {
-//							validatePrivateFnCall(fn, a0, callStack);
-//						}
-						
 						sandboxMaxExecutionTimeChecker.check();
 						checkInterrupted();
 	
@@ -841,7 +836,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 
 		final VncSymbol fnName = qualifySymbolWithCurrNS(name, env);
-		ReservedSymbols.validate(fnName);
+		ReservedSymbols.validateNotReservedSymbol(fnName);
 
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 		if (Types.isVncVector(paramsOrSig)) {
@@ -1203,26 +1198,6 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-//	private void validatePrivateFnCall(
-//			final VncFunction fn, 
-//			final VncVal fnAst, 
-//			final CallStack callStack
-//	) {
-//		final String callerModule = callStack.peekModule();
-//		if (callerModule == null || !callerModule.equals(fn.getModule())) {
-//			final CallFrame callFrame = callStack.peek();
-//			final String callerFnName = callFrame == null ? null : callFrame.getFnName();								
-//			try (WithCallStack cs = new WithCallStack(CallFrame.fromFunction(fn, fnAst))) {
-//				throw new VncException(String.format(
-//						"Illegal call of private function %s (module %s). Called by %s (module %s).\n%s", 
-//						fn.getName(),
-//						fn.getModule(),
-//						callerFnName,
-//						callerModule,
-//						callStack.toString()));
-//			}
-//		}
-//	}
 
 	/**
 	 * Resolves a class name.
@@ -1244,7 +1219,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private VncSymbol evaluateSymbolMetaData(final VncVal symVal, final Env env) {
 		final VncSymbol sym = Coerce.toVncSymbol(symVal);
-		ReservedSymbols.validate(sym);
+		ReservedSymbols.validateNotReservedSymbol(sym);
 		return sym.withMeta(evaluate(sym.getMeta(), env));
 	}
 

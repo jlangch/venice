@@ -39,8 +39,10 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.util.NullOutputStream;
 
@@ -424,7 +426,11 @@ public class Env implements Serializable {
 		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
 			return new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS());
 		}
-		
+
+		if (ReservedSymbols.isSpecialForm(sym)) {
+			return null;
+		}
+
 		final String name = sym.getName();
 		
 		if (name.startsWith("core/")) {
@@ -432,10 +438,6 @@ public class Env implements Serializable {
 		}
 				
 		if (Namespace.on() && !Namespace.isQualified(sym)) {
-			if (ReservedSymbols.isSpecialForm(sym)) {
-				return null;
-			}
-
 			final VncSymbol ns = Namespace.getCurrentNS();
 			if (!Namespace.NS_CORE.equals(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
@@ -503,6 +505,24 @@ public class Env implements Serializable {
 		return new PrintStream(new NullOutputStream(), true);
 	}
 
+	private void validatePrivateSymbolAccess(final VncSymbol sym) {
+		if (sym.isPrivate()) {
+			final VncSymbol currNS = Namespace.getCurrentNS();
+			final String symNS = Namespace.getNamespace(sym.getName());
+			if (!Namespace.getNamespace(currNS.getName()).equals(symNS)) {
+				final CallStack callStack = ThreadLocalMap.getCallStack();
+				final CallFrame callFrame = callStack.peek();
+				
+				try (WithCallStack cs = new WithCallStack(callFrame)) {
+					throw new VncException(String.format(
+							"Illegal access of private symbol %s. Called by %s.\n%s", 
+							sym.getName(),
+							callFrame.getFnName(),
+							callStack.toString()));
+				}				
+			}
+		}	
+	}
 	
 	
 	private static final long serialVersionUID = 9002640180394221858L;

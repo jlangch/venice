@@ -40,7 +40,7 @@ public class ReservedSymbols {
 	}
 
 
-	public static void validate(final VncSymbol symbol) {
+	public static void validateNotReservedSymbol(final VncSymbol symbol) {
 		if (symbol != null && isReserved(symbol)) {
 			throw new SecurityException(
 					String.format(
