@@ -150,4 +150,18 @@ local filesystem as 'login-webapp.venice' and run the WebApp from the REPL:
 venice> (load-file "login-webapp.venice")
 ```
 
+Tomcat logs the startup like:
+
+```
+Aug 08, 2019 9:19:52 PM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-nio-8080"]
+Aug 08, 2019 9:19:52 PM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service [Tomcat]
+Aug 08, 2019 9:19:52 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/9.0.19]
+Aug 08, 2019 9:19:52 PM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-nio-8080"]
+=> org.apache.catalina.startup.Tomcat@22df874e
+``
+
 Stop the WebApp with `ctrl-c`.
