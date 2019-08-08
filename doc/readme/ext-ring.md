@@ -6,134 +6,138 @@ Venice Ring is a port of Clojure's Ring web applications library.
 ## Hello World WEB App
 
 ```clojure
-(load-module :tomcat)
-(load-module :ring)
+(do
+  (load-module :tomcat)
+  (load-module :ring)
 
-(defn hello-world-handler [request]
-  { :status 200
-    :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body (str/escape-html "Hello World") })
+  (defn hello-world-handler [request]
+    { :status 200
+      :headers { "Content-Type" "text/plain; charset=utf-8" }
+      :body (str/escape-html "Hello World") })
 
-;; A route is defined by a HTTP verb, a URI filter and a handle function.
-;; If multiple routes match the route with the longest URI filter will be 
-;; chosen.
-(def routes [
-  [:get "/**"  hello-world-handler]
-])
+  ;; A route is defined by a HTTP verb, a URI filter and a handle function.
+  ;; If multiple routes match the route with the longest URI filter will be 
+  ;; chosen.
+  (def routes [
+    [:get "/**"  hello-world-handler]
+  ])
 
-(tc/run-tomcat
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           (ring/mw-print-uri)         ; ^  |
-                           (ring/mw-debug :on)))       ; +--+
-  {:await? false})
+  (tc/run-tomcat
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-print-uri)         ; ^  |
+                             (ring/mw-debug :on)))       ; +--+
+    {:await? false}))
 ```
 
 
 ## Hello World WEB App with sessions activated
 
 ```clojure
-(load-module :tomcat)
-(load-module :ring)
+(do
+  (load-module :tomcat)
+  (load-module :ring)
 
-(defn hello-world-handler [request]
-  { :status 200
-    :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body (str/escape-html "Hello World") })
+  (defn hello-world-handler [request]
+    { :status 200
+      :headers { "Content-Type" "text/plain; charset=utf-8" }
+      :body (str/escape-html "Hello World") })
 
-;; A route is defined by a HTTP verb, a URI filter and a handle function.
-;; If multiple routes match the route with the longest URI filter will be 
-;; chosen.
-(def routes [
-  [:get "/**"  hello-world-handler]
-])
+  ;; A route is defined by a HTTP verb, a URI filter and a handle function.
+  ;; If multiple routes match the route with the longest URI filter will be 
+  ;; chosen.
+  (def routes [
+    [:get "/**"  hello-world-handler]
+  ])
 
-;; The 'mw-request-counter' middlware uses the session to store the 
-;; session's request count and prints it if debug is :on
-(tc/run-tomcat
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           (ring/mw-request-counter)   ; ^  |
-                           (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)         ; |  |
-                           (ring/mw-debug :on)))       ; +--+
-  {:await? false})
+  ;; The 'mw-request-counter' middlware uses the session to store the 
+  ;; session's request count and prints it if debug is :on
+  (tc/run-tomcat
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-request-counter)   ; ^  |
+                             (ring/mw-add-session 3600)  ; |  |
+                             (ring/mw-print-uri)         ; |  |
+                             (ring/mw-debug :on)))       ; +--+
+    {:await? false}))
 ```
 
 ## Hello World WEB App with request/response dump
 
 ```clojure
-(load-module :tomcat)
-(load-module :ring)
+(do
+  (load-module :tomcat)
+  (load-module :ring)
 
-(defn hello-world-handler [request]
-  { :status 200
-    :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body (str/escape-html "Hello World") })
+  (defn hello-world-handler [request]
+    { :status 200
+      :headers { "Content-Type" "text/plain; charset=utf-8" }
+      :body (str/escape-html "Hello World") })
 
-;; A route is defined by a HTTP verb, a URI filter and a handle function.
-;; If multiple routes match the route with the longest URI filter will be 
-;; chosen.
-(def routes [
-  [:get "/**"  hello-world-handler]
-])
+  ;; A route is defined by a HTTP verb, a URI filter and a handle function.
+  ;; If multiple routes match the route with the longest URI filter will be 
+  ;; chosen.
+  (def routes [
+    [:get "/**"  hello-world-handler]
+  ])
 
-(tc/run-tomcat
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           (ring/mw-dump-response)     ; ^  |
-                           (ring/mw-dump-request)      ; |  |
-                           (ring/mw-print-uri)         ; |  |
-                           (ring/mw-debug :on)))       ; +--+
-  {:await? false})
+  (tc/run-tomcat
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-dump-response)     ; ^  |
+                             (ring/mw-dump-request)      ; |  |
+                             (ring/mw-print-uri)         ; |  |
+                             (ring/mw-debug :on)))       ; +--+
+    {:await? false}))
 ```
 
 
 ## Sample WEB App with multiple routes
 
 ```clojure
-(load-module :tomcat)
-(load-module :ring)
+(do
+  (load-module :tomcat)
+  (load-module :ring)
 
-(defn hello-world-handler [request]
-  { :status 200
-    :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body (str/escape-html "Hello World") })
+  (defn hello-world-handler [request]
+    { :status 200
+      :headers { "Content-Type" "text/plain; charset=utf-8" }
+      :body (str/escape-html "Hello World") })
 
-(defn test-handler [request]
-  { :status 200
-    :headers { "Content-Type" "text/plain; charset=utf-8" }
-    :body (str/escape-html "Test") })
+  (defn test-handler [request]
+    { :status 200
+      :headers { "Content-Type" "text/plain; charset=utf-8" }
+      :body (str/escape-html "Test") })
 
-(defn image-handler [request]
-  (let [name (last (str/split (:uri request) "/"))
-        file (io/file (io/user-dir) name)]
-    (if (io/exists-file? file)
-      { :status 200
-        :headers { "Content-Type" (io/mime-type name) }
-        :body file }
-      (ring/not-found-response "File not found"))))
+  (defn image-handler [request]
+    (let [name (last (str/split (:uri request) "/"))
+          file (io/file (io/user-dir) name)]
+      (if (io/exists-file? file)
+        { :status 200
+          :headers { "Content-Type" (io/mime-type name) }
+          :body file }
+        (ring/not-found-response "File not found"))))
 
-;; A route is defined by a HTTP verb, a URI filter and a handle function.
-;; If multiple routes match the route with the longest URI filter will be 
-;; chosen.
-(def routes [
-  [:get "/**"                   hello-world-handler]
-  [:get "/test"                 test-handler]
-  [:get "/test/**"              test-handler]
-  [:get "/static/images/*.png"  image-handler]
-])
+  ;; A route is defined by a HTTP verb, a URI filter and a handle function.
+  ;; If multiple routes match the route with the longest URI filter will be 
+  ;; chosen.
+  (def routes [
+    [:get "/**"                   hello-world-handler]
+    [:get "/test"                 test-handler]
+    [:get "/test/**"              test-handler]
+    [:get "/static/images/*.png"  image-handler]
+  ])
 
-(tc/run-tomcat
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           (ring/mw-dump-response)     ; ^  |
-                           (ring/mw-dump-request)      ; |  |
-                           (ring/mw-request-counter)   ; |  |
-                           (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)         ; |  |
-                           (ring/mw-debug :on)))       ; +--+
-  {:await? false})
+  (tc/run-tomcat
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-dump-response)     ; ^  |
+                             (ring/mw-dump-request)      ; |  |
+                             (ring/mw-request-counter)   ; |  |
+                             (ring/mw-add-session 3600)  ; |  |
+                             (ring/mw-print-uri)         ; |  |
+                             (ring/mw-debug :on)))       ; +--+
+    {:await? false}))
 ```
 
 

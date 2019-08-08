@@ -163,12 +163,14 @@ Example:
 
 ```clojure
 (do
+  (ns test)
+  
   (load-module :kira)
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
   (def template
-       "<birthdate><% (kira/escape-xml (:birth-date data) format-ts) %></birthdate>")
+       "<birthdate><% (kira/escape-xml (:birth-date test/data) test/format-ts) %></birthdate>")
 
   (def data { :birth-date (time/local-date 2000 8 1) })
   
@@ -195,11 +197,13 @@ Example:
 
 ```clojure
 (do
+  (ns test)
+  
   (load-module :kira)
   
   (defn format-ts [t] (print (time/format t "yyyy-MM-dd HH:mm:ss")))
   
-  (def template "timestamp: <% (format-ts timestamp) %>")
+  (def template "timestamp: <% (test/format-ts timestamp) %>")
 
   (def data { :timestamp (time/local-date-time) })
   
@@ -447,6 +451,7 @@ Venice template:
 
 ```clojure
 (do
+  (ns test) 
   (load-module :kira)
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
@@ -457,7 +462,7 @@ Venice template:
          <user>
            <firstname><% (kira/escape-xml (:first user)) %></firstname>
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
-           <birthdate><% (kira/escape-xml (:birth-date user) format-ts) %></birthdate>
+           <birthdate><% (kira/escape-xml (:birth-date user) test/format-ts) %></birthdate>
            <address>
              <street><% (kira/escape-xml (-> user :location :street)) %></street>
              <zip><% (kira/escape-xml (-> user :location :zip)) %></zip>

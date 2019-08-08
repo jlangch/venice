@@ -8,32 +8,44 @@
 Just using a salt:
 
 ```clojure
-(str/bytebuf-to-hex
-  (crypt/pbkdf2-hash "hello world" "-salt-")
-  :upper)
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/pbkdf2-hash "hello world" "-salt-")
+    :upper))
 ```
 
 Specifying a salt, the number of iterations, and key length:
 
 ```clojure
-(str/bytebuf-to-hex
-  (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
-  :upper)
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+    :upper))
 ```
 
 
 ### SHA-512
 
 ```clojure
-(str/bytebuf-to-hex
-  (crypt/sha512-hash "hello world" "-salt-")
-  :upper)
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/sha512-hash "hello world" "-salt-")
+    :upper))
 ```
 
 ```clojure
-(str/bytebuf-to-hex
-  (crypt/sha512-hash (bytebuf [54 78 99]) "-salt-")
-  :upper)
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/sha512-hash (bytebuf [54 78 99]) "-salt-")
+    :upper))
 ```
 
 
@@ -42,15 +54,21 @@ Specifying a salt, the number of iterations, and key length:
 Note: MD5 is not safe anymore use PBKDF2 instead to hash passwords
 
 ```clojure
-(str/bytebuf-to-hex
-  (crypt/md5-hash "hello world")
-  :upper)
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/md5-hash "hello world")
+    :upper))
 ```
 
 ```clojure
-(str/bytebuf-to-hex
-  (crypt/md5-hash (bytebuf [54 78 99]))
-  :upper)
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/md5-hash (bytebuf [54 78 99]))
+    :upper))
 ```
 
 
