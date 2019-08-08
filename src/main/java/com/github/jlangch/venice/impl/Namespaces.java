@@ -25,7 +25,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
-public class Namespace {
+public class Namespaces {
 
 	public static String getNamespace(final String name) {
 		final int pos = name.indexOf("/");

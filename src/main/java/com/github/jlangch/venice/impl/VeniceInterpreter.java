@@ -160,7 +160,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
 
 		// init current namespaces
-		Namespace.setCurrentNS(Namespace.NS_USER);
+		Namespaces.setCurrentNS(Namespaces.NS_USER);
 
 		// load modules
 		final List<String> modules = new ArrayList<>();
@@ -362,17 +362,17 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 	
 				case "ns": { // (ns alpha)
-					Namespace.setCurrentNS(Coerce.toVncSymbol(ast.second()));
+					Namespaces.setCurrentNS(Coerce.toVncSymbol(ast.second()));
 					return Nil;
 				}
 					
 				case "eval": {
-					final VncSymbol ns = Namespace.getCurrentNS();
+					final VncSymbol ns = Namespaces.getCurrentNS();
 					try {
 						return evaluate(Coerce.toVncSequence(eval_ast(ast.rest(), env)).last(), env);
 					}
 					finally {
-						Namespace.setCurrentNS(ns);
+						Namespaces.setCurrentNS(ns);
 					}
 				}
 					
@@ -700,12 +700,12 @@ public class VeniceInterpreter implements Serializable  {
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 					
 		String name = macroName.getName();
-		String ns = Namespace.getNamespace(macroName.getName());
+		String ns = Namespaces.getNamespace(macroName.getName());
 
-		if (Namespace.on()) {
+		if (Namespaces.on()) {
 			if (ns == null) {
-				ns = Namespace.getCurrentNS().getName();
-				if (!Namespace.NS_CORE.getName().equals(ns)) {
+				ns = Namespaces.getCurrentNS().getName();
+				if (!Namespaces.NS_CORE.getName().equals(ns)) {
 					name = ns + "/" + name;
 				}
 			}
@@ -1119,15 +1119,15 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVector preConditions, 
 			final Env env
 	) {
-		final VncSymbol ns = Namespace.getCurrentNS();
+		final VncSymbol ns = Namespaces.getCurrentNS();
 		
 		return new VncFunction(name, params) {
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
-				final VncSymbol curr_ns = Namespace.getCurrentNS();
+				final VncSymbol curr_ns = Namespaces.getCurrentNS();
 				try {
-					Namespace.setCurrentNS(ns);
+					Namespaces.setCurrentNS(ns);
 
 					// destructuring fn params -> args
 					localEnv.addAll(Destructuring.destructure(params, args));
@@ -1137,7 +1137,7 @@ public class VeniceInterpreter implements Serializable  {
 					return evaluateBody(body, localEnv);
 				}
 				finally {
-					Namespace.setCurrentNS(curr_ns);
+					Namespaces.setCurrentNS(curr_ns);
 				}
 			}
 			
@@ -1232,9 +1232,9 @@ public class VeniceInterpreter implements Serializable  {
 			return null;
 		}
 		
-		if (Namespace.on() && !Namespace.isQualified(sym)) {
-			final VncSymbol ns = Namespace.getCurrentNS();
-			if (!Namespace.NS_CORE.equals(ns)) {
+		if (Namespaces.on() && !Namespaces.isQualified(sym)) {
+			final VncSymbol ns = Namespaces.getCurrentNS();
+			if (!Namespaces.NS_CORE.equals(ns)) {
 				return new VncSymbol(
 								ns.getName() + "/" + sym.getName(), 
 								sym.getMeta());

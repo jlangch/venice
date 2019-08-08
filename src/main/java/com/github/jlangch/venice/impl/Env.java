@@ -198,7 +198,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setLocal(final VncSymbol sym, final VncVal val) {
-		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
+		if (sym.equals(Namespaces.NS_SYMBOL_CURRENT)) {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
@@ -226,7 +226,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobal(final Var val) {
-		if (val.getName().equals(Namespace.NS_SYMBOL_CURRENT)) {
+		if (val.getName().equals(Namespaces.NS_SYMBOL_CURRENT)) {
 			throw new VncException(String.format("Internal error setting var %s", val.getName().getName()));
 		}
 
@@ -296,7 +296,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobalDynamic(final VncSymbol sym, final VncVal val) {
-		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
+		if (sym.equals(Namespaces.NS_SYMBOL_CURRENT)) {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
@@ -423,8 +423,8 @@ public class Env implements Serializable {
 	}
 	
 	private Var getGlobalVar(final VncSymbol sym) {
-		if (sym.equals(Namespace.NS_SYMBOL_CURRENT)) {
-			return new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS());
+		if (sym.equals(Namespaces.NS_SYMBOL_CURRENT)) {
+			return new Var(Namespaces.NS_SYMBOL_CURRENT, Namespaces.getCurrentNS());
 		}
 
 		if (ReservedSymbols.isSpecialForm(sym)) {
@@ -437,9 +437,9 @@ public class Env implements Serializable {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
 				
-		if (Namespace.on() && !Namespace.isQualified(sym)) {
-			final VncSymbol ns = Namespace.getCurrentNS();
-			if (!Namespace.NS_CORE.equals(ns)) {
+		if (Namespaces.on() && !Namespaces.isQualified(sym)) {
+			final VncSymbol ns = Namespaces.getCurrentNS();
+			if (!Namespaces.NS_CORE.equals(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
 				final Var v = getGlobalVarRaw(qualifiedKey);
 				if (v != null) return v;
@@ -480,7 +480,7 @@ public class Env implements Serializable {
 			all.putAll(coreGlobalSymbols);
 		}
 		all.putAll(globalSymbols);
-		all.put(Namespace.NS_SYMBOL_CURRENT, new Var(Namespace.NS_SYMBOL_CURRENT, Namespace.getCurrentNS()));
+		all.put(Namespaces.NS_SYMBOL_CURRENT, new Var(Namespaces.NS_SYMBOL_CURRENT, Namespaces.getCurrentNS()));
 		return all;
 	}
 
@@ -507,9 +507,9 @@ public class Env implements Serializable {
 
 	private void validatePrivateSymbolAccess(final VncSymbol sym) {
 		if (sym.isPrivate()) {
-			final VncSymbol currNS = Namespace.getCurrentNS();
-			final String symNS = Namespace.getNamespace(sym.getName());
-			if (!Namespace.getNamespace(currNS.getName()).equals(symNS)) {
+			final VncSymbol currNS = Namespaces.getCurrentNS();
+			final String symNS = Namespaces.getNamespace(sym.getName());
+			if (!Namespaces.getNamespace(currNS.getName()).equals(symNS)) {
 				final CallStack callStack = ThreadLocalMap.getCallStack();
 				final CallFrame callFrame = callStack.peek();
 				
