@@ -53,20 +53,21 @@ public class NamespaceTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                 \n" +
-				"   (ns A)                           \n" +
-				"                                    \n" +
-				"   (def s1 1)                       \n" +
-				"   (def s2 s1)                      \n" +
-				"   (defn f1 [x] (+ x s1 s2))        \n" +
-				"   (defn f2 [x] (+ x (f1 x)))       \n" +
-				"                                    \n" +
-				"   (ns B)                           \n" +
-				"                                    \n" +
-				"   (str [(A/f1 100) (A/f2 100)])    \n" +
+				"(do                                                   \n" +
+				"   (ns A)                                             \n" +
+				"                                                      \n" +
+				"   (def s1 1)                                         \n" +
+				"   (def s2 s1)                                        \n" +
+				"   (defn f1 [x] (+ x s1 s2))                          \n" +
+				"   (defn f2 [x] (+ x (f1 x)))                         \n" +
+				"   (defn f3 [x] (+ x ((resolve (symbol \"f1\")) x)))  \n" +
+				"                                                      \n" +
+				"   (ns B)                                             \n" +
+				"                                                      \n" +
+				"   (str [(A/f1 100) (A/f2 100) (A/f3 100)])           \n" +
 				")";
 
-		assertEquals("[102 202]", venice.eval(script));
+		assertEquals("[102 202 202]", venice.eval(script));
 	}
 
 	@Test

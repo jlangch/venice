@@ -1269,6 +1269,13 @@ public class DocGenerator {
 		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
 		crypt.addItem(getDocItem("crypt/encrypt"));
 		crypt.addItem(getDocItem("crypt/decrypt"));
+		
+		final DocSection other = new DocSection("Other");
+		all.addSection(other);
+		other.addItem(getDocItem("*version*"));
+		other.addItem(getDocItem("*newline*"));
+		other.addItem(getDocItem("*loaded-modules*"));
+		other.addItem(getDocItem("*ns*"));
 
 		return section;
 	}

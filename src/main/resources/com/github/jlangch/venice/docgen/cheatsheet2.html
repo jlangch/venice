@@ -299,13 +299,15 @@
                 <div class="detail" id="${ (kira/emit (:id it)) }$">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>${ (kira/escape-xml (:name it)) }$</h1>
-                     <div class="arglists">
+                    ${ (when (not-empty? (:signatures it)) (kira/emit }$
+                    <div class="arglists">
                         <div class="arglist">
                            ${ (kira/foreach (:signatures it) (fn [sig] (kira/emit }$
                            <code>${ (kira/escape-xml sig) }$</code>
                            ${ ))) }$
                         </div>
                     </div>
+                    ${ )) }$
                     <div class="descr">
                         <code>${ (kira/escape-xml (:description it)) }$</code>
                     </div>

@@ -55,7 +55,6 @@ public class SpecialForms {
 				"()",
 				VncFunction
 				.meta()
-				.arglists("")		
 				.doc("Creates a list.")
 				.examples("'(10 20 30)")
 				.build()
@@ -68,7 +67,6 @@ public class SpecialForms {
 				"[]",
 				VncFunction
 				.meta()
-				.arglists("")		
 				.doc("Creates a vector.")
 				.examples("[10 20 30]")
 				.build()
@@ -81,7 +79,6 @@ public class SpecialForms {
 				"#{}",
 				VncFunction
 				.meta()
-				.arglists("")		
 				.doc("Creates a set.")
 				.examples("#{10 20 30}")
 				.build()
@@ -94,7 +91,6 @@ public class SpecialForms {
 				"{}",
 				VncFunction
 				.meta()
-				.arglists("")		
 				.doc("Creates a hash map.")
 				.examples("{:a 10 :b 20}")
 				.build()
@@ -107,7 +103,7 @@ public class SpecialForms {
 				"resolve",
 				VncFunction
 				.meta()
-				.arglists("")		
+				.arglists("(resolve sym)")		
 				.doc("Resolves a symbol.")
 				.examples("(resolve '+)", "(resolve (symbol \"+\"))")
 				.build()
@@ -120,7 +116,7 @@ public class SpecialForms {
 				"var-get",
 				VncFunction
 				.meta()
-				.arglists("")		
+				.arglists("(var-get symbol)")		
 				.doc("Returns the var associated with a symbol")
 				.examples(
 					"(var-get +)")
@@ -625,6 +621,54 @@ public class SpecialForms {
 	) {
 	    private static final long serialVersionUID = -1;
 	};
+
+	public static VncFunction var_version = 
+		new SpecialFormsDocFunction(
+				"*version*",
+				VncFunction
+				.meta()
+				.doc("The Venice version")
+				.examples("*version*")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
+	public static VncFunction var_newline = 
+		new SpecialFormsDocFunction(
+				"*newline*",
+				VncFunction
+				.meta()
+				.doc("The system newline")
+				.examples("*newline*")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
+	public static VncFunction var_loaded_modules = 
+		new SpecialFormsDocFunction(
+				"*loaded-modules*",
+				VncFunction
+				.meta()
+				.doc("The loaded modules")
+				.examples("*loaded-modules*")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
+
+	public static VncFunction var_ns = 
+		new SpecialFormsDocFunction(
+				"*ns*",
+				VncFunction
+				.meta()
+				.doc("The current namespace")
+				.examples("*ns*")
+				.build()
+	) {
+	    private static final long serialVersionUID = -1;
+	};
 	
 	
 	private static class SpecialFormsDocFunction extends VncFunction {
@@ -672,5 +716,9 @@ public class SpecialForms {
 					.put("dobench",		dobench)
 					.put("dorun",		dorun)
 					.put("prof",		prof)
+					.put("*version*",	var_version)
+					.put("*newline*",	var_newline)
+					.put("*loaded-modules*",var_loaded_modules)
+					.put("*ns*",		var_ns)
 					.toMap();
 }
