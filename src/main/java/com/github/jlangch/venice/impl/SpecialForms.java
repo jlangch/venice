@@ -103,9 +103,12 @@ public class SpecialForms {
 				"resolve",
 				VncFunction
 				.meta()
-				.arglists("(resolve sym)")		
+				.arglists("(resolve symbol)")		
 				.doc("Resolves a symbol.")
-				.examples("(resolve '+)", "(resolve (symbol \"+\"))")
+				.examples(
+					"(resolve '+)", 
+					"(resolve 'y)", 
+					"(resolve (symbol \"+\"))")
 				.build()
 	) {
 	    private static final long serialVersionUID = -1;
@@ -117,7 +120,7 @@ public class SpecialForms {
 				VncFunction
 				.meta()
 				.arglists("(var-get symbol)")		
-				.doc("Returns the var associated with a symbol")
+				.doc("Returns the var associated with the symbol")
 				.examples(
 					"(var-get +)")
 				.build()
