@@ -101,13 +101,14 @@
 ```
 
 ```clojure
-(def xform
-  (comp 
-    (partial take 4)
-    (partial map #(+ 2 %))
-    (partial filter odd?)))
+(do
+  (def xform
+    (comp 
+      (partial take 4)
+      (partial map #(+ 2 %))
+      (partial filter odd?)))
     
-(xform (range 0 10))  ;; => (3 5 7 9)
+  (xform (range 0 10)))  ;; => (3 5 7 9)
 ```
 
 
