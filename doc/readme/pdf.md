@@ -42,6 +42,8 @@ References:
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
@@ -90,7 +92,7 @@ References:
          <div class="subtitle">Example</div>
          
          <div class="head">${ (kira/escape-xml title) }$</div>
-         <div class="date">${ (kira/escape-xml timestamp format-ts) }$</div>
+         <div class="date">${ (kira/escape-xml timestamp test/format-ts) }$</div>
        </body>
      </html>
      """))
@@ -116,6 +118,8 @@ References:
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
 
   (defn format-birth-date [s] (if (string? s) s (time/format s "yyyy-MM-dd")))
@@ -220,7 +224,7 @@ References:
                <td>${ (kira/escape-xml (nth p 2)) }$</td>
                <td>${ (kira/escape-xml (nth p 3)) }$</td>
                <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) format-birth-date) }$</td>
+               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
@@ -234,7 +238,7 @@ References:
                <td>${ (kira/escape-xml (nth p 2)) }$</td>
                <td>${ (kira/escape-xml (nth p 3)) }$</td>
                <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) format-birth-date) }$</td>
+               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
@@ -304,6 +308,8 @@ These images are then referred as:
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   (load-module :xchart)
   
@@ -464,6 +470,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   
   (def text (str/lorem-ipsum :paragraphs 1))
@@ -587,6 +595,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   
   ; define the template
@@ -743,6 +753,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   
   ; define the template
@@ -865,6 +877,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   
   ; define the template
@@ -958,6 +972,8 @@ Venice supports simplified text to PDF
 
 ```clojure
 (do 
+  (ns test)
+  
   (load-module :kira)
   
   ; define the template
