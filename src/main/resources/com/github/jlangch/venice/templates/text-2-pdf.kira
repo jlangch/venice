@@ -27,14 +27,14 @@
 
   <body>
     <div>
-      ${ (kira/docoll (first pages) (fn [l] (kira/emit }$
+      ${ (kira/foreach (first pages) (fn [l] (kira/emit }$
       <div class="line">${ (kira/escape-xml l) }$</div>
       ${ ))) }$
     </div>
  
-    ${ (kira/docoll (rest pages) (fn [lines] (kira/emit }$
+    ${ (kira/foreach (rest pages) (fn [lines] (kira/emit }$
     <div class="page">
-      ${ (kira/docoll lines (fn [l] (kira/emit }$
+      ${ (kira/foreach lines (fn [l] (kira/emit }$
       <div class="line">${ (kira/escape-xml l) }$</div>
       ${ ))) }$
     </div>
