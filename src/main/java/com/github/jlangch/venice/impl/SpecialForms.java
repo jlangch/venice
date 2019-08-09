@@ -605,7 +605,16 @@ public class SpecialForms {
 				VncFunction
 				.meta()
 				.arglists("(import class)")		
-				.doc("Imports a Java class")
+				.doc(
+					"Imports a Java class. \n\n" +
+					"Default imports: \n" +
+					"  java.lang.Throwable \n" +
+					"  java.lang.Exception \n" +
+					"  java.lang.RuntimeException \n" +
+					"  java.lang.NullPointerException \n" +
+					"  java.lang.IllegalArgumentException \n" +
+					"  com.github.jlangch.venice.VncException \n" +
+					"  com.github.jlangch.venice.ValueException")
 				.examples("(do\n   (import :java.lang.Long)\n   (. :Long :new 10))")
 				.build()
 	) {

@@ -45,11 +45,11 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
-import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
@@ -115,7 +115,7 @@ public class CoreFunctions {
 						"(do                                                     \n" +
 						"   (try                                                 \n" +
 						"      (throw [100 {:a 3}])                              \n" +
-						"      (catch :ValueException ex (:value ex))            \n" +
+						"      (catch :ValueException ex (:value ex))             \n" +
 						"      (finally (println \"#finally\"))))                  ",
 
 						"(do                                                     \n" +

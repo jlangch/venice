@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.SandboxedCallable;
-import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;

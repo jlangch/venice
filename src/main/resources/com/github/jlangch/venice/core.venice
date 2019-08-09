@@ -24,7 +24,6 @@
 
 (ns core)
 
-(import :java.lang.RuntimeException)
 (import :com.github.jlangch.venice.VncException)
 (import :com.github.jlangch.venice.AssertionException)
 (import :com.github.jlangch.venice.ShellException)

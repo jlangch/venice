@@ -29,12 +29,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.ValueException;
 
 
 public class JavaImports implements Serializable {
 
 	public JavaImports() {
+		// from java.lang
+		add(Throwable.class.getName());
+		add(Exception.class.getName());
+		add(RuntimeException.class.getName());
+		add(NullPointerException.class.getName());
+		add(IllegalArgumentException.class.getName());
+		
+		// from com.github.jlangch.venice
+		add(VncException.class.getName());
 		add(ValueException.class.getName());
 	}
 	

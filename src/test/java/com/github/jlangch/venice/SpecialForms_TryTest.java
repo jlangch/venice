@@ -322,7 +322,7 @@ public class SpecialForms_TryTest {
 		final String lisp = 
 				"(try                                               \n" +
 				"  (throw 100)                                      \n" +
-				"  (catch :java.lang.IllegalArgumentException ex    \n" +
+				"  (catch :IllegalArgumentException ex              \n" +
 				"         -1)                                       \n" +
 				"  (catch :ValueException ex                        \n" +
 				"         -2))                                        ";
@@ -337,9 +337,9 @@ public class SpecialForms_TryTest {
 		final String lisp = 
 				"(try                                               \n" +
 				"  (throw 100)                                      \n" +
-				"  (catch :java.lang.IllegalArgumentException ex    \n" +
+				"  (catch :IllegalArgumentException ex              \n" +
 				"         -1)                                       \n" +
-				"  (catch :java.lang.RuntimeException ex            \n" +
+				"  (catch :RuntimeException ex                      \n" +
 				"         -2)                                       \n" +
 				"  (catch :ValueException ex                        \n" +
 				"         -3))                                        ";
@@ -435,13 +435,13 @@ public class SpecialForms_TryTest {
 		final Venice venice = new Venice();
 
 		final String lisp = 
-				"(do                                                        \n" +
-				"  (import :java.lang.RuntimeException)                     \n" +
-				"  (try                                                     \n" +
-				"     (throw [1 2 3])                                       \n" +
-				"     (catch :ValueException ex (pr-str (. ex :getValue)))  \n" +
-				"     (catch :RuntimeException ex \"???\")))                \n" +
-				")                                                          \n";
+				"(do                                                           \n" +
+				"  (import :java.lang.RuntimeException)                        \n" +
+				"  (try                                                        \n" +
+				"     (throw [1 2 3])                                          \n" +
+				"     (catch :ValueException ex (pr-str (. ex :getValue)))     \n" +
+				"     (catch :RuntimeException ex \"???\")))                   \n" +
+				")                                                             \n";
 
 		assertEquals("[1 2 3]", venice.eval(lisp));
 	}

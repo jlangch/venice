@@ -34,9 +34,6 @@
         :com.github.jlangch.venice.servlet.FilterOutputStreamCloseCB
         :java.io.BufferedWriter
         :java.io.OutputStreamWriter
-        :java.lang.Exception
-        :java.lang.RuntimeException
-        :java.lang.NullPointerException
         :java.util.Collections
         :javax.servlet.ServletConfig
         :javax.servlet.ServletException

@@ -67,8 +67,8 @@
             (do (kira/emit-string before)
                 (kira/emit-expr expr)
                 (recur after))
-            (do (kira/emit-string after)
-                (print ")"))))))))
+            (kira/emit-string after))))
+      (print ")"))))
 
 (defn kira/compile-fn [args src delimiters]
   (eval
