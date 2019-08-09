@@ -75,8 +75,8 @@ public class JavaInteropUtil {
 			
 			if ("new".equals(methodName)) {			
 				// call constructor (. :java.util.String :new \"abc\")
-				final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
-				final Class<?> targetClass = ReflectionAccessor.classForName(className);
+				final Class<?> targetClass = toClass(arg0, javaImports);
+				final String className = targetClass.getName();
 				
 				// Delay & Agents exceptionally get the original Venice data types passed!
 				final Object[] methodArgs = isDelayOrAgentClass(className) 
@@ -91,13 +91,15 @@ public class JavaInteropUtil {
 			else if ("class".equals(methodName)) {			
 				// get class (. :java.util.String :class)
 				if (Types.isVncString(arg0)) {
-					final String className = javaImports.resolveClassName(((VncString)arg0).getValue());
 					try {
-						return new VncJavaObject(ReflectionAccessor.classForName(className));
+						return new VncJavaObject(toClass(arg0, javaImports));
 					}
 					catch(Exception ex) {
 						return Constants.Nil;
 					}
+				}
+				else if (Types.isVncJavaObject(arg0, Class.class)) {
+					return  new VncJavaObject((Class<?>)((VncJavaObject)arg0).getDelegate());
 				}
 				else if (Types.isVncJavaObject(arg0)) {
 					return new VncJavaObject(((VncJavaObject)arg0).getDelegate().getClass());
@@ -107,10 +109,10 @@ public class JavaInteropUtil {
 				}
 			}
 			else {
-				if (Types.isVncKeyword(arg0)) {
+				if (Types.isVncKeyword(arg0) || (Types.isVncJavaObject(arg0, Class.class))) {
 					// static method / field:   (. :org.foo.Foo :getLastName)
-					final String className = javaImports.resolveClassName(((VncKeyword)arg0).getValue());
-					final Class<?> targetClass = ReflectionAccessor.classForName(className);
+					final Class<?> targetClass = toClass(arg0, javaImports);
+					final String className = targetClass.getName();
 
 					
 					// Delay & Agents exceptionally get the original Venice data types passed!
@@ -214,12 +216,16 @@ public class JavaInteropUtil {
 	}
 	
 	public static Class<?> toClass(final VncVal vClass, final JavaImports javaImports) {
-		final VncVal clazzVal = vClass;
-		final String className = Types.isVncKeyword(clazzVal)
-									? Coerce.toVncKeyword(clazzVal).getValue()
-									: Coerce.toVncString(clazzVal).getValue();
-
-		return ReflectionUtil.classForName(javaImports.resolveClassName(className));
+		if (Types.isVncJavaObject(vClass, Class.class)) {
+			return (Class<?>)((VncJavaObject)vClass).getDelegate();
+		}
+		else {
+			final String className = Types.isVncKeyword(vClass)
+										? Coerce.toVncKeyword(vClass).getValue()
+										: Coerce.toVncString(vClass).getValue();
+	
+			return ReflectionUtil.classForName(javaImports.resolveClassName(className));
+		}
 	}
 	
 	public static VncKeyword toVncKeyword(final Class<?> clazz) {

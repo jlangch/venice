@@ -1219,6 +1219,7 @@ public class DocGenerator {
 		general.addItem(getDocItem("imports"));
 		general.addItem(getDocItem("supers"));
 		general.addItem(getDocItem("bases"));
+		general.addItem(getDocItem("class"));
 		general.addItem(getDocItem("java-obj?"));
 		general.addItem(getDocItem("java-iterator-to-list"));
 		general.addItem(getDocItem("java-enumeration-to-list"));

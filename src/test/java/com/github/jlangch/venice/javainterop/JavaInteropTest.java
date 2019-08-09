@@ -98,7 +98,31 @@ public class JavaInteropTest {
 	}
 	
 	@Test
-	public void testImport_2() {
+	public void testImport_1a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"   (import :java.lang.Long)   \n" +
+				"   (. (class :Long) :new 10))   ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"   (import :java.lang.Long)             \n" +
+				"   (. (class :java.lang.Long) :new 10))   ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_3() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -678,6 +702,29 @@ public class JavaInteropTest {
 			    "    (def pred-fn (fn[x] (== x \"abc\")))                         " +
 			    "                                                                 " +
 			    "    (def pred-fn-proxy (proxify :Predicate { :test pred-fn }))   " +
+			    "                                                                 " +
+				"    (let [functions (. :Functions :new)]                         " +
+			    "         (. functions :evalPredicate                             " +
+			    "                      pred-fn-proxy                              " +
+			    "                      \"abc\" ))                                 " +
+				") ";
+
+		assertEquals(true, (Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_proxy_Predicate_class() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :com.github.jlangch.venice.support.Functions)        " +
+				"    (import :java.util.function.Predicate)                       " +
+			    "                                                                 " +
+			    "    (def pred-fn (fn[x] (== x \"abc\")))                         " +
+			    "                                                                 " +
+			    "    (def pred-fn-proxy                                           " +
+			    "         (proxify (class :Predicate) { :test pred-fn }))         " +
 			    "                                                                 " +
 				"    (let [functions (. :Functions :new)]                         " +
 			    "         (. functions :evalPredicate                             " +

@@ -38,9 +38,7 @@
 
 (def kira/delimiters ["<%" "%>"])
 
-(defn
-  kira/parser-regex
-  [delimiters]
+(defn kira/parser-regex [delimiters]
   (regex/pattern
         (str "(?s)\\A"
              "(?:" "(.*?)"

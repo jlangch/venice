@@ -55,6 +55,7 @@ public class JavaInteropFunctions {
 						.add(new ProxifyFn(javaImports))
 						.add(new SupersFn(javaImports))
 						.add(new BasesFn(javaImports))
+						.add(new JavaClassFn(javaImports))
 						.add(new JavaObjQFn(javaImports))
 						.add(new JavaEnumToListFn(javaImports))
 						.add(new JavaIterToListFn(javaImports))
@@ -161,6 +162,29 @@ public class JavaInteropFunctions {
 								CallFrame.fromVal("proxify(:" + clazz.getName() +")", args),
 								clazz, 
 								Coerce.toVncMap(args.second())));
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaClassFn extends AbstractJavaFn {
+		public JavaClassFn(final JavaImports javaImports) {
+			super(
+				"class", 
+				VncFunction
+					.meta()
+					.arglists("(class name)")
+					.doc("Returns the Java class for the given name.")
+					.examples("(class :java.util.ArrayList)")
+					.build(),
+				javaImports);
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity("class", args, 1);
+					
+			return new VncJavaObject(JavaInteropUtil.toClass(args.first(), javaImports));
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
