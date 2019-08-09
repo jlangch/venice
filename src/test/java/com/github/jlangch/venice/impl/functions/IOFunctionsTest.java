@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class IOFunctionsTest {
@@ -370,16 +369,6 @@ public class IOFunctionsTest {
 	public void test_shell_with_out_str() {
 		final Venice venice = new Venice();
 				 
-		final String script =
-				"(do                                                                   " +
-				"   (import :" + CapturingPrintStream.class.getPackage().getName() + ")" +
-				"   (binding [*out* (. :CapturingPrintStream :create)]                 " +
-				"        (print \"hello\")                                             " +
-				"        (. *out* :getOutput)))                                        ";
-				
-		assertEquals("hello", venice.eval(script));					
-		
-
 		assertEquals("s: hello", venice.eval("(str \"s: \" (with-out-str (print \"hello\")))"));
 	}
 

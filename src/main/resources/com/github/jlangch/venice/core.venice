@@ -24,12 +24,6 @@
 
 (ns core)
 
-(import :com.github.jlangch.venice.VncException)
-(import :com.github.jlangch.venice.AssertionException)
-(import :com.github.jlangch.venice.ShellException)
-(import :com.github.jlangch.venice.impl.types.concurrent.Delay)
-(import :com.github.jlangch.venice.util.CapturingPrintStream)
-
 (defmacro
    ^{ :arglists '("(comment & body)")
       :doc "Ignores body, yields nil"
@@ -49,11 +43,11 @@
 
    `(if ~message
        (when-not ~expr
-           (throw (. :AssertionException
+           (throw (. :com.github.jlangch.venice.AssertionException
                      :new
                      (str "Assert failed (" ~message "): " (pr-str '~expr)))))
        (when-not ~expr
-           (throw (. :AssertionException
+           (throw (. :com.github.jlangch.venice.AssertionException
                      :new
                      (str "Assert failed: " (pr-str '~expr)))))))
 
@@ -490,7 +484,7 @@
 
    `(do
       (when-not (io/exists-dir? (io/file ~dir))
-         (throw (. :ShellException
+         (throw (. :VncException
                    :new
                    (str/format "The dir '%s' does not exist" ~dir))))
       (binding [*sh-dir* ~dir] (do ~@forms))))
@@ -524,7 +518,7 @@
    with-out-str [& forms]
 
    `(do
-      (binding [*out* (. :CapturingPrintStream :create)]
+      (binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
          (do ~@forms)
          (. *out* :getOutput))))
 
@@ -536,7 +530,9 @@
 
    delay [& body]
 
-   `(. :Delay :new (fn [] (do ~@body))))
+   `(. :com.github.jlangch.venice.impl.types.concurrent.Delay
+       :new
+       (fn [] (do ~@body))))
 
 
 (defn
