@@ -21,8 +21,12 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.stream.Collectors;
+
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
@@ -71,6 +75,16 @@ public class Namespaces {
 	public static JavaImports getCurrentJavaImports() {
 		return ThreadLocalMap.getCurrNS().getJavaImports();
 	}
+	
+	public static VncList getCurrentJavaImportsAsVncList() {
+		return new VncList(
+				Namespaces.getCurrentJavaImports()
+						  .list()
+						  .stream().map(s -> new VncKeyword(s))
+						  .collect(Collectors.toList()));
+	}
+	
+
 	
 	
 	public static final String NS_CURRENT_NAME = "*ns*";

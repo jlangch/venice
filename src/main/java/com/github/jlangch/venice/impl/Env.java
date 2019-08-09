@@ -433,6 +433,8 @@ public class Env implements Serializable {
 			return null;
 		}
 		
+		// validatePrivateSymbolAccess(sym);
+		
 		if (name.startsWith("core/")) {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}

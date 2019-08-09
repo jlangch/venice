@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -226,9 +225,9 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "def": { // (def name value)
-					VncSymbol name = qualifySymbolWithCurrNS(
-											evaluateSymbolMetaData(ast.second(), env),
-											env);
+					final VncSymbol name = qualifySymbolWithCurrNS(
+												evaluateSymbolMetaData(ast.second(), env),
+												env);
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -237,9 +236,9 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defonce": { // (defonce name value)
-					VncSymbol name = qualifySymbolWithCurrNS(
-											evaluateSymbolMetaData(ast.second(), env),
-											env);
+					final VncSymbol name = qualifySymbolWithCurrNS(
+												evaluateSymbolMetaData(ast.second(), env),
+												env);
 					final VncVal val = ast.third();
 
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -248,9 +247,9 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "def-dynamic": { // (def-dynamic name value)
-					VncSymbol name = qualifySymbolWithCurrNS(
-											evaluateSymbolMetaData(ast.second(), env),
-											env);				
+					final VncSymbol name = qualifySymbolWithCurrNS(
+												evaluateSymbolMetaData(ast.second(), env),
+												env);				
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -264,7 +263,9 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				
 				case "set!": { // (set! name expr)
-					final VncSymbol name = evaluateSymbolMetaData(ast.second(), env);
+					final VncSymbol name = qualifySymbolWithCurrNS(
+												evaluateSymbolMetaData(ast.second(), env),
+												env);
 					final Var globVar = env.getGlobalVarOrNull(name);
 					if (globVar != null) {
 						final VncVal expr = ast.third();
@@ -349,10 +350,7 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					
 				case "imports":
-					return new VncList(Namespaces.getCurrentJavaImports()
-										.list()
-										.stream().map(s -> new VncKeyword(s))
-										.collect(Collectors.toList()));
+					return Namespaces.getCurrentJavaImportsAsVncList();
 				
 				case "resolve": { // (resolve sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
@@ -1246,7 +1244,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		if (!Namespaces.isQualified(sym)) {
 			final VncSymbol ns = Namespaces.getCurrentNS();
-			if (!Namespaces.NS_CORE.equals(ns)) {
+			if (!Namespaces.isCoreNS(ns)) {
 				return new VncSymbol(
 								ns.getName() + "/" + sym.getName(), 
 								sym.getMeta());

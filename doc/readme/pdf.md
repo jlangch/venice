@@ -5,7 +5,7 @@ libs are on the runtime classpath:
 
  - org.xhtmlrenderer:flying-saucer-core:9.1.18
  - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18
- - com.github.librepdf:openpdf:1.2.21
+ - com.github.librepdf:openpdf:1.3.1
  
 Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layout and formatting with output to PDF.
 
