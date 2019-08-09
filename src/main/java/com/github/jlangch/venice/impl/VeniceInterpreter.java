@@ -343,7 +343,8 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "import":
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
-						ast.rest().forEach(i -> Namespaces.getCurrentJavaImports().add(Coerce.toVncString(i).getValue()));
+						ast.rest().forEach(i -> Namespaces.getCurrentJavaImports()
+														  .add(Coerce.toVncString(i).getValue()));
 						return Nil;
 					}
 					
@@ -714,14 +715,13 @@ public class VeniceInterpreter implements Serializable  {
 		String name = macroName.getName();
 		String ns = Namespaces.getNamespace(macroName.getName());
 
-		if (Namespaces.on()) {
-			if (ns == null) {
-				ns = Namespaces.getCurrentNS().getName();
-				if (!Namespaces.NS_CORE.getName().equals(ns)) {
-					name = ns + "/" + name;
-				}
+		if (ns == null) {
+			ns = Namespaces.getCurrentNS().getName();
+			if (!Namespaces.isCoreNS(ns)) {
+				name = ns + "/" + name;
 			}
 		}
+
 		meta = MetaUtil.setNamespace(meta, ns);
 
 		final VncSymbol macroName_ = new VncSymbol(name, meta);
@@ -1244,7 +1244,7 @@ public class VeniceInterpreter implements Serializable  {
 			return null;
 		}
 		
-		if (Namespaces.on() && !Namespaces.isQualified(sym)) {
+		if (!Namespaces.isQualified(sym)) {
 			final VncSymbol ns = Namespaces.getCurrentNS();
 			if (!Namespaces.NS_CORE.equals(ns)) {
 				return new VncSymbol(

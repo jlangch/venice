@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.github.jlangch.venice.Venice;
 
@@ -32,7 +31,6 @@ import com.github.jlangch.venice.Venice;
 public class NamespaceTest {
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_ns_1() {
 		final Venice venice = new Venice();
 
@@ -40,7 +38,6 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_ns_2() {
 		final Venice venice = new Venice();
 
@@ -48,7 +45,6 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_def() {
 		final Venice venice = new Venice();
 
@@ -71,7 +67,6 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_defmulti() {
 		final Venice venice = new Venice();
 
@@ -97,7 +92,6 @@ public class NamespaceTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
 	public void test_import() {
 		final Venice venice = new Venice();
 

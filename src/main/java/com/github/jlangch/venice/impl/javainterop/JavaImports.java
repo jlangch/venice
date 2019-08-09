@@ -98,8 +98,8 @@ public class JavaImports implements Serializable {
 		
 		if (c != null && !c.equals(clazz)) {
 			throw new VncException(String.format(
-					"Failed to import class '%s'. There is a '%s' already imported as '%s'.",
-					clazz, c, cn));
+					"Failed to import class '%s' as '%s'. There is a '%s' already imported as '%s'.",
+					clazz, cn, c, cn));
 		}
 	}
 	

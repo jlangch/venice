@@ -46,8 +46,13 @@ public class Namespaces {
 		return isQualified(sym.getName());
 	}
 
-	public static boolean on() {
-		return true;
+
+	public static boolean isCoreNS(final VncSymbol nsSym) {
+		return Namespaces.NS_CORE.equals(nsSym);
+	}
+
+	public static boolean isCoreNS(final String nsName) {
+		return "core".equals(nsName);
 	}
 
 
@@ -68,7 +73,8 @@ public class Namespaces {
 	}
 	
 	
-	public static final VncSymbol NS_SYMBOL_CURRENT = new VncSymbol("*ns*");
+	public static final String NS_CURRENT_NAME = "*ns*";
+	public static final VncSymbol NS_CURRENT_SYMBOL = new VncSymbol("*ns*");
 	
 	public static final VncSymbol NS_USER = new VncSymbol("user");
 	public static final VncSymbol NS_CORE = new VncSymbol("core");

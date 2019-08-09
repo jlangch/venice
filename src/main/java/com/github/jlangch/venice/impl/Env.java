@@ -198,7 +198,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setLocal(final VncSymbol sym, final VncVal val) {
-		if (sym.equals(Namespaces.NS_SYMBOL_CURRENT)) {
+		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
@@ -226,7 +226,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobal(final Var val) {
-		if (val.getName().equals(Namespaces.NS_SYMBOL_CURRENT)) {
+		if (val.getName().equals(Namespaces.NS_CURRENT_SYMBOL)) {
 			throw new VncException(String.format("Internal error setting var %s", val.getName().getName()));
 		}
 
@@ -296,7 +296,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobalDynamic(final VncSymbol sym, final VncVal val) {
-		if (sym.equals(Namespaces.NS_SYMBOL_CURRENT)) {
+		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
@@ -423,29 +423,30 @@ public class Env implements Serializable {
 	}
 	
 	private Var getGlobalVar(final VncSymbol sym) {
-		if (sym.equals(Namespaces.NS_SYMBOL_CURRENT)) {
-			return new Var(Namespaces.NS_SYMBOL_CURRENT, Namespaces.getCurrentNS());
+		final String name = sym.getName();
+
+		if (name.equals("*ns*")) {
+			return new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS());
 		}
 
-		if (ReservedSymbols.isSpecialForm(sym)) {
+		if (ReservedSymbols.isSpecialForm(name)) {
 			return null;
 		}
-
-		final String name = sym.getName();
 		
 		if (name.startsWith("core/")) {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
 				
-		if (Namespaces.on() && !Namespaces.isQualified(sym)) {
+		if (!Namespaces.isQualified(sym)) {
 			final VncSymbol ns = Namespaces.getCurrentNamespace().getNS();
-			if (!Namespaces.NS_CORE.equals(ns)) {
+			if (!Namespaces.isCoreNS(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
 				final Var v = getGlobalVarRaw(qualifiedKey);
 				if (v != null) return v;
 			}
 		}
 
+		// symbol with namespace
 		return getGlobalVarRaw(sym);
 	}
 
@@ -484,8 +485,8 @@ public class Env implements Serializable {
 		all.putAll(globalSymbols);
 		
 		all.put(
-			Namespaces.NS_SYMBOL_CURRENT, 
-			new Var(Namespaces.NS_SYMBOL_CURRENT, Namespaces.getCurrentNS()));
+			Namespaces.NS_CURRENT_SYMBOL, 
+			new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS()));
 		
 		return all;
 	}

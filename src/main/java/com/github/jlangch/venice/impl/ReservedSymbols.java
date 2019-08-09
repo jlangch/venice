@@ -39,6 +39,10 @@ public class ReservedSymbols {
 		return symbol != null && sepcial_forms.contains(symbol.getName());
 	}
 
+	public static boolean isSpecialForm(final String name) {
+		return name != null && sepcial_forms.contains(name);
+	}
+
 
 	public static void validateNotReservedSymbol(final VncSymbol symbol) {
 		if (symbol != null && isReserved(symbol)) {
