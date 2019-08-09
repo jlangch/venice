@@ -49,6 +49,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/964de70/cheatsheet.htm
 * [Advanced string features](doc/readme/advanced-strings.md)
 * [Concurrency](doc/readme/concurrency.md)
 * [Java interoperability](doc/readme/java-interop.md)
+* [Namespaces](doc/readme/namespace.md)
 * [Exception handling](doc/readme/exceptions.md)
 * [Sandbox](doc/readme/sandbox.md)
 * [JSON](doc/readme/json.md)
