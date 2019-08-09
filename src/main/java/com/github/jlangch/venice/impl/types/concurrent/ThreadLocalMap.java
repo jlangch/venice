@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -172,11 +173,11 @@ public class ThreadLocalMap {
 	}
 
 
-	public static VncSymbol getCurrNS() {
+	public static Namespace getCurrNS() {
 		return get().nsCurr;
 	}
 
-	public static void setCurrNS(final VncSymbol ns) {
+	public static void setCurrNS(final Namespace ns) {
 		get().nsCurr = ns;
 	}
 
@@ -236,13 +237,13 @@ public class ThreadLocalMap {
 	}
 	
 	private void initNS() {
-		nsCurr = new VncSymbol("user");
+		nsCurr = new Namespace(new VncSymbol("user"));
 	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
-	private VncSymbol nsCurr = new VncSymbol("user");
+	private Namespace nsCurr;
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed

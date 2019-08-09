@@ -24,22 +24,13 @@ package com.github.jlangch.venice.impl.functions;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class Functions {
 
-	public static Map<VncVal,VncVal> create(final JavaImports javaImports) {
-		final Map<VncVal,VncVal> fns = new HashMap<>();
-		fns.putAll(functions);
-		fns.putAll(JavaInteropFunctions.create(javaImports));
-		return fns;
-	}
-	
-	
-	private static final Map<VncVal,VncVal> functions = new HashMap<>();
+	public static final Map<VncVal,VncVal> functions = new HashMap<>();
 	
 	static {
 		functions.putAll(CoreFunctions.ns);
@@ -58,6 +49,7 @@ public class Functions {
 		functions.putAll(ConcurrencyFunctions.ns);
 		functions.putAll(JsonFunctions.ns);
 		functions.putAll(PdfFunctions.ns);
+		functions.putAll(JavaInteropFunctions.ns);
 	}
 
 }

@@ -438,7 +438,7 @@ public class Env implements Serializable {
 		}
 				
 		if (Namespaces.on() && !Namespaces.isQualified(sym)) {
-			final VncSymbol ns = Namespaces.getCurrentNS();
+			final VncSymbol ns = Namespaces.getCurrentNamespace().getNS();
 			if (!Namespaces.NS_CORE.equals(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
 				final Var v = getGlobalVarRaw(qualifiedKey);
@@ -476,11 +476,17 @@ public class Env implements Serializable {
 	
 	private Map<VncSymbol,Var> getAllGlobalSymbols() {
 		final Map<VncSymbol,Var> all = new HashMap<>();
+		
 		if (coreGlobalSymbols != null) {
 			all.putAll(coreGlobalSymbols);
 		}
+		
 		all.putAll(globalSymbols);
-		all.put(Namespaces.NS_SYMBOL_CURRENT, new Var(Namespaces.NS_SYMBOL_CURRENT, Namespaces.getCurrentNS()));
+		
+		all.put(
+			Namespaces.NS_SYMBOL_CURRENT, 
+			new Var(Namespaces.NS_SYMBOL_CURRENT, Namespaces.getCurrentNS()));
+		
 		return all;
 	}
 

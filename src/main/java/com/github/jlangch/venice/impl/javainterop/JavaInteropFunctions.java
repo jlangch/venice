@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -48,30 +49,9 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 public class JavaInteropFunctions {
 
-	public static Map<VncVal, VncVal> create(final JavaImports javaImports) {
-		return new VncHashMap
-						.Builder()
-						.add(new JavaFn(javaImports))
-						.add(new ProxifyFn(javaImports))
-						.add(new SupersFn(javaImports))
-						.add(new BasesFn(javaImports))
-						.add(new JavaClassFn(javaImports))
-						.add(new JavaObjQFn(javaImports))
-						.add(new JavaEnumToListFn(javaImports))
-						.add(new JavaIterToListFn(javaImports))
-						.add(new JavaObjWrapFn(javaImports))
-						.add(new JavaObjUnwrapFn(javaImports))
-						.toMap();
-	}
-
 	private static abstract class AbstractJavaFn extends VncFunction {
-		public AbstractJavaFn(
-				final String name, 
-				final VncVal meta,
-				final JavaImports javaImports
-		) {
+		public AbstractJavaFn(final String name, final VncVal meta) {
 			super(name, meta);
-			this.javaImports = javaImports;
 		}
 
 		@Override
@@ -80,13 +60,11 @@ public class JavaInteropFunctions {
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
-
-	    protected final JavaImports javaImports;
 	}
 
 	
 	public static class JavaFn extends AbstractJavaFn {
-		public JavaFn(final JavaImports javaImports) {
+		public JavaFn() {
 			super(
 				".", 
 				VncFunction
@@ -110,20 +88,19 @@ public class JavaInteropFunctions {
 						";; invoke method \n(. (. :java.lang.Long :new 10) :toString)", 
 						";; get class name \n(. :java.lang.Math :class)", 
 						";; get class name \n(. (. :java.io.File :new \"/temp\") :class)")
-					.build(),
-				javaImports);
+					.build());
 		}
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			return JavaInteropUtil.applyJavaAccess(args, javaImports);
+			return JavaInteropUtil.applyJavaAccess(args, Namespaces.getCurrentJavaImports());
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
 	}
 	
 	public static class ProxifyFn extends AbstractJavaFn {
-		public ProxifyFn(final JavaImports javaImports) {
+		public ProxifyFn() {
 			super(
 				"proxify", 
 				VncFunction
@@ -145,8 +122,7 @@ public class JavaInteropFunctions {
 						"        ;; and implement its function 'accept' by 'file-filter'\n" +
 						"        (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +
 						")")
-					.build(),
-				javaImports);
+					.build());
 		}
 
 		@Override
@@ -155,7 +131,7 @@ public class JavaInteropFunctions {
 				throw new ArityException(2, "proxify");
 			}
 
-			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), javaImports);
+			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports());
 
 			return new VncJavaObject(
 						DynamicInvocationHandler.proxify(
@@ -168,7 +144,7 @@ public class JavaInteropFunctions {
 	}
 
 	public static class JavaClassFn extends AbstractJavaFn {
-		public JavaClassFn(final JavaImports javaImports) {
+		public JavaClassFn() {
 			super(
 				"class", 
 				VncFunction
@@ -176,22 +152,21 @@ public class JavaInteropFunctions {
 					.arglists("(class name)")
 					.doc("Returns the Java class for the given name.")
 					.examples("(class :java.util.ArrayList)")
-					.build(),
-				javaImports);
+					.build());
 		}
 	
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity("class", args, 1);
 					
-			return new VncJavaObject(JavaInteropUtil.toClass(args.first(), javaImports));
+			return new VncJavaObject(JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports()));
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	public static class SupersFn extends AbstractJavaFn {
-		public SupersFn(final JavaImports javaImports) {
+		public SupersFn() {
 			super(
 				"supers", 
 				VncFunction
@@ -199,15 +174,14 @@ public class JavaInteropFunctions {
 					.arglists("(supers class)")
 					.doc("Returns the immediate and indirect superclasses and interfaces of class, if any.")
 					.examples("(supers :java.util.ArrayList)")
-					.build(),
-				javaImports);
+					.build());
 		}
 	
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity("supers", args, 1);
 					
-			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), javaImports);
+			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports());
 
 			final List<Class<?>> classes = new ArrayList<>();
 
@@ -224,7 +198,7 @@ public class JavaInteropFunctions {
 	}
 
 	public static class BasesFn extends AbstractJavaFn {
-		public BasesFn(final JavaImports javaImports) {
+		public BasesFn() {
 			super(
 				"bases", 
 				VncFunction
@@ -232,15 +206,14 @@ public class JavaInteropFunctions {
 					.arglists("(bases class)")
 					.doc("Returns the immediate superclass and interfaces of class, if any.")
 					.examples("(bases :java.util.ArrayList)")
-					.build(),
-				javaImports);
+					.build());
 		}
 	
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity("bases", args, 1);
 			
-			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), javaImports);
+			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports());
 						
 			final List<Class<?>> classes = new ArrayList<>();
 			final Class<?> superclass = ReflectionUtil.getSuperclass(clazz);
@@ -256,7 +229,7 @@ public class JavaInteropFunctions {
 	}
 
 	public static class JavaObjQFn extends AbstractJavaFn {
-		public JavaObjQFn(final JavaImports javaImports) {
+		public JavaObjQFn() {
 			super(
 				"java-obj?", 
 				VncFunction
@@ -264,8 +237,7 @@ public class JavaInteropFunctions {
 					.arglists("(java-obj? obj)")		
 					.doc("Returns true if obj is a Java object")
 					.examples("(java-obj? (. :java.math.BigInteger :new \"0\"))")
-					.build(),
-				javaImports);
+					.build());
 		}
 		
 		@Override
@@ -279,15 +251,14 @@ public class JavaInteropFunctions {
 	}
 			
 	public static class JavaEnumToListFn extends AbstractJavaFn {
-		public JavaEnumToListFn(final JavaImports javaImports) {
+		public JavaEnumToListFn() {
 			super(
 				"java-enumeration-to-list", 
 				VncFunction
 					.meta()
 					.arglists("(java-enumeration-to-list e)")		
 					.doc("Converts a Java enumeration to a list")
-					.build(),
-				javaImports);
+					.build());
 		}
 		
 		@Override
@@ -313,15 +284,14 @@ public class JavaInteropFunctions {
 	};
 
 	public static class JavaIterToListFn extends AbstractJavaFn {
-		public JavaIterToListFn(final JavaImports javaImports) {
+		public JavaIterToListFn() {
 			super(
 				"java-iterator-to-list", 
 				VncFunction
 					.meta()
 					.arglists("(java-iterator-to-list e)")		
 					.doc("Converts a Java iterator to a list")
-					.build(),
-				javaImports);
+					.build());
 		}
 			
 		@Override
@@ -347,15 +317,14 @@ public class JavaInteropFunctions {
 	};
 
 	public static class JavaObjWrapFn extends AbstractJavaFn {
-		public JavaObjWrapFn(final JavaImports javaImports) {
+		public JavaObjWrapFn() {
 			super(
 				"java-wrap", 
 				VncFunction
 					.meta()
 					.arglists("(java-wrap val)")		
 					.doc("Wraps a venice value")
-					.build(),
-				javaImports);
+					.build());
 		}
 		
 		@Override
@@ -373,15 +342,14 @@ public class JavaInteropFunctions {
 	}
 
 	public static class JavaObjUnwrapFn extends AbstractJavaFn {
-		public JavaObjUnwrapFn(final JavaImports javaImports) {
+		public JavaObjUnwrapFn() {
 			super(
 				"java-unwrap", 
 				VncFunction
 					.meta()
 					.arglists("(java-unwrap val)")		
 					.doc("Unwraps a venice value")
-					.build(),
-				javaImports);
+					.build());
 		}
 		
 		@Override
@@ -397,4 +365,23 @@ public class JavaInteropFunctions {
 	
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// types_ns is namespace of type functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static Map<VncVal, VncVal> ns = 
+			new VncHashMap
+					.Builder()
+					.add(new JavaFn())
+					.add(new ProxifyFn())
+					.add(new SupersFn())
+					.add(new BasesFn())
+					.add(new JavaClassFn())
+					.add(new JavaObjQFn())
+					.add(new JavaEnumToListFn())
+					.add(new JavaIterToListFn())
+					.add(new JavaObjWrapFn())
+					.add(new JavaObjUnwrapFn())
+					.toMap();	
 }

@@ -95,4 +95,26 @@ public class NamespaceTest {
 
 		assertEquals("[6 -4 0]", venice.eval(script));
 	}
+
+	@Test
+	@EnabledIf("com.github.jlangch.venice.impl.Namespaces.on()")
+	public void test_import() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"   (ns A)                                             \n" +
+				"                                                      \n" +
+				"   (import :java.lang.Long)                           \n" +
+				"                                                      \n" +
+				"   (defn f1 [x] (. :Long :new x))                     \n" +
+				"   (defn f2 [x] (+ x (f1 x)))                         \n" +
+				"                                                      \n" +
+				"   (ns B)                                             \n" +
+				"                                                      \n" +
+				"   (str [(A/f1 100) (A/f2 100)])                      \n" +
+				")";
+
+		assertEquals("[100 200]", venice.eval(script));
+	}
 }
