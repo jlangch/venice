@@ -3,7 +3,7 @@
 A namespace is a set of symbols that are used to organize vars, so that these vars may be referred to by name. A namespace ensures that all the symbols within it have unique names.
 
 
-Namespaces are defined using the `ns`function:
+Namespaces are defined using the `ns` function:
 
 ```clojure
 (do
@@ -42,6 +42,5 @@ Namespaces can be reopened:
    (println A/s2)        ; => 200
 )
 ```
-
 
 
