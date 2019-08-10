@@ -226,8 +226,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "def": { // (def name value)
 					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env),
-												env);
+												evaluateSymbolMetaData(ast.second(), env));
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -237,8 +236,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "defonce": { // (defonce name value)
 					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env),
-												env);
+												evaluateSymbolMetaData(ast.second(), env));
 					final VncVal val = ast.third();
 
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -248,8 +246,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "def-dynamic": { // (def-dynamic name value)
 					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env),
-												env);				
+												evaluateSymbolMetaData(ast.second(), env));				
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -264,8 +261,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "set!": { // (set! name expr)
 					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env),
-												env);
+												evaluateSymbolMetaData(ast.second(), env));
 					final Var globVar = env.getGlobalVarOrNull(name);
 					if (globVar != null) {
 						final VncVal expr = ast.third();
@@ -291,8 +287,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "defmulti": { // (defmulti name dispatch-fn)
 					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env),
-												env);
+												evaluateSymbolMetaData(ast.second(), env));
 					
 					final VncFunction dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
 					final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn);
@@ -302,8 +297,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "defmethod": { // (defmethod multifn-name dispatch-val & fn-tail)
 					final VncSymbol multiFnName = qualifySymbolWithCurrNS(
-													Coerce.toVncSymbol(ast.second()), 
-													env);
+													Coerce.toVncSymbol(ast.second()));
 					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 					if (multiFnVal == null) {
 						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
@@ -704,8 +698,7 @@ public class VeniceInterpreter implements Serializable  {
 		int argPos = 1;
 		
 		final VncSymbol macroName = qualifySymbolWithCurrNS(
-										evaluateSymbolMetaData(ast.nth(argPos++), env),
-										env);
+										evaluateSymbolMetaData(ast.nth(argPos++), env));
 		VncVal meta = macroName.getMeta();
 		
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
@@ -845,7 +838,7 @@ public class VeniceInterpreter implements Serializable  {
 			name = new VncSymbol(VncFunction.createAnonymousFuncName());
 		}
 
-		final VncSymbol fnName = qualifySymbolWithCurrNS(name, env);
+		final VncSymbol fnName = qualifySymbolWithCurrNS(name);
 		ReservedSymbols.validateNotReservedSymbol(fnName);
 
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
@@ -1237,21 +1230,28 @@ public class VeniceInterpreter implements Serializable  {
 		return list == null ? new ArrayList<T>() : list;
 	}
 	
-	private VncSymbol qualifySymbolWithCurrNS(final VncSymbol sym, final Env env) {
+	private VncSymbol qualifySymbolWithCurrNS(final VncSymbol sym) {
 		if (sym == null) {
 			return null;
+		}	
+		else if (Namespaces.isQualified(sym)) {
+			return new VncSymbol(
+						sym.getName(),
+						MetaUtil.setNamespace(
+							sym.getMeta(),
+							Namespaces.getNamespace(sym.getName())));
 		}
-		
-		if (!Namespaces.isQualified(sym)) {
+		else {
 			final VncSymbol ns = Namespaces.getCurrentNS();
-			if (!Namespaces.isCoreNS(ns)) {
-				return new VncSymbol(
-								ns.getName() + "/" + sym.getName(), 
-								sym.getMeta());
-			}
+			
+			return new VncSymbol(
+					Namespaces.isCoreNS(ns)
+						? sym.getName()
+						: ns.getName() + "/" + sym.getName(), 
+					MetaUtil.setNamespace(
+						sym.getMeta(),
+						Namespaces.getNamespace(ns.getName())));
 		}
-		
-		return sym;
 	}
 	
 	private Namespace findNamespace(final VncSymbol sym) {

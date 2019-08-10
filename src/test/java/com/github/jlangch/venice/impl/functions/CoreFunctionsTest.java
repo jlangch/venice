@@ -1869,8 +1869,13 @@ public class CoreFunctionsTest {
 	
 		
 		assertEquals(
-				"{column=11, file=unknown, line=1}", 
+				"{column=11, file=unknown, line=1, ns=null}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (defn x [] 100) (meta x)))")).toString());
+		
+		assertEquals(
+				"{column=18, file=unknown, line=1, ns=null}", 
+				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (ns A) (defn x [] 100) (meta x)))")).toString());
+
 		
 		assertEquals(
 				"{column=7, file=unknown, line=1}", 
