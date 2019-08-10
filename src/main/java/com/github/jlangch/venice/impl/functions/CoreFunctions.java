@@ -84,6 +84,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
@@ -682,17 +683,30 @@ public class CoreFunctions {
 				"read-string",
 				VncFunction
 					.meta()
-					.arglists("(read-string x)")
-					.doc("Reads from x")
+					.arglists(
+						"(read-string s)",
+						"(read-string s origin)")
+					.doc("Reads from s")
+					.examples(
+						"(do                                             \n" +
+						"  (eval (read-string \"(def x 100)\" \"test\")) \n" +
+						"  x)                                              ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				try {
 					assertArity("read-string", args, 1, 2);
 
-					return Reader.read_str(
-							Coerce.toVncString(args.first()).getValue(),
-							args.size() == 2 ? Coerce.toVncString(args.second()).getValue() : "user");
+					String origin = null;
+					
+					if (args.size() == 2 && Types.isVncString(args.second())) {
+						origin = Coerce.toVncString(args.second()).getValue();									
+						origin = origin.substring(origin.lastIndexOf('/') + 1);
+					}
+					
+					origin = StringUtil.isBlank(origin) ? "unknown" : origin;
+						
+					return Reader.read_str(Coerce.toVncString(args.first()).getValue(), origin);
 				}
 				catch (ContinueException c) {
 					return Nil;

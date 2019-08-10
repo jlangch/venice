@@ -43,7 +43,7 @@ public class ReplParser extends DefaultParser {
 	) throws SyntaxError {
 		try {
 			if (context != ParseContext.COMPLETE) {
-				venice.READ(line, "user");
+				venice.READ(line, "repl");
 			}
 			eof = false;
 			return super.parse(line, cursor, context);
