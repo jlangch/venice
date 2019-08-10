@@ -1867,26 +1867,62 @@ public class CoreFunctionsTest {
 				"{column=7, file=unknown, line=1}", 
 				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(meta { :a 1 })")).toString());
 	
-		
-		assertEquals(
-				"{column=11, file=unknown, line=1, ns=null}", 
-				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (defn x [] 100) (meta x)))")).toString());
-		
-		assertEquals(
-				"{column=18, file=unknown, line=1, ns=null}", 
-				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (ns A) (defn x [] 100) (meta x)))")).toString());
-
-		
-		assertEquals(
-				"{column=7, file=unknown, line=1}", 
-				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(let [x (fn [] 100)] (meta x))")).toString());
-		
-		assertEquals(
-				"{column=11, file=unknown, line=1}", 
-				new TreeMap<Object,Object>((Map<?,?>)venice.eval("(do (let [x (fn [] 100)] (meta x)))")).toString());
-
-		
 		assertEquals("{:a 1}", venice.eval("(str (meta (with-meta [1 2 3] { :a 1 })))"));
+	}
+
+	@Test
+	public void test_meta_def_sym() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{:column 8 :file \"unknown\" :line 2 :ns \"user\"}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (def x 100)                                 \n" +
+					"  (pr-str (into (sorted-map) (meta x)))))       "));
+
+		assertEquals(
+				"{:column 8 :file \"unknown\" :line 3 :ns \"A\"}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (ns A)                                      \n" +
+					"  (def x 100)                                \n" +
+					"  (pr-str (into (sorted-map) (meta x)))))       "));
+	}
+
+	@Test
+	public void test_meta_def_fn() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{:column 9 :file \"unknown\" :line 2 :ns \"user\"}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (defn x [] 100)                             \n" +
+					"  (pr-str (into (sorted-map) (meta x)))))       "));
+
+		assertEquals(
+				"{:column 9 :file \"unknown\" :line 3 :ns \"A\"}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (ns A)                                      \n" +
+					"  (defn x [] 100)                             \n" +
+					"  (pr-str (into (sorted-map) (meta x)))))       "));
+		
+		assertEquals(
+				"{:column 9 :file \"unknown\" :line 2}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (let [x (fn [] 100)]                        \n" +
+					"     (pr-str (into (sorted-map) (meta x))))))   "));
+		
+		assertEquals(
+				"{:column 9 :file \"unknown\" :line 3}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (ns A)                                      \n" +
+					"  (let [x (fn [] 100)]                        \n" +
+					"     (pr-str (into (sorted-map) (meta x))))))   "));
 	}
 
 	@Test

@@ -62,7 +62,7 @@ public class MetaUtil {
 
 	public static VncVal addMetaVal(final VncVal meta, final VncString key, final VncVal val) {
 		if (meta == Constants.Nil) {
-			return new VncHashMap().assoc(key, val);	
+			return VncHashMap.of(key, val);	
 		}
 		else if (Types.isVncMap(meta)) {
 			return ((VncMap)meta).assoc(key, val);	

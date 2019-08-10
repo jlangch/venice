@@ -1248,9 +1248,7 @@ public class VeniceInterpreter implements Serializable  {
 					Namespaces.isCoreNS(ns)
 						? sym.getName()
 						: ns.getName() + "/" + sym.getName(), 
-					MetaUtil.setNamespace(
-						sym.getMeta(),
-						Namespaces.getNamespace(ns.getName())));
+					MetaUtil.setNamespace(sym.getMeta(), ns.getName()));
 		}
 	}
 	

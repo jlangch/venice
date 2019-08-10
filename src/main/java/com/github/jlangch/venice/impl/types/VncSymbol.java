@@ -51,6 +51,10 @@ public class VncSymbol extends VncVal {
 	public String getName() { 
 		return value; 
 	}
+
+	public String getValue() { 
+		return value; 
+	}
 	
 	@Override 
 	public int typeRank() {
