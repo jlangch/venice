@@ -29,7 +29,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class VncConstant extends VncVal {
 
 	public VncConstant(final String name) { 
-		super(Constants.Nil);
+		super(Nil);
 		value = name; 
 	}
 

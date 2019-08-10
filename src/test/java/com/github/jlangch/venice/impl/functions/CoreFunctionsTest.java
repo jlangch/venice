@@ -1871,8 +1871,27 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_meta_constants() {
+		final Venice venice = new Venice();
+
+		assertEquals("nil", venice.eval("(pr-str (meta nil))"));
+		assertEquals("nil", venice.eval("(pr-str (meta true))"));
+		assertEquals("nil", venice.eval("(pr-str (meta false))"));
+		assertEquals(
+				"{:column 34 :file \"unknown\" :line 1}", 
+				venice.eval("(pr-str (into (sorted-map) (meta 1)))) "));
+	}
+
+	@Test
 	public void test_meta_def_sym() {
 		final Venice venice = new Venice();
+
+		assertEquals(
+				"{}", 
+				venice.eval(
+					"(do                                           \n" +
+					"  (def x)                                     \n" +
+					"  (pr-str (into (sorted-map) (meta x)))))       "));
 
 		assertEquals(
 				"{:column 8 :file \"unknown\" :line 2 :ns \"user\"}", 

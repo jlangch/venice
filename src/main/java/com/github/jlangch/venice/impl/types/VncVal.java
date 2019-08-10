@@ -48,7 +48,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	public VncVal getMeta() {
 		// getMeta() can be redefined. Functions do that to manage meta data themselves.
-		return meta; 
+		return meta == null ? Nil : meta; 
 	}
 	
 	public VncVal getMetaVal(final VncString key) {
