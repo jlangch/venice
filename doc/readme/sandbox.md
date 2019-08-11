@@ -13,8 +13,8 @@ isolate execution properly, but it also means you cannot let Venice to create
 threads, or else it will escape the sandbox.
 
 To ensure this you should prohibit the use of threads. The only safe way to 
-work with threads and respecting the sandbox is by using Venice' built-in futures
-and agents.
+work with threads and respecting the sandbox is by using Venice' built-in 
+concurrency features like futures, agents, delays, ...
 
 
 ### No blacklisting
