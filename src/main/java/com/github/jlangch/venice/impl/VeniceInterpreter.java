@@ -343,9 +343,25 @@ public class VeniceInterpreter implements Serializable  {
 						return Nil;
 					}
 					
-				case "imports":
-					return Namespaces.getCurrentJavaImportsAsVncList();
-				
+				case "imports": {
+					if (ast.size() == 1) {
+						return Namespaces.getCurrentJavaImportsAsVncList();
+					}
+					else {
+						final VncSymbol ns = Coerce.toVncSymbol(ast.second());
+						final Namespace namespace = namespaces.get(ns);
+						if (namespace != null) {
+							return Namespaces.getJavaImportsAsVncList(namespace);
+						}
+						else {
+							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("imports", ast))) {
+								throw new VncException(String.format(
+									"The namespace '%s' does not exist", ns.toString()));
+							}
+						}
+					}
+				}
+							 	
 				case "resolve": { // (resolve sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.getOrNil(sym);

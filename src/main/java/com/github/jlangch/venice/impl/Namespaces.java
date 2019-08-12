@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
@@ -77,19 +81,40 @@ public class Namespaces {
 	}
 	
 	public static VncList getCurrentJavaImportsAsVncList() {
-		return new VncList(
-				Namespaces.getCurrentJavaImports()
-						  .list()
-						  .stream().map(s -> new VncKeyword(s))
-						  .collect(Collectors.toList()));
+		return getJavaImportsAsVncList(getCurrentNamespace());
 	}
 	
-
+	public static VncList getJavaImportsAsVncList(final Namespace namespace) {
+		return new VncList(
+				namespace
+					.getJavaImports()
+					.list()
+					.stream().map(s -> new VncKeyword(s))
+					.collect(Collectors.toList()));
+	}
 	
+	public static boolean isReservedNamespace(final VncSymbol ns) {
+		return ns != null && isReservedNamespace(ns.getName());
+	}
+
+	public static boolean isReservedNamespace(final String ns) {
+		return ns != null && RESERVED_NAMESPACES.contains(ns);
+	}
+
 	
 	public static final String NS_CURRENT_NAME = "*ns*";
 	public static final VncSymbol NS_CURRENT_SYMBOL = new VncSymbol("*ns*");
 	
 	public static final VncSymbol NS_USER = new VncSymbol("user");
 	public static final VncSymbol NS_CORE = new VncSymbol("core");
+	
+	public static final Set<String> RESERVED_NAMESPACES = 
+			Collections.unmodifiableSet(
+				new HashSet<>(
+					Arrays.asList(
+							"core", "http", "jackson", 
+							"math", "webdav", "xchart", "test",
+							"tc", "ring", "maven" , "kira",
+							"xml", "crypt", "bench")));
+
 }
