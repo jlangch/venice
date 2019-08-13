@@ -106,6 +106,13 @@ public class VeniceTest {
 		
 		assertEquals(Venice.getVersion(), venice.eval("*version*"));
 	}
+	
+	@Test
+	public void test_loaded_modules() {
+		final Venice venice = new Venice();
+		
+		assertEquals(1L, venice.eval("(count (sort *loaded-modules*))"));
+	}
 
 	@Test
 	public void test_CapturingPrintStream() {

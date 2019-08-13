@@ -99,6 +99,15 @@ public class PrecompiledTest {
 	}
 	
 	@Test
+	public void test_loaded_modules() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(count (sort *loaded-modules*))");
+		
+		assertEquals(1L, venice.eval(precomp));
+	}
+	
+	@Test
 	public void test_stdout() {
 		final Venice venice = new Venice();
 		
