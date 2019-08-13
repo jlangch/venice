@@ -194,8 +194,8 @@ public class PrecompiledTest {
 										"test", 
 										"(do                          " +
 										"  (defn sum [a b] (+ a b z)) " +
-										"   (sleep (rand-long 50))    " +
-										"   (sum x y))                ");
+										"  (sleep (rand-long 50))     " +
+										"  (sum x y))                 ");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
 		for(long ii=0; ii<2000; ii++) {
