@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -92,11 +91,11 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	public void initNS() {
-		namespaces.clear();
-		namespaces.put(Namespaces.NS_IO, new Namespace(Namespaces.NS_IO));
-		namespaces.put(Namespaces.NS_STR, new Namespace(Namespaces.NS_STR));
-		namespaces.put(Namespaces.NS_REGEX, new Namespace(Namespaces.NS_REGEX));
-		Namespaces.setCurrentNamespace(findNamespace(Namespaces.NS_USER));
+		nsRegistry.clear();
+		nsRegistry.add(new Namespace(Namespaces.NS_IO));
+		nsRegistry.add(new Namespace(Namespaces.NS_STR));
+		nsRegistry.add(new Namespace(Namespaces.NS_REGEX));
+		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
 	
 	// read
@@ -335,26 +334,28 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "ns": { // (ns alpha)
 					final VncSymbol ns = Coerce.toVncSymbol(ast.second());
-					Namespaces.setCurrentNamespace(findNamespace(ns));
+					Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns));
 					return ns;
 				}
 				
 				case "import":
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
-						ast.rest().forEach(i -> Namespaces.getCurrentJavaImports()
-														  .add(Coerce.toVncString(i).getValue()));
+						ast.rest().forEach(i -> Namespaces
+													.getCurrentNamespace()
+													.getJavaImports()
+													.add(Coerce.toVncString(i).getValue()));
 						return Nil;
 					}
 					
 				case "imports": {
 					if (ast.size() == 1) {
-						return Namespaces.getCurrentJavaImportsAsVncList();
+						return Namespaces.getCurrentNamespace().getJavaImportsAsVncList();
 					}
 					else {
 						final VncSymbol ns = Coerce.toVncSymbol(ast.second());
-						final Namespace namespace = namespaces.get(ns);
+						final Namespace namespace = nsRegistry.get(ns);
 						if (namespace != null) {
-							return Namespaces.getJavaImportsAsVncList(namespace);
+							return namespace.getJavaImportsAsVncList();
 						}
 						else {
 							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("imports", ast))) {
@@ -1230,7 +1231,10 @@ public class VeniceInterpreter implements Serializable  {
 	 *         value if a mapping does nor exist 
 	 */
 	private String resolveClassName(final String className) {
-		return Namespaces.getCurrentJavaImports().resolveClassName(className);
+		return Namespaces
+					.getCurrentNamespace()
+					.getJavaImports()
+					.resolveClassName(className);
 	}
 	
 	private void checkInterrupted() {
@@ -1271,10 +1275,6 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private Namespace findNamespace(final VncSymbol sym) {
-		return namespaces.computeIfAbsent(sym, (s) -> new Namespace(s));
-	}
-	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 
@@ -1283,5 +1283,5 @@ public class VeniceInterpreter implements Serializable  {
 	private final IInterceptor interceptor;	
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
-	private final Map<VncSymbol, Namespace> namespaces = new ConcurrentHashMap<>();
+	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 }

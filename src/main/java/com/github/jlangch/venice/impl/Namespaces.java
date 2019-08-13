@@ -25,12 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
@@ -63,7 +59,6 @@ public class Namespaces {
 		return "core".equals(nsName);
 	}
 
-
 	public static VncSymbol getCurrentNS() {
 		return ThreadLocalMap.getCurrNS().getNS();
 	}
@@ -74,31 +69,6 @@ public class Namespaces {
 
 	public static void setCurrentNamespace(final Namespace ns) {
 		ThreadLocalMap.setCurrNS(ns);
-	}
-
-	public static JavaImports getCurrentJavaImports() {
-		return ThreadLocalMap.getCurrNS().getJavaImports();
-	}
-	
-	public static VncList getCurrentJavaImportsAsVncList() {
-		return getJavaImportsAsVncList(getCurrentNamespace());
-	}
-	
-	public static VncList getJavaImportsAsVncList(final Namespace namespace) {
-		return new VncList(
-				namespace
-					.getJavaImports()
-					.list()
-					.stream().map(s -> new VncKeyword(s))
-					.collect(Collectors.toList()));
-	}
-	
-	public static boolean isReservedNamespace(final VncSymbol ns) {
-		return ns != null && isReservedNamespace(ns.getName());
-	}
-
-	public static boolean isReservedNamespace(final String ns) {
-		return ns != null && RESERVED_NAMESPACES.contains(ns);
 	}
 
 	

@@ -21,42 +21,42 @@
  */
 package com.github.jlangch.venice.impl;
 
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class Namespace {
+public class NamespaceRegistry {
 	
-	public Namespace(final VncSymbol ns) {
-		this.ns = ns == null ? Namespaces.NS_USER : ns;
+	public NamespaceRegistry() {
 	}
 
-	public VncSymbol getNS() {
-		return ns;
-	}
-
-	public JavaImports getJavaImports() {
-		return javaImports;
+	public void add(final Namespace ns) {
+		Objects.requireNonNull(ns);
+		namespaces.put(ns.getNS(), ns);
 	}
 	
-	public VncList getJavaImportsAsVncList() {
-		return new VncList(
-				javaImports
-					.list()
-					.stream().map(s -> new VncKeyword(s))
-					.collect(Collectors.toList()));
+	public Namespace get(final VncSymbol sym) {
+		Objects.requireNonNull(sym);
+		return namespaces.get(sym);
+	}
+	
+	public Namespace computeIfAbsent(final VncSymbol sym) {
+		Objects.requireNonNull(sym);
+		return namespaces.computeIfAbsent(sym, (s) -> new Namespace(s));
+	}
+	
+	public Namespace remove(final VncSymbol sym) {
+		Objects.requireNonNull(sym);
+		return namespaces.remove(sym);
 	}
 
-	@Override
-	public String toString() {
-		return ns.getName();
+	public void clear() {
+		namespaces.clear();
 	}
 	
-	
-	private final VncSymbol ns;
-	private final JavaImports javaImports = new JavaImports();
+
+	private final Map<VncSymbol, Namespace> namespaces = new ConcurrentHashMap<>();
 }
