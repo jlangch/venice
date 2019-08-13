@@ -713,7 +713,10 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 
-		meta = MetaUtil.setNamespace(meta, ns);
+		meta = MetaUtil.addMetaVal(
+							meta,
+							MetaUtil.NS, new VncString(ns),
+							MetaUtil.MACRO, True);
 
 		final VncSymbol macroName_ = new VncSymbol(name, meta);
 

@@ -60,12 +60,12 @@ public class MetaUtil {
 					COLUMN, new VncLong(token.getColumn()));
 	}
 
-	public static VncVal addMetaVal(final VncVal meta, final VncString key, final VncVal val) {
+	public static VncVal addMetaVal(final VncVal meta, final VncVal... mvs) {
 		if (meta == Constants.Nil) {
-			return VncHashMap.of(key, val);	
+			return VncHashMap.of(mvs);	
 		}
 		else if (Types.isVncMap(meta)) {
-			return ((VncMap)meta).assoc(key, val);	
+			return ((VncMap)meta).assoc(mvs);	
 		}
 		else {
 			// not a map
@@ -133,6 +133,7 @@ public class MetaUtil {
 	public static final VncKeyword LINE = new VncKeyword(":line"); 
 	public static final VncKeyword COLUMN = new VncKeyword(":column"); 
 	
+	public static final VncKeyword MACRO = new VncKeyword(":macro"); 
 	public static final VncKeyword NS = new VncKeyword(":ns"); 
     public static final VncKeyword PRIVATE = new VncKeyword(":private");
 }

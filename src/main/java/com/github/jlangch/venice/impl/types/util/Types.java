@@ -261,7 +261,9 @@ public class Types {
 			return new VncKeyword("venice.ByteBuffer");
 		}
 		else if (Types.isVncFunction(val)) {
-			return new VncKeyword("venice.Function");
+			return ((VncFunction)val).isMacro()
+						? new VncKeyword("venice.Macro")
+						: new VncKeyword("venice.Function");
 		}
 		else if (Types.isVncSymbol(val)) {
 			return new VncKeyword("venice.Symbol");
