@@ -439,7 +439,7 @@ public class Env implements Serializable {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
 				
-		if (!Namespaces.isQualified(sym)) {
+		if (!Namespaces.isQualified(name)) {
 			final VncSymbol ns = Namespaces.getCurrentNamespace().getNS();
 			if (!Namespaces.isCoreNS(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);

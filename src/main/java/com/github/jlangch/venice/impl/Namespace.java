@@ -21,8 +21,12 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.stream.Collectors;
+
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class Namespace {
@@ -37,6 +41,14 @@ public class Namespace {
 
 	public JavaImports getJavaImports() {
 		return javaImports;
+	}
+	
+	public VncList getJavaImportsAsVncList() {
+		return new VncList(
+				javaImports
+					.list()
+					.stream().map(s -> new VncKeyword(s))
+					.collect(Collectors.toList()));
 	}
 
 	@Override

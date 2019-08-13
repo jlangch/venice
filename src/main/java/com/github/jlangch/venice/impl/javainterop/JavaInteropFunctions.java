@@ -93,7 +93,9 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			return JavaInteropUtil.applyJavaAccess(args, Namespaces.getCurrentJavaImports());
+			return JavaInteropUtil.applyJavaAccess(
+					args, 
+					Namespaces.getCurrentNamespace().getJavaImports());
 		}
 		
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -131,7 +133,9 @@ public class JavaInteropFunctions {
 				throw new ArityException(2, "proxify");
 			}
 
-			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports());
+			final Class<?> clazz = JavaInteropUtil.toClass(
+										args.first(), 
+										Namespaces.getCurrentNamespace().getJavaImports());
 
 			return new VncJavaObject(
 						DynamicInvocationHandler.proxify(
@@ -159,7 +163,10 @@ public class JavaInteropFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("class", args, 1);
 					
-			return new VncJavaObject(JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports()));
+			return new VncJavaObject(
+						JavaInteropUtil.toClass(
+							args.first(), 
+							Namespaces.getCurrentNamespace().getJavaImports()));
 		}
 
 	    private static final long serialVersionUID = -1848883965231344442L;
@@ -181,7 +188,9 @@ public class JavaInteropFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("supers", args, 1);
 					
-			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports());
+			final Class<?> clazz = JavaInteropUtil.toClass(
+										args.first(), 
+										Namespaces.getCurrentNamespace().getJavaImports());
 
 			final List<Class<?>> classes = new ArrayList<>();
 
@@ -213,7 +222,9 @@ public class JavaInteropFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("bases", args, 1);
 			
-			final Class<?> clazz = JavaInteropUtil.toClass(args.first(), Namespaces.getCurrentJavaImports());
+			final Class<?> clazz = JavaInteropUtil.toClass(
+										args.first(), 
+										Namespaces.getCurrentNamespace().getJavaImports());
 						
 			final List<Class<?>> classes = new ArrayList<>();
 			final Class<?> superclass = ReflectionUtil.getSuperclass(clazz);

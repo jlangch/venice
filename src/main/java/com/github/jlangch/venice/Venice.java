@@ -207,7 +207,7 @@ public class Venice {
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
 
 			final Env env = createEnv(venice, params);
-
+			
 			meterRegistry.reset();  // no metrics for creating env and loading modules 
 
 			meterRegistry.record("venice.setup", System.nanoTime() - nanos);

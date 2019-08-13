@@ -99,6 +99,20 @@ public class VeniceTest {
 
 		assertEquals(Boolean.FALSE, (Boolean)venice.eval(script, Parameters.of("event", event2)));
 	}
+	
+	@Test
+	public void test_version() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Venice.getVersion(), venice.eval("*version*"));
+	}
+	
+	@Test
+	public void test_loaded_modules() {
+		final Venice venice = new Venice();
+		
+		assertEquals(1L, venice.eval("(count (sort *loaded-modules*))"));
+	}
 
 	@Test
 	public void test_CapturingPrintStream() {

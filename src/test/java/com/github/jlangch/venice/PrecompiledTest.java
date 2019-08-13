@@ -90,6 +90,24 @@ public class PrecompiledTest {
 	}
 	
 	@Test
+	public void test_version() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "*version*");
+		
+		assertEquals(Venice.getVersion(), venice.eval(precomp));
+	}
+	
+	@Test
+	public void test_loaded_modules() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(count (sort *loaded-modules*))");
+		
+		assertEquals(1L, venice.eval(precomp));
+	}
+	
+	@Test
 	public void test_stdout() {
 		final Venice venice = new Venice();
 		
@@ -183,7 +201,10 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile(
 										"test", 
-										"(do (defn sum [a b] (+ a b z)) (sleep (rand-long 50)) (sum x y))");
+										"(do                          " +
+										"  (defn sum [a b] (+ a b z)) " +
+										"  (sleep (rand-long 50))     " +
+										"  (sum x y))                 ");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
 		for(long ii=0; ii<2000; ii++) {
@@ -215,7 +236,12 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile(
 										"test", 
-										"(do (defn sum [a b] (+ a b z)) (long (with-out-str (do (sleep (rand-long 50)) (print (sum x y))))))");
+										"(do                                 " +
+										"  (defn sum [a b] (+ a b z))        " +
+										"  (long (with-out-str               " +
+										"           (do                      " +
+										"             (sleep (rand-long 50)) " +
+										"             (print (sum x y))))))  ");
 		
 		final List<Callable<Object>> tasks = new ArrayList<>();
 		for(long ii=0; ii<2000; ii++) {

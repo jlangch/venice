@@ -21,12 +21,12 @@
  */
 package com.github.jlangch.venice.impl;
 
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
@@ -59,7 +59,6 @@ public class Namespaces {
 		return "core".equals(nsName);
 	}
 
-
 	public static VncSymbol getCurrentNS() {
 		return ThreadLocalMap.getCurrNS().getNS();
 	}
@@ -72,24 +71,26 @@ public class Namespaces {
 		ThreadLocalMap.setCurrNS(ns);
 	}
 
-	public static JavaImports getCurrentJavaImports() {
-		return ThreadLocalMap.getCurrNS().getJavaImports();
-	}
-	
-	public static VncList getCurrentJavaImportsAsVncList() {
-		return new VncList(
-				Namespaces.getCurrentJavaImports()
-						  .list()
-						  .stream().map(s -> new VncKeyword(s))
-						  .collect(Collectors.toList()));
-	}
-	
-
-	
 	
 	public static final String NS_CURRENT_NAME = "*ns*";
 	public static final VncSymbol NS_CURRENT_SYMBOL = new VncSymbol("*ns*");
 	
 	public static final VncSymbol NS_USER = new VncSymbol("user");
 	public static final VncSymbol NS_CORE = new VncSymbol("core");
+	public static final VncSymbol NS_IO = new VncSymbol("io");
+	public static final VncSymbol NS_STR = new VncSymbol("str");
+	public static final VncSymbol NS_REGEX = new VncSymbol("regex");
+	
+	public static final Set<String> RESERVED_NAMESPACES = 
+			Collections.unmodifiableSet(
+				new HashSet<>(
+					Arrays.asList(
+							"core", "io", "str", "regex", "time",
+							"crypt", "json", "pdf", "xml", "bench",
+							"test",
+							"xchart", "kira", 
+							"tc", "ring", 
+							"http", "jackson",
+							"math", "webdav", "maven")));
+
 }
