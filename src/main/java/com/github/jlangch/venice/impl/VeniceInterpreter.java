@@ -93,6 +93,9 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public void initNS() {
 		namespaces.clear();
+		namespaces.put(Namespaces.NS_IO, new Namespace(Namespaces.NS_IO));
+		namespaces.put(Namespaces.NS_STR, new Namespace(Namespaces.NS_STR));
+		namespaces.put(Namespaces.NS_REGEX, new Namespace(Namespaces.NS_REGEX));
 		Namespaces.setCurrentNamespace(findNamespace(Namespaces.NS_USER));
 	}
 	
