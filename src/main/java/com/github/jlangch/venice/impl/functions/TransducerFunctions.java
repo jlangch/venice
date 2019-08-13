@@ -71,25 +71,28 @@ public class TransducerFunctions {
 						"then applying xf to that result and the 2nd item, etc. If coll " +
 						"contains no items, returns init and f is not called.")
 					.examples(
-						"(do                                    \n" +
-						"  (def xf (map #(+ % 1)))              \n" +
-						"  (transduce xf + [1 2 3 4]))            ",
-						"(do                                    \n" +
-						"  (def xf (map #(+ % 1)))              \n" +
-						"  (transduce xf conj [1 2 3 4]))         ",
-						"(do                                    \n" +
-						"  (def xf (comp (drop 2) (take 3)))    \n" +
-						"  (transduce xf conj [1 2 3 4 5 6]))     ",
-						"(do                                    \n" +
-						"  (def xf (comp                        \n" +
-						"            (map #(* % 10))            \n" +
-						"            (map #(- % 5))             \n" +
-						"            (sorted compare)           \n" +
-						"            (drop 3)                   \n" +
-						"            (take 2)                   \n" +
-						"            (reverse)))                \n" +
-						"  (def coll [5 2 1 6 4 3])             \n" +
-						"  (str (transduce xf conj coll)))        ")
+						"(do                                       \n" +
+						"  (def xform (map #(+ % 1)))              \n" +
+						"  (transduce xform + [1 2 3 4]))            ",
+						
+						"(do                                       \n" +
+						"  (def xform (map #(+ % 1)))              \n" +
+						"  (transduce xform conj [1 2 3 4]))         ",
+						
+						"(do                                       \n" +
+						"  (def xform (comp (drop 2) (take 3)))    \n" +
+						"  (transduce xform conj [1 2 3 4 5 6]))     ",
+						
+						"(do                                       \n" +
+						"  (def xform (comp                        \n" +
+						"              (map #(* % 10))             \n" +
+						"              (map #(- % 5))              \n" +
+						"              (sorted compare)            \n" +
+						"              (drop 3)                    \n" +
+						"              (take 2)                    \n" +
+						"              (reverse)))                 \n" +
+						"  (def coll [5 2 1 6 4 3])                \n" +
+						"  (str (transduce xform conj coll)))        ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

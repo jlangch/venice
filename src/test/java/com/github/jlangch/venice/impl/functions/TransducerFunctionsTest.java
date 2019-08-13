@@ -615,6 +615,102 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_reduction_rf_first() {
+		final Venice venice = new Venice();
+				
+		final String script1 =
+		    "(do                                             \n" +
+		    "  (def xf (comp (filter number?)))              \n" +
+		    "  (pr-str (transduce xf rf-first [1 2 3])))       ";
+		
+		final String script2 =
+		    "(do                                             \n" +
+		    "  (def xf (comp (filter number?)))              \n" +
+		    "  (pr-str (transduce xf rf-first [1])))           ";
+
+		final String script3 =
+		    "(do                                             \n" +
+		    "  (def xf (comp (filter number?)))              \n" +
+		    "  (pr-str (transduce xf rf-first [])))            ";
+
+		assertEquals("1", venice.eval(script1));	
+		assertEquals("1", venice.eval(script2));	
+		assertEquals("nil", venice.eval(script3));	
+	}
+	
+	@Test
+	public void test_transduce_reduction_rf_last() {
+		final Venice venice = new Venice();
+				
+		final String script1 =
+		    "(do                                             \n" +
+		    "  (def xf (comp (filter number?)))              \n" +
+		    "  (pr-str (transduce xf rf-last [1 2 3])))       ";
+		
+		final String script2 =
+		    "(do                                             \n" +
+		    "  (def xf (comp (filter number?)))              \n" +
+		    "  (pr-str (transduce xf rf-last [1])))           ";
+
+		final String script3 =
+		    "(do                                             \n" +
+		    "  (def xf (comp (filter number?)))              \n" +
+		    "  (pr-str (transduce xf rf-last [])))             ";
+
+		assertEquals("3", venice.eval(script1));	
+		assertEquals("1", venice.eval(script2));	
+		assertEquals("nil", venice.eval(script3));	
+	}
+	
+	@Test
+	public void test_transduce_reduction_rf_any() {
+		final Venice venice = new Venice();
+				
+		final String script1 =
+		    "(do                                                          \n" +
+		    "  (def xf (comp (filter number?)))                           \n" +
+		    "  (pr-str (transduce xf (rf-any? pos?) [true -1 1 2 false])))  ";
+		
+		final String script2 =
+		    "(do                                                          \n" +
+		    "  (def xf (comp (filter number?)))                           \n" +
+		    "  (pr-str (transduce xf (rf-any? pos?) [true -1 -2 false])))  ";
+
+		final String script3 =
+		    "(do                                                          \n" +
+		    "  (def xf (comp (filter number?)))                           \n" +
+		    "  (pr-str (transduce xf (rf-any? pos?) [])))                   ";
+		
+		assertEquals("true",  venice.eval(script1));	
+		assertEquals("false", venice.eval(script2));	
+		assertEquals("false", venice.eval(script3));	
+	}
+	
+	@Test
+	public void test_transduce_reduction_rf_every() {
+		final Venice venice = new Venice();
+				
+		final String script1 =
+		    "(do                                                             \n" +
+		    "  (def xf (comp (filter number?)))                              \n" +
+		    "  (pr-str (transduce xf (rf-every? pos?) [true 1 1 2 false])))    ";
+		
+		final String script2 =
+		    "(do                                                             \n" +
+		    "  (def xf (comp (filter number?)))                              \n" +
+		    "  (pr-str (transduce xf (rf-every? pos?) [true 1 2 -3 false])))  ";
+
+		final String script3 =
+		    "(do                                                             \n" +
+		    "  (def xf (comp (filter number?)))                              \n" +
+		    "  (pr-str (transduce xf (rf-every? pos?) [])))                    ";
+		
+		assertEquals("true",  venice.eval(script1));	
+		assertEquals("false", venice.eval(script2));	
+		assertEquals("false", venice.eval(script3));	
+	}
+	
+	@Test
 	public void test_map() {
 		final Venice venice = new Venice();
 

@@ -637,6 +637,18 @@
 
 
 (defn
+  ^{ :arglists '("(rf-last)")
+     :doc "Returns a reducing function for a transducer that returns the last item."
+     :examples '("""(transduce (filter number?) rf-last [false 1 2])""") }
+
+  rf-last
+
+  ([] nil)
+  ([x] x)
+  ([x y] y))
+
+
+(defn
   ^{ :arglists '("(rf-any? pred)")
      :doc "Returns a reducing function for a transducer that returns true if the predicate is true for at least one the items, false otherwise."
      :examples '("""(transduce (filter number?) (rf-any? pos?) [true -1 1 2 false])""") }

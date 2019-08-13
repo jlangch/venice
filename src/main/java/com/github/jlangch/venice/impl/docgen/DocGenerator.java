@@ -855,6 +855,7 @@ public class DocGenerator {
 		final DocSection red = new DocSection("Reductions");
 		all.addSection(red);		
 		red.addItem(getDocItem("rf-first"));
+		red.addItem(getDocItem("rf-last"));
 		red.addItem(getDocItem("rf-every?"));
 		red.addItem(getDocItem("rf-any?"));
 		
