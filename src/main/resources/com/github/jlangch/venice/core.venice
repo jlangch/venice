@@ -625,21 +625,21 @@
 (defn
   ^{ :arglists '("(rf-first)")
      :doc "Returns a reducing function for a transducer that returns the first item."
-     :examples '("""(transduce (filter number?) rf-first [false 1 2])""") }
+     :examples '("(transduce (filter number?) rf-first [false 1 2])"
+                 "(transduce identity rf-first [nil 1 2])") }
 
   rf-first
 
   ([] nil)
   ([x] x)
-  ([x y] (if (nil? x)
-             (if (nil? y) nil (reduced y))
-             nil)))
+  ([x y] (reduced y)))
 
 
 (defn
   ^{ :arglists '("(rf-last)")
      :doc "Returns a reducing function for a transducer that returns the last item."
-     :examples '("""(transduce (filter number?) rf-last [false 1 2])""") }
+     :examples '("(transduce (filter number?) rf-last [false 1 2])"
+                 "(transduce identity rf-last [1 2 1.2])") }
 
   rf-last
 
@@ -686,6 +686,7 @@
   constantly
 
   [x] (fn [& args] x))
+
 
 (defn
    ^{ :arglists '("(zipmap keys vals)")
