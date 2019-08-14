@@ -32,7 +32,7 @@ Transducer example:
 
 ### Transduce function
 
-The `transduce` functions acts as the processor that applies the transforming and reducing transducer functions to the collection elements.
+The `transduce` function acts as the processor that applies the transforming and reducing transducer functions to the collection elements.
 
 ```clojure
 (transduce xform f coll)
