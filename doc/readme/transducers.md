@@ -1,6 +1,6 @@
 # Transducers
 
-Transducers isolate transforming reducing functions (like `map` or `filter` in their transducer version) from sequential iteration. They are independent from their input and output sources. As a consequence transducers can be composed like any other functions.
+Transducers isolate transforming reducing functions (like `map` or `filter` in their transducer version) from sequential iteration. They are independent from their input and output sources. As a consequence transducers can be composed like any other function.
 
 Traditional `map` or `filter` functions operate sequentially on input and output collections:
 
