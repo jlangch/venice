@@ -38,10 +38,10 @@ The `transduce` functions acts as the processor that applies the transforming an
 (transduce xform f coll)
 (transduce xform f init coll)
 ```
-Reduce with a transformation of a reduction function f (xf). If init is not supplied, (f) will be called to
+_Reduce with a transformation of a reduction function f (xf). If init is not supplied, (f) will be called to
 produce it. f should be a reducing step function that accepts both 1 and 2 arguments. Returns the result of
 applying (the transformed) xf to init and the first item in coll, then applying xf to that result and the 2nd
-item, etc. If coll contains no items, returns init and f is not called.
+item, etc. If coll contains no items, returns init and f is not called._
 
 
 ### Reducing functions
