@@ -11,7 +11,7 @@ Traditional `map` or `filter` functions operate sequentially on input and output
      (map #(+ 10 %)))
 ```
 
-In this example `filter` applies `odd?` to each element of the collection returning the filtered collection if all items have been processed. So are doing the two mapping functions thus creating a lot of intermediate collections.
+In this example `filter` applies `odd?` to each element of the collection returning the filtered collection if all items have been processed. So are doing the two mapping functions thus creating many intermediate collections.
 
 Transducers overcome this problem and decouple the transforming completely from input and output. Thus transducers can not only be applied to a collection of elements but to any kind of data sources that generate elements.
 
