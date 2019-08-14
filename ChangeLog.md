@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - meta data for `nil` constant
 
+### Changed
+
+- VAVR lib to actual version 0.10.2
+- JLine3 lib to actual version 3.12.1
+
 
 
 ## [1.6.3] - 2019-08-08
