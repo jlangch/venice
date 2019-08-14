@@ -75,5 +75,5 @@ Beside the standard reducing functions like `conj`, `+`, `-`, `max`, and `min` V
 (do
   (def xform (map #(+ % 1)))
   
-  (transduce xform + 0 [1 2 3 4])))  ; => 14
+  (transduce xform + 10 [1 2 3 4])))  ; => 24
 ```
