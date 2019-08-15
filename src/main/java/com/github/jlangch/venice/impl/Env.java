@@ -215,13 +215,7 @@ public class Env implements Serializable {
 		}
 
 		setLocalVar(sym, new Var(sym, val));
-		return this;
-	}
-	
-	public Env addAll(final List<Binding> bindings) {
-		for(Binding b : bindings) {
-			setLocal(b.sym, b.val);
-		}
+		
 		return this;
 	}
 
@@ -243,8 +237,14 @@ public class Env implements Serializable {
 
 		return this;
 	}
+	
+	public void addLocalBindings(final List<Binding> bindings) {
+		for(Binding b : bindings) {
+			setLocal(b.sym, b.val);
+		}
+	}
 
-	public Env pushGlobalDynamic(final VncSymbol sym, final VncVal val) {
+	public void pushGlobalDynamic(final VncSymbol sym, final VncVal val) {
 		final DynamicVar dv = findGlobalDynamicVar(sym);
 		if (dv != null) {
 			dv.pushVal(val);
@@ -254,26 +254,19 @@ public class Env implements Serializable {
 			setGlobalVar(sym, nv);
 			nv.pushVal(val);
 		}
-		return this;
 	}
 
 	public VncVal popGlobalDynamic(final VncSymbol sym) {
 		final DynamicVar dv = findGlobalDynamicVar(sym);
-		if (dv != null) {
-			return dv.popVal();
-		}	
-		return Nil;
+		return dv != null ? dv.popVal() : Nil;
 	}
 
 	public VncVal peekGlobalDynamic(final VncSymbol sym) {
 		final DynamicVar dv = findGlobalDynamicVar(sym);
-		if (dv != null) {
-			return dv.peekVal();
-		}
-		return Nil;
+		return dv != null ? dv.peekVal() : Nil;
 	}
 
-	public Env setGlobalDynamic(final VncSymbol sym, final VncVal val) {
+	public void setGlobalDynamic(final VncSymbol sym, final VncVal val) {
 		final DynamicVar dv = findGlobalDynamicVar(sym);
 		if (dv != null) {
 			dv.setVal(val);
@@ -283,8 +276,12 @@ public class Env implements Serializable {
 			setGlobalVar(sym, nv);
 			nv.pushVal(val);
 		}
-		
-		return this;
+	}
+
+	public void replaceGlobalDynamic(final VncSymbol sym, final VncVal val) {
+		final DynamicVar nv = new DynamicVar(sym, Nil);
+		setGlobalVar(sym, nv);
+		nv.pushVal(val);
 	}
 
 	public void removeGlobalSymbol(final VncSymbol sym) {
@@ -298,7 +295,7 @@ public class Env implements Serializable {
 			return env;
 		}
 		else {
-			while(env.outer != null) {
+			while (env.outer != null) {
 				env = env.outer;
 				if (env.level == level) {
 					return env;
@@ -338,13 +335,9 @@ public class Env implements Serializable {
 	}
 	
 	public Env setStdoutPrintStream(final PrintStream ps) {
-		final VncVal psVal = new VncJavaObject(ps != null ? ps : nullPrintStream());
-		final DynamicVar var = new DynamicVar(new VncSymbol("*out*"), psVal);
-		
-		setGlobal(var);
-		
-		// push it to the current thread so running precompiled scripts see it
-		var.pushVal(psVal);  
+		replaceGlobalDynamic(
+				new VncSymbol("*out*"), 
+				new VncJavaObject(ps != null ? ps : nullPrintStream()));
 		
 		return this;
 	}

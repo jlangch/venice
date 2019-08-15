@@ -417,9 +417,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = evaluate(bindings.nth(i+1), env);
 
-						for(Binding b : Destructuring.destructure(sym, val)) {
-							env.setLocal(b.sym, b.val);
-						}
+						env.addLocalBindings(Destructuring.destructure(sym, val));
 					}
 						
 					if (expressions.isEmpty()) {
@@ -1156,7 +1154,7 @@ public class VeniceInterpreter implements Serializable  {
 					Namespaces.setCurrentNamespace(ns);
 
 					// destructuring fn params -> args
-					localEnv.addAll(Destructuring.destructure(params, args));
+					localEnv.addLocalBindings(Destructuring.destructure(params, args));
 	
 					validateFnPreconditions(name, preConditions, localEnv);
 	
