@@ -56,25 +56,25 @@ public class Env implements Serializable {
 	public Env(final Env outer) {
 		this.outer = outer;
 		this.level = outer == null ? 0 : outer.level() + 1;
-		this.coreGlobalSymbols = outer == null ? null : outer.coreGlobalSymbols; 
+		this.precompiledGlobalSymbols = outer == null ? null : outer.precompiledGlobalSymbols; 
 		this.globalSymbols = outer == null ? new ConcurrentHashMap<>() : outer.globalSymbols;
 		this.localSymbols = new ConcurrentHashMap<>();
 	}
 	
-	private Env(final Map<VncSymbol,Var> coreGlobalSymbols) {
+	private Env(final Map<VncSymbol,Var> precompiledGlobalSymbols) {
 		this.outer = null;
 		this.level = 0;
-		this.coreGlobalSymbols = coreGlobalSymbols; 
+		this.precompiledGlobalSymbols = precompiledGlobalSymbols; 
 		this.globalSymbols = new ConcurrentHashMap<>();
 		this.localSymbols = new ConcurrentHashMap<>();
 	}
 
-	public Env makeCoreOnlyGlobalEnv() {
+	public Env copyGlobalToPrecompiledSymbols() {
 		// Used for precompiled scripts. 
 		// Move the global symbols to core global symbols so they remain untouched
 		// while running the precompiled script and thus can be reused by subsequent
 		// precompiled script invocations
-		return new Env(this.globalSymbols);
+		return new Env(globalSymbols);
 	}
 
 	/**
@@ -245,16 +245,9 @@ public class Env implements Serializable {
 	}
 
 	public Env pushGlobalDynamic(final VncSymbol sym, final VncVal val) {
-		final Var dv = getGlobalVar(sym);
+		final DynamicVar dv = findGlobalDynamicVar(sym);
 		if (dv != null) {
-			if (dv instanceof DynamicVar) {
-				((DynamicVar)dv).pushVal(val);
-			}
-			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym));
-				}
-			}
+			dv.pushVal(val);
 		}
 		else {
 			final DynamicVar nv = new DynamicVar(sym, Nil);
@@ -265,62 +258,37 @@ public class Env implements Serializable {
 	}
 
 	public VncVal popGlobalDynamic(final VncSymbol sym) {
-		final Var dv = getGlobalVar(sym);
+		final DynamicVar dv = findGlobalDynamicVar(sym);
 		if (dv != null) {
-			if (dv instanceof DynamicVar) {
-				return ((DynamicVar)dv).popVal();
-			}
-			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym.getName()));
-				}
-			}
-		}
-		
+			return dv.popVal();
+		}	
 		return Nil;
 	}
 
 	public VncVal peekGlobalDynamic(final VncSymbol sym) {
-		final Var dv = getGlobalVar(sym);
+		final DynamicVar dv = findGlobalDynamicVar(sym);
 		if (dv != null) {
-			if (dv instanceof DynamicVar) {
-				return ((DynamicVar)dv).peekVal();
-			}
-			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym.getName()));
-				}
-			}
+			return dv.peekVal();
 		}
 		return Nil;
 	}
 
 	public Env setGlobalDynamic(final VncSymbol sym, final VncVal val) {
-		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
-			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
-		}
-
-		final Var dv = getGlobalVar(sym);
+		final DynamicVar dv = findGlobalDynamicVar(sym);
 		if (dv != null) {
-			if (dv instanceof DynamicVar) {
-				((DynamicVar)dv).setVal(val);
-			}
-			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym));
-				}
-			}
+			dv.setVal(val);
 		}
 		else {
 			final DynamicVar nv = new DynamicVar(sym, Nil);
 			setGlobalVar(sym, nv);
 			nv.pushVal(val);
 		}
+		
 		return this;
 	}
 
 	public void removeGlobalSymbol(final VncSymbol sym) {
-		coreGlobalSymbols.remove(sym);
+		precompiledGlobalSymbols.remove(sym);
 		globalSymbols.remove(sym);
 	}
 
@@ -398,6 +366,25 @@ public class Env implements Serializable {
 				   .collect(Collectors.joining("\n"));
 	}
 	
+	private DynamicVar findGlobalDynamicVar(final VncSymbol sym) {
+		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
+			throw new VncException(String.format("%s can not be used as a dynamic var", sym.getName()));
+		}
+
+		final Var dv = getGlobalVar(sym);
+		if (dv != null) {
+			if (dv instanceof DynamicVar) {
+				return (DynamicVar)dv;
+			}
+			else {
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym.getName()));
+				}
+			}
+		}
+		return null;
+	}
+	
 	private VncVal getOrNull(final VncSymbol sym) {
 		final Env e = findEnv(sym);
 		if (e != null) {
@@ -453,8 +440,8 @@ public class Env implements Serializable {
 	}
 
 	private Var getGlobalVarRaw(final VncSymbol sym) {
-		if (coreGlobalSymbols != null) {
-			final Var v = coreGlobalSymbols.get(sym);
+		if (precompiledGlobalSymbols != null) {
+			final Var v = precompiledGlobalSymbols.get(sym);
 			if (v != null) return v;
 		}
 		
@@ -480,8 +467,8 @@ public class Env implements Serializable {
 	private Map<VncSymbol,Var> getAllGlobalSymbols() {
 		final Map<VncSymbol,Var> all = new HashMap<>();
 		
-		if (coreGlobalSymbols != null) {
-			all.putAll(coreGlobalSymbols);
+		if (precompiledGlobalSymbols != null) {
+			all.putAll(precompiledGlobalSymbols);
 		}
 		
 		all.putAll(globalSymbols);
@@ -538,7 +525,7 @@ public class Env implements Serializable {
 
 	private final Env outer;
 	private final int level;
-	private final Map<VncSymbol,Var> coreGlobalSymbols;
+	private final Map<VncSymbol,Var> precompiledGlobalSymbols;
 	private final Map<VncSymbol,Var> globalSymbols;
 	private final Map<VncSymbol,Var> localSymbols;
 }

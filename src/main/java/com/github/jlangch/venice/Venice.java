@@ -356,7 +356,7 @@ public class Venice {
 		}
 		
 		// make the env safe for reuse
-		return env.makeCoreOnlyGlobalEnv();
+		return env.copyGlobalToPrecompiledSymbols();
 	}
 	
 	
