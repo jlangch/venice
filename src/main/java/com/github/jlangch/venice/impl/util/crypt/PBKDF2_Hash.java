@@ -43,7 +43,6 @@ public class PBKDF2_Hash {
 	/**
 	 * Hash a string
 	 * 
-	 * 
 	 * @param text a text
 	 * @param salt a salt
 	 * @param iterationCount the number of iterations (e.g. 1000)
@@ -58,10 +57,10 @@ public class PBKDF2_Hash {
 		try {
 			final SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
 			final PBEKeySpec spec = new PBEKeySpec(
-										text.toCharArray(), 
-										salt == null ? new byte[]{} : salt.getBytes("UTF-8"), 
-										iterationCount, 
-										keyLength);
+											text.toCharArray(), 
+											salt == null ? new byte[]{} : salt.getBytes("UTF-8"), 
+											iterationCount, 
+											keyLength);
 			return skf.generateSecret(spec).getEncoded();
 		} 
 		catch (Exception ex) {
