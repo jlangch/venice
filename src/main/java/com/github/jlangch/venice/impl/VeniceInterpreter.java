@@ -548,39 +548,37 @@ public class VeniceInterpreter implements Serializable  {
 				case "prof":
 					return prof_(ast, env);
 	
-				default:
-					final long nanos = System.nanoTime();
-					
+				default:					
 					final VncList el = (VncList)eval_ast((VncList)ast, env);
 					final VncVal elFirst = el.first();
 					final VncList elArgs = el.rest();
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
+
+						final long nanos = System.nanoTime();
 						
 						// validate function call allowed by sandbox
 						interceptor.validateVeniceFunction(fn.getQualifiedName());	
 	
+						checkInterrupted();
+						sandboxMaxExecutionTimeChecker.check();
+
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						sandboxMaxExecutionTimeChecker.check();
-						checkInterrupted();
-	
 						// invoke function with call frame
 						try {
 							callStack.push(CallFrame.fromFunction(fn, a0));
 
-							final VncVal val = fn.apply(elArgs);
-							
-							if (meterRegistry.enabled) {
-								meterRegistry.record(fn.getQualifiedName(), System.nanoTime() - nanos);
-							}
-							
-							return val;
+							return fn.apply(elArgs);
 						}
 						finally {
 							callStack.pop();
 							checkInterrupted();
 							sandboxMaxExecutionTimeChecker.check();
+							
+							if (meterRegistry.enabled) {
+								meterRegistry.record(fn.getQualifiedName(), System.nanoTime() - nanos);
+							}
 						}
 					}
 					else if (Types.isIVncFunction(elFirst)) {

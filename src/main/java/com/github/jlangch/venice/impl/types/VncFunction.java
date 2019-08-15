@@ -50,10 +50,12 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 
 	public VncFunction(final String name, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
+		
+		final String ns = getNamespace(name);
+
 		this.simpleName = getSimpleName(name);
 		this.params = params;
-	
-		final String ns = getNamespace(name);
+		this.qualifiedName = "core".equals(ns) ? simpleName : ns + "/" + simpleName;
 		
 		this.fnMeta.set(MetaUtil.setNamespace(meta, ns));
 		this._private = MetaUtil.isPrivate(meta);
@@ -96,7 +98,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 	
 	public String getQualifiedName() { 
-		return "core".equals(ns) ? simpleName : ns + "/" + simpleName; 
+		return qualifiedName; 
 	}
 
 	public VncList getArgLists() { 
@@ -161,12 +163,12 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 				: "anonymous-" + name + "-" + UUID.randomUUID().toString();
 	}
 
-	private String getNamespace(final String qualifiedName) {
+	private static String getNamespace(final String qualifiedName) {
 		final int pos = qualifiedName.indexOf("/");
 		return pos < 1 ? "core" : qualifiedName.substring(0, pos);
 	}
 
-	private String getSimpleName(final String qualifiedName) {
+	private static String getSimpleName(final String qualifiedName) {
 		final int pos = qualifiedName.indexOf("/");
 		return pos < 1 ? qualifiedName : qualifiedName.substring(pos+1);
 	}
@@ -213,6 +215,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	private final VncVector params;
 	private volatile boolean macro = false;
 	private final String simpleName;
+	private final String qualifiedName;
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);

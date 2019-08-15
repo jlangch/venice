@@ -31,13 +31,9 @@ public class SandboxMaxExecutionTimeChecker implements Serializable {
 	
 	
 	public void check() {
-		if (sandboxDeadlineTime > 0) {
-			if (Thread.currentThread().isInterrupted() || 
-					System.currentTimeMillis() > sandboxDeadlineTime
-			) {
-				throw new SecurityException(
-						"Venice Sandbox: The sandbox exceeded the max execution time");
-			}
+		if (sandboxDeadlineTime > 0 && System.currentTimeMillis() > sandboxDeadlineTime) {
+			throw new SecurityException(
+					"Venice Sandbox: The sandbox exceeded the max execution time");
 		}
 	}
 

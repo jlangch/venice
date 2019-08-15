@@ -76,8 +76,7 @@ public class MeterRegistry implements Serializable {
 	}
 	
 	public void record(final String name, final long elapsedTime) {
-		final Timer oldVal = data.get(name);
-		data.put(name, oldVal == null ? new Timer(name, elapsedTime): oldVal.add(elapsedTime));
+		data.compute(name, (k, v) -> v == null ? new Timer(name, elapsedTime) : v.add(elapsedTime));
 	}
 	
 	public Collection<Timer> getTimerData() {
@@ -148,7 +147,7 @@ public class MeterRegistry implements Serializable {
 	
 	private VncMap convertToVncMap(final Timer timer) {
 		return VncHashMap.of(
-				name, new VncString(timer.name),
+				name,  new VncString(timer.name),
 				count, new VncLong(timer.count),
 				nanos, new VncLong(timer.elapsedNanos));
 	}

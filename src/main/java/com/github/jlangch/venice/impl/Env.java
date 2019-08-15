@@ -97,7 +97,7 @@ public class Env implements Serializable {
 	 * @throws VncException if the symbol does not exist.
 	 */
 	public VncVal get(final VncSymbol sym) {
-		final VncVal val = getOrNull(sym);
+		final VncVal val = getOrElse(sym, null);
 		if (val != null) return val;
 
 		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
@@ -124,8 +124,7 @@ public class Env implements Serializable {
 	 * @return the value or <code>Nil</code> if not found
 	 */
 	public VncVal getOrNil(final VncSymbol sym) {
-		final VncVal val = getOrNull(sym);
-		return val != null ? val : Nil;
+		return getOrElse(sym, Nil);
 	}
 
 	/**
@@ -378,15 +377,15 @@ public class Env implements Serializable {
 		return null;
 	}
 	
-	private VncVal getOrNull(final VncSymbol sym) {
+	private VncVal getOrElse(final VncSymbol sym, final VncVal defaultVal) {
 		final Env e = findEnv(sym);
 		if (e != null) {
 			final Var loc = e.getLocalVar(sym);
-			return loc == null ? null : loc.getVal();
+			return loc == null ? defaultVal : loc.getVal();
 		}
 		else {
 			final Var glob = getGlobalVar(sym);
-			return glob == null ? null : glob.getVal();
+			return glob == null ? defaultVal : glob.getVal();
 		}
 	}
 	
