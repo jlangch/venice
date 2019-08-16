@@ -52,9 +52,9 @@ import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -144,9 +144,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	public Env createEnv(final List<String> preloadExtensionModules) {
 		final Env env = new Env(null);
-	
-		final VncMutableMap loadedModules = new VncMutableMap();
-		
+			
 		Functions
 			.functions
 			.entrySet()
@@ -163,7 +161,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 		
 		// loaded modules
-		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, false));
+		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncHashSet(), true));
 
 		// init namespaces
 		initNS();
@@ -177,7 +175,10 @@ public class VeniceInterpreter implements Serializable  {
 			final long nanos = System.nanoTime();
 			RE("(eval " + ModuleLoader.load(m) + ")", m, env);
 			meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos);
-			loadedModules.assoc(new VncKeyword(m), new VncLong(System.currentTimeMillis()));
+			
+			env.setGlobal(
+				new Var(LOADED_MODULES_SYMBOL, 
+				((VncHashSet)env.getGlobalOrNull(LOADED_MODULES_SYMBOL)).add(new VncKeyword(m))));
 		});
 		
 		return env;
@@ -1278,6 +1279,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
+	private static final VncSymbol LOADED_MODULES_SYMBOL = new VncSymbol("*loaded-modules*");
 	
 	private final IInterceptor interceptor;	
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	

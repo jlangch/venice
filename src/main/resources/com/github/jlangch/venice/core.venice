@@ -468,9 +468,9 @@
 
    load-module [s]
 
-   `(when-not (contains? *loaded-modules* (keyword (name ~s)))
+   `(when-not (contains? core/*loaded-modules* (keyword (name ~s)))
       (let [module (read-string (str "(do " (load-core-module ~s) ")") ~s)]
-        (assoc! *loaded-modules* (keyword (name ~s)) (current-time-millis))
+        (set! core/*loaded-modules* (cons (keyword (name ~s)) core/*loaded-modules*))
         (eval module)
         (keyword (name ~s)))))
 
