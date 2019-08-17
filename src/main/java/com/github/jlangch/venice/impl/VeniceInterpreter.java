@@ -667,7 +667,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);
 			if (!Types.isVncMacro(fn)) break;
 
-			// validate that the macro allowed by the sandbox
+			// validate that the macro is allowed by the sandbox
 			interceptor.validateVeniceFunction(((VncFunction)fn).getQualifiedName());					
 
 			expanded = true; 

@@ -83,8 +83,9 @@
 
    ([] true)
    ([x] x)
-   ([x & next] `(let [cond_ ~x]
-                   (if cond_ (and ~@next) cond_))))
+   ([x & next] (let [cond_ (gensym "cond_")]
+                 `(let [~cond_ ~x]
+                    (if ~cond_ (and ~@next) ~cond_)))))
 
 
 (defmacro
@@ -96,8 +97,9 @@
 
    ([] false)
    ([x] x)
-   ([x & next] `(let [cond_ ~x]
-                   (if cond_ cond_ (or ~@next)))))
+   ([x & next] (let [cond_ (gensym "cond_")]
+                 `(let [~cond_ ~x]
+                    (if ~cond_ ~cond_ (or ~@next))))))
 
 
 (defmacro
@@ -191,10 +193,12 @@
 
    if-let [bindings then else]
 
-   (let [form (first bindings) tst (second bindings)]
-     `(let [temp_ ~tst]
-        (if temp_
-          (let [~form temp_]
+   (let [temp (gensym "temp_")
+         form (first bindings)
+         tst (second bindings)]
+     `(let [~temp ~tst]
+        (if ~temp
+          (let [~form ~temp]
             ~then)
           ~else))))
 

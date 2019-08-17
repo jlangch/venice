@@ -25,10 +25,10 @@ import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
@@ -97,7 +97,7 @@ public class ModuleLoader {
 	}
 		
 		
-	private static final Map<String,String> modules = new HashMap<>();
+	private static final Map<String,String> modules = new ConcurrentHashMap<>();
 	
 	public static final Set<String> VALID_MODULES = 
 			Collections.unmodifiableSet(
