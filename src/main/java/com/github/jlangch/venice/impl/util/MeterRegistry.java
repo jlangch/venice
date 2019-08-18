@@ -76,7 +76,13 @@ public class MeterRegistry implements Serializable {
 	}
 	
 	public void record(final String name, final long elapsedTime) {
-		data.compute(name, (k, v) -> v == null ? new Timer(name, elapsedTime) : v.add(elapsedTime));
+		if (elapsedTime > 0) {
+			data.compute(
+					name, 
+					(k, v) -> v == null 
+								? new Timer(name, elapsedTime) 
+								: v.add(elapsedTime));
+		}
 	}
 	
 	public Collection<Timer> getTimerData() {

@@ -414,11 +414,13 @@ public class Env implements Serializable {
 		
 		// validatePrivateSymbolAccess(sym);
 		
-		if (name.startsWith("core/")) {
+		final boolean qualified = Namespaces.isQualified(name);
+		
+		if (qualified && name.startsWith("core/")) {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
-				
-		if (!Namespaces.isQualified(name)) {
+		
+		if (!qualified) {
 			final VncSymbol ns = Namespaces.getCurrentNS();
 			if (!Namespaces.isCoreNS(ns)) {
 				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
