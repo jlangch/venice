@@ -18,7 +18,8 @@ Venice supports macros, tail-recursion, dynamic code loading, dynamic
 (thread-local) binding. It comes with excellent Java interoperability, and a 
 configurable sandbox that can prevent all sorts of dangerous JVM interactions 
 like reading/writing files, invoking _System.exit(0)_ or any other malicious 
-action.
+action. Venice has been designed from the ground-up with a sandbox making it 
+a first class citizen.
 
 Venice's immutable persistent data structures together with Clojure style atoms, 
 futures, promises, and agents greatly simplify writing concurrent code.
