@@ -832,6 +832,14 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_frequencies() {
+		final Venice venice = new Venice();
+		
+		assertEquals(3L, venice.eval("(:a (frequencies [:a :a :b :a]))"));
+		assertEquals(1L, venice.eval("(:b (frequencies [:a :a :b :a]))"));
+	}
+
+	@Test
 	public void test_gensym() {
 		final Venice venice = new Venice();
 

@@ -351,6 +351,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("replace"));
 		generic.addItem(getDocItem("range"));
 		generic.addItem(getDocItem("group-by"));
+		generic.addItem(getDocItem("frequencies"));
 		generic.addItem(getDocItem("get-in"));
 		generic.addItem(getDocItem("seq"));
 

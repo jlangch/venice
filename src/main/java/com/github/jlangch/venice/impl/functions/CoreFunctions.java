@@ -4503,6 +4503,42 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction frequencies =
+		new VncFunction(
+				"frequencies",
+				VncFunction
+					.meta()
+					.arglists("(frequencies coll)")
+					.doc(
+						"Returns a map from distinct items in coll to the number of times " + 
+						"they appear.")
+					.examples(
+						"(frequencies [:a :b :a :a])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("frequencies", args, 1);
+
+				final VncSequence coll = Coerce.toVncSequence(args.first());
+
+				final Map<VncVal,VncLong> map = new HashMap<>();
+
+				for(VncVal v : coll.getList()) {
+					VncLong count = map.get(v);
+					if (count == null) {
+						map.put(v, new VncLong(1L));
+					}
+					else {
+						map.put(v, new VncLong(count.getValue()+1));
+					}
+				}
+
+				return new VncHashMap(map);
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	// General sequence functions
 	public static VncFunction apply =
 		new VncFunction(
@@ -5545,6 +5581,7 @@ public class CoreFunctions {
 				.add(reduce_kv)
 				.add(replace)
 				.add(group_by)
+				.add(frequencies)
 				.add(sort)
 				.add(sort_by)
 				.add(some)
