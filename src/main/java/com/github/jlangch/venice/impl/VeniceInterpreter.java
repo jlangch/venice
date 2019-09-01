@@ -95,6 +95,7 @@ public class VeniceInterpreter implements Serializable  {
 		nsRegistry.add(new Namespace(Namespaces.NS_IO));
 		nsRegistry.add(new Namespace(Namespaces.NS_STR));
 		nsRegistry.add(new Namespace(Namespaces.NS_REGEX));
+		nsRegistry.add(new Namespace(Namespaces.NS_TIME));
 		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
 	

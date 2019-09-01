@@ -80,6 +80,7 @@ public class Namespaces {
 	public static final VncSymbol NS_IO = new VncSymbol("io");
 	public static final VncSymbol NS_STR = new VncSymbol("str");
 	public static final VncSymbol NS_REGEX = new VncSymbol("regex");
+	public static final VncSymbol NS_TIME = new VncSymbol("time");
 	
 	public static final Set<String> RESERVED_NAMESPACES = 
 			Collections.unmodifiableSet(
