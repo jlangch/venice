@@ -15,9 +15,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- Fixed JSON to handle empty objects and empty arrays.
-- Fixed `reduce-kv`. Can now reduce to any type not just maps.
-- Fixed `flatten`. Keep it from flattening maps.
+- fixed JSON to handle empty objects and empty arrays.
+- fixed `reduce-kv`. Can now reduce to any type not just maps.
+- fixed `flatten`. Keep it from flattening maps.
+
+### Info
+
+- tested JSON reader on large files. Reading a 800MB JSON file into
+  Venice data types took 3.5s on a 2017 MacBook Pro.
 
 
 
