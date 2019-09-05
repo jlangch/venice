@@ -36,7 +36,7 @@ import java.nio.charset.Charset;
  */
 final class JsonTokener {
 	// Used by tests
-	static final int BUFFER_SIZE = 32 * 1024;
+	static final int BUFFER_SIZE = 1 * 1024 * 1024;
 
 	static final int BUFFER_ROOM = 256;
 
