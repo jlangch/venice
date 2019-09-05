@@ -229,6 +229,23 @@ public class JsonFunctionsTest {
 		assertEquals(
 			"({a 100 b 100} {a 200 b 200})", 
 			venice.eval("(str (json/read-str \"\"\"[{\"a\": 100,\"b\": 100}, {\"a\": 200, \"b\": 200}]\"\"\"))"));
+
+		assertEquals(
+			"({a 100 b 100} {a 200 b 200})", 
+			venice.eval("(str (json/read-str \"\"\"[ { \"a\" : 100, \n\"b\" : 100 \n}, { \"a\" : 200, \n\"b\" : 200 } ]\"\"\"))"));
+	}
+	
+	@Test
+	public void test_json_read_str_empty_array() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+			"{a ()}", 
+			venice.eval("(str (json/read-str \"\"\"{\"a\" : [ ]}\"\"\"))"));
+
+		assertEquals(
+			"{a () b 12}", 
+			venice.eval("(str (json/read-str \"\"\"{\"a\" : [ ], \"b\" : 12}\"\"\"))"));
 	}
 
 	@Test

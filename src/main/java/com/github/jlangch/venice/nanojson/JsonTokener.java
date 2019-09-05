@@ -72,6 +72,20 @@ final class JsonTokener {
 	static final int TOKEN_ARRAY_START = 11;
 	static final int TOKEN_VALUE_MIN = TOKEN_NULL;
 
+	static final String[] TOKEN_SYMBOL = {
+							"EOF",
+							"COMMA",
+							"COLON",
+							"OBJECT_END",
+							"ARRAY_END",
+							"NULL",
+							"TRUE",
+							"FALSE",
+							"STRING",
+							"NUMBER",
+							"OBJECT_START",
+							"ARRAY_START" };
+
 	/**
 	 * A {@link Reader} that reads a UTF8 stream without decoding it for performance.
 	 */

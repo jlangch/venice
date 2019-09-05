@@ -82,10 +82,12 @@ public final class JsonParser {
 				InputStream stm = url.openStream();
 				try {
 					return from(stm);
-				} finally {
+				} 
+				finally {
 					stm.close();
 				}
-			} catch (IOException e) {
+			} 
+			catch (IOException e) {
 				throw new JsonParserException(e, "IOException opening URL", 1, 1, 0);
 			}
 		}
@@ -146,10 +148,11 @@ public final class JsonParser {
 		Object parsed = currentValue();
 		if (advanceToken() != JsonTokener.TOKEN_EOF)
 			throw tokener.createParseException(null, "Expected end of input, got " + token, true);
-		if (clazz != Object.class && (parsed == null || !clazz.isAssignableFrom(parsed.getClass())))
+		if (clazz != Object.class && (parsed == null || !clazz.isAssignableFrom(parsed.getClass()))) {
 			throw tokener.createParseException(null,
 					"JSON did not contain the correct type, expected " + clazz.getSimpleName() + ".", 
 					true);
+		}
 		return clazz.cast(parsed);
 	}
 
@@ -158,9 +161,10 @@ public final class JsonParser {
 	 */
 	private Object currentValue() throws JsonParserException {
 		// Only a value start token should appear when we're in the context of parsing a JSON value
-		if (token >= JsonTokener.TOKEN_VALUE_MIN)
+		if (token >= JsonTokener.TOKEN_VALUE_MIN) {
 			return value;
-		throw tokener.createParseException(null, "Expected JSON value, got " + token, true);
+		}
+		throw tokener.createParseException(null, "Expected JSON value, got " + JsonTokener.TOKEN_SYMBOL[token], true);
 	}
 
 	/*
@@ -172,38 +176,48 @@ public final class JsonParser {
 		switch (token) {
 		case JsonTokener.TOKEN_ARRAY_START: // Inlined function to avoid additional stack
 			JsonArray list = new JsonArray();
-			if (advanceToken() != JsonTokener.TOKEN_ARRAY_END)
+			if (advanceToken() != JsonTokener.TOKEN_ARRAY_END) {
 				while (true) {
 					list.add(currentValue());
-					if (advanceToken() == JsonTokener.TOKEN_ARRAY_END)
+					if (advanceToken() == JsonTokener.TOKEN_ARRAY_END) {
 						break;
-					if (token != JsonTokener.TOKEN_COMMA)
+					}
+					if (token != JsonTokener.TOKEN_COMMA) {
 						throw tokener.createParseException(null,
-								"Expected a comma or end of the array instead of " + token, true);
-					if (advanceToken() == JsonTokener.TOKEN_ARRAY_END)
+								"Expected a comma or end of the array instead of " + JsonTokener.TOKEN_SYMBOL[token], true);
+					}
+					if (advanceToken() == JsonTokener.TOKEN_ARRAY_END) {
 						throw tokener.createParseException(null, "Trailing comma found in array", true);
+					}
 				}
+			}
 			value = list;
 			return token = JsonTokener.TOKEN_ARRAY_START;
 		case JsonTokener.TOKEN_OBJECT_START: // Inlined function to avoid additional stack
 			JsonObject map = new JsonObject();
-			if (advanceToken() != JsonTokener.TOKEN_OBJECT_END)
+			if (advanceToken() != JsonTokener.TOKEN_OBJECT_END) {
 				while (true) {
-					if (token != JsonTokener.TOKEN_STRING)
-						throw tokener.createParseException(null, "Expected STRING, got " + token, true);
+					if (token != JsonTokener.TOKEN_STRING) {
+						throw tokener.createParseException(null, "Expected STRING, got " + JsonTokener.TOKEN_SYMBOL[token], true);
+					}
 					String key = (String)value;
-					if (advanceToken() != JsonTokener.TOKEN_COLON)
-						throw tokener.createParseException(null, "Expected COLON, got " + token, true);
+					if (advanceToken() != JsonTokener.TOKEN_COLON) {
+						throw tokener.createParseException(null, "Expected COLON, got " + JsonTokener.TOKEN_SYMBOL[token], true);
+					}
 					advanceToken();
 					map.put(key, currentValue());
-					if (advanceToken() == JsonTokener.TOKEN_OBJECT_END)
+					if (advanceToken() == JsonTokener.TOKEN_OBJECT_END) {
 						break;
-					if (token != JsonTokener.TOKEN_COMMA)
+					}
+					if (token != JsonTokener.TOKEN_COMMA) {
 						throw tokener.createParseException(null,
-								"Expected a comma or end of the object instead of " + token, true);
-					if (advanceToken() == JsonTokener.TOKEN_OBJECT_END)
+								"Expected a comma or end of the object instead of " + JsonTokener.TOKEN_SYMBOL[token], true);
+					}
+					if (advanceToken() == JsonTokener.TOKEN_OBJECT_END) {
 						throw tokener.createParseException(null, "Trailing object found in array", true);
+					}
 				}
+			}
 			value = map;
 			return token = JsonTokener.TOKEN_OBJECT_START;
 		case JsonTokener.TOKEN_TRUE:
@@ -242,7 +256,8 @@ public final class JsonParser {
 			// Quick parse for single-digits
 			if (number.length() == 1) {
 				return number.charAt(0) - '0';
-			} else if (number.length() == 2 && number.charAt(0) == '-') {
+			} 
+			else if (number.length() == 2 && number.charAt(0) == '-') {
 				return '0' - number.charAt(1);
 			}
 
@@ -250,13 +265,16 @@ public final class JsonParser {
 			boolean firstMinus = number.charAt(0) == '-';
 			int length = firstMinus ? number.length() - 1 : number.length();
 			// CHECKSTYLE_OFF: MagicNumber
-			if (length < 10 || (length == 10 && number.charAt(firstMinus ? 1 : 0) < '2')) // 2 147 483 647
+			if (length < 10 || (length == 10 && number.charAt(firstMinus ? 1 : 0) < '2')) { // 2 147 483 647
 				return Integer.parseInt(number);
-			if (length < 19 || (length == 19 && number.charAt(firstMinus ? 1 : 0) < '9')) // 9 223 372 036 854 775 807
+			}
+			if (length < 19 || (length == 19 && number.charAt(firstMinus ? 1 : 0) < '9')) { // 9 223 372 036 854 775 807
 				return Long.parseLong(number);
+			}
 			// CHECKSTYLE_ON: MagicNumber
 			return new BigInteger(number);
-		} catch (NumberFormatException e) {
+		} 
+		catch (NumberFormatException e) {
 			throw tokener.createParseException(e, "Malformed number: " + number, true);
 		}
 	}
