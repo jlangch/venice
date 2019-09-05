@@ -2348,6 +2348,8 @@ public class CoreFunctionsTest {
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (reduce-kv (fn [m k v] (assoc m k v)) (sorted-map ) {:a 1 :b 2 :c 3}))"));
 		
 		assertEquals("{:a 2 :b 3 :c 4}", venice.eval("(str (reduce-kv (fn [m k v] (assoc m k (inc v))) (sorted-map ) {:a 1 :b 2 :c 3}))"));
+		 
+		assertEquals(6L, venice.eval("(reduce-kv (fn [x y z] (+ x z)) 0 {:a 1 :b 2 :c 3})"));
 	}
 
 	@Test

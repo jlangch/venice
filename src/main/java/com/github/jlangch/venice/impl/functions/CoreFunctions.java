@@ -4928,9 +4928,9 @@ public class CoreFunctions {
 				assertArity("reduce-kv", args, 3);
 
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
-				final List<VncMapEntry> values = Coerce.toVncHashMap(args.nth(2)).entries();
+				final List<VncMapEntry> values = Coerce.toVncHashMap(args.third()).entries();
 
-				VncMap value = (VncMap)args.second();
+				VncVal value = args.second();
 
 				if (values.isEmpty()) {
 					return value;
@@ -4940,7 +4940,7 @@ public class CoreFunctions {
 						final VncVal key = entry.getKey();
 						final VncVal val = entry.getValue();
 
-						value = Coerce.toVncMap(reduceFn.apply(VncList.of(value, key, val)));
+						value = reduceFn.apply(VncList.of(value, key, val));
 					}
 
 					return value;

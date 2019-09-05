@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - Fixed JSON to handle empty objects and empty arrays
+- Fixed `reduce-kv`. Can now reduce to any type not just maps
 
 
 
