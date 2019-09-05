@@ -25,8 +25,15 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -116,14 +123,15 @@ public class JsonFunctions {
 						"(json/spit out val & options)")		
 					.doc(
 						"Spits the JSON converted val to the output.\n" +
-						"out maybe a Java OutputStream or a Java Writer. \n\n" +
+						"out maybe a file, a Java OutputStream, or a Java Writer. \n\n" +
 						"Options are: \n" +
 						"  :pretty boolean \n" + 
 						"      Enables/disables pretty printing. \n" +
 						"      Defaults to false. \n" +
 						"  :decimal-as-double boolean \n" + 
 						"      If true emit a decimal as double else as string. \n" +
-						"      Defaults to false.")
+						"      Defaults to false. \n" +
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
 						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
@@ -144,8 +152,21 @@ public class JsonFunctions {
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
 					final boolean prettyPrint = isTrueOption(options, "pretty"); 
 					final boolean decimalAsDouble = isTrueOption(options, "decimal-as-double"); 
+					final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
-					if (out instanceof PrintStream) {
+					if (out instanceof File) {
+						try (BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream((File)out), encoding))) {
+							final JsonAppendableWriter writer = prettyPrint
+									? JsonWriter.indent(INDENT).on(wr)
+									: JsonWriter.on(wr);
+									
+							new VncJsonWriter(writer, decimalAsDouble).write(val).done();
+						}
+						catch(Exception ex) {
+							throw new VncException("Function 'json/spit'. Failed to spit JSON to File", ex);
+						}				
+					}
+					else if (out instanceof PrintStream) {
 						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((PrintStream)out)
 																: JsonWriter.on((PrintStream)out);
@@ -153,11 +174,16 @@ public class JsonFunctions {
 						new VncJsonWriter(writer, decimalAsDouble).write(val).done();
 					}
 					else if (out instanceof OutputStream) {
-						final JsonAppendableWriter writer = prettyPrint
-																? JsonWriter.indent(INDENT).on((OutputStream)out)
-																: JsonWriter.on((OutputStream)out);
-																
-						new VncJsonWriter(writer, decimalAsDouble).write(val).done();
+						try (BufferedWriter wr = new BufferedWriter(new OutputStreamWriter((OutputStream)out, encoding))) {
+							final JsonAppendableWriter writer = prettyPrint
+																	? JsonWriter.indent(INDENT).on(wr)
+																	: JsonWriter.on(wr);
+																	
+							new VncJsonWriter(writer, decimalAsDouble).write(val).done();
+						}
+						catch(Exception ex) {
+							throw new VncException("Function 'json/spit'. Failed to spit JSON to File", ex);
+						}				
 					}
 					else if (out instanceof Writer) {
 						final JsonAppendableWriter writer = prettyPrint
@@ -252,7 +278,7 @@ public class JsonFunctions {
 					.arglists("(json/slurp in & options)")		
 					.doc(
 						"Slurps a JSON string from the input and returns it as a Venice datatype.\n" +
-						"in maybe a Java InputStream or a Java Reader. \n\n" +
+						"in maybe a file, a Java InputStream, or a Java Reader. \n\n" +
 						"Options are: \n" +
 						"  :key-fn fn  \n" + 
 						"      Single-argument function called on JSON property names; \n" +
@@ -267,7 +293,8 @@ public class JsonFunctions {
 						"      in the output. The default value-fn returns the value unchanged.\n" + 
 						"  :decimal boolean \n" + 
 						"      If true use BigDecimal for decimal numbers instead of Double.\n" + 
-						"      Default is false.")
+						"      Default is false.\n" +
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.examples(
 						"(let [json (json/write-str {:a 100 :b 100})             \n" +
 						"      data (bytebuf-from-string json :utf-8)            \n" +
@@ -291,15 +318,23 @@ public class JsonFunctions {
 						final VncFunction key_fn = getFunctionOption(options, "key-fn"); 
 						final VncFunction value_fn = getFunctionOption(options, "value-fn"); 
 						final boolean toDecimal = isTrueOption(options, "decimal"); 
-						
+						final String encoding = encoding(options.get(new VncKeyword("encoding")));
+
 						final Function<VncVal,VncVal> keyFN = 
 								key_fn == null ? null : (key) -> key_fn.apply(VncList.of(key));
 
 						final BiFunction<VncVal,VncVal,VncVal> valueFN = 
 								value_fn == null ? null : (k, v) -> value_fn.apply(VncList.of(k, v));
 
-						if (in instanceof InputStream) {
-							return new VncJsonReader(JsonReader.from((InputStream)in), keyFN, valueFN, toDecimal).read();
+						if (in instanceof File) {
+							try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream((File)in), encoding))) {
+								return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
+							}
+						}
+						else if (in instanceof InputStream) {
+							try (BufferedReader br = new BufferedReader(new InputStreamReader((InputStream)in, encoding))) {
+								return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
+							}
 						}
 						else if (in instanceof Reader) {
 							return new VncJsonReader(JsonReader.from((Reader)in), keyFN, valueFN, toDecimal).read();
@@ -359,6 +394,14 @@ public class JsonFunctions {
 	private static VncFunction getFunctionOption(final VncHashMap options, final String optionName) {
 		final VncVal val = options.get(new VncKeyword(optionName)); 
 		return val == Constants.Nil ? null : Coerce.toVncFunction(val);
+	}
+	
+	private static String encoding(final VncVal enc) {
+		return enc == Nil
+				? "UTF-8"
+				: Types.isVncKeyword(enc)
+					? Coerce.toVncKeyword(enc).getValue()
+					: Coerce.toVncString(enc).getValue();
 	}
 
 	
