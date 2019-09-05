@@ -288,7 +288,7 @@ public final class JsonReader {
 		if (inObject) {
 			if (token == JsonTokener.TOKEN_OBJECT_END) {
 				inObject = states.get(--stateIndex);
-				//first = false;  // fixed empty object:  {"a" : { }}
+				first = false;  // fixed empty object:  {"a" : { }}
 				return false;
 			}
 			
@@ -312,7 +312,7 @@ public final class JsonReader {
 		else {
 			if (token == JsonTokener.TOKEN_ARRAY_END) {
 				inObject = states.get(--stateIndex);
-				//first = false;  // fixed empty array:  {"a" : [ ], "b" : 12}
+				first = false;  // fixed empty array:  {"a" : [ ], "b" : 12}
 				return false;
 			}
 			if (!first) {
