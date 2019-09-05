@@ -1047,7 +1047,9 @@ public class TransducerFunctions {
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(flatten [])",
-						"(flatten [[1 2 3] [4 [5 6]] [7 [8 [9]]]])")
+						"(flatten [[1 2 3] [4 [5 6]] [7 [8 [9]]]])",
+						"(flatten [1 2 {:a 3 :b [4 5 6]}])",
+						"(flatten (seq {:a 1 :b 2}))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1207,12 +1209,6 @@ public class TransducerFunctions {
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncSequence(value)) {
 			Coerce.toVncSequence(value).forEach(v -> flatten(v, result));
-		}
-		else if (Types.isVncMap(value)) {
-			((VncMap)value).entries().forEach(e -> {
-				result.add(e.getKey());
-				flatten(e.getValue(), result);
-			});
 		}
 		else {
 			result.add(value);

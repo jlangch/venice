@@ -979,7 +979,9 @@ public class TransducerFunctionsTest {
 
 		assertEquals("(1 2 3 4 5 6)", venice.eval("(str (flatten '(1 2 (3 4 (5 6)))))"));
 
-		assertEquals("(:a 1 :b 2)", venice.eval("(str (flatten '({:a 1 :b 2})))"));
+		assertEquals("({:a 1 :b 2})", venice.eval("(str (flatten '({:a 1 :b 2})))"));
+		assertEquals("({:a 1 :b 2})", venice.eval("(str (flatten '(({:a 1 :b 2}))))"));
+		assertEquals("(:a 1 :b 2)", venice.eval("(str (flatten (seq {:a 1 :b 2})))"));
 		assertEquals("(1 :a 2 :b 3)", venice.eval("(str (flatten '(1 (:a 2 :b 3))))"));
 		assertEquals("(1 2 :a 3 :b 4)", venice.eval("(str (flatten '(1 2 (:a 3 :b 4))))"));
 		assertEquals("(1 2 :a 3 :b 4 5 6)", venice.eval("(str (flatten '(1 2 (:a 3 :b (4 5 6)))))"));
@@ -999,8 +1001,9 @@ public class TransducerFunctionsTest {
 
 		assertEquals("[1 2 3 4 5 6]", venice.eval("(str (flatten [1 2 [3 4 [5 6]]]))"));
 
-		assertEquals("[:a 1 :b 2]", venice.eval("(str (flatten [{:a 1 :b 2}]))"));
-		assertEquals("[1 :a 2 :b 3]", venice.eval("(str (flatten [1 {:a 2 :b 3}]))"));
-		assertEquals("[1 2 :a 3 :b 4 5 6]", venice.eval("(str (flatten [1 2 {:a 3 :b [4 5 6]}]))"));
+		assertEquals("[{:a 1 :b 2}]", venice.eval("(str (flatten [{:a 1 :b 2}]))"));
+		assertEquals("[{:a 1 :b 2}]", venice.eval("(str (flatten [[{:a 1 :b 2}]]))"));
+		assertEquals("[1 {:a 2 :b 3}]", venice.eval("(str (flatten [1 {:a 2 :b 3}]))"));
+		assertEquals("[1 2 {:a 3 :b [4 5 6]}]", venice.eval("(str (flatten [1 2 {:a 3 :b [4 5 6]}]))"));
 	}
 }
