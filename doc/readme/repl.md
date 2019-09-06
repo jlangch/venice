@@ -125,6 +125,17 @@ or
 > java -server -cp "./libs/*" com.github.jlangch.venice.Launcher -colors
 ```
 
+Java VM with 2GB of memory, disable using preallocated exceptions (stack traces are always generated)
+
+```text
+> java \
+    -server \
+    -cp "libs/*" com.github.jlangch.venice.Launcher \
+    -Xmx2G \
+    -XX:-OmitStackTraceInFastThrow \
+    -colors
+```
+
 ## Reload Venice context
 
 Reload the Venice context without restarting the REPL
