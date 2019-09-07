@@ -487,6 +487,7 @@ public class DocGenerator {
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
 		vec_test.addItem(getDocItem("contains?"));
+		vec_test.addItem(getDocItem("not-contains?"));
 		vec_test.addItem(getDocItem("every?"));
 		vec_test.addItem(getDocItem("not-every?"));
 		vec_test.addItem(getDocItem("any?"));

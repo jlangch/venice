@@ -2237,6 +2237,7 @@ public class CoreFunctions {
 						"Returns true if key is present in the given collection, otherwise " +
 						"returns false.")
 					.examples(
+						"(contains? #{:a :b} :a)",
 						"(contains? {:a 1 :b 2} :a)",
 						"(contains? [10 11 12] 1)",
 						"(contains? [10 11 12] 5)",
@@ -2272,6 +2273,34 @@ public class CoreFunctions {
 							"Function 'contains?' does not allow %s as coll",
 							Types.getType(coll)));
 				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
+	public static VncFunction not_contains_Q =
+		new VncFunction(
+				"not-contains?",
+				VncFunction
+					.meta()
+					.arglists("(not-contains? coll key)")
+					.doc(
+						"Returns true if key is not present in the given collection, otherwise " +
+						"returns false.")
+					.examples(
+						"(not-contains? #{:a :b} :c)",
+						"(not-contains? {:a 1 :b 2} :c)",
+						"(not-contains? [10 11 12] 1)",
+						"(not-contains? [10 11 12] 5)",
+						"(not-contains? \"abc\" 1)",
+						"(not-contains? \"abc\" 5)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("not-contains?", args, 2);
+
+				return contains_Q.apply(args) == True ? False : True;
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -3220,6 +3249,7 @@ public class CoreFunctions {
 						"(any? number? [])",
 						"(any? number? [1 :a :b])",
 						"(any? number? [1 2 3])",
+						"(any? #(== % 10) [10 20 30])",
 						"(any? #(>= % 10) [1 5 10])")
 					.build()
 		) {
@@ -5513,6 +5543,7 @@ public class CoreFunctions {
 				.add(dissoc)
 				.add(dissoc_BANG)
 				.add(contains_Q)
+				.add(not_contains_Q)
 				.add(find)
 				.add(get)
 				.add(get_in)
