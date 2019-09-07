@@ -3861,7 +3861,8 @@ public class CoreFunctions {
 						"(rest [1 2 3])",
 						"(rest '())",
 						"(rest '(1))",
-						"(rest '(1 2 3))")
+						"(rest '(1 2 3))",
+						"(rest \"1234\"")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3879,6 +3880,19 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncJavaList(coll)) {
 					return ((VncJavaList)coll).rest();
+				}
+				else if (Types.isVncString(coll)) {
+					final String s = ((VncString)coll).getValue();
+					if (s.length() > 1) {
+						final List<VncVal> lst = new ArrayList<VncVal>();
+						for (char c : s.toCharArray()) {
+							lst.add(new VncString(String.valueOf(c)));
+						}
+						return new VncList(lst).rest();
+					}
+					else {
+						return new VncList();
+					}
 				}
 				else {
 					throw new VncException(String.format(
@@ -3904,7 +3918,8 @@ public class CoreFunctions {
 						"(butlast [1 2 3])",
 						"(butlast '())",
 						"(butlast '(1))",
-						"(butlast '(1 2 3))")
+						"(butlast '(1 2 3))",
+						"(butlast \"1234\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3925,6 +3940,19 @@ public class CoreFunctions {
 				else if (Types.isVncJavaList(coll)) {
 					final VncList list = ((VncJavaList)coll).toVncList();
 					return list.size() > 1 ? list.slice(0, list.size()-1) : new VncList();
+				}
+				else if (Types.isVncString(coll)) {
+					final String s = ((VncString)coll).getValue();
+					if (s.length() > 1) {
+						final List<VncVal> lst = new ArrayList<VncVal>();
+						for (char c : s.toCharArray()) {
+							lst.add(new VncString(String.valueOf(c)));
+						}
+						return new VncList(lst).slice(0, s.length()-1);
+					}
+					else {
+						return new VncList();
+					}
 				}
 				else {
 					throw new VncException(String.format(
