@@ -119,6 +119,31 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_char_Q =
+		new VncFunction(
+				"str/char?",
+				VncFunction
+					.meta()
+					.arglists("(str/char s)")
+					.doc("Returns true if s is a single char string.")
+					.examples("(str/char? \"x\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/char?", args, 1);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+
+				final VncVal s = args.first();
+				
+				return Types.isVncString(s) && ((VncString)s).size() == 1 ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_starts_with_Q =
 		new VncFunction(
 				"str/starts-with?",
@@ -1436,6 +1461,7 @@ public class StringFunctions {
 					.add(str_ends_with_Q)
 					.add(str_contains_Q)
 					.add(str_equals_ignore_case_Q)
+					.add(str_char_Q)
 					.add(str_digit_Q)
 					.add(str_letter_Q)
 					.add(str_linefeed_Q)

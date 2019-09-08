@@ -41,6 +41,16 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_char_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/char? \"x\")"));
+		assertTrue((Boolean)venice.eval("(str/char? \"8\")"));
+		assertFalse((Boolean)venice.eval("(str/char? \"888\")"));
+		assertFalse((Boolean)venice.eval("(str/char? 1)"));
+	}
+
+	@Test
 	public void test_str_contains() {
 		final Venice venice = new Venice();
 		
