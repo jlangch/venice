@@ -806,6 +806,7 @@ public class DocGenerator {
 		all.addSection(test);
 		test.addItem(getDocItem("macro?"));
 		test.addItem(getDocItem("cond"));
+		test.addItem(getDocItem("condp"));
 		test.addItem(getDocItem("case"));
 
 		final DocSection assert_ = new DocSection("Assert");

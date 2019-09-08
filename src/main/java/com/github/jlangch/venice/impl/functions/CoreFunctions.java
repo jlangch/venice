@@ -3867,7 +3867,7 @@ public class CoreFunctions {
 						"(rest '())",
 						"(rest '(1))",
 						"(rest '(1 2 3))",
-						"(rest \"1234\"")
+						"(rest \"1234\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

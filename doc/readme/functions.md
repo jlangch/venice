@@ -59,7 +59,7 @@
 ```
 
 
-## Maps and Keywords as functions
+## Maps, Sets, and Keywords as functions
 
 ```clojure
 (do
@@ -75,6 +75,9 @@
    ; accessing nested maps
    (let [m {:a {:b {:c 3}}}]
       (-> m :a :b :c))  ; -> 3
+
+   ; sets work as functions
+   ({:a :b} :b)
 )
 ```
 

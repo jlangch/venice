@@ -267,6 +267,19 @@ public class MacroTest {
 	}
 	
 	@Test
+	public void test_condp() {
+		final Venice venice = new Venice();
+		
+		final String script = 
+				"(condp some [1 2 3 4]        " +
+				"    #{0 6 7} :>> inc         " +
+				"    #{4 5 9} :>> dec         " +
+				"    #{1 2 3} :>> #(+ % 3))   ";
+
+		assertEquals(3L, venice.eval(script));
+	}
+	
+	@Test
 	public void test_case() {
 		final Venice venice = new Venice();
 		

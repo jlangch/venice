@@ -11,7 +11,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- ...
+- collection `set` to work as a function: `(#{1 2 3} 1)`
+- macro `condp`
+
+### Fixed
+
+- fixed function `some`
 
 
 
