@@ -2538,7 +2538,11 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals(Boolean.TRUE, venice.eval("(some even? '(1 2 3 4))"));	
-		assertEquals(null, venice.eval("(some even? '(1 3 5 7))"));	
+		assertEquals(null,         venice.eval("(some even? '(1 3 5 7))"));	
+		assertEquals(Boolean.TRUE, venice.eval("(some true? [false true false])"));	
+		assertEquals(Boolean.TRUE, venice.eval("(some #(== 5 %) [1 2 3 4 5])"));	
+		assertEquals(null,         venice.eval("(some #(== 5 %) [1 2 3 4 6])"));	
+		assertEquals(2L,           venice.eval("(some #(if (even? %) %) [1 2 3 4])"));			
 	}
 
 	@Test

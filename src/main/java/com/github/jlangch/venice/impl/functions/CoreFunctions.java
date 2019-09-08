@@ -3309,17 +3309,19 @@ public class CoreFunctions {
 				"some",
 				VncFunction
 					.meta()
-					.arglists("(some? pred coll)")
+					.arglists("(some pred coll)")
 					.doc(
 						"Returns the first logical true value of (pred x) for any x in coll, " +
 						"else nil.")
 					.examples(
 						"(some even? '(1 2 3 4))",
-						"(some even? '(1 3 5 7))")
+						"(some even? '(1 3 5 7))",
+						"(some #(== 5 %) [1 2 3 4 5])",
+						"(some #(if (even? %) %) [1 2 3 4])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("some?", args, 2);
+				assertArity("some", args, 2);
 
 				if (args.second() == Nil) {
 					return Nil;
@@ -3332,10 +3334,13 @@ public class CoreFunctions {
 						return Nil;
 					}
 
-					return coll.toVncList()
-							   .getList()
-							   .stream()
-							   .anyMatch(v -> pred.apply(VncList.of(v)) == True) ? True : Nil;
+					for(VncVal v : coll.toVncList().getList()) {
+						final VncVal r = pred.apply(VncList.of(v));
+						if (r != False && r != Nil) {
+							return r;
+						}
+					}
+					return Nil;
 				}
 			}
 
