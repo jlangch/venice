@@ -26,15 +26,25 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.functions.FunctionsUtil;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public abstract class VncSet extends VncCollection {
+public abstract class VncSet extends VncCollection implements IVncFunction {
 
 	public VncSet(VncVal meta) {
 		super(meta);
 	}
 	
+
+	@Override
+	public VncVal apply(final VncList args) {
+		FunctionsUtil.assertArity("set", args, 1);
+		
+		return contains(args.first()) ? args.first() : Constants.Nil;
+	}
 	
 	@Override
 	public abstract VncSet empty();

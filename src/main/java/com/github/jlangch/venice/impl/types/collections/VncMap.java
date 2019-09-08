@@ -41,7 +41,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	public VncVal apply(final VncList args) {
 		FunctionsUtil.assertArity("map", args, 1);
 		
-		return args.first() == Constants.Nil ? Constants.Nil : get(args.first());
+		return get(args.first());
 	}
 
 	
