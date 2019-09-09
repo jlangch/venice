@@ -185,7 +185,8 @@ Venice supports functions calling each other without needing to `declare` them
 or bind them with `letfn` as required with _Clojure_.
 
 Nevertheless alternately calling functions can cause stack overflows if the 
-recursion is too deep. In such a case one needs to use `loop` - `recur`.
+recursion is too deep. As of now Venice does not have a `trampoline` function
+to overcome this.
 
 ```clojure
 (do

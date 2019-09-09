@@ -130,13 +130,13 @@
     `(defn ~name ~args
        (fn [~state ~cok ~cerr ~eok ~eerr]
          (let [p# (>> ~@body)]
-           (Continue. #(p# ~state ~cok ~cerr ~eok ~eerr)))))))
+           (parsatron/Continue. #(p# ~state ~cok ~cerr ~eok ~eerr)))))))
 
 (defmacro >>
   ; Expands into nested nxt forms
   ([m] m)
-  ([m n] `(nxt ~m ~n))
-  ([m n & ms] `(nxt ~m (>> ~n ~@ms))))
+  ([m n] `(parsatron/nxt ~m ~n))
+  ([m n & ms] `(parsatron/nxt ~m (>> ~n ~@ms))))
 
 (defmacro let->>
   ; Expands into nested bind forms
