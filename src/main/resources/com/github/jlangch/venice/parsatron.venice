@@ -19,9 +19,9 @@
 (defn Ok. [item] { :item item :type :Ok })
 (defn Err. [errmsg] { :errmsg errmsg :type :Err })
 
-(defn Continue? [v]  (== :Continue (:type v)))
-(defn Ok? [v]  (== :Ok (:type v)))
-(defn Err? [v]  (== :Err (:type v)))
+(defn Continue? [v]  (and (map? v) (== :Continue (:type v))))
+(defn Ok? [v]  (and (map? v) (== :Ok (:type v))))
+(defn Err? [v]  (and (map? v) (== :Err (:type v))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; position
@@ -102,14 +102,14 @@
   ; will be given the value of p and must return the q to follow p
   [p f]
   (fn [state cok cerr eok eerr]
-    (letfn [(pcok [item state]
-              (sequentially
-               (fn [q] (Continue. #(q state cok cerr cok cerr)))
-               (f item)))
-            (peok [item state]
-              (sequentially
-               (fn [q] (Continue. #(q state cok cerr eok eerr)))
-               (f item)))]
+    (let [pcok (fn [item state]
+                   (sequentially
+                     (fn [q] (Continue. #(q state cok cerr cok cerr)))
+                     (f item)))
+          peok (fn [item state]
+                   (sequentially
+                     (fn [q] (Continue. #(q state cok cerr eok eerr)))
+                     (f item)))]
       (Continue. #(p state pcok cerr peok eerr)))))
 
 (defn nxt
@@ -159,9 +159,9 @@
   ; failure (if no input was consumed) tries to parse q
   [p q]
   (fn [state cok cerr eok eerr]
-    (letfn [(peerr [err-from-p]
-              (letfn [(qeerr [err-from-q]
-                        (eerr (merge-errors err-from-p err-from-q)))]
+    (let [peerr (fn [err-from-p]
+              (let [qeerr (fn [err-from-q]
+                              (eerr (merge-errors err-from-p err-from-q)))]
                 (Continue. #(q state cok cerr eok qeerr))))]
       (Continue. #(p state cok cerr eok peerr)))))
 
@@ -215,10 +215,10 @@
   ; combinator is applied to a parser that accepts the empty string, as
   ; that would cause the parser to loop forever
   [p]
-  (letfn [(many-err [_ _]
-            (fail "Combinator '*' is applied to a parser that accepts an empty string"))
-          (safe-p [state cok cerr eok eerr]
-            (Continue. #(p state cok cerr many-err eerr)))]
+  (let [many-err (fn [_ _]
+                     (fail "Combinator '*' is applied to a parser that accepts an empty string"))
+        safe-p (fn [state cok cerr eok eerr]
+                   (Continue. #(p state cok cerr many-err eerr)))]
     (either
      (let->> [x safe-p
               xs (many safe-p)]
@@ -239,8 +239,7 @@
   ; parsed
   [p]
   (fn [state cok cerr eok eerr]
-    (letfn [(ok [item _]
-              (eok item state))]
+    (let [ok (fn [item _] (eok item state))]
       (Continue. #(p state ok cerr eok eerr)))))
 
 (defn choice
