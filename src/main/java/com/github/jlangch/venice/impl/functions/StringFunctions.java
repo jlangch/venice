@@ -1024,13 +1024,18 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/digit?", args, 1);
 
-				final String str = Coerce.toVncString(args.first()).getValue();
-				if (str.length() != 1) {
-					throw new VncException(String.format(
-							"Function 'str/digit?' expects a single char string",
-							Types.getType(args.first())));
+				if (Types.isVncString(args.first())) {
+					final String str = Coerce.toVncString(args.first()).getValue();
+					if (str.length() != 1) {
+						throw new VncException(String.format(
+								"Function 'str/digit?' expects a single char string",
+								Types.getType(args.first())));
+					}
+					return Character.isDigit(str.charAt(0)) ? True : False;
 				}
-				return Character.isDigit(str.charAt(0)) ? True : False;
+				else {
+					return False;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1051,13 +1056,18 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/letter?", args, 1);
 
-				final String str = Coerce.toVncString(args.first()).getValue();
-				if (str.length() != 1) {
-					throw new VncException(String.format(
-							"Function 'str/letter?' expects a single char string",
-							Types.getType(args.first())));
+				if (Types.isVncString(args.first())) {
+					final String str = Coerce.toVncString(args.first()).getValue();
+					if (str.length() != 1) {
+						throw new VncException(String.format(
+								"Function 'str/letter?' expects a single char string",
+								Types.getType(args.first())));
+					}
+					return Character.isLetter(str.charAt(0)) ? True : False;
 				}
-				return Character.isLetter(str.charAt(0)) ? True : False;
+				else {
+					return False;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1077,13 +1087,18 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/linefeed?", args, 1);
 
-				final String str = Coerce.toVncString(args.first()).getValue();
-				if (str.length() != 1) {
-					throw new VncException(String.format(
-							"Function 'str/linefeed?' expects a single char string",
-							Types.getType(args.first())));
+				if (Types.isVncString(args.first())) {
+					final String str = Coerce.toVncString(args.first()).getValue();
+					if (str.length() != 1) {
+						throw new VncException(String.format(
+								"Function 'str/linefeed?' expects a single char string",
+								Types.getType(args.first())));
+					}
+					return str.charAt(0) == '\n' ? True : False;
 				}
-				return str.charAt(0) == '\n' ? True : False;
+				else {
+					return False;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1104,13 +1119,18 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/whitespace?", args, 1);
 
-				final String str = Coerce.toVncString(args.first()).getValue();
-				if (str.length() != 1) {
-					throw new VncException(String.format(
-							"Function 'str/whitespace?' expects a single char string",
-							Types.getType(args.first())));
+				if (Types.isVncString(args.first())) {
+					final String str = Coerce.toVncString(args.first()).getValue();
+					if (str.length() != 1) {
+						throw new VncException(String.format(
+								"Function 'str/whitespace?' expects a single char string",
+								Types.getType(args.first())));
+					}
+					return Character.isWhitespace(str.charAt(0)) ? True : False;
 				}
-				return Character.isWhitespace(str.charAt(0)) ? True : False;
+				else {
+					return False;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
