@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -230,7 +231,12 @@ public class TransducerFunctions {
 						final List<VncVal> fnArgs = new ArrayList<>();
 
 						for(int ii=0; ii<lists.size(); ii++) {
-							final VncSequence nthList = Coerce.toVncSequence(lists.nth(ii));
+							VncVal seq = lists.nth(ii);
+							if (Types.isVncString(seq)) {
+								seq = ((VncString)seq).toVncList();
+							}
+							
+							final VncSequence nthList = Coerce.toVncSequence(seq);
 							if (nthList.size() > index) {
 								fnArgs.add(nthList.nth(index));
 							}
