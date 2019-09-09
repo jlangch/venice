@@ -58,7 +58,6 @@
          (+ x y)))
 ```
 
-
 ## Maps, Sets, and Keywords as functions
 
 ```clojure
@@ -81,7 +80,6 @@
 )
 ```
 
-
 ## Function resolved from a string
 
 ```clojure
@@ -89,13 +87,11 @@
    (add 2 5))
 ```
 
-
 ## Partial functions
 
 ```clojure
 (map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
 ```
-
 
 ## Function composition
 
@@ -113,7 +109,6 @@
     
   (xform (range 0 10)))  ;; => (3 5 7 9)
 ```
-
 
 ## Function threading macros
 
@@ -165,7 +160,6 @@ Thread any `as->`, `-<>`
      (* <> 2))  ;; => "Result: 32"
 ```
 
-
 ## Multimethods
 
 Multimethods are a powerful mechanism for runtime polymorphism.
@@ -183,6 +177,25 @@ Multimethods are a powerful mechanism for runtime polymorphism.
   [ (math-op {:op "add"      :op1 1 :op2 5}) 
     (math-op {:op "subtract" :op1 1 :op2 5}) 
     (math-op {:op "bogus"    :op1 1 :op2 5}) ] )
+```
+
+## Functions calling each other:
+
+Venice supports functions calling each other without needing to `declare` them 
+or bind them with `letfn` as required with _Clojure_.
+
+Nevertheless alternately calling functions can cause stack overflows if the 
+recursion is to deep. In such a case one needs to use `loop` - `recur`.
+
+```clojure
+(do
+  (let [print-number (fn [n]
+                         (println n)
+                         (decrease n))
+        decrease (fn [n]
+                     (when (> n 0)
+                       (print-number (dec n))))]
+    (decrease 10)))
 ```
 
 
