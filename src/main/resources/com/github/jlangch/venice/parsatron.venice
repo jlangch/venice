@@ -5,6 +5,7 @@
 ;;
 ;; Introduction:
 ;; https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown
+;; https://twoguysarguing.wordpress.com/category/haskell/
 ;;
 ;; This is a Venice port of the Parsatron parser combinator.
 
@@ -79,7 +80,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; host environment
 (defn fail [message]
-  (runtime-exception message))
+  (. :VncException :new message))
 
 (defn digit? [c]
   (str/digit? c))
@@ -210,7 +211,7 @@
       (eerr (unexpect-error "end of input" pos)))))
 
 (defn many
-  ; Consume zero or more p. A RuntimeException will be thrown if this
+  ; Consume zero or more p. A VncException will be thrown if this
   ; combinator is applied to a parser that accepts the empty string, as
   ; that would cause the parser to loop forever
   [p]
@@ -321,7 +322,7 @@
 (defn run
   ; Run a parser p over some input. The input can be a string or a seq
   ; of tokens, if the parser produces an error, its message is wrapped
-  ; in a RuntimeException and thrown, and if the parser succeeds, its
+  ; in a VncException and thrown, and if the parser succeeds, its
   ; value is returned
   [p input]
   (let [result (run-parser p (InputState. input (SourcePos. 1 1)))]

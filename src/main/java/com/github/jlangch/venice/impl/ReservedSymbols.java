@@ -92,6 +92,7 @@ public class ReservedSymbols {
 					"defmethod",
 					
 					"deftype",
+					"defprotocol",
 					"defrecord"));
 	
 	private static final Set<String> reserved = 
