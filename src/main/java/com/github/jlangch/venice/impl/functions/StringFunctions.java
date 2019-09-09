@@ -701,6 +701,31 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_rest =
+		new VncFunction(
+				"str/rest",
+				VncFunction
+					.meta()
+					.arglists("(str/rest s)")
+					.doc("Returns a possibly empty string of the characters after the first.")
+					.examples("(str/rest \"abcdef\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/rest", args, 1);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				else {
+					final String s = Coerce.toVncString(args.first()).getValue();
+					return new VncString(s.length() < 2 ? "" : s.substring(1));
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_format =
 		new VncFunction(
 				"str/format",
@@ -1480,6 +1505,7 @@ public class StringFunctions {
 					.add(str_split)
 					.add(str_split_lines)
 					.add(str_format)
+					.add(str_rest)
 					.add(str_quote)
 					.add(str_double_quote)
 					.add(str_truncate)

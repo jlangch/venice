@@ -1,7 +1,10 @@
 ;; Parsatron
 
 ;; Thanks to Nate Young and his Clojure parser combinators project.
-;; (https://github.com/youngnh/parsatron).
+;; https://github.com/youngnh/parsatron
+;;
+;; Introduction:
+;; https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown
 ;;
 ;; This is a Venice port of the Parsatron parser combinator.
 

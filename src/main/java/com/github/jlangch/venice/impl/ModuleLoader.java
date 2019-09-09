@@ -103,7 +103,7 @@ public class ModuleLoader {
 			Collections.unmodifiableSet(
 				new HashSet<>(
 					Arrays.asList(
-							"core", "http", "jackson", 
+							"core", "http", "jackson", "parsatron",
 							"math", "webdav", "xchart", "test",
 							"tomcat", "ring", "maven" , "kira",
 							"xml", "crypt", "benchmark")));

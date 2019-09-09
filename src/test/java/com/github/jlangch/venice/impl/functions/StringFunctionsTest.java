@@ -227,6 +227,17 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_rest() {
+		final Venice venice = new Venice();
+
+		assertEquals("23", venice.eval("(str/rest \"123\")"));
+		assertEquals("2", venice.eval("(str/rest \"12\")"));
+		assertEquals("", venice.eval("(str/rest \"1\")"));
+		assertEquals("", venice.eval("(str/rest \"\")"));
+		assertEquals(null, venice.eval("(str/rest nil)"));
+	}
+
+	@Test
 	public void test_str_split() {
 		final Venice venice = new Venice();
 

@@ -89,7 +89,7 @@ public class Namespaces {
 							"core", "io", "str", "regex", "time",
 							"crypt", "json", "pdf", "xml", "bench",
 							"test",
-							"xchart", "kira", 
+							"xchart", "kira", "parsatron",
 							"tc", "ring", 
 							"http", "jackson",
 							"math", "webdav", "maven")));

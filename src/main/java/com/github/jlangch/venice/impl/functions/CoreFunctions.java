@@ -3858,7 +3858,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(rest coll)")
-					.doc("Returns a collection with second to list element")
+					.doc("Returns a possibly empty collection of the items after the first.")
 					.examples(
 						"(rest nil)",
 						"(rest [])",
