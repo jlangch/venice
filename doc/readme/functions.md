@@ -181,7 +181,7 @@ Multimethods are a powerful mechanism for runtime polymorphism.
 
 ## Functions calling each other:
 
-Venice supports functions calling each other without needing to `declare` them 
+Venice supports functions calling each other without needing to declare them 
 or bind them with `letfn` as required with _Clojure_.
 
 Nevertheless alternately calling functions can cause stack overflows if the 
