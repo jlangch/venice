@@ -516,6 +516,7 @@ public class DocGenerator {
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);
 		set_test.addItem(getDocItem("contains?"));
+		set_test.addItem(getDocItem("not-contains?"));
 		set_test.addItem(getDocItem("every?"));
 		set_test.addItem(getDocItem("not-every?"));
 		set_test.addItem(getDocItem("any?"));
@@ -566,6 +567,7 @@ public class DocGenerator {
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);
 		map_test.addItem(getDocItem("contains?"));
+		map_test.addItem(getDocItem("not-contains?"));
 
 		
 		final DocSection stacks = new DocSection("Stack");
