@@ -126,11 +126,12 @@
         cok   (gensym "cok_")
         cerr  (gensym "cerr_")
         eok   (gensym "eok_")
-        eerr  (gensym "eerr_")]
+        eerr  (gensym "eerr_")
+        p     (gensym "p_")]
     `(defn ~name ~args
        (fn [~state ~cok ~cerr ~eok ~eerr]
-         (let [p# (>> ~@body)]
-           (parsatron/Continue. #(p# ~state ~cok ~cerr ~eok ~eerr)))))))
+         (let [~p (>> ~@body)]
+           (parsatron/Continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
 (defmacro >>
   ; Expands into nested nxt forms
