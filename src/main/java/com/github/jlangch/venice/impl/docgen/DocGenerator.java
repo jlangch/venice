@@ -245,6 +245,8 @@ public class DocGenerator {
 		use.addItem(getDocItem("first"));
 		use.addItem(getDocItem("last"));
 		use.addItem(getDocItem("nth"));
+		use.addItem(getDocItem("nfirst"));
+		use.addItem(getDocItem("nlast"));
 		use.addItem(getDocItem("seq"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));

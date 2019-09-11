@@ -3994,33 +3994,44 @@ public class CoreFunctions {
 						"(nfirst [1 2 3] 2)",
 						"(nfirst '() 2)",
 						"(nfirst '(1) 2)",
-						"(nfirst '(1 2 3) 2)")
+						"(nfirst '(1 2 3) 2)",
+						"(nfirst \"abcdef\" 2)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("nfirst", args, 2);
 
-				if (args.first() == Nil) {
+				final VncVal coll = args.first();
+				int n = Coerce.toVncLong(args.second()).getValue().intValue();
+				
+				if (coll == Nil) {
 					return new VncList();
 				}
-				else if (Types.isVncVector(args.first())) {
-					final VncVector vec = Coerce.toVncVector(args.first());
-					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+				else if (Types.isVncVector(coll)) {
+					final VncVector vec = (VncVector)coll;
+					n = Math.max(0, Math.min(vec.size(), n));
 					return vec.isEmpty()
 							? new VncVector()
 							: new VncVector(vec.getList().subList(0, n));
 				}
-				else if (Types.isVncList(args.first()) || Types.isVncJavaList(args.first())) {
-					final VncSequence list = Coerce.toVncSequence(args.first());
-					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
+					final VncList list = (VncList)args.first();
+					n = Math.max(0, Math.min(list.size(), n));
 					return list.isEmpty()
 							? new VncList()
 							: new VncList(list.getList().subList(0, n));
 				}
+				else if (Types.isVncString(coll)) {
+					final String s = ((VncString)coll).getValue();
+					n = Math.max(0, Math.min(s.length(), n));
+					return s.isEmpty()
+							? new VncString("")
+							: new VncString(s.substring(0, n));
+				}
 				else {
 					throw new VncException(String.format(
 							"nfirst: type %s not supported",
-							Types.getType(args.first())));
+							Types.getType(coll)));
 				}
 			}
 
@@ -4041,33 +4052,44 @@ public class CoreFunctions {
 						"(nlast [1 2 3] 2)",
 						"(nlast '() 2)",
 						"(nlast '(1) 2)",
-						"(nlast '(1 2 3) 2)")
+						"(nlast '(1 2 3) 2)",
+						"(nlast \"abcdef\" 2)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("nlast", args, 2);
 
+				final VncVal coll = args.first();
+				int n = Coerce.toVncLong(args.second()).getValue().intValue();
+
 				if (args.first() == Nil) {
 					return new VncList();
 				}
-				else if (Types.isVncVector(args.first())) {
-					final VncVector vec = Coerce.toVncVector(args.first());
-					final int n = Math.max(0, Math.min(vec.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+				else if (Types.isVncVector(coll)) {
+					final VncVector vec = (VncVector)coll;
+					n = Math.max(0, Math.min(vec.size(), n));
 					return vec.isEmpty()
 							? new VncVector()
 							: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 				}
-				else if (Types.isVncList(args.first()) || Types.isVncJavaList(args.first())) {
-					final VncList list = Coerce.toVncList(args.first());
-					final int n = Math.max(0, Math.min(list.size(), Coerce.toVncLong(args.second()).getValue().intValue()));
+				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
+					final VncList list = (VncList)args.first();
+					n = Math.max(0, Math.min(list.size(),n));
 					return list.isEmpty()
 							? new VncList()
 							: new VncList(list.getList().subList(list.size()-n, list.size()));
 				}
+				else if (Types.isVncString(coll)) {
+					final String s = ((VncString)coll).getValue();
+					n = Math.max(0, Math.min(s.length(), n));
+					return s.isEmpty()
+							? new VncString("")
+							: new VncString(s.substring(s.length()-n, s.length()));
+				}
 				else {
 					throw new VncException(String.format(
 							"nlast: type %s not supported",
-							Types.getType(args.first())));
+							Types.getType(coll)));
 				}
 			}
 

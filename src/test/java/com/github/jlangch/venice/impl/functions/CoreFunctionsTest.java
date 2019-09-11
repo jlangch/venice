@@ -2009,6 +2009,12 @@ public class CoreFunctionsTest {
 		assertEquals("[1 2]", venice.eval("(str (nfirst [1 2 3] 2))"));
 		assertEquals("[1 2 3]", venice.eval("(str (nfirst [1 2 3] 3))"));
 		assertEquals("[1 2 3]", venice.eval("(str (nfirst [1 2 3] 4))"));
+
+		assertEquals("",    venice.eval("(nfirst \"abc\" 0)"));
+		assertEquals("a",   venice.eval("(nfirst \"abc\" 1)"));
+		assertEquals("ab",  venice.eval("(nfirst \"abc\" 2)"));
+		assertEquals("abc", venice.eval("(nfirst \"abc\" 3)"));
+		assertEquals("abc", venice.eval("(nfirst \"abc\" 4)"));
 	}
 
 	@Test
@@ -2039,6 +2045,12 @@ public class CoreFunctionsTest {
 		assertEquals("[2 3]", venice.eval("(str (nlast [1 2 3] 2))"));
 		assertEquals("[1 2 3]", venice.eval("(str (nlast [1 2 3] 3))"));
 		assertEquals("[1 2 3]", venice.eval("(str (nlast [1 2 3] 4))"));
+
+		assertEquals("",    venice.eval("(nlast \"abc\" 0)"));
+		assertEquals("c",   venice.eval("(nlast \"abc\" 1)"));
+		assertEquals("bc",  venice.eval("(nlast \"abc\" 2)"));
+		assertEquals("abc", venice.eval("(nlast \"abc\" 3)"));
+		assertEquals("abc", venice.eval("(nlast \"abc\" 4)"));
 	}
 	
 	@Test
