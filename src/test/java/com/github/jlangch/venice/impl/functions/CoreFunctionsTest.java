@@ -447,6 +447,9 @@ public class CoreFunctionsTest {
 
 		assertTrue((Boolean)venice.eval("(contains? (sorted-map :a 1 :b 2) :b)"));
 		assertFalse((Boolean)venice.eval("(contains? (sorted-map :a 1 :b 2) :z)"));
+
+		assertTrue((Boolean)venice.eval("(contains? #{:a :b} :b)"));
+		assertFalse((Boolean)venice.eval("(contains? #{:a :b} :z)"));
 	}
 	
 	@Test
@@ -856,27 +859,36 @@ public class CoreFunctionsTest {
 	public void test_get() {
 		final Venice venice = new Venice();
 
-		assertEquals(Long.valueOf(2L), venice.eval("(get {:a 1 :b 2} :b)"));
+		// maps
+		assertEquals(2L, venice.eval("(get {:a 1 :b 2} :b)"));
 		assertEquals(null, venice.eval("(get {:a 1 :b 2} :z)"));
 		assertEquals(null, venice.eval("(get {} :z)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get {:a 1 :b 2} :z 9)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get {} :z 9)"));
+		assertEquals(9L, venice.eval("(get {:a 1 :b 2} :z 9)"));
+		assertEquals(9L, venice.eval("(get {} :z 9)"));
 
-		assertEquals(Long.valueOf(2L), venice.eval("(get (ordered-map :a 1 :b 2) :b)"));
+		assertEquals(2L, venice.eval("(get (ordered-map :a 1 :b 2) :b)"));
 		assertEquals(null, venice.eval("(get (ordered-map :a 1 :b 2) :z)"));
 		assertEquals(null, venice.eval("(get (ordered-map ) :z)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get (ordered-map :a 1 :b 2) :z 9)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get (ordered-map ) :z 9)"));
+		assertEquals(9L, venice.eval("(get (ordered-map :a 1 :b 2) :z 9)"));
+		assertEquals(9L, venice.eval("(get (ordered-map ) :z 9)"));
 
-		assertEquals(Long.valueOf(2L), venice.eval("(get (sorted-map :a 1 :b 2) :b)"));
+		assertEquals(2L, venice.eval("(get (sorted-map :a 1 :b 2) :b)"));
 		assertEquals(null, venice.eval("(get (sorted-map :a 1 :b 2) :z)"));
 		assertEquals(null, venice.eval("(get (sorted-map ) :z)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get (sorted-map :a 1 :b 2) :z 9)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get (sorted-map ) :z 9)"));
+		assertEquals(9L, venice.eval("(get (sorted-map :a 1 :b 2) :z 9)"));
+		assertEquals(9L, venice.eval("(get (sorted-map ) :z 9)"));
 
-		assertEquals(Long.valueOf(2L), venice.eval("(get [1 2 3] 1)"));
+		// sets
+		assertEquals(2L, venice.eval("(get #{1 2} 2)"));
+		assertEquals(null, venice.eval("(get #{1 2} 3)"));
+		assertEquals(null, venice.eval("(get #{} 2)"));
+		assertEquals(9L, venice.eval("(get #{1 2} 3 9)"));
+		assertEquals(9L, venice.eval("(get #{} 3 9)"));
+
+		// vector
+		assertEquals(2L, venice.eval("(get [1 2 3] 1)"));
 		assertEquals(null, venice.eval("(get [1 2 3] 5)"));
-		assertEquals(Long.valueOf(9L), venice.eval("(get [1 2 3] 5 9)"));
+		assertEquals(9L, venice.eval("(get [1 2 3] 5 9)"));
 	}
 	
 	@Test

@@ -238,6 +238,17 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_reverse() {
+		final Venice venice = new Venice();
+
+		assertEquals("321", venice.eval("(str/reverse \"123\")"));
+		assertEquals("21", venice.eval("(str/reverse \"12\")"));
+		assertEquals("1", venice.eval("(str/reverse \"1\")"));
+		assertEquals("", venice.eval("(str/reverse \"\")"));
+		assertEquals(null, venice.eval("(str/reverse nil)"));
+	}
+
+	@Test
 	public void test_str_split() {
 		final Venice venice = new Venice();
 

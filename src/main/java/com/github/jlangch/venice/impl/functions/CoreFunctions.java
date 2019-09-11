@@ -2581,38 +2581,49 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("get", args, 2, 3);
 
-				if (args.first() == Nil) {
-					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+				final VncVal coll = args.first();
+				
+				if (coll == Nil) {
+					final VncVal key_not_found = (args.size() == 3) ? args.third() : Nil;
 					return key_not_found;
 				}
-				else if (Types.isVncMap(args.first())) {
-					final VncMap mhm = Coerce.toVncMap(args.first());
+				else if (Types.isVncMap(coll)) {
+					final VncMap map = (VncMap)coll;
 					final VncVal key = args.second();
-					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
 
-					final VncVal value = mhm.get(key);
-					return value != Nil ? value : key_not_found;
+					final VncVal value = map.get(key);
+					return value != Nil 
+								? value 
+								: args.size() == 3 ? args.third() : Nil;
 				}
-				else if (Types.isVncVector(args.first())) {
-					final VncVector vec = Coerce.toVncVector(args.first());
+				else if (Types.isVncVector(coll)) {
+					final VncVector vec = (VncVector)coll;
 					final int idx = Coerce.toVncLong(args.second()).getIntValue();
-					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+					final VncVal key_not_found = (args.size() == 3) ? args.third() : Nil;
 
 					return vec.nthOrDefault(idx, key_not_found);
 				}
-				else if (Types.isVncThreadLocal(args.first())) {
-					final VncThreadLocal th = Coerce.toVncThreadLocal(args.first());
-
+				else if (Types.isVncThreadLocal(coll)) {
+					final VncThreadLocal th = (VncThreadLocal)coll;
 					final VncKeyword key = Coerce.toVncKeyword(args.second());
-					final VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
-
 					final VncVal value = th.get(key);
-					return value != Nil ? value : key_not_found;
+					
+					return value != Nil 
+								? value 
+								: args.size() == 3 ? args.third() : Nil;
+				}
+				else if (Types.isVncSet(coll)) {
+					final VncSet set = (VncSet)coll;
+					final VncVal val = args.second();
+
+					return set.contains(val)
+								? val
+								: args.size() == 3 ? args.third() : Nil;
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'get' does not allow %s as collection",
-							Types.getType(args.first())));
+							Types.getType(coll)));
 				}
 			}
 

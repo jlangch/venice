@@ -471,6 +471,32 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_reverse =
+		new VncFunction(
+				"str/reverse",
+				VncFunction
+					.meta()
+					.arglists("(str/reverse s)")
+					.doc("Reverses a string")
+					.examples("(str/reverse \"abcdef\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/reverse", args, 1);
+	
+				if (args.first() == Nil) {
+					return Nil;
+				}
+	
+				return new VncString(
+					new StringBuilder(Coerce.toVncString(args.first()).getValue())
+							.reverse()
+							.toString());
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_replace_all =
 		new VncFunction(
 				"str/replace-all",
@@ -1518,6 +1544,7 @@ public class StringFunctions {
 					.add(str_replace_first)
 					.add(str_replace_last)
 					.add(str_replace_all)
+					.add(str_reverse)
 					.add(str_lower_case)
 					.add(str_upper_case)
 					.add(str_join)
