@@ -670,13 +670,15 @@ public class VeniceInterpreter implements Serializable  {
 			
 			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);
 			if (!Types.isVncMacro(fn)) break;
+			
+			final VncFunction macro = (VncFunction)fn;
 
 			// validate that the macro is allowed by the sandbox
-			interceptor.validateVeniceFunction(((VncFunction)fn).getQualifiedName());					
+			interceptor.validateVeniceFunction(macro.getQualifiedName());					
 
 			expanded = true; 
 
-			ast_ = ((VncFunction)fn).apply(((VncList)ast_).rest());
+			ast_ = macro.apply(((VncList)ast_).rest());
 		}
 	
 		if (expanded && meterRegistry.enabled) {
