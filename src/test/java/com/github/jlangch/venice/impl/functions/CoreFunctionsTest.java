@@ -2840,6 +2840,28 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_trampoline() {
+		final Venice venice = new Venice();
+		
+		final String script = 
+				"(defn incrementor2 [n]                  \n" +
+				"  (let [_ (print (str n \", \"))        \n" +
+				"        next-val (+ n (rand-long 100))] \n" +
+				"    (if (< -10000 next-val)             \n" +
+				"      #(decrementor2 next-val))))       \n" +
+				"                                        \n" +
+				"(defn decrementor2 [n]                  \n" +
+				"  (let [_ (print (str n \", \"))        \n" +
+				"        next-val (- n (rand-long 100))] \n" +
+				"    (if (> 10000 next-val)              \n" +
+				"      #(incrementor2 next-val))))       \n" +
+				"                                        \n" +
+				"(trampoline incrementor2 500)             ";
+
+		venice.eval(script);	
+	}
+
+	@Test
 	public void test_true_Q() {
 		final Venice venice = new Venice();
 
