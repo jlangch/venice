@@ -10,7 +10,7 @@ The value held by an atom is changed with the `swap!` method.
 ```clojure
 (do
    (def counter (atom 2))
-   (swap! counter + 2))
+   (swap! counter + 2)
    (deref counter))
 ```
 
