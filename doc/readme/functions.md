@@ -64,8 +64,8 @@
 (do
    ; instead of (get {:a 1 :b 2} :b)
    ; maps/keys work as functions
-   ({:a 1 :b 2} :b)
-   (:b {:a 1 :b 2})
+   ({:a 1 :b 2} :b)  ; -> 2
+   (:b {:a 1 :b 2})  ; -> 2
    
    ; keyword as function supports defaults
    (:c {:a 1 :b 2})  ; -> nil
