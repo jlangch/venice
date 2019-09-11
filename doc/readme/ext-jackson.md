@@ -35,9 +35,9 @@ The Jackson _jdk8_ module is loaded automatically if it is available
 (do
   (load-module :maven)
   
-  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9"))
-  (maven/download "com.fasterxml.jackson.core:jackson-databind:2.9.9"))
-  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9"))
+  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9")
+  (maven/download "com.fasterxml.jackson.core:jackson-databind:2.9.9")
+  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9")
   (maven/download "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9"))
 ```
 
