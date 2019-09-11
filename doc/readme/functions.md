@@ -63,21 +63,36 @@
 ```clojure
 (do
    ; instead of (get {:a 1 :b 2} :b)
-   ; maps/keys work as functions
+   ; maps work as functions
    ({:a 1 :b 2} :b)  ; -> 2
-   (:b {:a 1 :b 2})  ; -> 2
+   ({:a 1 :b 2} :c)  ; -> nil
    
-   ; keyword as function supports defaults
-   (:c {:a 1 :b 2})  ; -> nil
-   (:c {:a 1 :b 2} :none)  ; -> :none
+   ; maps as functions with default
+   ({:a 1 :b 2} :c 9)  ; -> 9
    
-   ; accessing nested maps
-   (let [m {:a {:b {:c 3}}}]
-      (-> m :a :b :c))  ; -> 3
-
+   
    ; sets work as functions
    (#{:a :b} :b)  ; -> :b
    (#{:a :b} :c)  ; -> nil
+   
+   ; sets as functions with default
+   (#{:a :b} :c 9)  ; -> 9
+ 
+ 
+   ; keywords as functions
+   (:b {:a 1 :b 2})  ; -> 2
+   (:c {:a 1 :b 2})  ; -> nil
+   (:b #{:a :b})  ; -> :b
+   (:c #{:a :b})  ; -> nil
+ 
+   ; keywords as functions with defaults
+   (:c {:a 1 :b 2} 9)  ; -> 9
+   (:c #{:a :b} 9)  ; -> 9
+ 
+    
+   ; accessing nested maps
+   (let [m {:a {:b {:c 3}}}]
+      (-> m :a :b :c))  ; -> 3
 )
 ```
 

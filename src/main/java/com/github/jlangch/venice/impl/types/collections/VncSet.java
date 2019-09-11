@@ -41,9 +41,16 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("set", args, 1);
+		FunctionsUtil.assertArity("set", args, 1, 2);
 		
-		return contains(args.first()) ? args.first() : Constants.Nil;
+		final VncVal first = args.first();
+		
+		if (args.size() == 1) {
+			return contains(first) ? first : Constants.Nil;
+		}
+		else {
+			return contains(first) ? first : args.second();
+		}
 	}
 	
 	@Override

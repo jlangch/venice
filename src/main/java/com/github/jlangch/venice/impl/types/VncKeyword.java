@@ -21,10 +21,11 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
@@ -42,11 +43,13 @@ public class VncKeyword extends VncString implements IVncFunction {
 	public VncVal apply(final VncList args) {
 		FunctionsUtil.assertArity("keyword", args, 1, 2);
 		
-		if (args.first() == Constants.Nil) {
+		final VncVal first = args.first();
+		
+		if (first == Constants.Nil) {
 			return args.second();
 		}
-		else {
-			final VncMap map = Coerce.toVncMap(args.first());
+		else if (Types.isVncMap(first)) {
+			final VncMap map = (VncMap)first;
 			if (args.size() == 1) {
 				return map.get(this);
 			}
@@ -54,8 +57,25 @@ public class VncKeyword extends VncString implements IVncFunction {
 				return map.get(this);
 			}
 			else {
-				return args.second();
+				return args.second();  // return default value
 			}
+		}
+		else if (Types.isVncSet(first)) {
+			final VncSet set = (VncSet)first;
+			if (args.size() == 1) {
+				return set.contains(this) ? this : Constants.Nil;
+			}
+			else if (set.contains(this)) {
+				return this;
+			}
+			else {
+				return args.second();  // return default value
+			}
+		}
+		else {
+			throw new VncException(String.format(
+					"keyword as function does not allow arg %s.",
+					Types.getType(first)));
 		}
 	}
 	

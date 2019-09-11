@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.types.collections;
+package com.github.jlangch.venice.impl.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,19 +28,26 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 
 
-public class MapTest {
+public class KeywordTest {
 
 	@Test
-	public void test_MapAsFunction() {
+	public void test_KeywordAsFunction() {
 		final Venice venice = new Venice();
 
-		assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a))"));
-		assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} :c))"));
-		assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} nil))"));
+		// maps
+		assertEquals("2", venice.eval("(pr-str (:a {:a 2 :b 3}))"));		
+		assertEquals("nil", venice.eval("(pr-str (:c {:a 2 :b 3}))"));
 		
-		// defaults
-		assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a 9))"));
-		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} :c 9))"));
-		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} nil 9))"));
+		// maps with default
+		assertEquals("2", venice.eval("(pr-str (:a {:a 2 :b 3} 5))"));
+		assertEquals("5", venice.eval("(pr-str (:c {:a 2 :b 3} 5))"));
+
+		// sets
+		assertEquals(":a", venice.eval("(pr-str (:a #{:a :b}))"));		
+		assertEquals("nil", venice.eval("(pr-str (:c #{:a :b}))"));
+		
+		// sets with default
+		assertEquals(":a", venice.eval("(pr-str (:a #{:a :b } :e))"));
+		assertEquals(":e", venice.eval("(pr-str (:c #{:a :b} :e))"));
 	}
 }

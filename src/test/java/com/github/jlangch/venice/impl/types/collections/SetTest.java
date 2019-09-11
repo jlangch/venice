@@ -34,9 +34,15 @@ public class SetTest {
 	public void test_SetAsFunction() {
 		final Venice venice = new Venice();
 
-		assertEquals(1L, venice.eval("(#{1 2 3} 1)"));
-		assertEquals(null, venice.eval("(#{1 2 3} 4)"));
-		assertEquals(null, venice.eval("(#{1 2 3} nil)"));
-		assertEquals(null, venice.eval("(#{nil 1 2 3} nil)"));
+		assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a))"));
+		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} :d))"));
+		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} nil))"));
+		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil))"));
+		
+		// defaults
+		assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a :e))"));
+		assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} :d :e))"));
+		assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} nil :e))"));
+		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil :e))"));
 	}
 }
