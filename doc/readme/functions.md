@@ -76,7 +76,8 @@
       (-> m :a :b :c))  ; -> 3
 
    ; sets work as functions
-   ({:a :b} :b)
+   (#{:a :b} :b)  ; -> :b
+   (#{:a :b} :c)  ; -> nil
 )
 ```
 
