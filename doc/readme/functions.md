@@ -243,16 +243,27 @@ mutual recursion is available for more involved forms of recursion.
   (defn mul [x y] (math/bigint-mul x (math/bigint y)))
   
   (defn factorial [x]
-    (loop [n x, f (math/bigint 1)]
+    (loop [n x, acc (math/bigint 1)]
         (if (== n 1)
-            f
-            (recur (dec n) (mul f n)))))
+            acc
+            (recur (dec n) (mul acc n)))))
     
   (factorial 10000))
 ```
 
 
 ### mutually recursive calls (trampoline)
+
+The function `trampoline` is defined simplified as
+
+```clojure
+(defn trampoline [f] 
+      (loop [f f]
+        (let [ret (f)]
+          (if (fn? ret) (recur ret) ret)))))
+```
+
+Examples:
 
 ```clojure
 (do
