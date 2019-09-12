@@ -14,7 +14,7 @@ mutual recursion is available for more involved forms of recursion.
   
   (defn mul [x y] (math/bigint-mul (math/bigint x) (math/bigint y)))
   
-  (defn fact [x] (if (<= x 1) 1 (mul (fact (dec x)) x))))
+  (defn fact [x] (if (<= x 1) 1 (mul x (fact (dec x))))))
 ```
 
 `(fact 2)  ; -> 2`
