@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- ...
+- function `str/reverse`
+- enhancements to the `math` module to support the examples in the [Recursion](doc/readme/recursion.md) readme 
 
 
 
