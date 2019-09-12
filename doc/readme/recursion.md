@@ -6,7 +6,7 @@ is a way to mimic TCO for self-recursion and the _trampoline_ function for
 mutual recursion is available for more involved forms of recursion.
 
 
-## Simple recursion
+## simple recursion
 
 ```clojure
 (do
