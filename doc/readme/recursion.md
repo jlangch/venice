@@ -20,11 +20,13 @@ mutual recursion is available for more involved forms of recursion.
          (mul x (fact (dec x))))))
 ```
 
-`(fact 2)  ; -> 2`
+```clojure
+(fact 2)  ; -> 2
 
-`(fact 4)  ; -> 32`
+(fact 4)  ; -> 32
 
-`(fact 4000)  ; -> booom...`
+(fact 4000)  ; -> booom...
+```
 
 Simple recursion a few thousand calls deep throws a _StackOverflowError_.
 
