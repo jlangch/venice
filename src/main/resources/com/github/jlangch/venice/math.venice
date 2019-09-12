@@ -37,7 +37,9 @@
          (long? x)        (. :java.math.BigInteger :valueOf x)
          (double? x)      (. :java.math.BigInteger :valueOf (long x))
          (math/bigint? x) x
-         :else (throw (str/format "Invalid parameter (%s) to create a new big integer" (type x)))))
+         :else (throw (str/format
+                          "Invalid parameter (%s) to create a new big integer"
+                          (type x)))))
 
 
 (defn
