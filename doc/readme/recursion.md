@@ -6,6 +6,26 @@ is a way to mimic TCO for self-recursion and the _trampoline_ function for
 mutual recursion is available for more involved forms of recursion.
 
 
+## Simple recursion
+
+```clojure
+(do
+  (load-module :math)
+  
+  (defn mul [x y] (math/bigint-mul (math/bigint x) (math/bigint y)))
+  
+  (defn fact [x] (if (<= x 1) 1 (mul (fact (dec x)) x))))
+```
+
+`(fact 2) -> 2`
+
+`(fact 4) -> 32`
+
+`(fact 4000) -> booom...`
+
+Simple recursion a few thousand calls deep throws a _StackOverflowError_.
+
+
 ## self-recursive calls (loop - recur)
 
 ```clojure
