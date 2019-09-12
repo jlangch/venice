@@ -14,7 +14,10 @@ mutual recursion is available for more involved forms of recursion.
   
   (defn mul [x y] (math/bigint-mul (math/bigint x) (math/bigint y)))
   
-  (defn fact [x] (if (<= x 1) 1 (mul x (fact (dec x))))))
+  (defn fact [x] 
+     (if (<= x 1) 
+         1 
+         (mul x (fact (dec x))))))
 ```
 
 `(fact 2)  ; -> 2`
@@ -33,8 +36,8 @@ Simple recursion a few thousand calls deep throws a _StackOverflowError_.
    (defn sum [n]
       (loop [cnt n, acc 0]
          (if (zero? cnt)
-            acc
-            (recur (dec cnt) (+ acc cnt)))))
+             acc
+             (recur (dec cnt) (+ acc cnt)))))
 
    (sum 100000))
 ```
@@ -72,13 +75,13 @@ Examples:
 (do
   (defn is-odd? [n]
     (if (zero? n)
-      false
-      #(is-even? (dec n))))
+        false
+        #(is-even? (dec n))))
 
   (defn is-even? [n]
     (if (zero? n)
-      true
-      #(is-odd? (dec n))))
+        true
+        #(is-odd? (dec n))))
 
   (trampoline (is-odd? 10000)))
 ```
