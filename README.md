@@ -45,6 +45,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/4f40de2/cheatsheet.htm
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
 * [Transducers](doc/readme/transducers.md)
+* [Recursion](doc/readme/recursion.md)
 * [Mutable Refs](doc/readme/refs.md)
 * [Destructuring](doc/readme/destructuring.md)
 * [Advanced string features](doc/readme/advanced-strings.md)
