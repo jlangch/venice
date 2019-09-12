@@ -12,12 +12,10 @@ mutual recursion is available for more involved forms of recursion.
 (do
   (load-module :math)
   
-  (defn mul [x y] (math/bigint-mul (math/bigint x) (math/bigint y)))
-  
   (defn fact [x] 
      (if (<= x 1) 
          1 
-         (mul x (fact (dec x))))))
+         (math/bigint-mul x (fact (dec x))))))
 ```
 
 ```clojure
@@ -48,13 +46,11 @@ Simple recursion a few thousand calls deep throws a _StackOverflowError_.
 (do
   (load-module :math)
   
-  (defn mul [x y] (math/bigint-mul x (math/bigint y)))
-  
   (defn factorial [x]
     (loop [n x, acc (math/bigint 1)]
         (if (== n 1)
             acc
-            (recur (dec n) (mul acc n)))))
+            (recur (dec n) (math/bigint-mul acc n)))))
     
   (factorial 10000))
 ```
@@ -92,13 +88,11 @@ Examples:
 (do
   (load-module :math)
  
-  (defn mul [x y] (math/bigint-mul x (math/bigint y)))
- 
   (defn factorial
     ([n] #(factorial n (math/bigint 1)))
     ([n acc] (if (< n 2) 
                  acc 
-                 #(factorial (dec n) (mul acc n)))))
+                 #(factorial (dec n) (math/bigint-mul acc n)))))
 
   (trampoline (factorial 10000)))
 ```

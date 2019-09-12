@@ -59,9 +59,7 @@
 
    math/bigint-add
 
-   [x y]
-      { :pre [(math/bigint? x) (math/bigint? y)] }
-      (. x :add y))
+   [x y] (. (math/bigint x) :add (math/bigint y)))
 
 
 (defn
@@ -71,9 +69,7 @@
 
    math/bigint-sub
 
-   [x y]
-      { :pre [(math/bigint? x) (math/bigint? y)] }
-      (. x :subtract y))
+   [x y] (. (math/bigint x) :subtract (math/bigint y)))
 
 
 (defn
@@ -83,9 +79,7 @@
 
    math/bigint-mul
 
-   [x y]
-      { :pre [(math/bigint? x) (math/bigint? y)] }
-      (. x :multiply y))
+   [x y] (. (math/bigint x) :multiply (math/bigint y)))
 
 (defn
    ^{ :arglists '("(math/bigint-div x y)")
@@ -94,9 +88,7 @@
 
    math/bigint-div
 
-   [x y]
-      { :pre [(math/bigint? x) (math/bigint? y)] }
-      (. x :divide y))
+   [x y] (. (math/bigint x) :divide (math/bigint y)))
 
 
 (defn
@@ -106,9 +98,7 @@
 
    math/bigint-neg
 
-   [x]
-      { :pre [(math/bigint? x)] }
-      (. x :negate))
+   [x] (. (math/bigint x) :negate))
 
 
 (defn
@@ -118,9 +108,7 @@
 
    math/bigint-sig
 
-   [x]
-      { :pre [(math/bigint? x)] }
-      (. x :signum))
+   [x] (. (math/bigint x) :signum))
 
 
 (defn
@@ -130,9 +118,7 @@
 
    math/bigint-abs
 
-   [x]
-      { :pre [(math/bigint? x)] }
-      (. x :abs))
+   [x] (. (math/bigint x) :abs))
 
 
 (defn
@@ -142,6 +128,4 @@
 
    math/bigint-to-long
 
-   [x]
-      { :pre [(math/bigint? x)] }
-      (. x :longValue))
+   [x] (. (math/bigint x) :longValue))
