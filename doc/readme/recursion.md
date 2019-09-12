@@ -17,11 +17,11 @@ mutual recursion is available for more involved forms of recursion.
   (defn fact [x] (if (<= x 1) 1 (mul (fact (dec x)) x))))
 ```
 
-`(fact 2) -> 2`
+`(fact 2)  ; -> 2`
 
-`(fact 4) -> 32`
+`(fact 4)  ; -> 32`
 
-`(fact 4000) -> booom...`
+`(fact 4000)  ; -> booom...`
 
 Simple recursion a few thousand calls deep throws a _StackOverflowError_.
 
