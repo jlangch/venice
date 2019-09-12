@@ -33,10 +33,21 @@
 
    [x]
       (cond
-         (string? x) (. :java.math.BigInteger :new x)
-         (long? x) (. :java.math.BigInteger :valueOf x)
-         (double? x) (. :java.math.BigInteger :valueOf (long x))
+         (string? x)      (. :java.math.BigInteger :new x)
+         (long? x)        (. :java.math.BigInteger :valueOf x)
+         (double? x)      (. :java.math.BigInteger :valueOf (long x))
+         (math/bigint? x) x
          :else (throw "Invalid parameter to create a new big integer")))
+
+
+(defn
+   ^{ :arglists '("(math/bigint? x)")
+      :doc "Returns true if x is a big integer"
+      :examples '("(math/bigint? (math/bigint 1000000))") }
+
+   math/bigint?
+
+   [x] (== (type x) :java.math.BigInteger))
 
 
 (defn
