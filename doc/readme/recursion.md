@@ -2,7 +2,7 @@
 
 
 Venice does not support automated tail call optimization. The _recur_ syntax 
-is a way to mimic TCO for self-recursion and the _trampoline_ function for 
+is a way to mimic TCO for self-recursion. In addition the _trampoline_ function for 
 mutual recursion is available for more involved forms of recursion.
 
 
