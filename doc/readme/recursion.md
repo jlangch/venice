@@ -23,7 +23,7 @@ integer support._
 ```clojure
 (factorial 2)  ; -> 2
 
-(factorial 4)  ; -> 32
+(factorial 4)  ; -> 24
 
 (factorial 4000)  ; -> booom...
 ```
