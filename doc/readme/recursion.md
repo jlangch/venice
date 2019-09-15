@@ -65,8 +65,8 @@ The function `trampoline` is defined simplified as
 ```clojure
 (defn trampoline [f] 
    (loop [f f]
-     (let [ret (f)]
-        (if (fn? ret) (recur ret) ret)))))
+      (let [ret (f)]
+         (if (fn? ret) (recur ret) ret)))))
 ```
 
 Examples:
