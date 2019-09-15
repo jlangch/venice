@@ -12,12 +12,12 @@ integer support._
 
 ```clojure
 (do
-  (load-module :math)
+   (load-module :math)
   
-  (defn factorial [x] 
-     (if (<= x 1) 
-         1 
-         (math/bigint-mul x (factorial (dec x))))))
+   (defn factorial [x] 
+      (if (<= x 1) 
+          1 
+          (math/bigint-mul x (factorial (dec x))))))
 ```
 
 ```clojure
@@ -46,15 +46,15 @@ Simple recursion a few thousand calls deep throws a _StackOverflowError_.
 
 ```clojure
 (do
-  (load-module :math)
+   (load-module :math)
   
-  (defn factorial [x]
-    (loop [n x, acc (math/bigint 1)]
-        (if (== n 1)
-            acc
-            (recur (dec n) (math/bigint-mul acc n)))))
+   (defn factorial [x]
+      (loop [n x, acc (math/bigint 1)]
+         (if (== n 1)
+             acc
+             (recur (dec n) (math/bigint-mul acc n)))))
     
-  (factorial 10000))
+   (factorial 10000))
 ```
 
 
@@ -64,37 +64,37 @@ The function `trampoline` is defined simplified as
 
 ```clojure
 (defn trampoline [f] 
-  (loop [f f]
-    (let [ret (f)]
-      (if (fn? ret) (recur ret) ret)))))
+   (loop [f f]
+     (let [ret (f)]
+        (if (fn? ret) (recur ret) ret)))))
 ```
 
 Examples:
 
 ```clojure
 (do
-  (defn is-odd? [n]
-    (if (zero? n)
-        false
-        #(is-even? (dec n))))
+   (defn is-odd? [n]
+      (if (zero? n)
+          false
+          #(is-even? (dec n))))
 
-  (defn is-even? [n]
-    (if (zero? n)
-        true
-        #(is-odd? (dec n))))
+   (defn is-even? [n]
+      (if (zero? n)
+          true
+          #(is-odd? (dec n))))
 
-  (trampoline (is-odd? 10000)))
+   (trampoline (is-odd? 10000)))
 ```
 
 ```clojure
 (do
-  (load-module :math)
+   (load-module :math)
  
-  (defn factorial
-    ([n] #(factorial n (math/bigint 1)))
-    ([n acc] (if (< n 2) 
-                 acc 
-                 #(factorial (dec n) (math/bigint-mul acc n)))))
+   (defn factorial
+      ([n] #(factorial n (math/bigint 1)))
+      ([n acc] (if (< n 2) 
+                   acc 
+                   #(factorial (dec n) (math/bigint-mul acc n)))))
 
-  (trampoline (factorial 10000)))
+   (trampoline (factorial 10000)))
 ```
