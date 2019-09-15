@@ -12,18 +12,18 @@ mutual recursion is available for more involved forms of recursion.
 (do
   (load-module :math)
   
-  (defn fact [x] 
+  (defn factorial [x] 
      (if (<= x 1) 
          1 
-         (math/bigint-mul x (fact (dec x))))))
+         (math/bigint-mul x (factorial (dec x))))))
 ```
 
 ```clojure
-(fact 2)  ; -> 2
+(factorial 2)  ; -> 2
 
-(fact 4)  ; -> 32
+(factorial 4)  ; -> 32
 
-(fact 4000)  ; -> booom...
+(factorial 4000)  ; -> booom...
 ```
 
 Simple recursion a few thousand calls deep throws a _StackOverflowError_.
