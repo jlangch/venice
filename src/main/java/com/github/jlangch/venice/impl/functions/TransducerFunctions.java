@@ -1039,13 +1039,13 @@ public class TransducerFunctions {
 						return Nil;
 					}
 					else if (Types.isVncSequence(coll)) {
-						return reverse(new ArrayList<>(((VncSequence)coll).getList()));
+						return reverse(((VncSequence)coll).getList());
 					}
 					else if (Types.isVncSet(coll)) {
-						return reverse(new ArrayList<>(((VncSet)coll).getList()));
+						return reverse(((VncSet)coll).getList());
 					}
 					else if (Types.isVncMap(coll)) {
-						return reverse(new ArrayList<>(((VncMap)coll).toVncList().getList()));
+						return reverse(((VncMap)coll).toVncList().getList());
 					}
 					else if (Types.isVncString(coll)) {
 						return reverse(((VncString)coll).toVncList().getList());
@@ -1243,10 +1243,12 @@ public class TransducerFunctions {
 	}
 
 	private static VncList reverse(final List<VncVal> list) {
-		Collections.reverse(list);
-		return new VncList(list);
+		final List<VncVal> copy = new ArrayList<>(list);
+		Collections.reverse(new ArrayList<>(copy));
+		return new VncList(copy);
 	}
 
+	
 	public static final VncKeyword HALT = new VncKeyword("@halt");
 	private static final VncKeyword NONE = new VncKeyword("@none");
 
