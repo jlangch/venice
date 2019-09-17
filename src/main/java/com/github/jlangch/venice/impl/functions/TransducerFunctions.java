@@ -1039,13 +1039,13 @@ public class TransducerFunctions {
 						return Nil;
 					}
 					else if (Types.isVncSequence(coll)) {
-						return reverse(((VncSequence)coll).getList());
+						return reverse(new ArrayList<>(((VncSequence)coll).getList()));
 					}
 					else if (Types.isVncSet(coll)) {
-						return reverse(((VncSet)coll).getList());
+						return reverse(new ArrayList<>(((VncSet)coll).getList()));
 					}
 					else if (Types.isVncMap(coll)) {
-						return reverse(((VncMap)coll).toVncList().getList());
+						return reverse(new ArrayList<>(((VncMap)coll).toVncList().getList()));
 					}
 					else if (Types.isVncString(coll)) {
 						return reverse(((VncString)coll).toVncList().getList());
