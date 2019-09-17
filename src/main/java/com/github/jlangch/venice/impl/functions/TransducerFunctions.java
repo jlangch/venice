@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -48,6 +49,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -983,7 +985,9 @@ public class TransducerFunctions {
 					.doc(
 						"Returns a collection of the items in coll in reverse order. " +
 						"Returns a stateful transducer when no collection is provided.")
-					.examples("(reverse [1 2 3 4 5 6])")
+					.examples(
+						"(reverse [1 2 3 4 5 6])",
+						"(reverse \"abcdef\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1029,11 +1033,28 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					final VncSequence coll = Coerce.toVncSequence(args.first());
+					final VncVal coll = args.first();
 
-					final List<VncVal> reversed = coll.getList();
-					Collections.reverse(reversed);
-					return coll.withValues(reversed);
+					if (coll == Nil) {
+						return Nil;
+					}
+					else if (Types.isVncSequence(coll)) {
+						return reverse(((VncSequence)coll).getList());
+					}
+					else if (Types.isVncSet(coll)) {
+						return reverse(((VncSet)coll).getList());
+					}
+					else if (Types.isVncMap(coll)) {
+						return reverse(((VncMap)coll).toVncList().getList());
+					}
+					else if (Types.isVncString(coll)) {
+						return reverse(((VncString)coll).toVncList().getList());
+					}
+					else {
+						throw new VncException(
+								"Function 'reverse' requires a list, vector, set, " +
+								"map, or string as coll argument.");
+					}
 				}
 			}
 
@@ -1221,6 +1242,10 @@ public class TransducerFunctions {
 		}
 	}
 
+	private static VncList reverse(final List<VncVal> list) {
+		Collections.reverse(list);
+		return new VncList(list);
+	}
 
 	public static final VncKeyword HALT = new VncKeyword("@halt");
 	private static final VncKeyword NONE = new VncKeyword("@none");

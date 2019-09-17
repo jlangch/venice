@@ -5216,23 +5216,14 @@ public class CoreFunctions {
 								.map(e -> VncVector.of(e.getKey(), e.getValue()))
 								.collect(Collectors.toList()));
 				}
-				if (Types.isVncVector(val)) {
+				else if (Types.isVncVector(val)) {
 					return ((VncVector)val).isEmpty() ? Nil : ((VncVector)val).toVncList();
 				}
 				else if (Types.isVncList(val)) {
 					return ((VncList)val).isEmpty() ? Nil :  val;
 				}
 				else if (Types.isVncString(val)) {
-					final String s = ((VncString)val).getValue();
-					if (s.length() == 0) {
-						return Nil;
-					}
-
-					final List<VncVal> lst = new ArrayList<VncVal>();
-					for (char c : s.toCharArray()) {
-						lst.add(new VncString(String.valueOf(c)));
-					}
-					return new VncList(lst);
+					return ((VncString)val).toVncList();
 				}
 				else if (val == Nil) {
 					return Nil;

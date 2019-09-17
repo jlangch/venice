@@ -248,6 +248,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("nfirst"));
 		use.addItem(getDocItem("nlast"));
 		use.addItem(getDocItem("seq"));
+		use.addItem(getDocItem("reverse"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
 		use.addItem(getDocItem("str/replace-first"));
@@ -359,6 +360,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("frequencies"));
 		generic.addItem(getDocItem("get-in"));
 		generic.addItem(getDocItem("seq"));
+		generic.addItem(getDocItem("reverse"));
 
 		final DocSection coll_test = new DocSection("Tests");
 		collections.addSection(coll_test);
@@ -420,7 +422,6 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("interleave"));
 		list_modify.addItem(getDocItem("mapcat"));
 		list_modify.addItem(getDocItem("flatten"));
-		list_modify.addItem(getDocItem("reverse"));
 		list_modify.addItem(getDocItem("sort"));
 		list_modify.addItem(getDocItem("sort-by"));
 		list_modify.addItem(getDocItem("take"));
@@ -476,7 +477,6 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("interleave"));
 		vec_modify.addItem(getDocItem("mapcat"));
 		vec_modify.addItem(getDocItem("flatten"));
-		vec_modify.addItem(getDocItem("reverse"));
 		vec_modify.addItem(getDocItem("sort"));
 		vec_modify.addItem(getDocItem("sort-by"));
 		vec_modify.addItem(getDocItem("take"));
