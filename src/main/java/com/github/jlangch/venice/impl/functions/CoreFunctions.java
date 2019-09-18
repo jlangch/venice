@@ -5107,7 +5107,7 @@ public class CoreFunctions {
 							"the result by calling (f val-in-result val-in-latter).")
 						.examples(
 							"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0})",
-							"(merge-with into {:a [1] :b [2]} {:b [3] :c [4]})")
+							"(merge-with into {:a [1] :b [2]} {:b [3 4] :c [5 6]})")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
