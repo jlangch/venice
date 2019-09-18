@@ -3763,7 +3763,7 @@ public class CoreFunctions {
 					.examples(
 						"(third nil)",
 						"(third [])",
-						"(second [1 2 3])",
+						"(third [1 2 3])",
 						"(third '())",
 						"(third '(1 2 3))")
 					.build()
@@ -3786,6 +3786,46 @@ public class CoreFunctions {
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'third'",
+							Types.getType(coll)));
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction fourth =
+		new VncFunction(
+				"fourth",
+				VncFunction
+					.meta()
+					.arglists("(fourth coll)")
+					.doc("Returns the fourth element of coll.")
+					.examples(
+						"(fourth nil)",
+						"(fourth [])",
+						"(fourth [1 2 3 4 5])",
+						"(fourth '())",
+						"(fourth '(1 2 3 4 5))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("fourth", args, 1);
+
+
+				final VncVal coll = args.first();
+				if (coll == Nil) {
+					return Nil;
+				}
+
+				if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).fourth();
+				}
+				else if (Types.isVncString(coll)) {
+					return ((VncString)coll).nth(3);
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'fourth'",
 							Types.getType(coll)));
 				}
 			}
@@ -5711,6 +5751,7 @@ public class CoreFunctions {
 				.add(first)
 				.add(second)
 				.add(third)
+				.add(fourth)
 				.add(last)
 				.add(rest)
 				.add(butlast)

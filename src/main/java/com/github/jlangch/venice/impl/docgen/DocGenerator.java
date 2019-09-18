@@ -402,6 +402,7 @@ public class DocGenerator {
 		list_access.addItem(getDocItem("first"));
 		list_access.addItem(getDocItem("second"));
 		list_access.addItem(getDocItem("third"));
+		list_access.addItem(getDocItem("fourth"));
 		list_access.addItem(getDocItem("nth"));
 		list_access.addItem(getDocItem("last"));
 		list_access.addItem(getDocItem("peek"));
