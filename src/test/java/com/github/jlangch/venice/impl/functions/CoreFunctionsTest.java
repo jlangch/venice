@@ -1868,6 +1868,29 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_merge_with() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{}", 
+				venice.eval("(str (sorted-map (merge-with +)))"));
+
+		assertEquals(
+				"{:a 0 :b 10}", 
+				venice.eval("(str (sorted-map (merge-with + {:a 0 :b 10})))"));
+
+		assertEquals(
+				"{:a 0 :b 10 :c 20 :d 30}", 
+				venice.eval("(str (sorted-map (merge-with + {:a 0 :b 2 :c 13} {:b 8 :c 7 :d 30})))"));
+
+		assertEquals(
+				"{:a #{1 2 3 7 8} :b #{4 5 6} :c #{1 2 3}}", 
+				venice.eval("(str (sorted-map (merge-with union                \n" +
+							"		            {:a #{1 2 3}    :b #{4 5 6}}   \n" +
+							"		            {:a #{2 3 7 8}  :c #{1 2 3}})))  "));
+	}
+
+	@Test
 	public void test_meta() {
 		final Venice venice = new Venice();
 

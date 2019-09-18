@@ -5102,7 +5102,7 @@ public class CoreFunctions {
 						.arglists("(merge-with f & maps)")
 						.doc(
 							"Returns a map that consists of the rest of the maps conj-ed onto\n" + 
-							"the first.  If a key occurs in more than one map, the mapping(s)\n" + 
+							"the first. If a key occurs in more than one map, the mapping(s)\n" + 
 							"from the latter (left-to-right) will be combined with the mapping in\n" + 
 							"the result by calling (f val-in-result val-in-latter).")
 						.examples(
@@ -5115,23 +5115,44 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertMinArity("merge-with", args, 2);
+					assertMinArity("merge-with", args, 1);
+
+					final List<VncMap> rest = args.rest()
+												  .stream()
+												  .filter(v -> v != Nil)
+												  .map(v -> Coerce.toVncMap(v))
+												  .collect(Collectors.toList());
+
+					if (rest.isEmpty()) {
+						return new VncHashMap();
+					}
+					else if (rest.size() == 1) {
+						return rest.get(0);
+					}
 
 					final VncFunction f = Coerce.toVncFunction(args.first());
 
-					final List<VncVal> maps = args.rest()
-												  .stream()
-												  .filter(v -> v != Nil)
-												  .collect(Collectors.toList());
+					final Map<VncVal,VncVal> map = new HashMap<>();
+					
+					for(VncMap m : rest) {
+						for(VncMapEntry e : m.entries()) {
+							final VncVal key = e.getKey();
+							final VncVal val1 = map.get(key);
+							final VncVal val2 = e.getValue();
+							
+							if (val1 == null) {
+								map.put(key, f.apply(VncList.of(val2)));
+							}
+							else if (val2 == null) {
+								map.put(key, f.apply(VncList.of(val1)));
+							}
+							else {
+								map.put(key, f.apply(VncList.of(val1, val2)));
+							}
+						}
+					}
 
-					if (maps.isEmpty()) {
-						return Nil;
-					}
-					else {
-						final Map<VncVal,VncVal> map = new HashMap<>();
-						maps.stream().forEach(v -> map.putAll(Coerce.toVncMap(v).getMap()));
-						return new VncHashMap(map);
-					}
+					return new VncHashMap(map);
 				}
 
 			    private static final long serialVersionUID = -1848883965231344442L;
