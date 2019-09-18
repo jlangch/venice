@@ -1038,17 +1038,20 @@ public class TransducerFunctions {
 					if (coll == Nil) {
 						return Nil;
 					}
-					else if (Types.isVncSequence(coll)) {
-						return reverse(((VncSequence)coll).getList());
+					else if (Types.isVncList(coll)) {
+						return reverseList(((VncList)coll).getList());
+					}
+					else if (Types.isVncVector(coll)) {
+						return reverseVector(((VncVector)coll).getList());
 					}
 					else if (Types.isVncSet(coll)) {
-						return reverse(((VncSet)coll).getList());
+						return reverseList(((VncSet)coll).getList());
 					}
 					else if (Types.isVncMap(coll)) {
-						return reverse(((VncMap)coll).toVncList().getList());
+						return reverseList(((VncMap)coll).toVncList().getList());
 					}
 					else if (Types.isVncString(coll)) {
-						return reverse(((VncString)coll).toVncList().getList());
+						return reverseList(((VncString)coll).toVncList().getList());
 					}
 					else {
 						throw new VncException(
@@ -1242,10 +1245,16 @@ public class TransducerFunctions {
 		}
 	}
 
-	private static VncList reverse(final List<VncVal> list) {
+	private static VncList reverseList(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.reverse(new ArrayList<>(copy));
+		Collections.reverse(copy);
 		return new VncList(copy);
+	}
+
+	private static VncVector reverseVector(final List<VncVal> list) {
+		final List<VncVal> copy = new ArrayList<>(list);
+		Collections.reverse(copy);
+		return new VncVector(copy);
 	}
 
 	

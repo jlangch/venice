@@ -2995,10 +2995,13 @@ public class CoreFunctions {
 				"into",
 				VncFunction
 					.meta()
-					.arglists("(into to-coll from-coll)")
+					.arglists(
+						"(into)",
+						"(into to)",
+						"(into to from)")
 					.doc(
-						"Returns a new coll consisting of to-coll with all of the items of" +
-						"from-coll conjoined.")
+						"Returns a new coll consisting of to coll with all of the items of" +
+						"from coll conjoined.")
 					.examples(
 						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )",
 						"(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )",
@@ -3022,7 +3025,14 @@ public class CoreFunctions {
 		) {
 			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {
-				assertArity("into", args, 2);
+				assertArity("into", args, 0, 1, 2);
+
+				if (args.size() == 0) {
+					return new VncList();
+				}
+				else if (args.size() == 1) {
+					return args.first();
+				}
 
 				if (args.second() == Nil) {
 					return args.first();
@@ -5084,6 +5094,49 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction merge_with =
+			new VncFunction(
+					"merge-with",
+					VncFunction
+						.meta()
+						.arglists("(merge-with f & maps)")
+						.doc(
+							"Returns a map that consists of the rest of the maps conj-ed onto\n" + 
+							"the first.  If a key occurs in more than one map, the mapping(s)\n" + 
+							"from the latter (left-to-right) will be combined with the mapping in\n" + 
+							"the result by calling (f val-in-result val-in-latter).")
+						.examples(
+							"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0}",
+							"(merge-with into                              \n" + 
+							"	  {\"fruits\" [\"cherry\" \"apple\"]       \n" + 
+							"	   \"beverages\" [\"water\" \"coke\"]}     \n" + 
+							"	  {\"fruits\" [\"apricot\"]                \n" + 
+							"	   \"beverages\" [\"sprite\"]})")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					assertMinArity("merge-with", args, 2);
+
+					final VncFunction f = Coerce.toVncFunction(args.first());
+
+					final List<VncVal> maps = args.rest()
+												  .stream()
+												  .filter(v -> v != Nil)
+												  .collect(Collectors.toList());
+
+					if (maps.isEmpty()) {
+						return Nil;
+					}
+					else {
+						final Map<VncVal,VncVal> map = new HashMap<>();
+						maps.stream().forEach(v -> map.putAll(Coerce.toVncMap(v).getMap()));
+						return new VncHashMap(map);
+					}
+				}
+
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction conj =
 		new VncFunction(
 				"conj",
@@ -5223,7 +5276,8 @@ public class CoreFunctions {
 					return ((VncList)val).isEmpty() ? Nil :  val;
 				}
 				else if (Types.isVncString(val)) {
-					return ((VncString)val).toVncList();
+					final VncString s = (VncString)val;
+					return s.isEmpty() ? Nil : s.toVncList();
 				}
 				else if (val == Nil) {
 					return Nil;
@@ -5675,6 +5729,7 @@ public class CoreFunctions {
 				.add(some)
 
 				.add(merge)
+				.add(merge_with)
 				.add(conj)
 				.add(disj)
 				.add(seq)
