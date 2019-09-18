@@ -1884,6 +1884,10 @@ public class CoreFunctionsTest {
 				venice.eval("(str (sorted-map (merge-with + {:a 0 :b 2 :c 13} {:b 8 :c 7 :d 30})))"));
 
 		assertEquals(
+				"{:a [1] :b [2 3] :c [4]}", 
+				venice.eval("(str (merge-with into {:a [1] :b [2]} {:b [3] :c [4]}))"));
+		
+		assertEquals(
 				"{:a #{1 2 3 7 8} :b #{4 5 6} :c #{1 2 3}}", 
 				venice.eval("(str (sorted-map (merge-with union                \n" +
 							"		            {:a #{1 2 3}    :b #{4 5 6}}   \n" +

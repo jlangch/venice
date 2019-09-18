@@ -5106,12 +5106,8 @@ public class CoreFunctions {
 							"from the latter (left-to-right) will be combined with the mapping in\n" + 
 							"the result by calling (f val-in-result val-in-latter).")
 						.examples(
-							"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0}",
-							"(merge-with into                              \n" + 
-							"	  {\"fruits\" [\"cherry\" \"apple\"]       \n" + 
-							"	   \"beverages\" [\"water\" \"coke\"]}     \n" + 
-							"	  {\"fruits\" [\"apricot\"]                \n" + 
-							"	   \"beverages\" [\"sprite\"]})")
+							"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0})",
+							"(merge-with into {:a [1] :b [2]} {:b [3] :c [4]})")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {

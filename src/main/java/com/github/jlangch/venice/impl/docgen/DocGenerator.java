@@ -566,6 +566,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("flatten"));
 		map_modify.addItem(getDocItem("reduce-kv"));
 		map_modify.addItem(getDocItem("merge"));
+		map_modify.addItem(getDocItem("merge-with"));
 		map_modify.addItem(getDocItem("map-invert"));
 		
 		final DocSection map_test = new DocSection("Test");
