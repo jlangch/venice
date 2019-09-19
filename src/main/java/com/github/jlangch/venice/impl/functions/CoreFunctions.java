@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -5673,13 +5674,13 @@ public class CoreFunctions {
 
 	private static VncList shuffleList(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.shuffle(copy);
+		Collections.shuffle(copy, random);
 		return new VncList(copy);
 	}
 
 	private static VncVector shuffleVector(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.shuffle(copy);
+		Collections.shuffle(copy, random);
 		return new VncVector(copy);
 	}
 
@@ -5864,4 +5865,5 @@ public class CoreFunctions {
 
 
 	private static final AtomicLong gensymValue = new AtomicLong(0);
+	private static final SecureRandom random = new SecureRandom();
 }
