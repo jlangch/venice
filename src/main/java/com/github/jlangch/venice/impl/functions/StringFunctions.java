@@ -765,8 +765,10 @@ public class StringFunctions {
 						"(str/format \"value: %.4f\" 1.45)",
 						"(str/format (. :java.util.Locale :new \"de\" \"DE\") \"value: %.4f\" 1.45)",
 						"(str/format (. :java.util.Locale :GERMANY) \"value: %.4f\" 1.45)",
+						"(str/format (. :java.util.Locale :new \"de\" \"CH\") \"value: %,d\" 2345000)",
 						"(str/format [ \"de\"] \"value: %.4f\" 1.45)",
-						"(str/format [ \"de\" \"DE\"] \"value: %.4f\" 1.45)")
+						"(str/format [ \"de\" \"DE\"] \"value: %.4f\" 1.45)",
+						"(str/format [ \"de\" \"DE\"] \"value: %,d\" 2345000)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
