@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - function `merge-with`
 - function `fourth`
 
+### Changed
+
+- OpenPDF lib to actual version 1.3.11
+
 
 
 ## [1.7.3] - 2019-09-17
