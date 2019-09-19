@@ -11,8 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- function `merge-with`
-- function `fourth`
+- function `merge-with`, `fourth`, `shuffle`
 
 ### Changed
 

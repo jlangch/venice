@@ -249,6 +249,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("nlast"));
 		use.addItem(getDocItem("seq"));
 		use.addItem(getDocItem("reverse"));
+		use.addItem(getDocItem("shuffle"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
 		use.addItem(getDocItem("str/replace-first"));
@@ -361,6 +362,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("get-in"));
 		generic.addItem(getDocItem("seq"));
 		generic.addItem(getDocItem("reverse"));
+		generic.addItem(getDocItem("shuffle"));
 
 		final DocSection coll_test = new DocSection("Tests");
 		collections.addSection(coll_test);

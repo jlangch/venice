@@ -34,6 +34,7 @@ import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1513,6 +1514,47 @@ public class CoreFunctions {
 				else {
 					throw new VncException(
 							"Function 'repeat' requires a list, vector, set, or map as coll argument");
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction shuffle =
+		new VncFunction(
+				"shuffle",
+				VncFunction
+					.meta()
+					.arglists("(shuffle coll)")
+					.doc(
+						"Returns a collection of the items in coll in random order.")
+					.examples(
+						"(shuffle '(1 2 3 4 5 6))",
+						"(shuffle [1 2 3 4 5 6])",
+						"(shuffle \"abcdef\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("shuffle", args, 1);
+
+				final VncVal coll = args.first();
+
+				if (coll == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncList(coll)) {
+					return shuffleList(((VncList)coll).getList());
+				}
+				else if (Types.isVncVector(coll)) {
+					return shuffleVector(((VncVector)coll).getList());
+				}
+				else if (Types.isVncString(coll)) {
+					return shuffleList(((VncString)coll).toVncList().getList());
+				}
+				else {
+					throw new VncException(
+							"Function 'reverse' requires a list, vector, set, " +
+							"map, or string as coll argument.");
 				}
 			}
 
@@ -5629,6 +5671,18 @@ public class CoreFunctions {
 					: Coerce.toVncString(enc).getValue();
 	}
 
+	private static VncList shuffleList(final List<VncVal> list) {
+		final List<VncVal> copy = new ArrayList<>(list);
+		Collections.shuffle(copy);
+		return new VncList(copy);
+	}
+
+	private static VncVector shuffleVector(final List<VncVal> list) {
+		final List<VncVal> copy = new ArrayList<>(list);
+		Collections.shuffle(copy);
+		return new VncVector(copy);
+	}
+
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -5733,6 +5787,7 @@ public class CoreFunctions {
 				.add(union)
 				.add(intersection)
 				.add(juxt)
+				.add(shuffle)
 
 				.add(split_at)
 				.add(split_with)
