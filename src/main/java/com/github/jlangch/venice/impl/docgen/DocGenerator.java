@@ -384,6 +384,7 @@ public class DocGenerator {
 		final DocSection coll_process = new DocSection("Process");
 		collections.addSection(coll_process);
 		coll_process.addItem(getDocItem("map"));
+		coll_process.addItem(getDocItem("map-indexed"));
 		coll_process.addItem(getDocItem("filter"));
 		coll_process.addItem(getDocItem("reduce"));
 		coll_process.addItem(getDocItem("keep"));
@@ -853,6 +854,7 @@ public class DocGenerator {
 		final DocSection func = new DocSection("Functions");
 		all.addSection(func);		
 		func.addItem(getDocItem("map"));
+		func.addItem(getDocItem("map-indexed"));
 		func.addItem(getDocItem("filter"));
 		func.addItem(getDocItem("drop"));
 		func.addItem(getDocItem("drop-while"));

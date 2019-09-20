@@ -153,6 +153,19 @@ public class TransducerFunctionsTest {
 		assertEquals("27", venice.eval(script1));	
 		assertEquals("[2 3 4 5 6 7]", venice.eval(script2));	
 	}
+
+	@Test
+	public void test_transduce_map_indexed() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (map-indexed vector))        \n" +
+				"  (def coll [:a :b :c])                \n" +
+				"  (pr-str (transduce xf conj coll)))     ";
+
+		assertEquals("[[0 :a] [1 :b] [2 :c]]", venice.eval(script1));	
+	}
 	
 	@Test
 	public void test_transduce_filter() {
