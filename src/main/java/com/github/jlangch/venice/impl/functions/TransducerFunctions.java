@@ -262,6 +262,111 @@ public class TransducerFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction map_indexed =
+		new VncFunction(
+				"map-indexed",
+				VncFunction
+					.meta()
+					.arglists("(map-indexed f coll)")
+					.doc(
+						"Retruns a collection of applying f to 0 and the first item of " +
+						"coll, followed by applying f to 1 and the second item of coll, etc. " +
+						"until coll is exhausted. " +
+						"Returns a stateful transducer when no collection is provided.")
+					.examples(
+						"(map-indexed (fn [idx val] [idx val]) [:a :b :c])",
+						"(map-indexed vector [:a :b :c])",
+						"(map-indexed vector \"abcdef\")",
+						"(map-indexed hash-map [:a :b :c])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				if (args.size() == 0) {
+					return Nil;
+				}
+				else if (args.size() == 1) {
+					final VncFunction fn = Coerce.toVncFunction(args.first());
+
+					// return a transducer
+					return new VncFunction(createAnonymousFuncName("map-indexed:transducer:wrapped")) {
+						public VncVal apply(final VncList args) {
+							assertArity(this.getQualifiedName(), args, 1);
+
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final AtomicLong idx = new AtomicLong(0);
+
+							return new VncFunction(createAnonymousFuncName("map-indexed:transducer")) {
+								public VncVal apply(final VncList args) {
+									assertArity(this.getQualifiedName(), args, 1, 2, 3);
+
+									if (args.size() == 0) {
+										return rf.apply(new VncList());
+									}
+									else if (args.size() == 1) {
+										final VncVal result = args.first();
+										return rf.apply(VncList.of(result));
+									}
+									else {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+			
+										return rf.apply(VncList.of(
+															result, 
+															fn.apply(VncList.of(
+																		new VncLong(idx.getAndIncrement()), 
+																		input))));
+									}
+								}
+
+							    private static final long serialVersionUID = -1L;
+							};
+						}
+
+					    private static final long serialVersionUID = -1L;
+					};
+				}
+				else {
+					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final VncVal coll = args.second();
+
+					List<VncVal> items;
+					
+					if (Types.isVncList(coll)) {
+						items = ((VncList)coll).getList();
+					}
+					else if (Types.isVncVector(coll)) {
+						items = ((VncVector)coll).getList();
+					}
+					else if (Types.isVncSet(coll)) {
+						items = ((VncSet)coll).getList();
+					}
+					else if (Types.isVncMap(coll)) {
+						items = ((VncMap)coll).toVncList().getList();
+					}
+					else if (Types.isVncString(coll)) {
+						items = ((VncString)coll).toVncList().getList();
+					}
+					else {
+						throw new VncException(
+								"Function 'map-indexed' requires a list, vector, set, " +
+								"map, or string as coll argument.");
+					}
+					
+
+					final List<VncVal> list = new ArrayList<>();
+					int index = 0;
+					
+					for(VncVal v : items) {
+						list.add(fn.apply(VncList.of(new VncLong(index++), v)));
+					}
+
+					return new VncList(list);
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction filter =
 		new VncFunction(
 				"filter",
@@ -1273,6 +1378,7 @@ public class TransducerFunctions {
 					.add(reduced)
 					.add(reduced_Q)
 					.add(map)
+					.add(map_indexed)
 					.add(filter)
 					.add(drop)
 					.add(drop_while)
