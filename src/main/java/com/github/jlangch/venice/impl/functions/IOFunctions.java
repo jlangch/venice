@@ -750,6 +750,24 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_user_home_dir =
+		new VncFunction(
+				"io/user-home-dir",
+				VncFunction
+					.meta()
+					.arglists("(io/user-home-dir)")
+					.doc("Returns the user's home dir as a java.io.File.")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/user-home-dir", args, 0);
+
+				return new VncJavaObject(new File(System.getProperty("user.home")));
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_slurp_lines =
 		new VncFunction(
 				"io/slurp-lines",
@@ -1500,7 +1518,7 @@ public class IOFunctions {
 					: Coerce.toVncString(enc).getValue();
 	}
 
-	private static File convertToFile(final VncVal f, final String errFormat) {
+	public static File convertToFile(final VncVal f, final String errFormat) {
 		if (Types.isVncString(f)) {
 			return new File(((VncString)f).getValue());
 		}
@@ -1567,6 +1585,7 @@ public class IOFunctions {
 					.add(io_temp_dir)
 					.add(io_tmp_dir)
 					.add(io_user_dir)
+					.add(io_user_home_dir)
 					.add(io_slurp)
 					.add(io_slurp_lines)
 					.add(io_spit)

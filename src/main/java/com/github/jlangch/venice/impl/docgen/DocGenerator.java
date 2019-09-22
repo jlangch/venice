@@ -1019,6 +1019,7 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/download"));
 		io.addItem(getDocItem("io/tmp-dir"));
 		io.addItem(getDocItem("io/user-dir"));
+		io.addItem(getDocItem("io/user-home-dir"));
 		io.addItem(getDocItem("io/temp-file"));
 
 		final DocSection io_test = new DocSection("file-io test");
