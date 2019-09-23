@@ -76,16 +76,16 @@
   (defn cmp
     ^{ :doc "Compares versions a and b, returning -1 if a is older than b, 0 if they're the same version, and 1 if a is newer than b" }
     [a b]
-    (let [key-for-ident (fn [v] (when v
-                                   (into [] (map try-parse-long (str/split v "\\.")))))
+    (let [key-for-ident #(when %
+                           (into [] (map try-parse-long (str/split % "\\."))))
           key           (juxt :major
                               :minor
                               :patch
                               ;; Because non-existent pre-release tags take
                               ;; precedence over existing ones
                               #(nil? (% :pre-release))
-                              (fn [v] (key-for-ident (:pre-release v)))
-                              (fn [v] (key-for-ident (:meta v))))]
+                              #(key-for-ident (:pre-release %))
+                              #(key-for-ident (:meta %)))]
       (compare (key (version a))
                (key (version b)))))
 
