@@ -254,12 +254,13 @@ public class SemverModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                \n" +
-				"   (load-module :semver)                           \n" +
-				"                                                   \n" +
-				"   (let [v (semver/parse \"1\")]                   \n" + 
-				"      (assert (not (semver/valid? v)))))           \n" + 
-				") ";
+				"(do                               \n" +
+				"   (load-module :semver)          \n" +
+				"                                  \n" +
+				"   (-<> (semver/parse \"1\")      \n" + 
+				"        (semver/valid? <>)        \n" + 
+				"        (not <>)                  \n" + 
+				"        (assert <>)))               ";
 
 		venice.eval(script);
 	}
