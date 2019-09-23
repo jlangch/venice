@@ -106,5 +106,5 @@ public class ModuleLoader {
 							"core", "http", "jackson", "parsatron",
 							"math", "webdav", "xchart", "test",
 							"tomcat", "ring", "maven" , "kira",
-							"xml", "crypt", "benchmark")));
+							"semver", "xml", "crypt", "benchmark")));
 }

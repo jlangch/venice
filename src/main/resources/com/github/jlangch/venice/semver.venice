@@ -1,0 +1,105 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2019 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; semver is a pure Venice implementation of the Semantic Versioning spec.
+;;;; See http://semver.org
+
+
+(ns semver)
+
+  (def pattern "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$")
+
+  (defn try-parse-long
+    ^{ :doc "Attempt to parse `o` to a long, returning `o` if that fails or the parsed version of `o` if successful." }
+    [o]
+    (try
+      (if (nil? o) nil (long o))
+      (catch :VncException e o)))
+
+  (defn valid?
+    ^{ :doc "Checks if the supplied version map is valid or not" }
+    [v]
+    (and (map? v)
+         (number? (:major v))
+         (number? (:minor v))
+         (number? (:patch v))
+         (>= (:major v) 0)
+         (>= (:minor v) 0)
+         (>= (:patch v) 0)
+         (or (nil? (:pre-release v))
+             (string? (:pre-release v)))
+         (or (nil? (:meta v))
+             (string? (:meta v)))))
+
+  (defn valid-format?
+    ^{ :doc "Checks the string `s` for semantic versioning formatting" }
+    [s]
+    (let [p (regex/pattern pattern)
+          m (regex/matcher p s)]
+      (regex/matches? m)))
+
+  (defn parse
+    ^{ :doc "Parses string `s` into a version map" }
+    [s]
+    (let [[_ major minor patch pre-release meta] (regex/matches pattern s)]
+      {:major (try-parse-long major)
+       :minor (try-parse-long minor)
+       :patch (try-parse-long patch)
+       :pre-release pre-release
+       :meta meta}))
+
+  (defn version
+    ^{ :doc "If `o` is a valid version map, does nothing. Otherwise, we'll attempt to parse `o` and return a version map." }
+    [o]
+    (if (and (map? o) (valid? o))
+      o
+      (parse o)))
+
+  (defn cmp
+    ^{ :doc "Compares versions a and b, returning -1 if a is older than b, 0 if they're the same version, and 1 if a is newer than b" }
+    [a b]
+    (let [key-for-ident (fn [v] (when v
+                                   (into [] (map try-parse-long (str/split v "\\.")))))
+          key           (juxt :major
+                              :minor
+                              :patch
+                              ;; Because non-existent pre-release tags take
+                              ;; precedence over existing ones
+                              #(nil? (% :pre-release))
+                              (fn [v] (key-for-ident (:pre-release v)))
+                              (fn [v] (key-for-ident (:meta v))))]
+      (compare (key (version a))
+               (key (version b)))))
+
+  (defn newer?
+    ^{ :doc "Is version a newer than version b?" }
+    [a b]
+    (pos? (cmp a b)))
+
+  (defn older?
+    ^{ :doc "Is version a older than version b?" }
+    [a b]
+    (neg? (cmp a b)))
+
+  (defn equal?
+    ^{ :doc "Is version a the same as version b?" }
+    [a b]
+    (zero? (cmp a b)))
