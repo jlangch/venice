@@ -43,7 +43,7 @@ public class SemverModuleTest {
 				"      (assert (== 2 (:minor v)))                   \n" + 
 				"      (assert (== 3 (:patch v)))                   \n" + 
 				"      (assert (== \"snapshot\" (:pre-release v)))  \n" + 
-				"      (assert (== \"b1\" (:meta v))))              \n" + 
+				"      (assert (== \"b1\" (:meta-data v))))         \n" + 
 				") ";
 
 		venice.eval(script);
@@ -62,7 +62,7 @@ public class SemverModuleTest {
 				"      (assert (== 2 (:minor v)))                   \n" + 
 				"      (assert (== 3 (:patch v)))                   \n" + 
 				"      (assert (== \"snapshot\" (:pre-release v)))  \n" + 
-				"      (assert (== nil (:meta v))))                 \n" + 
+				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
 
 		venice.eval(script);
@@ -81,7 +81,7 @@ public class SemverModuleTest {
 				"      (assert (== 2 (:minor v)))                   \n" + 
 				"      (assert (== 3 (:patch v)))                   \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
-				"      (assert (== nil (:meta v))))                 \n" + 
+				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
 
 		venice.eval(script);
@@ -100,7 +100,7 @@ public class SemverModuleTest {
 				"      (assert (== nil (:minor v)))                 \n" + 
 				"      (assert (== nil (:patch v)))                 \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
-				"      (assert (== nil (:meta v))))                 \n" + 
+				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
 
 		venice.eval(script);
@@ -119,7 +119,7 @@ public class SemverModuleTest {
 				"      (assert (== nil (:minor v)))                 \n" + 
 				"      (assert (== nil (:patch v)))                 \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
-				"      (assert (== nil (:meta v))))                 \n" + 
+				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
 
 		venice.eval(script);
@@ -138,7 +138,7 @@ public class SemverModuleTest {
 				"      (assert (== nil (:minor v)))                 \n" + 
 				"      (assert (== nil (:patch v)))                 \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
-				"      (assert (== nil (:meta v))))                 \n" + 
+				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
 
 		venice.eval(script);

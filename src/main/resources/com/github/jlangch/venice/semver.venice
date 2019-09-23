@@ -21,13 +21,17 @@
 
 ;;;; semver is a pure Venice implementation of the Semantic Versioning spec.
 ;;;; See http://semver.org
+;;;;
+;;;; Thanks to Deepak Giridharagopal and his clojure 'clj-semvar' project
+;;;; (https://github.com/grimradical/clj-semver). Venice's semver
+;;;; module builds on it.
 
 
 (ns semver)
 
   (def pattern "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$")
 
-  (defn try-parse-long
+  (defn parse-long
     ^{ :doc "Attempt to parse `o` to a long, returning `o` if that fails or the parsed version of `o` if successful." }
     [o]
     (try
@@ -46,8 +50,8 @@
          (>= (:patch v) 0)
          (or (nil? (:pre-release v))
              (string? (:pre-release v)))
-         (or (nil? (:meta v))
-             (string? (:meta v)))))
+         (or (nil? (:meta-data v))
+             (string? (:meta-data v)))))
 
   (defn valid-format?
     ^{ :doc "Checks the string `s` for semantic versioning formatting" }
@@ -60,11 +64,11 @@
     ^{ :doc "Parses string `s` into a version map" }
     [s]
     (let [[_ major minor patch pre-release meta] (regex/matches pattern s)]
-      {:major (try-parse-long major)
-       :minor (try-parse-long minor)
-       :patch (try-parse-long patch)
+      {:major (parse-long major)
+       :minor (parse-long minor)
+       :patch (parse-long patch)
        :pre-release pre-release
-       :meta meta}))
+       :meta-data meta}))
 
   (defn version
     ^{ :doc "If `o` is a valid version map, does nothing. Otherwise, we'll attempt to parse `o` and return a version map." }
@@ -77,7 +81,7 @@
     ^{ :doc "Compares versions a and b, returning -1 if a is older than b, 0 if they're the same version, and 1 if a is newer than b" }
     [a b]
     (let [key-for-ident #(when %
-                           (into [] (map try-parse-long (str/split % "\\."))))
+                           (into [] (map parse-long (str/split % "\\."))))
           key           (juxt :major
                               :minor
                               :patch
@@ -85,7 +89,7 @@
                               ;; precedence over existing ones
                               #(nil? (% :pre-release))
                               #(key-for-ident (:pre-release %))
-                              #(key-for-ident (:meta %)))]
+                              #(key-for-ident (:meta-data %)))]
       (compare (key (version a))
                (key (version b)))))
 
