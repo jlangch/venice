@@ -358,7 +358,7 @@ public class SemverModuleTest {
 	}
 
 	@Test
-	public void test_newer_1() {
+	public void test_newer_1a() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -368,6 +368,20 @@ public class SemverModuleTest {
 				"   (semver/newer?                                  \n" +
 				"      (semver/version \"1.2.4\")                   \n" + 
 				"      (semver/version \"1.2.3\"))                  \n" + 
+				") ";
+
+		assertTrue((Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_newer_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                \n" +
+				"   (load-module :semver)                           \n" +
+				"                                                   \n" +
+				"   (semver/newer? \"1.2.4\" \"1.2.3\")             \n" + 
 				") ";
 
 		assertTrue((Boolean)venice.eval(script));
@@ -422,7 +436,7 @@ public class SemverModuleTest {
 	}
 
 	@Test
-	public void test_equal_1() {
+	public void test_equal_1a() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -432,6 +446,20 @@ public class SemverModuleTest {
 				"   (semver/equal?                                  \n" +
 				"      (semver/version \"1.2.3\")                   \n" + 
 				"      (semver/version \"1.2.3\"))                  \n" + 
+				") ";
+
+		assertTrue((Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_equal_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                \n" +
+				"   (load-module :semver)                           \n" +
+				"                                                   \n" +
+				"   (semver/equal? \"1.2.3\" \"1.2.3\")             \n" + 
 				") ";
 
 		assertTrue((Boolean)venice.eval(script));
@@ -470,7 +498,7 @@ public class SemverModuleTest {
 	}
 
 	@Test
-	public void test_older_1() {
+	public void test_older_1a() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -480,6 +508,20 @@ public class SemverModuleTest {
 				"   (semver/older?                                  \n" +
 				"      (semver/version \"1.2.3\")                   \n" + 
 				"      (semver/version \"1.2.4\"))                  \n" + 
+				") ";
+
+		assertTrue((Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_older_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                \n" +
+				"   (load-module :semver)                           \n" +
+				"                                                   \n" +
+				"   (semver/older? \"1.2.3\" \"1.2.4\")             \n" + 
 				") ";
 
 		assertTrue((Boolean)venice.eval(script));
