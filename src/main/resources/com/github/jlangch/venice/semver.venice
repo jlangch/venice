@@ -65,9 +65,8 @@
        :examples '("""(semver/valid-format? "1.2.3")""") }
     valid-format?
     [s]
-    (let [p (regex/pattern pattern)
-          m (regex/matcher p s)]
-      (regex/matches? m)))
+    (->> (regex/matcher pattern s)
+         (regex/matches?)))
 
   (defn
     ^{ :arglists '("(semver/parse s)")

@@ -24,6 +24,10 @@
 
 (ns math)
 
+(defonce math/bigint-zero (. :java.math.BigInteger :ZERO))
+
+(defonce math/bigint-one (. :java.math.BigInteger :ONE))
+
 (defn
    ^{ :arglists '("(math/bigint x)")
       :doc "Creates a new big integer from a string, a long, or a double"
@@ -34,6 +38,7 @@
    [x]
       (cond
          (string? x)      (. :java.math.BigInteger :new x)
+         (int? x)         (. :java.math.BigInteger :valueOf (long x))
          (long? x)        (. :java.math.BigInteger :valueOf x)
          (double? x)      (. :java.math.BigInteger :valueOf (long x))
          (math/bigint? x) x

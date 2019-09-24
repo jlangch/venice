@@ -33,6 +33,34 @@ import com.github.jlangch.venice.Venice;
 public class MathModuleTest {
 
 	@Test
+	public void test_zero() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                         " +
+				"   (load-module :math)      " +
+				"                            " +
+				"   math/bigint-zero         " + 
+				") ";
+
+		assertEquals("0", ((BigInteger)venice.eval(script)).toString());
+	}
+
+	@Test
+	public void test_one() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                         " +
+				"   (load-module :math)      " +
+				"                            " +
+				"   math/bigint-one          " + 
+				") ";
+
+		assertEquals("1", ((BigInteger)venice.eval(script)).toString());
+	}
+
+	@Test
 	public void test_create_string() {
 		final Venice venice = new Venice();
 
