@@ -723,7 +723,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("resolve"));
 		misc.addItem(getDocItem("var-get"));
 		misc.addItem(getDocItem("callstack"));
-
+		misc.addItem(getDocItem("coalesce"));
 
 		final DocSection meta = new DocSection("Meta");
 		all.addSection(meta);
@@ -762,7 +762,6 @@ public class DocGenerator {
 		util.addItem(getDocItem("current-time-millis"));
 		util.addItem(getDocItem("nano-time"));
 		util.addItem(getDocItem("format-nano-time"));
-		util.addItem(getDocItem("coalesce"));
 
 		final DocSection shell = new DocSection("Shell");
 		all.addSection(shell);
