@@ -113,6 +113,10 @@ public class ShellFunctions {
 						"(println (sh \"echo\" \"x\\u25bax\"))", 
 						"(println (sh \"/bin/sh\" \"-c\" \"ls -l\"))", 
 						
+						";; background process\n" +
+						"(println (sh \"/bin/sh\" \"-c\" \"sleep 30 >/dev/null 2>&1 &\"))",
+						"(println (sh \"/bin/sh\" \"-c\" \"nohup sleep 30 >/dev/null 2>&1 &\"))",
+						
 						";; reads 4 single-byte chars\n" +
 						"(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
 						

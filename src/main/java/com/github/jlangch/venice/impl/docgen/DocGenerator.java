@@ -754,6 +754,8 @@ public class DocGenerator {
 		util.addItem(getDocItem("java-version"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
+		util.addItem(getDocItem("host-name"));
+		util.addItem(getDocItem("host-address"));
 		util.addItem(getDocItem("gc"));
 		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));

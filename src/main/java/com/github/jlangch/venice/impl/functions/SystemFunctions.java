@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -271,6 +272,56 @@ public class SystemFunctions {
 
 				return new VncString(
 							ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction host_name =
+		new VncFunction(
+				"host-name",
+				VncFunction
+					.meta()
+					.arglists("(host-name)")
+					.doc("Returns this host's name.")
+					.examples("(host-name)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("host-name", args, 0);
+
+				try {
+					return new VncString(
+							InetAddress.getLocalHost().getHostName());
+				}
+				catch(Exception ex) {
+					throw new VncException("(host-name) failed", ex);
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction host_address =
+		new VncFunction(
+				"host-address",
+				VncFunction
+					.meta()
+					.arglists("(host-address)")
+					.doc("Returns this host's ip address.")
+					.examples("(host-address)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("host-address", args, 0);
+
+				try {
+					return new VncString(
+							InetAddress.getLocalHost().getHostAddress());
+				}
+				catch(Exception ex) {
+					throw new VncException("(host-address) failed", ex);
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -536,6 +587,8 @@ public class SystemFunctions {
 					.add(nano_time)
 					.add(format_nano_time)
 					.add(pid)
+					.add(host_name)
+					.add(host_address)
 					.add(gc)
 					.add(shutdown_hook)
 					.add(sandboxed_Q)
