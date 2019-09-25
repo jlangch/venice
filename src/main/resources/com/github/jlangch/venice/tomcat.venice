@@ -21,7 +21,7 @@
 
 ;;;; Tomcat
 
-;;;; start a Tomcat server:
+;;;; start an embedded Tomcat server:
 ;;;;   (load-module :tomcat)
 ;;;;   (tc/run-tomcat (tc/hello-world-servlet) {:await? false})
 ;;;;
@@ -223,8 +223,16 @@
                             (coalesce context-path tc/default-context-path)
                             (coalesce context-doc-base tc/default-context-doc-base))]
       (. server :addServlet "" "venice-servlet" servlet)
-      (. context :addServletMappingDecoded "/*" "venice-servlet" false) ;
+      (. context :addServletMappingDecoded "/*" "venice-servlet" false)
       (. server :start)
       (when (:await? options true)
         (. (. server :getServer) :await))
     server)))
+
+  (defn tc/stop-tomcat
+    [server]
+    (. server :stop))
+
+  (defn tc/destroy-tomcat
+    [server]
+    (. server :destroy))
