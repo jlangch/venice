@@ -11,19 +11,21 @@ integer support._
 ## simple recursion
 
 ```clojure
-(load-module :math)
+(do
+  (load-module :math)
   
-(defn factorial [x] 
-  (if (<= x 1) 
-      1 
-      (math/bigint-mul x (factorial (dec x))))))
+  (defn factorial [x] 
+    (if (<= x 1) 
+        1 
+        (math/bigint-mul x (factorial (dec x))))))
 
 
-(factorial 2)  ; -> 2
+  (factorial 2)  ; -> 2
 
-(factorial 4)  ; -> 24
+  (factorial 4)  ; -> 24
 
-(factorial 4000)  ; -> boooom...
+  (factorial 4000)  ; -> boooom...
+)
 ```
 
 Simple recursion a few thousand calls deep throws a _StackOverflowError_.
