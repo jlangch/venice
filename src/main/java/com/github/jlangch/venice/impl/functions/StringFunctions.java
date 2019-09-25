@@ -177,7 +177,7 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/ends-with? s substr)")
 					.doc("True if s ends with substr.")
-					.examples("(str/starts-with? \"abc\"  \"bc\")")
+					.examples("(str/ends-with? \"abc\"  \"bc\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -681,21 +681,27 @@ public class StringFunctions {
 					.examples(
 						"(str/split \"abc,def,ghi\" \",\")",
 						"(str/split \"abc , def , ghi\" \"[ *],[ *]\")",
-						"(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")")
+						"(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")",
+						"(str/split nil \",\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/split", args, 2);
 
-				final VncString string = Coerce.toVncString(args.first());
-				final VncString regex = Coerce.toVncString(args.second());
-
-				return new VncList(
-						Arrays
-							.asList(string.getValue().split(regex.getValue()))
-							.stream()
-							.map(s -> new VncString(s))
-							.collect(Collectors.toList()));
+				if (args.first() == Nil) {
+					return new VncList();
+				}
+				else {
+					final VncString string = Coerce.toVncString(args.first());
+					final VncString regex = Coerce.toVncString(args.second());
+	
+					return new VncList(
+							Arrays
+								.asList(string.getValue().split(regex.getValue()))
+								.stream()
+								.map(s -> new VncString(s))
+								.collect(Collectors.toList()));
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
