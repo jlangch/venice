@@ -314,7 +314,11 @@ public class ShellFunctions {
 	
 	private static void validateArgs(final VncList args) {
 		args.forEach(arg -> {
-			if (!(Types.isVncString(arg) || Types.isVncKeyword(arg) || Types.isVncBoolean(arg))) {
+			if (!(Types.isVncString(arg) 
+					|| Types.isVncKeyword(arg) 
+					|| Types.isVncBoolean(arg) 
+					|| Types.isVncJavaObject(arg, File.class))
+			) {
 				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", arg))) {
 					throw new VncException(String.format(
 							"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
