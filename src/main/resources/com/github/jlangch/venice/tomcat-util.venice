@@ -23,3 +23,215 @@
 
 
 (ns tc-util)
+  (load-module :semver)
+
+  (def-dynamic tc-archive "http://archive.apache.org/dist/tomcat")
+  (def-dynamic tc-pid-file "catalina.pid")
+
+  (defn- process-running?
+    [pid]
+    (if (some? pid)
+      (->> (sh "ps")
+           (:out)
+           (str/split-lines)
+           (map #(first (str/split % " ")))
+           (filter #(== % (str pid)))
+           (not-empty?))
+      false))
+
+  (defn- wait-for-process-exit
+    [pid timeout]
+    (loop [secs timeout]
+      (when (and (pos? secs) (process-running? pid))
+        (do
+          (sleep 1 :seconds)
+          (recur (dec secs))))))
+
+  (defn get-pid-file
+    [tc-home]
+    (if (io/exists-file? tc-pid-file)
+      tc-pid-file
+      (io/file (io/file tc-home "bin") tc-pid-file)))
+
+  (defn- tc-download-url
+    [version]
+    (str/format "%s/tomcat-%s/v%s/bin/apache-tomcat-%s.zip"
+                tc-archive
+                (:major (semver/parse version))
+                version
+                version))
+
+  (defn installed?
+    [tc-home]
+    (and (some? tc-home) (io/exists-dir? tc-home)))
+
+  (defn validate-installed
+    [tc-home]
+    (when-not (installed? tc-home)
+      (throw (runtime-exception
+                (str "Tomcat is not installed at " tc-home)))))
+
+  (defn version
+    [tc-home]
+    (validate-installed tc-home)
+    (-<> (sh "./version.sh" :dir (io/file tc-home "bin"))
+         (:out <>)
+         (str/split-lines <>)
+         (filter #(str/contains? % "Server number") <>)
+         (first <>)
+         (str/split <> " ")
+         (fourth <>)))
+
+  (defn get-pid
+    [tc-home]
+    (validate-installed tc-home)
+    (let [pid-file (get-pid-file tc-home)]
+      (when (io/exists-file? pid-file)
+        (let [pid (first (str/split-lines (io/slurp pid-file)))]
+          (when (process-running? pid)
+            pid)))))
+
+  (defn running?
+    [tc-home]
+    (validate-installed tc-home)
+    (some? (get-pid tc-home)))
+
+  (defn status-info
+    [tc-home]
+    (validate-installed tc-home)
+    (str "Tomcat running: " (running? tc-home)))
+
+  (defn clean-logs
+    [tc-home]
+    (validate-installed tc-home)
+    (let [log-dir (io/file tc-home "logs")]
+      (apply io/delete-file (io/list-files log-dir #(io/exists-file? %)))))
+
+  (defn clean
+    [tc-home]
+    (validate-installed tc-home)
+    (when (running? tc-home)
+      (throw (runtime-exception "Tomcat running!")))
+    (println "Cleaning Tomcat...")
+    (clean-logs tc-home)
+    (io/delete-file-tree (io/file tc-home "javamelody"))
+    (io/delete-file-tree (io/file tc-home "work")))
+
+  (defn war-deployed?
+    [tc-home]
+    (validate-installed tc-home)
+    (let [webapp-dir (io/file tc-home "webapps")]
+      (not-empty? (io/list-files webapp-dir #(io/file-ext? % ".war")))))
+
+  (defn start
+    [tc-home]
+    (validate-installed tc-home)
+    (when (and (not (running? tc-home)) (war-deployed? tc-home))
+      (let [bin-dir (io/file tc-home "bin")]
+        (sh "/bin/sh" "-c" "./startup.sh &" :dir bin-dir))))
+
+  (defn stop
+    [tc-home]
+    (validate-installed tc-home)
+    (let [bin-dir (io/file tc-home "bin")
+          pid (get-pid tc-home)]
+      (when (some? pid)
+        (do
+          (println "Tomcat shutdown ...")
+          (let [out (:out (sh "/bin/sh" "-c" "./shutdown.sh 2>&1" :dir bin-dir))]
+            (println out))
+
+          (sleep 1 :seconds)
+
+          (when (process-running? pid)
+            (do
+              (println "Awaiting Tomcat shutdown ...")
+              (wait-for-process-exit pid 20) ; gracefully wait max 20s
+
+              (when (process-running? pid)
+                (do
+                  (println "Tomcat killing ...")
+                  (sh "kill" "-9" pid :dir bin-dir)))))))
+
+      (println "Tomcat shutdown.")))
+
+  (defn deploy-war
+    [tc-home war]
+    (validate-installed tc-home)
+    (let [source-war (io/file war)
+          war-name   (io/file-name source-war)
+          target-war (io/file (io/file tc-home "webapps") war-name)]
+
+      (when-not (io/file-ext? war-name ".war")
+        (throw (runtime-exception (str "Not a WAR file: " source-war))))
+
+      (when (running? tc-home)
+        (throw (runtime-exception "Tomcat running. Please stop it before deploying!")))
+
+      (println "Deploying webapp ...")
+
+      (when-not (io/exists-file? source-war)
+        (throw (runtime-exception (str
+          "The web archive " source-war
+          " does not exist. Please build the web archive first."))))
+
+      (println "Cleaning webapp ...")
+      (clean)
+      (io/delete-file target-war)
+      (let [dir-name (str/strip-end war-name ".war")
+            dir (io/file (io/file tc-home "webapps") dir-name)]
+        (io/delete-file-tree dir))
+
+      (println (str "Deploying " war-name " ...")
+      (io/copy-file source-war target-war)
+
+      (println "Tomcat deploying webapp done."))))
+
+  (defn install
+    [install-dir tc-version & options]
+
+    (let [options          (hash-map options)
+          install-base-dir (io/file install-dir)
+          dir-name         (str "apache-tomcat-" tc-version)
+          tc-dir           (io/file install-base-dir dir-name)
+          tc-dir-bin       (io/file tc-dir "bin")
+          tc-dir-webapps   (io/file tc-dir "webapps")]
+
+      (when-not (io/exists-dir? install-base-dir)
+        (throw (runtime-exception (str
+          "The Tomcat install directory " install-dir
+          " does not exist! Please create it first."))))
+      (when (io/exists-dir? tc-dir)
+        (throw (runtime-exception (str
+          "The Tomcat version " tc-version " is already installed!"))))
+
+      (println (str "Installing Tomcat " tc-version " ..."))
+
+      (println (str "Downloading Tomcat " tc-version " ..."))
+      (let [target (io/file install-base-dir "tc.zip")
+            url (tc-download-url tomcat-version)]
+        (io/delete-file dest-zip)
+        (io/spit target (io/download uri :binary true))
+        (println "Downloading ok.")
+
+        (println "Unpacking Tomcat archive ...")
+        (io/unzip-to-dir target install-base-dir)
+
+        (when (:remove-unix-files options false)
+          (apply io/delete-file (io/list-files tc-dir-bin #(io/file-ext? % ".sh"))))
+
+        (when (:remove-windows-files options false)
+          (apply io/delete-file (io/list-files tc-dir-bin #(io/file-ext? % ".bat"))))
+
+        (when (:remove-system-webapps options false)
+          (apply io/delete-file-tree (io/list-files tc-dir-webapps)))
+
+        (->> (io/list-files tc-dir-bin #(io/file-ext? % ".sh"))
+             (docoll #(sh "chmod" "a+x" %)))
+
+        (println "Cleanup ...")
+        (io/delete-file target)
+        (println (str "Tomcat " tc-version " has been installed successfully."))
+      )))
+
+)
