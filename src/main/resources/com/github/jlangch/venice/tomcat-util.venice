@@ -51,7 +51,7 @@
     [tc-home]
     (if (io/exists-file? tc-pid-file)
       tc-pid-file
-      (io/file (io/file tc-home "bin") tc-pid-file)))
+      (io/file tc-home "bin" tc-pid-file)))
 
   (defn- tc-download-url
     [version]
@@ -160,7 +160,7 @@
     (validate-installed tc-home)
     (let [source-war (io/file war)
           war-name   (io/file-name source-war)
-          target-war (io/file (io/file tc-home "webapps") war-name)]
+          target-war (io/file tc-home "webapps" war-name)]
 
       (when-not (io/file-ext? war-name ".war")
         (throw (runtime-exception (str "Not a WAR file: " source-war))))
@@ -179,7 +179,7 @@
       (clean)
       (io/delete-file target-war)
       (let [dir-name (str/strip-end war-name ".war")
-            dir (io/file (io/file tc-home "webapps") dir-name)]
+            dir (io/file tc-home "webapps" dir-name)]
         (io/delete-file-tree dir))
 
       (println (str "Deploying " war-name " ...")

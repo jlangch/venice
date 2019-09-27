@@ -89,12 +89,12 @@ public class IOFunctions {
 					.examples(
 						"(io/file \"/temp/test.txt\")",
 						"(io/file \"/temp\" \"test.txt\")",
-						"(io/file (io/file \"/temp\") \"test.txt\")",
+						"(io/file \"/temp\" \"test\" \"test.txt\")",
 						"(io/file (. :java.io.File :new \"/temp/test.txt\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("io/file", args, 1, 2);
+				assertMinArity("io/file", args, 1);
 
 				if (args.size() == 1) {
 					return new VncJavaObject(
@@ -107,9 +107,13 @@ public class IOFunctions {
 											args.first(),
 											"Function 'io/file' does not allow %s as parent");
 
-					final String child = Coerce.toVncString(args.second()).getValue();
+					final List<VncVal> children = args.rest().getList();
+					File file = parent;
+					for(VncVal child : children) {
+						file = new File(file, Coerce.toVncString(child).getValue());
+					}
 
-					return new VncJavaObject(new File(parent, child));
+					return new VncJavaObject(file);
 				}
 			}
 
