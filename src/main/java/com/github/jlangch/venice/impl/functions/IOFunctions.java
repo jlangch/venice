@@ -46,6 +46,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -261,6 +262,30 @@ public class IOFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_file_ext_Q =
+		new VncFunction(
+				"io/file-ext?",
+				VncFunction
+					.meta()
+					.arglists("(io/file-ext f ext)")
+					.doc("Returns true if the file f hast the extension ext. f must be a file or a string (file path).")
+					.examples("(io/file-ext? (io/file \"/tmp/test/x.txt\") \"txt\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/file-ext", args, 2);
+
+				final File f = convertToFile(
+									args.first(),
+									"Function 'io/file-ext' does not allow %s as f");
+
+				final String ext = Coerce.toVncString(args.second()).getValue();
+				return f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext) ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_file_Q =
 		new VncFunction(
 				"io/file?",
@@ -436,7 +461,8 @@ public class IOFunctions {
 					.arglists("(io/delete-file f & files)")
 					.doc(
 						"Deletes one or multiple files. Silently skips delete if the file " +
-						"does not exist. f must be a file or a string (file path)")
+						"does not exist. If f is a directory the directory must be empty. " +
+						"f must be a file or a string (file path)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -455,6 +481,52 @@ public class IOFunctions {
 								String.format("Failed to delete file %s", f.toString()),
 								ex);
 					}
+				});
+
+				return Nil;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_delete_file_tree =
+		new VncFunction(
+				"io/delete-file-tree",
+				VncFunction
+					.meta()
+					.arglists("(io/delete-file-tree f & files)")
+					.doc(
+						"Deletes a file or a directory with all its content. Silently skips delete if " +
+						"the file or directory does not exist. f must be a file or a string (file path)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/delete-file-tree", args, 1);
+
+				args.forEach(f -> {
+					final File file = convertToFile(
+										f,
+										"Function 'io/delete-file-tree' does not allow %s as f");
+
+					if (file.isDirectory()) {
+						try {
+						    Files.walk(file.toPath())
+						    	 .sorted(Comparator.reverseOrder())
+						    	 .map(Path::toFile)
+						    	 .forEach(File::delete);						
+						}
+						catch(Exception ex) {
+							throw new VncException(
+									String.format("Failed to delete dir %s", file.toString()),
+									ex);
+						}
+					}
+					else if (file.isFile()) {
+						file.delete();
+					}
+					else {
+						// ignore
+					}						
 				});
 
 				return Nil;
@@ -1567,6 +1639,7 @@ public class IOFunctions {
 					.add(io_file_absolute_path)
 					.add(io_file_parent)
 					.add(io_file_name)
+					.add(io_file_ext_Q)
 					.add(io_file_size)
 					.add(io_exists_file_Q)
 					.add(io_exists_dir_Q)
@@ -1577,6 +1650,7 @@ public class IOFunctions {
 					.add(io_list_files)
 					.add(io_delete_file)
 					.add(io_delete_file_on_exit)
+					.add(io_delete_file_tree)
 					.add(io_copy_file)
 					.add(io_move_file)
 					.add(io_mkdir)

@@ -1006,10 +1006,12 @@ public class DocGenerator {
 		io.addItem(getDocItem("io/file-path"));
 		io.addItem(getDocItem("io/file-absolute-path"));
 		io.addItem(getDocItem("io/file-canonical-path"));
+		io.addItem(getDocItem("io/file-ext?"));
 		io.addItem(getDocItem("io/list-files"));
 		io.addItem(getDocItem("io/file-size"));
 		io.addItem(getDocItem("io/delete-file"));
 		io.addItem(getDocItem("io/delete-file-on-exit"));
+		io.addItem(getDocItem("io/delete-file-tree"));
 		io.addItem(getDocItem("io/copy-file"));
 		io.addItem(getDocItem("io/move-file"));
 		io.addItem(getDocItem("io/mkdir"));
