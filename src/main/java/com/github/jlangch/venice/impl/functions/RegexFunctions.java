@@ -170,7 +170,7 @@ public class RegexFunctions {
 				"regex/matches?", 
 				VncFunction
 					.meta()
-					.arglists("(regex/matches matcher)")		
+					.arglists("(regex/matches? matcher)")		
 					.doc(
 						"Attempts to match the entire region against the pattern. " +
 						"If the match succeeds then more information can be obtained " +
