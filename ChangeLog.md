@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - module for semantic versions `(load-module :semver)`
 - functions `merge-with`, `fourth`, `shuffle`
-- enhancement function `io/file` to accept multiple children
+- enhancement to `io/file` to accept multiple children
 - transducing function `map-indexed`
 
 ### Changed
