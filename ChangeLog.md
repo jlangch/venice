@@ -12,8 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - module for semantic versions `(load-module :semver)`
-- function `merge-with`, `fourth`, `shuffle`
-- function `io/file` accepts multiple children
+- functions `merge-with`, `fourth`, `shuffle`
+- enhancement function `io/file` to accept multiple children
 - transducing function `map-indexed`
 
 ### Changed
