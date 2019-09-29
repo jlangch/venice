@@ -11,10 +11,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- module for semantic versions `(load-module :semver)`
 - functions `merge-with`, `fourth`, `shuffle`
 - enhancement to `io/file` to accept multiple children paths
 - transducing function `map-indexed`
+- module for semantic versions `(load-module :semver)`
+- module for Tomcat management `(load-module :tomcat-util)`
 
 ### Changed
 
