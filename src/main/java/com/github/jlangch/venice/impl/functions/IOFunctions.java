@@ -475,7 +475,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("io/delete-file", args, 1);
+				assertMinArity("io/delete-file", args, 0);
 
 				args.forEach(f -> {
 					try {
