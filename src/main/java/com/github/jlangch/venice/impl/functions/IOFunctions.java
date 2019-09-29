@@ -271,9 +271,14 @@ public class IOFunctions {
 				"io/file-ext?",
 				VncFunction
 					.meta()
-					.arglists("(io/file-ext f ext)")
-					.doc("Returns true if the file f hast the extension ext. f must be a file or a string (file path).")
-					.examples("(io/file-ext? (io/file \"/tmp/test/x.txt\") \"txt\")")
+					.arglists(
+						"(io/file-ext f ext)")
+					.doc(
+						"Returns true if the file f hast the extension ext. " +
+						"f must be a file or a string (file path).")
+					.examples(
+						"(io/file-ext? (io/file \"/tmp/test/x.txt\") \"txt\")",
+						"(io/file-ext? (io/file \"/tmp/test/x.txt\") \".txt\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
