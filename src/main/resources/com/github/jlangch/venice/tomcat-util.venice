@@ -69,7 +69,7 @@
 (defn validate-installed
   [tc-home]
   (when-not (installed? tc-home)
-    (throw (runtime-exception
+    (throw (venice-exception
               (str "Tomcat is not installed at " tc-home)))))
 
 (defn version
@@ -112,7 +112,7 @@
   [tc-home]
   (validate-installed tc-home)
   (when (running? tc-home)
-    (throw (runtime-exception "Tomcat running!")))
+    (throw (venice-exception "Tomcat running!")))
   (println "Cleaning Tomcat...")
   (clean-logs tc-home)
   (io/delete-file-tree (io/file tc-home "javamelody"))
@@ -169,15 +169,17 @@
         target-war (io/file tc-home "webapps" war-name)]
 
     (when-not (io/exists-file? source-war)
-      (throw (runtime-exception (str "The WAR " source-war " does not exist!"))))
+      (throw (venice-exception
+               (str "The WAR " source-war " does not exist!"))))
 
     (when-not (io/file-ext? source-war ".war")
-      (throw (runtime-exception (str "Not a WAR file: " source-war))))
+      (throw (venice-exception (str "Not a WAR file: " source-war))))
 
     (when (running? tc-home)
-      (throw (runtime-exception "Tomcat is running. Please stop it before deploying!")))
+      (throw (venice-exception
+               "Tomcat is running. Please stop it before deploying!")))
 
-    (clean)
+    (clean tc-home)
     (io/delete-file target-war)
     (->> (str/strip-end war-name ".war")
          (io/file tc-home "webapps")
@@ -198,11 +200,11 @@
         tc-dir-webapps   (io/file tc-dir "webapps")]
 
     (when-not (io/exists-dir? install-base-dir)
-      (throw (runtime-exception (str
+      (throw (venice-exception (str
         "The Tomcat install directory " install-base-dir
         " does not exist! Please create it first."))))
     (when (io/exists-dir? tc-dir)
-      (throw (runtime-exception (str
+      (throw (venice-exception (str
         "The Tomcat version " tc-version " is already installed!"))))
 
     (println (str "Downloading Tomcat " tc-version " ..."))
