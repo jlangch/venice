@@ -848,28 +848,76 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_quoted_Q =
+		new VncFunction(
+				"str/quoted?",
+				VncFunction
+					.meta()
+					.arglists("(str/quoted? str q)", "(str/quoted? str start end)")
+					.doc("Returns true if the string is quoted.")
+					.examples(
+						"(str/quoted? \"-abc-\" \"-\")",
+						"(str/quoted? \"<abc>\" \"<\" \">\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/quoted?", args, 2, 3);
+
+				final String s = Coerce.toVncString(args.first()).getValue();
+				final String start = Coerce.toVncString(args.second()).getValue();
+				final String end = (args.size() == 2)
+										? start
+										: Coerce.toVncString(args.nth(2)).getValue();
+
+				return s.startsWith(start) && s.endsWith(end) ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_double_quote =
-			new VncFunction(
-					"str/double-quote",
-					VncFunction
-						.meta()
-						.arglists("(str/double-quote str)")
-						.doc("Double quotes a string.")
-						.examples(
-							"(str/double-quote \"abc\")",
-							"(str/double-quote \"\")")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					assertArity("str/double-quote", args, 1);
+		new VncFunction(
+				"str/double-quote",
+				VncFunction
+					.meta()
+					.arglists("(str/double-quote str)")
+					.doc("Double quotes a string.")
+					.examples(
+						"(str/double-quote \"abc\")",
+						"(str/double-quote \"\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/double-quote", args, 1);
 
-					final String s = Coerce.toVncString(args.first()).getValue();
+				final String s = Coerce.toVncString(args.first()).getValue();
 
-					return new VncString("\"" + s + "\"");
-				}
+				return new VncString("\"" + s + "\"");
+			}
 
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_double_quoted_Q =
+		new VncFunction(
+				"str/double-quoted?",
+				VncFunction
+					.meta()
+					.arglists("(str/double-quoteed? str)")
+					.doc("Returns true if the string is double quoted.")
+					.examples("(str/double-quoted? \"\\\"abc\\\"\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/double-quoted?", args, 1);
+
+				final String s = Coerce.toVncString(args.first()).getValue();
+
+				return s.startsWith("\"") && s.endsWith("\"") ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction str_truncate =
 		new VncFunction(
@@ -1563,6 +1611,8 @@ public class StringFunctions {
 					.add(str_rest)
 					.add(str_quote)
 					.add(str_double_quote)
+					.add(str_quoted_Q)
+					.add(str_double_quoted_Q)
 					.add(str_truncate)
 					.add(str_strip_start)
 					.add(str_strip_end)

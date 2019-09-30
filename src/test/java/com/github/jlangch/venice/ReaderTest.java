@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -148,6 +149,17 @@ public class ReaderTest {
 		assertThrows(ParseError.class, () -> {
 			Reader.tokenize("\"uvwxyz", "test");
 		});
+	}
+
+	@Test
+	public void testEscapedString() {	
+		List<Token> tokens = Reader.tokenize("\"aaa\"", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"aaa\"", tokens.get(0).getToken());
+		
+		tokens = Reader.tokenize("\\S", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\\S", tokens.get(0).getToken());
 	}
 
 	@Test
