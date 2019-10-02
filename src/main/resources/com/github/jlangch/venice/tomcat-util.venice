@@ -97,11 +97,6 @@
   (validate-installed tc-home)
   (some? (get-pid tc-home)))
 
-(defn status-info
-  [tc-home]
-  (validate-installed tc-home)
-  (str "Tomcat running: " (running? tc-home)))
-
 (defn clean-logs
   [tc-home]
   (validate-installed tc-home)
@@ -191,7 +186,6 @@
 
 (defn install
   [install-dir tc-version & options]
-
   (let [options          (apply hash-map options)
         install-base-dir (io/file install-dir)
         dir-name         (str "apache-tomcat-" tc-version)
@@ -233,3 +227,11 @@
       (io/delete-file target)
       (println (str "Tomcat " tc-version " has been installed successfully."))
     )))
+
+(defn uninstall
+  [tc-home]
+  (validate-installed tc-home)
+  (when (running? tc-home)
+    (throw (venice-exception
+             "Tomcat is running. Please stop it before uninstalling!")))
+  (io/delete-file-tree tc-home))
