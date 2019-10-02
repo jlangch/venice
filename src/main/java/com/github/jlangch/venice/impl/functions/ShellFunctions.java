@@ -428,8 +428,12 @@ public class ShellFunctions {
 			final BufferedReader rd = new BufferedReader(new InputStreamReader(is, enc));
 			while(true) {
 				final String line = rd.readLine();
-				fn.apply(VncList.of(line == null ? Nil : new VncString(line)));
-				if (line == null) break;
+				if (line == null) {
+					break;
+				}
+				else {
+					fn.apply(VncList.of(new VncString(line)));
+				}
 			}
 		}
 		catch(Exception ex) {
