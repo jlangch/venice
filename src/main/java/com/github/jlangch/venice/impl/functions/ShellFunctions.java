@@ -24,9 +24,11 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -91,6 +93,12 @@ public class ShellFunctions {
 						"             returned. If :bytes is given, the sub-process's stdout\n" + 
 						"             will be stored in a Bytebuf and returned. Defaults to\n" + 
 						"             UTF-8.\n" + 
+						"  :out-fn    a function with a single string argument that receives\n" + 
+						"             line by line from the process' stdout. If passed the \n" + 
+						"             :out value in the return map will be empty.\n" + 
+						"  :err-fn    a function with a single string argument that receives\n" + 
+						"             line by line from the process' stderr. If passed the \n" + 
+						"             :err value in the return map will be empty.\n" + 
 						"  :env       override the process env with a map.\n" + 
 						"  :dir       override the process dir with a String or java.io.File.\n" + 
 						"  :throw-ex  If true throw an exception if the exit code is not equal\n" + 
@@ -112,7 +120,9 @@ public class ShellFunctions {
 						"(println (sh \"cat\" :in \"x\\u25bax\\n\"))",
 						"(println (sh \"echo\" \"x\\u25bax\"))", 
 						"(println (sh \"/bin/sh\" \"-c\" \"ls -l\"))", 
-						
+
+						"(sh \"ls\" \"-l\" :out-fn #(println %))",
+
 						";; background process\n" +
 						"(println (sh \"/bin/sh\" \"-c\" \"sleep 30 >/dev/null 2>&1 &\"))",
 						"(println (sh \"/bin/sh\" \"-c\" \"nohup sleep 30 >/dev/null 2>&1 &\"))",
@@ -186,6 +196,8 @@ public class ShellFunctions {
 			final File dir_ = toFile(opts.get(new VncKeyword(":dir")));
 			
 			final VncVal in = opts.get(new VncKeyword(":in"));
+			final VncVal slurpOutFn = opts.get(new VncKeyword(":out-fn"));
+			final VncVal slurpErrFn = opts.get(new VncKeyword(":err-fn"));
 			final VncVal inEnc = opts.get(new VncKeyword(":in-enc"));
 			final VncVal outEnc = opts.get(new VncKeyword(":out-enc"));
 			
@@ -221,17 +233,32 @@ public class ShellFunctions {
 			try(InputStream stdout = proc.getInputStream();
 				InputStream stderr = proc.getErrorStream()
 			) {
-				// slurp the subprocess' stdout (as string or bytebuf)
 				final String enc = getEncoding(outEnc);
-				final Future<VncVal> future_stdout =
-						executor.submit(() -> "bytes".equals(enc)
-												? new VncByteBuffer(IOStreamUtil.copyIStoByteArray(stdout))
-												: new VncString(IOStreamUtil.copyIStoString(stdout, enc)));
+
+				// slurp the subprocess' stdout (as string or bytebuf)			
+				Future<VncVal> future_stdout;
+				if ("bytes".equals(enc)) {
+					future_stdout = executor.submit(() -> slurpToBytes(stdout));
+				}
+				else if (Types.isVncFunction(slurpOutFn)) {
+					slurp(stdout, enc, (VncFunction)slurpOutFn);
+					future_stdout = executor.submit(() -> new VncString(""));
+				}
+				else {
+					future_stdout = executor.submit(() -> slurpToString(stdout, enc));
+				}
 				
 				// slurp the subprocess' stderr as string with platform default encoding
-				final Future<VncVal> future_stderr = 
-						executor.submit(() -> new VncString(IOStreamUtil.copyIStoString(stderr, null)));
-				
+				Future<VncVal> future_stderr; 
+				if (Types.isVncFunction(slurpErrFn)) {
+					slurp(stderr, enc, (VncFunction)slurpErrFn);
+					future_stderr = executor.submit(() -> new VncString(""));
+				}
+				else {
+					future_stderr = executor.submit(() -> slurpToString(stderr, enc));
+				}
+			
+				// wait for the process to exit
 				final int exitCode = proc.waitFor();
 					
 				if (future_stdin != null) {
@@ -317,6 +344,7 @@ public class ShellFunctions {
 			if (!(Types.isVncString(arg) 
 					|| Types.isVncKeyword(arg) 
 					|| Types.isVncBoolean(arg) 
+					|| Types.isVncFunction(arg) 
 					|| Types.isVncJavaObject(arg, File.class))
 			) {
 				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", arg))) {
@@ -393,6 +421,28 @@ public class ShellFunctions {
 		os.flush();
 		os.close();
 		return null;
+	}
+	
+	private static void slurp(final InputStream is, final String enc, final VncFunction fn) {
+		try {
+			final BufferedReader rd = new BufferedReader(new InputStreamReader(is, enc));
+			while(true) {
+				final String line = rd.readLine();
+				fn.apply(VncList.of(line == null ? Nil : new VncString(line)));
+				if (line == null) break;
+			}
+		}
+		catch(Exception ex) {
+			fn.apply(VncList.of(Nil));
+		}
+	}
+
+	private static VncString slurpToString(final InputStream is, final String enc) throws Exception{
+		return new VncString(IOStreamUtil.copyIStoString(is, enc));
+	}
+
+	private static VncByteBuffer slurpToBytes(final InputStream is) throws Exception{
+		return new VncByteBuffer(IOStreamUtil.copyIStoByteArray(is));
 	}
 
 	

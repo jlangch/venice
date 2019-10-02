@@ -12,9 +12,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - functions `merge-with`, `fourth`, `shuffle`
+- transducing function `map-indexed`
 - sandboxed access to individual system environment variables (function `system-env`).
 - enhancement to `io/file` to accept multiple children paths
-- transducing function `map-indexed`
+- enhanced stdout/stderr processing of the `sh` function
 - module for semantic versions `(load-module :semver)`
 - module for Tomcat management `(load-module :tomcat-util)`
 
