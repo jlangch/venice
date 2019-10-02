@@ -19,6 +19,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - module for semantic versions `(load-module :semver)`
 - module for Tomcat management `(load-module :tomcat-util)`
 
+### Fixed
+
+- fixed function `sh`: the subprocess should inherit the environment 
+  of the current process if no explicit environment is given
+
 ### Changed
 
 - OpenPDF lib to actual version 1.3.11

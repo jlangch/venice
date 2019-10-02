@@ -322,7 +322,7 @@ public class ShellFunctions {
 	}
 
 	private static String[] toEnvStrings(final VncVal envMap) {
-		if (envMap == Nil) {
+		if (envMap == Nil || ((VncMap)envMap).isEmpty()) {
 			return null;
 		}
 		else {
@@ -344,6 +344,7 @@ public class ShellFunctions {
 			if (!(Types.isVncString(arg) 
 					|| Types.isVncKeyword(arg) 
 					|| Types.isVncBoolean(arg) 
+					|| Types.isVncMap(arg) 
 					|| Types.isVncFunction(arg) 
 					|| Types.isVncJavaObject(arg, File.class))
 			) {
