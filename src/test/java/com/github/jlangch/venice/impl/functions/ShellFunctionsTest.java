@@ -30,11 +30,13 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 
 public class ShellFunctionsTest {
 
 	@Test
+	@EnableOnMacOrLinux
 	public void test_shell() {
 		final Venice venice = new Venice();
 		
@@ -44,6 +46,7 @@ public class ShellFunctionsTest {
 	}
 
 	@Test
+	@EnableOnMacOrLinux
 	public void test_shell_with_dir_1() {
 		final Venice venice = new Venice();
 		
@@ -53,6 +56,7 @@ public class ShellFunctionsTest {
 	}
 
 	@Test
+	@EnableOnMacOrLinux
 	public void test_shell_with_dir_2() {
 		final Venice venice = new Venice();
 		
@@ -62,28 +66,31 @@ public class ShellFunctionsTest {
 	}
 
 	@Test
+	@EnableOnMacOrLinux
 	public void test_shell_error_exit_code() {
 		final Venice venice = new Venice();
 		
-		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"rm\" \"x.any\")");
+		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\")");
 		assertEquals(1L, result.get("exit"));
 	}
 
 	@Test
+	@EnableOnMacOrLinux
 	public void test_shell_error_throw_exception_1() {
 		final Venice venice = new Venice();
 		
 		assertThrows(
 	            ShellException.class, 
-	            () -> venice.eval("(with-sh-throw (sh \"rm\" \"x.any\"))"));
+	            () -> venice.eval("(with-sh-throw (sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\"))"));
 	}
 
 	@Test
+	@EnableOnMacOrLinux
 	public void test_shell_error_throw_exception_2() {
 		final Venice venice = new Venice();
 		
 		assertThrows(
 	            ShellException.class, 
-	            () -> venice.eval("(sh \"rm\" \"x.any\" :throw-ex true)"));
+	            () -> venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\" :throw-ex true)"));
 	}
 }
