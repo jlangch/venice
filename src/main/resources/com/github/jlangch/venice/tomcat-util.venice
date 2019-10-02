@@ -46,7 +46,8 @@
     (when (and (pos? secs) (process-running? pid))
       (do
         (sleep 1 :seconds)
-        (recur (dec secs))))))
+        (recur (dec secs)))))
+  (if (process-running? pid) pid nil))
 
 (defn get-pid-file
   [tc-home]
