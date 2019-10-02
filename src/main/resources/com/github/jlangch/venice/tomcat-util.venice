@@ -29,8 +29,14 @@
 (def-dynamic tc-archive "http://archive.apache.org/dist/tomcat")
 (def-dynamic tc-pid-file "catalina.pid")
 
+
+(defn require-mac-or-linux []
+  (when-not (or (os-type? :mac-osx) (os-type? :linux))
+    (throw (venice-exception "Can only run on Mac OSX or Linux!"))))
+
 (defn- process-running?
   [pid]
+  (require-mac-or-linux)
   (if (some? pid)
     (->> (sh "ps" :throw-ex true)
          (:out)
@@ -42,6 +48,7 @@
 
 (defn- wait-for-process-exit
   [pid timeout]
+  (require-mac-or-linux)
   (loop [secs timeout]
     (when (and (pos? secs) (process-running? pid))
       (do
@@ -75,14 +82,19 @@
 
 (defn version
   [tc-home]
+  (require-mac-or-linux)
   (validate-installed tc-home)
-  (-<> (sh "./version.sh" :dir (io/file tc-home "bin") :throw-ex true)
+  (-<> (sh "/bin/sh"
+           "-c"
+           "./version.sh"
+           :dir (io/file tc-home "bin")
+           :throw-ex true)
        (:out <>)
        (str/split-lines <>)
        (filter #(str/contains? % "Server number") <>)
        (first <>)
        (str/split <> " +")
-       (fourth <>)))
+       (third <>)))
 
 (defn get-pid
   [tc-home]
@@ -122,6 +134,7 @@
 
 (defn start
   [tc-home]
+  (require-mac-or-linux)
   (validate-installed tc-home)
   (when (and (not (running? tc-home)) (war-deployed? tc-home))
     (sh "/bin/sh"
@@ -132,6 +145,7 @@
 
 (defn stop
   [tc-home]
+  (require-mac-or-linux)
   (validate-installed tc-home)
   (let [pid (get-pid tc-home)]
     (when (some? pid)
