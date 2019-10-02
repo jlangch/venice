@@ -54,6 +54,7 @@ final IInterceptor interceptor =
               	"time/zone-ids")
               .withStandardSystemProperties()
               .withSystemProperties("db.name", "db.port")
+              .withSystemEnvs("SHELL", "HOME")
               .withClasspathResources("resources/images/*.png")
               .withClasses(
                 "java.lang.Math:PI"
@@ -103,6 +104,9 @@ venice.eval("(sleep 30000)");
 
 // => FAIL (accessing non whitelisted system property)
 venice.eval("(system-prop \"db.password\")"); 
+
+// => FAIL (accessing non whitelisted system environment variable)
+venice.eval("(system-env \"USER\")"); 
 
 // => FAIL (accessing non whitelisted classpath resources)
 venice.eval("(io/load-classpath-resource "resources/images/img.tiff")"); 
