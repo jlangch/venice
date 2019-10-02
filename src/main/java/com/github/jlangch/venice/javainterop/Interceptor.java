@@ -110,6 +110,15 @@ public abstract class Interceptor implements IInterceptor {
 				? null
 				: System.getProperty(propertyName);
 	}
+
+	@Override
+	public String onReadSystemEnv(
+			final String name
+	) throws SecurityException {
+		return StringUtil.isBlank(name) 
+				? null
+				: System.getenv(name);
+	}
 	
 	@Override
 	public void validateVeniceFunction(

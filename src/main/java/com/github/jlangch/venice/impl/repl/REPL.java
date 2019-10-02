@@ -411,6 +411,9 @@ public class REPL {
 				else if (rule.startsWith("system.property:")) {
 					rules.withSystemProperties(rule);
 				}
+				else if (rule.startsWith("system.env:")) {
+					rules.withSystemEnvs(rule);
+				}
 				else if (rule.startsWith("blacklist:venice:")) {
 					rules.rejectVeniceFunctions(rule);
 				}

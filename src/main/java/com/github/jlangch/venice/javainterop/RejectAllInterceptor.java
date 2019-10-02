@@ -136,6 +136,15 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
+	public String onReadSystemEnv(
+			final String name
+	) throws SecurityException {
+		throw new SecurityException(String.format(
+				"Venice Sandbox: Access denied to system environment variable '%s'", 
+				name));
+	}
+
+	@Override
 	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {

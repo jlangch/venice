@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - functions `merge-with`, `fourth`, `shuffle`
+- function `system-env` to access system environment variables.
 - enhancement to `io/file` to accept multiple children paths
 - transducing function `map-indexed`
 - module for semantic versions `(load-module :semver)`

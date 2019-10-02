@@ -133,7 +133,13 @@ public class SandboxRecorder extends Interceptor {
 		return super.onReadSystemProperty(propertyName);
 	}
 	
-	
+	@Override
+	public String onReadSystemEnv(
+			final String name
+	) throws SecurityException {
+		format("system.env:name", name);
+		return super.onReadSystemEnv(name);
+	}
 	
 	private void format(final String fmt, final Object ... args) {
 		writer.println(String.format(fmt,args));

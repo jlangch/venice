@@ -753,6 +753,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("version"));
 		util.addItem(getDocItem("os-type"));
 		util.addItem(getDocItem("system-prop"));
+		util.addItem(getDocItem("system-env"));
 		util.addItem(getDocItem("java-version"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));

@@ -244,7 +244,49 @@ public class SandboxRules {
 		}
 		return this;
 	}
+
 	
+	/**
+	 * Add whitelisted system environment variable rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g: white listing environment variable
+	 * <ul>
+	 *   <li>HOME</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withSystemEnvs(final String... rules) {
+		if (rules != null) {
+			withSystemEnvs(Arrays.asList(rules));
+		}
+		return this;
+	}
+	
+	/**
+	 * Add whitelisted system environment variable rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g: white listing environment variable
+	 * <ul>
+	 *   <li>HOME</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withSystemEnvs(final Collection<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream()
+					 .map(r -> r.startsWith("system.env:") ? r : "system.env:" + r)
+					 .collect(Collectors.toList()));
+		}
+		return this;
+	}
+
 	/**
 	 * Reject Venice function rules to the sandbox.
 	 * 
@@ -352,7 +394,7 @@ public class SandboxRules {
 		withSystemProperties(DEFAULT_SYSTEM_PROPERTIES);
 		return this;
 	}
-	
+
 	/**
 	 * Allow access to all Java system properties
 	 * 
@@ -360,6 +402,30 @@ public class SandboxRules {
 	 */
 	public SandboxRules withAllSystemProperties() {
 		withSystemProperties("*");
+		return this;
+	}
+
+	/**
+	 * Allow access to all standard system environment variables
+	 * 
+	 * <p>Standard system environment variables:
+	 * <ul>
+	 * </ul>
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withStandardSystemEnvs() {
+		withSystemEnvs(DEFAULT_SYSTEM_ENVS);
+		return this;
+	}
+
+	/**
+	 * Allow access to all system environment variables
+	 * 
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules withAllSystemEnvs() {
+		withSystemEnvs("*");
 		return this;
 	}
 		
@@ -511,6 +577,11 @@ public class SandboxRules {
 							"user.home",
 							"user.name")));
 
+
+	public static final Set<String> DEFAULT_SYSTEM_ENVS = 
+			Collections.unmodifiableSet(
+				new HashSet<>());
+	
 
 	private final Set<String> rules = new HashSet<>();
 	private Integer maxExecTimeSeconds = null;

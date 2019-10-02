@@ -133,6 +133,15 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	}
 
 	@Override
+	public String onReadSystemEnv(
+			final String name
+	) throws SecurityException {
+		validateSystemEnv(name);
+		
+		return super.onReadSystemEnv(name);
+	}
+
+	@Override
 	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {
@@ -201,6 +210,16 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 				throw new SecurityException(String.format(
 						"Venice Sandbox: Access denied to system property '%s'", 
 						propertyName));
+			}
+		}
+	}
+
+	private void validateSystemEnv(final String name) {
+		if (!StringUtil.isBlank(name)) {
+			if (!sandboxRules.isWhiteListedSystemEnv(name)) {
+				throw new SecurityException(String.format(
+						"Venice Sandbox: Access denied to system environment variable '%s'", 
+						name));
 			}
 		}
 	}

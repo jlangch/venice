@@ -544,6 +544,36 @@ public class SystemFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction system_env =
+		new VncFunction(
+				"system-env",
+				VncFunction
+					.meta()
+					.arglists("(system-env name default-val)")
+					.doc(
+						"Returns the system env variable with the given name. Returns " +
+						"the default-val if the variable does not exist or it's value is nil")
+					.examples(
+						"(system-env :SHELL)",
+						"(system-env :FOO \"test\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("system-env", args, 1, 2);
+
+				final VncString key = Coerce.toVncString(
+										CoreFunctions.name.apply(
+											VncList.of(args.first())));
+				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
+
+				final String val = JavaInterop.getInterceptor().onReadSystemEnv(key.getValue());
+
+				return val == null ? defaultVal : new VncString(val);
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction java_version =
 		new VncFunction(
 				"java-version",
@@ -598,6 +628,7 @@ public class SystemFunctions {
 					.add(os_type_Q)
 					.add(version)
 					.add(system_prop)
+					.add(system_env)
 					.add(java_version)
 					.toMap();
 

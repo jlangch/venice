@@ -96,12 +96,16 @@ venice> !sandbox customized
 
 #### Customize the sandbox...
 * enable calls to _java.lang.Math_
+* enable access to system property _java.class.path_
+* enable access to system environment variable _JAVA___HOME_
 * blacklist all Venice I/O functions
 * blacklist the Venice 'count' function
 
 ```
 venice> !sandbox customized
 venice> !sandbox add-rule class:java.lang.Math:*
+venice> !sandbox add-rule system.property:java.class.path
+venice> !sandbox add-rule system.env:JAVA_HOME
 venice> !sandbox add-rule blacklist:venice:*io*
 venice> !sandbox add-rule blacklist:venice:count
 ```
@@ -111,6 +115,16 @@ venice> !sandbox add-rule blacklist:venice:count
 ```clojure
 ; Java calls to java.lang.Math are accepted
 (. :java.lang.Math :min 2 3)
+```
+
+```clojure
+; Accessing system property 'java.class.path'
+(system-prop :java.class.path)
+```
+
+```clojure
+; Accessing environment variable 'JAVA_HOME'
+(system-env :JAVA_HOME)
 ```
 
 ```clojure

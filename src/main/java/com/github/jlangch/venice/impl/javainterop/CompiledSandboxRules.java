@@ -43,6 +43,7 @@ public class CompiledSandboxRules {
 			final List<Pattern> whiteListClasspathPatterns,
 			final Set<String> blackListVeniceFunctions,
 			final Set<String> whiteListSystemProps,
+			final Set<String> whiteListSystemEnvs,
 			final Integer maxExecTimeSeconds
 	) {
 		this.whiteListClassPatterns = whiteListClassPatterns == null 
@@ -62,13 +63,14 @@ public class CompiledSandboxRules {
 											: blackListVeniceFunctions;
 											
 		this.whiteListSystemProps = whiteListSystemProps;
+		this.whiteListSystemEnvs = whiteListSystemEnvs;
 		
 		this.maxExecTimeSeconds = maxExecTimeSeconds;
 	}
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null, null, null, null);
+			return new CompiledSandboxRules(null, null, null, null, null, null, null);
 		}
 		
 		final List<String> filtered = whiteList
@@ -123,7 +125,16 @@ public class CompiledSandboxRules {
 						.filter(s -> s.startsWith("system.property:"))
 						.map(s -> s.substring("system.property:".length()))
 						.collect(Collectors.toSet()),
-						
+
+				// whitelisted system environment variables
+				allowAccessToAllSystemEnvs(filtered)
+					? null
+					: filtered
+						.stream()
+						.filter(s -> s.startsWith("system.env:"))
+						.map(s -> s.substring("system.env:".length()))
+						.collect(Collectors.toSet()),
+
 				whiteList.getMaxExecTimeSeconds());
 	}
 	
@@ -240,6 +251,11 @@ public class CompiledSandboxRules {
 					|| (property != null && whiteListSystemProps.contains(property));
 	}
 	
+	public boolean isWhiteListedSystemEnv(final String name) {
+		return (whiteListSystemEnvs == null) 
+					|| (name != null && whiteListSystemEnvs.contains(name));
+	}
+	
 	public Integer getMaxExecTimeSeconds() {
 		return maxExecTimeSeconds;
 	}
@@ -248,7 +264,11 @@ public class CompiledSandboxRules {
 	private static boolean allowAccessToAllSystemProperties(final List<String> rules) {
 		return rules.stream().anyMatch(s -> s.equals("system.property:*"));
 	}
-	
+
+	private static boolean allowAccessToAllSystemEnvs(final List<String> rules) {
+		return rules.stream().anyMatch(s -> s.equals("system.env:*"));
+	}
+
 	private static Set<String> toSet(final String... args) {
 		return new HashSet<>(Arrays.asList(args));
 	}
@@ -264,5 +284,6 @@ public class CompiledSandboxRules {
 	private final List<Pattern> whiteListClasspathPatterns;
 	private final Set<String> blackListVeniceFunctions;
 	private final Set<String> whiteListSystemProps;
+	private final Set<String> whiteListSystemEnvs;
 	private final Integer maxExecTimeSeconds;
 }

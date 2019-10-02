@@ -153,6 +153,15 @@ public interface IInterceptor {
 	 * @throws SecurityException if the property is not whitelisted
 	 */
 	String onReadSystemProperty(String propertyName) throws SecurityException;
+
+	/**
+	 * Reads a Java environment variable
+	 * 
+	 * @param name a variable name (e.g: USER)
+	 * @return the variable value
+	 * @throws SecurityException if the variable is not whitelisted
+	 */
+	String onReadSystemEnv(String name) throws SecurityException;
 	
 	/**
 	 * Validates the invocation of a Venice function.
