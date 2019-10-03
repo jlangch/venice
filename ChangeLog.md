@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - transducing function `map-indexed`
 - sandboxed access to individual system environment variables (function `system-env`).
 - enhancement to `io/file` to accept multiple children paths
+- enhancement to `io/copy-file` to support file replace option
 - enhanced stdout/stderr processing of the `sh` function
 - module for semantic versions `(load-module :semver)`
 - module for Tomcat management `(load-module :tomcat-util)`

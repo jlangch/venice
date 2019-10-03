@@ -41,9 +41,11 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -630,15 +632,20 @@ public class IOFunctions {
 				"io/copy-file",
 				VncFunction
 					.meta()
-					.arglists("(io/copy-file source dest)")
+					.arglists("(io/copy-file source dest & options)")
 					.doc(
 						"Copies source to dest. Returns nil or throws IOException. " +
 						"Source must be a file or a string (file path), dest must be a file, " +
-						"a string (file path), or an OutputStream.")
+						"a string (file path), or an OutputStream.\n\n" +
+						"Options: \n" +
+						"  :replace true/false - e.g if true replace an aexistiong file, defaults to false")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("io/copy-file", args, 2);
+				assertMinArity("io/copy-file", args, 2);
+
+				final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
+				final VncVal replaceOpt = options.get(new VncKeyword("replace"));
 
 				final File source = convertToFile(
 										args.first(),
@@ -653,12 +660,23 @@ public class IOFunctions {
 										? new File(Coerce.toVncString(destVal).getValue())
 										: Coerce.toVncJavaObject(destVal, File.class);
 
+					final List<CopyOption> copyOptions = new ArrayList<>();
+					if (replaceOpt == True) {
+						copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+					}
+					
 					try {
 						if (dest.isDirectory()) {
-							Files.copy(source.toPath(), dest.toPath().resolve(source.getName()));
+							Files.copy(
+								source.toPath(), 
+								dest.toPath().resolve(source.getName()), 
+								copyOptions.toArray(new CopyOption[0]));
 						}
 						else {
-							Files.copy(source.toPath(), dest.toPath());
+							Files.copy(
+								source.toPath(), 
+								dest.toPath(), 
+								copyOptions.toArray(new CopyOption[0]));
 						}
 					}
 					catch(Exception ex) {
