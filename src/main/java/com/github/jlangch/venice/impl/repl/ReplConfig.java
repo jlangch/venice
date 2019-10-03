@@ -52,6 +52,12 @@ public class ReplConfig {
 		
 		// use colors
 		config.put("colors.use", cli.switchPresent("-colors") ? "true" : "false");
+		
+		// load module
+		final String file = cli.switchValue("-load-file");
+		if (file != null) {
+			config.put("load.file", file);
+		}
 
 		try {
 			final JsonObject jsonObj = loadJsonConfig();
@@ -88,6 +94,10 @@ public class ReplConfig {
 
 	public boolean useColors() {
 		return "true".equals(config.get("colors.use"));
+	}
+
+	public String getLoadFile() {
+		return config.get("load.file");
 	}
 
 	public String getPrompt() {

@@ -40,6 +40,10 @@ public class CommandLineArgs {
 		parse(args);
 	}
 	
+	public static CommandLineArgs of(final String... args) {
+		return new CommandLineArgs(args);
+	}
+	
 	public void parse(final String[] arguments){
 		switchIndexes.clear();
 		takenIndexes.clear();

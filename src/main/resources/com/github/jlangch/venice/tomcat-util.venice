@@ -41,7 +41,7 @@
     (->> (sh "ps" :throw-ex true)
          (:out)
          (str/split-lines)
-         (map #(first (str/split % " +")))
+         (map #(first (str/split (str/trim %) " +")))
          (filter #(== % (str pid)))
          (not-empty?))
     false))

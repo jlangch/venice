@@ -654,7 +654,12 @@ public class IOFunctions {
 										: Coerce.toVncJavaObject(destVal, File.class);
 
 					try {
-						Files.copy(source.toPath(), dest.toPath());
+						if (dest.isDirectory()) {
+							Files.copy(source.toPath(), dest.toPath().resolve(source.getName()));
+						}
+						else {
+							Files.copy(source.toPath(), dest.toPath());
+						}
 					}
 					catch(Exception ex) {
 						throw new VncException(

@@ -137,6 +137,18 @@ public class REPL {
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
+		try {
+			final String loadFile = config.getLoadFile();
+			if (loadFile != null) {
+				println(terminal, "stdout", "loading file \"" + loadFile + "\"");
+				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
+				println(terminal, "stdout", resultPrefix + venice.PRINT(result));
+			}
+		}
+		catch(Exception ex) {
+			printex(terminal, "error", ex);
+		}
+		
 		// REPL loop
 		while (true) {
 			resultHistory.mergeToEnv(env);
