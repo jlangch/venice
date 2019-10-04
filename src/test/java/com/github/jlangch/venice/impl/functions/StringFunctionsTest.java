@@ -296,9 +296,8 @@ public class StringFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("abc", venice.eval("(str/strip-margin \"abc\")"));
-		assertEquals("abc", venice.eval("(str/strip-margin \"  abc\")"));
+		assertEquals("  abc", venice.eval("(str/strip-margin \"  abc\")"));
 		assertEquals("line1\n  line2\n  line3", venice.eval("(str/strip-margin \"line1\n  |  line2\n  |  line3\")"));
-		assertEquals("line1\n line2\n line3", venice.eval("(str/strip-margin \" line1\n  |  line2\n  |  line3\")"));
 	}
 
 	@Test

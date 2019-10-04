@@ -258,6 +258,13 @@ public class ReaderTest {
 	}
 
 	@Test
+	public void testString_triple_quoted() {	
+		assertEquals("123", new Venice().eval("\"\"\"123\"\"\")"));
+		assertEquals("  123  ", new Venice().eval("\"\"\"  123  \"\"\")"));
+		assertEquals("1\n2", new Venice().eval("\"\"\"\n  1\n  2\"\"\")"));
+	}
+
+	@Test
 	public void testStringInterpolation_triple_mixed() {	
 		assertEquals("100 101", new Venice().eval("(do (def x 100) \"\"\"~{x} ~(inc x)\"\"\")"));
 		assertEquals(" 100 101", new Venice().eval("(do (def x 100) \"\"\" ~{x} ~(inc x)\"\"\")"));

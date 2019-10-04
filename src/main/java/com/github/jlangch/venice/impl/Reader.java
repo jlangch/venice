@@ -195,7 +195,9 @@ public class Reader {
 		} 
 		else if (matcher.group(8) != null) {
 			// 8: string """
-			final String s = unescapeAndDecodeUnicode(matcher.group(8));
+			String s = StringUtil.stripIndentIfFirstLineEmpty(
+							unescapeAndDecodeUnicode(matcher.group(8)));
+			
 			return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
 						.withMeta(MetaUtil.toMeta(token));
 		} 

@@ -87,7 +87,38 @@ public class StringUtil {
 		
 		return sb.toString();
 	}
+	
+	public static int indexOf(final String text, final String searchChars, final int startPos) {
+		if (text == null) {
+			throw new IllegalArgumentException("A text must not be null");
+		}
+		if (isEmpty(searchChars)) {
+			throw new IllegalArgumentException("A searchChars must not be empty");
+		}
+		if (startPos < 0) {
+			throw new IllegalArgumentException("A startPos must not be negativ");
+		}
 		
+		
+		if (startPos >= text.length()) {
+			return -1;
+		}
+	
+		final Set<Character> chars = searchChars.chars().mapToObj(c -> (char)c).collect(Collectors.toSet());
+
+		int pos = startPos;
+		while(pos < text.length()) {
+			if (chars.contains(text.charAt(pos))) {
+				return pos;
+			}
+			else {
+				pos++;
+			}
+		}
+		
+		return -1;
+	}
+
 	public static int indexNotOf(final String text, final String searchChars, final int startPos) {
 		if (text == null) {
 			throw new IllegalArgumentException("A text must not be null");
@@ -123,21 +154,24 @@ public class StringUtil {
 		if (text == null || text.isEmpty()) {
 			return text;
 		}
-		
-		final List<String> lines = StringUtil.splitIntoLines(text);
-		final String first = lines.get(0);
-		
-		final int pos = StringUtil.indexNotOf(first, " \t", 0);
-		if (pos < 0) {
+
+		return stripIndentRaw(text, StringUtil.splitIntoLines(text));
+	}
+	
+	public static String stripIndentIfFirstLineEmpty(final String text) {
+		if (text == null || text.isEmpty()) {
 			return text;
 		}
-		else {
-			final String indent = first.substring(0, pos);				
-			return lines
-					.stream()
-					.map(s -> s.startsWith(indent) ? s.substring(pos) : s)
-					.collect(Collectors.joining("\n"));
+
+		final List<String> lines = StringUtil.splitIntoLines(text);
+		if (lines.size() == 1 || !lines.get(0).isEmpty()) {
+			// just a single line or does not start with an empty line
+			return text; 
 		}
+
+		return removeEnd(
+				stripIndentRaw(text, lines.subList(1, lines.size())),
+				"\n");
 	}
 	
 	public static String stripMargin(final String text, final char margin) {
@@ -145,12 +179,11 @@ public class StringUtil {
 			return text;
 		}
 		
-		final List<String> lines = StringUtil.splitIntoLines(text);
-		return stripIndent(
-				lines
+		return StringUtil
+					.splitIntoLines(text)
 					.stream()
 					.map(s -> { int pos = s.indexOf(margin); return pos < 0 ? s : s.substring(pos+1); })
-					.collect(Collectors.joining("\n")));
+					.collect(Collectors.joining("\n"));
 	}
 	
 	/**
@@ -305,6 +338,27 @@ public class StringUtil {
 	    else {
     		return text;
 	    }
+	}
+	
+	private static String stripIndentRaw(final String text, final List<String> lines) {
+		final String first = lines.get(0);
+		
+		final int firstNonBlankPos = StringUtil.indexNotOf(first, " \t", 0);
+		final int firstBlankPos = StringUtil.indexOf(first, " \t", 0);
+
+		if (firstBlankPos < 0) {
+			return text;
+		}
+		
+		final String indent = firstNonBlankPos < 0 
+								? first
+								: first.substring(0, firstNonBlankPos);
+		
+		final int skipChars = indent.length();
+		return lines
+				.stream()
+				.map(s -> s.startsWith(indent) ? s.substring(skipChars) : s)
+				.collect(Collectors.joining("\n"));
 	}
 
 }
