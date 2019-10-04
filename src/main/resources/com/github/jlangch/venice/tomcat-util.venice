@@ -21,6 +21,12 @@
 
 ;;;; Tomcat utilities
 
+;; The Tomcat utilities currently do not support Windows
+;;   ps          (sh "tasklist")
+;;   kill        (sh "cmd" "/C" "taskkill /PID <1234>")
+;;   exec        (sh "cmd" "/C" <command>")
+;;   exec nohup  (sh "cmd" "/C" "start /D <workingDir> /MIN <command>")
+
 
 (ns tc-util)
 
