@@ -231,8 +231,11 @@ public class RegexFunctions {
 					.arglists("(regex/find-all matcher)")		
 					.doc("Returns all regex matches")
 					.examples(
-						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
-						"   (regex/find-all m)))                                     ")
+						"(->> (regex/matcher \"\\\\d+\" \"672-345-456-3212\") \n" +
+						"     (regex/find-all)))                                 ",
+						"(->> (regex/matcher \"([^\\\"]\\\\S*|\\\".+?\\\")\\\\s*\" \"1 2 \\\"3 4\\\" 5\") \n" +
+						"     (regex/find-all)))                                 "
+						)
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
