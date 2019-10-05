@@ -1043,7 +1043,7 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/copy-stream"));
 		stream.addItem(getDocItem("io/slurp-stream"));
 		stream.addItem(getDocItem("io/spit-stream"));
-		stream.addItem(getDocItem("io/uri-stream"));
+		stream.addItem(getDocItem("io/uri-stream", false));
 		stream.addItem(getDocItem("io/wrap-os-with-buffered-writer"));
 		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
 		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));

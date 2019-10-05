@@ -1322,6 +1322,9 @@ public class IOFunctions {
 						.meta()
 						.arglists("(io/uri-stream uri)")
 						.doc("Returns a Java InputStream from the uri.")
+						.examples(
+							"(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" + 
+							"    (io/slurp-stream :binary false :encoding :utf-8))             ")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
