@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- function `=`. Returns true if both operands have the equivalent type and value
+- function `=`. Returns true if both operands have equivalent type and value
 
 
 

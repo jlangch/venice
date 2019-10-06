@@ -729,7 +729,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(= x y)")
-					.doc("Returns true if both operands have the equivalent type and value")
+					.doc("Returns true if both operands have equivalent type and value")
 					.examples("(= 0 0)", "(= 0 1)", "(= 0 0.0)", "(= 0 0.0M)")
 					.build()
 		) {
@@ -748,7 +748,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(== x y)")
-					.doc("Returns true if both operands have the equivalent value")
+					.doc("Returns true if both operands have equivalent value")
 					.examples("(== 0 0)", "(== 0 1)", "(== 0 0.0)", "(== 0 0.0M)")
 					.build()
 		) {
