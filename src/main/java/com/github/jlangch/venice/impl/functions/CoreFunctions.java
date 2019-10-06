@@ -4602,15 +4602,16 @@ public class CoreFunctions {
 						"order is determined by comparing (keyfn item).  If no comparator is " +
 						"supplied, uses compare.")
 					.examples(
+						"(sort-by :id [{:id 2 :name \"Smith\"} {:id 1 :name \"Jones\"} ])",
 						"(sort-by count [\"aaa\" \"bb\" \"c\"])",
 						"; reversed\n" +
 						"(sort-by count (comp (partial * -1) compare) [\"aaa\" \"bb\" \"c\"])",
 						"(sort-by first [[1 2] [3 4] [2 3]])",
 						"; reversed\n" +
 						"(sort-by first (comp (partial * -1) compare) [[1 2] [3 4] [2 3]])",
-						"(sort-by (fn [x] (get x :rank)) [{:rank 2} {:rank 3} {:rank 1}])",
+						"(sort-by :rank [{:rank 2} {:rank 3} {:rank 1}])",
 						"; reversed\n" +
-						"(sort-by (fn [x] (get x :rank)) (comp (partial * -1) compare) [{:rank 2} {:rank 3} {:rank 1}])")
+						"(sort-by :rank (comp (partial * -1) compare) [{:rank 2} {:rank 3} {:rank 1}])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
