@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- ...
+- function `==` to smart coerce numeric values so that e.g (== 1 1.0) yields true
+- function `!=` to smart coerce numeric values so that e.g (!= 1 1.0) yields false
 
 
 
