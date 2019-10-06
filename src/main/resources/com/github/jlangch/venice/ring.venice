@@ -62,11 +62,12 @@
            :body """<html><body><p>~(str/escape-html msg)</p></body></html>""" }))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Returns the value of the specified request parameter. If the request
-        did not include a parameter of the specified name, this method returns
-        nil. If there are multiple parameters with the same name, this method
-        returns the first parameter in the request.""" ) }
+  ^{ :doc """
+          Returns the value of the specified request parameter. If the request
+          did not include a parameter of the specified name, this method returns
+          nil. If there are multiple parameters with the same name, this method
+          returns the first parameter in the request.
+          """ }
   ring/get-request-parameter
   [req name]
   (first (get (:parameters req) name)))
@@ -78,11 +79,12 @@
   (get (:parameters req) name))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Returns the value of the specified request header. If the request
-        did not include a header of the specified name, this method returns
-        nil. If there are multiple header with the same name, this method
-        returns the first header in the request.""" ) }
+  ^{ :doc """
+          Returns the value of the specified request header. If the request
+          did not include a header of the specified name, this method returns
+          nil. If there are multiple header with the same name, this method
+          returns the first header in the request.
+          """  }
   ring/get-request-header
   [req name]
   (first (get (:headers req) name)))
@@ -94,9 +96,10 @@
   (get (:headers req) name))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Returns all 'Accept' header mime-types of the request as a set.
-        Strips off the ratings""" ) }
+  ^{ :doc """
+          Returns all 'Accept' header mime-types of the request as a set.
+          Strips off the ratings
+          """ }
   ring/get-request-header-accept-mimetypes
   [req]
   (into #{} (map #(first (str/split % " *; *"))
@@ -185,9 +188,10 @@
   (fn [req] (handler req)))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-      Turns handler debug flag on the request on/off and then calls
-      the handler with the modified request.""" ) }
+  ^{ :doc """
+          Turns handler debug flag on the request on/off and then calls
+          the handler with the modified request.
+          """ }
   ring/mw-debug
   [handler option]
   (let [on (or (nil? option) (== option :on))]
@@ -204,9 +208,10 @@
     (handler req)))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Increments the number requests, stores it in the attribute
-        'request-counter' in the session, and then calls the handler.""" ) }
+  ^{ :doc """
+          Increments the number requests, stores it in the attribute
+          'request-counter' in the session, and then calls the handler.
+          """ }
   ring/mw-request-counter
   [handler]
   (fn [req]
@@ -218,12 +223,13 @@
     (handler req)))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Adds the session to the request. If a new session is created
-        the given timeout is set as the MaxInactiveInterval. If a
-        timeout is not given the session will never timeout.
-        Adds the session to the request and then calls the handler
-        with the modified request.""" ) }
+  ^{ :doc """
+          Adds the session to the request. If a new session is created
+          the given timeout is set as the MaxInactiveInterval. If a
+          timeout is not given the session will never timeout.
+          Adds the session to the request and then calls the handler
+          with the modified request.$
+          """ }
   ring/mw-add-session
   [handler timeout]
   (fn [req]
@@ -285,9 +291,10 @@
 ;;      {:await? false})
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Compile the routes and return a function that calls the handler
-        matching the URI.""" ) }
+  ^{ :doc """
+          Compile the routes and return a function that calls the handler
+          matching the URI.
+          """ }
   ring/match-routes
   [routes]
   (let [compiled (ring/compile-routes routes)]
@@ -341,9 +348,10 @@
   (regex/pattern ".*charset=([^\\s;]+).*"))
 
 (defn-
-  ^{ :doc (str/strip-indent """\
-        Looks up a header in a Ring response (or request) case insensitively,
-        returning the header map entry, or nil if not present.""" ) }
+  ^{ :doc """
+          Looks up a header in a Ring response (or request) case insensitively,
+          returning the header map entry, or nil if not present.
+          """  }
   ring/find-header
   [resp header-name]
   (if (java-obj? resp)
@@ -353,9 +361,10 @@
          (first))))
 
 (defn-
-  ^{ :doc (str/strip-indent """\
-        Gets the character encoding of a Ring response.
-        E.g.: Content-Type: text/html; charset=utf-8""" ) }
+  ^{ :doc """
+          Gets the character encoding of a Ring response.
+          E.g.: Content-Type: text/html; charset=utf-8
+          """ }
   ring/get-charset
   [res]
   (if-let [content-type (ring/find-header res "Content-Type")]
@@ -492,10 +501,11 @@
          (. async-context :complete ))))))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Turns a handler into a function that takes the same arguments
-        and has the same return value as the service method in the
-        HttpServlet class.""") }
+  ^{ :doc """
+          Turns a handler into a function that takes the same arguments
+          and has the same return value as the service method in the
+          HttpServlet class.
+          """ }
   ring/make-service-method
   ([handler]
    (ring/make-service-method handler {}))
@@ -711,14 +721,15 @@
       (. :println (str "<html><body><p>Internal Error</p></body></html>"))))
 
 (defn
-  ^{ :doc (str/strip-indent """\
-        Bootstrap the handler chain. Builds the request from then
-        HttpServletRequest and calls the handler with the request.
-        Builds the HttpServletResponse from the handler's response.
-        Sends a not-found HTTP response if the handler returned a
-        nil response. Sends a redirect if a handler raises a
-        RingRedirectException. In case of any other exception sends
-        an internal-error (HTTP status 500) response.""") }
+  ^{ :doc """
+          Bootstrap the handler chain. Builds the request from then
+          HttpServletRequest and calls the handler with the request.
+          Builds the HttpServletResponse from the handler's response.
+          Sends a not-found HTTP response if the handler returned a
+          nil response. Sends a redirect if a handler raises a
+          RingRedirectException. In case of any other exception sends
+          an internal-error (HTTP status 500) response.
+          """ }
   ring/handle
   [req res servlet handler]
   (try
