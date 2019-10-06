@@ -192,7 +192,7 @@ public class DocGenerator {
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
 		compare.addItem(getDocItem("=="));
-		compare.addItem(getDocItem("!="));
+		compare.addItem(getDocItem("="));
 		compare.addItem(getDocItem("<"));
 		compare.addItem(getDocItem(">"));
 		compare.addItem(getDocItem("<="));

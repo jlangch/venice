@@ -325,18 +325,18 @@ public class MacroTest {
 		final Venice venice = new Venice();
 
 		assertTrue((Boolean)venice.eval("(when (== 1 1) true)"));
-		assertEquals(null, venice.eval("(when (!= 1 1) true)"));
+		assertEquals(null, venice.eval("(when (not (== 1 1)) true)"));
 		
 		assertEquals(Long.valueOf(300), venice.eval("(when (== 1 1) (println 100) 300)", Parameters.of("*out*", null)));
 		assertEquals(Long.valueOf(300), venice.eval("(when (== 1 1) 100 200 300)"));
-		assertEquals(null,              venice.eval("(when (!= 1 1) 100 200 300)"));
+		assertEquals(null,              venice.eval("(when (not (== 1 1)) 100 200 300)"));
 	}
 	
 	@Test
 	public void test_when_not() {
 		final Venice venice = new Venice();
 	
-		assertTrue((Boolean)venice.eval("(when-not (!= 1 1) true)"));
+		assertTrue((Boolean)venice.eval("(when-not (not (== 1 1)) true)"));
 		assertEquals(null, venice.eval("(when-not (== 1 1) true)"));
 	}
 	
@@ -668,11 +668,11 @@ public class MacroTest {
 		assertEquals("nil", venice.eval("(pr-str (if-not (== 1 1) (+ 100 1))))"));
 		assertEquals("201", venice.eval("(pr-str (if-not (== 1 1) (+ 100 1) (+ 200 1)))"));
 
-		assertEquals("100", venice.eval("(pr-str (if-not (!= 1 1) 100))"));
-		assertEquals("100", venice.eval("(pr-str (if-not (!= 1 1) 100 200))"));
+		assertEquals("100", venice.eval("(pr-str (if-not (not (== 1 1)) 100))"));
+		assertEquals("100", venice.eval("(pr-str (if-not (not (== 1 1)) 100 200))"));
 
-		assertEquals("101", venice.eval("(pr-str (if-not (!= 1 1) (+ 100 1)))"));
-		assertEquals("101", venice.eval("(pr-str (if-not (!= 1 1) (+ 100 1) (+ 200 1)))"));
+		assertEquals("101", venice.eval("(pr-str (if-not (not (== 1 1)) (+ 100 1)))"));
+		assertEquals("101", venice.eval("(pr-str (if-not (not (== 1 1)) (+ 100 1) (+ 200 1)))"));
 	}
 
 }

@@ -696,6 +696,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(== 2I 3)"));
 		assertFalse((Boolean)venice.eval("(== 2I 3.0)"));
 		assertFalse((Boolean)venice.eval("(== 2I 3.0M)"));
+		assertFalse((Boolean)venice.eval("(== 2I 2.1)"));
 
 		// Long
 		assertTrue((Boolean)venice.eval("(== 2 2)"));
@@ -706,6 +707,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(== 2 3I)"));
 		assertFalse((Boolean)venice.eval("(== 2 3.0)"));
 		assertFalse((Boolean)venice.eval("(== 2 3.0M)"));
+		assertFalse((Boolean)venice.eval("(== 2 2.1)"));
 
 		// Double
 		assertTrue((Boolean)venice.eval("(== 2.0 2.0)"));
@@ -760,6 +762,92 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1})"));
 		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {})"));
 		assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} nil)"));
+	}
+	
+	@Test
+	public void test_equals_strict_Q() {
+		final Venice venice = new Venice();
+		
+		// Nil
+		assertTrue((Boolean)venice.eval("(= nil nil)"));
+		
+		// Boolean
+		assertTrue((Boolean)venice.eval("(= true true)"));
+		assertFalse((Boolean)venice.eval("(= true false)"));
+
+		// Integer
+		assertTrue((Boolean)venice.eval("(= 2I 2I)"));
+		assertFalse((Boolean)venice.eval("(= 2I 2)"));
+		assertFalse((Boolean)venice.eval("(= 2I 2.0)"));
+		assertFalse((Boolean)venice.eval("(= 2I 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2I 3I)"));
+		assertFalse((Boolean)venice.eval("(= 2I 3)"));
+		assertFalse((Boolean)venice.eval("(= 2I 3.0)"));
+		assertFalse((Boolean)venice.eval("(= 2I 3.0M)"));
+
+		// Long
+		assertTrue((Boolean)venice.eval("(= 2 2)"));
+		assertFalse((Boolean)venice.eval("(= 2 2I)"));
+		assertFalse((Boolean)venice.eval("(= 2 2.0)"));
+		assertFalse((Boolean)venice.eval("(= 2 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2 3)"));
+		assertFalse((Boolean)venice.eval("(= 2 3I)"));
+		assertFalse((Boolean)venice.eval("(= 2 3.0)"));
+		assertFalse((Boolean)venice.eval("(= 2 3.0M)"));
+
+		// Double
+		assertTrue((Boolean)venice.eval("(= 2.0 2.0)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 2)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 2I)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 3.0)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 3)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 3I)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 3.0M)"));
+
+		// Decimal
+		assertTrue((Boolean)venice.eval("(= 2.0M 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 2)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 2I)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 2.0)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 3.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 3)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 3I)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 3.0)"));
+
+		// String
+		assertTrue((Boolean)venice.eval("(= \"aa\" \"aa\")"));
+		assertFalse((Boolean)venice.eval("(= \"aa\" \"zz\")"));
+
+		// Keyword
+		assertTrue((Boolean)venice.eval("(= :a :a)"));
+		assertFalse((Boolean)venice.eval("(= :a :b)"));
+
+		// String/Keyword
+		assertTrue((Boolean)venice.eval("(= \"aa\" :aa)"));
+		assertTrue((Boolean)venice.eval("(= :aa \"aa\")"));
+
+		// List
+		assertTrue((Boolean)venice.eval("(= '(1 2) '(1 2))"));
+		assertFalse((Boolean)venice.eval("(= '(1 2) '(1 4))"));
+		assertFalse((Boolean)venice.eval("(= '(1 2) '(1))"));
+		assertFalse((Boolean)venice.eval("(= '(1 2) '())"));
+		assertFalse((Boolean)venice.eval("(= '(1 2) nil)"));
+
+		// Vector
+		assertTrue((Boolean)venice.eval("(= [1 2] [1 2])"));
+		assertFalse((Boolean)venice.eval("(= [1 2] [1 4])"));
+		assertFalse((Boolean)venice.eval("(= [1 2] [1])"));
+		assertFalse((Boolean)venice.eval("(= [1 2] [])"));
+		assertFalse((Boolean)venice.eval("(= [1 2] nil)"));
+
+		// Map
+		assertTrue((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1 :b 2})"));
+		assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1 :b 3})"));
+		assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1 :c 2})"));
+		assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1})"));
+		assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {})"));
+		assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} nil)"));
 	}
 	
 	@Test
@@ -2120,88 +2208,6 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(not-any? (fn [x] (number? x)) [1])"));	
 		assertFalse((Boolean)venice.eval("(not-any? (fn [x] (number? x)) [1 2])"));	
 		assertFalse((Boolean)venice.eval("(not-any? (fn [x] (number? x)) (set :a 1 2))"));	
-	}
-
-	@Test
-	public void test_not_equals_Q() {
-		final Venice venice = new Venice();
-		
-		// Nil
-		assertFalse((Boolean)venice.eval("(!= nil nil)"));
-		
-		// Boolean
-		assertFalse((Boolean)venice.eval("(!= true true)"));
-		assertTrue((Boolean)venice.eval("(!= true false)"));
-
-		// Integer
-		assertFalse((Boolean)venice.eval("(!= 2I 2I)"));
-		assertFalse((Boolean)venice.eval("(!= 2I 2)"));
-		assertFalse((Boolean)venice.eval("(!= 2I 2.0)"));
-		assertFalse((Boolean)venice.eval("(!= 2I 2.0M)"));
-		assertTrue((Boolean)venice.eval("(!= 2I 3I)"));
-		assertTrue((Boolean)venice.eval("(!= 2I 3)"));
-		assertTrue((Boolean)venice.eval("(!= 2I 3.0)"));
-		assertTrue((Boolean)venice.eval("(!= 2I 3.0M)"));
-
-		// Long
-		assertFalse((Boolean)venice.eval("(!= 2 2)"));
-		assertFalse((Boolean)venice.eval("(!= 2 2I)"));
-		assertFalse((Boolean)venice.eval("(!= 2 2.0)"));
-		assertFalse((Boolean)venice.eval("(!= 2 2.0M)"));
-		assertTrue((Boolean)venice.eval("(!= 2 3)"));
-		assertTrue((Boolean)venice.eval("(!= 2 3I)"));
-		assertTrue((Boolean)venice.eval("(!= 2 3.0)"));
-		assertTrue((Boolean)venice.eval("(!= 2 3.0M)"));
-
-		// Double
-		assertFalse((Boolean)venice.eval("(!= 2.0 2.0)"));
-		assertFalse((Boolean)venice.eval("(!= 2.0 2)"));
-		assertFalse((Boolean)venice.eval("(!= 2.0 2I)"));
-		assertFalse((Boolean)venice.eval("(!= 2.0 2.0M)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0 3.0)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0 3)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0 3I)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0 3.0M)"));
-
-		// Decimal
-		assertFalse((Boolean)venice.eval("(!= 2.0M 2.0M)"));
-		assertFalse((Boolean)venice.eval("(!= 2.0M 2)"));
-		assertFalse((Boolean)venice.eval("(!= 2.0M 2I)"));
-		assertFalse((Boolean)venice.eval("(!= 2.0M 2.0)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0M 3.0M)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0M 3)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0M 3I)"));
-		assertTrue((Boolean)venice.eval("(!= 2.0M 3.0)"));
-
-		// String
-		assertFalse((Boolean)venice.eval("(!= \"aa\" \"aa\")"));
-		assertTrue((Boolean)venice.eval("(!= \"aa\" \"zz\")"));
-
-		// Keyword
-		assertFalse((Boolean)venice.eval("(!= :a :a)"));
-		assertTrue((Boolean)venice.eval("(!= :a :b)"));
-
-		// List
-		assertFalse((Boolean)venice.eval("(!= '(1 2) '(1 2))"));
-		assertTrue((Boolean)venice.eval("(!= '(1 2) '(1 4))"));
-		assertTrue((Boolean)venice.eval("(!= '(1 2) '(1))"));
-		assertTrue((Boolean)venice.eval("(!= '(1 2) '())"));
-		assertTrue((Boolean)venice.eval("(!= '(1 2) nil)"));
-
-		// Vector
-		assertFalse((Boolean)venice.eval("(!= [1 2] [1 2])"));
-		assertTrue((Boolean)venice.eval("(!= [1 2] [1 4])"));
-		assertTrue((Boolean)venice.eval("(!= [1 2] [1])"));
-		assertTrue((Boolean)venice.eval("(!= [1 2] [])"));
-		assertTrue((Boolean)venice.eval("(!= [1 2] nil)"));
-
-		// Map
-		assertFalse((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1 :b 2})"));
-		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1 :b 3})"));
-		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1 :c 2})"));
-		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {:a 1})"));
-		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} {})"));
-		assertTrue((Boolean)venice.eval("(!= {:a 1 :b 2} nil)"));
 	}
 	
 	@Test

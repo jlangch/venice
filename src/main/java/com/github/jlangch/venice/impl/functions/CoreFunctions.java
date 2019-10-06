@@ -723,39 +723,39 @@ public class CoreFunctions {
 	// Number functions
 	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction equal_strict_Q =
+		new VncFunction(
+				"=",
+				VncFunction
+					.meta()
+					.arglists("(= x y)")
+					.doc("Returns true if both operands have the equivalent type and value")
+					.examples("(= 0 0)", "(= 0 1)", "(= 0 0.0)", "(= 0 0.0M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("=", args, 2);
+
+				return Types._equal_strict_Q(args.first(), args.second()) ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction equal_Q =
 		new VncFunction(
 				"==",
 				VncFunction
 					.meta()
 					.arglists("(== x y)")
-					.doc("Returns true if both operands have the equivalent type and value")
-					.examples("(== 0 0)", "(== 0 1)", "(== 0 0.0)")
+					.doc("Returns true if both operands have the equivalent value")
+					.examples("(== 0 0)", "(== 0 1)", "(== 0 0.0)", "(== 0 0.0M)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("==", args, 2);
 
 				return Types._equal_Q(args.first(), args.second()) ? True : False;
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction not_equal_Q =
-		new VncFunction(
-				"!=",
-				VncFunction
-					.meta()
-					.arglists("(!= x y)")
-					.doc("Returns true if both operands do not have the equivalent type and value")
-					.examples("(!= 0 1)", "(!= 0 0)", "(!= 0 0.0)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("!=", args, 2);
-
-				return Types._equal_Q(args.first(), args.second()) ? False : True;
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -5721,7 +5721,7 @@ public class CoreFunctions {
 				.add(read_string)
 
 				.add(equal_Q)
-				.add(not_equal_Q)
+				.add(equal_strict_Q)
 				.add(lt)
 				.add(lte)
 				.add(gt)

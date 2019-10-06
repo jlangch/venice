@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 public enum MathOp {
 		
+	EQU("=="), 
 	ADD("+"), 
 	SUB("-"), 
 	MUL("*"), 

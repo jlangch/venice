@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -134,6 +137,10 @@ public class Numeric {
 	public static VncBigDecimal intToDecimal(final VncInteger val) {
 		return new VncBigDecimal(new BigDecimal(val.getValue()));
 	}
+
+	public static VncBigDecimal intToDecimal(final VncInteger val, final int scale) {
+		return new VncBigDecimal(new BigDecimal(val.getValue()).setScale(scale));
+	}
 	
 	public static VncInteger longToInt(final VncLong val) {
 		return new VncInteger(val.getValue());
@@ -145,6 +152,10 @@ public class Numeric {
 
 	public static VncBigDecimal longToDecimal(final VncLong val) {
 		return new VncBigDecimal(new BigDecimal(val.getValue()));
+	}
+
+	public static VncBigDecimal longToDecimal(final VncLong val, final int scale) {
+		return new VncBigDecimal(new BigDecimal(val.getValue()).setScale(scale));
 	}
 
 	public static VncInteger doubleToInt(final VncDouble val) {
@@ -267,8 +278,9 @@ public class Numeric {
 		}
 	}
 	
-	private static VncInteger calcInteger(final MathOp op, final Integer op1, final Integer op2) {
+	private static VncVal calcInteger(final MathOp op, final Integer op1, final Integer op2) {
 		switch(op) {
+			case EQU: return op1.compareTo(op2) == 0 ? True : False;
 			case ADD: return new VncInteger(op1 + op2);
 			case SUB: return new VncInteger(op1 - op2);
 			case MUL: return new VncInteger(op1 * op2);
@@ -277,8 +289,9 @@ public class Numeric {
 		}
 	}
 	
-	private static VncLong calcLong(final MathOp op, final Long op1, final Long op2) {
+	private static VncVal calcLong(final MathOp op, final Long op1, final Long op2) {
 		switch(op) {
+			case EQU: return op1.compareTo(op2) == 0 ? True : False;
 			case ADD: return new VncLong(op1 + op2);
 			case SUB: return new VncLong(op1 - op2);
 			case MUL: return new VncLong(op1 * op2);
@@ -287,8 +300,9 @@ public class Numeric {
 		}
 	}
 
-	private static VncDouble calcDouble(final MathOp op, final Double op1, final Double op2) {
+	private static VncVal calcDouble(final MathOp op, final Double op1, final Double op2) {
 		switch(op) {
+			case EQU: return op1.compareTo(op2) == 0 ? True : False;
 			case ADD: return new VncDouble(op1 + op2);
 			case SUB: return new VncDouble(op1 - op2);
 			case MUL: return new VncDouble(op1 * op2);
@@ -297,8 +311,9 @@ public class Numeric {
 		}
 	}
 
-	private static VncBigDecimal calcDecimal(final MathOp op, final BigDecimal op1, final BigDecimal op2) {
+	private static VncVal calcDecimal(final MathOp op, final BigDecimal op1, final BigDecimal op2) {
 		switch(op) {
+			case EQU: return op1.compareTo(op2) == 0 ? True : False;
 			case ADD: return new VncBigDecimal(op1.add(op2));
 			case SUB: return new VncBigDecimal(op1.subtract(op2));
 			case MUL: return new VncBigDecimal(op1.multiply(op2));
