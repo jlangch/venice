@@ -4569,7 +4569,7 @@ public class CoreFunctions {
 						"(sort [3 2 5 4 1 6])",
 						"(sort compare [3 2 5 4 1 6])",
 						"; reversed\n" +
-						"(sort (comp (partial * -1) compare) [3 2 5 4 1 6])",
+						"(sort (comp - compare) [3 2 5 4 1 6])",
 						"(sort {:c 3 :a 1 :b 2})")
 					.build()
 		) {
@@ -4605,13 +4605,13 @@ public class CoreFunctions {
 						"(sort-by :id [{:id 2 :name \"Smith\"} {:id 1 :name \"Jones\"} ])",
 						"(sort-by count [\"aaa\" \"bb\" \"c\"])",
 						"; reversed\n" +
-						"(sort-by count (comp (partial * -1) compare) [\"aaa\" \"bb\" \"c\"])",
+						"(sort-by count (comp - compare) [\"aaa\" \"bb\" \"c\"])",
 						"(sort-by first [[1 2] [3 4] [2 3]])",
 						"; reversed\n" +
-						"(sort-by first (comp (partial * -1) compare) [[1 2] [3 4] [2 3]])",
+						"(sort-by first (comp - compare) [[1 2] [3 4] [2 3]])",
 						"(sort-by :rank [{:rank 2} {:rank 3} {:rank 1}])",
 						"; reversed\n" +
-						"(sort-by :rank (comp (partial * -1) compare) [{:rank 2} {:rank 3} {:rank 1}])")
+						"(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
