@@ -25,37 +25,39 @@
 (ns core)
 
 (defmacro
-   ^{ :arglists '("(comment & body)")
-      :doc "Ignores body, yields nil"
-      :examples (list (str/strip-margin
-                        "(comment
-                        |   (println 1)
-                        |   (println 5))" )) }
+  ^{ :arglists '("(comment & body)")
+     :doc "Ignores body, yields nil"
+     :examples (list
+          """
+          (comment
+            (println 1)
+            (println 5))
+          """ ) }
 
    comment [& body] nil)
 
 
 (defmacro
-   ^{ :arglists '("(assert expr)" "(assert expr message)")
-      :doc "Evaluates expr and throws an exception if it does not evaluate to logical true." }
+  ^{ :arglists '("(assert expr)" "(assert expr message)")
+     :doc "Evaluates expr and throws an exception if it does not evaluate to logical true." }
 
-   assert [expr message]
+  assert [expr message]
 
-   `(if ~message
+  `(if ~message
        (when-not ~expr
-           (throw (. :com.github.jlangch.venice.AssertionException
-                     :new
-                     (str "Assert failed (" ~message "): " (pr-str '~expr)))))
+         (throw (. :com.github.jlangch.venice.AssertionException
+                   :new
+                   (str "Assert failed (" ~message "): " (pr-str '~expr)))))
        (when-not ~expr
-           (throw (. :com.github.jlangch.venice.AssertionException
-                     :new
-                     (str "Assert failed: " (pr-str '~expr)))))))
+         (throw (. :com.github.jlangch.venice.AssertionException
+                   :new
+                   (str "Assert failed: " (pr-str '~expr)))))))
 
 
 (defmacro
-   ^{ :arglists '("(defn name [args*] condition-map? expr*)" "(defn name ([args*] condition-map? expr*)+)")
-      :doc "Same as (def name (fn name [args*] condition-map? expr*)) or (def name (fn name ([args*] condition-map? expr*)+))"
-      :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
+  ^{ :arglists '("(defn name [args*] condition-map? expr*)" "(defn name ([args*] condition-map? expr*)+)")
+     :doc "Same as (def name (fn name [args*] condition-map? expr*)) or (def name (fn name ([args*] condition-map? expr*)+))"
+     :examples '("(defn sum [x y] (+ x y))" "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
 
    defn [name & forms]
 
@@ -75,75 +77,79 @@
 
 
 (defmacro
-   ^{ :arglists '("(and x)" "(and x & next)")
-      :doc "Ands the predicate forms"
-      :examples '("(and true true)", "(and true false)") }
+  ^{ :arglists '("(and x)" "(and x & next)")
+     :doc "Ands the predicate forms"
+     :examples '("(and true true)", "(and true false)") }
 
-   and
+  and
 
-   ([] true)
-   ([x] x)
-   ([x & next] (let [cond_ (gensym "cond_")]
-                 `(let [~cond_ ~x]
-                    (if ~cond_ (and ~@next) ~cond_)))))
-
-
-(defmacro
-   ^{ :arglists '("(or x)" "(or x & next)")
-      :doc "Ors the predicate forms"
-      :examples '("(or true false)", "(or false false)") }
-
-   or
-
-   ([] false)
-   ([x] x)
-   ([x & next] (let [cond_ (gensym "cond_")]
-                 `(let [~cond_ ~x]
-                    (if ~cond_ ~cond_ (or ~@next))))))
+  ([] true)
+  ([x] x)
+  ([x & next] (let [cond_ (gensym "cond_")]
+                `(let [~cond_ ~x]
+                  (if ~cond_ (and ~@next) ~cond_)))))
 
 
 (defmacro
-   ^{ :arglists '("(cond & clauses)")
-      :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil."
-      :examples (list (str/strip-margin
-                        """(let [n 5]
-                          |     (cond
-                          |        (< n 0) "negative"
-                          |        (> n 0) "positive"
-                          |        :else "zero"))""" )) }
+  ^{ :arglists '("(or x)" "(or x & next)")
+     :doc "Ors the predicate forms"
+     :examples '("(or true false)", "(or false false)") }
 
-   cond [& clauses]
+  or
 
-   (when clauses
-        (list 'if (first clauses)
-            (if (rest clauses)
-                (second clauses)
-                (throw "cond requires an even number of forms"))
-            (cons 'cond (rest (rest clauses))))))
+  ([] false)
+  ([x] x)
+  ([x & next] (let [cond_ (gensym "cond_")]
+                `(let [~cond_ ~x]
+                  (if ~cond_ ~cond_ (or ~@next))))))
+
+
+(defmacro
+  ^{ :arglists '("(cond & clauses)")
+     :doc "Takes a set of test/expr pairs. It evaluates each test one at a time. If a test returns logical true, cond evaluates and returns the value of the corresponding expr and doesn't evaluate any of the other tests or exprs. (cond) returns nil."
+     :examples (list
+          """
+          (let [n 5]
+            (cond
+              (< n 0) "negative"
+              (> n 0) "positive"
+              :else "zero"))
+          """ ) }
+
+  cond [& clauses]
+
+  (when clauses
+    (list 'if (first clauses)
+          (if (rest clauses)
+              (second clauses)
+              (throw "cond requires an even number of forms"))
+          (cons 'cond (rest (rest clauses))))))
 
 
 (defmacro
    ^{ :arglists '("(condp pred expr & clauses)")
-      :doc (str/strip-indent """\
-              Takes a binary predicate, an expression, and a set of clauses.
-              Each clause can take the form of either:
-                 test-expr result-expr
-                 test-expr :>> result-fn
-              Note :>> is an ordinary keyword.
-              For each clause, (pred test-expr expr) is evaluated. If it returns
-              logical true, the clause is a match. If a binary clause matches, the
-              result-expr is returned, if a ternary clause matches, its result-fn,
-              which must be a unary function, is called with the result of the
-              predicate as its argument, the result of that call being the return
-              value of condp. A single default expression can follow the clauses,
-              and its value will be returned if no clause matches. If no default
-              expression is provided and no clause matches, a VncException
-              is thrown. """)
-      :examples (list (str/strip-margin
-                        """(condp some [1 2 3 4]
-                           |   #{0 6 7} :>> inc
-                           |   #{4 5 9} :>> dec
-                           |   #{1 2 3} :>> #(+ % 3))""" )) }
+      :doc """
+           Takes a binary predicate, an expression, and a set of clauses.
+           Each clause can take the form of either:
+              test-expr result-expr
+              test-expr :>> result-fn
+           Note :>> is an ordinary keyword.
+           For each clause, (pred test-expr expr) is evaluated. If it returns
+           logical true, the clause is a match. If a binary clause matches, the
+           result-expr is returned, if a ternary clause matches, its result-fn,
+           which must be a unary function, is called with the result of the
+           predicate as its argument, the result of that call being the return
+           value of condp. A single default expression can follow the clauses,
+           and its value will be returned if no clause matches. If no default
+           expression is provided and no clause matches, a VncException
+           is thrown.
+           """
+      :examples (list """
+                      (condp some [1 2 3 4]
+                         #{0 6 7} :>> inc
+                         #{4 5 9} :>> dec
+                         #{1 2 3} :>> #(+ % 3))
+                      """ ) }
 
   condp [pred expr & clauses]
 
@@ -171,12 +177,13 @@
 (defmacro
    ^{ :arglists '("(case expr & clauses)")
       :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr"
-      :examples (list (str/strip-margin
-                        "(case (+ 1 9)
-                        |   10  :ten
-                        |   20  :twenty
-                        |   30  :thirty
-                        |   :dont-know)" )) }
+      :examples (list """
+                      (case (+ 1 9)
+                        10  :ten
+                        20  :twenty
+                        30  :thirty
+                        :dont-know)
+                      """ ) }
 
       ;; rewrites to (let [e (+ 1 9)]
       ;;                (cond
@@ -232,10 +239,11 @@
 (defmacro
    ^{ :arglists '("(if-let bindings then)" "(if-let bindings then else)")
       :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else"
-      :examples (list (str/strip-margin
-                        """(if-let [value (* 100 2)]
-                          |    (str "The expression is true. value=" value)
-                          |    (str "The expression is false."))""" )) }
+      :examples (list """
+                      (if-let [value (* 100 2)]
+                        (str "The expression is true. value=" value)
+                        (str "The expression is false."))
+                      """ ) }
 
    if-let [bindings then else]
 
@@ -268,11 +276,12 @@
 (defmacro
    ^{ :arglists '("(while test & body)")
       :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
-      :examples (list (str/strip-margin
-                        "(do
-                        |   (def a (atom 5))
-                        |   (while (pos? (deref a))
-                        |          (do (println (deref a)) (swap! a dec))))" )) }
+      :examples (list """
+                      (do
+                        (def a (atom 5))
+                        (while (pos? (deref a))
+                          (do (println (deref a)) (swap! a dec))))
+                      """ ) }
 
    while [test & body]
 
@@ -285,10 +294,11 @@
 (defmacro
    ^{ :arglists '("(doto x & forms)")
       :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x."
-      :examples (list (str/strip-margin
-                        "(doto (. :java.util.HashMap :new)
-                        |      (. :put :a 1)
-                        |      (. :put :b 2))" )) }
+      :examples (list """
+                      (doto (. :java.util.HashMap :new)
+                            (. :put :a 1)
+                            (. :put :b 2))
+                      """ ) }
 
    doto [x & forms]
 

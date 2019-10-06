@@ -34,12 +34,14 @@
 (defn
   ^{ :arglists '("(crypt/md5-hash data)")
      :doc "Hashes a string or a bytebuf using MD5. Note: MD5 is not safe any more use PBKDF2."
-     :examples (list (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (str/bytebuf-to-hex
-                         |    (crypt/md5-hash "hello world")
-                         |    :upper)) """ )) }
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (str/bytebuf-to-hex
+              (crypt/md5-hash "hello world")
+              :upper))
+           """ ) }
 
   crypt/md5-hash [text]
 
@@ -49,18 +51,21 @@
 (defn
   ^{ :arglists '("(crypt/sha512-hash data)", "(crypt/sha512-hash data salt)")
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
-     :examples (list (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (str/bytebuf-to-hex
-                         |    (crypt/sha512-hash "hello world")
-                         |    :upper)) """ )
-                     (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (str/bytebuf-to-hex
-                         |    (crypt/sha512-hash "hello world" "-salt-")
-                         |    :upper)) """ )) }
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (str/bytebuf-to-hex
+              (crypt/sha512-hash "hello world")
+              :upper))
+           """,
+           """
+           (do
+             (load-module :crypt)
+               (str/bytebuf-to-hex
+                 (crypt/sha512-hash "hello world" "-salt-")
+                 :upper))
+           """ ) }
 
   crypt/sha512-hash
 
@@ -72,18 +77,21 @@
   ^{ :arglists '("(crypt/pbkdf2-hash text salt)",
                  "(crypt/pbkdf2-hash text salt iterations key-length)")
      :doc "Hashes a string using PBKDF2. iterations default to 1000, key-length defaults to 256"
-     :examples (list (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (str/bytebuf-to-hex
-                         |    (crypt/pbkdf2-hash "hello world" "-salt-")
-                         |    :upper)) """ )
-                     (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (str/bytebuf-to-hex
-                         |    (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
-                         |    :upper)) """ )) }
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (str/bytebuf-to-hex
+              (crypt/pbkdf2-hash "hello world" "-salt-")
+              :upper))
+           """,
+           """
+           (do
+             (load-module :crypt)
+             (str/bytebuf-to-hex
+               (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+               :upper))
+           """ ) }
 
   crypt/pbkdf2-hash
 
@@ -95,26 +103,32 @@
 
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
-     :doc (str/strip-margin
-             """Returns a new function to encrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is encrypted and returned as a base64 encoded string. If a bytebuf is passed the encryped bytebuf is returned.
-               |Supported algorithms: "DES", "3DES", "AES256"
-               |
-               |Options:
-               |  :url-safe enabled
-               |      The boolean option directs the base64 encoder to emit
-               |      standard or URL safe base64 enoded strings.
-               |      If enabled (true) the base64 encoder will emit '-' and '_'
-               |      instead of the usual '+' and '/' characters.
-               |      Defaults to false.
-               |      Note: no padding is added when encoding using the
-               |            URL-safe alphabet.""")
-     :examples (list (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-                         |  (encrypt "hello") ; => "ndmW1NLsDHA"
-                         |  (encrypt "world") ; => "KPYjndkZ8vM"
-                         |  (encrypt (bytebuf [1 2 3 4 5]))) """ )) }
+     :doc """
+          Returns a new function to encrypt a string or a bytebuf given
+          the algorithm and passphrase. If a string is passed it is
+          encrypted and returned as a base64 encoded string. If a bytebuf
+          is passed the encryped bytebuf is returned.
+          Supported algorithms: "DES", "3DES", "AES256"
+
+          Options:
+            :url-safe enabled
+                The boolean option directs the base64 encoder to emit
+                standard or URL safe base64 enoded strings.
+                If enabled (true) the base64 encoder will emit '-' and '_'
+                instead of the usual '+' and '/' characters.
+                Defaults to false.
+                Note: no padding is added when encoding using the
+                      URL-safe alphabet.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+            (encrypt "hello") ; => "ndmW1NLsDHA"
+            (encrypt "world") ; => "KPYjndkZ8vM"
+            (encrypt (bytebuf [1 2 3 4 5])))
+           """ ) }
 
   crypt/encrypt
 
@@ -127,24 +141,30 @@
 
 (defn
   ^{ :arglists '("(crypt/decrypt algorithm passphrase & options)")
-  :doc (str/strip-margin
-          """Returns a new function to decrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is base64 decoded, decrypted, and returned as string. If a bytebuf is passed the decrypted bytebuf is returned.
-            |Supported algorithms: "DES", "3DES", "AES256"
-            |
-            |Options:
-            |  :url-safe enabled
-            |      The boolean option directs the base64 decoder to decode
-            |      standard or  URL safe base64 encoded strings.
-            |      If enabled (true) the base64 decoder will convert '-' and '_'
-            |      characters back to '+' and '/' before decoding.
-            |      Defaults to false.""")
-     :examples (list (str/strip-margin
-                       """(do
-                         |  (load-module :crypt)
-                         |  (def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-                         |  (decrypt "ndmW1NLsDHA") ; => "hello"
-                         |  (decrypt "KPYjndkZ8vM") ; => "world"
-                         |  (decrypt  (bytebuf [234 220 237 189 12 176 242 147]))) """ )) }
+  :doc """
+       Returns a new function to decrypt a string or a bytebuf given the
+       algorithm and passphrase. If a string is passed it is base64 decoded,
+       decrypted, and returned as string. If a bytebuf is passed the decrypted
+       bytebuf is returned.
+       Supported algorithms: "DES", "3DES", "AES256"
+
+       Options:
+         :url-safe enabled
+             The boolean option directs the base64 decoder to decode
+             standard or  URL safe base64 encoded strings.
+             If enabled (true) the base64 decoder will convert '-' and '_'
+             characters back to '+' and '/' before decoding.
+             Defaults to false.
+       """
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+            (decrypt "ndmW1NLsDHA") ; => "hello"
+            (decrypt "KPYjndkZ8vM") ; => "world"
+            (decrypt  (bytebuf [234 220 237 189 12 176 242 147])))
+           """ ) }
 
   crypt/decrypt
 
