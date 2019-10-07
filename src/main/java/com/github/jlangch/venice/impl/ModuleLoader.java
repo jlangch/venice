@@ -107,5 +107,5 @@ public class ModuleLoader {
 							"math", "webdav", "xchart", "test",
 							"tomcat", "tomcat-util", "ring", "maven", 
 							"kira", "semver", "xml", "crypt", 
-							"benchmark")));
+							"java", "benchmark")));
 }

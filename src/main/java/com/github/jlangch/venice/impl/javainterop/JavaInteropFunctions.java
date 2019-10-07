@@ -474,16 +474,9 @@ public class JavaInteropFunctions {
 		final Type[] types = m.getGenericParameterTypes();
 		final Type ret = m.getGenericReturnType();
 
-		VncHashMap map = new VncHashMap();
-		for(int ii=0; ii<params.length; ii++) {
-			map = map.assoc(
-					new VncKeyword(params[ii].getName()), 
-					new VncKeyword(types[ii].getTypeName()));
-		}
-		
 		return new VncHashMap()
 			.assoc(new VncKeyword(":name"), new VncKeyword(m.getName()))
-			.assoc(new VncKeyword(":params"), map)
+			.assoc(new VncKeyword(":params"), mapParams(params, types))
 			.assoc(new VncKeyword(":return"), new VncKeyword(ret.getTypeName()))
 			.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(m) ? Constants.True : Constants.False);
 	}
@@ -491,19 +484,20 @@ public class JavaInteropFunctions {
 	private static VncHashMap mapConstructor(final Constructor<?> c) {
 		final Parameter[] params = c.getParameters();
 		final Type[] types = c.getGenericParameterTypes();
-		
-		if (params.length == 0) {
-			return new VncHashMap()
-					.assoc(new VncKeyword(":default"), Constants.Nil);
+
+		return new VncHashMap()
+				.assoc(new VncKeyword(":default"), params.length == 0 ? Constants.True : Constants.False)
+				.assoc(new VncKeyword(":params"), mapParams(params, types));
+	}
+	
+	private static VncHashMap mapParams(final Parameter[] params, final Type[] types) {
+		VncHashMap map = new VncHashMap();
+		for(int ii=0; ii<params.length; ii++) {
+			map = map.assoc(
+						new VncKeyword(params[ii].getName()),
+					 	new VncKeyword(types[ii].getTypeName()));
 		}
-		else {
-			VncHashMap map = new VncHashMap();
-			for(int ii=0; ii<params.length; ii++) {
-				map = map.assoc(new VncKeyword(":name"), new VncKeyword(params[ii].getName()))
-						 .assoc(new VncKeyword(":type"), new VncKeyword(types[ii].getTypeName()));
-			}
-			return map;
-		}
+		return map;
 	}
 
 	private static Set<String> skippedFn = new HashSet<>(Arrays.asList(

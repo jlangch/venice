@@ -1,0 +1,84 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2019 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice Java functions
+
+
+(ns java)
+
+(defn
+  ^{ :arglists '("(describe class)")
+     :doc "Describes a Java class."
+     :examples '("(describe :java.util.ArrayList)") }
+
+  describe [clazz]
+
+  (let [info    (describe-class clazz)
+        ctors   (:constructors info)
+        methods (:methods info)
+        methods-instance (filter #(false? (:static %)) (:methods info))
+        methods-static (filter #(true? (:static %)) (:methods info))
+        fields  (:fields info)
+        fields-instance (filter #(false? (:static %)) (:fields info))
+        fields-static (filter #(true? (:static %)) (:fields info))]
+
+    (when (pos? (count ctors))
+      (println "[Constructors]")
+      (docoll (fn [c]
+                (println "  constructor")
+                (when (:default c)
+                   (println "     default"))
+                (docoll (fn [[n t]]
+                          (println "     " (name n) "->" t))
+                        (seq (:params c))))
+              ctors))
+
+    (when (pos? (count methods-instance))
+      (println)
+      (println "[Methods instance]")
+      (docoll (fn [m]
+                (println "  " (name (:name m)))
+                (docoll (fn [[n t]]
+                          (println "     " (name n) "->" t))
+                        (seq (:params m)))
+                (println "      return ->" (:return m)))
+              methods-instance))
+
+    (when (pos? (count methods-static))
+      (println)
+      (println "[Methods static]")
+      (docoll (fn [m]
+                (println "  " (name (:name m)))
+                (docoll (fn [[n t]]
+                          (println "     " (name n) "->" t))
+                        (seq (:params m)))
+                (println "      return ->" (:return m)))
+              methods-static))
+
+    (when (pos? (count fields-instance))
+      (println)
+      (println "[Fields instance]")
+      (docoll #(println "  " (name (:name %)) "->" (:type %)) fields-instance))
+
+    (when (pos? (count fields-static))
+      (println)
+      (println "[Fields static]")
+      (docoll #(println "  " (:name %) "->" (:type %)) fields-static))))
