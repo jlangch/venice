@@ -2,10 +2,10 @@
 
 Venice supports Jackson if the [Jackson](https://github.com/FasterXML/jackson) libs are on the runtime classpath:
 
- - com.fasterxml.jackson.core:jackson-core:2.9.9
- - com.fasterxml.jackson.core:jackson-databind:2.9.9
- - com.fasterxml.jackson.core:jackson-core:2.9.9
- - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9 (optional Jdk8 module)
+ - com.fasterxml.jackson.core:jackson-core:2.9.10
+ - com.fasterxml.jackson.core:jackson-databind:2.9.10
+ - com.fasterxml.jackson.core:jackson-core:2.9.10
+ - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.10 (optional Jdk8 module)
  
 The Jackson _jdk8_ module is loaded automatically if it is available
  
@@ -35,9 +35,9 @@ The Jackson _jdk8_ module is loaded automatically if it is available
 (do
   (load-module :maven)
   
-  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9")
-  (maven/download "com.fasterxml.jackson.core:jackson-databind:2.9.9")
-  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.9")
-  (maven/download "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.9"))
+  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.10")
+  (maven/download "com.fasterxml.jackson.core:jackson-databind:2.9.10")
+  (maven/download "com.fasterxml.jackson.core:jackson-core:2.9.10")
+  (maven/download "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.10"))
 ```
 

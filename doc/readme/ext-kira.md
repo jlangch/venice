@@ -231,7 +231,8 @@ Loop over a collection of items:
 (do
   (load-module :kira)
   
-  (def template (str/strip-indent """\
+  (def template 
+       """
        <users>
          <% (kira/foreach users (fn [user] (kira/emit %>
          <user>
@@ -239,7 +240,8 @@ Loop over a collection of items:
            <lastname><% (kira/escape-xml (:last user)) %></lastname>
          </user>
          <% ))) %>
-       </users>"""))
+       </users>
+       """)
 
   (def data { :users [ {:first "Thomas" :last "Meier" }
                        {:first "Anna" :last "Steiger" } ]  })
@@ -282,7 +284,8 @@ Example:
 (do
   (load-module :kira)
   
-  (def template (str/strip-indent """\
+  (def template 
+       """
        <users>
          <% (kira/foreach users (fn [user] (kira/emit %>
          <user>
@@ -293,7 +296,8 @@ Example:
            <% )) %>
          </user>
          <% ))) %>
-       </users>"""))
+       </users>
+       """)
 
   (def data { :users [ {:first "Thomas"
                         :last "Meier"
@@ -330,7 +334,8 @@ Example:
 (do
   (load-module :kira)
   
-  (def template (str/strip-indent """\
+  (def template 
+       """
        body {
          background-color: white;
          font-family: 'Open Sans', sans-serif;
@@ -338,7 +343,7 @@ Example:
          font-size: <% (print (if (== font :large) 36 12)) %>px;
          line-height: 1.5em;
          font-weight: <%= weight %>;
-       }"""))
+       """)
 
   (def data { :font :large 
               :weight "400" })
@@ -374,7 +379,8 @@ body {
 (do
   (load-module :kira)
   
-  (def template (str/strip-indent """\
+  (def template 
+       """
        <% (if font-mono (kira/emit %>
        @font-face {
            font-family: 'Source Code Pro';
@@ -393,7 +399,8 @@ body {
            color: #444;
            font-size: 12px;
        }
-       <% )) %>"""))
+       <% )) %>
+       """)
 
   (def data { :font-mono true })
   
@@ -456,7 +463,8 @@ Venice template:
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
-  (def template (str/strip-indent """\
+  (def template 
+       """
        <users>
          <% (kira/foreach users (fn [user] (kira/emit %>
          <user>
@@ -477,7 +485,8 @@ Venice template:
            <% )) %>
          </user>
          <% ))) %>
-       </users>"""))
+       </users>
+       """)
 
   (def data { :users [ {:first "Thomas"
                         :last "Meier"

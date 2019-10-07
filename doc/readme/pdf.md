@@ -50,7 +50,8 @@ References:
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -96,7 +97,7 @@ References:
          <div class="date">${ (kira/escape-xml timestamp test/format-ts) }$</div>
        </body>
      </html>
-     """))
+     """)
 
   (def data { :title "Hello, world"
               :timestamp (time/local-date 2000 8 1) } )
@@ -126,7 +127,8 @@ References:
   (defn format-birth-date [s] (if (string? s) s (time/format s "yyyy-MM-dd")))
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -246,7 +248,7 @@ References:
          </table>
        </body>
      </html>
-     """))
+     """)
 
   (def data {
        :persons
@@ -333,7 +335,8 @@ These images are then referred as:
       300))  
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -393,7 +396,7 @@ These images are then referred as:
          </div>
        </body>
      </html>
-     """))
+     """)
 
   (def data { :title "Hello, world" } )
   
@@ -478,7 +481,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
   (def text (str/lorem-ipsum :paragraphs 1))
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -573,7 +577,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
          <div class="source-code-pro">${ (kira/escape-xml text) }$</div>
        </body>
      </html>
-     """))
+     """)
 
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
@@ -601,7 +605,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
   (load-module :kira)
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -730,7 +735,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
          </div>
        </body>
      </html>
-     """))
+     """)
 
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
@@ -759,7 +764,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
   (load-module :kira)
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -852,7 +858,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
          <div class="text">${ (kira/escape-xml text) }$</div>
        </body>
      </html>
-     """))
+     """)
 
   ; create a Lorem Ipsum text block
   (def data { :footer-front-page "Aarestrasse 51, 3012 Bern, Tel. 099 100 20 30, Fax 099 100 20 31, info@foo.ch, www.foo.ch"
@@ -883,7 +889,8 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
   (load-module :kira)
   
   ; define the template
-  (def template (str/strip-indent """\
+  (def template 
+     """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
@@ -937,7 +944,7 @@ Google hosts Open Source fonts at: [Google Fonts](https://fonts.google.com)
          <div class="text">${ (kira/escape-xml text) }$</div>
        </body>
      </html>
-     """))
+     """)
 
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
@@ -978,7 +985,8 @@ Venice supports simplified text to PDF
   (load-module :kira)
   
   ; define the template
-  (def text (str/strip-indent """\
+  (def text 
+     """
      Lorem Ipsum is simply dummy text of the printing and typesetting
      industry. Lorem Ipsum has been the industry's standard dummy
      text ever since the 1500s, when an unknown printer took a galley
@@ -1004,7 +1012,8 @@ Venice supports simplified text to PDF
      typesetting, remaining essentially unchanged. It was popularised in
      the 1960s with the release of Letraset sheets containing Lorem
      Ipsum passages, and more recently with desktop publishing
-     software like Aldus PageMaker including versions of Lorem Ipsum."""))
+     software like Aldus PageMaker including versions of Lorem Ipsum.
+     """)
 
   ; render the PDF, and save it
   (-<> text

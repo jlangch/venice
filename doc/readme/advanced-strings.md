@@ -6,19 +6,19 @@
 (do
    (def s1 """{ "fruit": "apple", "color": "red" }""")
 
-   (def s2 """{ 
-                "fruit": "apple",
-                "color": "red" 
-              }""")
+   (def s2 """
+           { 
+             "fruit": "apple",
+             "color": "red" 
+           }
+           """)
 
-   ; remove the indentation on multi-line strings
    (def s3 (str/strip-indent """\
                 {
                   "fruit": "apple",
                   "color": "red"
                 }"""))
 
-   ; remove the indentation on multi-line strings
    (def s4 (str/strip-margin
              """{
                 |  "fruit": "apple",
