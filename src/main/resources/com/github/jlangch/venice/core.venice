@@ -127,29 +127,30 @@
 
 
 (defmacro
-   ^{ :arglists '("(condp pred expr & clauses)")
-      :doc """
-           Takes a binary predicate, an expression, and a set of clauses.
-           Each clause can take the form of either:
+  ^{ :arglists '("(condp pred expr & clauses)")
+     :doc """
+          Takes a binary predicate, an expression, and a set of clauses.
+          Each clause can take the form of either:
               test-expr result-expr
               test-expr :>> result-fn
-           Note :>> is an ordinary keyword.
-           For each clause, (pred test-expr expr) is evaluated. If it returns
-           logical true, the clause is a match. If a binary clause matches, the
-           result-expr is returned, if a ternary clause matches, its result-fn,
-           which must be a unary function, is called with the result of the
-           predicate as its argument, the result of that call being the return
-           value of condp. A single default expression can follow the clauses,
-           and its value will be returned if no clause matches. If no default
-           expression is provided and no clause matches, a VncException
-           is thrown.
-           """
-      :examples (list """
-                      (condp some [1 2 3 4]
-                         #{0 6 7} :>> inc
-                         #{4 5 9} :>> dec
-                         #{1 2 3} :>> #(+ % 3))
-                      """ ) }
+          Note :>> is an ordinary keyword.
+          For each clause, (pred test-expr expr) is evaluated. If it returns
+          logical true, the clause is a match. If a binary clause matches, the
+          result-expr is returned, if a ternary clause matches, its result-fn,
+          which must be a unary function, is called with the result of the
+          predicate as its argument, the result of that call being the return
+          value of condp. A single default expression can follow the clauses,
+          and its value will be returned if no clause matches. If no default
+          expression is provided and no clause matches, a VncException
+          is thrown.
+          """
+     :examples (list
+          """
+          (condp some [1 2 3 4]
+             #{0 6 7} :>> inc
+             #{4 5 9} :>> dec
+             #{1 2 3} :>> #(+ % 3))
+          """ ) }
 
   condp [pred expr & clauses]
 
@@ -175,374 +176,391 @@
 
 
 (defmacro
-   ^{ :arglists '("(case expr & clauses)")
-      :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr"
-      :examples (list """
-                      (case (+ 1 9)
-                        10  :ten
-                        20  :twenty
-                        30  :thirty
-                        :dont-know)
-                      """ ) }
+  ^{ :arglists '("(case expr & clauses)")
+     :doc "Takes an expression and a set of clauses. Each clause takes the form of test-constant result-expr"
+     :examples (list
+          """
+          (case (+ 1 9)
+            10  :ten
+            20  :twenty
+            30  :thirty
+            :dont-know)
+          """ ) }
 
-      ;; rewrites to (let [e (+ 1 9)]
-      ;;                (cond
-      ;;                  (== e 10) :ten
-      ;;                  (== e 20) :twenty
-      ;;                  (== e 30) :thirty
-      ;;                  :else :dont-know))
+     ;; rewrites to (let [e (+ 1 9)]
+     ;;                (cond
+     ;;                  (== e 10) :ten
+     ;;                  (== e 20) :twenty
+     ;;                  (== e 30) :thirty
+     ;;                  :else :dont-know))
 
-   case [expr & clauses]
+  case [expr & clauses]
 
-   (let [expr-sym (gensym "expr_")
-         default_ (if (odd? (count clauses)) (last clauses) nil)
-         pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]
-      `(let [~expr-sym ~expr]
-         (cond
-            ~@(mapcat (fn [[test-const_ result-expr_]]
-                          `((== ~expr-sym ~test-const_) ~result-expr_))
+  (let [expr-sym (gensym "expr_")
+        default_ (if (odd? (count clauses)) (last clauses) nil)
+        pairs_ (partition 2 (if (odd? (count clauses)) (butlast clauses) clauses))]
+    `(let [~expr-sym ~expr]
+       (cond
+         ~@(mapcat (fn [[test-const_ result-expr_]]
+                       `((== ~expr-sym ~test-const_) ~result-expr_))
                       pairs_)
-            :else ~default_))))
+         :else ~default_))))
 
 
 (defmacro
-   ^{ :arglists '("(if-not then)", "(if-not then else)")
-      :doc "Evaluates test. If logical false, evaluates and returns then expr, otherwise else expr, if supplied, else nil."
-      :examples '("(if-not (== 1 2) 100 0)", "(if-not (== 1 2) 100)") }
+  ^{ :arglists '("(if-not then)", "(if-not then else)")
+     :doc "Evaluates test. If logical false, evaluates and returns then expr, otherwise else expr, if supplied, else nil."
+     :examples '("(if-not (== 1 2) 100 0)", "(if-not (== 1 2) 100)") }
 
-   if-not
+  if-not
 
-   ([test then] `(if-not ~test ~then nil))
-   ([test then else] `(if (not ~test) ~then ~else)))
-
-
-(defmacro
-   ^{ :arglists '("(when test & body)")
-      :doc "Evaluates test. If logical true, evaluates body in an implicit do."
-      :examples '("(when (== 1 1) true)") }
-
-   when [test & body]
-
-   (list 'if test (cons 'do body)))
+  ([test then] `(if-not ~test ~then nil))
+  ([test then else] `(if (not ~test) ~then ~else)))
 
 
 (defmacro
-   ^{ :arglists '("(when-not test & body)")
-      :doc "Evaluates test. If logical false, evaluates body in an implicit do."
-      :examples '("(when-not (== 1 2) true)") }
+  ^{ :arglists '("(when test & body)")
+     :doc "Evaluates test. If logical true, evaluates body in an implicit do."
+     :examples '("(when (== 1 1) true)") }
 
-   when-not [test & body]
+  when [test & body]
 
-   (list 'if test nil (cons 'do body)))
-
-
-(defmacro
-   ^{ :arglists '("(if-let bindings then)" "(if-let bindings then else)")
-      :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else"
-      :examples (list """
-                      (if-let [value (* 100 2)]
-                        (str "The expression is true. value=" value)
-                        (str "The expression is false."))
-                      """ ) }
-
-   if-let [bindings then else]
-
-   (let [temp (gensym "temp_")
-         form (first bindings)
-         tst (second bindings)]
-     `(let [~temp ~tst]
-        (if ~temp
-          (let [~form ~temp]
-            ~then)
-          ~else))))
+  (list 'if test (cons 'do body)))
 
 
 (defmacro
-   ^{ :arglists '("(dotimes bindings & body)")
-      :doc "Repeatedly executes body with name bound to integers from 0 through n-1."
-      :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
+  ^{ :arglists '("(when-not test & body)")
+     :doc "Evaluates test. If logical false, evaluates body in an implicit do."
+     :examples '("(when-not (== 1 2) true)") }
 
-   dotimes [bindings & body]
+  when-not [test & body]
 
-   (let [i (first bindings)
-         n (second bindings)]
-       `(let [k (long ~n)]
-           (loop [~i 0]
-              (when (< ~i k)
-                 ~@body
-                 (recur (inc ~i)))))))
+  (list 'if test nil (cons 'do body)))
 
 
 (defmacro
-   ^{ :arglists '("(while test & body)")
-      :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
-      :examples (list """
-                      (do
-                        (def a (atom 5))
-                        (while (pos? (deref a))
-                          (do (println (deref a)) (swap! a dec))))
-                      """ ) }
+  ^{ :arglists '("(if-let bindings then)" "(if-let bindings then else)")
+     :doc "bindings is a vector with 2 elements: binding-form test. \nIf test is true, evaluates then with binding-form bound to the value of test, if not, yields else"
+     :examples (list
+          """
+          (if-let [value (* 100 2)]
+            (str "The expression is true. value=" value)
+            (str "The expression is false."))
+          """ ) }
 
-   while [test & body]
+  if-let [bindings then else]
 
-   `(loop []
-        (when ~test
-            ~@body
-            (recur))))
-
-
-(defmacro
-   ^{ :arglists '("(doto x & forms)")
-      :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x."
-      :examples (list """
-                      (doto (. :java.util.HashMap :new)
-                            (. :put :a 1)
-                            (. :put :b 2))
-                      """ ) }
-
-   doto [x & forms]
-
-   (let [gx (gensym)]
-       `(let [~gx ~x]
-          ~@(map (fn [f] `(~(first f) ~gx ~@(rest f))) forms)
-          ~gx)))
+  (let [temp (gensym "temp_")
+        form (first bindings)
+        tst (second bindings)]
+    `(let [~temp ~tst]
+      (if ~temp
+        (let [~form ~temp]
+          ~then)
+        ~else))))
 
 
 (defmacro
-   ^{ :arglists '("(-> x & forms)")
-      :doc "Threads the x through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc."
-      :examples (list "(-> 5 (+ 3) (/ 2) (- 1))"
+  ^{ :arglists '("(dotimes bindings & body)")
+     :doc "Repeatedly executes body with name bound to integers from 0 through n-1."
+     :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
 
-                      (str/strip-margin
-                        """(do
-                          |   (def person
-                          |        {:name "Peter Meier"
-                          |         :address {:street "Lindenstrasse 45"
-                          |                   :city "Bern"
-                          |                   :zip 3000}})
-                          |
-                          |   (-> person :address :street)) """ )) }
+  dotimes [bindings & body]
 
-   -> [x & forms]
+  (let [i (first bindings)
+        n (second bindings)]
+      `(let [k (long ~n)]
+          (loop [~i 0]
+            (when (< ~i k)
+                ~@body
+                (recur (inc ~i)))))))
+
+
+(defmacro
+  ^{ :arglists '("(while test & body)")
+     :doc "Repeatedly executes body while test expression is true. Presumes some side-effect will cause test to become false/nil. Returns nil"
+     :examples (list
+          """
+          (do
+            (def a (atom 5))
+            (while (pos? (deref a))
+              (do (println (deref a)) (swap! a dec))))
+          """ ) }
+
+  while [test & body]
+
+  `(loop []
+      (when ~test
+        ~@body
+        (recur))))
+
+
+(defmacro
+  ^{ :arglists '("(doto x & forms)")
+     :doc "Evaluates x then calls all of the methods and functions with the value of x supplied at the front of the given arguments. The forms are evaluated in order. Returns x."
+     :examples (list
+          """
+          (doto (. :java.util.HashMap :new)
+                (. :put :a 1)
+                (. :put :b 2))
+          """ ) }
+
+  doto [x & forms]
+
+  (let [gx (gensym)]
+    `(let [~gx ~x]
+       ~@(map (fn [f] `(~(first f) ~gx ~@(rest f))) forms)
+       ~gx)))
+
+
+(defmacro
+  ^{ :arglists '("(-> x & forms)")
+     :doc "Threads the x through the forms. Inserts x as the second item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the second item in second form, etc."
+     :examples (list
+          """
+          (-> 5 (+ 3) (/ 2) (- 1))
+          """
+          """
+          (do
+            (def person
+                 {:name "Peter Meier"
+                  :address {:street "Lindenstrasse 45"
+                            :city "Bern"
+                            :zip 3000}})
+
+            (-> person :address :street))
+          """ ) }
+
+  -> [x & forms]
+
+  (loop [x x, forms forms]
+    (if forms
+      (let [form (first forms)
+            threaded (if (list? form)
+                       `(~(first form) ~x ~@(empty-to-nil(rest form)))
+                       (list form x))]
+        (recur threaded (empty-to-nil(rest forms))))
+      x)))
+
+
+(defmacro
+  ^{ :arglists '("(->> x & forms)")
+     :doc "Threads the x through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc."
+     :examples (list
+          "(->> 5 (+ 3) (/ 32) (- 1))"
+          """
+          (->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
+               (map (fn [x] (get x :b)))
+               (filter (fn [x] (> x 4)))
+               (map inc))))
+          """ ) }
+
+  ->> [x & forms]
 
    (loop [x x, forms forms]
-        (if forms
-            (let [form (first forms)
-                  threaded (if (list? form)
-                               `(~(first form) ~x ~@(empty-to-nil(rest form)))
-                               (list form x))]
-               (recur threaded (empty-to-nil(rest forms))))
-            x)))
+     (if forms
+       (let [form (first forms)
+             threaded (if (list? form)
+                         `(~(first form) ~@(empty-to-nil(rest form)) ~x)
+                         (list form x))]
+         (recur threaded (empty-to-nil(rest forms))))
+       x)))
 
 
 (defmacro
-   ^{ :arglists '("(->> x & forms)")
-      :doc "Threads the x through the forms. Inserts x as the last item in the first form, making a list of it if it is not a list already. If there are more forms, inserts the first form as the last item in second form, etc."
-      :examples (list "(->> 5 (+ 3) (/ 32) (- 1))"
+  ^:private
 
-                      (str/strip-margin
-                         "(->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
-                         |     (map (fn [x] (get x :b)))
-                         |     (filter (fn [x] (> x 4)))
-                         |     (map inc)))) " )) }
+  ;; serves the macro -<>. Inserts x in place of '<>' in form
 
-   ->> [x & forms]
+  -<>* [form x]
 
-   (loop [x x, forms forms]
-        (if forms
-            (let [form (first forms)
-                  threaded (if (list? form)
-                               `(~(first form) ~@(empty-to-nil(rest form)) ~x)
-                               (list form x))]
-               (recur threaded (empty-to-nil(rest forms))))
-            x)))
+  (let [substitute-pos (fn [form_] (replace {'<> x} form_))
+        count-pos (fn [form_] (count (filter #(== % '<>) form_)))
+        c (cond
+            (or (set? form) (list? form) (vector? form)) (count-pos form)
+            (map? form) (count-pos (mapcat concat form))
+            :otherwise 0)]
+    (cond
+      (not (== c 1))   (throw (. :VncException :new "-<> macro: one position per form is required."))
+      (symbol? form)   `(~form ~x)
+      (vector? form)   (substitute-pos form)
+      (map? form)      (apply hash-map (mapcat substitute-pos form))
+      :else            `(~(first form) ~@(substitute-pos (rest form))))))
+
+(defmacro
+  ^{ :arglists '("(-<> x & forms)")
+     :doc "Threads the x through the forms. Inserts x at position of the <> symbol of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol in second form, etc."
+     :examples (list
+          """
+          (-<> 5
+               (+ <> 3)
+               (/ 2 <>)
+               (- <> 1))
+          """ ) }
+
+  -<>
+
+  ([x] x)
+  ([x form] `(-<>* ~form ~x))
+  ([x form & forms] `(-<> (-<> ~x ~form) ~@forms)))
 
 
 (defmacro
-   ^:private
+  ^{ :arglists '("(as-> expr name & forms)")
+     :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position."
+     :examples (list
+          """
+          ; allows to use arbitrary positioning of the argument
+          (as-> [:foo :bar] v
+                (map name v)
+                (first v)
+                (str/subs v 1))
+          """
+          """
+          ; allows the use of if statements in the thread
+          (as-> {:a 1 :b 2} m
+                (update m :a #(+ % 10))
+                (if true
+                  (update m :b #(+ % 10))
+                  m))
+          """ ) }
 
-   ;; serves the macro -<>. Inserts x in place of '<>' in form
+  as-> [expr name & forms]
 
-   -<>* [form x]
-
-   (let [substitute-pos (fn [form_] (replace {'<> x} form_))
-         count-pos (fn [form_] (count (filter #(== % '<>) form_)))
-         c (cond
-              (or (set? form) (list? form) (vector? form)) (count-pos form)
-              (map? form) (count-pos (mapcat concat form))
-              :otherwise 0)]
-      (cond
-         (not (== c 1))   (throw (. :VncException :new "-<> macro: one position per form is required."))
-         (symbol? form)   `(~form ~x)
-         (vector? form)   (substitute-pos form)
-         (map? form)      (apply hash-map (mapcat substitute-pos form))
-         :else            `(~(first form) ~@(substitute-pos (rest form))))))
-
-(defmacro
-   ^{ :arglists '("(-<> x & forms)")
-      :doc "Threads the x through the forms. Inserts x at position of the <> symbol of the first form, making a list of it if is not a list already. If there are more forms, inserts the first form at position of the <> symbol in second form, etc."
-      :examples (list (str/strip-margin
-                        "(-<> 5
-                        |     (+ <> 3)
-                        |     (/ 2 <>)
-                        |     (- <> 1))" )) }
-
-   -<>
-
-   ([x] x)
-   ([x form] `(-<>* ~form ~x))
-   ([x form & forms] `(-<> (-<> ~x ~form) ~@forms)))
+  `(let [~name ~expr
+        ~@(interleave (repeat (count forms) name) (butlast forms))]
+      ~(if (empty? forms)
+           name
+           (last forms))))
 
 
 (defmacro
-   ^{ :arglists '("(as-> expr name & forms)")
-      :doc "Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position."
-      :examples (list (str/strip-margin
-                        ";allows to use arbitrary positioning of the argument
-                        |(as-> [:foo :bar] v
-                        |      (map name v)
-                        |      (first v)
-                        |      (str/subs v 1))" )
-                      (str/strip-margin
-                        ";allows the use of if statements in the thread
-                        |(as-> {:a 1 :b 2} m
-                        |      (update m :a #(+ % 10))
-                        |      (if true
-                        |        (update m :b #(+ % 10))
-                        |         m))" ) ) }
+  ^{ :arglists '("(list-comp seq-exprs body-expr)")
+     :doc "List comprehension. Takes a vector of one or more binding-form/collection-expr pairs, each followed by zero or more modifiers, and yields a collection of evaluations of expr. Supported modifiers are: :when test."
+     :examples '("(list-comp [x (range 10)] x)"
+                 "(list-comp [x (range 5)] (* x 2))"
+                 "(list-comp [x (range 10) :when (odd? x)] x)"
+                 "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
+                 "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
 
-   as-> [expr name & forms]
+  list-comp [[binding_ coll-expr & bindings] body-expr]
 
-   `(let [~name ~expr
-          ~@(interleave (repeat (count forms) name) (butlast forms))]
-       ~(if (empty? forms)
-            name
-            (last forms))))
+  (cond (not binding_)
+    `(list ~body-expr)
+
+    (== :when binding_)
+      `(when ~coll-expr (list-comp ~bindings ~body-expr))
+
+    :else
+      `(mapcat (fn [~binding_] (list-comp ~bindings ~body-expr))
+                ~coll-expr)))
 
 
 (defmacro
-   ^{ :arglists '("(list-comp seq-exprs body-expr)")
-      :doc "List comprehension. Takes a vector of one or more binding-form/collection-expr pairs, each followed by zero or more modifiers, and yields a collection of evaluations of expr. Supported modifiers are: :when test."
-      :examples '("(list-comp [x (range 10)] x)"
-                  "(list-comp [x (range 5)] (* x 2))"
-                  "(list-comp [x (range 10) :when (odd? x)] x)"
-                  "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
-                  "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
+  ^{ :arglists '("(time expr)")
+     :doc "Evaluates expr and prints the time it took.  Returns the value of expr."
+     :examples '("(time (+ 100 200))") }
 
-   list-comp [[binding_ coll-expr & bindings] body-expr]
+  time [expr]
 
-   (cond (not binding_)
-         `(list ~body-expr)
-
-         (== :when binding_)
-         `(when ~coll-expr (list-comp ~bindings ~body-expr))
-
-         :else
-         `(mapcat (fn [~binding_] (list-comp ~bindings ~body-expr))
-                  ~coll-expr)))
+  `(let [start_ (nano-time)
+         ret_ ~expr
+         end_ (nano-time)
+         elapsed_ (- end_ start_)]
+     (if (< elapsed_ 1000000)
+         (printf "Elapsed time: %.2f us\n" (/ elapsed_ 1000.0))
+         (printf "Elapsed time: %.2f ms\n" (/ elapsed_ 1000000.0)))
+      ret_))
 
 
 (defmacro
-   ^{ :arglists '("(time expr)")
-      :doc "Evaluates expr and prints the time it took.  Returns the value of expr."
-      :examples '("(time (+ 100 200))") }
+  ^{ :arglists '("(perf expr warmup-iterations test-iterations)")
+     :doc "Performance test with the given expression. \n\nRuns the test in 3 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression under profiling.\nReturns nil.\n\nAfter a test run metrics data can be printed with (println (prof :data-formatted))"
+     :examples (list
+          """
+          (do
+            (perf (+ 120 200) 12000 1000)
+            (println (prof :data-formatted)))
+          """ ) }
 
-   time [expr]
+  perf [expr warmup-iterations test-iterations]
 
-   `(let [start_ (nano-time)
-          ret_ ~expr
-          end_ (nano-time)
-          elapsed_ (- end_ start_)]
-       (if (< elapsed_ 1000000)
-          (printf "Elapsed time: %.2f us\n" (/ elapsed_ 1000.0))
-          (printf "Elapsed time: %.2f ms\n" (/ elapsed_ 1000000.0)))
-       ret_))
-
-
-(defmacro
-   ^{ :arglists '("(perf expr warmup-iterations test-iterations)")
-      :doc "Performance test with the given expression. \n\nRuns the test in 3 phases: \n   1. Runs the expr in a warmup phase to allow the HotSpot compiler to do optimizations. \n   2. Runs the garbage collector \n   3. Runs the expression under profiling.\nReturns nil.\n\nAfter a test run metrics data can be printed with (println (prof :data-formatted))"
-      :examples (list (str/strip-margin
-                        """(do
-                          |   (perf (+ 120 200) 12000 1000)
-                          |   (println (prof :data-formatted)))""" )) }
-
-   perf [expr warmup-iterations test-iterations]
-
-   `(do
-       (prof :on)
-       (prof :clear)
-       (let [fn-perf-warmup (fn _warmup [] (dorun ~warmup-iterations ~expr))
-             fn-perf-gc (fn _warmup-gc [] (dorun 2 (gc)))
-             fn-perf-test (fn _test [] (dorun ~test-iterations ~expr))]
-           (fn-perf-warmup)
-           (fn-perf-gc)
-           (prof :clear-all-but ["_warmup" "_warmup-gc"])
-           (fn-perf-test)
-           (prof :off))
-       nil))
+  `(do
+     (prof :on)
+     (prof :clear)
+     (let [fn-perf-warmup (fn _warmup [] (dorun ~warmup-iterations ~expr))
+           fn-perf-gc (fn _warmup-gc [] (dorun 2 (gc)))
+           fn-perf-test (fn _test [] (dorun ~test-iterations ~expr))]
+         (fn-perf-warmup)
+         (fn-perf-gc)
+         (prof :clear-all-but ["_warmup" "_warmup-gc"])
+         (fn-perf-test)
+         (prof :off))
+     nil))
 
 
 (defmacro
-   ^{ :arglists '("(load-string s)")
-      :doc "Sequentially read and evaluate the set of forms contained in the string."
-      :examples (list (str/strip-margin
-                        """(do
-                          |   (load-string "(def x 1)")
-                          |   (+ x 2))""" )) }
+  ^{ :arglists '("(load-string s)")
+     :doc "Sequentially read and evaluate the set of forms contained in the string."
+     :examples (list
+          """
+          (do
+            (load-string "(def x 1)")
+            (+ x 2))
+          """ ) }
 
-   load-string [s]
+  load-string [s]
 
-   `(eval (read-string (str "(do " ~s ")"))))
-
-
-(defmacro
-   ^{ :arglists '("(load-file name)")
-      :doc "Sequentially read and evaluate the set of forms contained in the file."
-      :examples '() }
-
-   load-file [f]
-
-   `(eval (read-string (str "(do " (io/slurp ~f :encoding "UTF-8" :binary false) ")") ~f)))
+  `(eval (read-string (str "(do " ~s ")"))))
 
 
 (defmacro
-   ^{ :arglists '("(load-classpath-file name)")
-      :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'."
-      :examples (list (str/strip-margin
-                        """(do
-                          |   (load-classpath-file "com/github/jlangch/venice/test.venice")
-                          |   (test/test-fn "hello"))""" )) }
+  ^{ :arglists '("(load-file name)")
+     :doc "Sequentially read and evaluate the set of forms contained in the file."
+     :examples '() }
 
-   load-classpath-file [f]
+  load-file [f]
 
-   `(eval (read-string (str "(do " (load-classpath-venice ~f) ")") ~f)))
+  `(eval (read-string (str "(do " (io/slurp ~f :encoding "UTF-8" :binary false) ")") ~f)))
 
 
 (defmacro
-   ^{ :arglists '("(load-module s)")
-      :doc "Loads a Venice predefined extension module."
-      :examples (list (str/strip-margin
-                        "(do
-                        |   (load-module :math))" )) }
+  ^{ :arglists '("(load-classpath-file name)")
+     :doc "Sequentially read and evaluate the set of forms contained in the classpath file. The function is restricted to classpath files with the extension '.venice'."
+     :examples (list
+          """
+          (do
+            (load-classpath-file "com/github/jlangch/venice/test.venice")
+            (test/test-fn "hello"))
+          """ ) }
 
-   load-module [s]
+  load-classpath-file [f]
 
-   `(when-not (contains? core/*loaded-modules* (keyword (name ~s)))
-      (let [module (read-string (str "(do " (load-core-module ~s) ")") ~s)]
-        (set! core/*loaded-modules* (cons (keyword (name ~s)) core/*loaded-modules*))
-        (eval module)
-        (keyword (name ~s)))))
+  `(eval (read-string (str "(do " (load-classpath-venice ~f) ")") ~f)))
 
 
 (defmacro
-   ^{ :arglists '("(with-sh-dir dir & forms)")
-      :doc "Sets the directory for use with sh, see sh for details."
-      :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""") }
+  ^{ :arglists '("(load-module s)")
+     :doc "Loads a Venice predefined extension module."
+     :examples '( "(load-module :math))" ) }
 
-   with-sh-dir [dir & forms]
+  load-module [s]
 
-   `(do
+  `(when-not (contains? core/*loaded-modules* (keyword (name ~s)))
+     (let [module (read-string (str "(do " (load-core-module ~s) ")") ~s)]
+       (set! core/*loaded-modules* (cons (keyword (name ~s)) core/*loaded-modules*))
+       (eval module)
+       (keyword (name ~s)))))
+
+
+(defmacro
+  ^{ :arglists '("(with-sh-dir dir & forms)")
+     :doc "Sets the directory for use with sh, see sh for details."
+     :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""") }
+
+  with-sh-dir [dir & forms]
+
+  `(do
       (when-not (io/exists-dir? (io/file ~dir))
          (throw (. :VncException
                    :new
@@ -551,111 +569,111 @@
 
 
 (defmacro
-   ^{ :arglists '("(with-sh-env env & forms)")
-      :doc "Sets the environment for use with sh, see sh for details."
-      :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""") }
+  ^{ :arglists '("(with-sh-env env & forms)")
+     :doc "Sets the environment for use with sh, see sh for details."
+     :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""") }
 
-   with-sh-env [env & forms]
+  with-sh-env [env & forms]
 
-   `(do (binding [*sh-env* ~env] (do ~@forms))))
-
-
-(defmacro
-   ^{ :arglists '("(with-sh-throw forms)")
-      :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
-      :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
-
-   with-sh-throw [& forms]
-
-   `(do (binding [*sh-throw-ex* true] (do ~@forms))))
+  `(do (binding [*sh-env* ~env] (do ~@forms))))
 
 
 (defmacro
-   ^{ :arglists '("(with-out-str & forms)")
-      :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
-      :examples '("""(with-out-str (println "a string"))""") }
+  ^{ :arglists '("(with-sh-throw forms)")
+     :doc "If true throws an exception if the spawned shell process returns an exit code other than 0. If false return the exit code. Defaults to false. For use with sh, see sh for details."
+     :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
 
-   with-out-str [& forms]
+  with-sh-throw [& forms]
 
-   `(do
+  `(do (binding [*sh-throw-ex* true] (do ~@forms))))
+
+
+(defmacro
+  ^{ :arglists '("(with-out-str & forms)")
+     :doc "Evaluates exprs in a context in which *out* is bound to a capturing output stream. Returns the string created by any nested printing calls."
+     :examples '("""(with-out-str (println "a string"))""") }
+
+  with-out-str [& forms]
+
+  `(do
       (binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
          (do ~@forms)
          (. *out* :getOutput))))
 
 
 (defmacro
-   ^{ :arglists '("(delay & body)")
-      :doc "Takes a body of expressions and yields a Delay object that will invoke the body only the first time it is forced (with force or deref/@), and will cache the result and return it on all subsequent force calls"
-      :examples '("""(do\n   (def x (delay (println "working...") 100))\n   (deref x))""") }
+  ^{ :arglists '("(delay & body)")
+     :doc "Takes a body of expressions and yields a Delay object that will invoke the body only the first time it is forced (with force or deref/@), and will cache the result and return it on all subsequent force calls"
+     :examples '("""(do\n   (def x (delay (println "working...") 100))\n   (deref x))""") }
 
-   delay [& body]
+  delay [& body]
 
-   `(. :com.github.jlangch.venice.impl.types.concurrent.Delay
-       :new
-       (fn [] (do ~@body))))
-
-
-(defn
-   ^{ :arglists '("(print & xs)")
-      :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
-      :examples '("(print [10 20 30])") }
-
-   print
-
-   ([] nil)
-   ([x] (. *out* :append (str (coalesce x "nil"))) nil)
-   ([& xs] (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))) nil))
+  `(. :com.github.jlangch.venice.impl.types.concurrent.Delay
+      :new
+      (fn [] (do ~@body))))
 
 
 (defn
-   ^{ :arglists '("(printf fmt & args)")
-      :doc "Prints formatted output, as per format"
-      :examples '("""(printf "%s: %d" "abc" 100)""") }
+  ^{ :arglists '("(print & xs)")
+     :doc "Prints to stdout, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+     :examples '("(print [10 20 30])") }
 
-   printf
+  print
 
-   [fmt & args] (print (apply str/format fmt args)))
-
-
-(defn
-   ^{ :arglists '("(println & xs)")
-      :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
-      :examples '("(do (println 200) (println [10 20 30]))") }
-
-   println
-
-   [& xs] (do (apply print xs) (newline) nil))
+  ([] nil)
+  ([x] (. *out* :append (str (coalesce x "nil"))) nil)
+  ([& xs] (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))) nil))
 
 
 (defn
-   ^{ :arglists '("(newline)")
-      :doc "Writes a platform-specific newline to *out*"
-      :examples '("(newline)") }
+  ^{ :arglists '("(printf fmt & args)")
+     :doc "Prints formatted output, as per format"
+     :examples '("""(printf "%s: %d" "abc" 100)""") }
 
-   newline
+  printf
 
-   [] (do (. *out* :append "\n") nil))
-
-
-(defn
-   ^{ :arglists '("(flush)", "(flush os)")
-      :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
-      :examples '("(flush)", "(flush *out*)") }
-
-   flush
-
-   [os] (let [out (coalesce os *out*)] (. out :flush) nil))
+  [fmt & args] (print (apply str/format fmt args)))
 
 
 (defn
-   ^{ :arglists '("(not x)")
-      :doc "Returns true if x is logical false, false otherwise."
-      :examples '("(not true)"
+  ^{ :arglists '("(println & xs)")
+     :doc "Prints to stdout with a tailing linefeed, with no args, prints the empty string. With one arg x, prints x.toString(). With more than one arg, prints the concatenation of the str values of the args with delimiter ' '. Returns nil."
+     :examples '("(do (println 200) (println [10 20 30]))") }
+
+  println
+
+  [& xs] (do (apply print xs) (newline) nil))
+
+
+(defn
+  ^{ :arglists '("(newline)")
+     :doc "Writes a platform-specific newline to *out*"
+     :examples '("(newline)") }
+
+  newline
+
+  [] (do (. *out* :append "\n") nil))
+
+
+(defn
+  ^{ :arglists '("(flush)", "(flush os)")
+     :doc "Without arg flushes the output stream that is the current value of *out*. With arg flushes the passed output stream"
+     :examples '("(flush)", "(flush *out*)") }
+
+  flush
+
+  [os] (let [out (coalesce os *out*)] (. out :flush) nil))
+
+
+(defn
+  ^{ :arglists '("(not x)")
+     :doc "Returns true if x is logical false, false otherwise."
+     :examples '("(not true)"
                  "(not (== 1 2))") }
 
-   not
+  not
 
-   [x] (if x false true))
+  [x] (if x false true))
 
 (defn
   ^{ :arglists '("(complement f)")
@@ -672,14 +690,14 @@
          ([x y & zs] (not (apply f x y zs)))))
 
 (defn
-   ^{ :arglists '("(identity x)")
-      :doc "Returns its argument."
-      :examples '("(identity 4)"
-                  "(filter identity [1 2 3 nil 4 false true 1234])") }
+  ^{ :arglists '("(identity x)")
+     :doc "Returns its argument."
+     :examples '("(identity 4)"
+                 "(filter identity [1 2 3 nil 4 false true 1234])") }
 
-   identity
+  identity
 
-   [x] x)
+  [x] x)
 
 
 (defn
@@ -749,12 +767,12 @@
 
 
 (defn
-   ^{ :arglists '("(zipmap keys vals)")
-      :doc "Returns a map with the keys mapped to the corresponding vals."
-      :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
+  ^{ :arglists '("(zipmap keys vals)")
+     :doc "Returns a map with the keys mapped to the corresponding vals."
+     :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
                  "(zipmap [:a :b :c] [1 2 3 4 5])") }
 
-   zipmap [keys vals]
+  zipmap [keys vals]
 
   (loop [omap (ordered-map)
          ks (seq keys)
@@ -767,42 +785,45 @@
 
 
 (defn
-   ^{ :arglists '("(memoize f)")
-      :doc "Returns a memoized version of a referentially transparent function."
-      :examples (list (str/strip-margin
-                        "(do
-                        |   (def fibonacci
-                        |      (memoize
-                        |         (fn [n]
-                        |             (cond
-                        |                (<= n 0) 0
-                        |                (< n 2) 1
-                        |                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
-                        |
-                        |   (time (fibonacci 25)))" )) }
+  ^{ :arglists '("(memoize f)")
+     :doc "Returns a memoized version of a referentially transparent function."
+     :examples (list
+          """
+          (do
+            (def fibonacci
+              (memoize
+                (fn [n]
+                  (cond
+                    (<= n 0) 0
+                    (< n 2) 1
+                    :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
-   memoize
+            (time (fibonacci 25)))
+          """ ) }
 
-   [f]
-      (let [mem_ (atom {})]
-         (fn [& args]
-            (if-let [e (find @mem_ args)]
-               (val e)
-               (let [ret (apply f args)]
-                  (swap! mem_ assoc args ret)
-                  ret)))))
+  memoize
+
+  [f]
+    (let [mem_ (atom {})]
+      (fn [& args]
+        (if-let [e (find @mem_ args)]
+          (val e)
+          (let [ret (apply f args)]
+            (swap! mem_ assoc args ret)
+            ret)))))
 
 
 (defn
   ^{ :arglists '("(trampoline f)" "(trampoline f & args)")
-     :doc (str/strip-indent """\
-             trampoline can be used to convert algorithms requiring mutual
-             recursion without stack consumption. Calls f with supplied args,
-             if any. If f returns a fn, calls that fn with no arguments, and
-             continues to repeat, until the return value is not a fn, then
-             returns that non-fn value. Note that if you want to return a fn
-             as a final value, you must wrap it in some data structure and
-             unpack it after trampoline returns.""")}
+     :doc """
+          trampoline can be used to convert algorithms requiring mutual
+          recursion without stack consumption. Calls f with supplied args,
+          if any. If f returns a fn, calls that fn with no arguments, and
+          continues to repeat, until the return value is not a fn, then
+          returns that non-fn value. Note that if you want to return a fn
+          as a final value, you must wrap it in some data structure and
+          unpack it after trampoline returns.
+          """ }
 
   trampoline
 
