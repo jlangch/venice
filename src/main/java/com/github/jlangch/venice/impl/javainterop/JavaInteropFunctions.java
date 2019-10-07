@@ -23,11 +23,19 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
@@ -36,6 +44,7 @@ import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -239,6 +248,81 @@ public class JavaInteropFunctions {
 	    private static final long serialVersionUID = -1848883965231344442L;
 	}
 
+	public static class DescribeJavaClassFn extends AbstractJavaFn {
+		public DescribeJavaClassFn() {
+			super(
+				"describe-class", 
+				VncFunction
+					.meta()
+					.arglists("(describe-class class)")
+					.doc("Describes a Java class.")
+					.examples("(describe :java.util.ArrayList)")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity("describe-class", args, 1);
+				
+			final Class<?> clazz = JavaInteropUtil.toClass(
+										args.first(), 
+										Namespaces.getCurrentNamespace().getJavaImports());
+			
+			VncHashMap map = new VncHashMap();
+			
+			map = map.assoc(
+						new VncKeyword("constructors"),
+						new VncList(
+								ReflectionUtil
+									.getPublicConstructors(clazz)
+									.stream()
+									.map(c -> mapConstructor(c))
+									.collect(Collectors.toList())));
+
+			map = map.assoc(
+					new VncKeyword("methods"),
+					new VncList()
+							.addAllAtEnd(
+								new VncList(
+									ReflectionUtil
+										.getAllPublicInstanceMethods(clazz, true)
+										.stream()
+										.filter(m -> !skippedFn.contains(m.getName()))
+										.map(m -> mapMethod(m))
+										.collect(Collectors.toList())))
+							.addAllAtEnd(
+									new VncList(
+										ReflectionUtil
+											.getAllPublicStaticMethods(clazz, true)
+											.stream()
+											.filter(m -> !skippedFn.contains(m.getName()))
+											.map(m -> mapMethod(m))
+											.collect(Collectors.toList()))));
+
+			map = map.assoc(
+					new VncKeyword("fields"),
+					new VncList()
+						.addAllAtEnd(
+							new VncList(
+								ReflectionUtil
+									.getPublicInstanceFields(clazz)
+									.stream()
+									.map(m -> mapField(m))
+									.collect(Collectors.toList())))
+						.addAllAtEnd(
+							new VncList(
+								ReflectionUtil
+									.getPublicStaticFields(clazz)
+									.stream()
+									.map(m -> mapField(m))
+									.collect(Collectors.toList()))));
+			
+			return map;
+		}
+
+	    private static final long serialVersionUID = -1848883965231344442L;
+	}
+
 	public static class JavaObjQFn extends AbstractJavaFn {
 		public JavaObjQFn() {
 			super(
@@ -279,9 +363,10 @@ public class JavaInteropFunctions {
 			if (Types.isVncJavaObject(args.first(), Enumeration.class)) {
 				final Enumeration<?> e = (Enumeration<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
 				final List<VncVal> list = StreamUtil
-												 .stream(e)
-												 .map(v -> JavaInteropUtil.convertToVncVal(v))
-												 .collect(Collectors.toList());
+											 .stream(e)
+											 .map(v -> JavaInteropUtil.convertToVncVal(v))
+											 .collect(Collectors.toList());
+				
 				return new VncList(list); 
 			}
 			else {
@@ -377,6 +462,60 @@ public class JavaInteropFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
 	
+	private static VncHashMap mapField(final Field f) {
+		return new VncHashMap()
+				.assoc(new VncKeyword(":name"), new VncKeyword(f.getName()))
+				.assoc(new VncKeyword(":type"), new VncKeyword(f.getType().getName()))
+				.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(f) ? Constants.True : Constants.False);
+	}
+	
+	private static VncHashMap mapMethod(final Method m) {
+		final Parameter[] params = m.getParameters();
+		final Type[] types = m.getGenericParameterTypes();
+		final Type ret = m.getGenericReturnType();
+
+		VncHashMap map = new VncHashMap();
+		for(int ii=0; ii<params.length; ii++) {
+			map = map.assoc(
+					new VncKeyword(params[ii].getName()), 
+					new VncKeyword(types[ii].getTypeName()));
+		}
+		
+		return new VncHashMap()
+			.assoc(new VncKeyword(":name"), new VncKeyword(m.getName()))
+			.assoc(new VncKeyword(":params"), map)
+			.assoc(new VncKeyword(":return"), new VncKeyword(ret.getTypeName()))
+			.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(m) ? Constants.True : Constants.False);
+	}
+	
+	private static VncHashMap mapConstructor(final Constructor<?> c) {
+		final Parameter[] params = c.getParameters();
+		final Type[] types = c.getGenericParameterTypes();
+		
+		if (params.length == 0) {
+			return new VncHashMap()
+					.assoc(new VncKeyword(":default"), Constants.Nil);
+		}
+		else {
+			VncHashMap map = new VncHashMap();
+			for(int ii=0; ii<params.length; ii++) {
+				map = map.assoc(new VncKeyword(":name"), new VncKeyword(params[ii].getName()))
+						 .assoc(new VncKeyword(":type"), new VncKeyword(types[ii].getTypeName()));
+			}
+			return map;
+		}
+	}
+
+	private static Set<String> skippedFn = new HashSet<>(Arrays.asList(
+													"clone",
+													"equals",
+													"hashCode",
+													"notify",
+													"notifyAll",
+													"getClass",
+													"toString",
+													"wait"));
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -388,6 +527,7 @@ public class JavaInteropFunctions {
 					.add(new ProxifyFn())
 					.add(new SupersFn())
 					.add(new BasesFn())
+					.add(new DescribeJavaClassFn())
 					.add(new JavaClassFn())
 					.add(new JavaObjQFn())
 					.add(new JavaEnumToListFn())

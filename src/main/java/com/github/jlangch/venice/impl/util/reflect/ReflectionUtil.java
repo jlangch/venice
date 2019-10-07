@@ -280,6 +280,20 @@ public class ReflectionUtil {
 	}
 
 	public static List<Constructor<?>> getPublicConstructors(
+			final Class<?> type
+	) {
+		final List<Constructor<?>> constructors = new ArrayList<>();
+		
+		for(Constructor<?> c : type.getDeclaredConstructors()) {
+			if (Modifier.isPublic(c.getModifiers())) {
+				constructors.add(c);
+			}
+		}
+		
+		return constructors;
+	}
+
+	public static List<Constructor<?>> getPublicConstructors(
 			final Class<?> type, final int numArgs
 	) {
 		final List<Constructor<?>> constructors = new ArrayList<>();
@@ -394,6 +408,14 @@ public class ReflectionUtil {
 				.orElse(null);
 	}
 
+	public static List<Field> getPublicStaticFields(final Class<?> clazz) {
+		return Arrays
+				.stream(clazz.getFields())
+				.filter(f -> isPublic(f))
+				.filter(f -> isStatic(f))
+				.collect(Collectors.toList());
+	}
+
 	public static Field getPublicStaticField(final Class<?> clazz, String name) {
 		return Arrays
 				.stream(clazz.getFields())
@@ -402,6 +424,14 @@ public class ReflectionUtil {
 				.filter(f -> isStatic(f))
 				.findFirst()
 				.orElse(null);
+	}
+
+	public static List<Field> getPublicInstanceFields(final Class<?> clazz) {
+		return Arrays
+				.stream(clazz.getFields())
+				.filter(f -> isPublic(f))
+				.filter(f -> !isStatic(f))
+				.collect(Collectors.toList());
 	}
 
 	public static Field getPublicInstanceField(final Class<?> clazz, String name) {
