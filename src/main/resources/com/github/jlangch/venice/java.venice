@@ -82,3 +82,38 @@
       (println)
       (println "[Fields static]")
       (docoll #(println "  " (:name %) "->" (:type %)) fields-static))))
+
+
+(defn
+  ^{ :arglists '("(describe-bean class)")
+     :doc "Describes a Java bean."
+     :examples '("(describe-bean :java.util.String)") }
+
+  describe [clazz]
+
+  (let [info    (describe-class clazz)
+        ctors   (:constructors info)
+        bean (:bean info)
+        getters (filter #(true? (:getter %)) bean)
+        setters (filter #(true? (:setter %)) bean)]
+
+    (when (pos? (count ctors))
+      (println "[Constructors]")
+      (docoll (fn [c]
+                (println "  constructor")
+                (when (:default c)
+                   (println "     default"))
+                (docoll (fn [[n t]]
+                          (println "     " (name n) "->" t))
+                        (seq (:params c))))
+              ctors))
+
+    (when (pos? (count getters))
+      (println)
+      (println "[Getters]")
+      (docoll #(println "  " (name (:property %)) "->" (:type %)) getters))
+
+    (when (pos? (count setters))
+      (println)
+      (println "[Setters]")
+      (docoll #(println "  " (name (:property %)) "->" (:type %)) setters))))
