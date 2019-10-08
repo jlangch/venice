@@ -317,6 +317,24 @@ public class JavaInteropFunctions {
 									.map(m -> mapField(m))
 									.collect(Collectors.toList()))));
 			
+			map = map.assoc(
+					new VncKeyword("bean"),
+					new VncList()
+						.addAllAtEnd(
+							new VncList(
+								ReflectionUtil
+									.getBeanGetterMethods(clazz)
+									.stream()
+									.map(m -> mapBeanGetter(m))
+									.collect(Collectors.toList())))
+						.addAllAtEnd(
+							new VncList(
+								ReflectionUtil
+									.getBeanSetterMethods(clazz)
+									.stream()
+									.map(m -> mapBeanSetter(m))
+									.collect(Collectors.toList()))));
+			
 			return map;
 		}
 
@@ -475,10 +493,10 @@ public class JavaInteropFunctions {
 		final Type ret = m.getGenericReturnType();
 
 		return new VncHashMap()
-			.assoc(new VncKeyword(":name"), new VncKeyword(m.getName()))
-			.assoc(new VncKeyword(":params"), mapParams(params, types))
-			.assoc(new VncKeyword(":return"), new VncKeyword(ret.getTypeName()))
-			.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(m) ? Constants.True : Constants.False);
+				.assoc(new VncKeyword(":name"), new VncKeyword(m.getName()))
+				.assoc(new VncKeyword(":params"), mapParams(params, types))
+				.assoc(new VncKeyword(":return"), new VncKeyword(ret.getTypeName()))
+				.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(m) ? Constants.True : Constants.False);
 	}
 	
 	private static VncHashMap mapConstructor(final Constructor<?> c) {
@@ -498,6 +516,28 @@ public class JavaInteropFunctions {
 					 	new VncKeyword(types[ii].getTypeName()));
 		}
 		return map;
+	}
+	
+	private static VncHashMap mapBeanGetter(final Method m) {
+		final String name = ReflectionUtil.getBeanPropertyName(m);
+				
+		final Type type = m.getGenericReturnType();
+
+		return new VncHashMap()
+				.assoc(new VncKeyword(":property"), new VncKeyword(name))
+				.assoc(new VncKeyword(":type"),new VncKeyword(type.getTypeName()))
+				.assoc(new VncKeyword(":getter"), Constants.True);
+	}
+	
+	private static VncHashMap mapBeanSetter(final Method m) {
+		final String name = ReflectionUtil.getBeanPropertyName(m);
+
+		final Type type = m.getGenericParameterTypes()[0];
+
+		return new VncHashMap()
+				.assoc(new VncKeyword(":property"), new VncKeyword(name))
+				.assoc(new VncKeyword(":type"),new VncKeyword(type.getTypeName()))
+				.assoc(new VncKeyword(":setter"), Constants.True);
 	}
 
 	private static Set<String> skippedFn = new HashSet<>(Arrays.asList(
