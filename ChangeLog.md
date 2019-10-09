@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - function `=`. Returns true if both operands have equivalent type and 
   value. `(= 1 1) ; true`, `(= 1 1.0) ;  false`, `(== 1 1.0) ;  true`
 
+### Fixed
+
+- fixed java interop bean setters
+
 
 
 ## [1.7.4] - 2019-10-03
