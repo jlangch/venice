@@ -25,13 +25,13 @@
 (ns java)
 
 (defn
-  ^{ :arglists '("(describe class)")
+  ^{ :arglists '("(describe obj)")
      :doc "Describes a Java class."
      :examples '("(describe :java.util.ArrayList)") }
 
-  describe [clazz]
+  describe [obj]
 
-  (let [info    (describe-class clazz)
+  (let [info    (describe-class obj)
         ctors   (:constructors info)
         methods (:methods info)
         methods-instance (filter #(false? (:static %)) (:methods info))
@@ -85,15 +85,15 @@
 
 
 (defn
-  ^{ :arglists '("(describe-bean class)")
+  ^{ :arglists '("(describe-bean obj)")
      :doc "Describes a Java bean."
      :examples '("(describe-bean :java.util.String)") }
 
-  describe [clazz]
+  describe-bean [obj]
 
-  (let [info    (describe-class clazz)
+  (let [info    (describe-class obj)
         ctors   (:constructors info)
-        bean (:bean info)
+        bean    (:bean info)
         getters (filter #(true? (:getter %)) bean)
         setters (filter #(true? (:setter %)) bean)]
 

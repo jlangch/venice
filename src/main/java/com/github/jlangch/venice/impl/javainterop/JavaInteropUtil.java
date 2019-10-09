@@ -215,14 +215,17 @@ public class JavaInteropUtil {
 		}
 	}
 	
-	public static Class<?> toClass(final VncVal vClass, final JavaImports javaImports) {
-		if (Types.isVncJavaObject(vClass, Class.class)) {
-			return (Class<?>)((VncJavaObject)vClass).getDelegate();
+	public static Class<?> toClass(final VncVal val, final JavaImports javaImports) {
+		if (Types.isVncJavaObject(val, Class.class)) {
+			return (Class<?>)((VncJavaObject)val).getDelegate();
+		}
+		else if (Types.isVncJavaObject(val)) {
+			return ((VncJavaObject)val).getDelegate().getClass();
 		}
 		else {
-			final String className = Types.isVncKeyword(vClass)
-										? Coerce.toVncKeyword(vClass).getValue()
-										: Coerce.toVncString(vClass).getValue();
+			final String className = Types.isVncKeyword(val)
+										? Coerce.toVncKeyword(val).getValue()
+										: Coerce.toVncString(val).getValue();
 	
 			return ReflectionUtil.classForName(javaImports.resolveClassName(className));
 		}

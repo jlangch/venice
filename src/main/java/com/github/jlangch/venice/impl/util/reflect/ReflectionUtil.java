@@ -374,20 +374,29 @@ public class ReflectionUtil {
 	}
 
 	public static String getBeanPropertyName(final Method method) {
-		if (!isBeanGetterMethod(method)) {
-			throw new IllegalArgumentException("The passed method is not a bean property accessor");
+		final String name = method.getName();
+
+		if (isBeanGetterMethod(method)) {
+			if (name.startsWith("get")) {
+				final String p = name.substring(3);
+				return String.valueOf(Character.toLowerCase(p.charAt(0))) + p.substring(1);
+			}
+			else if (name.startsWith("is")) {
+				final String p = name.substring(2);
+				return String.valueOf(Character.toLowerCase(p.charAt(0)))  + p.substring(1);
+			}
+		}
+		else if (isBeanSetterMethod(method)) {
+			if (name.startsWith("set")) {
+				final String p = name.substring(3);
+				return String.valueOf(Character.toLowerCase(p.charAt(0))) + p.substring(1);
+			}
 		}
 		
-		final String name = method.getName();
-		if (name.startsWith("get")) {
-			final String p = name.substring(3);
-			return String.valueOf(Character.toLowerCase(p.charAt(0))) + p.substring(1);
-		}
-		if (name.startsWith("is")) {
-			final String p = name.substring(2);
-			return String.valueOf(Character.toLowerCase(p.charAt(0)))  + p.substring(1);
-		}
-		return null;
+		throw new IllegalArgumentException(String.format(
+				"The method '%s'is not a bean property accessor of class '%s'",
+				name,
+				method.getDeclaringClass().getName()));
 	}	
 	
 	public static Method getBeanGetterMethod(final Class<?> clazz, final String propertyName) {
