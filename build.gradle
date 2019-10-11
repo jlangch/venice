@@ -42,7 +42,12 @@
 //   - src/main/java/com/github/jlangch/venice/Version
 //   - doc/maven-central.svg
 //   
-// Get the Gradle wrapper (Venice currently uses Gradle 5.2.1)
+// Upgrade Gradle wrapper
+//   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
+//   Upgrade:
+//      $> ./gradlew wrapper --gradle-version=5.6.2
+//
+// Get initial Gradle wrapper
 //   See https://guides.gradle.org/creating-new-gradle-builds/
 //
 //   Create and init a gradle project:

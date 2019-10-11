@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.7.5] - 2019-10-xx
+## [1.7.5] - 2019-10-10
 
 ### Added
 
@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - fixed java interop bean setters
+
+### Changed
+
+- build to Gradle 5.6.2
 
 
 
