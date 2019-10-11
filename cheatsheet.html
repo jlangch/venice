@@ -205,7 +205,7 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.4</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.5</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -249,7 +249,7 @@
                             
                             <tr>
                                 <td class="shrink">Compare</td>
-                                <td class="expand"><code><a href="#1028">==</a> <a href="#1029">!=</a> <a href="#1030">&lt;</a> <a href="#1031">&gt;</a> <a href="#1032">&lt;=</a> <a href="#1033">&gt;=</a> <a href="#1034">compare</a> </code></td>
+                                <td class="expand"><code><a href="#1028">==</a> <a href="#1029">=</a> <a href="#1030">&lt;</a> <a href="#1031">&gt;</a> <a href="#1032">&lt;=</a> <a href="#1033">&gt;=</a> <a href="#1034">compare</a> </code></td>
                             </tr>
                             
                             <tr>
@@ -1118,35 +1118,6 @@ public class Example {
                 
                  
                 
-                <div class="detail" id="1029">
-                    <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>!=</h1>
-                    
-                    <div class="arglists">
-                        <div class="arglist">
-                           
-                           <code>(!= x y)</code>
-                           
-                        </div>
-                    </div>
-                    
-                    <div class="descr">
-                        <code>Returns true if both operands do not have the equivalent type</code>
-                    </div>
-                    <div class="examples">
-                        <code>(!= 0 1)
-=&gt; true
-
-(!= 0 0)
-=&gt; false
-
-(!= 0 0.0)
-=&gt; true</code>
-                    </div>
-                </div>
-                
-                 
-                
                 <div class="detail" id="1357">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>#{}</h1>
@@ -1285,7 +1256,7 @@ public class Example {
                     </div>
                     <div class="examples">
                         <code>*version*
-=&gt; &quot;1.7.4&quot;</code>
+=&gt; &quot;1.7.5&quot;</code>
                     </div>
                 </div>
                 
@@ -1423,13 +1394,13 @@ public class Example {
 =&gt; 3
 
 (do
-   (def person
-        {:name &quot;Peter Meier&quot;
-         :address {:street &quot;Lindenstrasse 45&quot;
-                   :city &quot;Bern&quot;
-                   :zip 3000}})
+  (def person
+       {:name &quot;Peter Meier&quot;
+        :address {:street &quot;Lindenstrasse 45&quot;
+                  :city &quot;Bern&quot;
+                  :zip 3000}})
 
-   (-&gt; person :address :street)) 
+  (-&gt; person :address :street))
 =&gt; &quot;Lindenstrasse 45&quot;</code>
                     </div>
                 </div>
@@ -1458,7 +1429,7 @@ public class Example {
 (-&gt;&gt; [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
      (map (fn [x] (get x :b)))
      (filter (fn [x] (&gt; x 4)))
-     (map inc)))) 
+     (map inc))))
 =&gt; (7 9)</code>
                     </div>
                 </div>
@@ -1499,7 +1470,7 @@ public class Example {
 
 ;; invoke static method 
 (. :java.time.ZonedDateTime :now)
-=&gt; 2019-10-03T17:37:05.643+02:00[Europe/Zurich]
+=&gt; 2019-10-11T11:21:17.728+02:00[Europe/Zurich]
 
 ;; invoke static method 
 (. :java.lang.Math :min 10 20)
@@ -1630,6 +1601,38 @@ public class Example {
                 
                  
                 
+                <div class="detail" id="1029">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>=</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(= x y)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Returns true if both operands have equivalent type and value</code>
+                    </div>
+                    <div class="examples">
+                        <code>(= 0 0)
+=&gt; true
+
+(= 0 1)
+=&gt; false
+
+(= 0 0.0)
+=&gt; false
+
+(= 0 0.0M)
+=&gt; false</code>
+                    </div>
+                </div>
+                
+                 
+                
                 <div class="detail" id="1028">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>==</h1>
@@ -1643,7 +1646,7 @@ public class Example {
                     </div>
                     
                     <div class="descr">
-                        <code>Returns true if both operands have the equivalent type</code>
+                        <code>Returns true if both operands have equivalent value</code>
                     </div>
                     <div class="examples">
                         <code>(== 0 0)
@@ -1653,7 +1656,10 @@ public class Example {
 =&gt; false
 
 (== 0 0.0)
-=&gt; false</code>
+=&gt; true
+
+(== 0 0.0M)
+=&gt; true</code>
                     </div>
                 </div>
                 
@@ -2084,19 +2090,19 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                         <code>Binds name to expr, evaluates the first form in the lexical context of that binding, then binds name to that result, repeating for each successive form, returning the result of the last form. This allows a value to thread into any argument position.</code>
                     </div>
                     <div class="examples">
-                        <code>;allows to use arbitrary positioning of the argument
+                        <code>; allows to use arbitrary positioning of the argument
 (as-&gt; [:foo :bar] v
       (map name v)
       (first v)
       (str/subs v 1))
 =&gt; &quot;oo&quot;
 
-;allows the use of if statements in the thread
+; allows the use of if statements in the thread
 (as-&gt; {:a 1 :b 2} m
       (update m :a #(+ % 10))
       (if true
         (update m :b #(+ % 10))
-         m))
+        m))
 =&gt; {:a 11 :b 12}</code>
                     </div>
                 </div>
@@ -2755,10 +2761,10 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                     </div>
                     <div class="examples">
                         <code>(case (+ 1 9)
-   10  :ten
-   20  :twenty
-   30  :thirty
-   :dont-know)
+  10  :ten
+  20  :twenty
+  30  :thirty
+  :dont-know)
 =&gt; :ten</code>
                     </div>
                 </div>
@@ -2895,8 +2901,8 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                     </div>
                     <div class="examples">
                         <code>(comment
-   (println 1)
-   (println 5))
+  (println 1)
+  (println 5))
 =&gt; nil</code>
                     </div>
                 </div>
@@ -3042,7 +3048,7 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                     </div>
                     <div class="examples">
                         <code>(complement even?)
-=&gt; function anonymous-951af71e-e293-4a7f-9727-ce10fa767771 {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-d827c66c-b637-40ec-b6d7-1314bfd5cc37 {visibility :public, ns &quot;core&quot;}
 
 (filter (complement even?) &apos;(1 2 3 4))
 =&gt; (1 3)</code>
@@ -3114,10 +3120,10 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                     </div>
                     <div class="examples">
                         <code>(let [n 5]
-     (cond
-        (&lt; n 0) &quot;negative&quot;
-        (&gt; n 0) &quot;positive&quot;
-        :else &quot;zero&quot;))
+  (cond
+    (&lt; n 0) &quot;negative&quot;
+    (&gt; n 0) &quot;positive&quot;
+    :else &quot;zero&quot;))
 =&gt; &quot;positive&quot;</code>
                     </div>
                 </div>
@@ -3139,8 +3145,8 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                     <div class="descr">
                         <code>Takes a binary predicate, an expression, and a set of clauses.
 Each clause can take the form of either:
-   test-expr result-expr
-   test-expr :&gt;&gt; result-fn
+    test-expr result-expr
+    test-expr :&gt;&gt; result-fn
 Note :&gt;&gt; is an ordinary keyword.
 For each clause, (pred test-expr expr) is evaluated. If it returns
 logical true, the clause is a match. If a binary clause matches, the
@@ -3150,7 +3156,7 @@ predicate as its argument, the result of that call being the return
 value of condp. A single default expression can follow the clauses,
 and its value will be returned if no clause matches. If no default
 expression is provided and no clause matches, a VncException
-is thrown. </code>
+is thrown.</code>
                     </div>
                     <div class="examples">
                         <code>(condp some [1 2 3 4]
@@ -3338,7 +3344,10 @@ is thrown. </code>
                     </div>
                     
                     <div class="descr">
-                        <code>Returns a new function to decrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is base64 decoded, decrypted, and returned as string. If a bytebuf is passed the decrypted bytebuf is returned.
+                        <code>Returns a new function to decrypt a string or a bytebuf given the
+algorithm and passphrase. If a string is passed it is base64 decoded,
+decrypted, and returned as string. If a bytebuf is passed the decrypted
+bytebuf is returned.
 Supported algorithms: &quot;DES&quot;, &quot;3DES&quot;, &quot;AES256&quot;
 
 Options:
@@ -3355,7 +3364,8 @@ Options:
   (def decrypt (crypt/encrypt &quot;3DES&quot; &quot;secret&quot; :url-safe true))
   (decrypt &quot;ndmW1NLsDHA&quot;) ; =&gt; &quot;hello&quot;
   (decrypt &quot;KPYjndkZ8vM&quot;) ; =&gt; &quot;world&quot;
-  (decrypt  (bytebuf [234 220 237 189 12 176 242 147]))) 
+  (decrypt  (bytebuf [234 220 237 189 12 176 242 147])))
+ 
 =&gt; [192 19 255 241 144 162 159 77 53 176 196 254 163 194 211 219]</code>
                     </div>
                 </div>
@@ -3375,7 +3385,10 @@ Options:
                     </div>
                     
                     <div class="descr">
-                        <code>Returns a new function to encrypt a string or a bytebuf given the algorithm and passphrase. If a string is passed it is encrypted and returned as a base64 encoded string. If a bytebuf is passed the encryped bytebuf is returned.
+                        <code>Returns a new function to encrypt a string or a bytebuf given
+the algorithm and passphrase. If a string is passed it is
+encrypted and returned as a base64 encoded string. If a bytebuf
+is passed the encryped bytebuf is returned.
 Supported algorithms: &quot;DES&quot;, &quot;3DES&quot;, &quot;AES256&quot;
 
 Options:
@@ -3394,7 +3407,8 @@ Options:
   (def encrypt (crypt/encrypt &quot;3DES&quot; &quot;secret&quot; :url-safe true))
   (encrypt &quot;hello&quot;) ; =&gt; &quot;ndmW1NLsDHA&quot;
   (encrypt &quot;world&quot;) ; =&gt; &quot;KPYjndkZ8vM&quot;
-  (encrypt (bytebuf [1 2 3 4 5]))) 
+  (encrypt (bytebuf [1 2 3 4 5])))
+ 
 =&gt; [234 220 237 189 12 176 242 147]</code>
                     </div>
                 </div>
@@ -3421,7 +3435,8 @@ Options:
   (load-module :crypt)
   (str/bytebuf-to-hex
     (crypt/md5-hash &quot;hello world&quot;)
-    :upper)) 
+    :upper))
+ 
 =&gt; &quot;5EB63BBBE01EEED093CB22BB8F5ACDC3&quot;</code>
                     </div>
                 </div>
@@ -3450,14 +3465,15 @@ Options:
   (load-module :crypt)
   (str/bytebuf-to-hex
     (crypt/pbkdf2-hash &quot;hello world&quot; &quot;-salt-&quot;)
-    :upper)) 
+    :upper))
+ 
 =&gt; &quot;54F2B4411E8817C2A0743B2A7DD7EAE5AA3F748D1DDDCE00766380914AFFE995&quot;
 
 (do
   (load-module :crypt)
   (str/bytebuf-to-hex
     (crypt/pbkdf2-hash &quot;hello world&quot; &quot;-salt-&quot; 1000 256)
-    :upper)) 
+    :upper))
 =&gt; &quot;54F2B4411E8817C2A0743B2A7DD7EAE5AA3F748D1DDDCE00766380914AFFE995&quot;</code>
                     </div>
                 </div>
@@ -3486,14 +3502,15 @@ Options:
   (load-module :crypt)
   (str/bytebuf-to-hex
     (crypt/sha512-hash &quot;hello world&quot;)
-    :upper)) 
+    :upper))
+ 
 =&gt; &quot;309ECC489C12D6EB4CC40F50C902F2B4D0ED77EE511A7C7A9BCD3CA86D4CD86F989DD35BC5FF499670DA34255B45B0CFD830E81F605DCF7DC5542E93AE9CD76F&quot;
 
 (do
   (load-module :crypt)
-  (str/bytebuf-to-hex
-    (crypt/sha512-hash &quot;hello world&quot; &quot;-salt-&quot;)
-    :upper)) 
+    (str/bytebuf-to-hex
+      (crypt/sha512-hash &quot;hello world&quot; &quot;-salt-&quot;)
+      :upper))
 =&gt; &quot;316EBB70239D9480E91089D5D5BC6428879DF6E5CFB651B39D7AFC27DFF259418105C6D78F307FC6197531FBD37C4E8103095F186B19FC33C93D60282F3314A2&quot;</code>
                     </div>
                 </div>
@@ -3517,7 +3534,7 @@ Options:
                     </div>
                     <div class="examples">
                         <code>(current-time-millis)
-=&gt; 1570117025618</code>
+=&gt; 1570785677706</code>
                     </div>
                 </div>
                 
@@ -4319,7 +4336,7 @@ Test...
                     </div>
                     <div class="examples">
                         <code>(dobench 10 (+ 1 1))
-=&gt; (5647 1678 1931 4458 1485 1484 1366 1170 3963 1188)</code>
+=&gt; (6975 1461 1586 1267 1097 1542 3872 1028 756 713)</code>
                     </div>
                 </div>
                 
@@ -5666,7 +5683,7 @@ After 300ms: done=true
                     </div>
                     <div class="examples">
                         <code>(host-address)
-=&gt; &quot;10.0.1.8&quot;</code>
+=&gt; &quot;172.20.10.2&quot;</code>
                     </div>
                 </div>
                 
@@ -5764,8 +5781,8 @@ If test is true, evaluates then with binding-form bound to the value of test, if
                     </div>
                     <div class="examples">
                         <code>(if-let [value (* 100 2)]
-    (str &quot;The expression is true. value=&quot; value)
-    (str &quot;The expression is false.&quot;))
+  (str &quot;The expression is true. value=&quot; value)
+  (str &quot;The expression is false.&quot;))
 =&gt; &quot;The expression is true. value=200&quot;</code>
                     </div>
                 </div>
@@ -7300,7 +7317,8 @@ a file, a string (file path) or an InputStream.</code>
                         <code>Returns a Java InputStream from the uri.</code>
                     </div>
                     <div class="examples">
-                        <code></code>
+                        <code>(-&gt; (io/uri-stream &quot;https://www.w3schools.com/xml/books.xml&quot;) 
+    (io/slurp-stream :binary false :encoding :utf-8))             </code>
                     </div>
                 </div>
                 
@@ -8291,8 +8309,8 @@ last of which will be treated as a collection.</code>
                     </div>
                     <div class="examples">
                         <code>(do
-   (load-classpath-file &quot;com/github/jlangch/venice/test.venice&quot;)
-   (test/test-fn &quot;hello&quot;))
+  (load-classpath-file &quot;com/github/jlangch/venice/test.venice&quot;)
+  (test/test-fn &quot;hello&quot;))
 =&gt; &quot;test: hello&quot;</code>
                     </div>
                 </div>
@@ -8337,8 +8355,7 @@ last of which will be treated as a collection.</code>
                         <code>Loads a Venice predefined extension module.</code>
                     </div>
                     <div class="examples">
-                        <code>(do
-   (load-module :math))
+                        <code>(load-module :math))
 =&gt; :math</code>
                     </div>
                 </div>
@@ -8362,8 +8379,8 @@ last of which will be treated as a collection.</code>
                     </div>
                     <div class="examples">
                         <code>(do
-   (load-string &quot;(def x 1)&quot;)
-   (+ x 2))
+  (load-string &quot;(def x 1)&quot;)
+  (+ x 2))
 =&gt; 3</code>
                     </div>
                 </div>
@@ -8983,16 +9000,16 @@ last of which will be treated as a collection.</code>
                     </div>
                     <div class="examples">
                         <code>(do
-   (def fibonacci
-      (memoize
-         (fn [n]
-             (cond
-                (&lt;= n 0) 0
-                (&lt; n 2) 1
-                :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
+  (def fibonacci
+    (memoize
+      (fn [n]
+        (cond
+          (&lt;= n 0) 0
+          (&lt; n 2) 1
+          :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
-   (time (fibonacci 25)))
-Elapsed time: 10.93 ms
+  (time (fibonacci 25)))
+Elapsed time: 8.65 ms
 =&gt; 75025</code>
                     </div>
                 </div>
@@ -9262,7 +9279,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     </div>
                     <div class="examples">
                         <code>(nano-time)
-=&gt; 108359928889496</code>
+=&gt; 32751174879078</code>
                     </div>
                 </div>
                 
@@ -10277,8 +10294,8 @@ After a test run metrics data can be printed with (println (prof :data-formatted
                     </div>
                     <div class="examples">
                         <code>(do
-   (perf (+ 120 200) 12000 1000)
-   (println (prof :data-formatted)))</code>
+  (perf (+ 120 200) 12000 1000)
+  (println (prof :data-formatted)))</code>
                     </div>
                 </div>
                 
@@ -10301,7 +10318,7 @@ After a test run metrics data can be printed with (println (prof :data-formatted
                     </div>
                     <div class="examples">
                         <code>(pid)
-=&gt; &quot;14135&quot;</code>
+=&gt; &quot;3270&quot;</code>
                     </div>
                 </div>
                 
@@ -10832,10 +10849,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-double)
-=&gt; 0.7194667403725534
+=&gt; 0.6108374401806165
 
 (rand-double 100.0)
-=&gt; 75.25843059114209</code>
+=&gt; 75.49149479661568</code>
                     </div>
                 </div>
                 
@@ -10861,10 +10878,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-gaussian)
-=&gt; 0.983448615820711
+=&gt; -0.8130958465909607
 
 (rand-gaussian 0.0 5.0)
-=&gt; -6.18516977564909</code>
+=&gt; -1.0472297592147497</code>
                     </div>
                 </div>
                 
@@ -10890,10 +10907,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-long)
-=&gt; 7669498785380988154
+=&gt; 1570394851392566513
 
 (rand-long 100)
-=&gt; 99</code>
+=&gt; 79</code>
                     </div>
                 </div>
                 
@@ -11241,9 +11258,13 @@ nil
                         <code>Returns all regex matches</code>
                     </div>
                     <div class="examples">
-                        <code>(let [m (regex/matcher &quot;[0-9]+&quot; &quot;672-345-456-3212&quot;)]  
-   (regex/find-all m)))                                     
-=&gt; (&quot;672&quot; &quot;345&quot; &quot;456&quot; &quot;3212&quot;)</code>
+                        <code>(-&gt;&gt; (regex/matcher &quot;\\d+&quot; &quot;672-345-456-3212&quot;) 
+     (regex/find-all)))                                 
+=&gt; (&quot;672&quot; &quot;345&quot; &quot;456&quot; &quot;3212&quot;)
+
+(-&gt;&gt; (regex/matcher &quot;([^\&quot;]\\S*|\&quot;.+?\&quot;)\\s*&quot; &quot;1 2 \&quot;3 4\&quot; 5&quot;) 
+     (regex/find-all)))                                 
+=&gt; (&quot;1 &quot; &quot;2 &quot; &quot;\&quot;3 4\&quot; &quot; &quot;5&quot;)</code>
                     </div>
                 </div>
                 
@@ -11603,12 +11624,12 @@ nil
                     </div>
                     <div class="examples">
                         <code>(repeatedly 5 #(rand-long 11))
-=&gt; (7 2 4 7 8)
+=&gt; (4 2 0 3 8)
 
 ;; compare with repeat, which only calls the &apos;rand-long&apos;
 ;; function once, repeating the value five times. 
 (repeat 5 (rand-long 11))
-=&gt; (5 5 5 5 5)</code>
+=&gt; (8 8 8 8 8)</code>
                     </div>
                 </div>
                 
@@ -12381,13 +12402,13 @@ sh returns a map of
                     </div>
                     <div class="examples">
                         <code>(shuffle &apos;(1 2 3 4 5 6))
-=&gt; (3 5 6 1 2 4)
+=&gt; (6 5 2 4 3 1)
 
 (shuffle [1 2 3 4 5 6])
-=&gt; [4 6 2 1 5 3]
+=&gt; [1 5 2 3 4 6]
 
 (shuffle &quot;abcdef&quot;)
-=&gt; (&quot;c&quot; &quot;b&quot; &quot;f&quot; &quot;d&quot; &quot;a&quot; &quot;e&quot;)</code>
+=&gt; (&quot;d&quot; &quot;e&quot; &quot;c&quot; &quot;b&quot; &quot;a&quot; &quot;f&quot;)</code>
                     </div>
                 </div>
                 
@@ -12563,7 +12584,7 @@ Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. </code>
 =&gt; [1 2 3 4 5 6]
 
 ; reversed
-(sort (comp (partial * -1) compare) [3 2 5 4 1 6])
+(sort (comp - compare) [3 2 5 4 1 6])
 =&gt; [6 5 4 3 2 1]
 
 (sort {:c 3 :a 1 :b 2})
@@ -12591,25 +12612,28 @@ Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. </code>
                         <code>Returns a sorted sequence of the items in coll, where the sort order is determined by comparing (keyfn item).  If no comparator is supplied, uses compare.</code>
                     </div>
                     <div class="examples">
-                        <code>(sort-by count [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])
+                        <code>(sort-by :id [{:id 2 :name &quot;Smith&quot;} {:id 1 :name &quot;Jones&quot;} ])
+=&gt; [{:name &quot;Jones&quot; :id 1} {:name &quot;Smith&quot; :id 2}]
+
+(sort-by count [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])
 =&gt; [&quot;c&quot; &quot;bb&quot; &quot;aaa&quot;]
 
 ; reversed
-(sort-by count (comp (partial * -1) compare) [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])
+(sort-by count (comp - compare) [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;])
 =&gt; [&quot;aaa&quot; &quot;bb&quot; &quot;c&quot;]
 
 (sort-by first [[1 2] [3 4] [2 3]])
 =&gt; [[1 2] [2 3] [3 4]]
 
 ; reversed
-(sort-by first (comp (partial * -1) compare) [[1 2] [3 4] [2 3]])
+(sort-by first (comp - compare) [[1 2] [3 4] [2 3]])
 =&gt; [[3 4] [2 3] [1 2]]
 
-(sort-by (fn [x] (get x :rank)) [{:rank 2} {:rank 3} {:rank 1}])
+(sort-by :rank [{:rank 2} {:rank 3} {:rank 1}])
 =&gt; [{:rank 1} {:rank 2} {:rank 3}]
 
 ; reversed
-(sort-by (fn [x] (get x :rank)) (comp (partial * -1) compare) [{:rank 2} {:rank 3} {:rank 1}])
+(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])
 =&gt; [{:rank 3} {:rank 2} {:rank 1}]</code>
                     </div>
                 </div>
@@ -14711,7 +14735,7 @@ line3&quot;)
                     </div>
                     <div class="examples">
                         <code>(time (+ 100 200))
-Elapsed time: 13.06 us
+Elapsed time: 16.69 us
 =&gt; 300</code>
                     </div>
                 </div>
@@ -14783,7 +14807,7 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/date)
-=&gt; Thu Oct 03 17:36:54 CEST 2019</code>
+=&gt; Fri Oct 11 11:21:06 CEST 2019</code>
                     </div>
                 </div>
                 
@@ -14829,13 +14853,13 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/day-of-month (time/local-date))
-=&gt; 3
+=&gt; 11
 
 (time/day-of-month (time/local-date-time))
-=&gt; 3
+=&gt; 11
 
 (time/day-of-month (time/zoned-date-time))
-=&gt; 3</code>
+=&gt; 11</code>
                     </div>
                 </div>
                 
@@ -14858,13 +14882,13 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/day-of-week (time/local-date))
-=&gt; :THURSDAY
+=&gt; :FRIDAY
 
 (time/day-of-week (time/local-date-time))
-=&gt; :THURSDAY
+=&gt; :FRIDAY
 
 (time/day-of-week (time/zoned-date-time))
-=&gt; :THURSDAY</code>
+=&gt; :FRIDAY</code>
                     </div>
                 </div>
                 
@@ -14887,13 +14911,13 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/day-of-year (time/local-date))
-=&gt; 276
+=&gt; 284
 
 (time/day-of-year (time/local-date-time))
-=&gt; 276
+=&gt; 284
 
 (time/day-of-year (time/zoned-date-time))
-=&gt; 276</code>
+=&gt; 284</code>
                     </div>
                 </div>
                 
@@ -14970,19 +14994,19 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)
-=&gt; &quot;03-10-2019&quot;
+=&gt; &quot;11-10-2019&quot;
 
 (time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)
-=&gt; &quot;2019-10-03T17:36:55.110CEST&quot;
+=&gt; &quot;2019-10-11T11:21:07.126CEST&quot;
 
 (time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)
-=&gt; &quot;2019-10-03T17:36:55.114+02:00&quot;
+=&gt; &quot;2019-10-11T11:21:07.13+02:00&quot;
 
 (time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))
-=&gt; &quot;2019-10-03T17:36:55.119CEST&quot;
+=&gt; &quot;2019-10-11T11:21:07.133CEST&quot;
 
 (time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))
-=&gt; &quot;2019-10-03T17:36:55.122+02:00&quot;</code>
+=&gt; &quot;2019-10-11T11:21:07.136+02:00&quot;</code>
                     </div>
                 </div>
                 
@@ -15043,10 +15067,10 @@ Elapsed time: 13.06 us
 =&gt; 0
 
 (time/hour (time/local-date-time))
-=&gt; 17
+=&gt; 11
 
 (time/hour (time/zoned-date-time))
-=&gt; 17</code>
+=&gt; 11</code>
                     </div>
                 </div>
                 
@@ -15221,7 +15245,7 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/local-date)
-=&gt; 2019-10-03
+=&gt; 2019-10-11
 
 (time/local-date 2018 8 1)
 =&gt; 2018-08-01
@@ -15233,7 +15257,7 @@ Elapsed time: 13.06 us
 =&gt; 2013-08-01
 
 (time/local-date (. :java.util.Date :new))
-=&gt; 2019-10-03</code>
+=&gt; 2019-10-11</code>
                     </div>
                 </div>
                 
@@ -15287,7 +15311,7 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/local-date-time)
-=&gt; 2019-10-03T17:36:54.871
+=&gt; 2019-10-11T11:21:06.893
 
 (time/local-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00
@@ -15305,7 +15329,7 @@ Elapsed time: 13.06 us
 =&gt; 2013-08-01T02:00
 
 (time/local-date-time (. :java.util.Date :new))
-=&gt; 2019-10-03T17:36:54.892</code>
+=&gt; 2019-10-11T11:21:06.917</code>
                     </div>
                 </div>
                 
@@ -15400,13 +15424,13 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/minus (time/local-date) :days 2)
-=&gt; 2019-10-01
+=&gt; 2019-10-09
 
 (time/minus (time/local-date-time) :days 2)
-=&gt; 2019-10-01T17:36:55.183
+=&gt; 2019-10-09T11:21:07.192
 
 (time/minus (time/zoned-date-time) :days 2)
-=&gt; 2019-10-01T17:36:55.187+02:00[Europe/Zurich]</code>
+=&gt; 2019-10-09T11:21:07.196+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -15432,10 +15456,10 @@ Elapsed time: 13.06 us
 =&gt; 0
 
 (time/minute (time/local-date-time))
-=&gt; 36
+=&gt; 21
 
 (time/minute (time/zoned-date-time))
-=&gt; 36</code>
+=&gt; 21</code>
                     </div>
                 </div>
                 
@@ -15562,13 +15586,13 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/plus (time/local-date) :days 2)
-=&gt; 2019-10-05
+=&gt; 2019-10-13
 
 (time/plus (time/local-date-time) :days 2)
-=&gt; 2019-10-05T17:36:55.173
+=&gt; 2019-10-13T11:21:07.183
 
 (time/plus (time/zoned-date-time) :days 2)
-=&gt; 2019-10-05T17:36:55.177+02:00[Europe/Zurich]</code>
+=&gt; 2019-10-13T11:21:07.186+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -15594,10 +15618,10 @@ Elapsed time: 13.06 us
 =&gt; 0
 
 (time/second (time/local-date-time))
-=&gt; 55
+=&gt; 7
 
 (time/second (time/zoned-date-time))
-=&gt; 55</code>
+=&gt; 7</code>
                     </div>
                 </div>
                 
@@ -15620,7 +15644,7 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/to-millis (time/local-date))
-=&gt; 1570053600000</code>
+=&gt; 1570744800000</code>
                     </div>
                 </div>
                 
@@ -15645,13 +15669,13 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/with-time (time/local-date) 22 00 15 333)
-=&gt; 2019-10-03T22:00:15.333
+=&gt; 2019-10-11T22:00:15.333
 
 (time/with-time (time/local-date-time) 22 00 15 333)
-=&gt; 2019-10-03T22:00:15.333
+=&gt; 2019-10-11T22:00:15.333
 
 (time/with-time (time/zoned-date-time) 22 00 15 333)
-=&gt; 2019-10-03T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2019-10-11T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -15816,7 +15840,7 @@ Elapsed time: 13.06 us
                     </div>
                     <div class="examples">
                         <code>(time/zoned-date-time)
-=&gt; 2019-10-03T17:36:54.907+02:00[Europe/Zurich]
+=&gt; 2019-10-11T11:21:06.930+02:00[Europe/Zurich]
 
 (time/zoned-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -15834,10 +15858,10 @@ Elapsed time: 13.06 us
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 (time/zoned-date-time (. :java.util.Date :new))
-=&gt; 2019-10-03T17:36:54.929+02:00[Europe/Zurich]
+=&gt; 2019-10-11T11:21:06.951+02:00[Europe/Zurich]
 
 (time/zoned-date-time :UTC)
-=&gt; 2019-10-03T15:36:54.933Z[UTC]
+=&gt; 2019-10-11T09:21:06.954Z[UTC]
 
 (time/zoned-date-time :UTC 2018 8 1)
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -15855,7 +15879,7 @@ Elapsed time: 13.06 us
 =&gt; 2013-08-01T00:00Z[UTC]
 
 (time/zoned-date-time :UTC (. :java.util.Date :new))
-=&gt; 2019-10-03T15:36:54.954Z[UTC]</code>
+=&gt; 2019-10-11T09:21:06.973Z[UTC]</code>
                     </div>
                 </div>
                 
@@ -16274,7 +16298,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(uuid )
-=&gt; &quot;03a71384-4a59-4e58-a8d9-28e8b0ad6776&quot;</code>
+=&gt; &quot;c2810eda-1dd5-491d-978d-4497c0b4a67d&quot;</code>
                     </div>
                 </div>
                 
@@ -16443,7 +16467,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(version )
-=&gt; &quot;1.7.4&quot;</code>
+=&gt; &quot;1.7.5&quot;</code>
                     </div>
                 </div>
                 
@@ -16562,9 +16586,9 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(do
-   (def a (atom 5))
-   (while (pos? (deref a))
-          (do (println (deref a)) (swap! a dec))))
+  (def a (atom 5))
+  (while (pos? (deref a))
+    (do (println (deref a)) (swap! a dec))))
 5
 4
 3
@@ -16706,7 +16730,7 @@ unpack it after trampoline returns.</code>
                         <code>(do
   (load-module :xml)
   (xml/children
-    (list (xml/parse-str &quot;&lt;a&gt;&lt;b&gt;B&lt;/b&gt;&lt;/a&gt;&quot;)))) 
+    (list (xml/parse-str &quot;&lt;a&gt;&lt;b&gt;B&lt;/b&gt;&lt;/a&gt;&quot;))))
 =&gt; ({:content [&quot;B&quot;] :tag &quot;b&quot;})</code>
                     </div>
                 </div>
@@ -16762,7 +16786,7 @@ maps with the keys :tag, :attrs, and :content.</code>
                     <div class="examples">
                         <code>(do
   (load-module :xml)
-  (xml/parse-str &quot;&lt;a&gt;&lt;b&gt;B&lt;/b&gt;&lt;/a&gt;&quot;)) 
+  (xml/parse-str &quot;&lt;a&gt;&lt;b&gt;B&lt;/b&gt;&lt;/a&gt;&quot;))
 =&gt; {:content [{:content [&quot;B&quot;] :tag &quot;b&quot;}] :tag &quot;a&quot;}</code>
                     </div>
                 </div>
@@ -16792,7 +16816,7 @@ maps with the keys :tag, :attrs, and :content.</code>
               (xml/tag= &quot;c&quot;)
               xml/text
               first]]
-    (xml/path-&gt; path nodes))) 
+    (xml/path-&gt; path nodes)))
 =&gt; &quot;C&quot;</code>
                     </div>
                 </div>
@@ -16820,7 +16844,7 @@ maps with the keys :tag, :attrs, and :content.</code>
   (let [nodes (xml/parse-str &quot;&lt;a&gt;&lt;b&gt;B&lt;/b&gt;&lt;/a&gt;&quot;)
         path [(xml/tag= &quot;b&quot;)
               xml/text]]
-    (xml/path-&gt; path nodes))) 
+    (xml/path-&gt; path nodes)))
 =&gt; (&quot;B&quot;)</code>
                     </div>
                 </div>

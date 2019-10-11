@@ -3,7 +3,7 @@
 ### Run a script:
 
 ```text
-foo> java -jar venice-1.7.4.jar -script "(+ 1 1)"
+foo> java -jar venice-1.7.5.jar -script "(+ 1 1)"
 => 2
 ```
 
@@ -11,7 +11,7 @@ foo> java -jar venice-1.7.4.jar -script "(+ 1 1)"
 
 ```text
 foo> echo "(+ 1 1)" > script.venice
-foo> java -jar venice-1.7.4.jar -file script.venice
+foo> java -jar venice-1.7.5.jar -file script.venice
 => 2
 ```
 
@@ -19,7 +19,7 @@ foo> java -jar venice-1.7.4.jar -file script.venice
 
 ```text
 foo> echo "(+ 1 (long (nth *ARGV* 2)))" > script.venice
-foo> java -jar venice-1.7.4.jar -file script.venice 3
+foo> java -jar venice-1.7.5.jar -file script.venice 3
 => 4
 ```
 
