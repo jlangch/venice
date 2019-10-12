@@ -1105,7 +1105,8 @@ public class CoreFunctions {
 						"(long true)",
 						"(long 1.2)",
 						"(long 1.2M)",
-						"(long \"1\")")
+						"(long \"1\")",
+						"(long (char \"A\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1132,6 +1133,9 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncBigDecimal(op1)) {
 					return Numeric.decimalToLong((VncBigDecimal)op1);
+				}
+				else if (Types.isVncChar(op1)) {
+					return new VncLong((int)((VncChar)op1).getValue().charValue());				
 				}
 				else if (Types.isVncString(op1)) {
 					final String s = ((VncString)op1).getValue();
@@ -1168,7 +1172,8 @@ public class CoreFunctions {
 					"(int true)",
 					"(int 1.2)",
 					"(int 1.2M)",
-					"(int \"1\")")
+					"(int \"1\")",
+					"(int (char \"A\"))")
 				.build()
 	) {
 		public VncVal apply(final VncList args) {
@@ -1195,6 +1200,9 @@ public class CoreFunctions {
 			}
 			else if (Types.isVncBigDecimal(op1)) {
 				return Numeric.decimalToInt((VncBigDecimal)op1);
+			}
+			else if (Types.isVncChar(op1)) {
+				return new VncInteger((int)((VncChar)op1).getValue().charValue());				
 			}
 			else if (Types.isVncString(op1)) {
 				final String s = ((VncString)op1).getValue();
