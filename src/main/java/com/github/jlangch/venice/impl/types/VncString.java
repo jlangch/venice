@@ -147,7 +147,7 @@ public class VncString extends VncVal {
 
 	@Override 
 	public String toString() {
-		return "\"" + value + "\"";
+		return value;
 	}
 	
 	public String toString(final boolean print_readably) {

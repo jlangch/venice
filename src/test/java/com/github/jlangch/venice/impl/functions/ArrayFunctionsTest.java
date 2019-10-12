@@ -388,12 +388,12 @@ public class ArrayFunctionsTest {
 		assertEquals("[1.0, 2.0, 3.0, 4.0, 5.0]", venice.eval("(str (double-array '(1.0 2.0 3.0 4.0 5.0)))"));
 
 		assertEquals("[]", venice.eval("(str (string-array '()))"));
-		assertEquals("[\"1\"]", venice.eval("(str (string-array '(\"1\")))"));
-		assertEquals("[\"1\", \"2\", \"3\", \"4\", \"5\"]", venice.eval("(str (string-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
+		assertEquals("[1]", venice.eval("(str (string-array '(\"1\")))"));
+		assertEquals("[1, 2, 3, 4, 5]", venice.eval("(str (string-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
 
 		assertEquals("[]", venice.eval("(str (object-array '()))"));
-		assertEquals("[\"1\"]", venice.eval("(str (object-array '(\"1\")))"));
-		assertEquals("[\"1\", \"2\", \"3\", \"4\", \"5\"]", venice.eval("(str (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
+		assertEquals("[1]", venice.eval("(str (object-array '(\"1\")))"));
+		assertEquals("[1, 2, 3, 4, 5]", venice.eval("(str (object-array '(\"1\" \"2\" \"3\" \"4\" \"5\")))"));
 
 		assertEquals("[nil, nil, nil, nil, nil]", venice.eval("(str (make-array :java.lang.Integer 5))"));
 	}
