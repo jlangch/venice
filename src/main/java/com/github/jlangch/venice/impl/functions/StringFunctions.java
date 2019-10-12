@@ -652,18 +652,18 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
-	public static VncFunction str_to_chars =
+	public static VncFunction str_chars =
 			new VncFunction(
-					"str/to-chars",
+					"str/chars",
 					VncFunction
 						.meta()
-						.arglists("(str/to-chars s)")
+						.arglists("(str/chars s)")
 						.doc("Converts a string to a char list.")
-						.examples("(str/to-chars \"abcdef\")")
+						.examples("(str/chars \"abcdef\")")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("str/to-chars", args, 1);
+					assertArity("str/chars", args, 1);
 
 					if (args.first() == Nil) {
 						return new VncList();
@@ -1722,7 +1722,7 @@ public class StringFunctions {
 					.add(str_upper_case)
 					.add(str_join)
 					.add(str_subs)
-					.add(str_to_chars)
+					.add(str_chars)
 					.add(str_split)
 					.add(str_split_lines)
 					.add(str_format)
