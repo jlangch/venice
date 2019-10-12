@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - char data type
 
+### Fixed
+
+- fixed an edge case with java interop matching number args
+
 
 
 ## [1.7.5] - 2019-10-11
