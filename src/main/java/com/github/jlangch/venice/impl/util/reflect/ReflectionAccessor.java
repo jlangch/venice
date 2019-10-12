@@ -631,11 +631,11 @@ public class ReflectionAccessor {
 		}
 		
 		if (paramType == byte.class 
-				|| argType == Byte.class 
+				|| paramType == Byte.class 
 				|| paramType == short.class 
-				|| argType == Short.class 
+				|| paramType == Short.class 
 				|| paramType == int.class 
-				|| argType == Integer.class 
+				|| paramType == Integer.class 
 				|| paramType == long.class
 				|| paramType == Long.class
 		) {
@@ -644,12 +644,13 @@ public class ReflectionAccessor {
 					|| argType == Integer.class 
 					|| argType == Long.class;
 		}
-		if (paramType == float.class 
-				|| paramType == Float.class
-				|| paramType == double.class
-				|| paramType == Double.class
+		else if (paramType == float.class 
+					|| paramType == Float.class
+					|| paramType == double.class
+					|| paramType == Double.class
 		) {
-			return argType == Float.class || argType == Double.class;
+			return argType == Float.class 
+					|| argType == Double.class;
 		}
 		else if (paramType == char.class || paramType == Character.class) {
 			return argType == Character.class;
