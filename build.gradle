@@ -38,8 +38,7 @@
 // Modify the Venice version:
 //   - gradle.properties
 //   - pom.xml
-//   - README.md
-//   - src/main/java/com/github/jlangch/venice/Version
+//   - doc/readme/build-dependencies.md
 //   - doc/maven-central.svg
 //   
 // Upgrade Gradle wrapper
