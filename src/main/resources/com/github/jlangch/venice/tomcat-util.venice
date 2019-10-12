@@ -139,8 +139,8 @@
 
   (and (some? tc-home)
        (io/exists-dir? tc-home)
-       (or (io/exists-file? (io/file tc-home "catalina.sh"))
-           (io/exists-file? (io/file tc-home "catalina.bat")))))
+       (or (io/exists-file? (io/file tc-home "bin" "catalina.sh"))
+           (io/exists-file? (io/file tc-home "bin" "catalina.bat")))))
 
 
 (defn
@@ -273,7 +273,9 @@
 
 
 (defn
-  ^{ :arglists '("(stop tc-home)")
+  ^{ :arglists '(
+          "(stop tc-home)",
+          "(stop tc-home timeout)")
      :doc """
           Stops Tomcat for the given Tomcat installation if its running. If a the Tomcat
           process is still running after timeout seconds after the shutdown has been
@@ -285,10 +287,11 @@
           "(stop \"/Users/tools/apache-tomcat-9.0.26\")",
           "(stop \"/Users/tools/apache-tomcat-9.0.26\" 60)") }
 
-  (stop [tc-home]
+  stop
+  ([tc-home]
     (stop tc-home 20))
 
-  (stop [tc-home timeout]
+  ([tc-home timeout]
     (require-mac-or-linux)
     (validate-installed tc-home)
     (let [pid (get-pid tc-home)]
