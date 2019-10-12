@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -94,31 +95,6 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction str_char =
-		new VncFunction(
-				"str/char",
-				VncFunction
-					.meta()
-					.arglists("(str/char n)")
-					.doc("Converts a number to a single char string.")
-					.examples("(str/char 65)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("str/char", args, 1);
-
-				if (args.first() == Nil) {
-					return Nil;
-				}
-
-				final long n = Coerce.toVncLong(args.first()).getValue();
-
-				return new VncString(String.valueOf((char)n));
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
 	public static VncFunction str_char_Q =
 		new VncFunction(
 				"str/char?",
@@ -138,7 +114,12 @@ public class StringFunctions {
 
 				final VncVal s = args.first();
 				
-				return Types.isVncString(s) && ((VncString)s).size() == 1 ? True : False;
+				if (Types.isVncChar(s)) {
+					return True;
+				}
+				else {
+					return Types.isVncString(s) && ((VncString)s).size() == 1 ? True : False;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1100,18 +1081,25 @@ public class StringFunctions {
 					.doc(
 						"True if s is a single char string and the char is a digit. " +
 						"Defined by Java Character.isDigit(ch).")
-					.examples("(str/digit? \"8\")")
+					.examples(
+						"(str/digit? (char \"8\"))",
+						"(str/digit? \"8\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/digit?", args, 1);
 
-				if (Types.isVncString(args.first())) {
-					final String str = Coerce.toVncString(args.first()).getValue();
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					return Character.isDigit(((VncChar)v).getValue()) ? True : False;
+				}
+				else if (Types.isVncString(v)) {
+					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
 								"Function 'str/digit?' expects a single char string",
-								Types.getType(args.first())));
+								Types.getType(v)));
 					}
 					return Character.isDigit(str.charAt(0)) ? True : False;
 				}
@@ -1132,18 +1120,25 @@ public class StringFunctions {
 					.doc(
 						"True if s is a single char string and the char is a letter. " +
 						"Defined by Java Character.isLetter(ch).")
-					.examples("(str/letter? \"x\")")
+					.examples(
+						"(str/letter? (char \"x\"))",
+						"(str/letter? \"x\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/letter?", args, 1);
+				
+				final VncVal v = args.first();
 
-				if (Types.isVncString(args.first())) {
-					final String str = Coerce.toVncString(args.first()).getValue();
+				if (Types.isVncChar(v)) {
+					return Character.isLetter(((VncChar)v).getValue()) ? True : False;
+				}
+				else if (Types.isVncString(v)) {
+					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
 								"Function 'str/letter?' expects a single char string",
-								Types.getType(args.first())));
+								Types.getType(v)));
 					}
 					return Character.isLetter(str.charAt(0)) ? True : False;
 				}
@@ -1155,6 +1150,83 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_lower_case_Q =
+		new VncFunction(
+				"str/lower-case?",
+				VncFunction
+					.meta()
+					.arglists("(str/lower-case? s)")
+					.doc(
+						"True if s is a single char string and the char is a lower case char. " +
+						"Defined by Java Character.isLowerCase(ch).")
+					.examples(
+						"(str/lower-case? (char \"x\"))",
+						"(str/lower-case? \"x\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/lower-case?", args, 1);
+				
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					return Character.isLowerCase(((VncChar)v).getValue()) ? True : False;
+				}
+				else if (Types.isVncString(v)) {
+					final String str = Coerce.toVncString(v).getValue();
+					if (str.length() != 1) {
+						throw new VncException(String.format(
+								"Function 'str/lower-case?' expects a single char string",
+								Types.getType(v)));
+					}
+					return Character.isLowerCase(str.charAt(0)) ? True : False;
+				}
+				else {
+					return False;
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_upper_case_Q =
+		new VncFunction(
+				"str/upper-case?",
+				VncFunction
+					.meta()
+					.arglists("(str/upper-case? s)")
+					.doc(
+						"True if s is a single char string and the char is an upper case char. " +
+						"Defined by Java Character.isUpperCase(ch).")
+					.examples(
+						"(str/upper-case? (char \"X\"))",
+						"(str/upper-case? \"X\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/upper-case?", args, 1);
+				
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					return Character.isUpperCase(((VncChar)v).getValue()) ? True : False;
+				}
+				else if (Types.isVncString(v)) {
+					final String str = Coerce.toVncString(v).getValue();
+					if (str.length() != 1) {
+						throw new VncException(String.format(
+								"Function 'str/upper-case?' expects a single char string",
+								Types.getType(v)));
+					}
+					return Character.isUpperCase(str.charAt(0)) ? True : False;
+				}
+				else {
+					return False;
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction str_linefeed_Q =
 		new VncFunction(
@@ -1163,14 +1235,21 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/linefeed? s)")
 					.doc("True if s is a single char string and the char is a linefeed.")
-					.examples("(str/linefeed? \"\n\")")
+					.examples(
+						"(str/linefeed? (char \"\n\"))",
+						"(str/linefeed? \"\n\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/linefeed?", args, 1);
 
-				if (Types.isVncString(args.first())) {
-					final String str = Coerce.toVncString(args.first()).getValue();
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					return ((VncChar)v).getValue() == '\n' ? True : False;
+				}
+				if (Types.isVncString(v)) {
+					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
 								"Function 'str/linefeed?' expects a single char string",
@@ -1195,18 +1274,25 @@ public class StringFunctions {
 					.doc(
 						"True if s is a single char string and the char is a whitespace. " +
 						"Defined by Java Character.isWhitespace(ch).")
-					.examples("(str/whitespace? \" \")")
+					.examples(
+						"(str/whitespace? (char \" \"))",
+						"(str/whitespace? \" \")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/whitespace?", args, 1);
 
-				if (Types.isVncString(args.first())) {
-					final String str = Coerce.toVncString(args.first()).getValue();
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					return Character.isWhitespace(((VncChar)v).getValue()) ? True : False;
+				}
+				else if (Types.isVncString(v)) {
+					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
 								"Function 'str/whitespace?' expects a single char string",
-								Types.getType(args.first())));
+								Types.getType(v)));
 					}
 					return Character.isWhitespace(str.charAt(0)) ? True : False;
 				}
@@ -1593,6 +1679,8 @@ public class StringFunctions {
 					.add(str_letter_Q)
 					.add(str_linefeed_Q)
 					.add(str_whitespace_Q)
+					.add(str_upper_case_Q)
+					.add(str_lower_case_Q)
 					.add(str_trim)
 					.add(str_trim_to_nil)
 					.add(str_index_of)
@@ -1619,7 +1707,6 @@ public class StringFunctions {
 					.add(str_strip_indent)
 					.add(str_strip_margin)
 					.add(str_repeat)
-					.add(str_char)
 					.add(str_lorem_ipsum)
 					.add(str_hex_to_bytebuf)
 					.add(str_bytebuf_to_hex)

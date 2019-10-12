@@ -188,6 +188,7 @@ public class DocGenerator {
 		convert.addItem(getDocItem("long"));
 		convert.addItem(getDocItem("double"));
 		convert.addItem(getDocItem("decimal"));
+		convert.addItem(getDocItem("char"));
 
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
@@ -211,6 +212,7 @@ public class DocGenerator {
 		test.addItem(getDocItem("long?"));
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
+		test.addItem(getDocItem("char?"));
 
 		final DocSection random = new DocSection("Random");
 		numbers.addSection(random);
@@ -268,7 +270,6 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
 		use.addItem(getDocItem("str/truncate"));
-		use.addItem(getDocItem("str/char"));
 		use.addItem(getDocItem("str/lorem-ipsum"));
 		
 		final DocSection regex = new DocSection("Regex");
@@ -305,13 +306,18 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
 		str_test.addItem(getDocItem("str/equals-ignore-case?"));
-		str_test.addItem(getDocItem("str/char?"));
-		str_test.addItem(getDocItem("str/digit?"));
-		str_test.addItem(getDocItem("str/letter?"));
-		str_test.addItem(getDocItem("str/whitespace?"));
-		str_test.addItem(getDocItem("str/linefeed?"));
 		str_test.addItem(getDocItem("str/quoted?"));
 		str_test.addItem(getDocItem("str/double-quoted?"));
+
+		final DocSection str_test_char = new DocSection("Test char");
+		strings.addSection(str_test_char);
+		str_test_char.addItem(getDocItem("str/char?"));
+		str_test_char.addItem(getDocItem("str/digit?"));
+		str_test_char.addItem(getDocItem("str/letter?"));
+		str_test_char.addItem(getDocItem("str/whitespace?"));
+		str_test_char.addItem(getDocItem("str/linefeed?"));
+		str_test_char.addItem(getDocItem("str/lower-case?"));
+		str_test_char.addItem(getDocItem("str/upper-case?"));
 		
 		final DocSection other = new DocSection("Other");
 		section.addSection(other);

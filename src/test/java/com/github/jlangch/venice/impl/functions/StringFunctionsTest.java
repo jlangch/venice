@@ -33,22 +33,6 @@ import com.github.jlangch.venice.Venice;
 
 
 public class StringFunctionsTest {
-	@Test
-	public void test_str_char() {
-		final Venice venice = new Venice();
-		
-		assertEquals("A", venice.eval("(str/char 65)"));
-	}
-
-	@Test
-	public void test_str_char_Q() {
-		final Venice venice = new Venice();
-		
-		assertTrue((Boolean)venice.eval("(str/char? \"x\")"));
-		assertTrue((Boolean)venice.eval("(str/char? \"8\")"));
-		assertFalse((Boolean)venice.eval("(str/char? \"888\")"));
-		assertFalse((Boolean)venice.eval("(str/char? 1)"));
-	}
 
 	@Test
 	public void test_str_contains() {

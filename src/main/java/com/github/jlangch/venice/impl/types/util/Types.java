@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -95,6 +96,10 @@ public class Types {
 
 	public static boolean isVncString(final VncVal val) {
 		return val != null && (val instanceof VncString);
+	}
+
+	public static boolean isVncChar(final VncVal val) {
+		return val != null && (val instanceof VncChar);
 	}
 
 	public static boolean isVncKeyword(final VncVal val) {

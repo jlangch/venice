@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -272,6 +273,9 @@ public class JavaInteropUtil {
 		}
 		else if (value instanceof String) {
 			return new VncString((String)value);
+		}
+		else if (value instanceof Character) {
+			return new VncChar((Character)value);
 		}
 		else if (value instanceof Number) {
 			if (value instanceof Integer) {

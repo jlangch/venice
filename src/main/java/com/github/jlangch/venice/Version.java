@@ -22,11 +22,10 @@
 package com.github.jlangch.venice;
 
 public class Version {
-
+	
 	public static String getBuildVersion() {
 		return Version.class.getPackage().getImplementationVersion();
 	}
 
-	
-	public static final String VERSION = getBuildVersion();
+	public final static String VERSION = "1.7.6-snapshot";
 }
