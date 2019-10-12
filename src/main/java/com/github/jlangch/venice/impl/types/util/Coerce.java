@@ -27,6 +27,7 @@ import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -178,6 +179,18 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to string. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
+	public static VncChar toVncChar(final VncVal val) {
+		if (val == null || Types.isVncChar(val)) {
+			return (VncChar)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to char. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

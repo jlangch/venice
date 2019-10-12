@@ -213,7 +213,23 @@ public class CoreFunctionsTest {
 		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
 		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
 	}
-	
+
+	@Test
+	public void test_new_char() {
+		final Venice venice = new Venice();
+		
+		assertEquals('A', venice.eval("(char 65)"));
+		assertEquals('A', venice.eval("(char \"A\")"));
+	}
+
+	@Test
+	public void test_char_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(char? (char 65))"));
+		assertTrue((Boolean)venice.eval("(char? (char \"A\"))"));
+	}
+
 	@Test
 	public void test_coalesce() {
 		final Venice venice = new Venice();

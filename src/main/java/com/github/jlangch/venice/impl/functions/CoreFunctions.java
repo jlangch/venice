@@ -56,6 +56,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -437,6 +438,69 @@ public class CoreFunctions {
 				}
 			}
 
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction new_char =
+		new VncFunction(
+				"char",
+				VncFunction
+					.meta()
+					.arglists("(char c)")
+					.doc("Converts a number or s single char string to a char.")
+					.examples("(char 65)", "(char \"A\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("char", args, 1);
+		
+				final VncVal c = args.first();
+				
+				if (c == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncChar(c)) {
+					return c;
+				}
+				else if (Types.isVncString(c)) {
+					final String s = ((VncString)c).getValue();
+					if (s.length() == 1) {
+						return new VncChar(s.charAt(0));
+					}
+					else {
+						throw new VncException(
+								"Function 'char' expects a string type argument of length 1.");
+					}
+				}
+				else if (Types.isVncNumber(c)) {
+					return new VncChar((char)Coerce.toVncLong(c).getIntValue().intValue());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'char' does not allow %s argument.",
+							Types.getType(c)));
+				}
+			}
+		
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction char_Q =
+		new VncFunction(
+				"char?",
+				VncFunction
+					.meta()
+					.arglists("(char? s)")
+					.doc("Returns true if s is a char.")
+					.examples("(char? (char \"x\"))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("char?", args, 1);
+		
+				return Types.isVncChar(args.first()) ? True : False;
+			}
+		
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -5708,6 +5772,7 @@ public class CoreFunctions {
 				.add(number_Q)
 				.add(bytebuf_Q)
 				.add(string_Q)
+				.add(char_Q)
 				.add(symbol)
 				.add(symbol_Q)
 				.add(keyword)
@@ -5743,6 +5808,7 @@ public class CoreFunctions {
 				.add(bytebuf_to_string)
 				.add(bytebuf_from_string)
 
+				.add(new_char)
 				.add(new_list)
 				.add(new_list_ASTERISK)
 				.add(list_Q)
