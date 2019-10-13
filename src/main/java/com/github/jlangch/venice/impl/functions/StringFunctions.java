@@ -102,19 +102,21 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/char s)")
 					.doc("Returns true if s is a single char string.")
-					.examples("(str/char? \"x\")")
+					.examples(
+						"(str/char? \"x\")",
+						"(str/char? (char \"x\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/char?", args, 1);
-
-				if (args.first() == Nil) {
-					return Nil;
-				}
-
+				
 				final VncVal s = args.first();
 				
-				if (Types.isVncChar(s)) {
+
+				if (s == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncChar(s)) {
 					return True;
 				}
 				else {
