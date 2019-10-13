@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - an edge case with java interop matching number args
+- tomcat-util module function 'process-running?' 
 
 
 
