@@ -31,56 +31,11 @@
 
 (ns tc-util)
 
+(load-module :shell)
 (load-module :semver)
 
 (def-dynamic tc-archive "http://archive.apache.org/dist/tomcat")
 (def-dynamic tc-pid-file "catalina.pid")
-
-
-(defn
-  ^{ :arglists '("(require-mac-or-linux)")
-     :doc "Validates if the OS is Mac OSX or Linux, throws an exception if not."
-     :examples '("(require-mac-or-linux)") }
-
-  require-mac-or-linux []
-
-  (when-not (or (os-type? :mac-osx) (os-type? :linux))
-    (throw (venice-exception "Can only run on Mac OSX or Linux!"))))
-
-
-(defn-
-  ^{ :arglists '("(process-running? pid)")
-     :doc "Returns true if the pid represents a running process, false otherwise."
-     :examples '("(process-running? 123)"
-                 "(process-running? \"123\")") }
-
-  process-running? [pid]
-
-  (require-mac-or-linux)
-  (if (some? pid)
-    (->> (sh "ps" :throw-ex true)
-         (:out)
-         (str/split-lines)
-         (map #(first (str/split (str/trim %) " +")))
-         (filter #(== % (str pid)))
-         (not-empty?))
-    false))
-
-
-(defn-
-  ^{ :arglists '("(wait-for-process-exit pid timeout)")
-     :doc "Waits until the process with the pid exits. Waits max timeout seconds."
-     :examples '("(wait-for-process-exit 12345 20)"
-                 "(wait-for-process-exit \"12345\" 20)") }
-
-  wait-for-process-exit [pid timeout]
-
-  (require-mac-or-linux)
-  (loop [secs timeout]
-    (when (and (pos? secs) (process-running? pid))
-      (sleep 1 :seconds)
-      (recur (dec secs))))
-  (if (process-running? pid) pid nil))
 
 
 (defn
@@ -166,7 +121,7 @@
 
   version [tc-home]
 
-  (require-mac-or-linux)
+  (shell/require-mac-or-linux)
   (validate-installed tc-home)
   (-<> (sh "/bin/sh"
            "-c"
@@ -196,7 +151,7 @@
   (let [pid-file (get-pid-file tc-home)]
     (when (io/exists-file? pid-file)
       (let [pid (first (str/split-lines (io/slurp pid-file)))]
-        (when (process-running? pid)
+        (when (shell/process-running? pid)
           pid)))))
 
 
@@ -262,7 +217,7 @@
 
   start [tc-home]
 
-  (require-mac-or-linux)
+  (shell/require-mac-or-linux)
   (validate-installed tc-home)
   (when (and (not (running? tc-home)) (war-deployed? tc-home))
     (sh "/bin/sh"
@@ -292,7 +247,7 @@
     (stop tc-home 20))
 
   ([tc-home timeout]
-    (require-mac-or-linux)
+    (shell/require-mac-or-linux)
     (validate-installed tc-home)
     (let [pid (get-pid tc-home)]
       (when (some? pid)
@@ -305,23 +260,23 @@
 
         (sleep 1 :seconds)
 
-        (when (process-running? pid)
+        (when (shell/process-running? pid)
           (when (pos? timeout)
             (println "Awaiting Tomcat shutdown ...")
-            (wait-for-process-exit pid timeout) ; gracefully wait
+            (shell/wait-for-process-exit pid timeout) ; gracefully wait
 
-            (when (process-running? pid)
+            (when (shell/process-running? pid)
               (println "Timeout: Killing Tomcat...")
               (sh "kill" "-9" pid :throw-ex true)
               (sleep 1 :seconds)))
 
           (when (neg? timeout)
             (loop []
-              (when (process-running? pid)
+              (when (shell/process-running? pid)
                 (sleep 1 :seconds)
                 (recur )))))
 
-        (when-not (process-running? pid)
+        (when-not (shell/process-running? pid)
            (println "Tomcat shutdown."))))))
 
 
