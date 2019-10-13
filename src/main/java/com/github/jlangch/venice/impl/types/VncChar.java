@@ -73,6 +73,9 @@ public class VncChar extends VncVal {
 		else if (Types.isVncChar(o)) {
 			return getValue().compareTo(((VncChar)o).getValue());
 		}
+		else if (Types.isVncString(o)) {
+			return getValue().toString().compareTo(((VncString)o).getValue());
+		}
 
 		return super.compareTo(o);
 	}

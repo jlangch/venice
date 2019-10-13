@@ -285,48 +285,63 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		// nil
-		assertEquals(Long.valueOf(-1), venice.eval("(compare nil 1)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare nil nil)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare 1 nil)"));
+		assertEquals(-1L, venice.eval("(compare nil 1)"));
+		assertEquals(0L,  venice.eval("(compare nil nil)"));
+		assertEquals(1L,  venice.eval("(compare 1 nil)"));
 
 		// boolean
-		assertEquals(Long.valueOf(0),  venice.eval("(compare false false)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare true true)"));
-		assertEquals(Long.valueOf(-1), venice.eval("(compare false true)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare true false)"));
+		assertEquals(0L,  venice.eval("(compare false false)"));
+		assertEquals(0L,  venice.eval("(compare true true)"));
+		assertEquals(-1L, venice.eval("(compare false true)"));
+		assertEquals(1L,  venice.eval("(compare true false)"));
 
 		// symbol
-		assertEquals(Long.valueOf(-1), venice.eval("(compare 'a 'b)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare 'a 'a)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare 'b 'a)"));
+		assertEquals(-1L, venice.eval("(compare 'a 'b)"));
+		assertEquals(0L,  venice.eval("(compare 'a 'a)"));
+		assertEquals(1L,  venice.eval("(compare 'b 'a)"));
 
 		// keyword
-		assertEquals(Long.valueOf(-1), venice.eval("(compare :a :b)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare :a :a)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare :b :a)"));
+		assertEquals(-1L, venice.eval("(compare :a :b)"));
+		assertEquals(0L,  venice.eval("(compare :a :a)"));
+		assertEquals(1L,  venice.eval("(compare :b :a)"));
 
 		// long
-		assertEquals(Long.valueOf(-1), venice.eval("(compare 0 1)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare 1 1)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare 1 0)"));
+		assertEquals(-1L, venice.eval("(compare 0 1)"));
+		assertEquals(0L,  venice.eval("(compare 1 1)"));
+		assertEquals(1L,  venice.eval("(compare 1 0)"));
 
 		// double
-		assertEquals(Long.valueOf(-1), venice.eval("(compare 0.0 1.0)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare 1.0 1.0)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare 1.0 0.0)"));
+		assertEquals(-1L, venice.eval("(compare 0.0 1.0)"));
+		assertEquals(0L,  venice.eval("(compare 1.0 1.0)"));
+		assertEquals(1L,  venice.eval("(compare 1.0 0.0)"));
 
 		// decimal
-		assertEquals(Long.valueOf(-1), venice.eval("(compare 0.0M 1.0M)"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare 1.0M 1.0M)"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare 1.0M 0.0M)"));
+		assertEquals(-1L, venice.eval("(compare 0.0M 1.0M)"));
+		assertEquals(0L,  venice.eval("(compare 1.0M 1.0M)"));
+		assertEquals(1L,  venice.eval("(compare 1.0M 0.0M)"));
 
 		// string
-		assertEquals(Long.valueOf(-1), venice.eval("(compare \"a\" \"b\")"));
-		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aa\" \"b\")"));
-		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aaa\" \"bb\")"));
-		assertEquals(Long.valueOf(-1), venice.eval("(compare \"aaa\" \"bbb\")"));
-		assertEquals(Long.valueOf(0),  venice.eval("(compare \"aaa\" \"aaa\")"));
-		assertEquals(Long.valueOf(1),  venice.eval("(compare \"bbb\" \"aaa\")"));
+		assertEquals(-1L, venice.eval("(compare \"a\" \"b\")"));
+		assertEquals(-1L, venice.eval("(compare \"aa\" \"b\")"));
+		assertEquals(-1L, venice.eval("(compare \"aaa\" \"bb\")"));
+		assertEquals(-1L, venice.eval("(compare \"aaa\" \"bbb\")"));
+		assertEquals(0L,  venice.eval("(compare \"aaa\" \"aaa\")"));
+		assertEquals(1L,  venice.eval("(compare \"bbb\" \"aaa\")"));
+
+		// char
+		assertEquals(-1L, venice.eval("(compare (char \"a\") (char \"b\"))"));
+		assertEquals(0L,  venice.eval("(compare (char \"a\") (char \"a\"))"));
+		assertEquals(1L,  venice.eval("(compare (char \"b\") (char \"a\"))"));
+
+		// char / string
+		assertEquals(-1L, venice.eval("(compare (char \"a\") \"b\")"));
+		assertEquals(0L,  venice.eval("(compare (char \"a\") \"a\")"));
+		assertEquals(1L,  venice.eval("(compare (char \"b\") \"a\")"));
+
+		// string / char
+		assertEquals(-1L, venice.eval("(compare \"a\" (char \"b\"))"));
+		assertEquals(0L,  venice.eval("(compare \"a\" (char \"a\"))"));
+		assertEquals(1L,  venice.eval("(compare \"b\" (char \"a\"))"));
 	}
 	
 	@Test
@@ -749,13 +764,27 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(== \"aa\" \"aa\")"));
 		assertFalse((Boolean)venice.eval("(== \"aa\" \"zz\")"));
 
-		// Keyword
-		assertTrue((Boolean)venice.eval("(== :a :a)"));
-		assertFalse((Boolean)venice.eval("(== :a :b)"));
-
 		// String/Keyword
 		assertTrue((Boolean)venice.eval("(== \"aa\" :aa)"));
 		assertTrue((Boolean)venice.eval("(== :aa \"aa\")"));
+
+		// String/Char
+		assertTrue((Boolean)venice.eval("(== \"a\" (char \"a\"))"));
+		assertFalse((Boolean)venice.eval("(== \"a\" (char \"z\"))"));
+		assertFalse((Boolean)venice.eval("(== \"abc\" (char \"z\"))"));
+
+		// Char
+		assertTrue((Boolean)venice.eval("(== (char \"a\") (char \"a\"))"));
+		assertFalse((Boolean)venice.eval("(== (char \"a\") (char \"z\"))"));
+
+		// Char/String
+		assertTrue((Boolean)venice.eval("(== (char \"a\") \"a\")"));
+		assertFalse((Boolean)venice.eval("(== (char \"a\") \"z\")"));
+		assertFalse((Boolean)venice.eval("(== (char \"a\") \"xyz\")"));
+
+		// Keyword
+		assertTrue((Boolean)venice.eval("(== :a :a)"));
+		assertFalse((Boolean)venice.eval("(== :a :b)"));
 
 		// List
 		assertTrue((Boolean)venice.eval("(== '(1 2) '(1 2))"));
@@ -834,6 +863,10 @@ public class CoreFunctionsTest {
 		// String
 		assertTrue((Boolean)venice.eval("(= \"aa\" \"aa\")"));
 		assertFalse((Boolean)venice.eval("(= \"aa\" \"zz\")"));
+
+		// Char
+		assertTrue((Boolean)venice.eval("(= (char \"a\") (char \"a\"))"));
+		assertFalse((Boolean)venice.eval("(= (char \"a\") (char \"z\"))"));
 
 		// Keyword
 		assertTrue((Boolean)venice.eval("(= :a :a)"));

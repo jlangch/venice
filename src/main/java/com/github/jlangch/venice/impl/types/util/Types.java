@@ -396,6 +396,12 @@ public class Types {
 		if (Types.isVncNumber(a) && Types.isVncNumber(b)) {
 			return Numeric.calc(MathOp.EQU, a, b) == True;
 		}
+		else if (Types.isVncString(a) && Types.isVncChar(b)) {
+			return ((VncString)a).getValue().equals(((VncChar)b).getValue().toString());
+		}
+		else if (Types.isVncChar(a) && Types.isVncString(b)) {
+			return ((VncChar)a).getValue().toString().equals(((VncString)b).getValue());
+		}
 		else {
 			return _equal_strict_Q(a, b);
 		}

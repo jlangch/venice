@@ -113,6 +113,9 @@ public class VncString extends VncVal {
 		if (o == Constants.Nil) {
 			return 1;
 		}
+		else if (Types.isVncChar(o)) {
+			return getValue().compareTo(((VncChar)o).getValue().toString());
+		}
 		else if (Types.isVncString(o)) {
 			return getValue().compareTo(((VncString)o).getValue());
 		}
