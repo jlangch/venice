@@ -11,7 +11,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- ...
+- char data type
+
+### Fixed
+
+- an edge case with java interop matching number args
 
 
 

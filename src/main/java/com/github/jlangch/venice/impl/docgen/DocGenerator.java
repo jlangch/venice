@@ -261,6 +261,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/upper-case"));
 		use.addItem(getDocItem("str/join"));
 		use.addItem(getDocItem("str/subs"));
+		use.addItem(getDocItem("str/chars"));
 		use.addItem(getDocItem("str/split"));
 		use.addItem(getDocItem("str/split-lines"));
 		use.addItem(getDocItem("str/strip-start"));

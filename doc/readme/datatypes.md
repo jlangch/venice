@@ -40,6 +40,15 @@ Booleans are defined by constants _true_ and _false_.
 (println """{ "age": 42 }""")
 ```
 
+
+## Character
+
+```clojure
+(println (char "A"))
+(println (char 65))
+```
+
+
 ## Numbers
 
 ### long
