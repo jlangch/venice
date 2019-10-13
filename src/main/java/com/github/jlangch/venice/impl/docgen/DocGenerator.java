@@ -188,7 +188,6 @@ public class DocGenerator {
 		convert.addItem(getDocItem("long"));
 		convert.addItem(getDocItem("double"));
 		convert.addItem(getDocItem("decimal"));
-		convert.addItem(getDocItem("char"));
 
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
@@ -212,7 +211,6 @@ public class DocGenerator {
 		test.addItem(getDocItem("long?"));
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
-		test.addItem(getDocItem("char?"));
 
 		final DocSection random = new DocSection("Random");
 		numbers.addSection(random);
@@ -319,6 +317,16 @@ public class DocGenerator {
 		str_test_char.addItem(getDocItem("str/linefeed?"));
 		str_test_char.addItem(getDocItem("str/lower-case?"));
 		str_test_char.addItem(getDocItem("str/upper-case?"));
+
+		
+		final DocSection chars = new DocSection("Chars");
+		section.addSection(chars);
+
+		final DocSection charuse = new DocSection("Use");
+		chars.addSection(charuse);		
+		charuse.addItem(getDocItem("char"));
+		charuse.addItem(getDocItem("char?"));
+
 		
 		final DocSection other = new DocSection("Other");
 		section.addSection(other);
