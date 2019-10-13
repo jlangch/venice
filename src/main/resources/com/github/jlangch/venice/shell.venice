@@ -51,10 +51,10 @@
 
   (require-mac-or-linux)
   (if (some? pid)
-    (->> (sh "ps" :throw-ex true)
+    (->> (sh "ps" "-ef" :throw-ex true)
          (:out)
          (str/split-lines)
-         (map #(first (str/split (str/trim %) " +")))
+         (map #(second (str/split (str/trim %) " +")))
          (filter #(== % (str pid)))
          (not-empty?))
     false))

@@ -54,7 +54,7 @@
     (io/file tc-home "bin" tc-pid-file)))
 
 
-(defn-
+(defn
   ^{ :arglists '("(tc-download-url version)")
      :doc "Returns the download URL for a Tomcat version"
      :examples '("(tc-download-url \"9.0.26\")") }
