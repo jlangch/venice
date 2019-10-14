@@ -64,7 +64,7 @@
   ^{ :arglists '("(wait-for-process-exit pid timeout)")
      :doc """
           Waits until the process with the pid exits. Waits max timeout seconds.
-          Returns nil if the process exits before reacjing the timeout, else
+          Returns nil if the process exits before reaching the timeout, else
           the pid is returned.
           """
      :examples '(
