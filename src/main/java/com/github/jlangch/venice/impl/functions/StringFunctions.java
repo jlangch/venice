@@ -602,7 +602,8 @@ public class StringFunctions {
 					.doc("Joins all elements in coll separated by an optional separator.")
 					.examples(
 						"(str/join [1 2 3])",
-						"(str/join \"-\" [1 2 3])")
+						"(str/join \"-\" [1 2 3])",
+						"(str/join \"-\" [(char \"a\") 1 \"xyz\" 2.56M])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -661,7 +662,9 @@ public class StringFunctions {
 						.meta()
 						.arglists("(str/chars s)")
 						.doc("Converts a string to a char list.")
-						.examples("(str/chars \"abcdef\")")
+						.examples(
+							"(str/chars \"abcdef\")",
+							"(str/join (str/chars \"abcdef\"))")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
