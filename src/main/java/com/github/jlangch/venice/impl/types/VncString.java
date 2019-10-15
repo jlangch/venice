@@ -38,7 +38,7 @@ public class VncString extends VncVal {
 
 	public VncString(final String v, final VncVal meta) { 
 		super(meta);
-		value = v; 
+		value = (v == null) ? "" : v; 
 	}
 
 	public String getValue() { 
