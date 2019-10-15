@@ -448,7 +448,10 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(char c)")
 					.doc("Converts a number or s single char string to a char.")
-					.examples("(char 65)", "(char \"A\")")
+					.examples(
+						"(char 65)", 
+						"(char \"A\")",
+						"(str/join (map char [65 66 67 68]))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
