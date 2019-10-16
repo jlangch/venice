@@ -513,17 +513,24 @@ public class PdfFunctions {
 	private static List<String> splitIntoPages(final String text) {
 		final List<String> pages = new ArrayList<>();
 		
-		if (text != null && !text.isEmpty()) {
+		if (StringUtil.isNotEmpty(text)) {
 			int lastPos = 0;
 			while(lastPos < text.length()) {
-				int pos = text.indexOf("<form-feed>", lastPos);
-				if (pos < 0) {
-					pages.add(text.substring(lastPos));
-					break;
+				int pos = text.indexOf("\n<form-feed>\n", lastPos);
+				if (pos >= 0) {
+					pages.add(text.substring(lastPos, pos));
+					lastPos = pos + "\n<form-feed>\n".length();
 				}
 				else {
-					pages.add(text.substring(lastPos, pos));
-					lastPos = pos + "<form-feed>".length();
+					pos = text.indexOf("<form-feed>", lastPos);
+					if (pos >= 0) {
+						pages.add(text.substring(lastPos, pos));
+						lastPos = pos + "<form-feed>".length();
+					}
+					else {
+						pages.add(text.substring(lastPos));
+						break;
+					}
 				}
 			}
 		}

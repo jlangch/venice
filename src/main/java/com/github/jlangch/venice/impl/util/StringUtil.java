@@ -239,7 +239,7 @@ public class StringUtil {
 	}
 
 	public static boolean isEmpty(final String s){
-		return s == null || s.length() == 0;
+		return s == null || s.isEmpty();
 	}
 	
 	public static boolean isNotEmpty(final String s){
