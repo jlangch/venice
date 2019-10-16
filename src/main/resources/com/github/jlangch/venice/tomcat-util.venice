@@ -367,6 +367,14 @@
         (apply io/delete-file (io/list-files tc-dir-bin #(io/file-ext? % ".bat"))))
 
       (when (:remove-system-webapps options false)
+        (io/delete-file tc-dir "BUILDING.txt")
+        (io/delete-file tc-dir "CONTRIBUTING.md")
+        (io/delete-file tc-dir "LICENSE")
+        (io/delete-file tc-dir "NOTICE")
+        (io/delete-file tc-dir "README.md")
+        (io/delete-file tc-dir "RELEASE_NOTES")
+        (io/delete-file tc-dir "RUNNING.txt")
+        (io/delete-file tc-dir "temp" "safeToDelete.tmp")
         (apply io/delete-file-tree (io/list-files tc-dir-webapps)))
 
       (->> (io/list-files tc-dir-bin #(io/file-ext? % ".sh"))
