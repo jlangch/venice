@@ -435,7 +435,7 @@ the class path:
 - `classpath:/OpenSans-Regular.ttf`
 - `classpath:/fonts/OpenSans-Regular.ttf`
 
-A font definition that embeds the font in the PDF looks like:
+A CSS font definition that embeds the font in the PDF looks like:
 
 ```css
    @font-face {
@@ -455,15 +455,15 @@ A `fonts.jar` file containing the OFL fonts 'Open Sans' and 'Source Code Pro'
 may look like:
 
 ```text
-   Length         Date/Time Name
-----------  ---------------- ----
-         0  2019-07-01 13:20 fonts/
-    213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
-    212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
-    212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
-    224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
-    217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
-    211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
+Length     Date/Time        Name
+---------  ---------------- -----------------------------
+        0  2019-07-01 13:20 fonts/
+   213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
+   212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
+   212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
+   224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
+   217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
+   211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
 ```
 
 A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub 
