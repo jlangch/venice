@@ -431,11 +431,12 @@ platforms regardless whether the font is locally installed or not.
 
 The PDF renderer loads custom True-Type fonts from URIs. The custom 
 schema `classpath:/` allows the renderer to load the font files from
-the class path:
+the class path. E.g.:
 - `classpath:/OpenSans-Regular.ttf`
 - `classpath:/fonts/OpenSans-Regular.ttf`
 
-A CSS font definition that embeds the font in the PDF looks like:
+A CSS font definition that embeds 'OpenSans-Regular' in the PDF looks 
+like:
 
 ```css
    @font-face {
