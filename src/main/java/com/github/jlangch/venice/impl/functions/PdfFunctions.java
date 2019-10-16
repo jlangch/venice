@@ -503,7 +503,8 @@ public class PdfFunctions {
 	private static <T> T runAsync(final Callable<T> callable) throws Exception {
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		try {
-			return executor.submit(callable).get();
+			return executor.submit(callable)
+					       .get();
 		}
 		finally {
 			executor.shutdownNow();
