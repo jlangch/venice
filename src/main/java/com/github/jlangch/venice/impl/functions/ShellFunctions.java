@@ -50,6 +50,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -147,9 +148,7 @@ public class ShellFunctions {
 		) {	
 			public VncVal apply(final VncList args) {
 				assertMinArity("sh", args, 1);
-	
-				validateArgs(args);
-				
+
 				final VncVector v = parseArgs(args);
 	
 				final VncList cmd = Coerce.toVncList(v.first()).withMeta(args.getMeta());
@@ -338,28 +337,28 @@ public class ShellFunctions {
 						.toArray(new String[] {});
 		}
 	}
-	
-	private static void validateArgs(final VncList args) {
-		args.forEach(arg -> {
-			if (!(Types.isVncString(arg) 
-					|| Types.isVncKeyword(arg) 
-					|| Types.isVncBoolean(arg) 
-					|| Types.isVncMap(arg) 
-					|| Types.isVncFunction(arg) 
-					|| Types.isVncJavaObject(arg, File.class))
-			) {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", arg))) {
-					throw new VncException(String.format(
-							"sh: accepts strings, keywords, and booleans only. Got an argument of type %s",
-							Types.getType(arg)));
-				}
-			}
-		});
-	}
 
 	private static VncVector parseArgs(final VncList args) {
 		final VncThreadLocal th = new VncThreadLocal();
+	
+		VncHashMap options = new VncHashMap();
+		VncList cmd = new VncList();		
+		VncList args_ = args;
+		while(!args_.isEmpty()) {
+			final VncVal v = args_.first();
+			args_ = args_.rest();
+			
+			if (Types.isVncKeyword(v) && optionKeywords.contains(v)) {
+				final VncVal optVal = args_.first();
+				args_ = args_.rest();
+				options = options.assoc(v, optVal);
+			}
+			else {
+				cmd = cmd.addAtEnd(new VncString(v.toString()));
+			}
+		}
 		
+
 		final VncMap defaultOptions = VncHashMap.of(
 										new VncKeyword(":out-enc"), new VncString("UTF-8"),
 										new VncKeyword(":in-enc"), new VncString("UTF-8"),
@@ -368,17 +367,10 @@ public class ShellFunctions {
 
 		final VncMap defaultEnv = (VncMap)th.get(":*sh-env*", new VncHashMap());
 		
-		final VncVector v = Coerce.toVncVector(
-								CoreFunctions.split_with.apply(
-										VncList.of(CoreFunctions.string_Q, args)));
-
-		final VncList cmd = Coerce.toVncList(v.first());
-
-		final VncMap sh_opts = VncHashMap.ofAll((VncList)v.second());
-
+		
 		// merge options
 		VncMap opts = (VncMap)CoreFunctions.merge.apply(
-								VncList.of(defaultOptions, sh_opts));
+								VncList.of(defaultOptions, options));
 		
 		// add merged :env map
 		opts = opts.assoc(
@@ -386,7 +378,7 @@ public class ShellFunctions {
 					CoreFunctions.merge.apply(
 							VncList.of(
 									defaultEnv, 
-									sh_opts.get(new VncKeyword(":env")))));
+									options.get(new VncKeyword(":env")))));
 		
 		return VncVector.of(cmd, opts);
 	}
@@ -452,7 +444,18 @@ public class ShellFunctions {
 
 	
 	private final static AtomicLong threadPoolCounter = new AtomicLong(0);
-	
+
+	private static final VncHashSet optionKeywords = VncHashSet.of(
+														new VncKeyword(":in"),
+														new VncKeyword(":in-enc"),
+														new VncKeyword(":out-enc"),
+														new VncKeyword(":out-fn"),
+														new VncKeyword(":err-fn"),
+														new VncKeyword(":env"),
+														new VncKeyword(":dir"),
+														new VncKeyword(":in"),
+														new VncKeyword(":throw-ex"));
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
