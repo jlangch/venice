@@ -79,3 +79,49 @@
       (sleep 1 :seconds)
       (recur (dec secs))))
   (if (process-running? pid) pid nil))
+
+
+(defn
+  ^{ :arglists '("(tput-cols)")
+     :doc "Returns the number of columns of the terminal"
+     :examples '("(tput-cols)") }
+
+  tput-cols []
+
+  (require-mac-or-linux)
+  (long (str/trim (:out (sh "tput" "cols" :throw-ex true)))))
+
+
+(defn
+  ^{ :arglists '("(tput-lines)")
+     :doc "Returns the number of lines of the terminal"
+     :examples '("(tput-lines)") }
+
+  tput-cols []
+
+  (require-mac-or-linux)
+  (long (str/trim (:out (sh "tput" "lines" :throw-ex true)))))
+
+
+(defn
+  ^{ :arglists '("(tput-cup x y)")
+     :doc "Positions the cursor in the terminal. (0,0) is the upper left corner."
+     :examples '("(tput-cup 0 10)") }
+
+  tput-cup [x y]
+
+  (require-mac-or-linux)
+  (sh "tput" "cup" y x)
+  nil)
+
+
+(defn
+  ^{ :arglists '("(tput-clear)")
+     :doc "Clears the terminal."
+     :examples '("(tput-clear)") }
+
+  tput-clear []
+
+  (require-mac-or-linux)
+  (sh "tput" "cup" y x)
+  nil)
