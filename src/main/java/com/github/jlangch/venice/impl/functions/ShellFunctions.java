@@ -122,7 +122,8 @@ public class ShellFunctions {
 						"(println (sh \"echo\" \"x\\u25bax\"))", 
 						"(println (sh \"/bin/sh\" \"-c\" \"ls -l\"))", 
 
-						"(sh \"ls\" \"-l\" :out-fn #(println %))",
+						"(sh \"ls\" \"-l\" :out-fn println)",
+						"(sh \"ls\" \"-l\" :out-fn println :err-fn println)",
 
 						";; background process\n" +
 						"(println (sh \"/bin/sh\" \"-c\" \"sleep 30 >/dev/null 2>&1 &\"))",
@@ -453,7 +454,6 @@ public class ShellFunctions {
 														new VncKeyword(":err-fn"),
 														new VncKeyword(":env"),
 														new VncKeyword(":dir"),
-														new VncKeyword(":in"),
 														new VncKeyword(":throw-ex"));
 
 	
