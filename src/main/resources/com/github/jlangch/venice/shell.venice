@@ -97,7 +97,7 @@
      :doc "Returns the number of lines of the terminal"
      :examples '("(tput-lines)") }
 
-  tput-cols []
+  tput-lines []
 
   (require-mac-or-linux)
   (long (str/trim (:out (sh "tput" "lines" :throw-ex true)))))
