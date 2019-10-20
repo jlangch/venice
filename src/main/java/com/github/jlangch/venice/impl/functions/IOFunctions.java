@@ -605,15 +605,55 @@ public class IOFunctions {
 					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
 
 					final List<VncVal> files = new ArrayList<>();
-
 					for(File f : dir.listFiles()) {
-						final VncVal result = (filterFn == null)
-												? True
-												: filterFn.apply(VncList.of(new VncJavaObject(f)));
-						if (result == True) {
+						if (filterFn == null || filterFn.apply(VncList.of(new VncJavaObject(f))) == True) {
 							files.add(new VncJavaObject(f));
 						}
 					}
+
+					return new VncList(files);
+				}
+				catch(Exception ex) {
+					throw new VncException(
+							String.format("Failed to list files %s", dir.getPath()),
+							ex);
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_list_file_tree =
+		new VncFunction(
+				"io/list-file-tree",
+				VncFunction
+					.meta()
+					.arglists("(io/list-file-tree dir filterFn?)")
+					.doc(
+						"Lists all files in a directory tree. dir must be a file or a string (file path). " +
+						"filterFn is an optional filter that filters the files found.")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/list-file-tree", args, 1, 2);
+
+				final File dir = convertToFile(
+									args.first(),
+									"Function 'io/list-file-tree' does not allow %s as dir");
+
+				validateReadableDirectory(dir);
+
+				try {
+					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
+
+					final List<VncVal> files = new ArrayList<>();
+				    Files.walk(dir.toPath())
+				    	 .map(Path::toFile)
+				    	 .forEach(f -> {
+							if (filterFn == null || filterFn.apply(VncList.of(new VncJavaObject(f))) == True) {
+								files.add(new VncJavaObject(f));
+							}
+				    	 });						
 
 					return new VncList(files);
 				}
@@ -1683,6 +1723,7 @@ public class IOFunctions {
 					.add(io_file_can_execute_Q)
 					.add(io_file_hidden_Q)
 					.add(io_list_files)
+					.add(io_list_file_tree)
 					.add(io_delete_file)
 					.add(io_delete_file_on_exit)
 					.add(io_delete_file_tree)

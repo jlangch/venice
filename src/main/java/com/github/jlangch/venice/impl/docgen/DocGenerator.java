@@ -1016,44 +1016,48 @@ public class DocGenerator {
 		from.addItem(getDocItem("readline"));
 		from.addItem(getDocItem("read-string"));
 
-		final DocSection io = new DocSection("file-io");
-		all.addSection(io);
-		io.addItem(getDocItem("io/file"));
-		io.addItem(getDocItem("io/file-parent"));
-		io.addItem(getDocItem("io/file-name"));
-		io.addItem(getDocItem("io/file-path"));
-		io.addItem(getDocItem("io/file-absolute-path"));
-		io.addItem(getDocItem("io/file-canonical-path"));
-		io.addItem(getDocItem("io/file-ext?"));
-		io.addItem(getDocItem("io/list-files"));
-		io.addItem(getDocItem("io/file-size"));
-		io.addItem(getDocItem("io/delete-file"));
-		io.addItem(getDocItem("io/delete-file-on-exit"));
-		io.addItem(getDocItem("io/delete-file-tree"));
-		io.addItem(getDocItem("io/copy-file"));
-		io.addItem(getDocItem("io/move-file"));
-		io.addItem(getDocItem("io/mkdir"));
-		io.addItem(getDocItem("io/mkdirs"));
-		io.addItem(getDocItem("io/slurp"));
-		io.addItem(getDocItem("io/slurp-lines"));
-		io.addItem(getDocItem("io/spit"));
-		io.addItem(getDocItem("io/download"));
-		io.addItem(getDocItem("io/tmp-dir"));
-		io.addItem(getDocItem("io/user-dir"));
-		io.addItem(getDocItem("io/user-home-dir"));
-		io.addItem(getDocItem("io/temp-file"));
+		final DocSection file_io = new DocSection("file i/o");
+		all.addSection(file_io);
+		file_io.addItem(getDocItem("io/file"));
+		file_io.addItem(getDocItem("io/file-parent"));
+		file_io.addItem(getDocItem("io/file-name"));
+		file_io.addItem(getDocItem("io/file-path"));
+		file_io.addItem(getDocItem("io/file-absolute-path"));
+		file_io.addItem(getDocItem("io/file-canonical-path"));
+		file_io.addItem(getDocItem("io/file-ext?"));
+		file_io.addItem(getDocItem("io/list-files"));
+		file_io.addItem(getDocItem("io/list-file-tree"));
+		file_io.addItem(getDocItem("io/file-size"));
+		file_io.addItem(getDocItem("io/delete-file"));
+		file_io.addItem(getDocItem("io/delete-file-on-exit"));
+		file_io.addItem(getDocItem("io/delete-file-tree"));
+		file_io.addItem(getDocItem("io/copy-file"));
+		file_io.addItem(getDocItem("io/move-file"));
+		file_io.addItem(getDocItem("io/mkdir"));
+		file_io.addItem(getDocItem("io/mkdirs"));
+		file_io.addItem(getDocItem("io/slurp"));
+		file_io.addItem(getDocItem("io/slurp-lines"));
+		file_io.addItem(getDocItem("io/spit"));
+		file_io.addItem(getDocItem("io/download"));
+		file_io.addItem(getDocItem("io/temp-file"));
 
-		final DocSection io_test = new DocSection("file-io test");
-		all.addSection(io_test);
-		io_test.addItem(getDocItem("io/file?"));
-		io_test.addItem(getDocItem("io/exists-file?"));
-		io_test.addItem(getDocItem("io/exists-dir?"));
-		io_test.addItem(getDocItem("io/file-can-read?", false));
-		io_test.addItem(getDocItem("io/file-can-write?", false));
-		io_test.addItem(getDocItem("io/file-can-execute?", false));
-		io_test.addItem(getDocItem("io/file-hidden?", false));
+		final DocSection file_test = new DocSection("file test");
+		all.addSection(file_test);
+		file_test.addItem(getDocItem("io/file?"));
+		file_test.addItem(getDocItem("io/exists-file?"));
+		file_test.addItem(getDocItem("io/exists-dir?"));
+		file_test.addItem(getDocItem("io/file-can-read?", false));
+		file_test.addItem(getDocItem("io/file-can-write?", false));
+		file_test.addItem(getDocItem("io/file-can-execute?", false));
+		file_test.addItem(getDocItem("io/file-hidden?", false));
 
-		final DocSection stream = new DocSection("stream-io");
+		final DocSection file_other = new DocSection("file other");
+		all.addSection(file_other);
+		file_other.addItem(getDocItem("io/tmp-dir"));
+		file_other.addItem(getDocItem("io/user-dir"));
+		file_other.addItem(getDocItem("io/user-home-dir"));
+
+		final DocSection stream = new DocSection("stream");
 		all.addSection(stream);
 		stream.addItem(getDocItem("io/copy-stream"));
 		stream.addItem(getDocItem("io/slurp-stream"));
@@ -1087,10 +1091,10 @@ public class DocGenerator {
 
 		final DocSection other = new DocSection("other");
 		all.addSection(other);
+		other.addItem(getDocItem("with-out-str"));
 		other.addItem(getDocItem("io/load-classpath-resource"));
 		other.addItem(getDocItem("io/mime-type"));
 		other.addItem(getDocItem("io/default-charset"));
-		other.addItem(getDocItem("with-out-str"));
 
 		return section;
 	}
