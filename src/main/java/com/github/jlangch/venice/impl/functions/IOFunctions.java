@@ -1002,9 +1002,7 @@ public class IOFunctions {
 					final VncVal arg = args.first();
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-
 					final VncVal binary = options.get(new VncKeyword("binary"));
-
 
 					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
 						final File file = Types.isVncString(arg)
@@ -1097,11 +1095,8 @@ public class IOFunctions {
 					final VncVal content = args.second();
 
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-
 					final VncVal append = options.get(new VncKeyword("append"));
-
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
-
 					final String encoding = encoding(encVal);
 
 					byte[] data;
@@ -1165,9 +1160,7 @@ public class IOFunctions {
 
 				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-
 					final VncVal binary = options.get(new VncKeyword("binary"));
-
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 
@@ -1259,7 +1252,6 @@ public class IOFunctions {
 					final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-
 					final VncVal binary = options.get(new VncKeyword("binary"));
 
 					if (binary == True) {
@@ -1318,10 +1310,8 @@ public class IOFunctions {
 					final VncVal content = args.second();
 
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
-
 					final VncVal flushVal = options.get(new VncKeyword("flush"));
 					final boolean flush = flushVal == True ? true : false;
 
