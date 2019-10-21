@@ -11,12 +11,16 @@ Benchmarking an expression incorporates four phases:
    3. Runs the expression
    4. Statistically analyze the expression evaluations
 
+Signature:
+
+`(benchmark expr warmup-iterations iterations & options)`
+
 
 ### Example
 
 ```clojure
 (do
-  (load-module :benchmark)   
+  (load-module :benchmark)
   (bench/benchmark (+ 1 2 3 4) 100000 3000))
 ```
 
