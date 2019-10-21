@@ -10,9 +10,9 @@ interoperability.
 
 ## Overview
 
-Venice is a Lisp dialect born from the need for a safe, powerful language
-that is suitable to drive standalone applications as well as serving as a
-scripting and expression language that can be used to implement scriptable 
+Venice is a Lisp dialect born from the need for a safe, sandboxed, powerful 
+language that is suitable to drive standalone applications as well as serving 
+as a scripting and expression language that can be used to implement scriptable 
 extension points and rules for applications. 
 
 Venice supports macros, tail-recursion, dynamic code loading, dynamic 
