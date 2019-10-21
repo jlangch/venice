@@ -1,7 +1,8 @@
 # Datatypes
 
-Venice has a rich set of data types (boolean, string, int, long, double, decimal, list, 
-vector, set, and map). All data types share common features:
+Venice has a rich set of data types (boolean, string, char, int, long, 
+double, decimal, list, vector, set, and map). All data types share 
+common features:
 
 - they are immutable
 - they support equals semantics
@@ -13,7 +14,8 @@ vector, set, and map). All data types share common features:
 
 ## nil
 
-_nil_ can be used for any data type in Venice. _nil_ has the same value as _null_ in Java.
+_nil_ can be used for any data type in Venice. _nil_ has the same value 
+as _null_ in Java.
 
 ```clojure
 (def x nil)
