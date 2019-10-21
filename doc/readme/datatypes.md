@@ -43,7 +43,7 @@ Booleans are defined by constants _true_ and _false_.
 ```
 
 
-## Character
+## Characters
 
 ```clojure
 (println (char "A"))
