@@ -153,7 +153,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/file-path f)")
-					.doc("Returns the path of the file f. f must be a file or a string (file path).")
+					.doc("Returns the path of the file f as a string. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
 					.build()
 		) {
@@ -251,7 +251,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/file-name f)")
-					.doc("Returns the name of the file f. f must be a file or a string (file path).")
+					.doc("Returns the name of the file f as a string. f must be a file or a string (file path).")
 					.examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
 					.build()
 		) {

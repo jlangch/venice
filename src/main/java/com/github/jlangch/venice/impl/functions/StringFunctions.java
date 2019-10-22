@@ -913,6 +913,34 @@ public class StringFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_double_unquote =
+		new VncFunction(
+				"str/double-unquote",
+				VncFunction
+					.meta()
+					.arglists("(str/double-unquote str)")
+					.doc("Unquotes a double quoted string.")
+					.examples(
+						"(str/double-unquote \"abc\")",
+						"(str/double-unquote \"\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/double-unquote", args, 1);
+
+				final String s = Coerce.toVncString(args.first()).getValue();
+				
+				if (s.startsWith("\"") && s.endsWith("\"")) {
+					return new VncString(s.length() == 2 ? "" : s.substring(1, s.length()-1));
+				}
+				else {
+					return args.first();
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_double_quoted_Q =
 		new VncFunction(
 				"str/double-quoted?",
@@ -1734,6 +1762,7 @@ public class StringFunctions {
 					.add(str_rest)
 					.add(str_quote)
 					.add(str_double_quote)
+					.add(str_double_unquote)
 					.add(str_quoted_Q)
 					.add(str_double_quoted_Q)
 					.add(str_truncate)

@@ -236,6 +236,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("str/format"));
 		create.addItem(getDocItem("str/quote"));
 		create.addItem(getDocItem("str/double-quote"));
+		create.addItem(getDocItem("str/double-unquote"));
 
 		final DocSection use = new DocSection("Use");
 		strings.addSection(use);
