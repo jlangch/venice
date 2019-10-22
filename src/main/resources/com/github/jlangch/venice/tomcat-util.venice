@@ -277,7 +277,11 @@
                 (recur )))))
 
         (when-not (shell/process-running? pid)
-           (println "Tomcat shutdown."))))))
+          (let [pid-file (get-pid-file tc-home)]
+            (when (io/exists-file? pid-file)
+              (println "Deleting Tomcat PID file" pid-file)
+              (io/delete-file pid-file)))
+          (println "Tomcat shutdown."))))))
 
 
 (defn
