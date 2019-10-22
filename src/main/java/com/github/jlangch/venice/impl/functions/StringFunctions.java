@@ -921,8 +921,8 @@ public class StringFunctions {
 					.arglists("(str/double-unquote str)")
 					.doc("Unquotes a double quoted string.")
 					.examples(
-						"(str/double-unquote \"abc\")",
-						"(str/double-unquote \"\")")
+						"(str/double-unquote \"\\\"abc\\\"\"))",
+						"(str/double-unquote \"\\\"\\\"\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
