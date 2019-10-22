@@ -11,7 +11,7 @@ Benchmarking an expression incorporates four phases:
    3. Runs the expression
    4. Statistically analyze the expression evaluations
 
-### Signature:
+### Signature
 
 `(benchmark expr warmup-iterations iterations & options)`
 
