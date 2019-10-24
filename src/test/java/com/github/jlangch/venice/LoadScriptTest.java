@@ -30,7 +30,7 @@ import java.nio.file.StandardOpenOption;
 import org.junit.jupiter.api.Test;
 
 
-public class LoadTest {
+public class LoadScriptTest {
 
 	@Test
 	public void test_load_classpath_file() {
