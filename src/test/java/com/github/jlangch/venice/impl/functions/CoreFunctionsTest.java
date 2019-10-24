@@ -461,9 +461,20 @@ public class CoreFunctionsTest {
 		assertEquals("[[1 2] 3]", venice.eval("(str (cons [1 2] [3]))"));
 		assertEquals("[[1 2] 3 4]", venice.eval("(str (cons [1 2] [3 4]))"));
 		
+		// Set
+		assertEquals("#{1 2 3}", venice.eval("(str (cons 3 (sorted-set 1 2)))"));
+		
 		// Map
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (cons {:c 3} (ordered-map :a 1 :b 2)))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (cons (ordered-map :c 3) (ordered-map :a 1 :b 2)))"));
+	}
+	
+	@Test
+	public void test_cons_BANG() {
+		final Venice venice = new Venice();
+
+		// Set
+		assertEquals("#{1 2 3}", venice.eval("(str (cons! 3 (mutable-set 1 2)))"));
 	}
 	
 	@Test

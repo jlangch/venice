@@ -76,6 +76,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
@@ -1893,6 +1894,28 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction new_mutable_set =
+			new VncFunction(
+					"mutable-set",
+					VncFunction
+						.meta()
+						.arglists("(mutable-set & items)")
+						.doc("Creates a new mutable set containing the items.")
+						.examples(
+							"(mutable-set )", 
+							"(mutable-set nil)", 
+							"(mutable-set 1)", 
+							"(mutable-set 1 2 3)", 
+							"(mutable-set [1 2] 3)")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					return VncMutableSet.ofAll(args);
+				}
+
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 	public static VncFunction set_Q =
 		new VncFunction(
 				"set?",
@@ -1919,13 +1942,32 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(sorted-set? obj)")
 					.doc("Returns true if obj is a sorted-set")
-					.examples("(sorted-set? (set 1))")
+					.examples("(sorted-set? (sorted-set 1))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sorted-set?", args, 1);
 
 				return Types.isVncSortedSet(args.first()) ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction mutable_set_Q =
+		new VncFunction(
+				"mutable-set?",
+				VncFunction
+					.meta()
+					.arglists("(mutable-set? obj)")
+					.doc("Returns true if obj is a mutable-set")
+					.examples("(mutable-set? (mutable-set 1))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("mutable-set?", args, 1);
+
+				return Types.isVncMutableSet(args.first()) ? True : False;
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -3681,12 +3723,45 @@ public class CoreFunctions {
 				else if (Types.isVncHashSet(coll)) {
 					return ((VncHashSet)coll).add(args.first());
 				}
+				else if (Types.isVncSortedSet(coll)) {
+					return ((VncSortedSet)coll).add(args.first());
+				}
 				else if (Types.isVncMap(coll) && Types.isVncMap(args.first())) {
 					return ((VncMap)coll).putAll((VncMap)args.first());
 				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'cons'",
+							Types.getType(coll)));
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction cons_BANG =
+		new VncFunction(
+				"cons!",
+				VncFunction
+					.meta()
+					.arglists("(cons! x coll)")
+					.doc(
+						"Adds x to the mutable coll")
+					.examples(
+						"(cons! 3 (mutable-set 1 2))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("cons!", args, 2);
+
+				final VncVal coll = args.second();
+
+				if (Types.isVncMutableSet(coll)) {
+					return ((VncMutableSet)coll).add(args.first());
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'cons!'",
 							Types.getType(coll)));
 				}
 			}
@@ -5888,8 +5963,10 @@ public class CoreFunctions {
 
 				.add(set_Q)
 				.add(sorted_set_Q)
+				.add(mutable_set_Q)
 				.add(new_set)
 				.add(new_sorted_set)
+				.add(new_mutable_set)
 				.add(difference)
 				.add(union)
 				.add(intersection)
@@ -5902,7 +5979,7 @@ public class CoreFunctions {
 				.add(sequential_Q)
 				.add(coll_Q)
 				.add(cons)
-				.add(cons)
+				.add(cons_BANG)
 				.add(concat)
 				.add(interpose)
 				.add(interleave)
