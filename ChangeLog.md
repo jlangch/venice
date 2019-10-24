@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - function `io/list-file-tree` 
 - function `str/double-unquote`
 
+### Changed
+
+- function `load-file` and `load-classpath-file` to load the file only once
+
 
 
 ## [1.7.6] - 2019-10-15
