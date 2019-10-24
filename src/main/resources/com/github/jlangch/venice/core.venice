@@ -588,13 +588,15 @@
 
 
 (defmacro
-  ^{ :arglists '("(load-file name)")
+  ^{ :arglists '("(load-file f)")
      :doc "Sequentially read and evaluate the set of forms contained in the file."
      :examples '() }
 
   load-file [f]
 
-  `(eval (read-string (str "(do " (io/slurp ~f :encoding "UTF-8" :binary false) ")") ~f)))
+  `(let [fc (io/file-canonical-path ~f)
+         code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")") ]
+     (eval (read-string code fc))))
 
 
 (defmacro
@@ -613,7 +615,8 @@
 
   load-classpath-file [f]
 
-  `(eval (read-string (str "(do " (load-classpath-venice ~f) ")") ~f)))
+  `(let [code (str "(do " (load-classpath-venice ~f) ")") ]
+     (eval (read-string code ~f))))
 
 
 (defmacro
