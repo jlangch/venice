@@ -34,8 +34,8 @@
 ;;;; To circumvent this the Java VMs stack size can be increased by
 ;;;; the VM argument -Xss4096k
 ;;;; So far this just has been obeserved once while producing the Venice
-;;;; cheatsheet a 180 page PDF document that is generated from a pretty large
-;;;; 625KB Kira XHTML template.
+;;;; cheatsheet a 180 page PDF document that is generated from a pretty
+;;;; complex 625KB Kira XHTML template.
 
 
 
