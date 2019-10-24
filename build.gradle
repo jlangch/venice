@@ -124,8 +124,8 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     main = 'com.github.jlangch.venice.impl.docgen.DocGenerator'
     classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
     
-    // more stack space to prevent Exception StackOverflowError
-    // at java.util.regex.Pattern$CharProperty$1.isSatisfiedBy(...)   
+    // add more stack space to prevent StackOverflowError at
+    // java.util.regex.Pattern$CharProperty$1.isSatisfiedBy(...)   
     jvmArgs(["-Xss4096k"])
  }
 
