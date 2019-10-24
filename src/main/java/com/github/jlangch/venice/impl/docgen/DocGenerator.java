@@ -85,9 +85,14 @@ public class DocGenerator {
 			data.put("pdfmode", true);
 			final String xhtml = CheatsheetRenderer.renderXHTML(data);
 			final ByteBuffer pdf = CheatsheetRenderer.renderPDF(xhtml);
-			save(new File(getUserDir(), "cheatsheet.pdf"), pdf.array());
+			final byte[] pdfArr =  pdf.array();
+			save(new File(getUserDir(), "cheatsheet.pdf"), pdfArr);
 			
-			System.out.println("Generated Cheat Sheet at: " + getUserDir());
+			System.out.println(String.format(
+					"Generated Cheat Sheet at: %s. XHTML=%dKB, PDF=%dKB",
+					getUserDir(),
+					xhtml.length() / 1024,
+					pdfArr.length / 1024));
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();

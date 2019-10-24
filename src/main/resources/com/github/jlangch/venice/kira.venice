@@ -25,6 +25,19 @@
 ;;;; (https://github.com/weavejester/comb). Venice's Kira
 ;;;; templating library builds on the ideas of 'comb'.
 
+;;;; Note
+;;;;
+;;;; Kira depends heavily on parsing templates using Java regex. Java
+;;;; regex can cause StackOverflowError exceptions on very large templates.
+;;;;    StackOverflowError
+;;;;        at java.util.regex.Pattern$CharProperty$1.isSatisfiedBy(...)
+;;;; To circumvent this the Java VMs stack size can be increased by
+;;;; the VM argument -Xss4096k
+;;;; So far this just has been obeserved once while producing the Venice
+;;;; cheatsheet a 180 page PDF document that is generated from a pretty large
+;;;; 625KB Kira XHTML template.
+
+
 
 (ns kira)
 
