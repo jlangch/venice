@@ -52,9 +52,9 @@ import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -161,8 +161,9 @@ public class VeniceInterpreter implements Serializable  {
 		// set system newline
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 		
-		// loaded modules
-		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncHashSet(), true));
+		// loaded modules & files
+		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(), true));
+		env.setGlobal(new Var(LOADED_FILES_SYMBOL, new VncMutableSet(), true));
 
 		// init namespaces
 		initNS();
@@ -179,7 +180,7 @@ public class VeniceInterpreter implements Serializable  {
 			
 			env.setGlobal(
 				new Var(LOADED_MODULES_SYMBOL, 
-				((VncHashSet)env.getGlobalOrNull(LOADED_MODULES_SYMBOL)).add(new VncKeyword(m))));
+				((VncMutableSet)env.getGlobalOrNull(LOADED_MODULES_SYMBOL)).add(new VncKeyword(m))));
 		});
 		
 		return env;
@@ -1286,6 +1287,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 	private static final VncSymbol LOADED_MODULES_SYMBOL = new VncSymbol("*loaded-modules*");
+	private static final VncSymbol LOADED_FILES_SYMBOL = new VncSymbol("*loaded-files*");
 	
 	private final IInterceptor interceptor;	
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	

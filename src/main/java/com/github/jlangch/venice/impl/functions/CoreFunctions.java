@@ -2443,9 +2443,8 @@ public class CoreFunctions {
 					final VncLong k = (VncLong)key;
 					return v.size() > k.getValue().intValue() ? True : False;
 				}
-				else if (Types.isVncHashSet(coll)) {
-					final VncHashSet s = (VncHashSet)coll;
-					return s.getSet().contains(key) ? True : False;
+				else if (Types.isVncSet(coll)) {
+					return ((VncSet)coll).contains(key) ? True : False;
 				}
 				else if (Types.isVncString(coll)) {
 					final VncString s = (VncString)coll;

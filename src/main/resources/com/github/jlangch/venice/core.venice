@@ -594,9 +594,11 @@
 
   load-file [f]
 
-  `(let [fc (io/file-canonical-path ~f)
-         code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")") ]
-     (eval (read-string code fc))))
+  `(let [fc (io/file-canonical-path ~f)]
+     (when-not (contains? core/*loaded-files* (name fc))
+       (let [code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")")]
+         (cons! (name fc) core/*loaded-files*)
+         (eval (read-string code fc))))))
 
 
 (defmacro
@@ -615,8 +617,10 @@
 
   load-classpath-file [f]
 
-  `(let [code (str "(do " (load-classpath-venice ~f) ")") ]
-     (eval (read-string code ~f))))
+  `(when-not (contains? core/*loaded-files* (name ~f))
+     (let [code (str "(do " (load-classpath-venice ~f) ")") ]
+       (cons! (name ~f) core/*loaded-files*)
+       (eval (read-string code ~f)))))
 
 
 (defmacro
@@ -628,7 +632,7 @@
 
   `(when-not (contains? core/*loaded-modules* (keyword (name ~s)))
      (let [module (read-string (str "(do " (load-core-module ~s) ")") ~s)]
-       (set! core/*loaded-modules* (cons (keyword (name ~s)) core/*loaded-modules*))
+       (cons! (keyword (name ~s)) core/*loaded-modules*)
        (eval module)
        (keyword (name ~s)))))
 
