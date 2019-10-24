@@ -126,7 +126,7 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     
     // more stack space to prevent Exception StackOverflowError
     // at java.util.regex.Pattern$CharProperty$1.isSatisfiedBy(...)   
-    jvmArgs(["-Xss1024k"])
+    jvmArgs(["-Xss4096k"])
  }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
