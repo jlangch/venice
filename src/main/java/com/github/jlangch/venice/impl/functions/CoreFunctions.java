@@ -801,9 +801,21 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("=", args, 2);
+				assertMinArity("=", args, 1);
 
-				return Types._equal_strict_Q(args.first(), args.second()) ? True : False;
+				if (args.size() == 1) {
+					return True;
+				}
+				else if (args.size() == 2) {
+					return Types._equal_strict_Q(args.first(), args.second()) ? True : False;
+				}
+				else {
+					final VncVal first = args.first();
+					for(VncVal v : args.rest().getList()) {
+						if (!Types._equal_strict_Q(first, v)) return False;
+					}
+					return True;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -820,9 +832,21 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("==", args, 2);
+				assertMinArity("==", args, 1);
 
-				return Types._equal_Q(args.first(), args.second()) ? True : False;
+				if (args.size() == 1) {
+					return True;
+				}
+				else if (args.size() == 2) {
+					return Types._equal_Q(args.first(), args.second()) ? True : False;
+				}
+				else {
+					final VncVal first = args.first();
+					for(VncVal v : args.rest().getList()) {
+						if (!Types._equal_Q(first, v)) return False;
+					}
+					return True;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
