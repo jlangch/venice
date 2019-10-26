@@ -282,7 +282,9 @@ public class Env implements Serializable {
 	}
 
 	public void removeGlobalSymbol(final VncSymbol sym) {
-		precompiledGlobalSymbols.remove(sym);
+		if (precompiledGlobalSymbols != null) {
+			precompiledGlobalSymbols.remove(sym);
+		}		
 		globalSymbols.remove(sym);
 	}
 
@@ -402,7 +404,7 @@ public class Env implements Serializable {
 	private Var getGlobalVar(final VncSymbol sym) {
 		final String name = sym.getName();
 
-		if (name.equals("*ns*")) {
+		if (name.equals(Namespaces.NS_CURRENT_NAME)) {
 			return new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS());
 		}
 

@@ -341,6 +341,39 @@ public class VeniceInterpreter implements Serializable  {
 					return ns;
 				}
 				
+				case "ns-remove": { // (ns-remove ns)
+					return Nil;
+				}
+				
+				case "ns-unmap": { // (ns-unmap ns sym)
+					if (ast.second() == Nil) {
+						throw new VncException("Cannot remove a core symbol");
+					}
+
+					VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					if (Namespaces.isCoreNS(ns)) {
+						throw new VncException("Cannot remove a core symbol");
+					}
+					else {
+						if (Namespaces.isCurrentNSSymbol(ns)) {
+							VncVal val = env.getGlobalOrNil(ns);
+							if (val == Nil) {
+								throw new VncException("Cannot remove a core symbol");
+							}
+							ns = (VncSymbol)val;
+							if (Namespaces.isCoreNS(ns)) {
+								throw new VncException("Cannot remove a core symbol");
+							}
+						}
+						final VncSymbol sym = new VncSymbol(
+													ns.getName()
+													+ "/"
+													+ Coerce.toVncSymbol(ast.third()).getName());
+						env.removeGlobalSymbol(sym);
+						return Nil;
+					}
+				}
+				
 				case "import":
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
 						ast.rest().forEach(i -> Namespaces

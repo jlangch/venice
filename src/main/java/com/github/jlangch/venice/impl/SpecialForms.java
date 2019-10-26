@@ -635,6 +635,24 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction ns_unmap = 
+		new SpecialFormsDocFunction(
+				"ns-unmap",
+				VncFunction
+				.meta()
+				.arglists("(ns-unmap ns sym)")		
+				.doc("Removes the mappings for the symbol from the namespace.")
+				.examples(
+					"(do                    \n" + 
+					"  (ns xxx)             \n" + 
+					"  (def foo 1)          \n" + 
+					"  (ns-unmap xxx foo)   \n" + 
+					"  (ns-unmap *ns* foo))   ")
+				.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction var_version = 
 		new SpecialFormsDocFunction(
 				"*version*",
@@ -666,6 +684,18 @@ public class SpecialForms {
 				.meta()
 				.doc("The loaded modules")
 				.examples("*loaded-modules*")
+				.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction var_loaded_files = 
+		new SpecialFormsDocFunction(
+				"*loaded-files*",
+				VncFunction
+				.meta()
+				.doc("The loaded files")
+				.examples("*loaded-files*")
 				.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -726,6 +756,7 @@ public class SpecialForms {
 					.put("try-with",		try_with)
 					.put("defmacro",		defmacro)
 					.put("macroexpand",		macroexpand)
+					.put("ns-unmap",		ns_unmap)
 					.put("import",			import_)
 					.put("imports",			imports_)
 					.put("dobench",			dobench)
@@ -734,6 +765,7 @@ public class SpecialForms {
 					.put("*version*",		var_version)
 					.put("*newline*",		var_newline)
 					.put("*loaded-modules*",var_loaded_modules)
+					.put("*loaded-files*",  var_loaded_files)
 					.put("*ns*",			var_ns)
 					.toMap();
 }

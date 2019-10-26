@@ -59,6 +59,14 @@ public class Namespaces {
 		return "core".equals(nsName);
 	}
 
+	public static boolean isCurrentNSSymbol(final VncSymbol nsSym) {
+		return NS_CURRENT_NAME.equals(nsSym.getName());
+	}
+
+	public static boolean isCurrentNSSymbol(final String nsName) {
+		return NS_CURRENT_NAME.equals(nsName);
+	}
+
 	public static VncSymbol getCurrentNS() {
 		return ThreadLocalMap.getCurrNS().getNS();
 	}

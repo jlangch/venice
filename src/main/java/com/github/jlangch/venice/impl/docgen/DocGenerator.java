@@ -1329,6 +1329,7 @@ public class DocGenerator {
 		other.addItem(getDocItem("*version*"));
 		other.addItem(getDocItem("*newline*"));
 		other.addItem(getDocItem("*loaded-modules*"));
+		other.addItem(getDocItem("*loaded-files*"));
 		other.addItem(getDocItem("*ns*"));
 
 		return section;
