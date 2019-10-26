@@ -162,7 +162,7 @@
                                 false}, defaults to false
               :outliers b     - show the outlier range in the chart {true/
                                 false}, defaults to false
-           """)
+           """
       :examples '(
         "(benchmark (+ 1 2) 120000 10000)",
         "(benchmark (+ 1 2) 120000 10000) :chart true :median true",
