@@ -603,7 +603,8 @@
          (let [code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")")
                parsed (read-string code fc)]
            (cons! (name fc) core/*loaded-files*)
-           (eval parsed))))))
+           (eval parsed)
+           ~file)))))
 
 
 (defmacro
@@ -630,7 +631,8 @@
        (let [code (str "(do " (load-classpath-venice ~file) ")")
              parsed (read-string code ~file)]
          (cons! (name ~file) core/*loaded-files*)
-         (eval parsed)))))
+         (eval parsed)
+         ~file))))
 
 
 (defmacro
