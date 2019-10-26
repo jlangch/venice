@@ -588,18 +588,22 @@
 
 
 (defmacro
-  ^{ :arglists '("(load-file f)")
+  ^{ :arglists '("(load-file file)")
      :doc "Sequentially read and evaluate the set of forms contained in the file."
      :examples '() }
 
-  load-file [f]
+  load-file
 
-  `(let [fc (io/file-canonical-path ~f)]
-     (when-not (contains? core/*loaded-files* (name fc))
-       (let [code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")")
-             parsed (read-string code fc)]
-         (cons! (name fc) core/*loaded-files*)
-         (eval parsed)))))
+  ([file]
+    (load-file file false))
+
+  ([file force]
+    `(let [fc (io/file-canonical-path ~file)]
+       (when (or force (not-contains? core/*loaded-files* (name fc)))
+         (let [code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")")
+               parsed (read-string code fc)]
+           (cons! (name fc) core/*loaded-files*)
+           (eval parsed))))))
 
 
 (defmacro
@@ -616,28 +620,36 @@
             (test/test-fn "hello"))
           """ ) }
 
-  load-classpath-file [f]
+  load-classpath-file
 
-  `(when-not (contains? core/*loaded-files* (name ~f))
-     (let [code (str "(do " (load-classpath-venice ~f) ")")
-           parsed (read-string code ~f)]
-       (cons! (name ~f) core/*loaded-files*)
-       (eval parsed))))
+  ([file]
+    (load-classpath-file file false))
+
+  ([file force]
+    `(when (or ~force (not-contains? core/*loaded-files* (name ~file)))
+       (let [code (str "(do " (load-classpath-venice ~file) ")")
+             parsed (read-string code ~file)]
+         (cons! (name ~file) core/*loaded-files*)
+         (eval parsed)))))
 
 
 (defmacro
-  ^{ :arglists '("(load-module s)")
+  ^{ :arglists '("(load-module m)")
      :doc "Loads a Venice predefined extension module."
      :examples '( "(load-module :math))" ) }
 
-  load-module [s]
+  load-module
 
-  `(when-not (contains? core/*loaded-modules* (keyword (name ~s)))
-     (let [code (str "(do " (load-core-module ~s) ")")
-           parsed (read-string code ~s)]
-       (cons! (keyword (name ~s)) core/*loaded-modules*)
-       (eval parsed)
-       (keyword (name ~s)))))
+  ([m]
+    (load-module m false))
+
+  ([m force]
+    `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
+       (let [code (str "(do " (load-core-module ~m) ")")
+             parsed (read-string code ~m)]
+         (cons! (keyword (name ~m)) core/*loaded-modules*)
+         (eval parsed)
+         (keyword (name ~m))))))
 
 
 (defmacro
