@@ -287,6 +287,28 @@ public class Env implements Serializable {
 		}		
 		globalSymbols.remove(sym);
 	}
+	
+	public void removeGlobalSymbolsByNS(final VncSymbol ns) {
+		final String nsName = ns.getName();
+		
+		if (Namespaces.isCoreNS(nsName)) {
+			return;
+		}
+		
+		if (precompiledGlobalSymbols != null) {
+			precompiledGlobalSymbols
+				.keySet()
+				.stream()
+				.filter(s -> nsName.equals(Namespaces.getNamespace(s.getName())))
+				.forEach(s -> precompiledGlobalSymbols.remove(s));
+		}	
+
+		globalSymbols
+			.keySet()
+			.stream()
+			.filter(s -> nsName.equals(Namespaces.getNamespace(s.getName())))
+			.forEach(s -> globalSymbols.remove(s));
+	}
 
 	public Env getLevelEnv(final int level) {
 		Env env = this;

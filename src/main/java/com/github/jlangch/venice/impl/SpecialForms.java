@@ -653,6 +653,25 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction ns_remove = 
+		new SpecialFormsDocFunction(
+				"ns-remove",
+				VncFunction
+				.meta()
+				.arglists("(ns-remove ns)")		
+				.doc("Removes the mappings for all symbols from the namespace.")
+				.examples(
+					"(do                     \n" + 
+					"  (ns xxx)              \n" + 
+					"  (def foo 1)           \n" + 
+					"  (def goo 1)           \n" + 
+					"  (ns-remove xxx foo)   \n" + 
+					"  (ns-remove *ns* foo))   ")
+				.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction var_version = 
 		new SpecialFormsDocFunction(
 				"*version*",
@@ -757,6 +776,7 @@ public class SpecialForms {
 					.put("defmacro",		defmacro)
 					.put("macroexpand",		macroexpand)
 					.put("ns-unmap",		ns_unmap)
+					.put("ns-remove",		ns_remove)
 					.put("import",			import_)
 					.put("imports",			imports_)
 					.put("dobench",			dobench)

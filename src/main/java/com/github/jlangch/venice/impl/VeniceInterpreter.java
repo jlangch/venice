@@ -342,7 +342,28 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns-remove": { // (ns-remove ns)
-					return Nil;
+					if (ast.second() == Nil) {
+						throw new VncException("Cannot remove a namespace nil");
+					}
+
+					VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					if (Namespaces.isCoreNS(ns)) {
+						throw new VncException("Cannot remove namespace core");
+					}
+					else {
+						if (Namespaces.isCurrentNSSymbol(ns)) {
+							VncVal val = env.getGlobalOrNil(ns);
+							if (val == Nil) {
+								throw new VncException("Cannot remove namespace core");
+							}
+							ns = (VncSymbol)val;
+							if (Namespaces.isCoreNS(ns)) {
+								throw new VncException("Cannot remove namespace core");
+							}
+						}
+						env.removeGlobalSymbolsByNS(ns);
+						return Nil;
+					}
 				}
 				
 				case "ns-unmap": { // (ns-unmap ns sym)
