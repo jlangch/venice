@@ -1666,7 +1666,7 @@ public class IOFunctions {
 			return ((Path)((VncJavaObject)f).getDelegate()).toFile();
 		}
 		else {
-			throw new VncException(String.format(errFormat, f));
+			throw new VncException(String.format(errFormat, Types.getType(f)));
 		}
 	}
 

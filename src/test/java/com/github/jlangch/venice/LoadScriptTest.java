@@ -60,8 +60,81 @@ public class LoadScriptTest {
 						"  (xxx/sum 1 2))        ",
 				    file.getPath());
 
-						try {
-				
+			try {			
+				assertEquals(14L, new Venice().eval(script_2));
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Test
+	public void test_load_file_param() {
+		final String script_1 = 
+				"(ns xxx)                        \n" + 
+				"                                \n" + 
+				"(defn sum [x y] (+ x y 11))       ";
+
+		try {
+			File file = File.createTempFile("test", ".venice");
+			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+
+			final String script_2 = 
+					"(do                   \n" + 
+					"  (load-file f)       \n" + 
+					"  (xxx/sum 1 2)))       ";
+
+			try {
+				assertEquals(14L, new Venice().eval(script_2, Parameters.of("f", file.getAbsolutePath())));
+			}
+			finally {
+				file.delete();
+			}
+			
+
+			file = File.createTempFile("test", ".venice");
+			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+
+			final String script_3 = 
+					"(do                    \n" + 
+					"  (load-file f true)   \n" + 
+					"  (xxx/sum 1 2)))       ";
+
+			try {
+				assertEquals(14L, new Venice().eval(script_3, Parameters.of("f", file.getAbsolutePath())));
+			}
+			finally {
+				file.delete();
+			}
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Test
+	public void test_load_file_force() {
+		final String script_1 = 
+				"(ns xxx)                        \n" + 
+				"                                \n" + 
+				"(defn sum [x y] (+ x y 11))       ";
+
+		try {
+			final File file = File.createTempFile("test", ".venice");
+			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+
+			final String script_2 = 
+					String.format(
+						"(do                         \n" + 
+						"  (load-file \"%s\" force)  \n" + 
+						"  (xxx/sum 1 2))              ",
+				    file.getPath());
+
+			try {	
 				assertEquals(14L, new Venice().eval(script_2));
 			}
 			finally {

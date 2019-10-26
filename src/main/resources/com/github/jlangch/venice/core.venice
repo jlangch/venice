@@ -588,14 +588,16 @@
 
 
 (defmacro
-  ^{ :arglists '("(load-file file)")
+  ^{ :arglists '(
+          "(load-file file)",
+          "(load-file file force)")
      :doc "Sequentially read and evaluate the set of forms contained in the file."
      :examples '() }
 
   load-file
 
   ([file]
-    (load-file file false))
+    `(load-file ~file false))
 
   ([file force]
     `(let [fc (io/file-canonical-path ~file)]
@@ -608,7 +610,9 @@
 
 
 (defmacro
-  ^{ :arglists '("(load-classpath-file name)")
+  ^{ :arglists '(
+          "(load-classpath-file name)",
+          "(load-classpath-file name force)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the
           classpath file. The function is restricted to classpath files with
@@ -619,12 +623,21 @@
           (do
             (load-classpath-file "com/github/jlangch/venice/test.venice")
             (test/test-fn "hello"))
+          """,
+          """
+          (do
+            (load-classpath-file "com/github/jlangch/venice/test.venice")
+            (test/test-fn "hello")
+            ; reload the classpath file
+            (ns-remove test)
+            (load-classpath-file "com/github/jlangch/venice/test.venice" true)
+            (test/test-fn "hello"))
           """ ) }
 
   load-classpath-file
 
   ([file]
-    (load-classpath-file file false))
+    `(load-classpath-file ~file false))
 
   ([file force]
     `(when (or ~force (not-contains? core/*loaded-files* (name ~file)))
@@ -636,14 +649,26 @@
 
 
 (defmacro
-  ^{ :arglists '("(load-module m)")
+  ^{ :arglists '(
+          "(load-module m)",
+          "(load-module m force)")
      :doc "Loads a Venice predefined extension module."
-     :examples '( "(load-module :math))" ) }
+     :examples '(
+           """
+           (load-module :math)
+           """,
+           """
+           (do
+             (load-module :math)
+             ; reload the module
+             (ns-remove math)
+             (load-module :math true))
+           """) }
 
   load-module
 
   ([m]
-    (load-module m false))
+    `(load-module ~m false))
 
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))

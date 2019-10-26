@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -38,7 +37,6 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
@@ -1721,31 +1719,6 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(list? 1)"));	
 	}
 
-	@Test
-	public void test_load_file() {
-		final Venice venice = new Venice();
-		
-		try {
-			final File file = File.createTempFile("load", ".txt");
-			try {				
-				venice.eval(
-						"(io/spit file \"(def x 1) (+ x 2)\")", 
-						Parameters.of("file", file.getAbsolutePath()));
-	
-				assertEquals(
-						Long.valueOf(3), 
-						venice.eval(
-								"(load-file file)", 
-								Parameters.of("file", file.getAbsolutePath())));					
-			}
-			finally {
-				file.delete();
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
 
 	@Test
 	public void test_load_string1() {
