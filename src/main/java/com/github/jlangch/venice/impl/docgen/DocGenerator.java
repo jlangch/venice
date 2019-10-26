@@ -119,7 +119,8 @@ public class DocGenerator {
 				getConcurrencySection(),
 				getSystemSection(),
 				getJavaInteropSection(),
-				getIOSection());
+				getIOSection(),
+				getNamespaceSection());
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
@@ -1107,7 +1108,25 @@ public class DocGenerator {
 
 		return section;
 	}
+
+	private DocSection getNamespaceSection() {
+		final DocSection section = new DocSection("Namespace", id());
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection curr = new DocSection("Current");
+		all.addSection(curr);
+		curr.addItem(getDocItem("*ns*"));
+
+		final DocSection remove = new DocSection("Remove");
+		all.addSection(remove);
+		remove.addItem(getDocItem("ns-unmap"));
+		remove.addItem(getDocItem("ns-remove"));
 	
+		return section;
+	}
+
 	private DocSection getByteBufSection() {
 		final DocSection section = new DocSection("Byte Buffer", id());
 
