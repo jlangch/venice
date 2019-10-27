@@ -122,7 +122,12 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     description="Generate cheatsheet"
 
     main = 'com.github.jlangch.venice.impl.docgen.DocGenerator'
-    classpath = sourceSets.main.runtimeClasspath + sourceSets.main.compileClasspath
+    
+    classpath { 
+      [ sourceSets.main.runtimeClasspath,
+        sourceSets.main.compileClasspath,
+        "src/main/resources" ]
+    }
     
     // add more stack space to prevent StackOverflowError at
     // java.util.regex.Pattern$CharProperty$1.isSatisfiedBy(...)   
