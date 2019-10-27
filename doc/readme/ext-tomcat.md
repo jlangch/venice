@@ -5,7 +5,7 @@ Tomcat server and running servlets.
 
 Dependencies:
 
- - org.apache.tomcat.embed:tomcat-embed-core:9.0.19
+ - org.apache.tomcat.embed:tomcat-embed-core:9.0.27
  - javax.annotation:javax.annotation-api:1.3.2
 
 To simplify things there is a 
@@ -68,6 +68,6 @@ Type `ctrl-c` in the REPL to shutdown the server.
 (do
   (load-module :maven)
   
-  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.21")
+  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.27")
   (maven/download "javax.annotation:javax.annotation-api:1.3.2"))
 ```

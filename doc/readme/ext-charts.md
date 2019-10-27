@@ -2,7 +2,7 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
-- org.knowm.xchart:xchart:3.5.4
+- org.knowm.xchart:xchart:3.6.0
 
 Examples:
 
@@ -180,6 +180,6 @@ Examples:
 (do
   (load-module :maven)
   
-  (maven/download "org.knowm.xchart:xchart:3.5.4"))
+  (maven/download "org.knowm.xchart:xchart:3.6.0"))
 ```
 
