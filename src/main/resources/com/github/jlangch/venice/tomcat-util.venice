@@ -379,7 +379,7 @@
         (io/delete-file (io/file tc-dir "LICENSE"))
         (io/delete-file (io/file tc-dir "NOTICE"))
         (io/delete-file (io/file tc-dir "README.md"))
-        (io/delete-file (io/file tc-dir "RELEASE_NOTES"))
+        (io/delete-file (io/file tc-dir "RELEASE-NOTES"))
         (io/delete-file (io/file tc-dir "RUNNING.txt"))
         (io/delete-file (io/file tc-dir "temp" "safeToDelete.tmp"))
         (println "Cleaning system webapps ...")
