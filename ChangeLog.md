@@ -16,11 +16,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- a syntax problem with a comment in the benchmark module causing load to fail
+- a syntax problem with a comment in the benchmark module causing the 
+  module load to fail
 
 ### Changed
 
-- function `load-file` and `load-classpath-file` to load the file only once
+- function `load-file` and `load-classpath-file` to load the file only 
+  once. There is an option to force a reload.
 
 
 
