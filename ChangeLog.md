@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - ...
 
+### Fixed
+
+- 'tomcat-util' module TC installation cleanup
+
 
 
 ## [1.7.7] - 2019-10-27
