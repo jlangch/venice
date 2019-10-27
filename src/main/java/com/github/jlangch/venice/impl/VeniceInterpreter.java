@@ -342,54 +342,24 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns-remove": { // (ns-remove ns)
-					if (ast.second() == Nil) {
-						throw new VncException("Cannot remove a namespace nil");
-					}
-
-					VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isCoreNS(ns)) {
 						throw new VncException("Cannot remove namespace core");
 					}
 					else {
-						if (Namespaces.isCurrentNSSymbol(ns)) {
-							VncVal val = env.getGlobalOrNil(ns);
-							if (val == Nil) {
-								throw new VncException("Cannot remove namespace core");
-							}
-							ns = (VncSymbol)val;
-							if (Namespaces.isCoreNS(ns)) {
-								throw new VncException("Cannot remove namespace core");
-							}
-						}
 						env.removeGlobalSymbolsByNS(ns);
+						nsRegistry.remove(ns);
 						return Nil;
 					}
 				}
 				
 				case "ns-unmap": { // (ns-unmap ns sym)
-					if (ast.second() == Nil) {
-						throw new VncException("Cannot remove a core symbol");
-					}
-
-					VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isCoreNS(ns)) {
 						throw new VncException("Cannot remove a core symbol");
 					}
 					else {
-						if (Namespaces.isCurrentNSSymbol(ns)) {
-							VncVal val = env.getGlobalOrNil(ns);
-							if (val == Nil) {
-								throw new VncException("Cannot remove a core symbol");
-							}
-							ns = (VncSymbol)val;
-							if (Namespaces.isCoreNS(ns)) {
-								throw new VncException("Cannot remove a core symbol");
-							}
-						}
-						final VncSymbol sym = new VncSymbol(
-													ns.getName()
-													+ "/"
-													+ Coerce.toVncSymbol(ast.third()).getName());
+						final VncSymbol sym = Namespaces.qualifySymbol(ns, Coerce.toVncSymbol(ast.third()));
 						env.removeGlobalSymbol(sym);
 						return Nil;
 					}

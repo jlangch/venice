@@ -107,6 +107,7 @@ public class DocGenerator {
 				getFunctionsSection(),
 				getMacrosSection(),
 				getTransducersSection(),
+				getNamespaceSection(),
 				getSpecialFormsSection(),
 				getMiscellaneousSection());
 	}
@@ -119,8 +120,7 @@ public class DocGenerator {
 				getConcurrencySection(),
 				getSystemSection(),
 				getJavaInteropSection(),
-				getIOSection(),
-				getNamespaceSection());
+				getIOSection());
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
