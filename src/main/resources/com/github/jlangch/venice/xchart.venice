@@ -406,11 +406,12 @@
         {:keys [label logarithmic? max min decimal-pattern
                 tick-mark-spacing-hint ticks-visible? title-visible?]}]
        (do
-          (let [{:keys [alignment rotation]} label]
+          (let [{:keys [alignment rotation max-count]} label]
              (xchart/doto-cond
                 styler
                 alignment (. :setXAxisLabelAlignment (get xchart/text-alignments alignment alignment))
-                rotation  (. :setXAxisLabelRotation rotation)))
+                rotation  (. :setXAxisLabelRotation rotation)
+                max-count (. :setXAxisMaxLabelCount max-count)))
           (xchart/doto-cond
              styler
              decimal-pattern             (. :setXAxisDecimalPattern decimal-pattern)
@@ -461,7 +462,7 @@
                ;; color, but if you specify something else, you cannot match the series!
                (and ebc (not (== ebc :match-series))) (. :setErrorBarsColor (get xchart/colors ebc ebc))
                (and ebc (not (== ebc :match-series))) (. :setErrorBarsColorSeriesColor false)
-               (== ebc :match-series)           (. :setErrorBarsColorSeriesColor true)
+               (== ebc :match-series)                 (. :setErrorBarsColorSeriesColor true)
 
                locale      (. :setLocale locale)
                marker-size (. :setMarkerSize marker-size)
