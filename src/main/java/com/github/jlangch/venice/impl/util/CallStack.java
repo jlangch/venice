@@ -38,7 +38,7 @@ public class CallStack {
 	}
 	
 	public CallFrame pop() {
-		return queue.pop();
+		return isEmpty() ? null : queue.pop();
 	}
 	
 	public CallFrame peek() {

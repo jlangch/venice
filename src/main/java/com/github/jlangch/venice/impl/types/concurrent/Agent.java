@@ -249,17 +249,20 @@ public class Agent implements IDeref {
 		public void run() {
 			final CallStack callStack = ThreadLocalMap.getCallStack();
 
+			final CallFrame callFrame = CallFrame.fromVal(
+											String.format(
+													"agent->%s->%s", 
+													sendType.toString().toLowerCase(), 
+													fn.getQualifiedName()),
+											fnArgs);
+
 			try {				
+				ThreadLocalMap.clearCallStack();
+				callStack.push(callFrame);
+
 				// inherit thread local values to the child thread
 				ThreadLocalMap.setValues(threadLocalValues.get());
 				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
-				ThreadLocalMap.clearCallStack();
-				callStack.push(CallFrame.fromVal(
-									String.format(
-											"agent->%s->%s", 
-											sendType.toString().toLowerCase(), 
-											fn.getQualifiedName()),
-									fnArgs));
 				JavaInterop.register(interceptor);	
 				
 				if (agent.getError() == null || agent.continueOnError) {

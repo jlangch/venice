@@ -593,9 +593,10 @@ public class VeniceInterpreter implements Serializable  {
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
 						// invoke function with call frame
+						final CallFrame callFrame = CallFrame.fromFunction(fn, a0);
 						try {
-							callStack.push(CallFrame.fromFunction(fn, a0));
-
+							callStack.push(callFrame);
+							
 							return fn.apply(elArgs);
 						}
 						finally {
