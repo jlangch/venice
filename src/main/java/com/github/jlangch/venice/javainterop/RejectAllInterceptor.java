@@ -45,7 +45,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object... args
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-					"Access denied to target %s", 
+					"%s: Access denied to target %s",
+					PREFIX,
 					receiver.getClass().getName()));
 	}
 
@@ -57,7 +58,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object... args
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Access denied to target %s", 
+				"%s: Access denied to target %s",
+				PREFIX,
 				receiver.getName()));
 	}
 
@@ -68,7 +70,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object... args
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Access denied to target %s", 
+				"%s: Access denied to target %s", 
+				PREFIX,
 				receiver.getName()));
 	}
 
@@ -79,7 +82,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final String property
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Access denied to target %s", 
+				"%s: Access denied to target %s",
+				PREFIX,
 				receiver.getClass().getName()));
 	}
 
@@ -91,7 +95,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object value
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Access denied to target %s", 
+				"%s: Access denied to target %s", 
+				PREFIX,
 				receiver.getClass().getName()));
 	}
 
@@ -102,7 +107,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final String fieldName
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Access denied to target %s", 
+				"%s: Access denied to target %s", 
+				PREFIX,
 				receiver.getName()));
 	}
 
@@ -113,7 +119,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final String fieldName
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Access denied to target %s", 
+				"%s: Access denied to target %s",
+				PREFIX,
 				receiver.getClass().getName()));
 	}
 
@@ -122,7 +129,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final String resourceName
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Venice Sandbox: Access denied to classpath resource '%s'", 
+				"%s: Access denied to classpath resource '%s'",
+				PREFIX,
 				resourceName));
 	}
 
@@ -131,7 +139,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final String propertyName
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Venice Sandbox: Access denied to system property '%s'", 
+				"%s: Access denied to system property '%s'", 
+				PREFIX,
 				propertyName));
 	}
 
@@ -140,7 +149,8 @@ public class RejectAllInterceptor extends Interceptor {
 			final String name
 	) throws SecurityException {
 		throw new SecurityException(String.format(
-				"Venice Sandbox: Access denied to system environment variable '%s'", 
+				"%s: Access denied to system environment variable '%s'", 
+				PREFIX,
 				name));
 	}
 
@@ -150,10 +160,14 @@ public class RejectAllInterceptor extends Interceptor {
 	) throws SecurityException {
 		if (blacklistedVeniceFunctions.contains(funcName)) {
 			throw new SecurityException(String.format(
-					"Access denied to Venice function %s. (reject-all sandbox)", funcName));
+					"%s: Access denied to Venice function %s.", 
+					PREFIX,
+					funcName));
 		}
 	}
 
+	
+	private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
 	
 	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getAllIoFunctions();
 }

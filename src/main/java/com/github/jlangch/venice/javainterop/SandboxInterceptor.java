@@ -147,7 +147,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	) throws SecurityException {
 		if (sandboxRules.isBlackListedVeniceFunction(funcName)) {
 			throw new SecurityException(String.format(
-					"Venice Sandbox: Access denied to function %s", 
+					"%s: Access denied to function %s", 
+					PREFIX,
 					funcName));
 		}
 	}
@@ -177,7 +178,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 
 			if (!sandboxRules.isWhiteListed(clazz)) {
 				throw new SecurityException(String.format(
-						"Venice Sandbox: Access denied to class %s", 
+						"%s: Access denied to class %s", 
+						PREFIX,
 						clazz.getName()));
 			}
 		}
@@ -188,8 +190,10 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final Class<?> clazz= getClass(receiver);
 			if (!sandboxRules.isWhiteListed(clazz, accessor)) {
 				throw new SecurityException(String.format(
-						"Venice Sandbox: Access denied to accessor %s::%s", 
-						clazz.getName(), accessor));
+						"%s: Access denied to accessor %s::%s", 
+						PREFIX,
+						clazz.getName(), 
+						accessor));
 			}
 		}
 	}
@@ -198,7 +202,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 		if (!StringUtil.isBlank(resourceName)) {
 			if (!sandboxRules.isWhiteListedClasspathResource(resourceName)) {
 				throw new SecurityException(String.format(
-						"Venice Sandbox: Access denied to classpath resource '%s'", 
+						"%s: Access denied to classpath resource '%s'", 
+						PREFIX,
 						resourceName));
 			}
 		}
@@ -208,7 +213,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 		if (!StringUtil.isBlank(propertyName)) {
 			if (!sandboxRules.isWhiteListedSystemProperty(propertyName)) {
 				throw new SecurityException(String.format(
-						"Venice Sandbox: Access denied to system property '%s'", 
+						"%s: Access denied to system property '%s'", 
+						PREFIX,
 						propertyName));
 			}
 		}
@@ -218,7 +224,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 		if (!StringUtil.isBlank(name)) {
 			if (!sandboxRules.isWhiteListedSystemEnv(name)) {
 				throw new SecurityException(String.format(
-						"Venice Sandbox: Access denied to system environment variable '%s'", 
+						"%s: Access denied to system environment variable '%s'",
+						PREFIX,
 						name));
 			}
 		}
@@ -233,6 +240,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 		}
 	}
 	
+	
+	private static final String PREFIX = "Venice Sandbox";
 	
 	private final SandboxRules sandboxRulesOrg;
 	private final CompiledSandboxRules sandboxRules;
