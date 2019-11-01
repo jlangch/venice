@@ -190,9 +190,10 @@ Multimethods are a powerful mechanism for runtime polymorphism.
   (defmethod math-op "subtract" [s] (- (:op1 s) (:op2 s)))
   (defmethod math-op :default [s] 0)
 
-  [ (math-op {:op "add"      :op1 1 :op2 5}) 
-    (math-op {:op "subtract" :op1 1 :op2 5}) 
-    (math-op {:op "bogus"    :op1 1 :op2 5}) ] )
+  (math-op {:op "add"      :op1 1 :op2 5})  ; -> 6 
+  (math-op {:op "subtract" :op1 1 :op2 5})  ; -> -4
+  (math-op {:op "bogus"    :op1 1 :op2 5})  ; -> 0
+)
 ```
 
 Keyword as discrimiator function:
@@ -206,9 +207,9 @@ Keyword as discrimiator function:
   (defmethod area :Rect [r] (* (:width r) (:height r)))
   (defmethod area :Circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
     
-  (area (rect 4 13)) ; -> 52
+  (area (rect 4 13))  ; -> 52
   
-  (area (circle 12)) ; -> 452.3893421169302
+  (area (circle 12))  ; -> 452.3893421169302
 )
 ```
 
