@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 public class VncMultiFunction extends VncFunction {
 
-	public VncMultiFunction(final String name, final VncFunction discriminatorFn) {
+	public VncMultiFunction(final String name, final IVncFunction discriminatorFn) {
 		super(name);
 		
 		if (discriminatorFn == null) {
@@ -72,7 +72,9 @@ public class VncMultiFunction extends VncFunction {
 
 	@Override
 	public VncVector getParams() { 
-		return discriminatorFn.getParams();
+		return discriminatorFn instanceof VncFunction
+					? ((VncFunction)discriminatorFn).getParams()
+					: keywordDiscriminatorFnParams;
 	}
 
 	@Override
@@ -112,7 +114,9 @@ public class VncMultiFunction extends VncFunction {
 	private static final long serialVersionUID = -1848883965231344442L;
 	
 	private static final VncKeyword DEFAULT_METHOD = new VncKeyword(":default");
+	
+	private static final VncVector keywordDiscriminatorFnParams = VncVector.of(new VncSymbol("x"));
 
-	private final VncFunction discriminatorFn;
+	private final IVncFunction discriminatorFn;
 	private final ConcurrentHashMap<VncVal,VncFunction> functions = new ConcurrentHashMap<>();
 }

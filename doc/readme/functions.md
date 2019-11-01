@@ -195,6 +195,23 @@ Multimethods are a powerful mechanism for runtime polymorphism.
     (math-op {:op "bogus"    :op1 1 :op2 5}) ] )
 ```
 
+Keyword as discrimiator function:
+
+```clojure
+(do
+  (defn rect [w h] {:Shape :Rect, :width w, :height h})
+  (defn circle [radius] {:Shape :Circle, :radius radius})
+
+  (defmulti area :Shape)
+  (defmethod area :Rect [r] (* (:width r) (:height r)))
+  (defmethod area :Circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
+    
+  (area (rect 4 13)) ; -> 52
+  
+  (area (circle 12)) ; -> 452.3893421169302
+)
+```
+
 ## Functions calling each other:
 
 Venice supports functions calling each other without needing to declare them 

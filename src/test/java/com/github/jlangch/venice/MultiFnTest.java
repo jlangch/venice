@@ -58,6 +58,27 @@ public class MultiFnTest {
 	}
 
 	@Test
+	public void test_defmulti_keyword() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                            \n" +
+		        "   (defn rect [w h] {:Shape :Rect, :width w, :height h})       \n" +
+		        "   (defn circle [radius] {:Shape :Circle, :radius radius})     \n" +
+				"                                                               \n" +
+				"   (defmulti area :Shape)                                      \n" +
+				"   (defmethod area :Rect [r]                                   \n" +
+				"      (* (:width r) (:height r)))                              \n" +
+				"   (defmethod area :Circle [c]                                 \n" +
+				"      (* (. :java.lang.Math :PI) (* (:radius c) (:radius c)))) \n" +
+				"                                                               \n" +
+				"   (area (rect 4 13))                                          \n" +
+				")                                                                ";
+
+		assertEquals(52L, venice.eval(s));
+	}
+
+	@Test
 	public void test_defmulti_default() {
 		final Venice venice = new Venice();
 
