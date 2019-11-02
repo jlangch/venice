@@ -200,7 +200,7 @@ Multimethods are a powerful mechanism for runtime polymorphism.
 )
 ```
 
-Keyword as discrimiator function:
+Keyword as discriminator function:
 
 ```clojure
 (do
