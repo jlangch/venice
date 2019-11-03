@@ -217,7 +217,7 @@ Keyword as discriminator function:
 )
 ```
 
-Self recursion with multimethods:
+Simple recursion with multimethods:
 
 ```clojure
 (do
@@ -228,6 +228,9 @@ Self recursion with multimethods:
   (factorial 5)  ; -> 120
 )
 ```
+
+_Note: simple recursion suffers from Java's stack depth limit._
+
 
 ## Functions calling each other:
 

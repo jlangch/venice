@@ -294,9 +294,18 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol name = qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(ast.second(), env));
 					
-					final IVncFunction dispatchFn = Types.isVncKeyword(ast.third())
-														? (VncKeyword)ast.third()
-														: fn_(Coerce.toVncList(ast.third()), env);
+					IVncFunction dispatchFn;
+					
+					if (Types.isVncKeyword(ast.third())) {
+						dispatchFn = (VncKeyword)ast.third();
+					}
+					else if (Types.isVncSymbol(ast.third())) {
+						dispatchFn = Coerce.toVncFunction(env.get((VncSymbol)ast.third()));
+					}
+					else {
+						dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
+					}
+
 					final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn);
 					env.setGlobal(new Var(name, multiFn, false));
 					return multiFn;

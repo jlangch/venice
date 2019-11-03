@@ -12,16 +12,28 @@ mutual recursion is available for more involved forms of recursion.
 (do
   (load-module :math)
   
-  (defn factorial [x] 
-    (if (<= x 1) 
+  (defn factorial [n] 
+    (if (<= n 1) 
         1 
-        (math/bigint-mul x (factorial (dec x))))))
+        (math/bigint-mul n (factorial (dec n))))))
 
+  (factorial 2)     ; -> 2
+  (factorial 5)     ; -> 120
+  (factorial 200)   ; -> 78865786736479050355236...00000000 (375 digits)
+  (factorial 4000)  ; -> boooom...
+)
+```
 
-  (factorial 2)  ; -> 2
+```clojure
+(do
+  (load-module :math)
 
-  (factorial 4)  ; -> 24
+  (defmulti factorial identity)
+  (defmethod factorial 0 [_] 1)
+  (defmethod factorial :default [n] (math/bigint-mul n (factorial (dec n))))
 
+  (factorial 5)     ; -> 120
+  (factorial 200)   ; -> 78865786736479050355236...00000000 (375 digits)
   (factorial 4000)  ; -> boooom...
 )
 ```

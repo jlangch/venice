@@ -79,6 +79,22 @@ public class MultiFnTest {
 	}
 
 	@Test
+	public void test_defmulti_fn() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                              \n" +
+				"   (defmulti factorial identity)                                 \n" +
+				"   (defmethod factorial 0 [_] 1)                                 \n" +
+				"   (defmethod factorial :default [n] (* n (factorial (dec n))))  \n" +
+				"                                                                 \n" +
+				"   (factorial 5)                                                 \n" +
+				")                                                                  ";
+
+		assertEquals(120L, venice.eval(s));
+	}
+
+	@Test
 	public void test_defmulti_default() {
 		final Venice venice = new Venice();
 
