@@ -217,6 +217,18 @@ Keyword as discriminator function:
 )
 ```
 
+Keyword as discriminator function:
+
+```clojure
+(do
+  (defmulti factorial identity)
+  (defmethod factorial 0 [_] 1)
+  (defmethod factorial :default [n] (* n (factorial (dec n))))
+
+  (factorial 5) ; 120
+)
+```
+
 ## Functions calling each other:
 
 Venice supports functions calling each other without needing to declare them 
