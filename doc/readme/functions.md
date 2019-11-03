@@ -217,7 +217,7 @@ Keyword as discriminator function:
 )
 ```
 
-Keyword as discriminator function:
+Self recursion with multimethods:
 
 ```clojure
 (do
@@ -225,7 +225,7 @@ Keyword as discriminator function:
   (defmethod factorial 0 [_] 1)
   (defmethod factorial :default [n] (* n (factorial (dec n))))
 
-  (factorial 5) ; 120
+  (factorial 5)  ; -> 120
 )
 ```
 
