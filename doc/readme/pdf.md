@@ -1017,12 +1017,10 @@ Venice supports simplified text to PDF
      """)
 
   ; render the PDF, and save it
-  (-<> text
-       (pdf/text-to-pdf <> :font-size 10 
-                           :font-weight 300 
-                           :font-monospace false)
-       (io/spit "text2pdf-example.pdf" <>))
-)
+  (let [pdf (pdf/text-to-pdf text :font-size 10 
+                                  :font-weight 300 
+                                  :font-monospace false)]
+    (io/spit "text2pdf-example.pdf" pdf)))
 ```
 
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/text2pdf-example.pdf)
@@ -1037,12 +1035,12 @@ Merge multiple PDFs into a single one
 
 ```clojure
 (do 
-  (->> (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
-                  (pdf/text-to-pdf "PDF #2" :font-size 64)
-                  (pdf/text-to-pdf "PDF #3" :font-size 64)
-                  (pdf/text-to-pdf "PDF #4" :font-size 64)
-                  (pdf/text-to-pdf "PDF #5" :font-size 64))
-       (io/spit "merge-example.pdf")))
+  (let [pdf (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
+                       (pdf/text-to-pdf "PDF #2" :font-size 64)
+                       (pdf/text-to-pdf "PDF #3" :font-size 64)
+                       (pdf/text-to-pdf "PDF #4" :font-size 64)
+                       (pdf/text-to-pdf "PDF #5" :font-size 64))]
+    (io/spit "merge-example.pdf" pdf)))
 ```
 
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/merge-example.pdf)
@@ -1057,13 +1055,13 @@ Copy pages from a PDF to a new PDF
 
 ```clojure
 (do 
-  (-<> (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
-                  (pdf/text-to-pdf "PDF #2" :font-size 64)
-                  (pdf/text-to-pdf "PDF #3" :font-size 64)
-                  (pdf/text-to-pdf "PDF #4" :font-size 64)
-                  (pdf/text-to-pdf "PDF #5" :font-size 64))
-       (pdf/copy <> :1 :1 :1 :2-4 :-1 :-2 :-3)
-       (io/spit "copy-example.pdf" <>)))
+  (let [pdf (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
+                       (pdf/text-to-pdf "PDF #2" :font-size 64)
+                       (pdf/text-to-pdf "PDF #3" :font-size 64)
+                       (pdf/text-to-pdf "PDF #4" :font-size 64)
+                       (pdf/text-to-pdf "PDF #5" :font-size 64))]
+    (->> (pdf/copy pdf :1 :1 :1 :2-4 :-1 :-2 :-3)
+         (io/spit "copy-example.pdf"))))
 ```
 
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/copy-example.pdf)
