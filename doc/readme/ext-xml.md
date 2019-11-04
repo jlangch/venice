@@ -11,14 +11,25 @@ and :content (XML element content).
    ;; load the Venice XML extension module
    (load-module :xml)
    
+   
    (str (xml/parse-str "<a><b>B</b></a>"))
    
+   ; -> {:tag "a" :content [{:tag "b" :content ["B"]}]}
+   
+   
    (str (xml/parse-str 
-           """<?xml version="1.0" encoding="UTF-8"?>
-              <a a1="100">
-                <b>B1</b>
-                <b>B2</b>
-              </a>""")))
+           """
+           <?xml version="1.0" encoding="UTF-8"?>
+           <a a1="100">
+             <b>B1</b>
+             <b>B2</b>
+           </a>
+           """)))
+           
+   ; -> {:tag "a" 
+   ;     :attrs {:a1 "100"} 
+   ;     :content [{:tag "b" :content ["B1"]} 
+   ;               {:tag "b" :content ["B2"]}]}
 ```
 
 
@@ -35,8 +46,8 @@ String
 SAX Parser InputSource
 
 ```clojure
-(xml/parse (->> (. :StringReader :new "<a><b>B</b></a>")
-                (. :InputSource :new)))
+(xml/parse (->> (. :java.io.StringReader :new "<a><b>B</b></a>")
+                (. :org.xml.sax.InputSource :new)))
 ```
 
 InputStream
