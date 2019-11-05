@@ -3551,6 +3551,116 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction every_pred =
+		new VncFunction(
+				"every-pred",
+				VncFunction
+					.meta()
+					.arglists("(every-pred p1 & p)")
+					.doc(
+						"Takes a set of predicates and returns a function f that returns true " +
+						"if all of its composing predicates return a logical true value against " +
+						"all of its arguments, else it returns false. Note that f is short-circuiting " +
+						"in that it will stop execution on the first argument that triggers a logical " +
+						"false result against the original predicates." )
+					.examples(
+						"((every-pred number?) 1)",
+						"((every-pred number?) 1 2)",
+						"((every-pred number? even?) 2 4 6)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("every-pred", args, 1);
+
+				final List<VncFunction> predicates = args.getList()
+														 .stream()
+														 .map(p -> Coerce.toVncFunction(p))
+														 .collect(Collectors.toList());
+				
+				return new VncFunction(createAnonymousFuncName("every-pred:wrapped")) {
+					public VncVal apply(final VncList args) {
+						for(VncVal arg : args.getList()) {
+							for(VncFunction pred : predicates) {
+								final VncVal res = pred.apply(VncList.of(arg));
+								if (res == True) {
+									continue;
+								}
+								else if (res == False) {
+									return False;
+								}
+								else {
+									throw new VncException(String.format(
+											"every-pred: The predicate function %s did not return a boolean value",
+											pred.getQualifiedName()));
+								}							
+							}
+						}
+						
+						return True;
+					}
+
+				    private static final long serialVersionUID = -1L;
+				};
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction any_pred =
+		new VncFunction(
+				"any-pred",
+				VncFunction
+					.meta()
+					.arglists("(any-pred p1 & p)")
+					.doc(
+						"Takes a set of predicates and returns a function f that returns the first " + 
+						"logical true value returned by one of its composing predicates against any " + 
+						"of its arguments, else it returns logical false. Note that f is short-circuiting " + 
+						"in that it will stop execution on the first argument that triggers a logical " +
+						"true result against the original predicates." )
+					.examples(
+						"((any-pred number?) 1)",
+						"((any-pred number?) 1 \"a\")",
+						"((any-pred number? string?) 2 \"a\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("any-pred", args, 1);
+
+				final List<VncFunction> predicates = args.getList()
+														 .stream()
+														 .map(p -> Coerce.toVncFunction(p))
+														 .collect(Collectors.toList());
+				
+				return new VncFunction(createAnonymousFuncName("any-pred:wrapped")) {
+					public VncVal apply(final VncList args) {
+						for(VncVal arg : args.getList()) {
+							for(VncFunction pred : predicates) {
+								final VncVal res = pred.apply(VncList.of(arg));
+								if (res == True) {
+									return True;
+								}
+								else if (res == False) {
+									continue;
+								}
+								else {
+									throw new VncException(String.format(
+											"any-pred: The predicate function %s did not return a boolean value",
+											pred.getQualifiedName()));
+								}							
+							}
+						}
+						
+						return False;
+					}
+
+				    private static final long serialVersionUID = -1L;
+				};
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction count =
 		new VncFunction(
 				"count",
@@ -6008,6 +6118,8 @@ public class CoreFunctions {
 				.add(not_every_Q)
 				.add(any_Q)
 				.add(not_any_Q)
+				.add(every_pred)
+				.add(any_pred)
 				.add(count)
 				.add(compare)
 				.add(apply)

@@ -723,6 +723,8 @@ public class DocGenerator {
 		create.addItem(getDocItem("trampoline"));
 		create.addItem(getDocItem("complement"));
 		create.addItem(getDocItem("constantly"));
+		create.addItem(getDocItem("every-pred"));
+		create.addItem(getDocItem("any-pred"));
 
 		final DocSection call = new DocSection("Call");
 		all.addSection(call);

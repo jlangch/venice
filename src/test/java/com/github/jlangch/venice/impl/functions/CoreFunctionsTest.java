@@ -58,6 +58,28 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_any_pred() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("((any-pred number?) 1)"));	
+		assertTrue((Boolean)venice.eval("((any-pred number?) 1 \"a\")"));	
+		assertTrue((Boolean)venice.eval("((any-pred number?) 1 \"a\" \"a\")"));	
+		
+		assertFalse((Boolean)venice.eval("((any-pred number?) true)"));	
+		assertFalse((Boolean)venice.eval("((any-pred number?) true false)"));	
+		assertFalse((Boolean)venice.eval("((any-pred number?) true true false)"));	
+
+		assertTrue((Boolean)venice.eval("((any-pred number? string?) 1)"));	
+		assertTrue((Boolean)venice.eval("((any-pred number? string?) \"a\")"));	
+		assertTrue((Boolean)venice.eval("((any-pred number? string?) 1 \"a\")"));	
+		assertTrue((Boolean)venice.eval("((any-pred number? string?) \"a\" 1)"));	
+		
+		assertFalse((Boolean)venice.eval("((any-pred number? string?) true)"));	
+		assertFalse((Boolean)venice.eval("((any-pred number? string?) true false)"));	
+		assertFalse((Boolean)venice.eval("((any-pred number? string?) true true false)"));	
+	}
+	
+	@Test
 	public void test_apply() {
 		final Venice venice = new Venice();
 		
@@ -952,6 +974,31 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [1])"));	
 		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) [1 2])"));	
 		assertTrue((Boolean)venice.eval("(every? (fn [x] (number? x)) (set 1 2))"));	
+	}
+	
+	@Test
+	public void test_every_pred() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("((every-pred number?) 1)"));	
+		assertTrue((Boolean)venice.eval("((every-pred number?) 1 2)"));	
+		assertTrue((Boolean)venice.eval("((every-pred number?) 1 2 3)"));	
+		
+		assertFalse((Boolean)venice.eval("((every-pred number?) 1 true)"));	
+		assertFalse((Boolean)venice.eval("((every-pred number?) 1 2 true)"));	
+		assertFalse((Boolean)venice.eval("((every-pred number?) 1 true 2 3)"));	
+
+		assertTrue((Boolean)venice.eval("((every-pred number? pos?) 1)"));	
+		assertTrue((Boolean)venice.eval("((every-pred number? pos?) 1 2)"));	
+		assertTrue((Boolean)venice.eval("((every-pred number? pos?) 1 2 3)"));	
+		
+		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 -1)"));	
+		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 2 -1)"));	
+		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 -1 2 3)"));	
+		
+		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 -1 true)"));	
+		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 2 true -1)"));	
+		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 -1 true 2 3)"));	
 	}
 	
 	@Test
