@@ -45,8 +45,9 @@
 ;; HTML templates
 ;; -----------------------------------------------------------------------------
 
-;; The HTML templates are string based to have single file demo app.
-;; Templates can be loaded from classpath or filesystem if required so.
+;; The HTML templates in this demo are string based to get single file demo app.
+;; Alternatively templates can be loaded from classpath or filesystem if 
+;; required so.
 
 (def tpl-login-screen (
   """
