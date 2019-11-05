@@ -9,7 +9,7 @@
 	<classpathentry kind="lib" path="lib/eclipse/openpdf-1.3.11.jar" sourcepath="lib/eclipse/openpdf-1.3.11-sources.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/pdf-toolbox-1.3.11.jar" sourcepath="lib/eclipse/pdf-toolbox-1.3.11-sources.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/javax.servlet-api-4.0.1.jar" sourcepath="lib/eclipse/javax.servlet-api-4.0.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/provided/jline-3.12.1.jar" sourcepath="lib/provided/jline-3.12.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/provided/jline-3.13.1.jar" sourcepath="lib/provided/jline-3.13.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/provided/vavr-0.10.2.jar" sourcepath="lib/provided/vavr-0.10.2-sources.jar"/>
 	<classpathentry kind="lib" path="src/main/resources"/>
 	<classpathentry kind="output" path="bin"/>
