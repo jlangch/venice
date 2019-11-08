@@ -140,7 +140,7 @@ Parse the XML
 Descends into the node's child elements
 
 ```clojure
-(xml/children [nodes])
+(xml/children nodes)
 ```
 
 which results in
