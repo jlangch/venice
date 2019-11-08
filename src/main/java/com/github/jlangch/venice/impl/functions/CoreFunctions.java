@@ -4886,51 +4886,47 @@ public class CoreFunctions {
 						"supplied, uses compare.")
 					.examples(
 						"(sort-by :id [{:id 2 :name \"Smith\"} {:id 1 :name \"Jones\"} ])",
+						
 						"(sort-by count [\"aaa\" \"bb\" \"c\"])",
+						
 						"; reversed\n" +
 						"(sort-by count (comp - compare) [\"aaa\" \"bb\" \"c\"])",
+						
 						"(sort-by first [[1 2] [3 4] [2 3]])",
+						
 						"; reversed\n" +
 						"(sort-by first (comp - compare) [[1 2] [3 4] [2 3]])",
 						"(sort-by :rank [{:rank 2} {:rank 3} {:rank 1}])",
+						
 						"; reversed\n" +
-						"(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])")
+						"(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])",
+						
+						"; sort by :foo, and where :foo is equal, sort by :bar\n" +
+						"(def x [ {:foo 2 :bar 11} \n" + 
+						"         {:foo 1 :bar 99} \n" + 
+						"         {:foo 2 :bar 55} \n" + 
+						"         {:foo 1 :bar 77} ] )\n" +
+						"(sort-by (juxt :foo :bar) x)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("sort-by", args, 2, 3);
 
-				if (args.size() == 2) {
-					final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
+				final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
+				final IVncFunction compfn = args.size() == 2
+												? compare
+												: Coerce.toIVncFunction(args.second());
 
-					return sort(
-							"sort-by",
-							args.second(),
-							(x,y) -> Coerce.toVncLong(
-										compare.apply(
-												VncList.of(
-													keyfn.apply(VncList.of(x)),
-													keyfn.apply(VncList.of(y))))
-									 ).getIntValue());
-				}
-				else if (args.size() == 3) {
-					final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
-					final IVncFunction compfn = Coerce.toIVncFunction(args.second());
-
-					return sort(
-							"sort-by",
-							args.nth(2),
-							(x,y) -> Coerce.toVncLong(
-										compfn.apply(
-												VncList.of(
-													keyfn.apply(VncList.of(x)),
-													keyfn.apply(VncList.of(y)))
-												)
-									 ).getIntValue());
-				}
-				else {
-					throw new VncException("sort-by: args not supported");
-				}
+				return sort(
+						"sort-by",
+						args.last(),
+						(x,y) -> Coerce.toVncLong(
+									compfn.apply(
+											VncList.of(
+												keyfn.apply(VncList.of(x)),
+												keyfn.apply(VncList.of(y)))
+											)
+								 ).getIntValue());
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
