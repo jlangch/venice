@@ -29,10 +29,10 @@ expressions:
       (println "try...")
       (throw (. :RuntimeException :new "a message"))
       (catch :IOException ex 
-         (println "caught :IOException")
+         (println "caught IOException")
          (:message ex))
       (catch :RuntimeException ex 
-         (println "caught : RuntimeException")
+         (println "caught RuntimeException")
          (:message ex))
       (finally 
          (println "... finally."))))
