@@ -54,7 +54,7 @@
 (do
    (defn sum 
          [x y] 
-         { :pre [(> x 0) (> y 0)] } 
+         { :pre [(number? x) (number? y)] } 
          (+ x y)))
 ```
 
