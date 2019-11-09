@@ -17,6 +17,28 @@ try - catch - finally
       (finally (println "... finally."))))
 ```
 
+Throw, catch, and finally blocks may contain multiple
+expressions:
+
+```clojure
+(do
+   (import :java.lang.RuntimeException)
+   (import :java.io.IOException)
+  
+   (try
+      (println "try...")
+      (throw (. :RuntimeException :new "a message"))
+      (catch :IOException ex 
+         (println "caught :IOException")
+         (:message ex))
+      (catch :RuntimeException ex 
+         (println "caught : RuntimeException")
+         (:message ex))
+      (finally 
+         (println "... finally."))))
+```
+
+Any Venice data can be thrown resulting in a ValueException:
 ```clojure
 (do
    (try
