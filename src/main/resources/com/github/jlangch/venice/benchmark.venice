@@ -175,7 +175,7 @@
          chart? (:chart opts false)
          median? (:median opts false)
          outlier? (:outlier opts false)
-         step (:step opts 100)]
+         steps (:steps opts 100)]
      (printf "Warmup...\n")
      `(dobench ~warmup-iterations ~expr)
      (printf "GC...\n")
@@ -187,4 +187,4 @@
         (bench/print-stats stats#)
         (when ~chart?
           (printf "Generating chart...\n")
-          (bench/chart stats# ~step ~median? ~outlier?)))))
+          (bench/chart stats# ~steps ~median? ~outlier?)))))
