@@ -30,7 +30,7 @@
           Validates if the OS is Mac OSX or Linux, throws an exception if not.
           """
      :examples '(
-          "(require-mac-or-linux)") }
+          "(shell/require-mac-or-linux)") }
 
   require-mac-or-linux []
 
@@ -44,8 +44,8 @@
           Returns true if the pid represents a running process, false otherwise.
           """
      :examples '(
-          "(process-running? 123)"
-          "(process-running? \"123\")") }
+          "(shell/process-running? 123)"
+          "(shell/process-running? \"123\")") }
 
   process-running? [pid]
 
@@ -68,8 +68,8 @@
           the pid is returned.
           """
      :examples '(
-          "(wait-for-process-exit 12345 20)"
-          "(wait-for-process-exit \"12345\" 20)") }
+          "(shell/wait-for-process-exit 12345 20)"
+          "(shell/wait-for-process-exit \"12345\" 20)") }
 
   wait-for-process-exit [pid timeout]
 
@@ -84,7 +84,7 @@
 (defn
   ^{ :arglists '("(tput-cols)")
      :doc "Returns the number of columns of the terminal"
-     :examples '("(tput-cols)") }
+     :examples '("(shell/tput-cols)") }
 
   tput-cols []
 
@@ -95,7 +95,7 @@
 (defn
   ^{ :arglists '("(tput-lines)")
      :doc "Returns the number of lines of the terminal"
-     :examples '("(tput-lines)") }
+     :examples '("(shell/tput-lines)") }
 
   tput-lines []
 
@@ -106,7 +106,7 @@
 (defn
   ^{ :arglists '("(tput-cup x y)")
      :doc "Positions the cursor in the terminal. (0,0) is the upper left corner."
-     :examples '("(tput-cup 0 10)") }
+     :examples '("(shell/tput-cup 0 10)") }
 
   tput-cup [x y]
 
@@ -118,7 +118,7 @@
 (defn
   ^{ :arglists '("(tput-clear)")
      :doc "Clears the terminal."
-     :examples '("(tput-clear)") }
+     :examples '("(shell/tput-clear)") }
 
   tput-clear []
 

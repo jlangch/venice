@@ -164,10 +164,10 @@
                                 false}, defaults to false
            """
       :examples '(
-        "(benchmark (+ 1 2) 120000 10000)",
-        "(benchmark (+ 1 2) 120000 10000) :chart true :median true",
-        "(benchmark (+ 1 2) 120000 10000) :chart true :outlier true",
-        "(benchmark (+ 1 2) 120000 10000) :chart true :steps 100" ) }
+        "(bench/benchmark (+ 1 2) 120000 10000)",
+        "(bench/benchmark (+ 1 2) 120000 10000 :chart true :median true)",
+        "(bench/benchmark (+ 1 2) 120000 10000 :chart true :outlier true)",
+        "(bench/benchmark (+ 1 2) 120000 10000 :chart true :steps 100)" ) }
 
    bench/benchmark [expr warmup-iterations iterations & options]
 

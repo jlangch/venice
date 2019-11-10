@@ -45,7 +45,7 @@
           the dynamic var 'tc-pid-file'. Defaults to 'TC_HOME/bin/catalina.pid'
           """
      :examples '(
-          "(get-pid-file \"/Users/tools/apache-tomcat-9.0.26\")") }
+          "(tc-util/get-pid-file \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   get-pid-file [tc-home]
 
@@ -57,7 +57,7 @@
 (defn
   ^{ :arglists '("(tc-download-url version)")
      :doc "Returns the download URL for a Tomcat version"
-     :examples '("(tc-download-url \"9.0.26\")") }
+     :examples '("(tc-util/tc-download-url \"9.0.26\")") }
 
   tc-download-url [version]
 
@@ -71,7 +71,7 @@
 (defn
   ^{ :arglists '("(list-tomcat9-archive)")
      :doc "Lists the available Tomcat 9 packages from the Tomcat archive"
-     :examples '("(list-tomcat9-archive)") }
+     :examples '("(tc-util/list-tomcat9-archive)") }
 
   list-tomcat9-archive []
 
@@ -88,7 +88,7 @@
 (defn
   ^{ :arglists '("(installed? tc-home)")
      :doc "Returns true if there is a Tomcat installation at the given path."
-     :examples '("(installed? \"/Users/tools/apache-tomcat-9.0.26\")") }
+     :examples '("(tc-util/installed? \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   installed? [tc-home]
 
@@ -101,7 +101,7 @@
 (defn
   ^{ :arglists '("(validate-installed tc-home)")
      :doc "Throws an exception if there is not a Tomcat installation at the given path."
-     :examples '("(validate-installed \"/Users/tools/apache-tomcat-9.0.26\")") }
+     :examples '("(tc-util/validate-installed \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   validate-installed [tc-home]
 
@@ -117,7 +117,7 @@
           Throws an exception if there is not a Tomcat installation at the path.
           """
      :examples '(
-          "(version \"/Users/tools/apache-tomcat-9.0.26\")") }
+          "(tc-util/version \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   version [tc-home]
 
@@ -143,7 +143,7 @@
           given path. Returns nil if Tomcat is not running.
           """
      :examples '(
-          "(get-pid \"/Users/tools/apache-tomcat-9.0.26\")") }
+          "(tc-util/get-pid \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   get-pid [tc-home]
 
@@ -158,7 +158,7 @@
 (defn
   ^{ :arglists '("(running? tc-home)")
      :doc "Returns true if the Tomcat process is running for the Tomcat installation."
-     :examples '("(running? \"/Users/tools/apache-tomcat-9.0.26\")") }
+     :examples '("(tc-util/running? \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   running? [tc-home]
 
@@ -169,7 +169,7 @@
 (defn
   ^{ :arglists '("(clean-logs tc-home)")
      :doc "Removes all log files from the Tomcat installation."
-     :examples '("(clean-logs \"/Users/tools/apache-tomcat-9.0.26\")") }
+     :examples '("(tc-util/clean-logs \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   clean-logs [tc-home]
 
@@ -185,7 +185,7 @@
           work directory and the javamelody directory if they exist.
           """
      :examples '(
-          "(clean \"/Users/tools/apache-tomcat-9.0.26\")") }
+          "(tc-util/clean \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   clean [tc-home]
 
@@ -201,7 +201,7 @@
 (defn
   ^{ :arglists '("(war-deployed? tc-home)")
      :doc "Returns true if at least one WAR file is deployed for the Tomcat installation."
-     :examples '("(war-deployed? \"/Users/tools/apache-tomcat-9.0.26\")") }
+     :examples '("(tc-util/war-deployed? \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   war-deployed? [tc-home]
 
@@ -213,7 +213,7 @@
 (defn
   ^{ :arglists '("(start tc-home)")
      :doc "Starts Tomcat for the given Tomcat installation if its not yet running."
-     :examples '("(start \"/Users/tools/apache-tomcat-9.0.26\")") }
+     :examples '("(tc-util/start \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   start [tc-home]
 
@@ -239,8 +239,8 @@
           immediately after the shutdown has been requested.
           """
      :examples '(
-          "(stop \"/Users/tools/apache-tomcat-9.0.26\")",
-          "(stop \"/Users/tools/apache-tomcat-9.0.26\" 60)") }
+          "(tc-util/stop \"/Users/tools/apache-tomcat-9.0.26\")",
+          "(tc-util/stop \"/Users/tools/apache-tomcat-9.0.26\" 60)") }
 
   stop
   ([tc-home]
@@ -291,7 +291,7 @@
           WAR does not exist or Tomcat is running.
           """
      :examples '(
-          "(deploy-war \"/Users/tools/apache-tomcat-9.0.26\" \"/Users/tools/x.war\")") }
+          "(tc-util/deploy-war \"/Users/tools/apache-tomcat-9.0.26\" \"/Users/tools/x.war\")") }
 
   deploy-war [tc-home war]
 
@@ -335,7 +335,7 @@
                 Removes the system web apps. Defaults to false.
           """
      :examples '(
-          "(install \"/Users/tools\" \"9.0.26\" :remove-system-webapps true)") }
+          "(tc-util/install \"/Users/tools\" \"9.0.26\" :remove-system-webapps true)") }
 
   install [install-dir tc-version & options]
 
@@ -398,7 +398,7 @@
   ^{ :arglists '("(uninstall tc-home)")
      :doc "Removes a Tomcat installation."
      :examples '(
-          "(uninstall \"/Users/tools/apache-tomcat-9.0.26\")") }
+          "(tc-util/uninstall \"/Users/tools/apache-tomcat-9.0.26\")") }
 
   uninstall [tc-home]
 

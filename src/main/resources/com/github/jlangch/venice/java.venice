@@ -27,7 +27,7 @@
 (defn
   ^{ :arglists '("(describe obj)")
      :doc "Describes a Java class."
-     :examples '("(describe :java.util.ArrayList)") }
+     :examples '("(java/describe :java.util.ArrayList)") }
 
   describe [obj]
 
@@ -87,7 +87,7 @@
 (defn
   ^{ :arglists '("(describe-bean obj)")
      :doc "Describes a Java bean."
-     :examples '("(describe-bean :java.util.String)") }
+     :examples '("(java/describe-bean :java.util.String)") }
 
   describe-bean [obj]
 
