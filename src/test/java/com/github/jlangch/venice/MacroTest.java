@@ -125,6 +125,10 @@ public class MacroTest {
 		assertEquals(true,  (Boolean)venice.eval("(and (== 1 1) (== 1 1) (== 1 1)))"));
 		assertEquals(false, (Boolean)venice.eval("(and (== 1 1) (== 1 1) (== 1 0)))"));
 		assertEquals(false, (Boolean)venice.eval("(and (== 1 0) (== 1 0) (== 1 0)))"));
+		
+		assertEquals(true,  (Boolean)venice.eval("(and (== 1 1) (and (== 1 1) (== 1 1))))"));
+		assertEquals(false, (Boolean)venice.eval("(and (== 1 1) (and (== 1 1) (== 1 0))))"));
+		assertEquals(false, (Boolean)venice.eval("(and (== 1 0) (and (== 1 0) (== 1 0))))"));
 	}
 
 	@Test

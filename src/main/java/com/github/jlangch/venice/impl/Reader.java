@@ -100,6 +100,7 @@ public class Reader {
 	private Token next() {
 		return tokens.get(position++);
 	}
+	
 
 	public static ArrayList<Token> tokenize(final String str, final String filename) {
 		return tokenize(str, filename, true); 
@@ -214,8 +215,14 @@ public class Reader {
 		else if (matcher.group(11) != null) {
 			// 11: symbol
 			final VncSymbol sym = new VncSymbol(matcher.group(11));
-			rdr.anonymousFnArgs.addSymbol(sym);
-			return sym.withMeta(MetaUtil.toMeta(token));
+			if (rdr.autoGenSym.isWithinSyntaxQuote() && rdr.autoGenSym.isAutoGenSymbol(sym)) {
+				// auto gen symbols within syntax quote
+				return rdr.autoGenSym.lookup(sym);
+			}
+			else {
+				rdr.anonymousFnArgs.addSymbol(sym);
+				return sym.withMeta(MetaUtil.toMeta(token));
+			}
 		} 
 		else {
 			throw new ParseError(formatParseError(token, "Unrecognized '%s'", matcher.group(0)));
@@ -272,8 +279,15 @@ public class Reader {
 			
 			case '`': 
 				rdr.next();
-				return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
-							  .withMeta(MetaUtil.toMeta(token));
+				try {
+					rdr.autoGenSym.enterSyntaxQuote();
+					
+					return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
+								  .withMeta(MetaUtil.toMeta(token));
+				}
+				finally {
+					rdr.autoGenSym.leaveSyntaxQuote();
+				}
 			
 			case '~':
 				if (token.equals("~")) {
@@ -596,4 +610,6 @@ public class Reader {
 	private ArrayList<Token> tokens;
 	private int position;
 	private final AnonymousFnArgs anonymousFnArgs = new AnonymousFnArgs();
+	
+	private final AutoGenSym autoGenSym = new AutoGenSym();
 }

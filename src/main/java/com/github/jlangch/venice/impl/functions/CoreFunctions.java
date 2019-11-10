@@ -42,13 +42,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.GenSym;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.Readline;
@@ -5826,13 +5826,12 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("gensym", args, 0, 1);
 
-				final String prefix = args.isEmpty()
-										? "G__"
-										: Types.isVncSymbol(args.first())
-											? Coerce.toVncSymbol(args.first()).getName()
-											: Coerce.toVncString(args.first()).getValue();
-
-				return new VncSymbol(prefix + String.valueOf(gensymValue.incrementAndGet()));
+				return args.isEmpty()
+						? GenSym.generate()
+						: GenSym.generate(
+							Types.isVncSymbol(args.first())
+								? Coerce.toVncSymbol(args.first()).getName()
+								: Coerce.toVncString(args.first()).getValue());
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -6154,6 +6153,5 @@ public class CoreFunctions {
 				.toMap();
 
 
-	private static final AtomicLong gensymValue = new AtomicLong(0);
 	private static final SecureRandom random = new SecureRandom();
 }
