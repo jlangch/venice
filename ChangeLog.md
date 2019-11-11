@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - functions `every-pred`, `any-pred`
+- auto generated unique symbol names (hash suffix: `count#`) for macros to be used 
+  within syntax quotes
 
 ### Changed
 
