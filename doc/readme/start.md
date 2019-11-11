@@ -17,7 +17,7 @@ Download Venice from Maven [AdoptOpenJDK](https://search.maven.org/artifact/com.
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
-Start the REPL with `java -jar venice-1.7.8.jar -colors`
+Open a terminal an start the REPL with `java -jar venice-1.7.8.jar -colors`
 
 ```text
 venice> (+ 1 1)
@@ -25,4 +25,5 @@ venice> (+ 1 1)
 venice>
 ```
 
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/repl.png" width="200">
 
