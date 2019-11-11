@@ -297,9 +297,9 @@
 
   (let [i (first bindings)
         n (second bindings)]
-      `(let [k (long ~n)]
+      `(let [k# (long ~n)]
           (loop [~i 0]
-            (when (< ~i k)
+            (when (< ~i k#)
                 ~@body
                 (recur (inc ~i)))))))
 
@@ -524,14 +524,14 @@
 
   time [expr]
 
-  `(let [start_ (nano-time)
-         ret_ ~expr
-         end_ (nano-time)
-         elapsed_ (- end_ start_)]
-     (if (< elapsed_ 1000000)
-         (printf "Elapsed time: %.2f us\n" (/ elapsed_ 1000.0))
-         (printf "Elapsed time: %.2f ms\n" (/ elapsed_ 1000000.0)))
-      ret_))
+  `(let [start# (nano-time)
+         ret# ~expr
+         end# (nano-time)
+         elapsed# (- end# start#)]
+     (if (< elapsed# 1000000)
+         (printf "Elapsed time: %.2f us\n" (/ elapsed# 1000.0))
+         (printf "Elapsed time: %.2f ms\n" (/ elapsed# 1000000.0)))
+      ret#))
 
 
 (defmacro
@@ -559,14 +559,14 @@
   `(do
      (prof :on)
      (prof :clear)
-     (let [fn-perf-warmup (fn _warmup [] (dorun ~warmup-iterations ~expr))
-           fn-perf-gc (fn _warmup-gc [] (dorun 2 (gc)))
-           fn-perf-test (fn _test [] (dorun ~test-iterations ~expr))]
-         (fn-perf-warmup)
-         (fn-perf-gc)
-         (prof :clear-all-but ["_warmup" "_warmup-gc"])
-         (fn-perf-test)
-         (prof :off))
+     (let [fn-perf-warmup# (fn _warmup [] (dorun ~warmup-iterations ~expr))
+           fn-perf-gc# (fn _warmup-gc [] (dorun 2 (gc)))
+           fn-perf-test# (fn _test [] (dorun ~test-iterations ~expr))]
+       (fn-perf-warmup#)
+       (fn-perf-gc#)
+       (prof :clear-all-but ["_warmup" "_warmup-gc"])
+       (fn-perf-test#)
+       (prof :off))
      nil))
 
 
@@ -598,11 +598,11 @@
     `(load-file ~file false))
 
   ([file force]
-    `(let [fc (io/file-canonical-path ~file)]
-       (when (or force (not-contains? core/*loaded-files* (name fc)))
-         (let [code (str "(do " (io/slurp fc :encoding "UTF-8" :binary false) ")")
-               parsed (read-string code fc)]
-           (cons! (name fc) core/*loaded-files*)
+    `(let [fc# (io/file-canonical-path ~file)]
+       (when (or force (not-contains? core/*loaded-files* (name fc#)))
+         (let [code (str "(do " (io/slurp fc# :encoding "UTF-8" :binary false) ")")
+               parsed (read-string code fc#)]
+           (cons! (name fc#) core/*loaded-files*)
            (eval parsed)
            ~file)))))
 
@@ -639,10 +639,10 @@
 
   ([file force]
     `(when (or ~force (not-contains? core/*loaded-files* (name ~file)))
-       (let [code (str "(do " (load-classpath-venice ~file) ")")
-             parsed (read-string code ~file)]
+       (let [code# (str "(do " (load-classpath-venice ~file) ")")
+             parsed# (read-string code# ~file)]
          (cons! (name ~file) core/*loaded-files*)
-         (eval parsed)
+         (eval parsed#)
          ~file))))
 
 
@@ -670,10 +670,10 @@
 
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
-       (let [code (str "(do " (load-core-module ~m) ")")
-             parsed (read-string code ~m)]
+       (let [code# (str "(do " (load-core-module ~m) ")")
+             parsed# (read-string code# ~m)]
          (cons! (keyword (name ~m)) core/*loaded-modules*)
-         (eval parsed)
+         (eval parsed#)
          (keyword (name ~m))))))
 
 
