@@ -2,6 +2,9 @@
 
 Welcome to Venice!
 
+Venice can run on any operating system for which a Java VM is available, 
+like Linux, MacOSX, or Windows.
+
 
 ### 1. Install Java
 
