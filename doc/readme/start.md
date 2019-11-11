@@ -12,7 +12,7 @@ Java can be downloaded from [AdoptOpenJDK](https://adoptopenjdk.net/)
 
 ### 2. Get the Venice JAR file
 
-Download Venice from Maven [AdoptOpenJDK](https://search.maven.org/artifact/com.github.jlangch/venice/1.7.8/jar)
+Download Venice from Maven [Venice Binary](https://search.maven.org/artifact/com.github.jlangch/venice/1.7.8/jar)
 
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
