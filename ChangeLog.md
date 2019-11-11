@@ -12,8 +12,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - functions `every-pred`, `any-pred`
-- auto generated unique symbol names (hash suffix: `count#`) for macros 
-  to be used within syntax quotes
+- auto generated unique symbol names (hash suffix) for macros 
+  to be used within syntax quotes. E.g.: ` `(let [a# 100] (println a#))` 
+  expands to `(let [a__9__auto 100] (println a__9__auto))`
 
 ### Changed
 
