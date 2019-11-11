@@ -40,6 +40,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/fd930b9/cheatsheet.htm
 
 ## Documentation
 
+* [Getting started](doc/readme/start.md)
 * [REPL](doc/readme/repl.md)
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
