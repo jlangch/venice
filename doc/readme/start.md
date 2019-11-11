@@ -17,7 +17,7 @@ Download Venice from Maven [Venice Binary](https://search.maven.org/artifact/com
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
-Open a terminal an start the REPL with `java -jar venice-1.7.8.jar -colors`
+Open a terminal and start a REPL with `java -jar venice-1.7.8.jar -colors`
 
 ```text
 venice> (+ 1 1)
