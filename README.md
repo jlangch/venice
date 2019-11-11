@@ -46,6 +46,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/fd930b9/cheatsheet.htm
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
+* [Control Flow](doc/readme/control-flow.md)
 * [Transducers](doc/readme/transducers.md)
 * [Recursion](doc/readme/recursion.md)
 * [Mutable Refs](doc/readme/refs.md)
