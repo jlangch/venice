@@ -25,5 +25,5 @@ venice> (+ 1 1)
 venice>
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/repl.png" width="200">
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/repl.png" width="400">
 
