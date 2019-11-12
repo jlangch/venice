@@ -34,7 +34,7 @@ venice>
 
 ### 4. Where to head next
 
-- browse through the [readme](https://github.com/jlangch/venice)
+- browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md)
 - see the cheatsheet and use it as a quick reference
 
 
