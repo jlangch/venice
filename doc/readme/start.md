@@ -8,7 +8,7 @@ like Linux, MacOSX, or Windows.
 
 ### 1. Install Java
 
-Venice requires a Java 8 or higher.
+Venice requires Java 8 or higher.
 
 Java can be downloaded from [AdoptOpenJDK](https://adoptopenjdk.net/)
 
