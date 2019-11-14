@@ -198,3 +198,71 @@ Thread local vars get inherited by child threads
          
 ;; => {:parent {:a 10 :b 20} :child {:a 10 :b 90}}
 ```
+
+
+## Dining Philosphers
+
+```clojure
+(do
+  (import :java.util.concurrent.Semaphore)
+  (import :java.util.concurrent.TimeUnit)
+
+  (def n-philosophers 5) 
+  (def max-eating-time 5000)
+  (def max-thinking-time 3000)
+  (def retry-time 5)
+  (def forks (->> (range n-philosophers) (map #(. :Semaphore :new 1))))
+  (def log-mutex 0)
+
+  (defn log [& xs] 
+    (locking log-mutex (println (apply str xs))))
+
+  (defn left-fork [n]
+    (nth forks (mod (dec n) n-philosophers)))
+
+  (defn right-fork [n]
+    (nth forks n))
+
+  (defn aquire-fork [fork]
+    (. fork :tryAcquire))
+
+  (defn release-fork [fork]
+    (. fork :release))
+
+  (defn take-forks [n]
+    (if (aquire-fork (left-fork n))
+      (if (aquire-fork (right-fork n))
+        true
+        (do (release-fork (left-fork n)) false))
+      false))
+
+  (defn put-down-forks [n]
+    (release-fork (left-fork n))
+    (release-fork (right-fork n)))
+
+  (defn eat [n]
+    (log "Philosopher " n " is dining")
+    (sleep (rand-long max-eating-time))
+    (put-down-forks n)
+    (log "Philosopher " n " put down forks"))
+
+  (defn think [n]
+    (log "Philosopher " n " is thinking")
+    (sleep (rand-long max-thinking-time)))
+
+  (defn philosopher [n]
+    (log "Philosopher " n " just sat down")
+    (while true
+      (if (take-forks n)
+        (do (log "Philosopher " n " picked up forks")
+            (eat n)
+            (think n))
+        (sleep 5))))
+ 
+   ;; launch
+   (println "Starting main")
+   (dotimes [i n-philosophers]
+     (future #(philosopher i)))
+)
+```
+
