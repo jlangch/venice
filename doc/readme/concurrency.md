@@ -200,7 +200,7 @@ Thread local vars get inherited by child threads
 ```
 
 
-## Dining Philosphers
+## Example: Dining Philosophers
 
 ```clojure
 (do
