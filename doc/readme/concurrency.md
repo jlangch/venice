@@ -205,7 +205,6 @@ Thread local vars get inherited by child threads
 ```clojure
 (do
   (import :java.util.concurrent.Semaphore)
-  (import :java.util.concurrent.TimeUnit)
 
   (def n-philosophers 5)
   (def max-eating-time 5000)
