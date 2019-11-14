@@ -224,6 +224,7 @@ public class MathFunctions {
 					.doc("Modulus of n and d.")
 					.examples(
 						"(mod 10 4)",
+						"(mod -1 5)",
 						"(mod 10I 4I)")
 					.build()
 		) {
