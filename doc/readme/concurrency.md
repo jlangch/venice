@@ -211,7 +211,8 @@ Thread local vars get inherited by child threads
   (def max-eating-time 5000)
   (def max-thinking-time 3000)
   (def retry-time 5)
-  (def forks (->> (range n-philosophers) (map #(. :Semaphore :new 1))))
+  (def forks (->> (range n-philosophers) 
+                  (map #(. :Semaphore :new 1))))
   (def log-mutex 0)
 
   (defn log [& xs] 
@@ -233,7 +234,8 @@ Thread local vars get inherited by child threads
     (if (aquire-fork (left-fork n))
       (if (aquire-fork (right-fork n))
         true
-        (do (release-fork (left-fork n)) false))
+        (do (release-fork (left-fork n)) 
+            false))
       false))
 
   (defn put-down-forks [n]
@@ -260,7 +262,7 @@ Thread local vars get inherited by child threads
         (sleep 5))))
  
    ;; launch
-   (println "Starting main")
+   (println "Starting")
    (dotimes [i n-philosophers]
      (future #(philosopher i)))
 )
