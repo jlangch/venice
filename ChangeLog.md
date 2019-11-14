@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 
+- function `mod` is now implemented with Java `Math.floorMod(x,y)` instead of `x % y`
 - JLine3 lib to actual version 3.13.1
 
 
@@ -33,9 +34,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - 'tomcat-util' module TC installation cleanup
 
-### Changed
-
-- function `mod` is now implemented with Java `Math.floorMod(x,y)` instead of `x % y`
 
 
 ## [1.7.7] - 2019-10-27
