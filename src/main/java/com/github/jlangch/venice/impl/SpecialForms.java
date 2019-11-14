@@ -585,17 +585,17 @@ public class SpecialForms {
 					"Locking operates like the synchronized keyword in Java.")
 				.examples(
 					"(do                        \n" +
-					"   (def lockee 1)          \n" +
+					"   (def x 1)               \n" +
 					"   (locking x              \n" +
 					"      (println 100)        \n" +
 					"      (println 200)))        ",
 					";; Locks are reentrant     \n" +
 					"(do                        \n" +
-					"   (def lockee 1)          \n" +
+					"   (def x 1)               \n" +
 					"   (locking x              \n" +
 					"      (locking x           \n" +
 					"         (println \"in\")) \n" +
-					"      (println \"out\")))     ")
+					"      (println \"out\")))    ")
 				.build()
 		) {
 		    private static final long serialVersionUID = -1;

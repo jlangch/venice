@@ -999,10 +999,10 @@ public class DocGenerator {
 		all.addSection(concurrent);
 		concurrent.addItem(getDocItem("locking"));
 
-		final DocSection util = new DocSection("Util");
-		all.addSection(util);
-		util.addItem(getDocItem("thread-id"));
-		util.addItem(getDocItem("thread-name"));
+		final DocSection threads = new DocSection("Threads");
+		all.addSection(threads);
+		threads.addItem(getDocItem("thread-id"));
+		threads.addItem(getDocItem("thread-name"));
 
 		return section;
 	}

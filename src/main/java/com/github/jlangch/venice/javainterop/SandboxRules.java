@@ -557,7 +557,12 @@ public class SandboxRules {
 				"class:java.util.HashSet:*",
 				"class:java.util.HashMap:*",
 				"class:java.util.LinkedHashMap:*",
-				"class:java.util.Locale:*");
+				"class:java.util.Locale:*",
+				
+				"class:java.util.concurrent.Semaphore:*",
+				"class:java.util.concurrent.CountDownLatch:*",
+				"class:java.util.concurrent.CyclicBarrier:*",
+				"class:java.util.concurrent.locks.*:*");
 
 	public static final Set<String> DEFAULT_SYSTEM_PROPERTIES = 
 			Collections.unmodifiableSet(

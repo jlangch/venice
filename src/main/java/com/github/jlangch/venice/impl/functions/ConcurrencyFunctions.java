@@ -1430,9 +1430,113 @@ public class ConcurrencyFunctions {
 
 
 	///////////////////////////////////////////////////////////////////////////
-	// Thread utils
+	// Thread
 	///////////////////////////////////////////////////////////////////////////
 
+
+//	public static VncFunction thread_Q = 
+//		new VncFunction(
+//				"thread?", 
+//				VncFunction
+//					.meta()
+//					.arglists("(thread? x)")		
+//					.doc("Returns true if x is a thread otherwise false.")
+//					.build()
+//		) {
+//			public VncVal apply(final VncList args) {
+//				assertArity("thread?", args, 1);
+//				return Types.isVncJavaObject(args.first(), Thread.class) ? True : False;
+//			}
+//			
+//			private static final long serialVersionUID = -1848883965231344442L;
+//		};
+//
+//	public static VncFunction thread_start = 
+//		new VncFunction(
+//				"thread-start", 
+//				VncFunction
+//					.meta()
+//					.arglists("(thread-start f)")		
+//					.doc("Starts a new thread and runs the function f")
+//					.examples(
+//						"(let [func #(do (sleep 500) (println \"done\"))        \n" +
+//						"      th (thread-start func)]                          \n" +
+//						"  (thread-join th))                                      ")
+//					.build()
+//		) {		
+//			public VncVal apply(final VncList args) {
+//				assertArity("thread-start", args, 1);
+//				
+//				final VncFunction fn = Coerce.toVncFunction(args.first());
+//	
+//				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+//				
+//				// thread local values from the parent thread
+//				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
+//						new AtomicReference<>(ThreadLocalMap.getValues());
+//				
+//
+//				final Runnable runnable = () -> {
+//					try {
+//						// inherit thread local values to the child thread
+//						ThreadLocalMap.setValues(parentThreadLocals.get());
+//						ThreadLocalMap.clearCallStack();
+//						JavaInterop.register(parentInterceptor);	
+//						
+//						fn.apply(new VncList());
+//					}
+//					finally {
+//						// clean up
+//						JavaInterop.unregister();
+//						ThreadLocalMap.remove();
+//					}
+//				};
+//	
+//				final Thread th = new Thread(runnable);
+//				th.setDaemon(true);			
+//				th.start();
+//				
+//				return new VncJavaObject(th);
+//			}
+//			
+//			private static final long serialVersionUID = -1848883965231344442L;
+//		};
+//
+//	public static VncFunction thread_join = 
+//		new VncFunction(
+//				"thread-join", 
+//				VncFunction
+//					.meta()
+//					.arglists("(thread-join th)")		
+//					.doc("Joins a thread")
+//					.examples(
+//						"(let [func #(do (sleep 500) (println \"done\"))        \n" +
+//						"      th (thread-start func)]                          \n" +
+//						"  (thread-join th))                                      ")
+//					.build()
+//		) {		
+//			public VncVal apply(final VncList args) {
+//				assertArity("thread-join", args, 1, 2);
+//				
+//				final Thread th = Coerce.toVncJavaObject(args.first(), Thread.class);
+//				
+//				final Long waitMillis = args.size() == 2 
+//											? Coerce.toVncLong(args.second()).getValue() 
+//											: 0;
+//	
+//				try {
+//					th.join(waitMillis);
+//				}
+//				catch(InterruptedException ex) {
+//					throw new com.github.jlangch.venice.InterruptedException(
+//							"Thread has been interrupted", ex);
+//				}
+//				
+//				return Nil;
+//			}
+//			
+//			private static final long serialVersionUID = -1848883965231344442L;
+//		};
 
 	public static VncFunction thread_id = 
 		new VncFunction(
@@ -1561,6 +1665,9 @@ public class ConcurrencyFunctions {
 					.add(delay_Q)
 					.add(force)
 					
+//					.add(thread_Q)
+//					.add(thread_start)
+//					.add(thread_join)
 					.add(thread_id)
 					.add(thread_name)
 
