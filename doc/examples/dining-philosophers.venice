@@ -69,16 +69,20 @@
     (sleep (rand-long max-thinking-time)))
 
   (defn philosopher [n]
-    (log "Philosopher " n " just sat down")
-    (while true
-      (if (take-forks n)
-        (do (log "Philosopher " n " picked up forks")
-            (eat n)
-            (think n))
-        (sleep 5))))
+    (fn []
+      (try
+        (log "Philosopher " n " just sat down")
+        (while true
+          (if (take-forks n)
+            (do (log "Philosopher " n " picked up forks")
+                (eat n)
+                (think n))
+            (sleep 5)))
+      (catch :RuntimeException ex
+        (log "Philosopher " n " died! " (:message ex))))))
 
    ;; launch
    (println "Starting")
    (dotimes [i n-philosophers]
-     (future #(philosopher i)))
+     (future (philosopher i)))
 )

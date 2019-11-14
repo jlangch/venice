@@ -207,15 +207,15 @@ Thread local vars get inherited by child threads
   (import :java.util.concurrent.Semaphore)
   (import :java.util.concurrent.TimeUnit)
 
-  (def n-philosophers 5) 
+  (def n-philosophers 5)
   (def max-eating-time 5000)
   (def max-thinking-time 3000)
   (def retry-time 5)
-  (def forks (->> (range n-philosophers) 
+  (def forks (->> (range n-philosophers)
                   (map #(. :Semaphore :new 1))))
   (def log-mutex 0)
 
-  (defn log [& xs] 
+  (defn log [& xs]
     (locking log-mutex (println (apply str xs))))
 
   (defn left-fork [n]
@@ -234,7 +234,7 @@ Thread local vars get inherited by child threads
     (if (aquire-fork (left-fork n))
       (if (aquire-fork (right-fork n))
         true
-        (do (release-fork (left-fork n)) 
+        (do (release-fork (left-fork n))
             false))
       false))
 
@@ -253,18 +253,22 @@ Thread local vars get inherited by child threads
     (sleep (rand-long max-thinking-time)))
 
   (defn philosopher [n]
-    (log "Philosopher " n " just sat down")
-    (while true
-      (if (take-forks n)
-        (do (log "Philosopher " n " picked up forks")
-            (eat n)
-            (think n))
-        (sleep 5))))
- 
+    (fn []
+      (try
+        (log "Philosopher " n " just sat down")
+        (while true
+          (if (take-forks n)
+            (do (log "Philosopher " n " picked up forks")
+                (eat n)
+                (think n))
+            (sleep 5)))
+      (catch :RuntimeException ex
+        (log "Philosopher " n " died! " (:message ex))))))
+
    ;; launch
    (println "Starting")
    (dotimes [i n-philosophers]
-     (future #(philosopher i)))
+     (future (philosopher i)))
 )
 ```
 
