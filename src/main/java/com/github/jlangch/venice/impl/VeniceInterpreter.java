@@ -585,6 +585,9 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "prof":
 					return prof_(ast, env);
+					
+				case "locking":
+					return locking_(ast, env);
 	
 				default:					
 					final VncList el = (VncList)eval_ast((VncList)ast, env);
@@ -882,6 +885,20 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		finally {
 			ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
+		}
+	}
+
+	private VncVal locking_(final VncList ast, final Env env) {
+		if (ast.size() < 3) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("locking", ast))) {
+				throw new VncException("locking requires a lockee and one or more expressions to run");
+			}
+		}
+		
+		final VncVal mutex = eval_ast(ast.second(), env);
+
+		synchronized(mutex) {
+			return evaluateBody(ast.slice(2), env);
 		}
 	}
 

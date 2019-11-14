@@ -617,6 +617,30 @@ public class ConcurrencyFunctionsTest {
 
 		assertEquals("[90 11]", venice.eval("(str " + script + ")"));
 	}
+
+	@Test
+	public void test_locking() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                         \n" +
+				"   (def x 1)                                \n" +
+				"                                            \n" +
+				"   (with-out-str                            \n" +
+				"      (future (fn []                        \n" +
+				"                  (locking x                \n" + 
+				"                     (sleep 2000)           \n" + 
+				"                     (println \"done1\")))) \n" + 
+				"                                            \n" +
+				"      (sleep 200)                           \n" +
+				"                                            \n" +
+				"      (locking x                            \n" + 
+				"         (sleep 1000)                       \n" + 
+				"         (println \"done2\")))              \n" +
+				") ";
+
+		assertEquals("done1\ndone2\n", venice.eval(script));
+	}
 	
 	@Test
 	public void test_thread_id() {

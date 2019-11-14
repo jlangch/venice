@@ -572,6 +572,35 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
+
+	public static VncFunction locking = 
+		new SpecialFormsDocFunction(
+				"locking",
+				VncFunction
+				.meta()
+				.arglists("(locking x & exprs)")		
+				.doc(
+					"Executes exprs in an implicit do, while holding the monitor of x. \n" + 
+					"Will release the monitor of x in all circumstances. \n" +
+					"Locking operates like the synchronized keyword in Java.")
+				.examples(
+					"(do                        \n" +
+					"   (def lockee 1)          \n" +
+					"   (locking x              \n" +
+					"      (println 100)        \n" +
+					"      (println 200)))        ",
+					";; Locks are reentrant     \n" +
+					"(do                        \n" +
+					"   (def lockee 1)          \n" +
+					"   (locking x              \n" +
+					"      (locking x           \n" +
+					"         (println \"in\")) \n" +
+					"      (println \"out\")))     ")
+				.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction defmacro = 
 		new SpecialFormsDocFunction(
 				"defmacro",
@@ -773,6 +802,7 @@ public class SpecialForms {
 					.put("recur",			recur)
 					.put("try",				try_)
 					.put("try-with",		try_with)
+					.put("locking",			locking)
 					.put("defmacro",		defmacro)
 					.put("macroexpand",		macroexpand)
 					.put("ns-unmap",		ns_unmap)

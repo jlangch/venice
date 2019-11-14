@@ -995,6 +995,10 @@ public class DocGenerator {
 		thlocal.addItem(getDocItem("dissoc"));
 		thlocal.addItem(getDocItem("get"));
 
+		final DocSection concurrent = new DocSection("Concurrent");
+		all.addSection(concurrent);
+		concurrent.addItem(getDocItem("locking"));
+
 		final DocSection util = new DocSection("Util");
 		all.addSection(util);
 		util.addItem(getDocItem("thread-id"));
