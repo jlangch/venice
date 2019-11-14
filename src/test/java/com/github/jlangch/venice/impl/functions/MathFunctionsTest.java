@@ -479,14 +479,16 @@ public class MathFunctionsTest {
 	@Test
 	public void test_mod() {
 		final Venice venice = new Venice();
-
+		
 		assertEquals(Integer.valueOf(0), venice.eval("(mod (int 0) (int 6))"));
 		assertEquals(Integer.valueOf(4), venice.eval("(mod (int 4) (int 6))"));
 		assertEquals(Integer.valueOf(1), venice.eval("(mod (int 13) (int 6))"));
+		assertEquals(Integer.valueOf(4), venice.eval("(mod (int -1) (int 5))"));
 
 		assertEquals(Long.valueOf(0), venice.eval("(mod 0 6)"));
 		assertEquals(Long.valueOf(4), venice.eval("(mod 4 6)"));
 		assertEquals(Long.valueOf(1), venice.eval("(mod 13 6)"));
+		assertEquals(Long.valueOf(4), venice.eval("(mod -1 5)"));
 	}
 
 	@Test

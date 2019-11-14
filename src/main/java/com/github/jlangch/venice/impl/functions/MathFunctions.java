@@ -236,9 +236,9 @@ public class MathFunctions {
 				if (Types.isVncLong(n)) {
 					if (Types.isVncLong(d)) {
 						return new VncLong(
-								((VncLong)n).getValue().longValue()
-								%
-								((VncLong)d).getValue().longValue());
+								Math.floorMod(
+									((VncLong)n).getValue().longValue(),
+									((VncLong)d).getValue().longValue()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -249,9 +249,9 @@ public class MathFunctions {
 				else if (Types.isVncInteger(n)) {
 					if (Types.isVncInteger(d)) {
 						return new VncInteger(
-								((VncInteger)n).getValue().intValue()
-								%
-								((VncInteger)d).getValue().intValue());
+								Math.floorMod(
+									((VncInteger)n).getValue().intValue(),
+									((VncInteger)d).getValue().intValue()));
 					}
 					else {
 						throw new VncException(String.format(
