@@ -345,12 +345,12 @@ public class SandboxRules {
 	}
 	
 	/**
-	* Sets the max thread pool size for futures a Venice script under this 
-	* <code>SandboxRules</code> is allowed to use.
-	* 
-	* @param maximumPoolSize the max thread pool size
-	* @return this <code>SandboxRules</code>
-	*/
+	 * Sets the max thread pool size for futures a Venice script under this 
+	 * <code>SandboxRules</code> is allowed to use.
+	 * 
+	 * @param maximumPoolSize the max thread pool size
+	 * @return this <code>SandboxRules</code>
+	 */
 	public SandboxRules withMaxFutureThreadPoolSize(final int maximumPoolSize) {
 		this.maxFutureThreadPoolSize = maximumPoolSize <= 0 ? null : maximumPoolSize;
 		return this;
