@@ -44,7 +44,8 @@ public class CompiledSandboxRules {
 			final Set<String> blackListVeniceFunctions,
 			final Set<String> whiteListSystemProps,
 			final Set<String> whiteListSystemEnvs,
-			final Integer maxExecTimeSeconds
+			final Integer maxExecTimeSeconds,
+			final Integer maxFutureThreadPoolSize
 	) {
 		this.whiteListClassPatterns = whiteListClassPatterns == null 
 											? Collections.emptyList() 
@@ -66,11 +67,12 @@ public class CompiledSandboxRules {
 		this.whiteListSystemEnvs = whiteListSystemEnvs;
 		
 		this.maxExecTimeSeconds = maxExecTimeSeconds;
+		this.maxFutureThreadPoolSize = maxFutureThreadPoolSize;
 	}
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null, null, null, null, null);
+			return new CompiledSandboxRules(null, null, null, null, null, null, null, null);
 		}
 		
 		final List<String> filtered = whiteList
@@ -135,7 +137,8 @@ public class CompiledSandboxRules {
 						.map(s -> s.substring("system.env:".length()))
 						.collect(Collectors.toSet()),
 
-				whiteList.getMaxExecTimeSeconds());
+				whiteList.getMaxExecTimeSeconds(),
+				whiteList.getMaxFutureThreadPoolSize());
 	}
 	
 	/**
@@ -260,6 +263,9 @@ public class CompiledSandboxRules {
 		return maxExecTimeSeconds;
 	}
 	
+	public Integer getMaxFutureThreadPoolSize() {
+		return maxFutureThreadPoolSize;
+	}
 	
 	private static boolean allowAccessToAllSystemProperties(final List<String> rules) {
 		return rules.stream().anyMatch(s -> s.equals("system.property:*"));
@@ -286,4 +292,5 @@ public class CompiledSandboxRules {
 	private final Set<String> whiteListSystemProps;
 	private final Set<String> whiteListSystemEnvs;
 	private final Integer maxExecTimeSeconds;
+	private final Integer maxFutureThreadPoolSize;
 }

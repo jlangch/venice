@@ -158,7 +158,11 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 		return sandboxRules.getMaxExecTimeSeconds();
 	}
 
-	
+	@Override
+	public Integer getMaxFutureThreadPoolSize() {
+		return sandboxRules.getMaxFutureThreadPoolSize();
+	}
+
 	@Override
 	protected Object filter(final Object obj) {
 		validateClass(obj);

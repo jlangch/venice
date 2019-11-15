@@ -177,4 +177,11 @@ public interface IInterceptor {
 	 * <code>Sandbox</code> is allowed to run.
 	 */
 	Integer getMaxExecutionTimeSeconds();
+	
+	/**
+	 * @return the max future thread pool size a Venice script under this 
+	 * <code>Sandbox</code> is allowed to use.
+	 */
+	Integer getMaxFutureThreadPoolSize();
+
 }

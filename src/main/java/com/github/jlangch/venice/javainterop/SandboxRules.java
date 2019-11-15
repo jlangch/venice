@@ -331,7 +331,7 @@ public class SandboxRules {
 		}
 		return this;
 	}
-		
+	
 	/**
 	 * Sets the max execution time in seconds a Venice script under this 
 	 * <code>SandboxRules</code> is allowed to run.
@@ -341,6 +341,18 @@ public class SandboxRules {
 	 */
 	public SandboxRules withMaxExecTimeSeconds(final int maxExecTimeSeconds) {
 		this.maxExecTimeSeconds = maxExecTimeSeconds <= 0 ? null : maxExecTimeSeconds;
+		return this;
+	}
+	
+	/**
+	* Sets the max thread pool size for futures a Venice script under this 
+	* <code>SandboxRules</code> is allowed to use.
+	* 
+	* @param maximumPoolSize the max thread pool size
+	* @return this <code>SandboxRules</code>
+	*/
+	public SandboxRules withMaxFutureThreadPoolSize(final int maximumPoolSize) {
+		this.maxFutureThreadPoolSize = maximumPoolSize <= 0 ? null : maximumPoolSize;
 		return this;
 	}
 	
@@ -456,6 +468,14 @@ public class SandboxRules {
 	 */
 	public Integer getMaxExecTimeSeconds() {
 		return maxExecTimeSeconds;
+	}
+	
+	/**
+	 * @return the max thread pool size for futures a Venice script under this 
+	 * <code>SandboxRules</code> is allowed to use.
+	 */
+	public Integer getMaxFutureThreadPoolSize() {
+		return maxFutureThreadPoolSize;
 	}
 	
 	
@@ -590,4 +610,5 @@ public class SandboxRules {
 
 	private final Set<String> rules = new HashSet<>();
 	private Integer maxExecTimeSeconds = null;
+	private Integer maxFutureThreadPoolSize = null;
 }

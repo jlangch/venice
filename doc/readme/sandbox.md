@@ -63,7 +63,8 @@ final IInterceptor interceptor =
                 "java.awt.**:*", 
                 "java.util.ArrayList:new",
                 "java.util.ArrayList:add")
-              .withMaxExecTimeSeconds(5));
+              .withMaxExecTimeSeconds(5)
+              .withMaxFutureThreadPoolSize(20));
 
 final Venice venice = new Venice(interceptor);
 

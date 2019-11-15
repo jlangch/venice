@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -140,7 +141,7 @@ public class Venice {
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 			}
-				 
+
 			final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
 
 			final Object jResult = result.convertToJavaObject();
@@ -311,6 +312,10 @@ public class Venice {
 	
 	private Object runWithSandbox(final Callable<Object> callable) {
 		try {
+			if (interceptor.getMaxFutureThreadPoolSize() != null) {
+				ConcurrencyFunctions.setMaximumThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());
+			}
+
 			if (interceptor.getMaxExecutionTimeSeconds() == null) {
 				return new SandboxedCallable<Object>(interceptor, callable).call();
 			}

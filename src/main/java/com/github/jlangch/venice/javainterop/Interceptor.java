@@ -132,4 +132,8 @@ public abstract class Interceptor implements IInterceptor {
 		return null;
 	}
 
+	@Override
+	public Integer getMaxFutureThreadPoolSize() {
+		return null;
+	}
 }
