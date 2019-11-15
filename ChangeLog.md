@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - functions `every-pred`, `any-pred`
 - function `locking`, Venice's equivalent for `synchronized` in Java
 - auto generated unique symbol names (hash suffix) for macros 
-  to be used within syntax quotes. E.g.: ` `(let [a# 100] (println a#))` 
+  to be used within syntax quotes. E.g.: `` `(let [a# 100] (println a#))``
   expands to `(let [a__9__auto 100] (println a__9__auto))`
 
 ### Changed
