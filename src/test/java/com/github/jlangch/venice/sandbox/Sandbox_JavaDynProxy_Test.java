@@ -33,15 +33,38 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class Sandbox_JavaDynProxy_Test {
-		
+	
 	@Test
-	public void test_proxy() {
+	public void test_proxy_filter_stream() {
 		final String script =
 			"(do                                                          \n" +
 			"    (import :java.util.function.Predicate)                   \n" +
 			"    (import :java.util.stream.Collectors)                    \n" +
 			"                                                             \n" +
-			"    (-> (. [1 2 3 4] :stream)                                \n" +
+			"    (-> (. [1 2 3 4] :stream) 			                      \n" +
+			"        (. :filter (proxify :Predicate { :test #(> % 2) }))  \n" +
+			"        (. :collect (. :Collectors :toList))))                 ";
+	
+		
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.withClasses(
+										"java.util.ArrayList:*",
+										"java.util.function.*:*",
+										"java.util.stream.*:*"));				
+	
+		assertDoesNotThrow(() -> new Venice(interceptor).eval(script));
+	}
+		
+	@Test
+	public void test_proxy_filter_parallel_stream() {
+		final String script =
+			"(do                                                          \n" +
+			"    (import :java.util.function.Predicate)                   \n" +
+			"    (import :java.util.stream.Collectors)                    \n" +
+			"                                                             \n" +
+			"    (-> (. [1 2 3 4] :parallelStream)                        \n" +
 			"        (. :filter (proxify :Predicate { :test #(> % 2) }))  \n" +
 			"        (. :collect (. :Collectors :toList))))                 ";
 
@@ -64,12 +87,9 @@ public class Sandbox_JavaDynProxy_Test {
 			"    (import :java.util.function.Predicate)                              \n" +
 			"    (import :java.util.stream.Collectors)                               \n" +
 		    "                                                                        \n" +
-			"    (def parent-th-id (atom (thread-id)))                               \n" +
-		    "                                                                        \n" +
 		    "    (defn pred-fn [x]                                                   \n" +
 			"          (do                                                           \n" +
-			"             (when-not (== @parent-th-id (thread-id))                   \n" +
-			"                       (. :java.lang.System :currentTimeMillis))        \n" +
+			"             (. :java.lang.System :currentTimeMillis)                   \n" +
 			"             (> x 2)))                                                  \n" +
 			"                                                                        \n" +
 			"    ;; parallel stream -> different threads for callback                \n" +
@@ -98,12 +118,9 @@ public class Sandbox_JavaDynProxy_Test {
 			"    (import :java.util.function.Predicate)                              \n" +
 			"    (import :java.util.stream.Collectors)                               \n" +
 		    "                                                                        \n" +
-			"    (def parent-th-id (atom (thread-id)))                               \n" +
-		    "                                                                        \n" +
 		    "    (defn pred-fn [x]                                                   \n" +
 			"          (do                                                           \n" +
-			"             (when-not (== @parent-th-id (thread-id))                   \n" +
-			"                       (. :java.lang.System :currentTimeMillis))        \n" +
+			"             (. :java.lang.System :currentTimeMillis)                   \n" +
 			"             (> x 2)))                                                  \n" +
 			"                                                                        \n" +
 			"    ;; parallel stream -> different threads for callback                \n" +
