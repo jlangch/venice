@@ -162,7 +162,6 @@ References:
              border-spacing: 0px;
              empty-cells: show;
              vertical-align: top;
-             border: 1px solid #808080;
              table-layout: fixed;
              font-size: 9pt;
            }
@@ -197,19 +196,29 @@ References:
              text-align: right;
            }
            table.people1 > tbody > tr:first-child {
-             background-color: #E0E0E0;
+             background-color: #FFFFFF;
            }
            table.people1 > tbody > tr > td {
-             border: 1px solid #CBCBCB;
+             border-style: none;
+           }
+           table.people1 > tbody > tr:first-child > td {
+             border-top: 2px solid #000000;
+             border-bottom: 2px solid #000000;
+           }
+           table.people2 > tbody > tr:first-child {
+             background-color: #E0E0E0;
            }
            table.people2 > tbody > tr > td {
              border: 1px solid #CBCBCB;
            }
-           table.people2 > tbody > tr:nth-child(2n+1) {
+           table.people3 > tbody > tr:nth-child(2n+1) {
              background-color: #F0F0F0;
            }
-           table.people2 > tbody > tr:first-child {
+           table.people3 > tbody > tr:first-child {
              background-color: #C0C0C0;
+           }
+           table.people3 > tbody > tr > td {
+             border: 1px solid #B0B0B0;
            }
          </style>
        </head>
@@ -217,7 +226,7 @@ References:
        <body>
          <div class="title">Venice PDF Tables</div>
          <div class="subtitle">Example</div>
-         
+                 
          <table class="people people1">
            <tbody>
              ${ (kira/foreach persons (fn [p] (kira/emit }$
@@ -232,6 +241,7 @@ References:
              ${ ))) }$
            </tbody>
          </table>
+                 
          <table class="people people2">
            <tbody>
              ${ (kira/foreach persons (fn [p] (kira/emit }$
@@ -246,6 +256,22 @@ References:
              ${ ))) }$
            </tbody>
          </table>
+         
+         <table class="people people3">
+           <tbody>
+             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             <tr>
+               <td>${ (kira/escape-xml (nth p 0)) }$</td>
+               <td>${ (kira/escape-xml (nth p 1)) }$</td>
+               <td>${ (kira/escape-xml (nth p 2)) }$</td>
+               <td>${ (kira/escape-xml (nth p 3)) }$</td>
+               <td>${ (kira/escape-xml (nth p 4)) }$</td>
+               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+             </tr>
+             ${ ))) }$
+           </tbody>
+         </table>
+         
        </body>
      </html>
      """)
