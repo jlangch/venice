@@ -52,10 +52,9 @@
 
 ```clojure
 (do
-   (defn sum 
-         [x y] 
-         { :pre [(number? x) (number? y)] } 
-         (+ x y)))
+   (defn sum [x y] 
+      { :pre [(number? x) (number? y)] } 
+      (+ x y)))
 ```
 
 ## Maps, Sets, and Keywords as functions
