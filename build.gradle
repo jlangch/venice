@@ -177,13 +177,13 @@ dependencies {
     // unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
-    testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.18'
-    testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18'
+    testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.19'
+    testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.19'
     testRuntimeOnly 'com.github.librepdf:openpdf:1.3.11'
 
     // required for cheatsheet generation
-    compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.18'
-    compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18'
+    compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.19'
+    compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.19'
     compileOnly 'com.github.librepdf:openpdf:1.3.11'
 
     // WebApp support

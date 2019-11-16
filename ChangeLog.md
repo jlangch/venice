@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - function `mod` is now implemented with Java `Math.floorMod(x,y)` instead of `x % y`
   to change the behavior on negative values: `(mod -1 5)` returns now `4`.
 - JLine3 lib to actual version 3.13.1
+- Flying-Saucer libs to version 9.1.19
 
 
 
