@@ -421,8 +421,6 @@ public class SandboxRules {
 	 * Allow access to all standard system environment variables
 	 * 
 	 * <p>Standard system environment variables:
-	 * <ul>
-	 * </ul>
 	 * 
 	 * @return this <code>SandboxRules</code>
 	 */
