@@ -135,10 +135,16 @@ public class ModuleFunctions {
 							else {
 								for(VncVal p : loadPaths.getList()) {
 									if (p != Nil) {
-										final File dir = new File(name(p));
-										final VncVal code = load(new File(dir, file.getPath()));
-										if (code != Nil) {
-											return code;
+										final File dir = new File(name(p)).getAbsoluteFile();
+										final File fl = new File(dir, file.getPath());
+										if (fl.isFile()) {
+											if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
+												// prevent accessing files outside the load-path
+												final VncVal code = load(new File(dir, file.getPath()));
+												if (code != Nil) {
+													return code;
+												}
+											}
 										}
 									}
 								}

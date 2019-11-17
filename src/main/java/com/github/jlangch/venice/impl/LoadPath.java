@@ -47,7 +47,7 @@ public class LoadPath {
 		else {
 			return paths
 					.stream()
-					.map(p ->  StringUtil.trimToNull(p))
+					.map(p -> StringUtil.trimToNull(p))
 					.filter(p -> p != null)
 					.collect(Collectors.toList());
 		}

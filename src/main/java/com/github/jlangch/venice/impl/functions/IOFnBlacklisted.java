@@ -34,6 +34,8 @@ public class IOFnBlacklisted {
 					// load (macros)
 					"load-file",
 					"load-classpath-file",
+					"*load-file",
+					"*load-classpath-file",
 
 					// system
 					"gc",
