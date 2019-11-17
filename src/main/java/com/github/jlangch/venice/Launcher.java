@@ -45,14 +45,14 @@ public class Launcher {
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		JavaInterop.register(interceptor);
 		
-		final List<String> loadPaths = LoadPath.parseFromString(cli.switchValue("--load-path"));
+		final List<String> loadPaths = LoadPath.parseFromString(cli.switchValue("-loadpath"));
 
 		try {
 			if (cli.switchPresent("-file")) {
 				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 				final Env env = createEnv(venice, cli);
 	
-				final String file = cli.switchValue("-file");
+				final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
 				final String script = new String(FileUtil.load(new File(file)));
 				
 				System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
@@ -89,5 +89,9 @@ public class Launcher {
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}
-	
+
+	private static String suffixWithVeniceFileExt(final String s) {
+		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
+	}
+
 }

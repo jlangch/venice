@@ -596,12 +596,9 @@
           current working directory.
           """
      :examples '(
-          """
-          (load-file "coffee")
-          """,
-          """
-          (load-file "coffee.venice")
-          """ ) }
+          """(load-file "coffee")""",
+          """(load-file "coffee.venice")""",
+          """(load-file "beverages/coffee")""" ) }
 
   load-file
 

@@ -1,0 +1,10 @@
+(do
+   (load-module :xchart)
+
+   (xchart/write-to-file
+      (xchart/pie-chart
+         { "A" 400 "B" 310 "C" 50 }
+         { :title "Pie Chart" :theme :xchart } )
+      :png
+      120
+      (io/file "pie.png")))

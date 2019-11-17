@@ -1,0 +1,8 @@
+(do
+   (load-module :xchart)
+
+   (xchart/swing-view-chart
+      (xchart/pie-chart
+         { "A" 400 "B" 310 "C" 50 }
+         { :title "Pie Chart" :theme :xchart } )
+      "Pie Chart"))

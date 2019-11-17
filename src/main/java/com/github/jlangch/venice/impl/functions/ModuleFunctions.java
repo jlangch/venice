@@ -57,14 +57,14 @@ public class ModuleFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				try {	
-					assertArity("*load-module", args, 1);
-					
+				assertArity("*load-module", args, 1);
+
+				try {		
 					final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
 					return new VncString(ModuleLoader.loadModule(name));
 				} 
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException("Failed to load Venice module", ex);
 				}
 			}
 	
@@ -81,9 +81,9 @@ public class ModuleFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				try {	
-					assertArity("*load-classpath-file", args, 1);
-					
+				assertArity("*load-classpath-file", args, 1);
+
+				try {		
 					final String file = suffixWithVeniceFileExt(name(args.first()));
 					
 					if (file != null) {
@@ -95,7 +95,7 @@ public class ModuleFunctions {
 					}
 				} 
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException("Failed to load Venice classpath file", ex);
 				}
 			}
 	
@@ -112,25 +112,28 @@ public class ModuleFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				assertArity("*load-file", args, 1, 2);
+				
 				try {	
-					assertArity("*load-file", args, 1, 2);
-					
 					final String f = suffixWithVeniceFileExt(name(args.first()));
 					if (f != null) {
 						final File file = new File(f);
 						
-						final VncList loadPaths = args.size() == 2 
-													? Types.isVncList(args.second())
+						final VncList loadPaths = args.size() == 2 && Types.isVncList(args.second())
 														? (VncList)args.second() 
-														: new VncList()
-													: new VncList();
+														: new VncList();
 
 						if (file != null) {
-							if (file.isAbsolute() || loadPaths.isEmpty()) {
+							if (loadPaths.isEmpty()) {
 								final VncVal code = load(file);
 								if (code != Nil) {
 									return code;
 								}
+							}
+							else if (file.isAbsolute()) {
+								throw new VncException(
+											"Failed to load Venice file '" + file + "'. " +
+											"Absolute files cannot be used with a load-path!");
 							}
 							else {
 								for(VncVal p : loadPaths.getList()) {
@@ -139,7 +142,8 @@ public class ModuleFunctions {
 										final File fl = new File(dir, file.getPath());
 										if (fl.isFile()) {
 											if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
-												// prevent accessing files outside the load-path
+												// Prevent accessing files outside the load-path.
+												// E.g.: ../../coffee
 												final VncVal code = load(new File(dir, file.getPath()));
 												if (code != Nil) {
 													return code;
@@ -150,7 +154,7 @@ public class ModuleFunctions {
 								}
 							}
 	
-							throw new VncException("Failed to load Venice file '" + file + "'");
+							throw new VncException("Failed to load Venice file '" + file + "'. File not found!");
 						}
 					}
 					
@@ -160,7 +164,7 @@ public class ModuleFunctions {
 					throw ex;
 				}
 				catch (Exception ex) {
-					throw new VncException(ex);
+					throw new VncException("Failed to load Venice file", ex);
 				}
 			}
 	
@@ -195,7 +199,7 @@ public class ModuleFunctions {
 	}
 	
 	private static String suffixWithVeniceFileExt(final String s) {
-		return s== null ? null : (s.endsWith(".venice") ? s : s + ".venice");
+		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
 	}
 		
 	

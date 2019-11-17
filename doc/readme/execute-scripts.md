@@ -15,6 +15,14 @@ foo> java -jar venice-1.7.8.jar -file script.venice
 => 2
 ```
 
+### Passing a load-path:
+
+```text
+foo> echo "(+ 1 1)" > script.venice
+foo> java -jar venice-1.7.8.jar -file script.venice -loadpath "/users/foo/venice/scripts"
+=> 2
+```
+
 ### Venice passes the command line args as \*ARGV\* vector:
 
 ```text

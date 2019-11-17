@@ -1,0 +1,16 @@
+{
+  "prompt": "venice> ",
+  "secondary-prompt": "      | ",
+  "result-prefix": "=> ",
+
+  "colors": {
+    "prompt": null,
+    "result": "\u001b[38;5;20m",
+    "stdout": "\u001b[38;5;243m",
+    "error": "\u001b[38;5;202m",
+    "system": "\u001b[48;5;35m\u001b[38;5;15m",
+    "interrupt": "\u001b[48;5;196m\u001b[38;5;15m",
+
+    "comment": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
+  }
+}
