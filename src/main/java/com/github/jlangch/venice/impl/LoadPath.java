@@ -53,7 +53,6 @@ public class LoadPath {
 		}
 	}
 
-
 	public static VncList toVncList(final List<String> paths) {
 		if (paths == null) {
 			return new VncList();
