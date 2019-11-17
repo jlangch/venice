@@ -609,13 +609,13 @@
     `(load-file ~file false))
 
   ([file force]
-    `(let [fc# (io/file-canonical-path ~file)]
-       (when (or force (not-contains? core/*loaded-files* (name fc#)))
+    `(let [fc# (name ~file)]
+       (when (or force (not-contains? core/*loaded-files* fc#))
          (let [code (str "(do " (*load-file fc# core/*load-path*) ")")
                parsed (read-string code fc#)]
-           (cons! (name fc#) core/*loaded-files*)
+           (cons! fc# core/*loaded-files*)
            (eval parsed)
-           ~file)))))
+           fc#)))))
 
 
 (defmacro

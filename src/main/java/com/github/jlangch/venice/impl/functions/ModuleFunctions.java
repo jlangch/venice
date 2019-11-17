@@ -124,7 +124,7 @@ public class ModuleFunctions {
 														? (VncList)args.second() 
 														: new VncList()
 													: new VncList();
-						
+
 						if (file != null) {
 							if (file.isAbsolute() || loadPaths.isEmpty()) {
 								final VncVal code = load(file);
