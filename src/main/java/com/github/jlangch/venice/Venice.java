@@ -24,6 +24,7 @@ package com.github.jlangch.venice;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -56,16 +58,27 @@ import com.github.jlangch.venice.util.Timer;
 public class Venice {
 
 	public Venice() {
-		this(null);
+		this(null, null);
 	}
 
 	/**
 	 * Create new sandboxed Venice instance
 	 * 
-	 * @param interceptor an interceptor that defines the sandbox 
+	 * @param interceptor an optional interceptor that defines the sandbox 
 	 */
 	public Venice(final IInterceptor interceptor) {
+		this(interceptor, null);
+	}
+
+	/**
+	 * Create new sandboxed Venice instance
+	 * 
+	 * @param interceptor an optional interceptor that defines the sandbox 
+	 * @param loadPaths an optional list of file load paths used by the function 'load-file'
+	 */
+	public Venice(final IInterceptor interceptor, final List<String> loadPaths) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
+		this.loadPaths = LoadPath.sanitize(loadPaths);
 	}
 	
 	
@@ -86,7 +99,7 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false), interceptor);
+		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false), interceptor, loadPaths);
 		
 		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName));
 
@@ -131,7 +144,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
+			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor, loadPaths);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
@@ -205,7 +218,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor);
+			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor, loadPaths);
 
 			final Env env = createEnv(venice, params);
 			
@@ -375,6 +388,7 @@ public class Venice {
 							true /* daemon threads */));
 	
 	private final IInterceptor interceptor;
+	private final List<String> loadPaths;
 	private final MeterRegistry meterRegistry = new MeterRegistry(false);
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 	private final PrintStream stdout = new PrintStream(System.out, true);

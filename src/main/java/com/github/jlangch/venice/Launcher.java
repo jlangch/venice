@@ -23,8 +23,10 @@ package com.github.jlangch.venice;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.List;
 
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
@@ -43,9 +45,11 @@ public class Launcher {
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		JavaInterop.register(interceptor);
 		
+		final List<String> loadPaths = LoadPath.parseFromString(cli.switchValue("--load-path"));
+
 		try {
 			if (cli.switchPresent("-file")) {
-				final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 				final Env env = createEnv(venice, cli);
 	
 				final String file = cli.switchValue("-file");
@@ -54,7 +58,7 @@ public class Launcher {
 				System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
 			}
 			else if (cli.switchPresent("-script")) {
-				final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 				final Env env = createEnv(venice, cli);
 	
 				final String script = cli.switchValue("-script");
@@ -62,10 +66,10 @@ public class Launcher {
 				System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 			}
 			else if (cli.switchPresent("-repl")) {
-				new REPL(interceptor).run(args);
+				new REPL(interceptor, loadPaths).run(args);
 			}
 			else {
-				new REPL(interceptor).run(args);
+				new REPL(interceptor, loadPaths).run(args);
 			}
 			
 			System.exit(0);
@@ -85,4 +89,5 @@ public class Launcher {
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}
+	
 }

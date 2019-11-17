@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -64,8 +65,9 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class REPL {
 	
-	public REPL(final IInterceptor interceptor) {
+	public REPL(final IInterceptor interceptor, final List<String> loadPaths) {
 		this.interceptor = interceptor;
+		this.loadPaths = loadPaths;
 	}
 	
 	public void run(final String[] args) {
@@ -115,7 +117,7 @@ public class REPL {
 											config.getColor("colors.stdout"))
 									: System.out;
 		
-		venice = new VeniceInterpreter(interceptor);
+		venice = new VeniceInterpreter(interceptor, loadPaths);
 		
 		Env env = loadEnv(cli, ps);
 
@@ -511,7 +513,7 @@ public class REPL {
 	
 	private void activate(final IInterceptor interceptor) {
 		this.interceptor = interceptor; 
-		this.venice = new VeniceInterpreter(interceptor);
+		this.venice = new VeniceInterpreter(interceptor, loadPaths);
 		JavaInterop.register(interceptor);			
 	}
 
@@ -577,7 +579,9 @@ public class REPL {
 			"   !sandbox add-rule blacklist:venice:*io*\n";	
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
-	
+
+	private final List<String> loadPaths;
+
 	private ReplConfig config;
 	private IInterceptor interceptor;
 	private VeniceInterpreter venice;

@@ -74,16 +74,20 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		this(new MeterRegistry(false), new AcceptAllInterceptor());
+		this(new MeterRegistry(false), new AcceptAllInterceptor(), null);
 	}
 
-	public VeniceInterpreter(final IInterceptor interceptor) {
-		this(new MeterRegistry(false), interceptor);
+	public VeniceInterpreter(
+			final IInterceptor interceptor, 
+			final List<String> loadPaths
+	) {
+		this(new MeterRegistry(false), interceptor, loadPaths);
 	}
 
 	public VeniceInterpreter(
 			final MeterRegistry perfmeter, 
-			final IInterceptor interceptor
+			final IInterceptor interceptor, 
+			final List<String> loadPaths
 	) {
 		this.sandboxMaxExecutionTimeChecker = new SandboxMaxExecutionTimeChecker();
 		this.meterRegistry = perfmeter;
