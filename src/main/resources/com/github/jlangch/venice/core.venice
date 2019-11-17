@@ -589,14 +589,19 @@
   ^{ :arglists '(
           "(load-file file)",
           "(load-file file force)")
-     :doc "Sequentially read and evaluate the set of forms contained in the file."
+     :doc """
+          Sequentially read and evaluate the set of forms contained in the file.
+          The global var *load-path* holds a list of paths that are tried to
+          load the file. If *load-path* is empty the file is loaded from the
+          current working directory.
+          """
      :examples '(
-       """
-       (load-file "coffee")
-       """,
-       """
-       (load-file "coffee.venice")
-       """ ) }
+          """
+          (load-file "coffee")
+          """,
+          """
+          (load-file "coffee.venice")
+          """ ) }
 
   load-file
 
@@ -606,7 +611,7 @@
   ([file force]
     `(let [fc# (io/file-canonical-path ~file)]
        (when (or force (not-contains? core/*loaded-files* (name fc#)))
-         (let [code (str "(do " (*load-file fc# *load-path*) ")")
+         (let [code (str "(do " (*load-file fc# core/*load-path*) ")")
                parsed (read-string code fc#)]
            (cons! (name fc#) core/*loaded-files*)
            (eval parsed)
