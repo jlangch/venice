@@ -36,21 +36,7 @@ import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 public class ModuleLoader {
 
-	public static String fileNameToModule(final String fileName) {
-		if (fileName == null) {
-			return null;
-		}
-		else if (fileName == "unknown") {
-			return "user";
-		}
-		else {
-			return fileName.endsWith(".venice") 
-						? fileName.substring(0, fileName.length() - 7) 
-						: fileName;
-		}
-	}
-
-	public static String load(final String module) {
+	public static String loadModule(final String module) {
 		if (!VALID_MODULES.contains(module)) {
 			throw new VncException(String.format(
 					"The Venice core module '%s' does not exist",
@@ -72,32 +58,29 @@ public class ModuleLoader {
 		}
 	}
 
-	public static boolean loaded(final String module) {
-		return modules.containsKey(module);
-	}
-
-	public static String loadVeniceResource(final String resource) {
+	public static String loadClasspathFile(final String file) {
 		// For security reasons just allow to load venice scripts!
-		if (!resource.endsWith(".venice")) {
+		if (!file.endsWith(".venice")) {
 			throw new VncException(String.format(
 					"Must not load other than Venice (*.venice) resources from "
 						+ "classpath. Resource: '%s'"));
 		}
 		
 		try {
-			return modules.computeIfAbsent(
-					resource, 
-					k -> new ClassPathResource(resource).getResourceAsString("UTF-8"));
+			return classpathFiles.computeIfAbsent(
+					file, 
+					k -> new ClassPathResource(file).getResourceAsString("UTF-8"));
 		}
 		catch(Exception ex) {
 			throw new VncException(String.format(
-					"Failed to load Venice resource '%s'", resource), 
+					"Failed to load Venice classpath file '%s'", file), 
 					ex);
 		}
 	}
 		
 		
 	private static final Map<String,String> modules = new ConcurrentHashMap<>();
+	private static final Map<String,String> classpathFiles = new ConcurrentHashMap<>();
 	
 	public static final Set<String> VALID_MODULES = 
 			Collections.unmodifiableSet(

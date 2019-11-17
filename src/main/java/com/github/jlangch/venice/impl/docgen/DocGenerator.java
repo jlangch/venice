@@ -841,10 +841,10 @@ public class DocGenerator {
 
 		final DocSection loading = new DocSection("Loading");
 		all.addSection(loading);
-		loading.addItem(getDocItem("load-string"));
-		loading.addItem(getDocItem("load-file"));
 		loading.addItem(getDocItem("load-module"));
+		loading.addItem(getDocItem("load-file", false));
 		loading.addItem(getDocItem("load-classpath-file"));
+		loading.addItem(getDocItem("load-string"));
 		
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);

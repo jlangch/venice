@@ -590,7 +590,13 @@
           "(load-file file)",
           "(load-file file force)")
      :doc "Sequentially read and evaluate the set of forms contained in the file."
-     :examples '() }
+     :examples '(
+       """
+       (load-file "coffee")
+       """,
+       """
+       (load-file "coffee.venice")
+       """ ) }
 
   load-file
 
@@ -600,7 +606,7 @@
   ([file force]
     `(let [fc# (io/file-canonical-path ~file)]
        (when (or force (not-contains? core/*loaded-files* (name fc#)))
-         (let [code (str "(do " (io/slurp fc# :encoding "UTF-8" :binary false) ")")
+         (let [code (str "(do " (*load-file fc#) ")")
                parsed (read-string code fc#)]
            (cons! (name fc#) core/*loaded-files*)
            (eval parsed)
@@ -639,7 +645,7 @@
 
   ([file force]
     `(when (or ~force (not-contains? core/*loaded-files* (name ~file)))
-       (let [code# (str "(do " (load-classpath-venice ~file) ")")
+       (let [code# (str "(do " (*load-classpath-file ~file) ")")
              parsed# (read-string code# ~file)]
          (cons! (name ~file) core/*loaded-files*)
          (eval parsed#)
@@ -670,7 +676,7 @@
 
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
-       (let [code# (str "(do " (load-core-module ~m) ")")
+       (let [code# (str "(do " (*load-module ~m) ")")
              parsed# (read-string code# ~m)]
          (cons! (keyword (name ~m)) core/*loaded-modules*)
          (eval parsed#)
