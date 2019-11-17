@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -48,6 +50,18 @@ public class LoadPath {
 					.map(p ->  StringUtil.trimToNull(p))
 					.filter(p -> p != null)
 					.collect(Collectors.toList());
+		}
+	}
+
+
+	public static VncList toVncList(final List<String> paths) {
+		if (paths == null) {
+			return new VncList();
+		}
+		else {
+			return new VncList(paths.stream()
+							 		.map(p -> new VncString(p))
+							 		.collect(Collectors.toList()));
 		}
 	}
 

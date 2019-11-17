@@ -92,6 +92,7 @@ public class VeniceInterpreter implements Serializable  {
 		this.sandboxMaxExecutionTimeChecker = new SandboxMaxExecutionTimeChecker();
 		this.meterRegistry = perfmeter;
 		this.interceptor = interceptor;
+		this.loadPaths = loadPaths;
 	}
 	
 	public void initNS() {
@@ -166,7 +167,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 
 		// set the load path
-		env.setGlobal(new Var(new VncSymbol("*load-path*"), new VncList(), false));
+		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(), true));
@@ -1350,6 +1351,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final VncSymbol LOADED_FILES_SYMBOL = new VncSymbol("*loaded-files*");
 	
 	private final IInterceptor interceptor;	
+	private final List<String> loadPaths;
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();

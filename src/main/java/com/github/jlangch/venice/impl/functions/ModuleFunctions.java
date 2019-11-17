@@ -115,36 +115,40 @@ public class ModuleFunctions {
 				try {	
 					assertArity("*load-file", args, 1, 2);
 					
-					final String file = suffixWithVeniceFileExt(name(args.first()));
-					final VncList loadPaths = args.size() == 2 
-												? Types.isVncList(args.second())
-													? (VncList)args.second() 
-													: new VncList()
-												: new VncList();
-					
-					if (file != null) {
-						if (loadPaths.isEmpty()) {
-							final VncVal code = load(new File(file));
-							if (code != Nil) {
-								return code;
+					final String f = suffixWithVeniceFileExt(name(args.first()));
+					if (f != null) {
+						final File file = new File(f);
+						
+						final VncList loadPaths = args.size() == 2 
+													? Types.isVncList(args.second())
+														? (VncList)args.second() 
+														: new VncList()
+													: new VncList();
+						
+						if (file != null) {
+							if (file.isAbsolute() || loadPaths.isEmpty()) {
+								final VncVal code = load(file);
+								if (code != Nil) {
+									return code;
+								}
 							}
-						}
-						else {
-							for(VncVal p : loadPaths.getList()) {
-								if (p != Nil) {
-									final VncVal code = load(new File(name(p), file));
-									if (code != Nil) {
-										return code;
+							else {
+								for(VncVal p : loadPaths.getList()) {
+									if (p != Nil) {
+										final File dir = new File(name(p));
+										final VncVal code = load(new File(dir, file.getPath()));
+										if (code != Nil) {
+											return code;
+										}
 									}
 								}
 							}
+	
+							throw new VncException("Failed to load Venice file '" + file + "'");
 						}
-
-						throw new VncException("Failed to load Venice file '" + file + "'");
 					}
-					else {
-						return Nil;
-					}
+					
+					return null;
 				} 
 				catch (VncException ex) {
 					throw ex;
@@ -185,7 +189,7 @@ public class ModuleFunctions {
 	}
 	
 	private static String suffixWithVeniceFileExt(final String s) {
-		return s.endsWith(".venice") ? s : s + ".venice";
+		return s== null ? null : (s.endsWith(".venice") ? s : s + ".venice");
 	}
 		
 	

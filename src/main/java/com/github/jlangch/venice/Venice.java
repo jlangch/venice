@@ -64,7 +64,8 @@ public class Venice {
 	/**
 	 * Create new sandboxed Venice instance
 	 * 
-	 * @param interceptor an optional interceptor that defines the sandbox 
+	 * @param interceptor 
+	 * 			an optional interceptor that defines the sandbox 
 	 */
 	public Venice(final IInterceptor interceptor) {
 		this(interceptor, null);
@@ -73,8 +74,11 @@ public class Venice {
 	/**
 	 * Create new sandboxed Venice instance
 	 * 
-	 * @param interceptor an optional interceptor that defines the sandbox 
-	 * @param loadPaths an optional list of file load paths used by the function 'load-file'
+	 * @param interceptor
+	 * 			 an optional interceptor that defines the sandbox 
+	 * @param loadPaths 
+	 * 			an optional list of file load paths used by the function 
+	 * 			'load-file'
 	 */
 	public Venice(final IInterceptor interceptor, final List<String> loadPaths) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
