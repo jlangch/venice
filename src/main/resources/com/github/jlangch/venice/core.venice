@@ -606,7 +606,7 @@
   ([file force]
     `(let [fc# (io/file-canonical-path ~file)]
        (when (or force (not-contains? core/*loaded-files* (name fc#)))
-         (let [code (str "(do " (*load-file fc#) ")")
+         (let [code (str "(do " (*load-file fc# *load-path*) ")")
                parsed (read-string code fc#)]
            (cons! (name fc#) core/*loaded-files*)
            (eval parsed)

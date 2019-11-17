@@ -107,25 +107,40 @@ public class ModuleFunctions {
 				"*load-file",
 				VncFunction
 					.meta()
-					.arglists("(*load-file file)")		
+					.arglists("(*load-file file load-paths)")		
 					.doc("Loads a Venice file.")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				try {	
-					assertArity("*load-file", args, 1);
+					assertArity("*load-file", args, 1, 2);
 					
 					final String file = suffixWithVeniceFileExt(name(args.first()));
+					final VncList loadPaths = args.size() == 2 
+												? Types.isVncList(args.second())
+													? (VncList)args.second() 
+													: new VncList()
+												: new VncList();
 					
 					if (file != null) {
-						try {
-							final byte[] data = Files.readAllBytes(new File(file).toPath());
-	
-							return new VncString(new String(data, "utf-8"));
+						if (loadPaths.isEmpty()) {
+							final VncVal code = load(new File(file));
+							if (code != Nil) {
+								return code;
+							}
 						}
-						catch (Exception ex) {
-							throw new VncException("Failed to load Venice file '" + file + "'", ex);
+						else {
+							for(VncVal p : loadPaths.getList()) {
+								if (p != Nil) {
+									final VncVal code = load(new File(name(p), file));
+									if (code != Nil) {
+										return code;
+									}
+								}
+							}
 						}
+
+						throw new VncException("Failed to load Venice file '" + file + "'");
 					}
 					else {
 						return Nil;
@@ -143,6 +158,17 @@ public class ModuleFunctions {
 		};
 
 
+	private static VncVal load(final File file) {
+		try {
+			final byte[] data = Files.readAllBytes(file.toPath());
+
+			return new VncString(new String(data, "utf-8"));
+		}
+		catch (Exception ex) {
+			return Nil;
+		}
+	}
+	
 	private static String name(final VncVal val) {
 		if (Types.isVncString(val)) {
 			return ((VncString)val).getValue();
