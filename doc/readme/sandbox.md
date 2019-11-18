@@ -145,6 +145,27 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 ...
 ```
 
+To verify which functions / modules are prohibited. Check the
+reject-all sandbox in the REPL:
+
+```
+venice> !sandbox reject-all
+venice> !sandbox config
+[reject-all] SAFE restricted sandbox
+Java calls:
+   All rejected!
+Blacklisted Venice functions:
+   agent
+   agent-error
+   agent-error-mode
+     :
+Blacklisted Venice modules:
+   java
+   maven
+     :
+venice> 
+```
+
 
 #### Sandbox turned off
 
