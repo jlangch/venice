@@ -73,11 +73,11 @@ public class REPL {
 	public void run(final String[] args) {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
-		System.out.println("Venice REPL: V" + Venice.getVersion());
-		System.out.println("Type '!' for help.");
-
 		try {
+			System.out.println("Venice REPL: V" + Venice.getVersion());
 			config = ReplConfig.load(cli);
+			
+			System.out.println("Type '!' for help.");
 			repl(cli);
 		}
 		catch (Exception ex) {

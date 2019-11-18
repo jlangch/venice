@@ -24,12 +24,26 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL with `java -jar venice-1.7.8.jar -colors`
 
 ```text
+jupiter> java -jar venice-1.7.8.jar -colors
+```
+
+The REPL prompts for input:
+
+```text
+jupiter> java -jar venice-1.7.8.jar -colors
+Venice REPL: V1.7.8
+Loading REPL config from repl.json...
+Type '!' for help.
+venice>
+```
+
+Type an expression like `(+ 1 1)` followed by a `<CR>`
+
+```text
 venice> (+ 1 1)
 => 2
 venice>
 ```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/repl.png" width="400">
 
 
 ### 4. Where to head next
