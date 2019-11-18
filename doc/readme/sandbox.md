@@ -14,9 +14,9 @@ threads through Java interop, or else it will escape the sandbox.
 
 To ensure this you should prohibit the use of threads. The only safe way to 
 work with threads and respecting the sandbox is by using Venice' built-in 
-concurrency features like futures, agents, delays, schedulers, ...
+[Concurrency](concurrency.md) features like futures, agents, delays, schedulers, ...
 
-The "Dining Philosophers" example in the _Concurrency_ readme section 
+The "Dining Philosophers" example in the [Concurrency](concurrency.md) section 
 demonstrates how to use Venice futures instead of bare Java threads.
 
 
@@ -51,10 +51,7 @@ import com.github.jlangch.venice.javainterop.*;
 final IInterceptor interceptor =
     new SandboxInterceptor(
         new SandboxRules()
-              .rejectAllVeniceIoFunctions()
-              .rejectVeniceFunctions(
-              	"time/date",
-              	"time/zone-ids")
+              // Java interop: whitelist rules
               .withStandardSystemProperties()
               .withSystemProperties("db.name", "db.port")
               .withSystemEnvs("SHELL", "HOME")
@@ -66,8 +63,22 @@ final IInterceptor interceptor =
                 "java.awt.**:*", 
                 "java.util.ArrayList:new",
                 "java.util.ArrayList:add")
-              .withMaxExecTimeSeconds(5)
-              .withMaxFutureThreadPoolSize(20));
+              
+              // Venice functions: blacklist rules
+              .rejectAllVeniceIoFunctions()
+              .rejectVeniceFunctions(
+              	"time/date",
+              	"time/zone-ids")
+              
+              // Venice extension modules: blacklist rules
+              .rejectVeniceModules(
+              	"shell", 
+              	"tomcat", 
+              	"tomcat-util")
+              
+              // Generic rules	
+              .withMaxFutureThreadPoolSize(20)              
+              .withMaxExecTimeSeconds(5));
 
 final Venice venice = new Venice(interceptor);
 

@@ -1,4 +1,3 @@
-
 # Embedding Venice in Java
 
 ```java
