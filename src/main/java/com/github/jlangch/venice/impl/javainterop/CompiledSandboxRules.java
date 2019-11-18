@@ -42,6 +42,7 @@ public class CompiledSandboxRules {
 			final List<Pattern> whiteListMethodPatterns,
 			final List<Pattern> whiteListClasspathPatterns,
 			final Set<String> blackListVeniceFunctions,
+			final Set<String> blackListVeniceModules,
 			final Set<String> whiteListSystemProps,
 			final Set<String> whiteListSystemEnvs,
 			final Integer maxExecTimeSeconds,
@@ -62,7 +63,11 @@ public class CompiledSandboxRules {
 		this.blackListVeniceFunctions = blackListVeniceFunctions == null 
 											? Collections.emptySet() 
 											: blackListVeniceFunctions;
-											
+
+		this.blackListVeniceModules = blackListVeniceModules == null 
+				? Collections.emptySet() 
+				: blackListVeniceModules;
+										
 		this.whiteListSystemProps = whiteListSystemProps;
 		this.whiteListSystemEnvs = whiteListSystemEnvs;
 		
@@ -72,7 +77,7 @@ public class CompiledSandboxRules {
 	
 	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
 		if (whiteList == null) {
-			return new CompiledSandboxRules(null, null, null, null, null, null, null, null);
+			return new CompiledSandboxRules(null, null, null, null, null, null, null, null, null);
 		}
 		
 		final List<String> filtered = whiteList
@@ -113,10 +118,17 @@ public class CompiledSandboxRules {
 				// blacklisted venice functions
 				filtered
 					.stream()
-					.filter(s -> s.startsWith("blacklist:venice:"))
-					.map(s -> s.substring("blacklist:venice:".length()))
-					.map(s -> s.equals("*io*") ? IOFnBlacklisted.getAllIoFunctions() : toSet(s))
+					.filter(s -> s.startsWith("blacklist:venice:func:"))
+					.map(s -> s.substring("blacklist:venice:func:".length()))
+					.map(s -> s.equals("*io*") ? IOFnBlacklisted.getIoFunctions() : toSet(s))
 					.flatMap(Set::stream)
+					.collect(Collectors.toSet()),
+					
+				// blacklisted venice modules
+				filtered
+					.stream()
+					.filter(s -> s.startsWith("blacklist:venice:module:"))
+					.map(s -> s.substring("blacklist:venice:module:".length()))
 					.collect(Collectors.toSet()),
 					
 				// whitelisted system properties
@@ -248,6 +260,10 @@ public class CompiledSandboxRules {
 	public boolean isBlackListedVeniceFunction(final String funcName) {
 		return blackListVeniceFunctions.contains(funcName);
 	}
+
+	public boolean isBlackListedVeniceModule(final String moduleName) {
+		return blackListVeniceModules.contains(moduleName);
+	}
 	
 	public boolean isWhiteListedSystemProperty(final String property) {
 		return (whiteListSystemProps == null) 
@@ -289,6 +305,7 @@ public class CompiledSandboxRules {
 	private final List<Pattern> whiteListMethodPatterns;
 	private final List<Pattern> whiteListClasspathPatterns;
 	private final Set<String> blackListVeniceFunctions;
+	private final Set<String> blackListVeniceModules;
 	private final Set<String> whiteListSystemProps;
 	private final Set<String> whiteListSystemEnvs;
 	private final Integer maxExecTimeSeconds;

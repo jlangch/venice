@@ -30,6 +30,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -39,6 +40,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ModuleFunctions {
@@ -59,8 +61,13 @@ public class ModuleFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("*load-module", args, 1);
 
-				try {		
+				try {
 					final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
+					
+					// sandbox: validate module load
+					final IInterceptor interceptor = JavaInterop.getInterceptor();
+					interceptor.validateLoadModule(name);
+					
 					return new VncString(ModuleLoader.loadModule(name));
 				} 
 				catch (Exception ex) {

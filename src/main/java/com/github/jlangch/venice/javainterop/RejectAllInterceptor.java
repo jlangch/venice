@@ -166,8 +166,21 @@ public class RejectAllInterceptor extends Interceptor {
 		}
 	}
 
+	@Override
+	public void validateLoadModule(
+			final String moduleName
+	) throws SecurityException {
+		if (blacklistedVeniceModules.contains(moduleName)) {
+			throw new SecurityException(String.format(
+					"%s: Access denied to Venice module %s.", 
+					PREFIX,
+					moduleName));
+		}
+	}
+
 	
 	private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
 	
-	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getAllIoFunctions();
+	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getIoFunctions();
+	private final Set<String> blacklistedVeniceModules = IOFnBlacklisted.getModules();
 }

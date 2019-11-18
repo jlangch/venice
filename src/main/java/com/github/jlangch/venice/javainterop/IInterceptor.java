@@ -162,6 +162,14 @@ public interface IInterceptor {
 	 * @throws SecurityException if the variable is not whitelisted
 	 */
 	String onReadSystemEnv(String name) throws SecurityException;
+
+	/**
+	 * Validates the load of a module
+	 * 
+	 * @param moduleName the module name
+	 * @throws SecurityException if the module is blacklisted
+	 */
+	void validateLoadModule(String moduleName) throws SecurityException;
 	
 	/**
 	 * Validates the invocation of a Venice function.

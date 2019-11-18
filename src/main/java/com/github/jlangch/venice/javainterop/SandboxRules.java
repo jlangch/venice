@@ -326,7 +326,36 @@ public class SandboxRules {
 		if (rules != null) {
 			this.rules.addAll(
 				rules.stream()
-				 	 .map(r -> r.startsWith("blacklist:venice:") ? r : "blacklist:venice:" + r)
+				 	 .map(r -> r.startsWith("blacklist:venice:func:") ? r : "blacklist:venice:func:" + r)
+					 .collect(Collectors.toList()));
+		}
+		return this;
+	}
+
+	/**
+	 * Reject Venice module rules to the sandbox.
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules rejectVeniceModules(final String... rules) {
+		if (rules != null) {
+			rejectVeniceModules(Arrays.asList(rules));
+		}
+		return this;
+	}
+	
+	/**
+	 * Reject Venice module rules to the sandbox.
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules rejectVeniceModules(final Collection<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream()
+				 	 .map(r -> r.startsWith("blacklist:venice:module:") ? r : "blacklist:venice:module:" + r)
 					 .collect(Collectors.toList()));
 		}
 		return this;

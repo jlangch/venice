@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class IOFnBlacklisted {
 
-	public static Set<String> getAllIoFunctions() {
+	public static Set<String> getIoFunctions() {
 		return new HashSet<>(
 				Arrays.asList(
 					// load (macros)
@@ -111,6 +111,18 @@ public class IOFnBlacklisted {
 					"io/gzip-to-stream",
 					"io/ungzip",
 					"io/ungzip-to-stream"));
+	}
+
+	public static Set<String> getModules() {
+		return new HashSet<>(
+				Arrays.asList(
+					"shell",
+					"tomcat",
+					"tomcat-util",
+					"ring",
+					"webdav",
+					"java",
+					"maven"));
 	}
 
 }

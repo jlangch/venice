@@ -106,8 +106,8 @@ venice> !sandbox customized
 venice> !sandbox add-rule class:java.lang.Math:*
 venice> !sandbox add-rule system.property:java.class.path
 venice> !sandbox add-rule system.env:JAVA_HOME
-venice> !sandbox add-rule blacklist:venice:*io*
-venice> !sandbox add-rule blacklist:venice:count
+venice> !sandbox add-rule blacklist:venice:func:*io*
+venice> !sandbox add-rule blacklist:venice:func:count
 ```
 
 #### ...and test it
