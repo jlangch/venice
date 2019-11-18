@@ -131,7 +131,7 @@ venice.eval("(io/load-classpath-resource "resources/images/img.tiff")");
 ```
 
 
-#### Reject all I/O related functions
+#### Sandbox rejecting all I/O related functions
 
 Prohibit Venice I/O functions, Venice I/O extension modules, 
 and Java Interop for completely safe scripting:
@@ -146,7 +146,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 ```
 
 
-#### No restrictions
+#### Sandbox turned off
 
 Run Venice scripts with no restrictions:
 
