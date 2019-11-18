@@ -1,9 +1,10 @@
 # Sandbox
 
 The Venice sandbox allows a program to execute _Venice_ in a restricted sandbox 
-environment regarding Java interop. It is useful for applications that want 
-to provide some degree of scriptability to users, without allowing them to 
-read/write files, execute `System.exit(0)`, or any other undesirable operations.
+environment regarding Java interop and Venice functions. It is useful for 
+applications that want to provide some degree of scriptability to users, 
+without allowing them to read/write files, execute `System.exit(0)`, or any other 
+undesirable operations.
 
 
 ### Multi-Threading
