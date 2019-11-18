@@ -81,6 +81,7 @@ public class IOFnBlacklisted {
 					"io/exists-file?",
 					"io/file-size",
 					"io/list-files",
+					"io/list-file-tree",
 					"io/move-file",
 					"io/mkdir",
 					"io/mkdirs",
