@@ -65,8 +65,8 @@ public class CompiledSandboxRules {
 											: blackListVeniceFunctions;
 
 		this.blackListVeniceModules = blackListVeniceModules == null 
-				? Collections.emptySet() 
-				: blackListVeniceModules;
+											? Collections.emptySet() 
+											: blackListVeniceModules;
 										
 		this.whiteListSystemProps = whiteListSystemProps;
 		this.whiteListSystemEnvs = whiteListSystemEnvs;
