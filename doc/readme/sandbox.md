@@ -20,7 +20,7 @@ The "Dining Philosophers" example in the [Concurrency](concurrency.md) section
 demonstrates how to use Venice futures instead of bare Java threads.
 
 
-### No blacklisting
+### No blacklisting for Java interop
 
 Unlike a sandbox provided by _Java SecurityManager_, this sandboxing is only a 
 skin deep. In other words, even if you prohibit Venice from executing a Java 
