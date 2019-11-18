@@ -378,7 +378,7 @@ public class REPL {
 			else if (params[0].equals("config")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
 					println(terminal, "stdout", "[accept-all] NO sandbox active");
-					println(terminal, "stdout", "All Java calls accepted no Venice calls rejected");
+					println(terminal, "stdout", "All Java calls accepted, no Venice calls rejected");
 					return;
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
@@ -393,6 +393,15 @@ public class REPL {
 									.stream()
 									.map(s -> "   " + s)
 									.collect(Collectors.joining("\n")));
+					println(
+							terminal,
+							"stdout", 
+							"Blacklisted Venice modules:\n" 
+								+ ((RejectAllInterceptor)interceptor)
+										.getBlacklistedVeniceModules()
+										.stream()
+										.map(s -> "   " + s)
+										.collect(Collectors.joining("\n")));
 					return;
 				}
 				else if (interceptor instanceof SandboxInterceptor) {

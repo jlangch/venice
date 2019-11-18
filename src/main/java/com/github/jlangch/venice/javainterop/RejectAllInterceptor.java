@@ -30,12 +30,6 @@ import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 
 
 public class RejectAllInterceptor extends Interceptor {
-
-	public List<String> getBlacklistedVeniceFunctions() {
-		final List<String> list = new ArrayList<>(blacklistedVeniceFunctions);
-		Collections.sort(list);
-		return list;
-	}
 	
 	@Override
 	public Object onInvokeInstanceMethod(
@@ -176,6 +170,18 @@ public class RejectAllInterceptor extends Interceptor {
 					PREFIX,
 					moduleName));
 		}
+	}
+
+	public List<String> getBlacklistedVeniceFunctions() {
+		final List<String> list = new ArrayList<>(blacklistedVeniceFunctions);
+		Collections.sort(list);
+		return list;
+	}
+
+	public List<String> getBlacklistedVeniceModules() {
+		final List<String> list = new ArrayList<>(blacklistedVeniceModules);
+		Collections.sort(list);
+		return list;
 	}
 
 	

@@ -43,6 +43,9 @@ that are available to the script in the JVM!
 
 ### Example
 
+
+#### Customized sandbox
+
 ```java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.*;
@@ -128,8 +131,10 @@ venice.eval("(io/load-classpath-resource "resources/images/img.tiff")");
 ```
 
 
-Prohibit Venice I/O functions and Java Interop for completely safe 
-scripting:
+#### Reject all I/O related functions
+
+Prohibit Venice I/O functions, Venice I/O extension modules, 
+and Java Interop for completely safe scripting:
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -140,6 +145,8 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 ...
 ```
 
+
+#### No restrictions
 
 Run Venice scripts with no restrictions:
 

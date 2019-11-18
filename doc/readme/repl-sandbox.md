@@ -23,6 +23,10 @@ Blacklisted Venice functions:
    agent-error
    agent-error-mode
      :
+Blacklisted Venice modules:
+   java
+   maven
+     :
 venice> 
 ```
 
