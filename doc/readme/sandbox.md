@@ -145,7 +145,7 @@ final Venice venice = new Venice(new RejectAllInterceptor());
 ...
 ```
 
-To verify which functions / modules are prohibited. Check the
+To verify which functions / modules are prohibited check the
 reject-all sandbox in the REPL:
 
 ```
