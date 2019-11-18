@@ -431,6 +431,9 @@ public class REPL {
 				else if (rule.startsWith("blacklist:venice:func:")) {
 					rules.rejectVeniceFunctions(rule);
 				}
+				else if (rule.startsWith("blacklist:venice:module:")) {
+					rules.rejectVeniceModules(rule);
+				}
 				else {
 					terminal.writer().println(HELP_SANDBOX);
 					return;
@@ -576,7 +579,8 @@ public class REPL {
 			"   !sandbox add-rule class:java.lang.Math:*\n" +
 			"   !sandbox add-rule system.property:os.name\n" +
 			"   !sandbox add-rule blacklist:venice:func:io/exists-dir?\n" +
-			"   !sandbox add-rule blacklist:venice:func:*io*\n";	
+			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
+			"   !sandbox add-rule blacklist:venice:module:shell\n";	
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
 

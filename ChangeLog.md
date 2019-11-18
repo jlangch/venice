@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
   to be used within syntax quotes. E.g.: `` `(let [a# 100] (println a#))``
   expands to `(let [a__9__auto 100] (println a__9__auto))`
 - function `load-file` supports now an optional load-path that defines a 
-  set of ';' delimited paths the file to be loaded is searched for. In
+  set of ';' delimited paths the file is searched for. In
   absence the file is loaded relative to current working directory. The
   load-path is passed to Venice via the command line arg '-loadpath'. 
   The load-path is supported in all run modes: REPL and Venice file/script
