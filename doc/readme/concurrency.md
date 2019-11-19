@@ -113,6 +113,42 @@ actors accept data to be processed by the actor's function
 ```
 
 
+## Locking
+
+The locking special form executes expressions in an implicit do, while 
+holding a monitor allowing only one thread to execute at any time. 
+The monitor can be any Venice value and will be released in all 
+circumstances.
+
+Locking operates like the synchronized keyword in Java.
+
+
+Example: coordinating multiple thread printing to stdout:
+
+```clojure
+(do
+  (def monitor 0)
+
+  (defn log [& xs]
+    (locking monitor (println (apply str xs))))
+  
+  (defn worker [n end]
+    (fn []
+      (log "Worker " n " started")
+      (while (< (current-time-millis) end)
+        (log "Worker " n " message...")
+        (sleep (rand-long 3000) :milliseconds))
+      (log "Worker " n " stopped")))
+ 
+   ;; launch some worker threads, run 20s
+   (println "Starting")
+   (let [end (+ (current-time-millis) 20000)]
+     (dotimes [i 5]
+       (future (worker i end))))
+)
+```
+
+
 
 ## Scheduler
 

@@ -933,14 +933,6 @@ public class DocGenerator {
 		atoms.addItem(getDocItem("add-watch"));
 		atoms.addItem(getDocItem("remove-watch"));
 
-		final DocSection volatiles = new DocSection("Volatiles");
-		all.addSection(volatiles);
-		volatiles.addItem(getDocItem("volatile"));
-		volatiles.addItem(getDocItem("volatile?"));
-		volatiles.addItem(getDocItem("deref"));
-		volatiles.addItem(getDocItem("reset!"));
-		volatiles.addItem(getDocItem("swap!"));
-
 		final DocSection futures = new DocSection("Futures");
 		all.addSection(futures);
 		futures.addItem(getDocItem("future"));
@@ -985,6 +977,18 @@ public class DocGenerator {
 		all.addSection(sched);
 		sched.addItem(getDocItem("schedule-delay", false));
 		sched.addItem(getDocItem("schedule-at-fixed-rate", false));
+
+		final DocSection locking = new DocSection("Locking");
+		all.addSection(locking);
+		locking.addItem(getDocItem("locking"));
+
+		final DocSection volatiles = new DocSection("Volatiles");
+		all.addSection(volatiles);
+		volatiles.addItem(getDocItem("volatile"));
+		volatiles.addItem(getDocItem("volatile?"));
+		volatiles.addItem(getDocItem("deref"));
+		volatiles.addItem(getDocItem("reset!"));
+		volatiles.addItem(getDocItem("swap!"));
 		
 		final DocSection thlocal = new DocSection("ThreadLocal");
 		all.addSection(thlocal);
