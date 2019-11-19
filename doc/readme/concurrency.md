@@ -115,12 +115,12 @@ actors accept data to be processed by the actor's function
 
 ## Locking
 
-The locking special form executes expressions in an implicit do, while 
+The `locking` special form executes expressions in an implicit do, while 
 holding a monitor allowing only one thread to execute at any time. 
-The monitor can be any Venice value and will be released in all 
+The monitor can be any _Venice_ value and will be released in all 
 circumstances.
 
-Locking operates like the synchronized keyword in Java.
+Locking operates like the _synchronized_ keyword in _Java_.
 
 
 Example: coordinating multiple threads printing to stdout
