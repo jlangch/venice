@@ -123,7 +123,7 @@ circumstances.
 Locking operates like the synchronized keyword in Java.
 
 
-Example: coordinating multiple thread printing to stdout:
+Example: coordinating multiple threads printing to stdout
 
 ```clojure
 (do
