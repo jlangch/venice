@@ -940,6 +940,8 @@ public class DocGenerator {
 		futures.addItem(getDocItem("future-done?"));
 		futures.addItem(getDocItem("future-cancel"));
 		futures.addItem(getDocItem("future-cancelled?"));
+		futures.addItem(getDocItem("futures-fork"));
+		futures.addItem(getDocItem("futures-wait"));
 		futures.addItem(getDocItem("deref"));
 		futures.addItem(getDocItem("realized?"));
 

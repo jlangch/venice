@@ -27,9 +27,11 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -1279,6 +1281,100 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction futures_fork = 
+		new VncFunction(
+				"futures-fork", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(futures-fork count worker-factory-fn)")		
+					.doc(
+						"Creates a list of count futures. The worker factory is single argument " +
+						"function that gets the worker index (0..count-1) as argument and returns " +
+						"a worker function. Returns a list with the created futures.")
+					.examples(
+						"(do                                                \n" +
+						"  (def mutex 0)                                    \n" +
+						"  (defn log [& xs]                                 \n" +
+						"    (locking mutex (println (apply str xs))))      \n" +
+						"  (defn factory [n]                                \n" +
+						"    (fn [] (log \"Worker\" n)))                    \n" +
+						"  (apply futures-wait (futures-fork 3 factory)))     ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("futures-fork", args, 2);
+	
+				final VncLong count = Coerce.toVncLong(args.first());
+				final VncFunction workerFactoryFn = Coerce.toVncFunction(args.second());
+				
+				final List<VncVal> futures = new ArrayList<>();
+				
+				for(int ii=0; ii<count.getValue(); ii++) {
+					final VncFunction worker = (VncFunction)workerFactoryFn.apply(VncList.of(new VncLong(ii)));
+					futures.add(future.apply(VncList.of(worker)));
+				}
+				
+				return new VncList(futures);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction futures_wait = 
+		new VncFunction(
+				"futures-wait", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(futures-wait & futures)")		
+					.doc(
+						"Waits for all futures to get terminated. If the waiting " +
+						"thread is interrupted the futures are cancelled. ")
+					.examples(
+						"(do                                                \n" +
+						"  (def mutex 0)                                    \n" +
+						"  (defn log [& xs]                                 \n" +
+						"    (locking mutex (println (apply str xs))))      \n" +
+						"  (defn factory [n]                                \n" +
+						"    (fn [] (log \"Worker\" n)))                    \n" +
+						"  (apply futures-wait (futures-fork 3 factory)))     ")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertMinArity("futures-wait", args, 0);
+	
+				for(VncVal v : args.getList()) {
+					final Future<?> future = Coerce.toVncJavaObject(v, Future.class);
+					
+					try {
+						future.get();
+					}
+					catch(ExecutionException | CancellationException ex) {
+						continue; // ok
+					}
+					catch(InterruptedException ex) {
+						// cancel all futures
+						args.forEach(f -> {
+							try { 
+								Coerce.toVncJavaObject(f, Future.class).cancel(true);
+							}
+							catch(Exception e) { }
+						});
+						
+						throw new com.github.jlangch.venice.InterruptedException(
+								"Interrupted while waiting for futures to terminate.");
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to wait for future", ex);
+					}
+				}
+				
+				return Nil;
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
 
 	///////////////////////////////////////////////////////////////////////////
@@ -1521,6 +1617,7 @@ public class ConcurrencyFunctions {
 		
 	}
 	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1566,6 +1663,8 @@ public class ConcurrencyFunctions {
 					.add(future_done_Q)
 					.add(future_cancel)
 					.add(future_cancelled_Q)
+					.add(futures_fork)
+					.add(futures_wait)
 
 					.add(delay_Q)
 					.add(force)

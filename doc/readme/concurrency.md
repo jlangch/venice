@@ -140,11 +140,10 @@ Example: coordinating multiple threads printing to stdout
         (sleep (rand-long 3000) :milliseconds))
       (log "Worker " n " stopped")))
  
-   ;; launch some worker threads, run 20s
+   ;; launch 5 worker threads, run 20s
    (println "Starting")
-   (let [end (+ (current-time-millis) 20000)
-         threads (list-comp [x (range 5)] (future (worker x end)))]
-      (docoll #(deref %) threads))
+   (let [end (+ (current-time-millis) 20000)]
+      (apply futures-wait (futures-fork 5 #(worker % end))))
 )
 ```
 
@@ -302,8 +301,7 @@ Thread local vars get inherited by child threads
 
    ;; launch
    (println "Starting")
-   (dotimes [i n-philosophers]
-     (future (philosopher i)))
+   (apply futures-wait (futures-fork n-philosophers #(philosopher %)))
 )
 ```
 

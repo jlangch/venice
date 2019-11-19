@@ -51,6 +51,8 @@ public class IOFnBlacklisted {
 					"future-cancel",
 					"future-cancelled?",
 					"future-done?",
+					"futures-fork",
+					"futures-wait",
 					"promise",
 					"promise?",
 					"agent",
