@@ -143,10 +143,9 @@ Example: coordinating multiple threads printing to stdout
  
    ;; launch some worker threads, run 20s
    (println "Starting")
-   (let [end (+ (current-time-millis) 20000)]
-     (->> (range 5)
-          (map #(future (worker % end)))
-          (map #(deref %))))
+   (let [end (+ (current-time-millis) 20000)
+         threads (list-comp [x (range 5)] (future (worker x end)))]
+      (docoll #(deref %) threads))
 )
 ```
 
