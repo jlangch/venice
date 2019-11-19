@@ -138,8 +138,7 @@ Example: coordinating multiple threads printing to stdout
       (while (< (current-time-millis) end)
         (log "Worker " n " message")
         (sleep (rand-long 3000) :milliseconds))
-      (log "Worker " n " stopped")
-      n))
+      (log "Worker " n " stopped")))
  
    ;; launch some worker threads, run 20s
    (println "Starting")
