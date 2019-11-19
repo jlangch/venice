@@ -136,15 +136,17 @@ Example: coordinating multiple threads printing to stdout
     (fn []
       (log "Worker " n " started")
       (while (< (current-time-millis) end)
-        (log "Worker " n " message...")
+        (log "Worker " n " message")
         (sleep (rand-long 3000) :milliseconds))
-      (log "Worker " n " stopped")))
+      (log "Worker " n " stopped")
+      n))
  
    ;; launch some worker threads, run 20s
    (println "Starting")
    (let [end (+ (current-time-millis) 20000)]
-     (dotimes [i 5]
-       (future (worker i end))))
+     (->> (range 5)
+          (map #(future (worker % end)))
+          (map #(deref %))))
 )
 ```
 
