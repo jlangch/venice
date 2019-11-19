@@ -589,7 +589,30 @@ public class MacroTest {
 	}
 
 	@Test
-	public void test_macroexpand() {
+	public void test_macroexpand_1() {
+		final Venice venice = new Venice();
+
+		final String s1 = 
+				"(do                                        " +
+				"   (defmacro hello [x] '(+ 1 2))           " +
+				"                                           " +
+				"   (macroexpand (hello 0))                 " +
+				")                                          ";
+
+
+		final String s2 = 
+				"(do                                        " +
+				"   (defmacro hello [x] (eval '(+ 1 2)))    " +
+				"                                           " +
+				"   (macroexpand (hello 0))                 " +
+				")                                          ";
+
+		assertEquals("(+ 1 2)", venice.eval("(str " + s1 + ")"));
+		assertEquals(3L, venice.eval(s2));
+	}
+
+	@Test
+	public void test_macroexpand_2() {
 		final Venice venice = new Venice();
 
 		final String s1 = 
