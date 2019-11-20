@@ -259,5 +259,4 @@ public class ReflectionTypes {
 
 		return genericTypes;
 	}
-
 }

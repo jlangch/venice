@@ -29,8 +29,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -1017,14 +1018,14 @@ public class ReflectionAccessor {
 	
 	private static final AtomicBoolean cachingEnabled = new AtomicBoolean(true);
 	
-	private static final HashMap<String,Class<?>> classCache = new HashMap<>();
-	private static final HashMap<Class<?>,List<String>> getterPropertiesCache = new HashMap<>();
-	private static final HashMap<Class<?>,List<String>> setterPropertiesCache = new HashMap<>();
-	private static final HashMap<Tuple2<Class<?>,String>,Method> getterMethodCache = new HashMap<>();
-	private static final HashMap<Tuple2<Class<?>,String>,Method> setterMethodCache = new HashMap<>();
-	private static final HashMap<Tuple2<Class<?>,Integer>,List<Constructor<?>>> constructorCache = new HashMap<>();
-	private static final HashMap<Tuple2<Class<?>,String>,Field> staticFieldCache = new HashMap<>();
-	private static final HashMap<Tuple2<Class<?>,String>,Field> instanceFieldCache = new HashMap<>();
-	private static final HashMap<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> staticMethodCache = new HashMap<>();
-	private static final HashMap<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> instanceMethodCache = new HashMap<>();
+	private static final Map<String,Class<?>> classCache = new ConcurrentHashMap<>();
+	private static final Map<Class<?>,List<String>> getterPropertiesCache = new ConcurrentHashMap<>();
+	private static final Map<Class<?>,List<String>> setterPropertiesCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,String>,Method> getterMethodCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,String>,Method> setterMethodCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,Integer>,List<Constructor<?>>> constructorCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,String>,Field> staticFieldCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,String>,Field> instanceFieldCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> staticMethodCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> instanceMethodCache = new ConcurrentHashMap<>();
 }
