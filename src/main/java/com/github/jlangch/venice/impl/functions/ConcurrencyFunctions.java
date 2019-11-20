@@ -130,21 +130,19 @@ public class ConcurrencyFunctions {
 				else if (Types.isVncJavaObject(first)) {
 					final Object delegate = ((VncJavaObject)first).getDelegate();
 					if (delegate instanceof Future) {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = (Future<VncVal>)delegate;
 						try {
-							@SuppressWarnings("unchecked")
-							final Future<VncVal> future = (Future<VncVal>)delegate;
 							if (args.size() == 1) {
 								return future.get();
 							}
 							else {
 								final long timeout = Coerce.toVncLong(args.second()).getValue();
-								try {
-									return future.get(timeout, TimeUnit.MILLISECONDS);
-								}
-								catch(TimeoutException ex) {
-									return args.nth(2);
-								}
+								return future.get(timeout, TimeUnit.MILLISECONDS);
 							}
+						}
+						catch(TimeoutException ex) {
+							return args.size() == 3 ? args.third() : Nil;
 						}
 						catch(ExecutionException ex) {
 							if (ex.getCause() != null) {
@@ -157,6 +155,15 @@ public class ConcurrencyFunctions {
 							}
 							
 							throw new VncException("Failed to deref future", ex);
+						}
+						catch(CancellationException ex) {
+							throw new VncException("Failed to deref future. Future has been cancelled", ex);
+						}
+						catch(InterruptedException ex) {
+							// cancel future
+							safelyCancelFuture(future);
+							throw new com.github.jlangch.venice.InterruptedException(
+									"Interrupted while waiting for future to terminate.");
 						}
 						catch(Exception ex) {
 							throw new VncException("Failed to deref future", ex);
@@ -1355,12 +1362,7 @@ public class ConcurrencyFunctions {
 					}
 					catch(InterruptedException ex) {
 						// cancel all futures
-						args.forEach(f -> {
-							try { 
-								Coerce.toVncJavaObject(f, Future.class).cancel(true);
-							}
-							catch(Exception e) { }
-						});
+						args.forEach(f -> safelyCancelFuture(Coerce.toVncJavaObject(f, Future.class)));
 						
 						throw new com.github.jlangch.venice.InterruptedException(
 								"Interrupted while waiting for futures to terminate.");
@@ -1607,7 +1609,6 @@ public class ConcurrencyFunctions {
 		}
 	}
 
-	
 	private static ExecutorService createExecutor() {
 		return Executors.newCachedThreadPool(
 				ThreadPoolUtil.createThreadFactory(
@@ -1615,6 +1616,16 @@ public class ConcurrencyFunctions {
 						futureThreadPoolCounter,
 						true /* daemon threads */));
 		
+	}
+	
+	private static void safelyCancelFuture(final Future<?> future) {
+		try { 
+			if (!future.isCancelled()) {
+				future.cancel(true);
+			}
+		}
+		catch(Exception e) { 
+		}
 	}
 	
 	
