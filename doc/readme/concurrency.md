@@ -6,7 +6,7 @@
 * [Agents](#agents)
 * [Worker Threads](#worker-threads)
 * [Locking](#locking)
-* [Scheduler](#scheduler)
+* [Schedulers](#schedulers)
 * [Thread local vars](#thread-local-vars)
 * [Example Dining Philosophers](#example-dining-philosophers)
 
@@ -179,7 +179,7 @@ Example: coordinating multiple threads printing to stdout
 
 
 
-## Scheduler
+## Schedulers
 
 ### one-shot
 
