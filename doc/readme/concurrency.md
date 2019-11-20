@@ -1,14 +1,14 @@
 # Concurrency
 
 * [Atoms](#atoms)
-* [Futures & Promises](#futures-promises)
+* [Futures & Promises](#futures-and-promises)
 * [Delays](#delays)
 * [Agents](#agents)
 * [Worker Threads](#worker-threads)
 * [Locking](#locking)
 * [Scheduler](#scheduler)
 * [Thread local vars](#thread-local-vars)
-* [Example: Dining Philosophers](#example-dining-philosophers)
+* [Example Dining Philosophers](#example-dining-philosophers)
 
 
 ## Atoms
@@ -24,7 +24,7 @@ The value held by an atom is changed with the `swap!` method.
    (deref counter))
 ```
 
-## Futures & Promises
+## Futures and Promises
 
 A future takes a function and yields a future object that will invoke the function 
 in another thread, and will cache the result and return it on all subsequent calls 
