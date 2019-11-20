@@ -164,6 +164,10 @@ public class Agent implements IDeref {
 				return latch.await(timeoutMillis, TimeUnit.MILLISECONDS);
 			}
 		}
+		catch(InterruptedException ex) {
+			throw new com.github.jlangch.venice.InterruptedException(
+					"Interrupted while waiting for agents.");
+		}
 		catch(Exception ex) {
 			throw new VncException("Failed awaiting for agents", ex);
 		}
