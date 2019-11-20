@@ -13,6 +13,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - ...
 
+### Fixed
+
+- a problem with caching Java interop meta data under heavy multi-threaded 
+  load.
+
 
 
 ## [1.7.9] - 2019-11-20
