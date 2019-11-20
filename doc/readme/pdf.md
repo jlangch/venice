@@ -1086,6 +1086,10 @@ Copy pages from a PDF to a new PDF
                        (pdf/text-to-pdf "PDF #3" :font-size 64)
                        (pdf/text-to-pdf "PDF #4" :font-size 64)
                        (pdf/text-to-pdf "PDF #5" :font-size 64))]
+    
+    ;; resulting pages #1, #1, #1, #2, #3, #4, #5, #4, #3
+    ;;                 :1  :1  :1  :2-4        :-1 :-2 :-3
+    ;; ---------------------------------------------------------
     (->> (pdf/copy pdf :1 :1 :1 :2-4 :-1 :-2 :-3)
          (io/spit "copy-example.pdf"))))
 ```
@@ -1102,8 +1106,8 @@ Copy pages from a PDF to a new PDF
 (do
   (load-module :maven)
   
-  (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.18")
-  (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18")
+  (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.19")
+  (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.19")
   (maven/download "com.github.librepdf:openpdf:1.3.11")
   (maven/download "com.github.librepdf:pdf-toolbox:1.3.11"))
 ```
