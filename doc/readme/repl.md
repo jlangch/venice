@@ -1,6 +1,6 @@
 # REPL
 
-Start the REPL with `java -jar venice-1.7.8.jar -colors`
+Start the REPL with `java -jar venice-1.7.9.jar -colors`
 
 ```text
 venice> (+ 1 1)
