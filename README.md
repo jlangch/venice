@@ -62,7 +62,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/79bbb86/cheatsheet.htm
 * [Extension modules](doc/readme/extension-modules.md)
 * See a larger [example](doc/readme/large-example.md)
 * [Benchmarks & Profiling](doc/readme/profiling.md)
-* [Benchmarks & Profiling](doc/readme/profiling.md)
 * [Multi-File App](doc/readme/multi-file-app.md)
+* [Build dependencies](doc/readme/build-dependencies.md)
 * [3rd Party Libs](doc/readme/3rdparty-lic.md)
 * [Change Log](ChangeLog.md)
