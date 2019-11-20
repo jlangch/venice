@@ -1,5 +1,15 @@
 # Concurrency
 
+* [Atoms](#atoms)
+* [Futures & Promises](#futures-promises)
+* [Delays](#delays)
+* [Agents](#agents)
+* [Worker Threads](#worker-threads)
+* [Locking](#locking)
+* [Scheduler](#scheduler)
+* [Thread local vars](#thread-local-vars)
+* [Example: Dining Philosophers](#example-dining-philosophers)
+
 
 ## Atoms
 
