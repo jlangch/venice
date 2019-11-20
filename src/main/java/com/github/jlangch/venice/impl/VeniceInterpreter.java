@@ -40,7 +40,7 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
-import com.github.jlangch.venice.impl.javainterop.SandboxMaxExecutionTimeChecker;
+import com.github.jlangch.venice.impl.sandbox.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;

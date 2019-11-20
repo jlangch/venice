@@ -19,9 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.javainterop;
+package com.github.jlangch.venice.impl.sandbox;
 
 import java.io.Serializable;
+
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 
 public class SandboxMaxExecutionTimeChecker implements Serializable {
 

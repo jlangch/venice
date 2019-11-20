@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.javainterop.CompiledSandboxRules;
+import com.github.jlangch.venice.impl.sandbox.CompiledSandboxRules;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 

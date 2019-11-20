@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.sandbox;
 
-import static com.github.jlangch.venice.impl.javainterop.SandboxRuleCompiler.compile;
+import static com.github.jlangch.venice.impl.sandbox.SandboxRuleCompiler.compile;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
