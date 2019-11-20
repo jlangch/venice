@@ -88,7 +88,8 @@ public class ConcurrencyFunctions {
 						"will block if computation not complete. The variant taking a " +
 						"timeout can be used for futures and will return timeout-val " + 
 						"if the timeout (in milliseconds) is reached before a value " + 
-						"is available. ")
+						"is available. If a future is deref'd and the waiting thread is " + 
+						"interrupted the futures are cancelled.")
 					.examples(
 						"(do                             \n" +
 						"   (def counter (atom 10))      \n" +

@@ -113,6 +113,26 @@ actors accept data to be processed by the actor's function
 ```
 
 
+## Worker Threads
+
+`futures` are the means of choice when worker thread are required. `futures` 
+are basically threads served from a _Java_ _ThreadPoolExecutor_.
+
+_Venice_ provides the functions `futures-fork` and `futures-wait` to rig the
+workers and wait for its termination.
+
+```clojure
+(do
+  ;; define a factory function that creates the workers
+  (defn worker-factory [n]
+    (fn [] (sleep 3 :seconds)))
+
+  ;; create 5 worker threads and wait for its termination
+  (let [threads (futures-fork 5 #(worker-factory %))]
+     (apply futures-wait threads)))
+```
+ 
+
 ## Locking
 
 The `locking` special form executes expressions in an implicit do, while 
@@ -300,7 +320,7 @@ Thread local vars get inherited by child threads
         (log "Philosopher " n " died! " (:message ex))))))
 
    ;; launch
-   (println "Starting")
+   (println "Starting (stop with <ctrl-c>)")
    (apply futures-wait (futures-fork n-philosophers #(philosopher %)))
 )
 ```
