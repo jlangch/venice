@@ -1005,6 +1005,8 @@ public class DocGenerator {
 		all.addSection(threads);
 		threads.addItem(getDocItem("thread-id"));
 		threads.addItem(getDocItem("thread-name"));
+		threads.addItem(getDocItem("thread-interrupted?"));
+		threads.addItem(getDocItem("thread-interrupted"));
 
 		return section;
 	}

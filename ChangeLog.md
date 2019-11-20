@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
   load-path is passed to Venice via the command line arg '-loadpath'. 
   The load-path is supported in all run modes: REPL and Venice file/script
   execution.
+- functions `futures-fork`, `futures-wait`
 
 ### Changed
 

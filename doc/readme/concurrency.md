@@ -125,7 +125,7 @@ actors accept data to be processed by the actor's function
 
 ## Worker Threads
 
-`futures` are the means of choice when worker thread are required. `futures` 
+`futures` are the means of choice when worker threads are required. `futures` 
 are basically threads served from a _Java_ _ThreadPoolExecutor_.
 
 _Venice_ provides the functions `futures-fork` and `futures-wait` to rig the

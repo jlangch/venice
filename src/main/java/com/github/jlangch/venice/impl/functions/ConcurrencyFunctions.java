@@ -1573,7 +1573,62 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+	public static VncFunction thread_interrupted_Q = 
+		new VncFunction(
+				"thread-interrupted?", 
+				VncFunction
+					.meta()
+					.arglists("(thread-interrupted?)")		
+					.doc(
+						"Tests whether this thread has been interrupted. The " +
+						"interrupted status of the thread is unaffected by this " +
+						"method. \n" +
+						"Returns true if the current thread has been interrupted " +
+						"else false.")
+					.examples("(thread-interrupted?)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("thread-interrupted?", args, 0);
+				return Thread.currentThread().isInterrupted() ? True : False;
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction thread_interrupted = 
+		new VncFunction(
+				"thread-interrupted", 
+				VncFunction
+					.meta()
+					.arglists("(thread-interrupted)")		
+					.doc(
+						"Tests whether the current thread has been interrupted. " +
+						"The interrupted status of the thread is cleared by this " +
+						"method. In other words, if this method were to be called " +
+						"twice in succession, the second call would return false " +
+						"(unless the current thread were interrupted again, after " +
+						"the first call had cleared its interrupted status and " +
+						"before the second call had examined it).\n" + 
+						"Returns true if the current thread has been interrupted " +
+						"else false.")
+					.examples("(thread-interrupted)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("thread-interrupted", args, 0);
+				return Thread.interrupted() ? True : False;
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
+
+	///////////////////////////////////////////////////////////////////////////
+	// Utils
+	///////////////////////////////////////////////////////////////////////////
+
 	public static void shutdown() {
 		synchronized(futureThreadPoolCounter) {
 			if (executor != null) {
@@ -1683,6 +1738,8 @@ public class ConcurrencyFunctions {
 					
 					.add(thread_id)
 					.add(thread_name)
+					.add(thread_interrupted_Q)
+					.add(thread_interrupted)
 
 					.add(new_thread_local)
 					.add(thread_local_Q)
