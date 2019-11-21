@@ -48,23 +48,24 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 
 final Venice venice = new Venice();
 
-// redirect stdout to the null device
+// case 1: redirect stdout to the null device
 venice.eval(
    "(println [1 2])", 
    Parameters.of("*out*", null));
 
-// capture stdout within the script and return it as the result
+// case 2: capture stdout within the script and return it as the result
 System.out.println(
    venice.eval(
       "(with-out-str (println [1 2]))"));
 
-// capturing stdout preserving the script result
-final CapturingPrintStream ps = CapturingPrintStream.create();
-System.out.println(
-   venice.eval(
-      "(do (println [1 2]) 100)", 
-      Parameters.of("*out*", ps)));
-System.out.println(ps.getOutput());
+// case 3: capturing stdout preserving the script result
+try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+   final Object result = venice.eval(
+                           "(do (println [1 2]) 100)", 
+                           Parameters.of("*out*", ps));
+   System.out.println("result: " + result);
+   System.out.println("stdout: " + ps.getOutput());
+}
 ```
 
 

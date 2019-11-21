@@ -116,37 +116,52 @@ public class VeniceTest {
 
 	@Test
 	public void test_CapturingPrintStream() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
-		
-		final Venice venice = new Venice();
-		
-		venice.eval("(print 10)", Parameters.of("*out*", ps));
-		assertEquals("10", ps.getOutput());
-		
-		ps.reset();
-		
-		venice.eval("(print 10)", Parameters.of("*out*", null));
-		assertEquals("", ps.getOutput());
+		try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+			final Venice venice = new Venice();
+			
+			venice.eval("(print 10)", Parameters.of("*out*", ps));
+			assertEquals("10", ps.getOutput());
+			
+			ps.reset();
+			
+			venice.eval("(print 10)", Parameters.of("*out*", null));
+			assertEquals("", ps.getOutput());
+		}
 	}
 
 	@Test
 	public void test_CapturingPrintStream_BelowLimit() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
-		
-		final Venice venice = new Venice();
-		
-		venice.eval("(range 1 10000)", Parameters.of("*out*", ps));
-		assertNotNull(ps.getOutput());
+		try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+			final Venice venice = new Venice();
+			
+			venice.eval("(range 1 10000)", Parameters.of("*out*", ps));
+			assertNotNull(ps.getOutput());
+		}
 	}
 
 	@Test
 	public void test_CapturingPrintStream_Limit() {
-		final CapturingPrintStream ps = CapturingPrintStream.create(10000);
-		
-		final Venice venice = new Venice();
-
-		assertThrows(SecurityException.class, () -> {
-			venice.eval("(map print (range 1 10000))", Parameters.of("*out*", ps));
-		});
+		try(CapturingPrintStream ps = CapturingPrintStream.create(10000)) {
+			final Venice venice = new Venice();
+	
+			assertThrows(SecurityException.class, () -> {
+				venice.eval("(map print (range 1 10000))", Parameters.of("*out*", ps));
+			});
+		}
 	}
+
+	@Test
+	public void test_CapturingPrintStream_PreserveResult() {
+		try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+			final Venice venice = new Venice();
+			
+			final Object result = venice.eval(
+									"(do (println [1 2]) 100)", 
+									Parameters.of("*out*", ps));
+
+			assertEquals(100L, result);
+			assertEquals("[1 2]\n", ps.getOutput());
+		}
+	}
+
 }
