@@ -176,11 +176,117 @@ total and average time for the function's calls:
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
-_warmup     [       1]:     9,82 s             
-_test       [       1]:     9,40 s             
-sum         [     100]:     9,40 s     93,97 ms
-<           [10000100]:  2850,62 ms      285 ns
-inc         [10000000]:  1588,21 ms      158 ns
-_warmup-gc  [       1]:    46,86 ms            
+user/_test  [       1]:    11,24 s             
+user/sum    [     100]:    11,24 s    112,38 ms
+inc         [10000000]:  1044,65 ms      104 ns
+<           [10000100]:   993,30 ms       99 ns
 -----------------------------------------------
+```
+
+
+### Example: profiling fibonacci (case macro)
+
+The profiler runs the sum function 100 times as warm-up followed by 100 times to profile it. 
+
+```clojure
+(do
+   (load-module :math)
+  
+   (defn fib [x]
+     (loop [n x, a (math/bigint 0), b (math/bigint 1)]
+       (case n
+         0 a
+         1 b 
+         (recur (dec n) b (math/bigint-add a b)))))
+
+   (perf (fib 50) 100 100)
+   
+   (println (prof :data-formatted "Metrics: fibonacci")))
+```
+
+Metrics:
+
+```text
+--------------------------------------------------
+Metrics: fibonacci
+--------------------------------------------------
+macroexpand      [134000]:   651,27 ms     4,86 us
+user/_test       [     1]:   618,24 ms            
+user/fib         [   100]:   617,99 ms     6,18 ms
+math/bigint-add  [  4900]:   366,27 ms    74,75 us
+math/bigint      [ 10000]:   359,15 ms    35,91 us
+cons             [219000]:    52,45 ms      239 ns
+mapcat           [  5000]:    50,36 ms    10,07 us
+list             [129000]:    27,22 ms      210 ns
+rest             [193500]:    27,02 ms      139 ns
+math/bigint?     [  9800]:    23,73 ms     2,42 us
+instance?        [  9800]:    14,08 ms     1,44 us
+first            [ 64500]:     8,97 ms      139 ns
+second           [ 64500]:     8,62 ms      133 ns
+partition        [  5000]:     4,40 ms      879 ns
+.                [  5100]:     3,07 ms      601 ns
+concat           [  5000]:     2,41 ms      481 ns
+==               [ 10000]:     1,49 ms      149 ns
+count            [ 10000]:     1,48 ms      147 ns
+string?          [ 10000]:     1,42 ms      141 ns
+long?            [ 10000]:     1,40 ms      139 ns
+double?          [  9800]:     1,37 ms      140 ns
+odd?             [ 10000]:     1,33 ms      132 ns
+int?             [ 10000]:     1,30 ms      129 ns
+gensym           [  5000]:     1,05 ms      210 ns
+butlast          [  5000]:   878,54 us      175 ns
+dec              [  4900]:   868,25 us      177 ns
+last             [  5000]:   741,72 us      148 ns
+--------------------------------------------------
+```
+
+
+
+### Example: profiling fibonacci (nested if)
+
+The profiler runs the sum function 100 times as warm-up followed by 100 times to profile it. 
+
+```clojure
+(do
+   (load-module :math)
+     
+   (defn fib [x]
+      (loop [n x, a (math/bigint 0), b (math/bigint 1)]
+        (if (= n 0)
+          a
+          (do 
+            (if (= n 1)
+              b 
+              (recur (dec n) b (math/bigint-add a b)))))))
+
+   (perf (fib 50) 100 100)
+   (println (prof :data-formatted "Metrics: fib")))
+```
+
+Metrics:
+
+```text
+--------------------------------------------------
+Metrics: fib
+--------------------------------------------------
+macroexpand      [ 99200]:   413,17 ms     4,16 us
+user/_test       [     1]:   399,70 ms            
+user/fib         [   100]:   399,50 ms     4,00 ms
+math/bigint-add  [  4900]:   378,21 ms    77,19 us
+math/bigint      [ 10000]:   371,74 ms    37,17 us
+cons             [ 99200]:    25,59 ms      257 ns
+list             [ 99200]:    22,13 ms      223 ns
+math/bigint?     [  9800]:    21,91 ms     2,24 us
+rest             [148800]:    21,40 ms      143 ns
+instance?        [  9800]:    12,48 ms     1,27 us
+first            [ 49600]:     6,95 ms      140 ns
+second           [ 49600]:     6,68 ms      134 ns
+.                [  5100]:     3,15 ms      617 ns
+long?            [ 10000]:     1,40 ms      139 ns
+double?          [  9800]:     1,39 ms      141 ns
+string?          [ 10000]:     1,39 ms      138 ns
+int?             [ 10000]:     1,28 ms      127 ns
+=                [ 10000]:     1,24 ms      124 ns
+dec              [  4900]:   776,42 us      158 ns
+--------------------------------------------------
 ```
