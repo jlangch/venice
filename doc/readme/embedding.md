@@ -55,8 +55,7 @@ venice.eval(
 
 // case 2: capture stdout within the script and return it as the result
 System.out.println(
-   venice.eval(
-      "(with-out-str (println [1 2]))"));
+   venice.eval("(with-out-str (println [1 2]))"));
 
 // case 3: capturing stdout preserving the script result
 try(CapturingPrintStream ps = CapturingPrintStream.create()) {
