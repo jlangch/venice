@@ -24,15 +24,77 @@
 
 (ns walk)
 
-(defn walk [inner outer form]
+(defn
+  ^{ :arglists '("(comment & body)")
+     :doc "Ignores body, yields nil"
+     :examples (list
+          """
+          (comment
+            (println 1)
+            (println 5))
+          """ ) }
+
+  walk [inner outer form]
+
   (cond
     (list? form) (outer (apply list (map inner form)))
     (map-entry? form) (outer (map-entry (inner (key form)) (inner (val form))))
     (coll? form) (outer (into (empty form) (map inner form)))
     :else (outer form)))
 
+
 (defn postwalk [f form]
-  (walk (partial postwalk f) f form))
+  (walk/walk (partial postwalk f) f form))
+
 
 (defn prewalk [f form]
-  (walk (partial prewalk f) identity (f form)))
+  (walk/walk (partial prewalk f) identity (f form)))
+
+
+(defn postwalk-dump [form]
+  (walk/postwalk (fn [x] (println "Walked:" (pr-str x)) x) form))
+
+
+(defn prewalk-dump [form]
+  (walk/prewalk (fn [x] (println "Walked:" (pr-str x)) x) form))
+
+
+(defn
+  ^{ :arglists '("(keywordize-keys form)")
+     :doc "Recursively transforms all map keys from strings to keywords."
+     :examples (list """(walk/keywordize-keys '(1 2 {"a" 1 "b" 2}))""") }
+
+  keywordize-keys [form]
+
+  (let [f (fn [[k v]] (if (string? k) [(keyword k) v] [k v]))]
+    ;; only apply to maps
+    (walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
+
+
+(defn
+  ^{ :arglists '("(stringify-keys form)")
+     :doc "Recursively transforms all map keys from keywords to strings."
+     :examples (list """(walk/keywordize-keys '(1 2 {"a" 1 "b" 2}))""") }
+
+  stringify-keys [form]
+
+  (let [f (fn [[k v]] (if (keyword? k) [(name k) v] [k v]))]
+    ;; only apply to maps
+    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
+
+
+(defn
+  ^{ :arglists '("(macroexpand-all form)")
+     :doc "Recursively expands all macros in the form."
+     :examples (list
+          """
+          (macroexpand-all (let [x 2]
+                             (cond
+                               (= x 0) "0"
+                               (= x 1) "1"
+                               :else "else")))
+          """ ) }
+
+  macroexpand-all [form]
+
+  (walk/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))

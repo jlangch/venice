@@ -50,6 +50,10 @@ public class VncMapEntry extends VncVal {
 		return val;
 	}
 
+	public VncVector toVector() {
+		return VncVector.of(key, val);
+	}
+
 	@Override
 	public VncMapEntry withMeta(final VncVal meta) {
 		return this;
