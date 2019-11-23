@@ -107,7 +107,7 @@ public class TransducerFunctions {
 
 				final VncFunction xform = Coerce.toVncFunction(args.first());
 				final VncFunction reduction_fn = Coerce.toVncFunction(args.second());
-				final VncSequence coll = (VncSequence)args.last();
+				final VncSequence coll = coerceToSequence(args.last());
 
 				final VncVal init = args.size() == 4
 										? args.third()
@@ -238,7 +238,7 @@ public class TransducerFunctions {
 								seq = ((VncString)seq).toVncList();
 							}
 							
-							final VncSequence nthList = Coerce.toVncSequence(seq);
+							final VncSequence nthList = coerceToSequence(seq);
 							if (nthList.size() > index) {
 								fnArgs.add(nthList.nth(index));
 							}
@@ -424,7 +424,7 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					final VncSequence coll = Coerce.toVncSequence(args.second());
+					final VncSequence coll = coerceToSequence(args.second());
 
 					final List<VncVal> items = new ArrayList<>();
 
@@ -502,7 +502,7 @@ public class TransducerFunctions {
 				}
 				else {
 					final VncLong n = Coerce.toVncLong(args.first());
-					final VncSequence coll = Coerce.toVncSequence(args.second());
+					final VncSequence coll = coerceToSequence(args.second());
 
 					return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
 				}
@@ -577,7 +577,7 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					final VncSequence coll = Coerce.toVncSequence(args.second());
+					final VncSequence coll = coerceToSequence(args.second());
 
 					for(int i=0; i<coll.size(); i++) {
 						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -655,7 +655,7 @@ public class TransducerFunctions {
 				}
 				else {
 					final VncLong n = Coerce.toVncLong(args.first());
-					final VncSequence coll = Coerce.toVncSequence(args.second());
+					final VncSequence coll = coerceToSequence(args.second());
 
 					return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
 				}
@@ -724,7 +724,7 @@ public class TransducerFunctions {
 
 				}
 				else {
-					final VncSequence coll = Coerce.toVncSequence(args.second());
+					final VncSequence coll = coerceToSequence(args.second());
 
 					for(int i=0; i<coll.size(); i++) {
 						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
@@ -874,7 +874,7 @@ public class TransducerFunctions {
 
 					final List<VncVal> items = new ArrayList<>();
 
-					for(VncVal val : Coerce.toVncSequence(args.first()).getList()) {
+					for(VncVal val : coerceToSequence(args.first()).getList()) {
 						if (!val.equals(seen)) {
 							items.add(val);
 							seen = val;
@@ -919,7 +919,7 @@ public class TransducerFunctions {
 					return filter.apply(VncList.of(fn));
 				}
 				else {
-					final VncSequence coll = Coerce.toVncSequence(args.second());
+					final VncSequence coll = coerceToSequence(args.second());
 
 					final List<VncVal> items = new ArrayList<>();
 					for(int i=0; i<coll.size(); i++) {
@@ -1360,6 +1360,15 @@ public class TransducerFunctions {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.reverse(copy);
 		return new VncVector(copy);
+	}
+
+	private static VncSequence coerceToSequence(final VncVal val) {
+		if (Types.isVncMap(val)) {
+			return new VncList(((VncMap)val).entries());
+		}
+		else {
+			return Coerce.toVncSequence(val);
+		}
 	}
 
 	
