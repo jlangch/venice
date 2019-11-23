@@ -15,6 +15,10 @@ list or vector within a let binding.
       (println x y z))
       ;=> 1 2 3
 
+   (let [[k v] (map-entry "a" 100)]
+      (println k v))
+      ;=> "a" 100
+      
    ;; for strings, the elements are destructured by character.
    (let [[x y z] "abc"]
      (println x y z))
