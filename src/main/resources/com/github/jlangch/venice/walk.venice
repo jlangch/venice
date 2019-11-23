@@ -24,7 +24,7 @@
 
 (ns walk)
 
-(defn
+(defn-
   ^{ :arglists '("(comment & body)")
      :doc "Ignores body, yields nil"
      :examples (list
@@ -74,13 +74,43 @@
 (defn
   ^{ :arglists '("(stringify-keys form)")
      :doc "Recursively transforms all map keys from keywords to strings."
-     :examples (list """(walk/keywordize-keys '(1 2 {"a" 1 "b" 2}))""") }
+     :examples (list """(walk/stringify-keys '(1 2 {:a 1 :b 2}))""") }
 
   stringify-keys [form]
 
   (let [f (fn [[k v]] (if (keyword? k) [(name k) v] [k v]))]
     ;; only apply to maps
-    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
+    (walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
+
+
+(defn
+  ^{ :arglists '("(prewalk-replace smap form)")
+     :doc """
+          Recursively transforms form by replacing keys in smap with their
+          values. Does replacement at the root of the tree first.
+          """
+     :examples (list
+          "(walk/prewalk-replace {:a :A :b :B} '(1 2 :a :b))",
+          "(walk/prewalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2}))" ) }
+
+  prewalk-replace [smap form]
+
+  (walk/prewalk (fn [x] (if (contains? smap x) (smap x) x)) form))
+
+
+(defn
+  ^{ :arglists '("(postwalk-replace smap form)")
+     :doc """
+          Recursively transforms form by replacing keys in smap with their
+          values. Does replacement at the leaves of the tree first.
+          """
+     :examples (list
+          "(walk/postwalk-replace {:a :A :b :B} '(1 2 :a :b))",
+          "(walk/postwalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2}))" ) }
+
+  postwalk-replace [smap form]
+
+  (walk/postwalk (fn [x] (if (contains? smap x) (smap x) x)) form))
 
 
 (defn
@@ -88,11 +118,11 @@
      :doc "Recursively expands all macros in the form."
      :examples (list
           """
-          (macroexpand-all (let [x 2]
-                             (cond
-                               (= x 0) "0"
-                               (= x 1) "1"
-                               :else "else")))
+          (walk/macroexpand-all (let [x 2]
+                                  (cond
+                                    (= x 0) "0"
+                                    (= x 1) "1"
+                                    :else "else")))
           """ ) }
 
   macroexpand-all [form]
