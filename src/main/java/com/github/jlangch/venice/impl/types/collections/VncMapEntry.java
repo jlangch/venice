@@ -67,6 +67,20 @@ public class VncMapEntry extends VncVal {
 				val.convertToJavaObject());
 	}
 
+
+	@Override 
+	public String toString() {
+		return toString(true);
+	}
+	
+	@Override
+	public String toString(final boolean print_readably) {
+		return String.format(
+				"[%s %s]", 
+				key.toString(print_readably),
+				val.toString(print_readably));
+	}
+
 	
 	private static final long serialVersionUID = 7943559441888855596L;
 	

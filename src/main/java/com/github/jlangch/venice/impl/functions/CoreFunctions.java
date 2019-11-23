@@ -2373,6 +2373,25 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction map_entry_Q =
+		new VncFunction(
+				"map-entry?",
+				VncFunction
+					.meta()
+					.arglists("(map-entry? m)")
+					.doc("Returns true if m is a map entry")
+					.examples("(map-entry? (first (entries {:a 1 :b 2})))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("map-entry?", args, 1);
+
+				return Types.isVncMapEntry(args.first()) ? True : False;
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction stack_Q =
 			new VncFunction(
 					"stack?",
@@ -2920,14 +2939,21 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(key e)")
 					.doc("Returns the key of the map entry.")
-					.examples("(key (find {:a 1 :b 2} :b))")
+					.examples(
+						"(key (find {:a 1 :b 2} :b))",
+						"(key (first (entries {:a 1 :b 2 :c 3})))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("key", args, 1);
-
-				final VncSequence entry = Coerce.toVncSequence(args.first());
-				return entry.first();
+				
+				final VncVal first = args.first();
+				if (Types.isVncMapEntry(first)) {
+					return ((VncMapEntry)first).getKey();
+				}
+				else {
+					return Coerce.toVncSequence(first).first();
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -2959,14 +2985,21 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(val e)")
 					.doc("Returns the val of the map entry.")
-					.examples("(val (find {:a 1 :b 2} :b))")
+					.examples(
+						"(val (find {:a 1 :b 2} :b))",
+						"(val (first (entries {:a 1 :b 2 :c 3})))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("val", args, 1);
-
-				final VncSequence entry = Coerce.toVncSequence(args.first());
-				return entry.second();
+		
+				final VncVal first = args.first();
+				if (Types.isVncMapEntry(first)) {
+					return ((VncMapEntry)first).getValue();
+				}
+				else {
+					return Coerce.toVncSequence(first).second();
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -2987,6 +3020,26 @@ public class CoreFunctions {
 
 				final VncMap mhm = Coerce.toVncMap(args.first());
 				return new VncList(mhm.getMap().values());
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction entries =
+		new VncFunction(
+				"entries",
+				VncFunction
+					.meta()
+					.arglists("(entries m)")
+					.doc("Returns a collection of the map entries.")
+					.examples("(entries {:a 1 :b 2 :c 3})")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("entries", args, 1);
+
+				final VncMap mhm = Coerce.toVncMap(args.first());
+				return new VncList(mhm.entries());
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -6033,6 +6086,7 @@ public class CoreFunctions {
 				.add(new_vector)
 				.add(vector_Q)
 				.add(map_Q)
+				.add(map_entry_Q)
 				.add(hash_map_Q)
 				.add(ordered_map_Q)
 				.add(sorted_map_Q)
@@ -6059,6 +6113,7 @@ public class CoreFunctions {
 				.add(keys)
 				.add(val)
 				.add(vals)
+				.add(entries)
 				.add(update)
 				.add(update_BANG)
 				.add(subvec)

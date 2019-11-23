@@ -462,6 +462,7 @@ public class DocGenerator {
 	
 		final DocSection list_test = new DocSection("Test");
 		lists.addSection(list_test);
+		list_test.addItem(getDocItem("list?"));
 		list_test.addItem(getDocItem("every?"));
 		list_test.addItem(getDocItem("not-every?"));
 		list_test.addItem(getDocItem("any?"));
@@ -520,6 +521,7 @@ public class DocGenerator {
 			
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
+		vec_test.addItem(getDocItem("vector?"));
 		vec_test.addItem(getDocItem("contains?"));
 		vec_test.addItem(getDocItem("not-contains?"));
 		vec_test.addItem(getDocItem("every?"));
@@ -550,6 +552,9 @@ public class DocGenerator {
 
 		final DocSection set_test = new DocSection("Test");
 		sets.addSection(set_test);
+		set_test.addItem(getDocItem("set?"));
+		set_test.addItem(getDocItem("sorted-set?"));
+		set_test.addItem(getDocItem("mutable-set?"));
 		set_test.addItem(getDocItem("contains?"));
 		set_test.addItem(getDocItem("not-contains?"));
 		set_test.addItem(getDocItem("every?"));
@@ -579,6 +584,7 @@ public class DocGenerator {
 		map_access.addItem(getDocItem("vals"));
 		map_access.addItem(getDocItem("key"));
 		map_access.addItem(getDocItem("val"));
+		map_access.addItem(getDocItem("entries"));
 
 		final DocSection map_modify = new DocSection("Modify");
 		maps.addSection(map_modify);
@@ -602,6 +608,13 @@ public class DocGenerator {
 		
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);
+		map_test.addItem(getDocItem("map?"));
+		map_test.addItem(getDocItem("sequential?"));
+		map_test.addItem(getDocItem("hash-map?"));
+		map_test.addItem(getDocItem("ordered-map?"));
+		map_test.addItem(getDocItem("sorted-map?"));
+		map_test.addItem(getDocItem("mutable-map?"));
+		map_test.addItem(getDocItem("map-entry?"));
 		map_test.addItem(getDocItem("contains?"));
 		map_test.addItem(getDocItem("not-contains?"));
 
