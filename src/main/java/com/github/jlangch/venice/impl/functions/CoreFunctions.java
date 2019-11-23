@@ -3261,6 +3261,7 @@ public class CoreFunctions {
 						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )",
 						"(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )",
 						"(into (sorted-map) [(map-entry :b 2) (map-entry :c 3) (map-entry :a 1)])",
+						"(into (sorted-map) {:b 2 :c 3 :a 1})",
 						"(into [] {1 2, 3 4})",
 						"(into '() '(1 2 3))",
 						"(into [1 2 3] '(4 5 6))",
@@ -3268,7 +3269,6 @@ public class CoreFunctions {
 						"(into [] (bytebuf [0 1 2]))",
 						"(into '() \"abc\")",
 						"(into [] \"abc\")",
-						"(into (sorted-map) {:b 2 :c 3 :a 1})",
 						"(do\n" +
 						"   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
 						"         (doto (. :java.util.ArrayList :new)\n" +
