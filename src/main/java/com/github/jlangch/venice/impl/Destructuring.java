@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -91,6 +92,10 @@ public class Destructuring {
 			else if (Types.isVncString(bindVal)) {
 				sequential_string_destructure((VncSequence)symVal, bindVal, bindings);
 			}
+			else if (Types.isVncMapEntry(bindVal)) {
+				sequential_list_destructure((VncSequence)symVal, ((VncMapEntry)bindVal).toVector(), bindings);
+			}
+
 			else if (bindVal == Nil) {
 				sequential_list_destructure((VncSequence)symVal, new VncList(), bindings);
 			}

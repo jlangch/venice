@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
@@ -61,6 +62,24 @@ public class DestructuringTest {
 
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
 		final VncVal bindVal = VncList.of(new VncLong(10), new VncLong(20));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(2, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+	}
+
+	@Test
+	public void test_sequential_map_entry() {
+		// [[x y] VncMapEntry(10 20)]
+
+		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
+		final VncVal bindVal = new VncMapEntry(new VncLong(10), new VncLong(20));
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 
