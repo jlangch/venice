@@ -2278,6 +2278,25 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction new_map_entry =
+		new VncFunction(
+				"map-entry",
+				VncFunction
+					.meta()
+					.arglists("(map-entry key val)")
+					.doc("Creates a new map entry")
+					.examples("(map-entry :a 1)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("map-entry", args, 2);
+
+				return new VncMapEntry(args.first(), args.second());
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction map_Q =
 		new VncFunction(
 				"map?",
@@ -3868,7 +3887,9 @@ public class CoreFunctions {
 					.examples(
 						"(cons 1 '(2 3 4 5 6))",
 						"(cons [1 2] [4 5 6])",
-						"(cons 3 (set 1 2))")
+						"(cons 3 (set 1 2))",
+						"(cons {:c 3} {:a 1 :b 2})",
+						"(cons (map-entry :c 3) {:a 1 :b 2})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3888,8 +3909,19 @@ public class CoreFunctions {
 				else if (Types.isVncSortedSet(coll)) {
 					return ((VncSortedSet)coll).add(args.first());
 				}
-				else if (Types.isVncMap(coll) && Types.isVncMap(args.first())) {
-					return ((VncMap)coll).putAll((VncMap)args.first());
+				else if (Types.isVncMap(coll)) {
+					if (Types.isVncMapEntry(args.first())) {
+						final VncMapEntry entry = (VncMapEntry)args.first();
+						return ((VncMap)coll).assoc(entry.getKey(), entry.getValue());
+					}
+					else if (Types.isVncMap(args.first())) {
+						return ((VncMap)coll).putAll((VncMap)args.first());
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid argument type %s for element while calling function 'cons' on map",
+								Types.getType(args.first())));
+					}
 				}
 				else {
 					throw new VncException(String.format(
@@ -3910,7 +3942,9 @@ public class CoreFunctions {
 					.doc(
 						"Adds x to the mutable coll")
 					.examples(
-						"(cons! 3 (mutable-set 1 2))")
+						"(cons! 3 (mutable-set 1 2))",
+						"(cons! {:c 3} (mutable-map :a 1 :b 2))",
+						"(cons! (map-entry :c 3) (mutable-map :a 1 :b 2))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3920,6 +3954,20 @@ public class CoreFunctions {
 
 				if (Types.isVncMutableSet(coll)) {
 					return ((VncMutableSet)coll).add(args.first());
+				}
+				else if (Types.isVncMutableMap(coll)) {
+					if (Types.isVncMapEntry(args.first())) {
+						final VncMapEntry entry = (VncMapEntry)args.first();
+						return ((VncMutableMap)coll).assoc(entry.getKey(), entry.getValue());
+					}
+					else if (Types.isVncMap(args.first())) {
+						return ((VncMutableMap)coll).putAll((VncMap)args.first());
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid argument type %s for element while calling function 'cons' on mutable map",
+								Types.getType(args.first())));
+					}
 				}
 				else {
 					throw new VncException(String.format(
@@ -5592,6 +5640,9 @@ public class CoreFunctions {
 						"(conj [1 2 3] 4)",
 						"(conj '(1 2 3) 4)",
 						"(conj (set 1 2 3) 4)",
+						"(conj {:a 1 :b 2} [:c 3])",
+						"(conj {:a 1 :b 2} {:c 3})",
+						"(conj {:a 1 :b 2} (map-entry :c 3))",
 						"(conj )",
 						"(conj 4)")
 					.build()
@@ -5626,6 +5677,10 @@ public class CoreFunctions {
 										VncList.of(
 											((VncVector)second).first(),
 											((VncVector)second).second()));
+						}
+						else if (Types.isVncMapEntry(second)) {
+							final VncMapEntry entry = (VncMapEntry)second;
+							return map.assoc(entry.getKey(), entry.getValue());
 						}
 						else if (Types.isVncMap(second)) {
 							return map.putAll((VncMap)second);
@@ -6097,6 +6152,7 @@ public class CoreFunctions {
 				.add(new_ordered_map)
 				.add(new_sorted_map)
 				.add(new_mutable_map)
+				.add(new_map_entry)
 				.add(new_stack)
 				.add(new_queue)
 				.add(assoc)
