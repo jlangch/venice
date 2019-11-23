@@ -3260,6 +3260,7 @@ public class CoreFunctions {
 					.examples(
 						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )",
 						"(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )",
+						"(into (sorted-map) [(map-entry :b 2) (map-entry :c 3) (map-entry :a 1)])",
 						"(into [] {1 2, 3 4})",
 						"(into '() '(1 2 3))",
 						"(into [1 2 3] '(4 5 6))",
@@ -3341,6 +3342,10 @@ public class CoreFunctions {
 						for(VncVal it : ((VncSequence)from).getList()) {
 							if (Types.isVncSequence(it)) {
 								toMap = ((VncMap)toMap).assoc(((VncSequence)it).toVncList());
+							}
+							else if (Types.isVncMapEntry(it)) {
+								final VncMapEntry entry = (VncMapEntry)it;
+								toMap = ((VncMap)toMap).assoc(entry.getKey(), entry.getValue());
 							}
 							else if (Types.isVncMap(it)) {
 								toMap = ((VncMap)toMap).putAll((VncMap)it);
