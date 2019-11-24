@@ -1,0 +1,29 @@
+(defn x [] (and true true))
+(defn y [] (let [cond__1__auto true] (if cond__1__auto true cond__1__auto)))
+
+
+
+(perf (x) 10000 10000)
+(println (prof :data-formatted "Metrics: macro"))
+
+----------------------------------------------
+Metrics: macro
+----------------------------------------------
+user/_test   [     1]:   195,89 ms
+user/x       [ 10000]:   188,11 ms    18,81 us
+macroexpand  [ 20000]:   171,70 ms     8,58 us
+cons         [100000]:    47,89 ms      478 ns
+concat       [ 10000]:     6,30 ms      629 ns
+----------------------------------------------
+
+
+
+(perf (y) 10000 10000)
+(println (prof :data-formatted "Metrics: macro expanded"))
+
+--------------------------------------------
+Metrics: macro expanded
+--------------------------------------------
+user/_test  [    1]:    15,27 ms
+user/y      [10000]:    10,40 ms     1,04 us
+--------------------------------------------
