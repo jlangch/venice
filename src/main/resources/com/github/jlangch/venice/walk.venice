@@ -174,4 +174,4 @@
 
   walk/macroexpand-all [form]
 
-  (walk/prewalk (fn [x] (if (list? x) (macroexpand-sym x) x)) form))
+  (walk/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))

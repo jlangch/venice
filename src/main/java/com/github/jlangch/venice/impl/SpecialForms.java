@@ -623,7 +623,7 @@ public class SpecialForms {
 				.meta()
 				.arglists("(macroexpand form)")		
 				.doc("If form represents a macro form, returns its expansion, else returns form")
-				.examples("(macroexpand (-> c (+ 3) (* 2)))")
+				.examples("(macroexpand '(-> c (+ 3) (* 2)))")
 				.build()
 		) {
 		    private static final long serialVersionUID = -1;

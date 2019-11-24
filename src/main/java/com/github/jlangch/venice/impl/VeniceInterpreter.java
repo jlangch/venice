@@ -424,14 +424,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 				case "macroexpand": 
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
-						return macroexpand(ast.second(), env);
-					}
-					
-				case "macroexpand-sym": 
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand-sym", ast))) {
-						final VncVal sym = ast.second();
-						final VncVal val = Types.isVncSymbol(sym) ? env.get((VncSymbol)sym) : sym;
-						return macroexpand(val, env);
+						return macroexpand(evaluate(ast.second(), env), env);
 					}
 					
 				case "quote":

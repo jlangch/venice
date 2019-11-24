@@ -596,7 +596,7 @@ public class MacroTest {
 				"(do                                        " +
 				"   (defmacro hello [x] '(+ 1 2))           " +
 				"                                           " +
-				"   (macroexpand (hello 0))                 " +
+				"   (macroexpand '(hello 0))                " +
 				")                                          ";
 
 
@@ -604,7 +604,7 @@ public class MacroTest {
 				"(do                                        " +
 				"   (defmacro hello [x] (eval '(+ 1 2)))    " +
 				"                                           " +
-				"   (macroexpand (hello 0))                 " +
+				"   (macroexpand '(hello 0))                " +
 				")                                          ";
 
 		assertEquals("(+ 1 2)", venice.eval("(str " + s1 + ")"));
@@ -620,7 +620,7 @@ public class MacroTest {
 				"   (defmacro when1 [expr form]             " +
 				"      (list 'if expr nil form))            " +
 				"                                           " +
-				"   (macroexpand (when1 true (+ 1 1)))      " +
+				"   (macroexpand '(when1 true (+ 1 1)))     " +
 				")                                          ";
 
 
@@ -629,7 +629,7 @@ public class MacroTest {
 				"   (defmacro when1 [expr form]             " +
 				"      (list 'if expr nil form))            " +
 				"                                           " +
-				"   (macroexpand (when1 false (+ 1 1)))     " +
+				"   (macroexpand '(when1 false (+ 1 1)))    " +
 				")                                          ";
 
 		assertEquals("(if true nil (+ 1 1))", venice.eval("(str " + s1 + ")"));
