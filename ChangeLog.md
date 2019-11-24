@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.7.10] - 2019-12-21
+## [1.7.10] - 2019-11-21
 
 ### Fixed
 
