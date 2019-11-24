@@ -25,14 +25,12 @@
 (ns walk)
 
 (defn-
-  ^{ :arglists '("(comment & body)")
-     :doc "Ignores body, yields nil"
-     :examples (list
-          """
-          (comment
-            (println 1)
-            (println 5))
-          """ ) }
+  ^{ :arglists '("(walk inner outer form)")
+     :doc """
+         Traverses form, an arbitrary data structure.  inner and outer are
+         functions.  Applies inner to each element of form, building up a
+         data structure of the same type, then applies outer to the result.
+         """ }
 
   walk [inner outer form]
 
@@ -43,19 +41,63 @@
     :else (outer form)))
 
 
-(defn postwalk [f form]
+(defn
+  ^{ :arglists '("(postwalk f form)")
+     :doc """
+          Performs a depth-first, post-order traversal of form. Calls f on
+          each sub-form, uses f's return value in place of the original.
+          """
+     :examples (list
+          """
+          (walk/postwalk (fn [x] (println "Walked:" (pr-str x)) x)
+                         '(1 2 {:a 1 :b 2}))
+          """) }
+
+  postwalk [f form]
+
   (walk/walk (partial postwalk f) f form))
 
 
-(defn prewalk [f form]
+(defn
+  ^{ :arglists '("(prewalk f form)")
+     :doc """
+          Performs a depth-last, pre-order traversal of form. Calls f on
+          each sub-form, uses f's return value in place of the original.
+          """
+     :examples (list
+          """
+          (walk/prewalk (fn [x] (println "Walked:" (pr-str x)) x)
+                         '(1 2 {:a 1 :b 2}))
+          """) }
+
+  prewalk [f form]
+
   (walk/walk (partial prewalk f) identity (f form)))
 
 
-(defn postwalk-dump [form]
+(defn
+  ^{ :arglists '("(postwalk-dump form)")
+     :doc """
+          Demonstrates the behavior of postwalk by printing each form
+          as it is walked. Returns the form.
+          """
+     :examples (list "(walk/postwalk-dump '(1 2 {:a 1 :b 2}))") }
+
+  postwalk-dump [form]
+
   (walk/postwalk (fn [x] (println "Walked:" (pr-str x)) x) form))
 
 
-(defn prewalk-dump [form]
+(defn
+  ^{ :arglists '("(prewalk-dump form)")
+     :doc """
+          Demonstrates the behavior of prewalk by printing each form
+          as it is walked. Returns the form.
+          """
+     :examples (list "(walk/prewalk-dump '(1 2 {:a 1 :b 2}))") }
+
+  prewalk-dump [form]
+
   (walk/prewalk (fn [x] (println "Walked:" (pr-str x)) x) form))
 
 
@@ -117,14 +159,9 @@
   ^{ :arglists '("(macroexpand-all form)")
      :doc "Recursively expands all macros in the form."
      :examples (list
-          """
-          (walk/macroexpand-all (let [x 2]
-                                  (cond
-                                    (= x 0) "0"
-                                    (= x 1) "1"
-                                    :else "else")))
-          """ ) }
+          "(walk/macroexpand-all '(do (and true true)))",
+          "(walk/macroexpand-all '(do (and true (or true false))))" ) }
 
-  macroexpand-all [form]
+  walk/macroexpand-all [form]
 
   (walk/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))
