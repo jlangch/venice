@@ -130,7 +130,7 @@
 
   cond [& clauses]
 
-  (when clauses
+  (when (not-empty? clauses)
     (list 'if (first clauses)
           (if (rest clauses)
               (second clauses)
