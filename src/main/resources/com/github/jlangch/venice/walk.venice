@@ -160,7 +160,9 @@
      :doc "Recursively expands all macros in the form."
      :examples (list
           "(walk/macroexpand-all '(do (and true true)))",
-          "(walk/macroexpand-all '(do (and true (or true false))))" ) }
+          "(walk/macroexpand-all '(do (and true (or true false))))"
+          "(walk/macroexpand-all '(do (and true (or true false))))"
+          "(walk/macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
 
   walk/macroexpand-all [form]
 
