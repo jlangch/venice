@@ -21,16 +21,21 @@
 
 ;;;; Venice walk functions
 
+;;;; Thanks to Stuart Sierra and his clojure walk project
+;;;; (https://github.com/clojure/clojure/blob/master/src/clj/clojure/walk.clj).
+;;;; Venice's walk builds heavily on Stuart Sierra's work.
+
+
 
 (ns walk)
 
 (defn-
   ^{ :arglists '("(walk inner outer form)")
      :doc """
-         Traverses form, an arbitrary data structure.  inner and outer are
-         functions.  Applies inner to each element of form, building up a
-         data structure of the same type, then applies outer to the result.
-         """ }
+          Traverses form, an arbitrary data structure. inner and outer are
+          functions. Applies inner to each element of form, building up a
+          data structure of the same type, then applies outer to the result.
+          """ }
 
   walk [inner outer form]
 
@@ -159,8 +164,8 @@
   ^{ :arglists '("(macroexpand-all form)")
      :doc "Recursively expands all macros in the form."
      :examples (list
-          "(walk/macroexpand-all '(do (and true true)))",
-          "(walk/macroexpand-all '(do (and true (or true false))))"
+          "(walk/macroexpand-all '(and true true false))",
+          "(walk/macroexpand-all '(and true (or true false) true))"
           "(walk/macroexpand-all '(do (and true (or true false))))"
           "(walk/macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
 
