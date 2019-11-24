@@ -315,6 +315,9 @@ public class Types {
 		else if (Types.isVncMutableMap(val)) {
 			return new VncKeyword("venice.MutableMap");
 		}
+		else if (Types.isVncMapEntry(val)) {
+			return new VncKeyword("venice.MapEntry");
+		}
 		else if (Types.isVncJavaObject(val)) {
 			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
 		}
@@ -374,6 +377,7 @@ public class Types {
 			case "venice.OrderedMap":	return Types.isVncOrderedMap(val);
 			case "venice.SortedMap":	return Types.isVncSortedMap(val);
 			case "venice.MutableMap":	return Types.isVncMutableMap(val);
+			case "venice.MapEntry":		return Types.isVncMapEntry(val);
 			default:
 				try {
 					if (Types.isVncJavaObject(val)) {
