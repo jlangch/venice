@@ -21,15 +21,23 @@
  */
 package com.github.jlangch.venice.examples;
 
+import java.awt.Point;
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 
 
-public class EvalExample {
-	
-	public static void main(final String[] args) {
-		final Venice venice = new Venice();
-		
-		System.out.println((Long)venice.eval("(+ 1 2)"));
-	}
-	
+public class Embed_02_PassingParameters {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
+
+        System.out.println(
+                venice.eval(
+                        "(+ x y 1)", 
+                        Parameters.of("x", 6, "y", 3L)));
+
+        System.out.println(
+                venice.eval(
+                        "(str \"(x: \" (:x point) \", y: \" (:y point) \")\")", 
+                        Parameters.of("point", new Point(100, 200))));
+    }
 }

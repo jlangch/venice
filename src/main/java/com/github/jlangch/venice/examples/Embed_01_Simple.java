@@ -21,27 +21,21 @@
  */
 package com.github.jlangch.venice.examples;
 
-import java.time.ZonedDateTime;
-
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
-public class JavaInteropExample {
-	
-	public static void main(final String[] args) {
-		final Venice venice = new Venice();
-		
-		// qualified classes
-		final Long val = (Long)venice.eval("(. :java.lang.Math :min 20 30)");
-		
-		// class import
-		final ZonedDateTime ts = (ZonedDateTime)venice.eval(
-									"(do " +
-									"   (import :java.time.ZonedDateTime) " +
-									"   (. (. :ZonedDateTime :now) :plusDays 5))");
-		
-		System.out.println(val);
-		System.out.println(ts);
-	}
-	
+public class Embed_01_Simple {
+    public static void main(final String[] args) {
+        try {
+           final Venice venice = new Venice();  
+           System.out.println(venice.eval("(+ 1 1)"));
+        } 
+        catch(VncException ex) {
+           ex.printVeniceStackTrace();
+        }
+        catch(RuntimeException ex) {
+           ex.printStackTrace();
+        }
+    }
 }

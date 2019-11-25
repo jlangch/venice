@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +43,10 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -85,7 +88,6 @@ public class Venice {
 		this.loadPaths = LoadPath.sanitize(loadPaths);
 	}
 	
-	
 	/**
 	 * Pre-compiles a Venice script.
 	 * 
@@ -94,6 +96,18 @@ public class Venice {
 	 * @return the pre-compiled script
 	 */
 	public PreCompiled precompile(final String scriptName, final String script) {
+		return precompile(scriptName, script, false);
+	}
+	
+	/**
+	 * Pre-compiles a Venice script.
+	 * 
+	 * @param scriptName A mandatory script name
+	 * @param script A mandatory script
+	 * @param expandMacros if true expand all macros
+	 * @return the pre-compiled script
+	 */
+	public PreCompiled precompile(final String scriptName, final String script, final boolean expandMacros) {
 		if (StringUtil.isBlank(scriptName)) {
 			throw new IllegalArgumentException("A 'scriptName' must not be blank");
 		}
@@ -103,9 +117,18 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		final VeniceInterpreter venice = new VeniceInterpreter(new MeterRegistry(false), interceptor, loadPaths);
+		final VeniceInterpreter venice = new VeniceInterpreter(
+												new MeterRegistry(false), 
+												new AcceptAllInterceptor(), 
+												loadPaths);
 		
-		final PreCompiled pc = new PreCompiled(scriptName, venice.READ(script, scriptName));
+		VncVal ast = venice.READ(script, scriptName);
+		
+		if (expandMacros) {
+			ast = expandMacros(ast, venice);
+		}
+		
+		final PreCompiled pc = new PreCompiled(scriptName, ast);
 
 		meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 		
@@ -380,6 +403,16 @@ public class Venice {
 		// make the env safe for reuse
 		return env.copyGlobalToPrecompiledSymbols();
 	}
+	
+	private VncVal expandMacros(final VncVal ast, final VeniceInterpreter venice) {
+		final Env env = venice.createEnv(Arrays.asList("walk"))
+							  .setStdoutPrintStream(null);
+
+		final VncFunction macroexpand_all = (VncFunction)env.get(new VncSymbol("walk/macroexpand-all"));
+		
+		return macroexpand_all.apply(VncList.of(ast));
+	}
+	
 	
 	
 	private final static AtomicLong timeoutThreadPoolCounter = new AtomicLong(0);

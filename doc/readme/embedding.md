@@ -4,16 +4,19 @@
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
-try {
-   final Venice venice = new Venice();
-  
-   System.out.println(venice.eval("(+ 1 1)"));
-} 
-catch(VncException ex) {
-   ex.printVeniceStackTrace();
-}
-catch(RuntimeException ex) {
-   ex.printStackTrace();
+public class Embed_Simple {
+    public static void main(final String[] args) {
+        try {
+           final Venice venice = new Venice();  
+           System.out.println(venice.eval("(+ 1 1)"));
+        } 
+        catch(VncException ex) {
+           ex.printVeniceStackTrace();
+        }
+        catch(RuntimeException ex) {
+           ex.printStackTrace();
+        }
+    }
 }
 ```
 
@@ -30,13 +33,21 @@ keys in Venice, so the getters can be accessed simply through `(:getterName bean
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
 
-final Venice venice = new Venice();
+public class Embed_PassingParameters {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
 
-System.out.println(
-   venice.eval(
-      "(+ x y 3)", 
-      Parameters.of("x", 6, "y", 3L)));
-```
+        System.out.println(
+                venice.eval(
+                        "(+ x y 1)", 
+                        Parameters.of("x", 6, "y", 3L)));
+
+        System.out.println(
+                venice.eval(
+                        "(str \"(x: \" (:x point) \", y: \" (:y point) \")\")", 
+                        Parameters.of("point", new Point(100, 200))));
+    }
+}```
 
 
 ## Venice stdout redirection
@@ -46,24 +57,28 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
-final Venice venice = new Venice();
+public class Embed_StdOutRedirection {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
 
-// case 1: redirect stdout to the null device
-venice.eval(
-   "(println [1 2])", 
-   Parameters.of("*out*", null));
+        // case 1: redirect stdout to the <null> device
+        venice.eval(
+           "(println [1 2])", 
+           Parameters.of("*out*", null));
 
-// case 2: capture stdout within the script and return it as the result
-System.out.println(
-   venice.eval("(with-out-str (println [1 2]))"));
+        // case 2: capture stdout within the script and return it as the result
+        System.out.println(
+           venice.eval("(with-out-str (println [1 2]))"));
 
-// case 3: capturing stdout preserving the script result
-try(CapturingPrintStream ps = CapturingPrintStream.create()) {
-   final Object result = venice.eval(
-                           "(do (println [1 2]) 100)", 
-                           Parameters.of("*out*", ps));
-   System.out.println("result: " + result);
-   System.out.println("stdout: " + ps.getOutput());
+        // case 3: capturing stdout preserving the script result
+        try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+           final Object result = venice.eval(
+                                   "(do (println [1 2]) 100)", 
+                                   Parameters.of("*out*", ps));
+           System.out.println("result: " + result);
+           System.out.println("stdout: " + ps.getOutput());
+        }
+    }
 }
 ```
 
@@ -77,26 +92,116 @@ Every evaluation gets its own private Venice context.
 If required precompiled scripts can be serialized/deserialized.
 
 ```java
+import java.util.stream.IntStream;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Parameters;
 
-final Venice venice = new Venice();
+public class Embed_Precompile {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
 
-final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
+        final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 
-// single-threaded
-IntStream.range(0, 100).sequential().forEach(
-  ii -> System.out.println(
-          venice.eval(
-             precompiled, 
-             Parameters.of("x", ii))));
+        // single-threaded
+        IntStream.range(0, 100).sequential().forEach(
+          ii -> System.out.println(
+                  venice.eval(
+                     precompiled, 
+                     Parameters.of("x", ii))));
              
-// multi-threaded
-IntStream.range(0, 100).parallel().forEach(
-  ii -> System.out.println(
-          venice.eval(
-             precompiled, 
-             Parameters.of("x", ii))));
-
+        // multi-threaded
+        IntStream.range(0, 100).parallel().forEach(
+          ii -> System.out.println(
+                  venice.eval(
+                     precompiled, 
+                     Parameters.of("x", ii))));
+    }
+}
 ```
+
+
+
+## Performance Benchmark
+
+### Without precompilation
+
+```java
+import com.github.jlangch.venice.*;
+
+public class Embed_PrecompiledShootout_1 {
+
+    public static void main(final String[] args) {
+        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
+
+        final Venice venice = new Venice();
+        
+
+        for(int ii=0; ii<10000; ii++) {
+            venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
+        }
+
+        final long start = System.currentTimeMillis();
+        for(int ii=0; ii<10000; ii++) {
+            venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
+        }
+        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+    }
+}
+```
+
+
+### With precompilation
+
+```java
+import com.github.jlangch.venice.*;
+
+public class Embed_PrecompiledShootout_2 {
+
+    public static void main(final String[] args) {
+        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
+
+        final Venice venice = new Venice();
+        final PreCompiled precompiled = venice.precompile("example", expr, false);
+
+        for(int ii=0; ii<10000; ii++) {
+            venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+        }
+
+        final long start = System.currentTimeMillis();
+        for(int ii=0; ii<10000; ii++) {
+            venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+        }
+        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+    }
+}
+```
+
+
+### With precompilation and upfront macro expansion
+
+```java
+import com.github.jlangch.venice.*;
+
+public class Embed_PrecompiledShootout_3 {
+
+    public static void main(final String[] args) {
+        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
+
+        final Venice venice = new Venice();
+        final PreCompiled precompiled = venice.precompile("example", expr, true);
+
+        for(int ii=0; ii<10000; ii++) {
+            venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+        }
+
+        final long start = System.currentTimeMillis();
+        for(int ii=0; ii<10000; ii++) {
+            venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+        }
+        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+    }
+}
+```
+
+

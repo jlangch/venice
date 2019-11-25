@@ -265,4 +265,14 @@ public class PrecompiledTest {
 		es.shutdown();
 	}
 
+
+	@Test
+	public void test_expand_macros() {
+		final Venice venice = new Venice();
+		
+		final PreCompiled precomp = venice.precompile("test", "(if (and true (= 1 1)) 4 0)", true);
+		
+		assertEquals(4L, venice.eval(precomp));
+	}
+
 }

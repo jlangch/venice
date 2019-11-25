@@ -134,42 +134,41 @@
 
 
 (defn
-  ^{ :arglists '("(prewalk-replace smap form)")
+  ^{ :arglists '("(prewalk-replace key-map form)")
      :doc """
-          Recursively transforms form by replacing keys in smap with their
-          values. Does replacement at the root of the tree first.
+          Recursively transforms form by replacing keys in key-map with
+          thei values. Does replacement at the root of the tree first.
           """
      :examples (list
           "(walk/prewalk-replace {:a :A :b :B} '(1 2 :a :b))",
           "(walk/prewalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2}))" ) }
 
-  prewalk-replace [smap form]
+  prewalk-replace [key-map form]
 
-  (walk/prewalk (fn [x] (if (contains? smap x) (smap x) x)) form))
+  (walk/prewalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
 
 (defn
-  ^{ :arglists '("(postwalk-replace smap form)")
+  ^{ :arglists '("(postwalk-replace key-map form)")
      :doc """
-          Recursively transforms form by replacing keys in smap with their
-          values. Does replacement at the leaves of the tree first.
+          Recursively transforms form by replacing keys in key-map with
+          their values. Does replacement at the leaves of the tree first.
           """
      :examples (list
           "(walk/postwalk-replace {:a :A :b :B} '(1 2 :a :b))",
           "(walk/postwalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2}))" ) }
 
-  postwalk-replace [smap form]
+  postwalk-replace [key-map form]
 
-  (walk/postwalk (fn [x] (if (contains? smap x) (smap x) x)) form))
+  (walk/postwalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
 
 (defn
   ^{ :arglists '("(macroexpand-all form)")
      :doc "Recursively expands all macros in the form."
      :examples (list
-          "(walk/macroexpand-all '(and true true false))",
+          "(walk/macroexpand-all '(and true true))",
           "(walk/macroexpand-all '(and true (or true false) true))"
-          "(walk/macroexpand-all '(do (and true (or true false))))"
           "(walk/macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
 
   walk/macroexpand-all [form]

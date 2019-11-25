@@ -21,35 +21,26 @@
  */
 package com.github.jlangch.venice.examples;
 
-import java.util.stream.IntStream;
+import java.time.ZonedDateTime;
 
-import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
 
 
-public class PrecompiledExample {
-	
-	public static void main(final String[] args) {
-		final Venice venice = new Venice();
-		
-		final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
-		
-		// single-threaded
-		System.out.println("single-threaded");
-		IntStream.range(0, 100).sequential().forEach(
-		  ii -> System.out.println(
-		          venice.eval(
-		             precompiled, 
-		             Parameters.of("x", ii))));
-		             
-		// multi-threaded
-		System.out.println("multi-threaded");
-		IntStream.range(0, 100).parallel().forEach(
-		  ii -> System.out.println(
-		          venice.eval(
-		             precompiled, 
-		             Parameters.of("x", ii))));
-	}
-	
+public class Embed_08_JavaInterop {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
+        
+        // qualified classes
+        final Long val = (Long)venice.eval("(. :java.lang.Math :min 20 30)");
+        
+        // class import
+        final ZonedDateTime ts = (ZonedDateTime)venice.eval(
+                                    "(do " +
+                                    "   (import :java.time.ZonedDateTime) " +
+                                    "   (. (. :ZonedDateTime :now) :plusDays 5))");
+
+        System.out.println(val);
+        System.out.println(ts);
+    }
+    
 }
