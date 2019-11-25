@@ -249,10 +249,8 @@ Venice calls.
 
 
 ```java
-import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.SandboxInterceptor;
-import com.github.jlangch.venice.javainterop.SandboxRules;
+import com.github.jlangch.venice.*;
+import com.github.jlangch.venice.javainterop.*;
 
 
 public class Embed_10_CustomSandbox {
