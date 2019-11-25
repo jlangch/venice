@@ -76,12 +76,11 @@
             (do (log "Philosopher " n " picked up forks")
                 (eat n)
                 (think n))
-            (sleep 5)))
+            (sleep retry-time)))
       (catch :RuntimeException ex
         (log "Philosopher " n " died! " (:message ex))))))
 
    ;; launch
-   (println "Starting")
-   (dotimes [i n-philosophers]
-     (future (philosopher i)))
+   (println "Starting (stop with <ctrl-c>)")
+   (apply futures-wait (futures-fork n-philosophers #(philosopher %)))
 )
