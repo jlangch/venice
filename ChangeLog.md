@@ -11,8 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- optional macro expansion to precompilation. This gives another performance gain 
-  when using Venice as an expression or rules engine. 
+- optional macro expansion at precompilation phase. This gives another 
+  performance gain when using Venice as an expression or rules engine. 
   See the benchmark in [Embedding Venice](doc/readme/embedding.md) 
 
 
