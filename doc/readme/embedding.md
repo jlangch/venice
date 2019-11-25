@@ -20,7 +20,8 @@ pretty impressive. See the Precompilation Performance Benchmark further down.
 For security reasons it might be necessary to establish a sandbox for the Venice expressions
 and rules.
 
-## A simple example:
+
+### A simple example:
 
 ```java
 import com.github.jlangch.venice.Venice;
