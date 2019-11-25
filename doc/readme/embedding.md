@@ -252,7 +252,6 @@ Venice calls.
 import com.github.jlangch.venice.*;
 import com.github.jlangch.venice.javainterop.*;
 
-
 public class Embed_10_CustomSandbox {
 
     public static void main(final String[] args) {
