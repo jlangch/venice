@@ -25,6 +25,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
+
 public class Embed_03_StdOutRedirection {
     public static void main(final String[] args) {
         final Venice venice = new Venice();

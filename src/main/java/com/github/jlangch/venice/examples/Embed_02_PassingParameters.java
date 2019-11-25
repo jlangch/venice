@@ -37,7 +37,7 @@ public class Embed_02_PassingParameters {
 
         System.out.println(
                 venice.eval(
-                        "(str \"(x: \" (:x point) \", y: \" (:y point) \")\")", 
+                        "(str \"Point=(x: \" (:x point) \", y: \" (:y point) \")\")", 
                         Parameters.of("point", new Point(100, 200))));
     }
 }

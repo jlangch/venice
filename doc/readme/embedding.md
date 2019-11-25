@@ -4,7 +4,7 @@
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
-public class Embed_Simple {
+public class Embed_01_Simple {
     public static void main(final String[] args) {
         try {
            final Venice venice = new Venice();  
@@ -33,7 +33,7 @@ keys in Venice, so the getters can be accessed simply through `(:getterName bean
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
 
-public class Embed_PassingParameters {
+public class Embed_02_PassingParameters {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
@@ -47,7 +47,8 @@ public class Embed_PassingParameters {
                         "(str \"(x: \" (:x point) \", y: \" (:y point) \")\")", 
                         Parameters.of("point", new Point(100, 200))));
     }
-}```
+}
+```
 
 
 ## Venice stdout redirection
@@ -57,7 +58,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
-public class Embed_StdOutRedirection {
+public class Embed_03_StdOutRedirection {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
@@ -97,7 +98,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Parameters;
 
-public class Embed_Precompile {
+public class Embed_04_Precompile {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
@@ -129,7 +130,7 @@ public class Embed_Precompile {
 ```java
 import com.github.jlangch.venice.*;
 
-public class Embed_PrecompiledShootout_1 {
+public class Embed_05_PrecompiledShootout_1 {
 
     public static void main(final String[] args) {
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
@@ -156,7 +157,7 @@ public class Embed_PrecompiledShootout_1 {
 ```java
 import com.github.jlangch.venice.*;
 
-public class Embed_PrecompiledShootout_2 {
+public class Embed_06_PrecompiledShootout_2 {
 
     public static void main(final String[] args) {
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
@@ -183,7 +184,7 @@ public class Embed_PrecompiledShootout_2 {
 ```java
 import com.github.jlangch.venice.*;
 
-public class Embed_PrecompiledShootout_3 {
+public class Embed_07_PrecompiledShootout_3 {
 
     public static void main(final String[] args) {
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
