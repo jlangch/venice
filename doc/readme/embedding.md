@@ -1,5 +1,15 @@
 # Embedding Venice in Java
 
+The main purpose for embedding Venice in a Java application is to use Venice as an expression
+or rules engine within the application. 
+
+Precompiling these Venice expressions or rules results in performance improvement that can be
+pretty impressive. See the Precompilation Performance Benchmark further down.
+
+For security reasons it might be necessary to establish a sandbox for the Venice expressions
+and rules.
+
+
 ```java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -207,3 +217,100 @@ public class Embed_07_PrecompiledShootout_3 {
     }
 }
 ```
+
+
+
+## Sandbox
+
+### Strict sandbox
+
+Disables all Java calls and all Venice IO functions
+
+
+```java
+import com.github.jlangch.venice.*;
+import com.github.jlangch.venice.javainterop.*;
+
+public class Embed_09_StrictSandbox {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice(new RejectAllInterceptor());
+
+        // => FAIL (Venice IO function) with Sandbox SecurityException
+        venice.eval("(println 100)"); 
+    }
+}
+```
+
+
+### Customized sandbox
+
+A customized sandbox allows the configuration of all aspects for Java and
+Venice calls.
+
+
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
+
+
+public class Embed_10_CustomSandbox {
+
+    public static void main(final String[] args) {
+        final IInterceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .rejectAllVeniceIoFunctions()
+                                .withClasses(
+                                    "java.lang.Math:PI", 
+                                    "java.lang.Math:min", 
+                                    "java.lang.Math:max", 
+                                    "java.time.ZonedDateTime:*", 
+                                    "java.awt.**:*", 
+                                    "java.util.ArrayList:new",
+                                    "java.util.ArrayList:add"));
+
+        final Venice venice = new Venice(interceptor);
+
+        // rule: "java.lang.Math:PI"
+        // => OK (static field)
+        venice.eval("(. :java.lang.Math :PI)"); 
+
+        // rule: "java.lang.Math:min"
+        // => OK (static method)
+        venice.eval("(. :java.lang.Math :min 20 30)"); 
+
+        // rule: "java.lang.Math:max"
+        // => OK (static method)
+        venice.eval("(. :java.lang.Math :max 20 30)"); 
+
+        // rule: "java.time.ZonedDateTime:*"
+        // => OK (constructor & instance method)
+        venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
+
+        // rule: "java.awt.**:*"
+        // => OK (constructor & instance method)
+        venice.eval("(. (. :java.awt.color.ICC_ColorSpace                  \n" +
+                    "      :getInstance                                    \n" +
+                    "      (. :java.awt.color.ColorSpace :CS_LINEAR_RGB))  \n" +
+                    "   :getMaxValue                                       \n" +
+                    "   0)                                                 ");
+
+        // rule: "java.util.ArrayList:new"
+        // => OK (constructor)
+        venice.eval("(. :java.util.ArrayList :new)");
+
+        // rule: "java.util.ArrayList:add"
+        // => OK (constructor & instance method)
+        venice.eval(
+                "(doto (. :java.util.ArrayList :new)  " +
+                "      (. :add 1)                     " +
+                "      (. :add 2))                    ");
+
+        // => FAIL (static method) with Sandbox SecurityException
+        venice.eval("(. :java.lang.System :exit 0)"); 
+    }
+}
+```
+
