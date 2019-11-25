@@ -20,6 +20,7 @@ pretty impressive. See the Precompilation Performance Benchmark further down.
 For security reasons it might be necessary to establish a sandbox for the Venice expressions
 and rules.
 
+## A simple example:
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -51,6 +52,7 @@ All other types can be accessed through Java interop. Java bean parameters expos
 keys in Venice, so the getters can be accessed simply through `(:getterName bean)`
 
 ```java
+import java.awt.Point;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
 
