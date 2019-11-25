@@ -36,6 +36,7 @@ public class Embed_05_PrecompiledShootout_1 {
 
         final Venice venice = new Venice();
         
+        // warmup
         for(int ii=0; ii<iterations; ii++) {
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
         }

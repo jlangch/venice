@@ -143,18 +143,18 @@ _considered as outliers and removed._
 ### Without precompilation
 
 ```java
-import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.*;
 
-// Without precompilation
 public class Embed_05_PrecompiledShootout_1 {
+
+    // SIMPLIFIED: see source code for details!
 
     public static void main(final String[] args) {
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
         
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<100; ii++) {
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
         }
     }
@@ -167,8 +167,9 @@ public class Embed_05_PrecompiledShootout_1 {
 ```java
 import com.github.jlangch.venice.*;
 
-// With precompilation
 public class Embed_06_PrecompiledShootout_2 {
+
+    // SIMPLIFIED: see source code for details!
 
     public static void main(final String[] args) {
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
@@ -176,7 +177,7 @@ public class Embed_06_PrecompiledShootout_2 {
         final Venice venice = new Venice();
         final PreCompiled precompiled = venice.precompile("example", expr, false);
 
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<100; ii++) {
            venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
     }
@@ -189,8 +190,9 @@ public class Embed_06_PrecompiledShootout_2 {
 ```java
 import com.github.jlangch.venice.*;
 
-// With precompilation and upfront macro expansion
 public class Embed_07_PrecompiledShootout_3 {
+
+    // SIMPLIFIED: see source code for details!
 
     public static void main(final String[] args) {
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
@@ -199,7 +201,7 @@ public class Embed_07_PrecompiledShootout_3 {
         
         final PreCompiled precompiled = venice.precompile("example", expr, true);
 
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<100; ii++) {
            venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
     }
