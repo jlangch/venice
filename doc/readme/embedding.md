@@ -169,7 +169,7 @@ import com.github.jlangch.venice.*;
 public class Embed_06_PrecompiledShootout_2 {
 
     public static void main(final String[] args) {
-        final int iterations = 10000;
+        final int iterations = 100000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
@@ -199,7 +199,7 @@ import com.github.jlangch.venice.*;
 public class Embed_07_PrecompiledShootout_3 {
 
     public static void main(final String[] args) {
-        final int iterations = 10000;
+        final int iterations = 100000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
