@@ -1,7 +1,18 @@
 # Embedding Venice in Java
 
-The main purpose for embedding Venice in a Java application is to use Venice as an expression
-or rules engine within the application. 
+* [Overview](#overview)
+* [Passing Parameters](#passing-parameters)
+* [STDOUT Redirection](#stdout-redirection)
+* [Precompiling](#precompiling)
+* [Serialize/Deserialize Precompiled Scripts](#serialize-deserialize-precompiled-scripts)
+* [Precompilation Benchmark](#precompilation-benchmark)
+* [Sandbox](#sandbox)
+
+
+## Overview
+
+The main purpose for embedding Venice a Java applications is to use Venice as an expression
+or rules engine. 
 
 Precompiling these Venice expressions or rules results in performance improvement that can be
 pretty impressive. See the Precompilation Performance Benchmark further down.
@@ -31,7 +42,7 @@ public class Embed_01_Simple {
 ```
 
 
-## Passing parameters to Venice
+## Passing Parameters
 
 Venice expects Java objects as parameters and returns Java objects as the expression result. It coerces 
 Java data types to/from Venice data types implicitly. Basic types as Boolean, Long, Double, String, 
@@ -61,7 +72,7 @@ public class Embed_02_PassingParameters {
 ```
 
 
-## Venice stdout redirection
+## STDOUT Redirection
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -94,7 +105,7 @@ public class Embed_03_StdOutRedirection {
 ```
 
 
-## Precompiling Venice
+## Precompiling
 
 Precompiling Venice speeds up evaluation significantly when calling an expression 
 multiple times with different parameters. Running precompiled scripts is threadsafe. 
@@ -104,9 +115,7 @@ If required precompiled scripts can be serialized/deserialized.
 
 ```java
 import java.util.stream.IntStream;
-import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.PreCompiled;
-import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.*;
 
 public class Embed_04_Precompile {
     public static void main(final String[] args) {
@@ -132,8 +141,33 @@ public class Embed_04_Precompile {
 ```
 
 
+### Serialize/Deserialize Precompiled Scripts
 
-## Precompilation Performance Benchmark
+Precompiled scripts can be serialized and desirialized to store them on
+a database for example.
+
+```java
+import com.github.jlangch.venice.*;
+
+public class Embed_11_PrecompileSerialize {
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
+
+        PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
+        
+        final byte[] data = precompiled.serialize();
+        
+        // ...
+        
+        precompiled = PreCompiled.deserialize(data);
+
+        System.out.println(venice.eval(precompiled, Parameters.of("x", 2)));
+    }
+}
+```
+
+
+## Precompilation Benchmark
 
 The benchmark did run on a 2017 MacBook Pro with a Java 11 server VM.
 
@@ -150,7 +184,7 @@ _'com.github.jlangch.venice.examples'. The slowest 20% of the runs are_
 _considered as outliers and removed._
 
 
-### Without precompilation
+### Without Precompilation
 
 ```java
 import com.github.jlangch.venice.*;
@@ -172,7 +206,7 @@ public class Embed_05_PrecompiledShootout_1 {
 ```
 
 
-### With precompilation
+### With Precompilation
 
 ```java
 import com.github.jlangch.venice.*;
@@ -195,7 +229,7 @@ public class Embed_06_PrecompiledShootout_2 {
 ```
 
 
-### With precompilation and upfront macro expansion
+### With Precompilation and Upfront Macro Expansion
 
 ```java
 import com.github.jlangch.venice.*;
@@ -222,7 +256,7 @@ public class Embed_07_PrecompiledShootout_3 {
 
 ## Sandbox
 
-### Strict sandbox
+### Strict Sandbox
 
 Disables all Java calls and all Venice IO functions
 
@@ -242,7 +276,7 @@ public class Embed_09_StrictSandbox {
 ```
 
 
-### Customized sandbox
+### Customized Sandbox
 
 A customized sandbox allows the configuration of all aspects for Java and
 Venice calls.
