@@ -125,6 +125,10 @@ public class Embed_04_Precompile {
 
 ## Precompilation Performance Benchmark
 
+The benchmark did run on a 2017 MacBook Pro with Java 11 server VM.
+
+**Results:**
+
 | Embed Type                       | Elapsed |   Per Call |
 | :---                             |    ---: |       ---: |
 | No precompilation                | 32.57 s | 3430.00 us |
@@ -135,8 +139,13 @@ public class Embed_04_Precompile {
 ### Without precompilation
 
 ```java
-import com.github.jlangch.venice.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.Venice;
+
+// Without precompilation
 public class Embed_05_PrecompiledShootout_1 {
 
     public static void main(final String[] args) {
@@ -149,13 +158,19 @@ public class Embed_05_PrecompiledShootout_1 {
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
         }
 
-        final long start = System.currentTimeMillis();
+        final List<Long> raw = new ArrayList<>();
         for(int ii=0; ii<iterations; ii++) {
+            final long start = System.nanoTime();
+            
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
+            
+            raw.add(System.nanoTime() - start);
         }
-        final long elapsed = System.currentTimeMillis() - start;
-        System.out.println("Elapsed : " + elapsed + "ms");
-        System.out.println("Per call: " + ((elapsed * 1000) / iterations) + "us");
+        final List<Long> measures = TimeFormatter.stripOutlier(raw);
+        final long elapsed = TimeFormatter.sum(measures);
+        
+        System.out.println("Elapsed : " + TimeFormatter.formatNanos(elapsed));
+        System.out.println("Per call: " + TimeFormatter.formatNanos(elapsed / measures.size()));
     }
 }
 ```
@@ -164,8 +179,12 @@ public class Embed_05_PrecompiledShootout_1 {
 ### With precompilation
 
 ```java
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jlangch.venice.*;
 
+// With precompilation
 public class Embed_06_PrecompiledShootout_2 {
 
     public static void main(final String[] args) {
@@ -179,13 +198,19 @@ public class Embed_06_PrecompiledShootout_2 {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
 
-        final long start = System.currentTimeMillis();
+        final List<Long> raw = new ArrayList<>();
         for(int ii=0; ii<iterations; ii++) {
+            final long start = System.nanoTime();
+            
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+            
+            raw.add(System.nanoTime() - start);
         }
-        final long elapsed = System.currentTimeMillis() - start;
-        System.out.println("Elapsed : " + elapsed + "ms");
-        System.out.println("Per call: " + ((elapsed * 1000) / iterations) + "us");
+        final List<Long> measures = TimeFormatter.stripOutlier(raw);
+        final long elapsed = TimeFormatter.sum(measures);
+        
+        System.out.println("Elapsed : " + TimeFormatter.formatNanos(elapsed));
+        System.out.println("Per call: " + TimeFormatter.formatNanos(elapsed / measures.size()));
     }
 }
 ```
@@ -194,8 +219,12 @@ public class Embed_06_PrecompiledShootout_2 {
 ### With precompilation and upfront macro expansion
 
 ```java
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jlangch.venice.*;
 
+// With precompilation and upfront macro expansion
 public class Embed_07_PrecompiledShootout_3 {
 
     public static void main(final String[] args) {
@@ -209,15 +238,19 @@ public class Embed_07_PrecompiledShootout_3 {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
 
-        final long start = System.currentTimeMillis();
+        final List<Long> raw = new ArrayList<>();
         for(int ii=0; ii<iterations; ii++) {
+            final long start = System.nanoTime();
+            
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+            
+            raw.add(System.nanoTime() - start);
         }
-        final long elapsed = System.currentTimeMillis() - start;
-        System.out.println("Elapsed : " + elapsed + "ms");
-        System.out.println("Per call: " + ((elapsed * 1000) / iterations) + "us");
+        final List<Long> measures = TimeFormatter.stripOutlier(raw);
+        final long elapsed = TimeFormatter.sum(measures);
+        
+        System.out.println("Elapsed : " + TimeFormatter.formatNanos(elapsed));
+        System.out.println("Per call: " + TimeFormatter.formatNanos(elapsed / measures.size()));
     }
 }
 ```
-
-
