@@ -125,7 +125,7 @@ public class Embed_04_Precompile {
 
 ## Precompilation Performance Benchmark
 
-The benchmark did run on a 2017 MacBook Pro with Java 11 server VM.
+The benchmark did run on a 2017 MacBook Pro with a Java 11 server VM.
 
 **Results:**
 
