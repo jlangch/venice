@@ -123,5 +123,4 @@ public class SandboxExample {
 		// => FAIL (static method) with Sandbox SecurityException
 		venice.eval("(. :java.lang.System :exit 0)"); 
 	}
-	
 }

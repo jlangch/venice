@@ -42,5 +42,4 @@ public class Embed_08_JavaInterop {
         System.out.println(val);
         System.out.println(ts);
     }
-    
 }

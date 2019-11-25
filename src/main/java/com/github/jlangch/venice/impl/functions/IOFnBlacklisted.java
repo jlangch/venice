@@ -31,6 +31,11 @@ public class IOFnBlacklisted {
 	public static Set<String> getIoFunctions() {
 		return new HashSet<>(
 				Arrays.asList(
+					// print
+					"print",
+					"println",
+					"newline",
+
 					// load (macros)
 					"load-file",
 					"load-classpath-file",

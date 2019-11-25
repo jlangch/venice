@@ -21,25 +21,37 @@
  */
 package com.github.jlangch.venice.examples;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jlangch.venice.*;
 
 // With precompilation and upfront macro expansion
 public class Embed_07_PrecompiledShootout_3 {
 
     public static void main(final String[] args) {
+        final int iterations = 100000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
         final PreCompiled precompiled = venice.precompile("example", expr, true);
 
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
 
-        final long start = System.currentTimeMillis();
-        for(int ii=0; ii<10000; ii++) {
+        final List<Long> raw = new ArrayList<>();
+        for(int ii=0; ii<iterations; ii++) {
+            final long start = System.nanoTime();
+            
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+            
+            raw.add(System.nanoTime() - start);
         }
-        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+        final List<Long> measures = TimeFormatter.stripOutlier(raw);
+        final long elapsed = TimeFormatter.sum(measures);
+        
+        System.out.println("Elapsed : " + TimeFormatter.formatNanos(elapsed));
+        System.out.println("Per call: " + TimeFormatter.formatNanos(elapsed / measures.size()));
     }
 }

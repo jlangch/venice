@@ -133,20 +133,22 @@ import com.github.jlangch.venice.*;
 public class Embed_05_PrecompiledShootout_1 {
 
     public static void main(final String[] args) {
+        final int iterations = 10000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
         
-
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
         }
 
         final long start = System.currentTimeMillis();
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
         }
-        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+        final long elapsed = System.currentTimeMillis() - start;
+        System.out.println("Elapsed : " + elapsed + "ms");
+        System.out.println("Per call: " + ((elapsed * 1000) / iterations) + "us");
     }
 }
 ```
@@ -160,20 +162,23 @@ import com.github.jlangch.venice.*;
 public class Embed_06_PrecompiledShootout_2 {
 
     public static void main(final String[] args) {
+        final int iterations = 10000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
         final PreCompiled precompiled = venice.precompile("example", expr, false);
 
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
 
         final long start = System.currentTimeMillis();
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
-        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+        final long elapsed = System.currentTimeMillis() - start;
+        System.out.println("Elapsed : " + elapsed + "ms");
+        System.out.println("Per call: " + ((elapsed * 1000) / iterations) + "us");
     }
 }
 ```
@@ -187,20 +192,23 @@ import com.github.jlangch.venice.*;
 public class Embed_07_PrecompiledShootout_3 {
 
     public static void main(final String[] args) {
+        final int iterations = 10000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
         final PreCompiled precompiled = venice.precompile("example", expr, true);
 
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
 
         final long start = System.currentTimeMillis();
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
         }
-        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+        final long elapsed = System.currentTimeMillis() - start;
+        System.out.println("Elapsed : " + elapsed + "ms");
+        System.out.println("Per call: " + ((elapsed * 1000) / iterations) + "us");
     }
 }
 ```

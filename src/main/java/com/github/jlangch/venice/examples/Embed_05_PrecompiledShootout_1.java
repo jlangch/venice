@@ -21,25 +21,37 @@
  */
 package com.github.jlangch.venice.examples;
 
-import com.github.jlangch.venice.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.Venice;
 
 // Without precompilation
 public class Embed_05_PrecompiledShootout_1 {
 
     public static void main(final String[] args) {
+        final int iterations = 10000;
         final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
         
-
-        for(int ii=0; ii<10000; ii++) {
+        for(int ii=0; ii<iterations; ii++) {
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
         }
 
-        final long start = System.currentTimeMillis();
-        for(int ii=0; ii<10000; ii++) {
+        final List<Long> raw = new ArrayList<>();
+        for(int ii=0; ii<iterations; ii++) {
+            final long start = System.nanoTime();
+            
             venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
+            
+            raw.add(System.nanoTime() - start);
         }
-        System.out.println("Elapsed: " + (System.currentTimeMillis() - start) + "ms");
+        final List<Long> measures = TimeFormatter.stripOutlier(raw);
+        final long elapsed = TimeFormatter.sum(measures);
+        
+        System.out.println("Elapsed : " + TimeFormatter.formatNanos(elapsed));
+        System.out.println("Per call: " + TimeFormatter.formatNanos(elapsed / measures.size()));
     }
 }
