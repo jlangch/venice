@@ -131,9 +131,9 @@ The benchmark did run on a 2017 MacBook Pro with Java 11 server VM.
 
 | Embed Type                       |   Calls | Elapsed |   Per Call |
 | :---                             |    ---: |    ---: |       ---: |
-| No precompilation                |  10'000 | 32.57 s | 3430.00 us |
-| Precompilation                   | 100'000 |   1.47s |   18.43 us |
-| Precompilation / macro expansion | 100'000 |   0.68s |    7.12 us |
+| No precompilation                |   8'000 | 32.57 s | 3430.00 us |
+| Precompilation                   |  80'000 |   1.47s |   18.43 us |
+| Precompilation / macro expansion |  80'000 |   0.68s |    7.12 us |
 
 _The benchmark source code can be found in the checked in Java package_ 
 _'com.github.jlangch.venice.examples'. The slowest 20% of the runs are_ 
