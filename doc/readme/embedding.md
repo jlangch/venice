@@ -125,6 +125,13 @@ public class Embed_04_Precompile {
 
 ## Performance Benchmark
 
+| Embed Type                       | Elapsed | Per Call   |
+| :---                             |    ---: |       ---: |
+| No precompilation                | 32.57 s | 3430.00 us |
+| precompilation                   | 1.47s   | 18.43 us   |
+| precompilation / macro expansion | 0.68s   | 7.12 us    |
+
+
 ### Without precompilation
 
 ```java
