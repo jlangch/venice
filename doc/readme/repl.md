@@ -130,9 +130,10 @@ Java VM with 2GB of memory, disable using preallocated exceptions (stack traces 
 ```text
 > java \
     -server \
-    -cp "libs/*" com.github.jlangch.venice.Launcher \
-    -Xmx2G \
     -XX:-OmitStackTraceInFastThrow \
+    -Xmx2G \
+    -cp "libs/*" \
+    com.github.jlangch.venice.Launcher \
     -colors
 ```
 
