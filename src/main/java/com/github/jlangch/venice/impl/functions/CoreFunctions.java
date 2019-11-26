@@ -5643,6 +5643,7 @@ public class CoreFunctions {
 						"happen at different 'places' depending on the concrete type.")
 					.examples(
 						"(conj [1 2 3] 4)",
+						"(conj [1 2 3] [4 5])",
 						"(conj '(1 2 3) 4)",
 						"(conj (set 1 2 3) 4)",
 						"(conj {:a 1 :b 2} [:c 3])",
@@ -5675,26 +5676,28 @@ public class CoreFunctions {
 						return ((VncSet)coll).addAll(args.rest());
 					}
 					else if (Types.isVncMap(coll)) {
-						final VncMap map = (VncMap)coll;
-						final VncVal second = args.second();
-						if (Types.isVncVector(second) && ((VncVector)second).size() == 2) {
-							return map.assoc(
-										VncList.of(
-											((VncVector)second).first(),
-											((VncVector)second).second()));
+						VncMap map = (VncMap)coll;
+						for(VncVal v : args.rest().getList()) {
+							if (Types.isVncSequence(v) && ((VncSequence)v).size() == 2) {
+								map = map.assoc(
+											VncList.of(
+												((VncSequence)v).first(),
+												((VncSequence)v).second()));
+							}
+							else if (Types.isVncMapEntry(v)) {
+								final VncMapEntry entry = (VncMapEntry)v;
+								map = map.assoc(entry.getKey(), entry.getValue());
+							}
+							else if (Types.isVncMap(v)) {
+								map = map.putAll((VncMap)v);
+							}
+							else {
+								throw new VncException(String.format(
+										"Invalid x %s while calling function 'conj'",
+										Types.getType(v)));
+							}
 						}
-						else if (Types.isVncMapEntry(second)) {
-							final VncMapEntry entry = (VncMapEntry)second;
-							return map.assoc(entry.getKey(), entry.getValue());
-						}
-						else if (Types.isVncMap(second)) {
-							return map.putAll((VncMap)second);
-						}
-						else {
-							throw new VncException(String.format(
-									"Invalid x %s while calling function 'conj'",
-									Types.getType(args.second())));
-						}
+						return map;
 					}
 					else {
 						throw new VncException(String.format(

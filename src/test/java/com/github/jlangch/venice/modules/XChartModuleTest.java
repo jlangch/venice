@@ -23,16 +23,14 @@ package com.github.jlangch.venice.modules;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
+@Disabled
 public class XChartModuleTest {
 
 	@Test
-	@Disabled
 	public void test_xy_chart() {
 		final Venice venice = new Venice();
 
@@ -63,7 +61,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_category_chart() {
 		final Venice venice = new Venice();
 
@@ -88,7 +85,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_category_chart_overlapping() {
 		final Venice venice = new Venice();
 
@@ -123,7 +119,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_pie_chart() {
 		final Venice venice = new Venice();
 
@@ -144,7 +139,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_bubble_chart() {
 		final Venice venice = new Venice();
 
@@ -184,7 +178,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_sticks_chart() {
 		final Venice venice = new Venice();
 
@@ -219,7 +212,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_misc_chart() {
 		final Venice venice = new Venice();
 
@@ -253,7 +245,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.modules.XChartModuleTest.isXChartAvailable()")
 	public void test_encoder() {
 		final Venice venice = new Venice();
 
@@ -273,7 +264,6 @@ public class XChartModuleTest {
 	}
 
 	@Test
-	@EnabledIf("com.github.jlangch.venice.modules.XChartModuleTest.isXChartAvailable()")
 	public void test_doto_cond() {
 		final Venice venice = new Venice();
 
@@ -296,8 +286,4 @@ public class XChartModuleTest {
 		System.out.println(venice.eval("(str " + script + ")"));
 	}
 
-	
-	public static boolean isXChartAvailable() {
-		return ReflectionUtil.isClassAvailable("org.knowm.xchart.XChartPanel");
-	}
 }

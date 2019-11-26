@@ -21,38 +21,23 @@
  */
 package com.github.jlangch.venice.examples;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.util.Benchmark;
 
 // Without precompilation
 public class Embed_05_PrecompiledShootout_1 {
-
+    
     public static void main(final String[] args) {
-        final int iterations = 10000;
-        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
+    	final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
-        
-        // warmup
-        for(int ii=0; ii<iterations; ii++) {
-            venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
-        }
-
-        final List<Long> raw = new ArrayList<>();
-        for(int ii=0; ii<iterations; ii++) {
-            final long start = System.nanoTime();
-            
-            venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
-            
-            raw.add(System.nanoTime() - start);
-        }
-        final List<Long> measures = TimeFormatter.stripOutlier(raw);
-        final long elapsed = TimeFormatter.sum(measures);
-        
-        System.out.println("Elapsed : " + TimeFormatter.formatNanos(elapsed));
-        System.out.println("Per call: " + TimeFormatter.formatNanos(elapsed / measures.size()));
+   	
+    	new Benchmark("No precompilation", 1000).benchmark(ii -> {
+    		final long start = System.nanoTime();
+    		venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
+    		return System.nanoTime() - start;
+    	});
     }
+
 }
