@@ -157,7 +157,7 @@ public class Embed_04_Precompile {
 
 ### Serialize/Deserialize Precompiled Scripts
 
-Precompiled scripts can be serialized and desirialized to store them on
+Precompiled scripts can be serialized and deserialized to store them on
 a database for example.
 
 ```java
