@@ -176,15 +176,16 @@
          median? (:median opts false)
          outlier? (:outlier opts false)
          steps (:steps opts 100)]
-     (printf "Warmup...\n")
-     `(dobench ~warmup-iterations ~expr)
-     (printf "GC...\n")
-     (dorun 2 (gc))
-     (printf "Sampling...\n")
-     `(let [samples# (dobench ~iterations ~expr)
-            stats# (bench/stats samples#)]
-        (printf "Analyzing...\n")
-        (bench/print-stats stats#)
-        (when ~chart?
-          (printf "Generating chart...\n")
-          (bench/chart stats# ~steps ~median? ~outlier?)))))
+     `(do
+        (printf "Warmup...\n")
+        (dobench ~warmup-iterations ~expr)
+        (printf "GC...\n")
+        (dorun 2 (gc))
+        (printf "Sampling...\n")
+        (let [samples# (dobench ~iterations ~expr)
+              stats# (bench/stats samples#)]
+          (printf "Analyzing...\n")
+          (bench/print-stats stats#)
+          (when ~chart?
+            (printf "Generating chart...\n")
+            (bench/chart stats# ~steps ~median? ~outlier?))))))
