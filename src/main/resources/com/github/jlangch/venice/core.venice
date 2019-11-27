@@ -161,7 +161,13 @@
           (condp some [1 2 3 4]
              #{0 6 7} :>> inc
              #{4 5 9} :>> dec
-             #{1 2 3} :>> #(+ % 3))
+             #{1 2 3} :>> #(* % 10))
+          """,
+          """
+          (condp some [-10 -20 0 10]
+            pos?  1
+            neg? -1
+            (constantly true)  0)
           """ ) }
 
   condp [pred expr & clauses]
@@ -939,8 +945,18 @@
 
 (defn
   ^{ :arglists '("(constantly x)")
-     :doc "Returns a function that takes any number of arguments and returns x."
-     :examples '("(do\n  (def fix (constantly 10))\n  (fix 1 2 3))") }
+     :doc """
+          Returns a function that takes any number of arguments and returns
+          always the value x.
+          """
+     :examples '(
+          """
+          (do
+            (def fix (constantly 10))
+            (fix 1 2 3)
+            (fix 1)
+            (fix ))
+          """) }
 
   constantly
 

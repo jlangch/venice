@@ -375,6 +375,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("empty-to-nil"));
 		generic.addItem(getDocItem("empty"));
 		generic.addItem(getDocItem("into"));
+		generic.addItem(getDocItem("cons"));
 		generic.addItem(getDocItem("conj"));
 		generic.addItem(getDocItem("remove"));
 		generic.addItem(getDocItem("repeat"));

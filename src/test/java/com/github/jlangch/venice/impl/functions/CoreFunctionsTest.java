@@ -371,18 +371,18 @@ public class CoreFunctionsTest {
 		assertEquals("[]", venice.eval("(str (conj))"));
 		assertEquals("1", venice.eval("(str (conj 1))"));
 		assertEquals("(1)", venice.eval("(str (conj nil 1))"));
-		assertEquals("(2 1)", venice.eval("(str (conj nil 1 2))"));
+		assertEquals("(1 2)", venice.eval("(str (conj nil 1 2))"));
 
 		// List
 		assertEquals("(1)", venice.eval("(str (conj '() 1))"));
-		assertEquals("(1 2)", venice.eval("(str (conj '(2) 1))"));
-		assertEquals("(1 2 3)", venice.eval("(str (conj '(2 3) 1))"));
-		assertEquals("(1 2)", venice.eval("(str (conj '() 2 1))"));
-		assertEquals("(1 2 3)", venice.eval("(str (conj '(3) 2 1))"));
-		assertEquals("(1 2 3 4)", venice.eval("(str (conj '(3 4) 2 1))"));
+		assertEquals("(1 2)", venice.eval("(str (conj '(1) 2))"));
+		assertEquals("(1 2 3)", venice.eval("(str (conj '(1 2) 3))"));
+		assertEquals("(1 2)", venice.eval("(str (conj '() 1 2))"));
+		assertEquals("(1 2 3)", venice.eval("(str (conj '(1) 2 3))"));
+		assertEquals("(1 2 3 4)", venice.eval("(str (conj '(1 2) 3 4))"));
 		assertEquals("((1 2))", venice.eval("(str (conj '() '(1 2)))"));
-		assertEquals("((1 2) (3 4))", venice.eval("(str (conj '((3 4)) '(1 2)))"));
-		assertEquals("(0 (1 2) (3 4) (5 6))", venice.eval("(str (conj '((5 6)) '(3 4) '(1 2) 0))"));
+		assertEquals("((1 2) (3 4))", venice.eval("(str (conj '((1 2)) '(3 4)))"));
+		assertEquals("(0 (1 2) (3 4) (5 6))", venice.eval("(str (conj '(0 (1 2)) '(3 4) '(5 6)))"));
 
 		// Vector
 		assertEquals("[1]", venice.eval("(str (conj [] 1))"));

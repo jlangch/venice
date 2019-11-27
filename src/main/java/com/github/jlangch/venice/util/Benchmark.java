@@ -32,12 +32,29 @@ import java.util.stream.Collectors;
  */
 public class Benchmark {
 
-	public Benchmark(final String title, final int iterations) {
-		this(title, iterations, 0);
+	public Benchmark(
+			final String title, 
+			final int iterations
+	) {
+		this(title, iterations, iterations, 0);
 	}
 
-	public Benchmark(final String title, final int iterations, final int microIterations) {
+	public Benchmark(
+			final String title, 
+			final int iterations, 
+			final int microIterations
+	) {
+		this(title, iterations, iterations, microIterations);
+	}
+
+	public Benchmark(
+			final String title, 
+			final int warmupIterations, 
+			final int iterations, 
+			final int microIterations
+	) {
 		this.title = title;
+		this.warmupIterations = warmupIterations;
 		this.iterations = iterations;
 		this.microIterations = microIterations;
 	}
@@ -45,23 +62,32 @@ public class Benchmark {
 	public void benchmark(final Function<Integer,Long> task) {
 		
         // warmup
-        for(int ii=0; ii<iterations; ii++) {
+        for(int ii=0; ii<warmupIterations; ii++) {
            task.apply(ii);
         }
 
         // benchmark
         final List<Long> raw = new ArrayList<>();       
         for(int ii=0; ii<iterations; ii++) {
-            final long elapsed = task.apply(ii);
-            
+            final long elapsed = task.apply(ii);         
             raw.add(elapsed);
         }
         
-        final List<Long> measures = stripOutlier(raw);
+        // print results
+        final List<Long> measures = stripOutliers(raw);
         final long elapsed = sum(measures);
         
-        System.out.println(title + " Elapsed : " + formatNanos(elapsed));
-        System.out.println(title + " Per call: " + formatNanos(elapsed / measures.size() / (microIterations > 2 ? microIterations : 1)));
+        System.out.println(String.format(
+				"%s Elapsed : %s",
+				title,
+				formatNanos(elapsed)));
+        
+        System.out.println(String.format(
+				"%s Per call: %s",
+				title,
+				formatNanos(elapsed 
+							/ measures.size() 
+							/ (microIterations > 2 ? microIterations : 1))));
 	}
 	
 	
@@ -84,7 +110,7 @@ public class Benchmark {
 		return measures.stream().mapToLong(p -> p).sum();
 	}
 	
-	private List<Long> stripOutlier(final List<Long> measures) {
+	private List<Long> stripOutliers(final List<Long> measures) {
 		// definition: the top 20% of the measures are outliers
 		return measures
 					.stream()
@@ -95,6 +121,7 @@ public class Benchmark {
 	
 	
 	private final String title;
+	private final int warmupIterations;
 	private final int iterations;
 	private final int microIterations;
 }

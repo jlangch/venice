@@ -5638,13 +5638,16 @@ public class CoreFunctions {
 						"(conj coll x)",
 						"(conj coll x & xs)")
 					.doc(
-						"Returns a new collection with the x, xs " +
-						"'added'. (conj nil item) returns (item).  The 'addition' may " +
-						"happen at different 'places' depending on the concrete type.")
+						"Returns a new collection with the x, xs 'added'. (conj nil item) " +
+						"returns (item). For list, vectors an ordered maps the values are " +
+						"added at the end. For all other sets and maps the position is undefined.")
 					.examples(
 						"(conj [1 2 3] 4)",
+						"(conj [1 2 3] 4 5)",
 						"(conj [1 2 3] [4 5])",
 						"(conj '(1 2 3) 4)",
+						"(conj '(1 2 3) 4 5)",
+						"(conj '(1 2 3) '(4 5))",
 						"(conj (set 1 2 3) 4)",
 						"(conj {:a 1 :b 2} [:c 3])",
 						"(conj {:a 1 :b 2} {:c 3})",
@@ -5670,7 +5673,7 @@ public class CoreFunctions {
 						return ((VncVector)coll).addAllAtEnd(args.rest());
 					}
 					else if (Types.isVncList(coll)) {
-						return ((VncList)coll).addAllAtStart(args.rest());
+						return ((VncList)coll).addAllAtEnd(args.rest());
 					}
 					else if (Types.isVncSet(coll)) {
 						return ((VncSet)coll).addAll(args.rest());

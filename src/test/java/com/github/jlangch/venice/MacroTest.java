@@ -243,6 +243,30 @@ public class MacroTest {
 				"   (pos-neg-or-zero 5)              " +
 				")                                   ";
 		
+		final String pos_order_1 = 
+				"(do                                 " +
+				"   (defn pos [n]                    " +
+				"         (cond                      " +
+				"   		 (< n 10) \"<10\"        " +
+				"            (< n 20) \"<20\"        " +
+				"            (< n 30) \"<30\"        " +
+				"            :else \"else\"))        " +
+				"                                    " +
+				"   (pr-str [(pos 5)(pos 15)(pos 25)(pos 35)])" +
+				")                                   ";
+		
+		final String pos_order_2 = 
+				"(do                                 " +
+				"   (defn pos [n]                    " +
+				"         (cond                      " +
+				"            (< n 30) \"<30\"        " +
+				"            (< n 20) \"<20\"        " +
+				"   		 (< n 10) \"<10\"        " +
+				"            :else \"else\"))        " +
+				"                                    " +
+				"   (pr-str [(pos 5)(pos 15)(pos 25)(pos 35)])" +
+				")                                   ";
+		
 		final String neg = 
 				"(do                                 " +
 				"   (defn pos-neg-or-zero [n]        " +
@@ -266,6 +290,8 @@ public class MacroTest {
 				")                                   ";
 
 		assertEquals("positive", venice.eval(pos));
+		assertEquals("[\"<10\" \"<20\" \"<30\" \"else\"]", venice.eval(pos_order_1));
+		assertEquals("[\"<30\" \"<30\" \"<30\" \"else\"]", venice.eval(pos_order_2));
 		assertEquals("negative", venice.eval(neg));
 		assertEquals("zero", venice.eval(zero));
 	}
@@ -275,12 +301,64 @@ public class MacroTest {
 		final Venice venice = new Venice();
 		
 		final String script = 
+				"(condp some [1 2 3]          " +
+				"    #{0 6 7} :>> inc         " +  // (some #{0 6 7} [1 2 3 4])
+				"    #{4 5 9} :>> dec         " +  // (some #{4 5 9} [1 2 3 4])
+				"    #{1 2 3} :>> #(* % 10 )) ";   // (some #{1 2 3} [1 2 3 4])
+		
+		final String script1 = 
+				"(condp some [10 2 1]         " +
+				"    #{0 6 7} :>> inc         " +
+				"    #{4 5 9} :>> dec         " +
+				"    #{1 2 3} :>> #(* % 10 )) " +
+				"    #{1 2 3} :>> #(* % 100)) ";
+		
+		final String script2 = 
+				"(condp some [10 2 1]         " +
+				"    #{0 6 7} :>> inc         " +
+				"    #{4 5 9} :>> dec         " +
+				"    #{1 2 3} :>> #(* % 100)) " +
+				"    #{1 2 3} :>> #(* % 10 )) ";
+		
+		final String script3 = 
+				"(condp some [1 2 3 6]        " +
+				"    #{0 6 7} :>> inc         " +
+				"    #{4 5 9} :>> dec         " +
+				"    #{1 2 3} :>> #(* % 10 )) ";
+		
+		final String script4 = 
 				"(condp some [1 2 3 4]        " +
 				"    #{0 6 7} :>> inc         " +
 				"    #{4 5 9} :>> dec         " +
-				"    #{1 2 3} :>> #(+ % 3))   ";
+				"    #{1 2 3} :>> #(* % 10 )) ";
+		
+		final String script5= 
+				"(condp some [-10 -20 0 10] " +
+				"    pos?  1                " +
+				"    neg? -1                " +
+				"    (constantly true)  0)  ";
+		
+		final String script6= 
+				"(condp some [0 -10 -20]    " +
+				"    pos?  1                " +
+				"    neg? -1                " +
+				"    (constantly true)  0)  ";
+		
+		final String script7= 
+				"(condp some [0 0 0]        " +
+				"    pos?   1               " +
+				"    neg?  -1               " +
+				"    (constantly true)  0)  ";
 
-		assertEquals(3L, venice.eval(script));
+		
+		assertEquals( 10L, venice.eval(script));
+		assertEquals( 20L, venice.eval(script1));
+		assertEquals(200L, venice.eval(script2));
+		assertEquals(  7L, venice.eval(script3));
+		assertEquals(  3L, venice.eval(script4));
+		assertEquals(  1L, venice.eval(script5));
+		assertEquals( -1L, venice.eval(script6));
+		assertEquals(  0L, venice.eval(script7));
 	}
 	
 	@Test
@@ -322,6 +400,15 @@ public class MacroTest {
 				"   30  :thirty)  ";
 
 		assertNull(venice.eval(script4));
+		
+		final String script5 = 
+				"(case 10         " +
+				"   10  :ten      " +
+				"   10  :ten-2    " +
+				"   20  :twenty   " +
+				"   30  :thirty)  ";
+
+		assertEquals(":ten", venice.eval("(str " + script5 + ")"));
 	}
 		
 	@Test
