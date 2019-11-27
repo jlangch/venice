@@ -358,7 +358,8 @@ public class SpecialForms {
 				.arglists("(dorun count expr)")		
 				.doc(
 					"Runs the expr count times in the most effective way. It's main purpose is " +
-					"supporting benchmark test.")
+					"supporting benchmark test. Returns the expression result of the first " +
+					"invocation.")
 				.examples("(dorun 10 (+ 1 1))")
 				.build()
 		) {
@@ -373,7 +374,7 @@ public class SpecialForms {
 				.arglists("(dobench count expr)")		
 				.doc(
 					"Runs the expr count times in the most effective way and returns a list of " +
-					"elapsed nano seconds for each invocation. It's main purpose is supporting " +
+					"elapsed nanoseconds for each invocation. It's main purpose is supporting " +
 					"benchmark test.")
 				.examples("(dobench 10 (+ 1 1))")
 				.build()

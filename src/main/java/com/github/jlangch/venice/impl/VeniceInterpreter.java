@@ -848,13 +848,13 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		
 		final long count = Coerce.toVncLong(ast.second()).getValue();
-		final VncList expr = VncList.of(ast.third());
+		final VncVal expr = ast.third();
 
 		try {
-			final VncVal first = ((VncList)eval_ast(expr, env)).first();
+			final VncVal first = evaluate(expr, env);
 			
 			for(int ii=1; ii<count; ii++) {
-				final VncVal result = eval_ast(expr, env);
+				final VncVal result = evaluate(expr, env);
 				
 				// store value to a mutable place to prevent JIT from optimizing too much
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
@@ -876,12 +876,14 @@ public class VeniceInterpreter implements Serializable  {
 		
 		try {
 			final long count = Coerce.toVncLong(ast.second()).getValue();
-			final VncList expr = VncList.of(ast.third());
+			final VncVal expr = ast.third();
 			
 			final List<VncVal> elapsed = new ArrayList<>();
 			for(int ii=0; ii<count; ii++) {
 				final long start = System.nanoTime();
-				final VncVal result = eval_ast(expr, env);
+				
+				final VncVal result = evaluate(expr, env);
+				
 				final long end = System.nanoTime();
 				elapsed.add(new VncLong(end-start));
 				
@@ -903,7 +905,7 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 		
-		final VncVal mutex = eval_ast(ast.second(), env);
+		final VncVal mutex = evaluate(ast.second(), env);
 
 		synchronized(mutex) {
 			return evaluateBody(ast.slice(2), env);

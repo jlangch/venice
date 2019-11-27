@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.CapturingPrintStream;
@@ -58,7 +60,36 @@ public class SpecialFormsTest {
 	public void test_dorun() {
 		final Venice venice = new Venice();
 		
+		assertEquals(3L, venice.eval("(dorun 4 3)"));
+		
 		assertEquals(3L, venice.eval("(dorun 4 (+ 1 2))"));
+		
+		assertEquals(3L, venice.eval("(dorun 4 (do (+ 1 20) (+ 1 2)))"));
+	}
+
+	@Test
+	public void test_dobench() {
+		final Venice venice = new Venice();
+		
+		assertEquals(4L, ((List<?>)venice.eval("(dobench 4 3)")).size());
+		
+		assertEquals(4L, ((List<?>)venice.eval("(dobench 4 (+ 1 2))")).size());
+		
+		assertEquals(4L, ((List<?>)venice.eval("(dobench 4 (do (+ 1 20) (+ 1 2)))")).size());
+	}
+
+	@Test
+	public void test_locking() {
+		final String script = 
+				"(do                           \n" +
+				"   (def mutex 1)              \n" +
+				"                              \n" +
+				"   (locking mutex (+ 1 2))    \n" +
+				") ";
+
+		final Venice venice = new Venice();
+		
+		assertEquals(3L, venice.eval(script));
 	}
 
 	@Test
