@@ -61,18 +61,21 @@ public class Embed_02_PassingParameters {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
+        // pass two long parameters
         // returns a long: 10
         System.out.println(
                 venice.eval(
                         "(+ x y 1)", 
                         Parameters.of("x", 6, "y", 3L)));
 
+        // pass a java.awt.Point
         // returns a string: "Point=(x: 100.0, y: 200.0)"
         System.out.println(
                 venice.eval(
                         "(str \"Point=(x: \" (:x point) \", y: \" (:y point) \")\")", 
                         Parameters.of("point", new Point(100, 200))));
 
+        // pass two long parameters
         // returns a java.awt.Point: [x=100,y=200]
         System.out.println(
                 venice.eval(
