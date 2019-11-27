@@ -366,13 +366,16 @@ public class StripedExecutorService extends AbstractExecutorService {
                     && !executors.isEmpty()) {
                 terminating.awaitNanos(remainingTime);
             }
-            if (remainingTime <= 0) return false;
+            if (remainingTime <= 0) {
+            	return false;
+            }
             if (executors.isEmpty()) {
                 return executor.awaitTermination(
                         remainingTime, TimeUnit.NANOSECONDS);
             }
             return false;
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }

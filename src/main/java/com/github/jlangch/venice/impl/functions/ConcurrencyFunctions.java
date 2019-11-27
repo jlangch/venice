@@ -164,7 +164,7 @@ public class ConcurrencyFunctions {
 							// cancel future
 							safelyCancelFuture(future);
 							throw new com.github.jlangch.venice.InterruptedException(
-									"Interrupted while waiting for future to terminate.");
+									"Interrupted while waiting for future to return result (deref future).");
 						}
 						catch(Exception ex) {
 							throw new VncException("Failed to deref future", ex);
@@ -1366,7 +1366,7 @@ public class ConcurrencyFunctions {
 						args.forEach(f -> safelyCancelFuture(Coerce.toVncJavaObject(f, Future.class)));
 						
 						throw new com.github.jlangch.venice.InterruptedException(
-								"Interrupted while waiting for futures to terminate.");
+								"Interrupted while waiting for futures to terminate (futures-wait & futures).");
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to wait for future", ex);

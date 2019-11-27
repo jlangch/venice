@@ -248,7 +248,7 @@ public class SystemFunctions {
 					Thread.sleep(Math.max(0, unit.toMillis(sleep)));
 				}
 				catch(InterruptedException ex) {
-					throw new com.github.jlangch.venice.InterruptedException("(sleep n) interrupted", ex);
+					throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (sleep n)", ex);
 				}
 
 				return Nil;

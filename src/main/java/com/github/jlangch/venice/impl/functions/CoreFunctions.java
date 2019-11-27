@@ -4871,9 +4871,20 @@ public class CoreFunctions {
 					"poll!",
 					VncFunction
 						.meta()
-						.arglists("(poll! queue)", "(poll! queue timeout)")
-						.doc("Polls an item from a queue with an optional timeout in milliseconds.")
-						.examples("(let [s (queue)]\n   (offer! s 4)\n   (offer! s 3)\n   (poll! s)\n   s)")
+						.arglists(
+							"(poll! queue)", 
+							"(poll! queue timeout)")
+						.doc(
+							"Polls an item from a queue with an optional timeout in milliseconds. " +
+							"If not no timeout is given returns the item if one is available else " +
+							"returns nil. With a timeout returns the item if one is available within" +
+							"the given timeout else returns nil.")
+						.examples(
+							"(let [s (queue)]     \n" +
+							"  (offer! s 4)       \n" +
+							"  (offer! s 3)       \n" +
+							"  (poll! s)          \n" +
+							"  s)")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {

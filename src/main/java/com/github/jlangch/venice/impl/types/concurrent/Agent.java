@@ -166,7 +166,7 @@ public class Agent implements IDeref {
 		}
 		catch(InterruptedException ex) {
 			throw new com.github.jlangch.venice.InterruptedException(
-					"Interrupted while waiting for agents.");
+					"Interrupted while waiting for agents (await agents).");
 		}
 		catch(Exception ex) {
 			throw new VncException("Failed awaiting for agents", ex);

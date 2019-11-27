@@ -91,7 +91,7 @@ public class VncQueue extends VncCollection {
 			return this;
 		}
 		catch(InterruptedException ex) {
-			throw new com.github.jlangch.venice.InterruptedException("(offer queue timeout val) interrupted", ex);
+			throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (offer queue timeout val)", ex);
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class VncQueue extends VncCollection {
 			return toNil(queue.poll(timeoutMillis, TimeUnit.MILLISECONDS));
 		}
 		catch(InterruptedException ex) {
-			throw new com.github.jlangch.venice.InterruptedException("(poll queue timeout) interrupted", ex);
+			throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (poll queue timeout)", ex);
 		}
 	}
 

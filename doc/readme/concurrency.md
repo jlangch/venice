@@ -325,7 +325,7 @@ Thread local vars get inherited by child threads
             (do (log "Philosopher " n " picked up forks")
                 (eat n)
                 (think n))
-            (sleep 5)))
+            (sleep retry-time)))
       (catch :RuntimeException ex
         (log "Philosopher " n " died! " (:message ex))))))
 

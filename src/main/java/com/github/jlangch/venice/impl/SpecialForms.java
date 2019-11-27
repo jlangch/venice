@@ -54,10 +54,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"()",
 				VncFunction
-				.meta()
-				.doc("Creates a list.")
-				.examples("'(10 20 30)")
-				.build()
+					.meta()
+					.doc("Creates a list.")
+					.examples("'(10 20 30)")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -66,10 +66,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"[]",
 				VncFunction
-				.meta()
-				.doc("Creates a vector.")
-				.examples("[10 20 30]")
-				.build()
+					.meta()
+					.doc("Creates a vector.")
+					.examples("[10 20 30]")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -78,10 +78,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"#{}",
 				VncFunction
-				.meta()
-				.doc("Creates a set.")
-				.examples("#{10 20 30}")
-				.build()
+					.meta()
+					.doc("Creates a set.")
+					.examples("#{10 20 30}")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -90,10 +90,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"{}",
 				VncFunction
-				.meta()
-				.doc("Creates a hash map.")
-				.examples("{:a 10 :b 20}")
-				.build()
+					.meta()
+					.doc("Creates a hash map.")
+					.examples("{:a 10 :b 20}")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -102,15 +102,15 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"resolve",
 				VncFunction
-				.meta()
-				.arglists("(resolve symbol)")		
-				.doc("Resolves a symbol.")
-				.examples(
-					"(resolve '+)", 
-					"(resolve 'y)", 
-					"(resolve (symbol \"+\"))",
-					"((-> \"first\" symbol resolve) [1 2 3])")
-				.build()
+					.meta()
+					.arglists("(resolve symbol)")		
+					.doc("Resolves a symbol.")
+					.examples(
+						"(resolve '+)", 
+						"(resolve 'y)", 
+						"(resolve (symbol \"+\"))",
+						"((-> \"first\" symbol resolve) [1 2 3])")
+					.build()
 		) {
 		   private static final long serialVersionUID = -1;
 		};
@@ -119,12 +119,12 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"var-get",
 				VncFunction
-				.meta()
-				.arglists("(var-get symbol)")		
-				.doc("Returns the var associated with the symbol")
-				.examples(
-					"(var-get +)")
-				.build()
+					.meta()
+					.arglists("(var-get symbol)")		
+					.doc("Returns the var associated with the symbol")
+					.examples(
+						"(var-get +)")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -133,37 +133,37 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"fn",
 				VncFunction
-				.meta()
-				.arglists("(fn name? [params*] condition-map? expr*)")		
-				.doc("Defines an anonymous function.")
-				.examples(
-					"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
-					
-					"(map (fn double [x] (* 2 x)) (range 1 5))",
-					
-					"(map #(* 2 %) (range 1 5))",
-					
-					"(map #(* 2 %1) (range 1 5))",
-					
-					";; anonymous function with two params, the second is destructured\n" + 
-					"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
-					
-					";; defining a pre-condition                 \n" + 
-					"(do                                         \n" +
-					"   (def square-root                         \n" +
-					"        (fn [x]                             \n" +
-					"            { :pre [(>= x 0)] }             \n" +
-					"            (. :java.lang.Math :sqrt x)))   \n" +
-					"   (square-root 4))                           ",
-					
-					";; higher-order function                                           \n" + 
-					"(do                                                                \n" +
-					"   (def discount                                                   \n" +
-					"        (fn [percentage]                                           \n" +
-					"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
-					"            (fn [price] (- price (* price percentage 0.01)))))     \n" +
-					"   ((discount 50) 300))                                              ")
-				.build()
+					.meta()
+					.arglists("(fn name? [params*] condition-map? expr*)")		
+					.doc("Defines an anonymous function.")
+					.examples(
+						"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
+						
+						"(map (fn double [x] (* 2 x)) (range 1 5))",
+						
+						"(map #(* 2 %) (range 1 5))",
+						
+						"(map #(* 2 %1) (range 1 5))",
+						
+						";; anonymous function with two params, the second is destructured\n" + 
+						"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
+						
+						";; defining a pre-condition                 \n" + 
+						"(do                                         \n" +
+						"   (def square-root                         \n" +
+						"        (fn [x]                             \n" +
+						"            { :pre [(>= x 0)] }             \n" +
+						"            (. :java.lang.Math :sqrt x)))   \n" +
+						"   (square-root 4))                           ",
+						
+						";; higher-order function                                           \n" + 
+						"(do                                                                \n" +
+						"   (def discount                                                   \n" +
+						"        (fn [percentage]                                           \n" +
+						"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
+						"            (fn [price] (- price (* price percentage 0.01)))))     \n" +
+						"   ((discount 50) 300))                                              ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -172,15 +172,15 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"eval",
 				VncFunction
-				.meta()
-				.arglists("(eval form)")	
-				.doc("Evaluates the form data structure (not text!) and returns the result.")
-				.examples(
-					"(eval '(let [a 10] (+ 3 4 a)))",
-					"(eval (list + 1 2 3))",
-				 	"(let [s \"(+ 2 x)\" x 10]     \n" +
-				 	"   (eval (read-string s))))     ")
-				.build()
+					.meta()
+					.arglists("(eval form)")	
+					.doc("Evaluates the form data structure (not text!) and returns the result.")
+					.examples(
+						"(eval '(let [a 10] (+ 3 4 a)))",
+						"(eval (list + 1 2 3))",
+					 	"(let [s \"(+ 2 x)\" x 10]     \n" +
+					 	"   (eval (read-string s))))     ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -189,13 +189,13 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"def",
 				VncFunction
-				.meta()
-				.arglists("(def name expr)")		
-				.doc("Creates a global variable.")
-				.examples(
-					 "(def x 5)",
-					 "(def sum (fn [x y] (+ x y)))")
-				.build()
+					.meta()
+					.arglists("(def name expr)")		
+					.doc("Creates a global variable.")
+					.examples(
+						 "(def x 5)",
+						 "(def sum (fn [x y] (+ x y)))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -204,11 +204,11 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"defonce",
 				VncFunction
-				.meta()
-				.arglists("(defonce name expr)")		
-				.doc("Creates a global variable that can not be overwritten")
-				.examples("(defonce x 5)")
-				.build()
+					.meta()
+					.arglists("(defonce name expr)")		
+					.doc("Creates a global variable that can not be overwritten")
+					.examples("(defonce x 5)")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -217,30 +217,30 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"set!",
 				VncFunction
-				.meta()
-				.arglists("(set! var-symbol expr)")		
-				.doc("Sets a global or thread-local variable to the value of the expression.")
-				.examples(
-					"(do                             \n" +
-					"  (def x 10)                    \n" +
-					"  (set! x 20)                   \n" +
-					"  x)                              ",
-					 
-					"(do                             \n" +
-					"   (def-dynamic x 100)          \n" +
-					"   (set! x 200)                 \n" +
-					"   x)                             ",
-					
-					"(do                             \n" +
-					"   (def-dynamic x 100)          \n" +
-					"   (with-out-str                \n" +
-					"      (print x)                 \n" +
-					"      (binding [x 200]          \n" +
-					"        (print (str \"-\" x))   \n" +
-					"        (set! x (inc x))        \n" +
-					"        (print (str \"-\" x)))  \n" +
-					"      (print (str \"-\" x))))     ")
-				.build()
+					.meta()
+					.arglists("(set! var-symbol expr)")		
+					.doc("Sets a global or thread-local variable to the value of the expression.")
+					.examples(
+						"(do                             \n" +
+						"  (def x 10)                    \n" +
+						"  (set! x 20)                   \n" +
+						"  x)                              ",
+						 
+						"(do                             \n" +
+						"   (def-dynamic x 100)          \n" +
+						"   (set! x 200)                 \n" +
+						"   x)                             ",
+						
+						"(do                             \n" +
+						"   (def-dynamic x 100)          \n" +
+						"   (with-out-str                \n" +
+						"      (print x)                 \n" +
+						"      (binding [x 200]          \n" +
+						"        (print (str \"-\" x))   \n" +
+						"        (set! x (inc x))        \n" +
+						"        (print (str \"-\" x)))  \n" +
+						"      (print (str \"-\" x))))     ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -249,36 +249,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"defmulti",
 				VncFunction
-				.meta()
-				.arglists("(defmulti name dispatch-fn)")		
-				.doc("Creates a new multimethod with the associated dispatch function.")
-				.examples(
-					"(do                                                                       \n" +
-					"   ;;defmulti with dispatch function                                      \n" +
-					"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
-					"                                                                          \n" +
-					"   ;;defmethod provides a function implementation for a particular value  \n" +
-					"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
-					"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
-					"   (defmethod salary :default  [amount] (:b amount))                      \n" +
-					"                                                                          \n" +
-					"   [(salary {:t \"com\" :b 1000})                                         \n" +
-					"    (salary {:t \"bon\" :b 1000})                                         \n" +
-					"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
-					")                                                                           ")
-				.build()
-		) {
-		    private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction defmethod = 
-		new SpecialFormsDocFunction(
-				"defmethod",
-				VncFunction
-				.meta()
-				.arglists("(defmethod multifn-name dispatch-val & fn-tail)")		
-				.doc("Creates a new method for a multimethod associated with a dispatch-value.")
-				.examples(
+					.meta()
+					.arglists("(defmulti name dispatch-fn)")		
+					.doc("Creates a new multimethod with the associated dispatch function.")
+					.examples(
 						"(do                                                                       \n" +
 						"   ;;defmulti with dispatch function                                      \n" +
 						"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
@@ -292,7 +266,33 @@ public class SpecialForms {
 						"    (salary {:t \"bon\" :b 1000})                                         \n" +
 						"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
 						")                                                                           ")
-				.build()
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction defmethod = 
+		new SpecialFormsDocFunction(
+				"defmethod",
+				VncFunction
+					.meta()
+					.arglists("(defmethod multifn-name dispatch-val & fn-tail)")		
+					.doc("Creates a new method for a multimethod associated with a dispatch-value.")
+					.examples(
+							"(do                                                                       \n" +
+							"   ;;defmulti with dispatch function                                      \n" +
+							"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
+							"                                                                          \n" +
+							"   ;;defmethod provides a function implementation for a particular value  \n" +
+							"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+							"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
+							"   (defmethod salary :default  [amount] (:b amount))                      \n" +
+							"                                                                          \n" +
+							"   [(salary {:t \"com\" :b 1000})                                         \n" +
+							"    (salary {:t \"bon\" :b 1000})                                         \n" +
+							"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
+							")                                                                           ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -301,19 +301,19 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"def-dynamic",
 				VncFunction
-				.meta()
-				.arglists("(def-dynamic name expr)")		
-				.doc(
-					"Creates a dynamic variable that starts off as a global variable " +
-					"and can be bound with 'binding' to a new value on the local thread.")
-				.examples(
-					"(do                      \n" +
-					"   (def-dynamic x 100)   \n" +
-					"   (println x)           \n" +
-					"   (binding [x 200]      \n" +
-					"      (println x))       \n" +
-					"   (println x)))           ")
-				.build()
+					.meta()
+					.arglists("(def-dynamic name expr)")		
+					.doc(
+						"Creates a dynamic variable that starts off as a global variable " +
+						"and can be bound with 'binding' to a new value on the local thread.")
+					.examples(
+						"(do                      \n" +
+						"   (def-dynamic x 100)   \n" +
+						"   (println x)           \n" +
+						"   (binding [x 200]      \n" +
+						"      (println x))       \n" +
+						"   (println x)))           ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -322,17 +322,17 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"binding",
 				VncFunction
-				.meta()
-				.arglists("(binding [bindings*] exprs*)")		
-				.doc("Evaluates the expressions and binds the values to dynamic (thread-local) symbols")
-				.examples(
-					"(do                      \n" +
-					"   (binding [x 100]      \n" +
-					"      (println x)        \n" +
-					"      (binding [x 200]   \n" +
-					"         (println x))    \n" +
-					"      (println x)))        ")
-				.build()
+					.meta()
+					.arglists("(binding [bindings*] exprs*)")		
+					.doc("Evaluates the expressions and binds the values to dynamic (thread-local) symbols")
+					.examples(
+						"(do                      \n" +
+						"   (binding [x 100]      \n" +
+						"      (println x)        \n" +
+						"      (binding [x 200]   \n" +
+						"         (println x))    \n" +
+						"      (println x)))        ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -341,11 +341,11 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"do",
 				VncFunction
-				.meta()
-				.arglists("(do exprs)")		
-				.doc("Evaluates the expressions in order and returns the value of the last.")
-				.examples("(do (println \"Test...\") (+ 1 1))")
-				.build()
+					.meta()
+					.arglists("(do exprs)")		
+					.doc("Evaluates the expressions in order and returns the value of the last.")
+					.examples("(do (println \"Test...\") (+ 1 1))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -354,14 +354,14 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"dorun",
 				VncFunction
-				.meta()
-				.arglists("(dorun count expr)")		
-				.doc(
-					"Runs the expr count times in the most effective way. It's main purpose is " +
-					"supporting benchmark test. Returns the expression result of the first " +
-					"invocation.")
-				.examples("(dorun 10 (+ 1 1))")
-				.build()
+					.meta()
+					.arglists("(dorun count expr)")		
+					.doc(
+						"Runs the expr count times in the most effective way. It's main purpose is " +
+						"supporting benchmark test. Returns the expression result of the first " +
+						"invocation.")
+					.examples("(dorun 10 (+ 1 1))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -370,14 +370,14 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"dobench",
 				VncFunction
-				.meta()
-				.arglists("(dobench count expr)")		
-				.doc(
-					"Runs the expr count times in the most effective way and returns a list of " +
-					"elapsed nanoseconds for each invocation. It's main purpose is supporting " +
-					"benchmark test.")
-				.examples("(dobench 10 (+ 1 1))")
-				.build()
+					.meta()
+					.arglists("(dobench count expr)")		
+					.doc(
+						"Runs the expr count times in the most effective way and returns a list of " +
+						"elapsed nanoseconds for each invocation. It's main purpose is supporting " +
+						"benchmark test.")
+					.examples("(dobench 10 (+ 1 1))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -386,22 +386,22 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"prof",
 				VncFunction
-				.meta()
-				.arglists("(prof opts)")		
-				.doc(
-					"Controls the code profiling. See the companion functions/macros 'dorun' and 'perf'. " +
-					"The perf macro is built on prof and dorun and provides all to do simple Venice profiling.")
-				.examples(
-					"(do  \n" +
-					"  (prof :on)   ; turn profiler on  \n" +
-					"  (prof :off)   ; turn profiler off  \n" +
-					"  (prof :status)   ; returns the profiler on/off staus  \n" +
-					"  (prof :clear)   ; clear profiler data captured so far  \n" +
-					"  (prof :data)   ; returns the profiler data as map  \n" +
-					"  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
-					"  (prof :data-formatted \"Metrics test\")   ; returns the profiler data as formatted text with a title  \n" +
-					"  nil)  ")
-				.build()
+					.meta()
+					.arglists("(prof opts)")		
+					.doc(
+						"Controls the code profiling. See the companion functions/macros 'dorun' and 'perf'. " +
+						"The perf macro is built on prof and dorun and provides all to do simple Venice profiling.")
+					.examples(
+						"(do  \n" +
+						"  (prof :on)   ; turn profiler on  \n" +
+						"  (prof :off)   ; turn profiler off  \n" +
+						"  (prof :status)   ; returns the profiler on/off staus  \n" +
+						"  (prof :clear)   ; clear profiler data captured so far  \n" +
+						"  (prof :data)   ; returns the profiler data as map  \n" +
+						"  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
+						"  (prof :data-formatted \"Metrics test\")   ; returns the profiler data as formatted text with a title  \n" +
+						"  nil)  ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -410,11 +410,11 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"if",
 				VncFunction
-				.meta()
-				.arglists("(if test true-expr false-expr)")		
-				.doc("Evaluates test.")
-				.examples("(if (< 10 20) \"yes\" \"no\")")
-				.build()
+					.meta()
+					.arglists("(if test true-expr false-expr)")		
+					.doc("Evaluates test.")
+					.examples("(if (< 10 20) \"yes\" \"no\")")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -423,22 +423,24 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"let",
 				VncFunction
-				.meta()
-				.arglists("(let [bindings*] exprs*)")		
-				.doc("Evaluates the expressions and binds the values to symbols to new local context")
-				.examples(
-					"(let [x 1] x))",
-					
-					";; destructured map                     \n" +
-					"(let [{:keys [width height title ]      \n" +
-					"       :or {width 640 height 500}       \n" +
-					"       :as styles}                      \n" +
-					"      {:width 1000 :title \"Title\"}]   \n" +
-					"     (println \"width: \" width)        \n" +
-					"     (println \"height: \" height)      \n" +
-					"     (println \"title: \" title)        \n" +
-					"     (println \"styles: \" styles))       ")
-				.build()
+					.meta()
+					.arglists("(let [bindings*] exprs*)")		
+					.doc(
+						"Evaluates the expressions and binds the values to symbols in " +
+						"the new local context.")
+					.examples(
+						"(let [x 1] x))",
+						
+						";; destructured map                     \n" +
+						"(let [{:keys [width height title ]      \n" +
+						"       :or {width 640 height 500}       \n" +
+						"       :as styles}                      \n" +
+						"      {:width 1000 :title \"Title\"}]   \n" +
+						"     (println \"width: \" width)        \n" +
+						"     (println \"height: \" height)      \n" +
+						"     (println \"title: \" title)        \n" +
+						"     (println \"styles: \" styles))       ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -447,27 +449,27 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"loop",
 				VncFunction
-				.meta()
-				.arglists("(loop [bindings*] exprs*)")		
-				.doc(
-					"Evaluates the exprs and binds the bindings. " + 
-					"Creates a recursion point with the bindings.")
-				.examples(
-					";; tail recursion                                   \n" +
-					"(loop [x 10]                                        \n" +
-					"   (when (> x 1)                                    \n" +
-					"      (println x)                                   \n" +
-					"      (recur (- x 2))))                               ",
-			
-					";; tail recursion                                   \n" +
-					"(do                                                 \n" +
-					"   (defn sum [n]                                    \n" +
-					"         (loop [cnt n acc 0]                        \n" +
-					"            (if (zero? cnt)                         \n" +
-					"                acc                                 \n" +
-					"                (recur (dec cnt) (+ acc cnt)))))    \n" +
-					"   (sum 10000))                                       ")
-				.build()
+					.meta()
+					.arglists("(loop [bindings*] exprs*)")		
+					.doc(
+						"Evaluates the exprs and binds the bindings. " + 
+						"Creates a recursion point with the bindings.")
+					.examples(
+						";; tail recursion                                   \n" +
+						"(loop [x 10]                                        \n" +
+						"   (when (> x 1)                                    \n" +
+						"      (println x)                                   \n" +
+						"      (recur (- x 2))))                               ",
+				
+						";; tail recursion                                   \n" +
+						"(do                                                 \n" +
+						"   (defn sum [n]                                    \n" +
+						"         (loop [cnt n acc 0]                        \n" +
+						"            (if (zero? cnt)                         \n" +
+						"                acc                                 \n" +
+						"                (recur (dec cnt) (+ acc cnt)))))    \n" +
+						"   (sum 10000))                                       ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -476,29 +478,29 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"recur",
 				VncFunction
-				.meta()
-				.arglists("(recur expr*)")		
-				.doc(
-					"Evaluates the exprs and rebinds the bindings of the recursion " + 
-					"point to the values of the exprs. The recur expression must be " +
-					"at the tail position. The tail position is a postion which an " +
-					"expression would return a value from.")
-				.examples(
-					";; tail recursion                                   \n" +
-					"(loop [x 10]                                        \n" +
-					"   (when (> x 1)                                    \n" +
-					"      (println x)                                   \n" +
-					"      (recur (- x 2))))                               ",
-			
-					";; tail recursion                                   \n" +
-					"(do                                                 \n" +
-					"   (defn sum [n]                                    \n" +
-					"         (loop [cnt n acc 0]                        \n" +
-					"            (if (zero? cnt)                         \n" +
-					"                acc                                 \n" +
-					"                (recur (dec cnt) (+ acc cnt)))))    \n" +
-					"   (sum 10000))                                       ")
-				.build()
+					.meta()
+					.arglists("(recur expr*)")		
+					.doc(
+						"Evaluates the exprs and rebinds the bindings of the recursion " + 
+						"point to the values of the exprs. The recur expression must be " +
+						"at the tail position. The tail position is a postion which an " +
+						"expression would return a value from.")
+					.examples(
+						";; tail recursion                                   \n" +
+						"(loop [x 10]                                        \n" +
+						"   (when (> x 1)                                    \n" +
+						"      (println x)                                   \n" +
+						"      (recur (- x 2))))                               ",
+				
+						";; tail recursion                                   \n" +
+						"(do                                                 \n" +
+						"   (defn sum [n]                                    \n" +
+						"         (loop [cnt n acc 0]                        \n" +
+						"            (if (zero? cnt)                         \n" +
+						"                acc                                 \n" +
+						"                (recur (dec cnt) (+ acc cnt)))))    \n" +
+						"   (sum 10000))                                       ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -507,44 +509,44 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"try",
 				VncFunction
-				.meta()
-				.arglists(
-					"(try expr)",
-					"(try expr (catch exClass exSym expr))",
-					"(try expr (catch exClass exSym expr) (finally expr))")		
-				.doc("Exception handling: try - catch -finally ")
-				.examples(
-					"(try (throw))",
-					
-					"(try                                      \n" +
-					"   (throw \"test message\"))                ",
-					
-					"(try                                       \n" +
-					"   (throw 100)                             \n" +
-					"   (catch :java.lang.Exception ex -100))    ",
-					
-					"(try                                       \n" +
-					"   (throw 100)                             \n" +
-					"   (finally (println \"...finally\")))       ",
-					
-					"(try                                       \n" +
-					"   (throw 100)                             \n" +
-					"   (catch :java.lang.Exception ex -100)    \n" +
-					"   (finally (println \"...finally\")))       ",
-					
-					"(do                                                  \n" +
-					"   (import :java.lang.RuntimeException)              \n" +
-					"   (try                                              \n" +
-					"      (throw (. :RuntimeException :new \"message\")) \n" +
-					"      (catch :RuntimeException ex (:message ex))))   \n",
-					
-					"(do                                                   \n" +
-					"   (try                                               \n" +
-					"      (throw [1 2 3])                                 \n" +
-					"      (catch :ValueException ex (str (:value ex)))    \n" +
-					"      (catch :RuntimeException ex \"runtime ex\")     \n" +
-					"      (finally (println \"...finally\"))))             ")
-				.build()
+					.meta()
+					.arglists(
+						"(try expr)",
+						"(try expr (catch exClass exSym expr))",
+						"(try expr (catch exClass exSym expr) (finally expr))")		
+					.doc("Exception handling: try - catch -finally ")
+					.examples(
+						"(try (throw))",
+						
+						"(try                                      \n" +
+						"   (throw \"test message\"))                ",
+						
+						"(try                                       \n" +
+						"   (throw 100)                             \n" +
+						"   (catch :java.lang.Exception ex -100))    ",
+						
+						"(try                                       \n" +
+						"   (throw 100)                             \n" +
+						"   (finally (println \"...finally\")))       ",
+						
+						"(try                                       \n" +
+						"   (throw 100)                             \n" +
+						"   (catch :java.lang.Exception ex -100)    \n" +
+						"   (finally (println \"...finally\")))       ",
+						
+						"(do                                                  \n" +
+						"   (import :java.lang.RuntimeException)              \n" +
+						"   (try                                              \n" +
+						"      (throw (. :RuntimeException :new \"message\")) \n" +
+						"      (catch :RuntimeException ex (:message ex))))   \n",
+						
+						"(do                                                   \n" +
+						"   (try                                               \n" +
+						"      (throw [1 2 3])                                 \n" +
+						"      (catch :ValueException ex (str (:value ex)))    \n" +
+						"      (catch :RuntimeException ex \"runtime ex\")     \n" +
+						"      (finally (println \"...finally\"))))             ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -553,22 +555,22 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"try-with",
 				VncFunction
-				.meta()
-				.arglists(
-					"(try-with [bindings*] expr)",
-					"(try-with [bindings*] expr (catch :java.lang.Exception ex expr))",
-					"(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))")		
-				.doc("try-with resources allows the declaration of resources to be used in a try block "
-						+ "with the assurance that the resources will be closed after execution "
-						+ "of that block. The resources declared must implement the Closeable or ")
-				.examples(
-					"(do                                                   \n" +
-					"   (import :java.io.FileInputStream)                  \n" +
-					"   (let [file (io/temp-file \"test-\", \".txt\")]     \n" +
-					"        (io/spit file \"123456789\" :append true)     \n" +
-					"        (try-with [is (. :FileInputStream :new file)] \n" +
-					"           (io/slurp-stream is :binary false))))        ")
-				.build()
+					.meta()
+					.arglists(
+						"(try-with [bindings*] expr)",
+						"(try-with [bindings*] expr (catch :java.lang.Exception ex expr))",
+						"(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))")		
+					.doc("try-with resources allows the declaration of resources to be used in a try block "
+							+ "with the assurance that the resources will be closed after execution "
+							+ "of that block. The resources declared must implement the Closeable or ")
+					.examples(
+						"(do                                                   \n" +
+						"   (import :java.io.FileInputStream)                  \n" +
+						"   (let [file (io/temp-file \"test-\", \".txt\")]     \n" +
+						"        (io/spit file \"123456789\" :append true)     \n" +
+						"        (try-with [is (. :FileInputStream :new file)] \n" +
+						"           (io/slurp-stream is :binary false))))        ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -578,26 +580,26 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"locking",
 				VncFunction
-				.meta()
-				.arglists("(locking x & exprs)")		
-				.doc(
-					"Executes exprs in an implicit do, while holding the monitor of x. \n" + 
-					"Will release the monitor of x in all circumstances. \n" +
-					"Locking operates like the synchronized keyword in Java.")
-				.examples(
-					"(do                        \n" +
-					"   (def x 1)               \n" +
-					"   (locking x              \n" +
-					"      (println 100)        \n" +
-					"      (println 200)))        ",
-					";; Locks are reentrant     \n" +
-					"(do                        \n" +
-					"   (def x 1)               \n" +
-					"   (locking x              \n" +
-					"      (locking x           \n" +
-					"         (println \"in\")) \n" +
-					"      (println \"out\")))    ")
-				.build()
+					.meta()
+					.arglists("(locking x & exprs)")		
+					.doc(
+						"Executes exprs in an implicit do, while holding the monitor of x. \n" + 
+						"Will release the monitor of x in all circumstances. \n" +
+						"Locking operates like the synchronized keyword in Java.")
+					.examples(
+						"(do                        \n" +
+						"   (def x 1)               \n" +
+						"   (locking x              \n" +
+						"      (println 100)        \n" +
+						"      (println 200)))        ",
+						";; Locks are reentrant     \n" +
+						"(do                        \n" +
+						"   (def x 1)               \n" +
+						"   (locking x              \n" +
+						"      (locking x           \n" +
+						"         (println \"in\")) \n" +
+						"      (println \"out\")))    ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -606,13 +608,13 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"defmacro",
 				VncFunction
-				.meta()
-				.arglists("(defmacro name [params*] body)")		
-				.doc("Macro definition")
-				.examples(
-					"(defmacro unless [pred a b]   \n" + 
-					"  `(if (not ~pred) ~a ~b))      ")
-				.build()
+					.meta()
+					.arglists("(defmacro name [params*] body)")		
+					.doc("Macro definition")
+					.examples(
+						"(defmacro unless [pred a b]   \n" + 
+						"  `(if (not ~pred) ~a ~b))      ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -621,14 +623,14 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"macroexpand",
 				VncFunction
-				.meta()
-				.arglists("(macroexpand form)")		
-				.doc(
-					"If form represents a macro form, returns its expansion, else " + 
-					"returns form.\n\n" +
-					"To recursively expand all macros in a form use (walk/macroexpand-all form).")
-				.examples("(macroexpand '(-> c (+ 3) (* 2)))")
-				.build()
+					.meta()
+					.arglists("(macroexpand form)")		
+					.doc(
+						"If form represents a macro form, returns its expansion, else " + 
+						"returns form.\n\n" +
+						"To recursively expand all macros in a form use (walk/macroexpand-all form).")
+					.examples("(macroexpand '(-> c (+ 3) (* 2)))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -637,20 +639,20 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"import",
 				VncFunction
-				.meta()
-				.arglists("(import class)")		
-				.doc(
-					"Imports a Java class. \n\n" +
-					"Default imports: \n" +
-					"  java.lang.Throwable \n" +
-					"  java.lang.Exception \n" +
-					"  java.lang.RuntimeException \n" +
-					"  java.lang.NullPointerException \n" +
-					"  java.lang.IllegalArgumentException \n" +
-					"  com.github.jlangch.venice.VncException \n" +
-					"  com.github.jlangch.venice.ValueException")
-				.examples("(do\n   (import :java.lang.Long)\n   (. :Long :new 10))")
-				.build()
+					.meta()
+					.arglists("(import class)")		
+					.doc(
+						"Imports a Java class. \n\n" +
+						"Default imports: \n" +
+						"  java.lang.Throwable \n" +
+						"  java.lang.Exception \n" +
+						"  java.lang.RuntimeException \n" +
+						"  java.lang.NullPointerException \n" +
+						"  java.lang.IllegalArgumentException \n" +
+						"  com.github.jlangch.venice.VncException \n" +
+						"  com.github.jlangch.venice.ValueException")
+					.examples("(do\n   (import :java.lang.Long)\n   (. :Long :new 10))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -659,11 +661,11 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"imports",
 				VncFunction
-				.meta()
-				.arglists("(imports)")		
-				.doc("List the registered imports")
-				.examples("(do\n   (import :java.lang.Long)\n   (imports))")
-				.build()
+					.meta()
+					.arglists("(imports)")		
+					.doc("List the registered imports")
+					.examples("(do\n   (import :java.lang.Long)\n   (imports))")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -672,16 +674,16 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"ns-unmap",
 				VncFunction
-				.meta()
-				.arglists("(ns-unmap ns sym)")		
-				.doc("Removes the mappings for the symbol from the namespace.")
-				.examples(
-					"(do                    \n" + 
-					"  (ns xxx)             \n" + 
-					"  (def foo 1)          \n" + 
-					"  (ns-unmap xxx foo)   \n" + 
-					"  (ns-unmap *ns* foo))   ")
-				.build()
+					.meta()
+					.arglists("(ns-unmap ns sym)")		
+					.doc("Removes the mappings for the symbol from the namespace.")
+					.examples(
+						"(do                    \n" + 
+						"  (ns xxx)             \n" + 
+						"  (def foo 1)          \n" + 
+						"  (ns-unmap xxx foo)   \n" + 
+						"  (ns-unmap *ns* foo))   ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -690,17 +692,17 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"ns-remove",
 				VncFunction
-				.meta()
-				.arglists("(ns-remove ns)")		
-				.doc("Removes the mappings for all symbols from the namespace.")
-				.examples(
-					"(do                     \n" + 
-					"  (ns xxx)              \n" + 
-					"  (def foo 1)           \n" + 
-					"  (def goo 1)           \n" + 
-					"  (ns-remove xxx foo)   \n" + 
-					"  (ns-remove *ns* foo))   ")
-				.build()
+					.meta()
+					.arglists("(ns-remove ns)")		
+					.doc("Removes the mappings for all symbols from the namespace.")
+					.examples(
+						"(do                     \n" + 
+						"  (ns xxx)              \n" + 
+						"  (def foo 1)           \n" + 
+						"  (def goo 1)           \n" + 
+						"  (ns-remove xxx foo)   \n" + 
+						"  (ns-remove *ns* foo))   ")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -709,10 +711,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"*version*",
 				VncFunction
-				.meta()
-				.doc("The Venice version")
-				.examples("*version*")
-				.build()
+					.meta()
+					.doc("The Venice version")
+					.examples("*version*")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -721,10 +723,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"*newline*",
 				VncFunction
-				.meta()
-				.doc("The system newline")
-				.examples("*newline*")
-				.build()
+					.meta()
+					.doc("The system newline")
+					.examples("*newline*")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -733,10 +735,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"*loaded-modules*",
 				VncFunction
-				.meta()
-				.doc("The loaded modules")
-				.examples("*loaded-modules*")
-				.build()
+					.meta()
+					.doc("The loaded modules")
+					.examples("*loaded-modules*")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -745,10 +747,10 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"*loaded-files*",
 				VncFunction
-				.meta()
-				.doc("The loaded files")
-				.examples("*loaded-files*")
-				.build()
+					.meta()
+					.doc("The loaded files")
+					.examples("*loaded-files*")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};
@@ -757,12 +759,12 @@ public class SpecialForms {
 		new SpecialFormsDocFunction(
 				"*ns*",
 				VncFunction
-				.meta()
-				.doc("The current namespace")
-				.examples(
-					"*ns*", 
-					"(do\n  (ns test)\n  *ns*)")
-				.build()
+					.meta()
+					.doc("The current namespace")
+					.examples(
+						"*ns*", 
+						"(do\n  (ns test)\n  *ns*)")
+					.build()
 		) {
 		    private static final long serialVersionUID = -1;
 		};

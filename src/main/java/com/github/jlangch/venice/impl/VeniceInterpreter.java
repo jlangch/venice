@@ -1309,7 +1309,8 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private void checkInterrupted() {
 		if (Thread.currentThread().isInterrupted()) {
-			throw new com.github.jlangch.venice.InterruptedException("interrupted");
+			throw new com.github.jlangch.venice.InterruptedException(
+					"interrupted while processing expressions");
 		}
 	}
 	
