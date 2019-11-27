@@ -81,7 +81,7 @@ Recursively transforms all map keys from strings to keywords.
       ;; only apply to maps
       (walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
 
-  (walk/keywordize-keys '(1 2 {"a" 1 "b" 2})))
+  (keywordize-keys '(1 2 {"a" 1 "b" 2})))
 ```
 
 
@@ -114,9 +114,9 @@ their values. Does replacement at the root of the tree first.
   (defn prewalk-replace [key-map form]
      (walk/prewalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
-  (walk/prewalk-replace {:a :A :b :B} '(1 2 :a :b))
+  (prewalk-replace {:a :A :b :B} '(1 2 :a :b))
 
-  (walk/prewalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2})))
+  (prewalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2})))
 ```
 
 
@@ -132,7 +132,7 @@ their values. Does replacement at the leaves of the tree first.
   (defn postwalk-replace [key-map form]
      (walk/postwalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
-  (walk/postwalk-replace {:a :A :b :B} '(1 2 :a :b))
+  (postwalk-replace {:a :A :b :B} '(1 2 :a :b))
 
-  (walk/postwalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2})))
+  (postwalk-replace {:a :A :b :B} '(1 2 {:a 1 :b 2})))
 ```
