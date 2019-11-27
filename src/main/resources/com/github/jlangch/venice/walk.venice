@@ -137,7 +137,7 @@
   ^{ :arglists '("(prewalk-replace key-map form)")
      :doc """
           Recursively transforms form by replacing keys in key-map with
-          thei values. Does replacement at the root of the tree first.
+          their values. Does replacement at the root of the tree first.
           """
      :examples (list
           "(walk/prewalk-replace {:a :A :b :B} '(1 2 :a :b))",
