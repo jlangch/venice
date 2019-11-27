@@ -603,13 +603,15 @@ public class VeniceInterpreter implements Serializable  {
 					final VncList elArgs = el.rest();
 					if (Types.isVncFunction(elFirst)) {
 						final VncFunction fn = (VncFunction)elFirst;
+						
+						final String fnName = fn.getQualifiedName();
 
 						final long nanos = System.nanoTime();
 						
 						// validate function call allowed by sandbox
-						interceptor.validateVeniceFunction(fn.getQualifiedName());	
+						interceptor.validateVeniceFunction(fnName);	
 	
-						checkInterrupted();
+						checkInterrupted("interrupted while about processing function " + fnName);
 						sandboxMaxExecutionTimeChecker.check();
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
@@ -618,12 +620,11 @@ public class VeniceInterpreter implements Serializable  {
 						final CallFrame callFrame = CallFrame.fromFunction(fn, a0);
 						try {
 							callStack.push(callFrame);
-							
 							return fn.apply(elArgs);
 						}
 						finally {
 							callStack.pop();
-							checkInterrupted();
+							checkInterrupted("interrupted after processing function " + fnName);
 							sandboxMaxExecutionTimeChecker.check();
 							
 							if (meterRegistry.enabled) {
@@ -855,7 +856,9 @@ public class VeniceInterpreter implements Serializable  {
 			
 			for(int ii=1; ii<count; ii++) {
 				final VncVal result = evaluate(expr, env);
-				
+
+				checkInterrupted("interrupted while in (dorun ...)");
+
 				// store value to a mutable place to prevent JIT from optimizing too much
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
 			}
@@ -886,7 +889,9 @@ public class VeniceInterpreter implements Serializable  {
 				
 				final long end = System.nanoTime();
 				elapsed.add(new VncLong(end-start));
-				
+
+				checkInterrupted("interrupted while in (dobench ...)");
+
 				// store value to a mutable place to prevent JIT from optimizing too much
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
 			}
@@ -1307,10 +1312,9 @@ public class VeniceInterpreter implements Serializable  {
 					.resolveClassName(className);
 	}
 	
-	private void checkInterrupted() {
+	private void checkInterrupted(final String message) {
 		if (Thread.currentThread().isInterrupted()) {
-			throw new com.github.jlangch.venice.InterruptedException(
-					"interrupted while processing expressions");
+			throw new com.github.jlangch.venice.InterruptedException(message);
 		}
 	}
 	
