@@ -270,6 +270,10 @@ public class Embed_07_PrecompiledShootout_3 {
 
 ## Sandbox
 
+If the expressions or rules come from an untrusted source a sandbox should be set in
+place to prevent malicous actions.
+
+
 ### Strict Sandbox
 
 Disables all Java calls and all Venice IO functions
