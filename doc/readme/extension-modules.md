@@ -17,3 +17,4 @@ explicitly.
 * [Jackson JSON](ext-jackson.md)
 * [Cryptographic Functions](ext-crypt.md)
 * [Semantic Versioning](ext-semver.md)
+* [Walk](ext-walk.md)
