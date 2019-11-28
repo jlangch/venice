@@ -70,21 +70,21 @@ final IInterceptor interceptor =
                 "java.awt.**:*", 
                 "java.util.ArrayList:new",
                 "java.util.ArrayList:add")
-              
+
               // Venice functions: blacklist rules
               .rejectAllVeniceIoFunctions()
               .rejectVeniceFunctions(
-              	"time/date",
-              	"time/zone-ids")
-              
+                "time/date",
+                "time/zone-ids")
+
               // Venice extension modules: blacklist rules
               .rejectVeniceModules(
-              	"shell", 
-              	"tomcat", 
-              	"tomcat-util")
-              
+                "shell", 
+                "tomcat", 
+                "tomcat-util")
+
               // Generic rules	
-              .withMaxFutureThreadPoolSize(20)              
+              .withMaxFutureThreadPoolSize(20)
               .withMaxExecTimeSeconds(5));
 
 final Venice venice = new Venice(interceptor);
