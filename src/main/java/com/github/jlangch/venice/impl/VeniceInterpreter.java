@@ -418,7 +418,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "var-get": { // (var-get sym)
-					final VncSymbol sym = Coerce.toVncSymbol(ast.second());
+					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.getOrNil(sym);
 				}
 	
@@ -478,6 +478,11 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "binding":  // (binding [bindings*] exprs*)
 					return binding_(ast, new Env(env));
+					
+				case "bound?": { // (bound? sym)
+					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return env.isBound(sym) ? True : False;
+				}
 					
 				case "loop": { // (loop [bindings*] exprs*)
 					env = new Env(env);					

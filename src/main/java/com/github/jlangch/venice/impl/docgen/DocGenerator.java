@@ -763,10 +763,14 @@ public class DocGenerator {
 		misc.addItem(getDocItem("instance?"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
-		misc.addItem(getDocItem("resolve"));
-		misc.addItem(getDocItem("var-get"));
 		misc.addItem(getDocItem("callstack"));
 		misc.addItem(getDocItem("coalesce"));
+
+		final DocSection env = new DocSection("Environment");
+		all.addSection(env);
+		env.addItem(getDocItem("var-get"));
+		env.addItem(getDocItem("bound?"));
+		env.addItem(getDocItem("resolve"));
 
 		final DocSection meta = new DocSection("Meta");
 		all.addSection(meta);

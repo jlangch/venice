@@ -33,7 +33,7 @@ public class Embed_05_PrecompiledShootout_1 {
 
         final Venice venice = new Venice();
    	
-    	new Benchmark("No precompilation", 1000).benchmark(ii -> {
+    	new Benchmark("No precompilation", 10_000).benchmark(ii -> {
     		final long start = System.nanoTime();
     		venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
     		return System.nanoTime() - start;

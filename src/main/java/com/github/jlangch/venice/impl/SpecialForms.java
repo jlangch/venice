@@ -120,10 +120,10 @@ public class SpecialForms {
 				"var-get",
 				VncFunction
 					.meta()
-					.arglists("(var-get symbol)")		
+					.arglists("(var-get sym)")		
 					.doc("Returns the var associated with the symbol")
 					.examples(
-						"(var-get +)")
+						"(var-get '+)")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -332,6 +332,21 @@ public class SpecialForms {
 						"      (binding [x 200]   \n" +
 						"         (println x))    \n" +
 						"      (println x)))        ")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction bound_Q = 
+		new SpecialFormsDocFunction(
+				"bound?",
+				VncFunction
+					.meta()
+					.arglists("(bound? s)")		
+					.doc("Returns true if the symbol is bound to a value else false")
+					.examples(
+						"(bound? 'test)",
+						"(let [test 100] (bound? 'test))" )
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -800,6 +815,7 @@ public class SpecialForms {
 					.put("defmethod",		defmethod)
 					.put("def-dynamic",		def_dynamic)
 					.put("binding",			binding)
+					.put("bound?",			bound_Q)
 					.put("set!",			set_BANG)
 					.put("do",				do_)
 					.put("if",				if_)

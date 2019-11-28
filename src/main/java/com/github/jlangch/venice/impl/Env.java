@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.*;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -100,6 +100,21 @@ public class Env implements Serializable {
 
 		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
 			throw new VncException(String.format("Symbol '%s' not found.", sym.getName())); 
+		}
+	}
+
+	/**
+	 * Checks if a symbol is bound to a value
+	 *
+	 * @return returns true if a symbol is bound to a value else false
+	 */
+	public boolean isBound(final VncSymbol sym) {
+		final Env e = findEnv(sym);
+		if (e != null) {
+			return e.getLocalVar(sym) != null;
+		}
+		else {
+			return getGlobalVar(sym) != null;
 		}
 	}
 

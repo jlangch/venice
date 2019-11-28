@@ -23,7 +23,7 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -41,6 +41,15 @@ public class SpecialFormsTest {
 		assertEquals(Long.valueOf(17), venice.eval("(eval '(let [a 10] (+ 3 4 a)))"));
 		assertEquals(Long.valueOf(6), venice.eval("(eval (list + 1 2 3))"));
 		assertEquals(Long.valueOf(5), venice.eval("(do (def x '(+ 2 3)) (eval x))"));
+	}
+	
+	@Test
+	public void test_bound_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(do (let [x 1] (bound? 'x)))"));
+		assertTrue((Boolean)venice.eval("(do (def x 1) (bound? 'x))"));
+		assertFalse((Boolean)venice.eval("(do (def x 1) (bound? 'y))"));
 	}
 
 	@Test
