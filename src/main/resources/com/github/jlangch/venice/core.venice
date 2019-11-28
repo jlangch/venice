@@ -1054,3 +1054,70 @@
 
    ([msg] (. :VncException :new msg))
    ([msg ex] (. :VncException :new msg ex)))
+
+
+(defn-
+  ^{ :arglists '("(walk inner outer form)")
+     :doc """
+          Traverses form, an arbitrary data structure. inner and outer are
+          functions. Applies inner to each element of form, building up a
+          data structure of the same type, then applies outer to the result.
+
+          Do not call this function directly use core/postwalk or
+          core/prewalk instead.
+          """ }
+
+  walk [inner outer form]
+
+  (cond
+    (list? form) (outer (apply list (map inner form)))
+    (map-entry? form) (outer (map-entry (inner (key form)) (inner (val form))))
+    (coll? form) (outer (into (empty form) (map inner form)))
+    :else (outer form)))
+
+
+(defn
+  ^{ :arglists '("(postwalk f form)")
+     :doc """
+          Performs a depth-first, post-order traversal of form. Calls f on
+          each sub-form, uses f's return value in place of the original.
+          """
+     :examples (list
+          """
+          (postwalk (fn [x] (println "Walked:" (pr-str x)) x)
+                    '(1 2 {:a 1 :b 2}))
+          """) }
+
+  postwalk [f form]
+
+  (core/walk (partial postwalk f) f form))
+
+
+(defn
+  ^{ :arglists '("(prewalk f form)")
+     :doc """
+          Performs a depth-last, pre-order traversal of form. Calls f on
+          each sub-form, uses f's return value in place of the original.
+          """
+     :examples (list
+          """
+          (prewalk (fn [x] (println "Walked:" (pr-str x)) x)
+                   '(1 2 {:a 1 :b 2}))
+          """) }
+
+  prewalk [f form]
+
+  (core/walk (partial prewalk f) identity (f form)))
+
+
+(defn
+  ^{ :arglists '("(macroexpand-all form)")
+      :doc "Recursively expands all macros in the form."
+      :examples (list
+          "(macroexpand-all '(and true true))",
+          "(macroexpand-all '(and true (or true false) true))"
+          "(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
+
+  macroexpand-all [form]
+
+  (core/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))

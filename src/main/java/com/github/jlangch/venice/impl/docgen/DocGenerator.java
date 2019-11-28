@@ -829,6 +829,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("defn-"));
 		create.addItem(getDocItem("defmacro"));
 		create.addItem(getDocItem("macroexpand"));
+		create.addItem(getDocItem("macroexpand-all"));
 
 		final DocSection branch = new DocSection("Branch");
 		all.addSection(branch);
@@ -1332,6 +1333,11 @@ public class DocGenerator {
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
+		
+		final DocSection walk = new DocSection("Tree Walker");
+		all.addSection(walk);
+		walk.addItem(getDocItem("prewalk"));
+		walk.addItem(getDocItem("postwalk"));
 		
 		final DocSection json = new DocSection("JSON");
 		all.addSection(json);

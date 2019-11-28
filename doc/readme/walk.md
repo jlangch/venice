@@ -1,9 +1,9 @@
-# Walk
+# Tree Walker
 
-This module defines a generic tree walker for Venice data
-structures.  It takes any data structure (list, vector, map, set,
-...), calls a function on every element, and uses the return value
-of the function in place of the original. 
+Venice provides a generic tree walker for data structures. It takes 
+any data structure (list, vector, map, set, ...), calls a function 
+on every element, and uses the return value of the function in place 
+of the original. 
 
 
 ## API
@@ -18,11 +18,8 @@ each sub-form, uses f's return value in place of the original.
 *Example:*
 
 ```clojure
-(do
-  (load-module :walk)
-
-  (walk/postwalk (fn [x] (println "Walked:" (pr-str x)) x)
-                 '(1 2 {:a 1 :b [5 6]})))
+postwalk (fn [x] (println "Walked:" (pr-str x)) x)
+         '(1 2 {:a 1 :b [5 6]}))
 ```
 
 
@@ -36,11 +33,8 @@ each sub-form, uses f's return value in place of the original.
 *Example:*
 
 ```clojure
-(do
-  (load-module :walk)
-
-  (walk/prewalk (fn [x] (println "Walked:" (pr-str x)) x)
-                '(1 2 {:a 1 :b [5 6]})))
+(prewalk (fn [x] (println "Walked:" (pr-str x)) x)
+         '(1 2 {:a 1 :b [5 6]}))
 ```
 
 
@@ -48,24 +42,22 @@ each sub-form, uses f's return value in place of the original.
 
 `(macroexpand-all form)`
 
-Recursively expands all macros in a form. It's implemented on top of `walk/prewalk`.
+Recursively expands all macros in a form. It's implemented on top of `prewalk`.
 
 *Examples:*
 
 ```clojure
 (do
-  (load-module :walk)
+  (macroexpand-all '(and true true))
 
-  (walk/macroexpand-all '(and true true))
+  (macroexpand-all '(and true (or true false) true))
 
-  (walk/macroexpand-all '(and true (or true false) true))
-
-  (walk/macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0))))
+  (macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0))))
 ```
 
 
 
-## Walk & Replace forms examples
+## Examples: Walk & Replace forms
 
 
 ### keywordize-keys
@@ -74,12 +66,10 @@ Recursively transforms all map keys from strings to keywords.
 
 ```clojure
 (do
-  (load-module :walk)
-
   (defn keywordize-keys [form]
     (let [f (fn [[k v]] (if (string? k) [(keyword k) v] [k v]))]
       ;; only apply to maps
-      (walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
+      (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
 
   (keywordize-keys '(1 2 {"a" 1 "b" 2})))
 ```
@@ -91,12 +81,10 @@ Recursively transforms all map keys from keywords to strings.
 
 ```clojure
 (do
-  (load-module :walk)
-
   (defn stringify-keys [form]
     (let [f (fn [[k v]] (if (keyword? k) [(name k) v] [k v]))]
       ;; only apply to maps
-      (walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
+      (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) form)))
 
    (stringify-keys '(1 2 {:a 1 :b 2})))
 ```
@@ -109,10 +97,8 @@ their values. Does replacement at the root of the tree first.
 
 ```clojure
 (do
-  (load-module :walk)
-
   (defn prewalk-replace [key-map form]
-     (walk/prewalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
+     (prewalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
   (prewalk-replace {:a :A :b :B} '(1 2 :a :b))
 
@@ -127,10 +113,8 @@ their values. Does replacement at the leaves of the tree first.
 
 ```clojure
 (do
-  (load-module :walk)
-
   (defn postwalk-replace [key-map form]
-     (walk/postwalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
+     (postwalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
 
   (postwalk-replace {:a :A :b :B} '(1 2 :a :b))
 

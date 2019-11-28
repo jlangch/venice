@@ -102,7 +102,6 @@ public class ModuleLoader {
 							"test",
 							"tomcat", 
 							"tomcat-util", 
-							"walk",
 							"webdav", 
 							"xchart", 
 							"xml")));

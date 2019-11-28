@@ -23,7 +23,6 @@ package com.github.jlangch.venice;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -405,10 +404,10 @@ public class Venice {
 	}
 	
 	private VncVal expandMacros(final VncVal ast, final VeniceInterpreter venice) {
-		final Env env = venice.createEnv(Arrays.asList("walk"))
+		final Env env = venice.createEnv()
 							  .setStdoutPrintStream(null);
 
-		final VncFunction macroexpand_all = (VncFunction)env.get(new VncSymbol("walk/macroexpand-all"));
+		final VncFunction macroexpand_all = (VncFunction)env.get(new VncSymbol("core/macroexpand-all"));
 		
 		return macroexpand_all.apply(VncList.of(ast));
 	}
