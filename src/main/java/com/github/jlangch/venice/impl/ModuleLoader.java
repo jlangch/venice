@@ -39,7 +39,7 @@ public class ModuleLoader {
 	public static String loadModule(final String module) {
 		if (!VALID_MODULES.contains(module)) {
 			throw new VncException(String.format(
-					"The Venice core module '%s' does not exist",
+					"The Venice module '%s' does not exist",
 					module));
 		}
 		
@@ -53,7 +53,7 @@ public class ModuleLoader {
 		}
 		catch(Exception ex) {
 			throw new VncException(String.format(
-					"Failed to load Venice core module '%s'", name), 
+					"Failed to load Venice module '%s'", name), 
 					ex);
 		}
 	}
