@@ -145,13 +145,13 @@ public class VeniceInterpreter implements Serializable  {
 		return result;
 	}
 	
-	public Env createEnv(final boolean expandMacrosOnLoad) {  
-		return createEnv(null, expandMacrosOnLoad);
+	public Env createEnv(final boolean macroexpandOnLoad) {  
+		return createEnv(null, macroexpandOnLoad);
 	}
 
 	public Env createEnv(
 			final List<String> preloadExtensionModules,
-			final boolean expandMacrosOnLoad
+			final boolean macroexpandOnLoad
 	) {
 		final Env env = new Env(null);
 			
@@ -173,8 +173,8 @@ public class VeniceInterpreter implements Serializable  {
 		// set the load path
 		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
 
-		// set expandmacros on load
-		env.setGlobal(new Var(new VncSymbol("*expandmacros-on-load*"), expandMacrosOnLoad ? True : False, false));
+		// set macroexpand-all on load
+		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, false));
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(), true));
