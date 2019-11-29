@@ -21,11 +21,17 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -44,15 +50,21 @@ public class Inspector {
 			
 		}
 		else if (Types.isVncMultiArityFunction(val)) {
-			final VncMultiArityFunction fn = (VncMultiArityFunction)val;
-			final VncList childFn = fn.getFunctions();
+			final List<VncVal> arityFunctions = new ArrayList<>();
+			
+			((VncMultiArityFunction)val).getFunctions().forEach(f -> {
+				arityFunctions.add(
+					VncOrderedMap.of(
+						new VncKeyword("arity"), new VncLong(((VncFunction)f).getFixedArgsCount()),
+						new VncKeyword("variadic?"), ((VncFunction)f).hasVariadicArgs() ? True : False,
+						new VncKeyword("fn"), inspect((VncFunction)f)));
+			});
 			
 			return VncOrderedMap.of(
 					new VncKeyword("name"), new VncString(((VncFunction)val).getQualifiedName()),
 					new VncKeyword("type"), Types.getType(val),
 					new VncKeyword("meta"), toNil(val.getMeta()),
-					new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
-					new VncKeyword("params"), toNil(((VncFunction)val).getParams()));
+					new VncKeyword("arity-fn"), new VncList(arityFunctions));
 		}
 		else if (Types.isVncMultiFunction(val)) {
 			return VncOrderedMap.of(
