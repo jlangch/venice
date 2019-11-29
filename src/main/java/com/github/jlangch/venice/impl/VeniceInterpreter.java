@@ -173,7 +173,7 @@ public class VeniceInterpreter implements Serializable  {
 		// set the load path
 		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
 
-		// set the load path
+		// set expandmacros on load
 		env.setGlobal(new Var(new VncSymbol("*expandmacros-on-load*"), expandMacrosOnLoad ? True : False, false));
 		
 		// loaded modules & files
