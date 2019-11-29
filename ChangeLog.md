@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - conj on maps to accept multiple elements
 - a tree walker (`prewalk`, `postwalk`)
 
+### Fixed
+
+- print functions (`println`, `newline`) to use the platform specific 
+  newline LF or CR-LF
+
 
 
 ## [1.7.10] - 2019-11-21

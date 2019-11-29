@@ -535,9 +535,10 @@
          end# (nano-time)
          elapsed# (- end# start#)]
      (if (< elapsed# 1000000)
-         (printf "Elapsed time: %.2f us\n" (/ elapsed# 1000.0))
-         (printf "Elapsed time: %.2f ms\n" (/ elapsed# 1000000.0)))
-      ret#))
+         (printf "Elapsed time: %.2f us" (/ elapsed# 1000.0))
+         (printf "Elapsed time: %.2f ms" (/ elapsed# 1000000.0)))
+     (newline)
+     ret#))
 
 
 (defmacro
@@ -828,7 +829,7 @@
 
   newline
 
-  [] (do (. *out* :append "\n") nil))
+  [] (do (. *out* :append *newline*) nil))
 
 
 (defn

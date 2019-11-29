@@ -100,7 +100,7 @@ public class ReaderTest {
 	}
 
 	@Test
-	public void testTokenize() {	
+	public void testTokenize_LF() {	
 		final String s = 
 				"(do                                  \n" +
 				"   100                               \n" +
@@ -113,6 +113,44 @@ public class ReaderTest {
 				"   \"\"\"uvw\nxyz\"\"\"              \n" +
 				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \n" +
 				"   (+ 2 3)                           \n" +
+				")                                      ";
+		
+		int pos = 0;
+		
+		final ArrayList<Token> tokens = Reader.tokenize(s,"test");
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("do", tokens.get(pos++).getToken());
+		assertEquals("100", tokens.get(pos++).getToken());
+		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\nxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("+", tokens.get(pos++).getToken());
+		assertEquals("2", tokens.get(pos++).getToken());
+		assertEquals("3", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+	}
+
+	@Test
+	public void testTokenize_CR_LF() {	
+		final String s = 
+				"(do                                  \r\n" +
+				"   100                               \r\n" +
+				"   ;comment                          \r\n" +
+				"   \"abcdef\"                        \r\n" +
+				"   \"abc\\\"def\"                    \r\n" +
+				"   \"abc\ndef\"                      \r\n" +
+				"   \"\"\"uvwxyz\"\"\"                \r\n" +
+				"   \"\"\"uvw\"xyz\"\"\"              \r\n" +
+				"   \"\"\"uvw\nxyz\"\"\"              \r\n" +
+				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \r\n" +
+				"   (+ 2 3)                           \r\n" +
 				")                                      ";
 		
 		int pos = 0;
