@@ -195,7 +195,7 @@ The benchmark did run on a 2017 MacBook Pro with a Java 11 server VM.
 
 _The benchmark source code can be found in the checked in Java package_ 
 _'com.github.jlangch.venice.examples'. The slowest 20% of the runs are_ 
-_considered as outliers and removed._
+_considered as outliers and are removed._
 
 
 ### Without Precompilation
