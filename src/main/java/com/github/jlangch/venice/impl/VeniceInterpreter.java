@@ -64,6 +64,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.CatchBlock;
 import com.github.jlangch.venice.impl.util.Doc;
+import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -144,11 +145,14 @@ public class VeniceInterpreter implements Serializable  {
 		return result;
 	}
 	
-	public Env createEnv() {  
-		return createEnv(null);
+	public Env createEnv(final boolean expandMacrosOnLoad) {  
+		return createEnv(null, expandMacrosOnLoad);
 	}
 
-	public Env createEnv(final List<String> preloadExtensionModules) {
+	public Env createEnv(
+			final List<String> preloadExtensionModules,
+			final boolean expandMacrosOnLoad
+	) {
 		final Env env = new Env(null);
 			
 		Functions
@@ -168,6 +172,9 @@ public class VeniceInterpreter implements Serializable  {
 
 		// set the load path
 		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
+
+		// set the load path
+		env.setGlobal(new Var(new VncSymbol("*expandmacros-on-load*"), expandMacrosOnLoad && false ? True : False, false));
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(), true));
@@ -421,6 +428,11 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.getOrNil(sym);
 				}
+				
+				case "inspect": { // (inspect sym)
+					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return Inspector.inspect(env.get(sym));
+				}
 	
 				case "macroexpand": 
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
@@ -482,6 +494,10 @@ public class VeniceInterpreter implements Serializable  {
 				case "bound?": { // (bound? sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.isBound(sym) ? True : False;
+				}
+				
+				case "global-vars-count": { // (global-vars-count)
+					return new VncLong(env.globalsCount());
 				}
 					
 				case "loop": { // (loop [bindings*] exprs*)
@@ -1225,6 +1241,7 @@ public class VeniceInterpreter implements Serializable  {
 		final Namespace ns = Namespaces.getCurrentNamespace();
 		
 		return new VncFunction(name, params) {
+			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
@@ -1242,6 +1259,11 @@ public class VeniceInterpreter implements Serializable  {
 				finally {
 					Namespaces.setCurrentNamespace(curr_ns);
 				}
+			}
+			
+			@Override
+			public VncVal getBody() {
+				return body;
 			}
 			
 			private static final long serialVersionUID = -1L;

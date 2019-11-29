@@ -342,6 +342,15 @@ public class Env implements Serializable {
 		throw new VncException(String.format("No env level %d", level));
 	}
 	
+	public int globalsCount() {
+		if (precompiledGlobalSymbols != null) {
+			return precompiledGlobalSymbols.size();
+		}
+		else {
+			return globalSymbols.size();
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return new StringBuilder()

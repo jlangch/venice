@@ -614,10 +614,13 @@
   ([file force]
     `(let [fc# (name ~file)]
        (when (or force (not-contains? core/*loaded-files* fc#))
-         (let [code (str "(do " (*load-file fc# core/*load-path*) ")")
-               parsed (read-string code fc#)]
+         (let [code# (str "(do " (*load-file fc# core/*load-path*) ")")
+               parsed# (read-string code# fc#)
+               expanded# (if core/*expandmacros-on-load*
+                           (expandmacro-all parsed#)
+                           parsed#)]
            (cons! fc# core/*loaded-files*)
-           (eval parsed)
+           (eval expanded#)
            fc#)))))
 
 
@@ -654,9 +657,12 @@
   ([file force]
     `(when (or ~force (not-contains? core/*loaded-files* (name ~file)))
        (let [code# (str "(do " (*load-classpath-file ~file) ")")
-             parsed# (read-string code# ~file)]
+             parsed# (read-string code# ~file)
+             expanded# (if core/*expandmacros-on-load*
+                         (expandmacro-all parsed#)
+                         parsed#)]
          (cons! (name ~file) core/*loaded-files*)
-         (eval parsed#)
+         (eval expanded#)
          ~file))))
 
 

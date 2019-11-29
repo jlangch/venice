@@ -54,7 +54,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("xml", "crypt"))
+							.createEnv(Arrays.asList("xml", "crypt"), false)
 							.setStdoutPrintStream(null);
 	}
 

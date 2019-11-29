@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -212,6 +213,10 @@ public class Types {
 		return val != null && (val instanceof VncFunction);
 	}
 	
+	public static boolean isVncMultiArityFunction(final VncVal val) {
+		return val != null && (val instanceof VncMultiArityFunction);
+	}
+	
 	public static boolean isVncMultiFunction(final VncVal val) {
 		return val != null && (val instanceof VncMultiFunction);
 	}
@@ -276,6 +281,14 @@ public class Types {
 		}
 		else if (Types.isVncByteBuffer(val)) {
 			return new VncKeyword("venice.ByteBuffer");
+		}
+		else if (Types.isVncMultiArityFunction(val)) {
+			return ((VncFunction)val).isMacro()
+						? new VncKeyword("venice.Macro")
+						: new VncKeyword("venice.Function");
+		}
+		else if (Types.isVncMultiFunction(val)) {
+			return new VncKeyword("venice.MultiFunction");
 		}
 		else if (Types.isVncFunction(val)) {
 			return ((VncFunction)val).isMacro()

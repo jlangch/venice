@@ -85,7 +85,7 @@ public class Launcher {
 	}
 	
 	private static Env createEnv(final VeniceInterpreter venice, final CommandLineArgs cli) {
-		return venice.createEnv()
+		return venice.createEnv(false)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}

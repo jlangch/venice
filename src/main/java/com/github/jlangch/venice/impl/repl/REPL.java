@@ -461,7 +461,7 @@ public class REPL {
 			final CommandLineArgs cli,
 			final PrintStream ps
 	) {
-		return venice.createEnv()
+		return venice.createEnv(false)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
 					 .setStdoutPrintStream(ps);
 	}

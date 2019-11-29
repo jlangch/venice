@@ -299,7 +299,7 @@ public class Venice {
 	
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		return addParams(venice.createEnv(), params);
+		return addParams(venice.createEnv(false), params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
@@ -394,7 +394,7 @@ public class Venice {
 		Env env = precompiledEnv.get();
 		if (env == null) {
 			env = new VeniceInterpreter()
-							.createEnv()
+							.createEnv(true)
 							.setStdoutPrintStream(null);
 			precompiledEnv.set(env);
 		}
@@ -404,7 +404,7 @@ public class Venice {
 	}
 	
 	private VncVal expandMacros(final VncVal ast, final VeniceInterpreter venice) {
-		final Env env = venice.createEnv()
+		final Env env = venice.createEnv(false)
 							  .setStdoutPrintStream(null);
 
 		final VncFunction macroexpand_all = (VncFunction)env.get(new VncSymbol("core/macroexpand-all"));
