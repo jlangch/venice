@@ -535,9 +535,8 @@
          end# (nano-time)
          elapsed# (- end# start#)]
      (if (< elapsed# 1000000)
-         (printf "Elapsed time: %.2f us" (/ elapsed# 1000.0))
-         (printf "Elapsed time: %.2f ms" (/ elapsed# 1000000.0)))
-     (newline)
+         (printf "Elapsed time: %.2f us%n" (/ elapsed# 1000.0))
+         (printf "Elapsed time: %.2f ms%n" (/ elapsed# 1000000.0)))
      ret#))
 
 
@@ -794,8 +793,10 @@
 
 (defn
   ^{ :arglists '("(printf fmt & args)")
-     :doc "Prints formatted output, as per format"
-     :examples '("""(printf "%s: %d" "abc" 100)""") }
+     :doc "Prints formatted output, as per format."
+     :examples '(
+          """(printf "%s: %d" "abc" 100)"""
+          """(printf "line 1: %s%nline 2: %s%n" "123" "456")""" ) }
 
   printf
 
@@ -819,7 +820,8 @@
 
   println
 
-  [& xs] (do (apply print xs) (newline) nil))
+  ([] (newline))
+  ([& xs] (do (apply print xs) (newline) nil)))
 
 
 (defn
