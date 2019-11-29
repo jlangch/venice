@@ -77,17 +77,14 @@ public class Benchmark {
         final List<Long> measures = stripOutliers(raw);
         final long elapsed = sum(measures);
         
-        System.out.println(String.format(
-				"%s Elapsed : %s",
-				title,
-				formatNanos(elapsed)));
+        final String sElapsed = formatNanos(elapsed);
+        final String sPerCall = formatNanos(elapsed 
+												/ measures.size() 
+												/ (microIterations > 2 ? microIterations : 1));
         
-        System.out.println(String.format(
-				"%s Per call: %s",
-				title,
-				formatNanos(elapsed 
-							/ measures.size() 
-							/ (microIterations > 2 ? microIterations : 1))));
+        System.out.println(String.format("%s Elapsed : %12s", title, sElapsed));
+        
+        System.out.println(String.format("%s Per call: %12s", title, sPerCall));
 	}
 	
 	
