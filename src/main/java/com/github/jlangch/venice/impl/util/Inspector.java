@@ -28,7 +28,6 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -90,9 +89,11 @@ public class Inspector {
 					new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
 					new VncKeyword("params"), toNil(((VncFunction)val).getParams()));
 		}
-		
-		throw new VncException(
-				"Function 'inspect' is not supported on type: " + Types.getType(val));
+		else {
+			return VncOrderedMap.of(
+					new VncKeyword("type"), Types.getType(val),
+					new VncKeyword("meta"), val.getMeta());
+		}
 	}
 
 	
