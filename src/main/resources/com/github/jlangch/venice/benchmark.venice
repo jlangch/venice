@@ -24,52 +24,46 @@
 
 (ns bench)
 
-(defn
-  bench/println [& xs] 
-    (do (apply printf xs) (newline)))
+(defn bench/println [& xs]
+  (do (apply printf xs) (newline)))
 
-(defn
-  bench/remove-outliers [samples low high]
-    (filter #(and (>= %1 low) (<= %1 high)) samples))
+(defn bench/remove-outliers [samples low high]
+  (filter #(and (>= %1 low) (<= %1 high)) samples))
 
-(defn
-  bench/chart-vert-line [name x y-max]
+(defn bench/chart-vert-line [name x y-max]
   { name { :x [x x]
            :y [0 y-max]
            :style { :render-style :line
                     :marker-type :none }}})
 
-(defn
-   bench/create-chart
-   [data median outlier-low outlier-high params]
-   (let [ y-max (apply max (:y data))
-          median-line (bench/chart-vert-line "median" median y-max)
-          outlier-low-line (bench/chart-vert-line "outlier low" outlier-low y-max)
-          outlier-high-line (bench/chart-vert-line "outlier high" outlier-high y-max)
-          cdata { "samples" data }
-          cdata (if median (merge cdata median-line) cdata)
-          cdata (if outlier-low (merge cdata outlier-low-line) cdata)
-          cdata (if outlier-high (merge cdata outlier-high-line) cdata)]
-     (xchart/write-to-file
-        (xchart/xy-chart
-           cdata
-           { :title (:title params)
-             :render-style :line   ; :step
-             :x-axis { :title (:x-axis-title params)
-                       :decimal-pattern (:x-axis-decimal-pattern params)
-                       :tick-mark-spacing-hint 10
-                       :logarithmic? (:x-axis-logarithmic? params false) }
-             :y-axis { :title (:y-axis-title params)
-                       :decimal-pattern "#0"
-                       :logarithmic? (:y-axis-logarithmic? params false) }
-             :theme :xchart } )
-        :png ; write as PNG
-        300  ; render with 300 dpi
-        (io/file "benchmark.png"))))
+(defn bench/create-chart [data median outlier-low outlier-high params]
+  (let [y-max (apply max (:y data))
+        median-line (bench/chart-vert-line "median" median y-max)
+        outlier-low-line (bench/chart-vert-line "outlier low" outlier-low y-max)
+        outlier-high-line (bench/chart-vert-line "outlier high" outlier-high y-max)
+        cdata { "samples" data }
+        cdata (if median (merge cdata median-line) cdata)
+        cdata (if outlier-low (merge cdata outlier-low-line) cdata)
+        cdata (if outlier-high (merge cdata outlier-high-line) cdata)]
+    (xchart/write-to-file
+      (xchart/xy-chart
+        cdata
+        { :title (:title params)
+          :render-style :line   ; :step
+          :x-axis { :title (:x-axis-title params)
+                    :decimal-pattern (:x-axis-decimal-pattern params)
+                    :tick-mark-spacing-hint 10
+                    :logarithmic? (:x-axis-logarithmic? params false) }
+          :y-axis { :title (:y-axis-title params)
+                    :decimal-pattern "#0"
+                    :logarithmic? (:y-axis-logarithmic? params false) }
+          :theme :xchart } )
+      :png ; write as PNG
+      300  ; render with 300 dpi
+      (io/file "benchmark.png"))))
 
 
-(defn
-  bench/chart [stats steps median? outlier?]
+(defn bench/chart [stats steps median? outlier?]
   (load-module :xchart)
   (assert (xchart/available?) "The xchart module (xchart libraries) is not available!")
   (let [samples  (:samples stats)
@@ -107,8 +101,7 @@
      (bench/println "Saved chart to 'benchmark.png'.")))
 
 
-(defn
-  bench/stats [samples]
+(defn bench/stats [samples]
   (let [q (quartiles samples)
         q1 (first q)
         q2 (second q)
@@ -131,8 +124,7 @@
        :standard-deviation (standard-deviation :sample cleaned-samples) }))
 
 
-(defn
-  bench/print-stats [stats]
+(defn bench/print-stats [stats]
   (bench/println "                      Samples : %d" (count (:samples stats)))
   (bench/println "          Execution time mean : %s" (format-nano-time (:q2 stats)))
   (bench/println " Execution time std-deviation : %s" (format-nano-time (:standard-deviation stats)))
