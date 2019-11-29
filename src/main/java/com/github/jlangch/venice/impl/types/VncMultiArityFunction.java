@@ -21,14 +21,13 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.Tuple3;
 
 
 public class VncMultiArityFunction extends VncFunction {
@@ -40,13 +39,14 @@ public class VncMultiArityFunction extends VncFunction {
 			throw new VncException("A multi-arity function must have at least one function");
 		}
 		
-		this.functions = functions
-							.stream()
-							.map(fn -> new Tuple3<VncFunction, Integer, Boolean>(
-												fn, 
-												countFixedArgs(fn.getParams()),
-												hasRemaingsArgs(fn.getParams())))
-							.collect(Collectors.toList());
+		for(VncFunction fn : functions) {
+			if (fn.hasVariadicArgs()) {
+				variadiArgFunctions.add(fn);
+			}
+			else {
+				fixedArgFunctions.put(fn.getFixedArgsCount(), fn);
+			}
+		}
 	}
 
 
@@ -66,59 +66,39 @@ public class VncMultiArityFunction extends VncFunction {
 		
 		return fn.apply(params);
 	}
-
 	
 	@Override public int typeRank() {
 		return 101;
 	}
 	
-	private VncFunction findFunction(final int arity) {
-		int fixedArgs = -1;
-		VncFunction fn = null;
+	public VncList getFunctions() {
+		final List<VncFunction> list = new ArrayList<>();
 		
-		for(Tuple3<VncFunction, Integer, Boolean> f : functions) {
-			if (f._3 == false) {
-				// only fixed args
-				if (f._2.equals(arity)) return f._1;  // exact fixed args match
-			}
-			else {
-				// with remaing args
-				if (arity >= f._2) {
-					if (f._2 > fixedArgs) {
-						fixedArgs = f._2;
-						fn = f._1;
+		list.addAll(fixedArgFunctions.values());
+		list.addAll(variadiArgFunctions);
+		
+		return new VncList(list);
+	}
+	
+	private VncFunction findFunction(final int arity) {
+		VncFunction fn = fixedArgFunctions.get(arity);
+		if (fn == null) {
+			int fixedArgs = -1;
+			for(VncFunction f : variadiArgFunctions) {
+				if (arity >= f.getFixedArgsCount()) {
+					if (f.getFixedArgsCount() > fixedArgs) {
+						fixedArgs = f.getFixedArgsCount();
+						fn = f;
 					}
 				}
 			}
-		}
-		
+		}		
 		return fn;
-	}
-	
-	private static int countFixedArgs(final VncVector params) {
-		int fixedArgs = 0;
-		
-		for(VncVal p : params.getList()) {
-			if (isElisionSymbol(p)) break;
-			fixedArgs++;
-		}
-		
-		return fixedArgs;
-	}
-
-	private static boolean hasRemaingsArgs(final VncVector params) {
-		for(VncVal p : params.getList()) {
-			if (isElisionSymbol(p)) return true;
-		}
-		return false;
-	}
-
-	private static boolean isElisionSymbol(final VncVal val) {
-		return Types.isVncSymbol(val) && ((VncSymbol)val).getName().equals("&");
 	}
 
 	
     private static final long serialVersionUID = -1848883965231344442L;
     
-    private final List<Tuple3<VncFunction, Integer, Boolean>> functions;
+    private final List<VncFunction> variadiArgFunctions = new ArrayList<>();
+    private final Map<Integer, VncFunction> fixedArgFunctions = new HashMap<>();
 }

@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -60,6 +61,9 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		this.fnMeta.set(MetaUtil.setNamespace(meta, ns));
 		this._private = MetaUtil.isPrivate(meta);
 		this.ns = ns;
+		
+		this.fixedArgsCount = params == null ? 0 : countFixedArgs(params);
+		this.variadicArgs = params == null ? false : hasRemaingsArgs(params);
 	}
 	
 	@Override
@@ -111,6 +115,18 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 	public VncList getExamples() { 
 		return (VncList)getMetaVal(MetaUtil.EXAMPLES, new VncList());
+	}
+	
+	public int getFixedArgsCount() {
+		return fixedArgsCount;
+	}
+	
+	public boolean hasVariadicArgs() {
+		return variadicArgs;
+	}
+
+	public VncVal getBody() { 
+		return Constants.Nil;
 	}
 
 	@Override
@@ -173,6 +189,30 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		return pos < 1 ? qualifiedName : qualifiedName.substring(pos+1);
 	}
 
+	private static int countFixedArgs(final VncVector params) {
+		int fixedArgs = 0;
+		
+		for(VncVal p : params.getList()) {
+			if (isElisionSymbol(p)) break;
+			fixedArgs++;
+		}
+		
+		return fixedArgs;
+	}
+
+	private static boolean hasRemaingsArgs(final VncVector params) {
+		for(VncVal p : params.getList()) {
+			if (isElisionSymbol(p)) return true;
+		}
+		return false;
+	}
+
+	private static boolean isElisionSymbol(final VncVal val) {
+		return Types.isVncSymbol(val) && ((VncSymbol)val).getName().equals("&");
+	}
+	
+	
+	
 	public static MetaBuilder meta() {
 		return new MetaBuilder();
 	}
@@ -216,6 +256,8 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	private volatile boolean macro = false;
 	private final String simpleName;
 	private final String qualifiedName;
+	private final int fixedArgsCount;
+	private final boolean variadicArgs;
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
