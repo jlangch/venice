@@ -22,9 +22,7 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -39,12 +37,22 @@ public class VncMultiArityFunction extends VncFunction {
 			throw new VncException("A multi-arity function must have at least one function");
 		}
 		
+
+		int maxFixedArgs = -1;
+		for(VncFunction fn : functions) {
+			if (!fn.hasVariadicArgs()) {
+				maxFixedArgs = Math.max(maxFixedArgs, fn.getFixedArgsCount());
+			}
+		}
+
+		fixedArgFunctions = new VncFunction[maxFixedArgs+1]; 
+
 		for(VncFunction fn : functions) {
 			if (fn.hasVariadicArgs()) {
-				variadiArgFunctions.add(fn);
+				variadicArgFunctions.add(fn);
 			}
 			else {
-				fixedArgFunctions.put(fn.getFixedArgsCount(), fn);
+				fixedArgFunctions[fn.getFixedArgsCount()] = fn;
 			}
 		}
 	}
@@ -74,21 +82,29 @@ public class VncMultiArityFunction extends VncFunction {
 	public VncList getFunctions() {
 		final List<VncFunction> list = new ArrayList<>();
 		
-		list.addAll(fixedArgFunctions.values());
-		list.addAll(variadiArgFunctions);
+		for(VncFunction f : fixedArgFunctions) {
+			list.add(f);
+		}
+		list.addAll(variadicArgFunctions);
 		
 		return new VncList(list);
 	}
 	
 	private VncFunction findFunction(final int arity) {
-		VncFunction fn = fixedArgFunctions.get(arity);
+		VncFunction fn = null;
+		if (arity < fixedArgFunctions.length) {
+			fn = fixedArgFunctions[arity];
+		}
 		if (fn == null) {
+			// with multi-arity functions choose the matching function with
+			// highest number of fixed args
 			int fixedArgs = -1;
-			for(VncFunction f : variadiArgFunctions) {
-				if (arity >= f.getFixedArgsCount()) {
-					if (f.getFixedArgsCount() > fixedArgs) {
-						fixedArgs = f.getFixedArgsCount();
-						fn = f;
+			for(VncFunction candidateFn : variadicArgFunctions) {
+				final int candidateFnFixedArgs = candidateFn.getFixedArgsCount();
+				if (arity >= candidateFnFixedArgs) {
+					if (candidateFnFixedArgs > fixedArgs) {
+						fixedArgs = candidateFnFixedArgs;
+						fn = candidateFn;
 					}
 				}
 			}
@@ -99,6 +115,6 @@ public class VncMultiArityFunction extends VncFunction {
 	
     private static final long serialVersionUID = -1848883965231344442L;
     
-    private final List<VncFunction> variadiArgFunctions = new ArrayList<>();
-    private final Map<Integer, VncFunction> fixedArgFunctions = new HashMap<>();
+    private final List<VncFunction> variadicArgFunctions = new ArrayList<>();
+    private final VncFunction[] fixedArgFunctions;
 }
