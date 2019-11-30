@@ -26,6 +26,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.functions.SystemFunctions;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+
 
 /**
  * A simple micro benchmark class
@@ -89,18 +94,12 @@ public class Benchmark {
 	
 	
 	private String formatNanos(final long nanos) {
-		if (nanos < 1_000L) {
-			return Long.valueOf(nanos).toString() + " ns";
-		}
-		else if (nanos < 1_000_000L) {
-			return String.format("%.2f us", nanos / 1_000.0D);
-		}
-		else if (nanos < 9_000_000_000L) {
-			return String.format("%.2f ms", nanos / 1_000_000.0D);
-		}
-		else {
-			return String.format("%.2f s ", nanos / 1_000_000_000.0D);			
-		}
+		final String s = ((VncString)SystemFunctions
+										.format_nano_time
+										.apply(VncList.of(new VncLong(nanos)))).getValue();
+		
+		// make the units always two chars width for printing alignment
+		return s.endsWith(" s") ? s + " " : s;
 	}
 	
 	private long sum(final List<Long> measures) {

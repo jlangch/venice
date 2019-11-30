@@ -122,14 +122,14 @@
 
 
 (defn bench/print-stats [stats]
-  (printf "                      Samples : %d%n" (count (:samples stats)))
-  (printf "          Execution time mean : %s%n" (format-nano-time (:q2 stats)))
-  (printf " Execution time std-deviation : %s%n" (format-nano-time (:standard-deviation stats)))
-  (printf "Execution time lower quartile : %s (25%%)%n" (format-nano-time (:q1 stats)))
-  (printf "Execution time upper quartile : %s (75%%)%n" (format-nano-time (:q3 stats)))
-  (printf "Execution time lower quantile : %s (2.5%%)%n" (format-nano-time (:lower-quantile stats)))
-  (printf "Execution time upper quantile : %s (97.5%%)%n" (format-nano-time (:higher-quantile stats)))
-  (printf "                     Outliers : %d%n" (:outliers-cnt stats)))
+  (printf "                      Samples : %7d%n" (count (:samples stats)))
+  (printf "          Execution time mean : %10s%n" (format-nano-time (:q2 stats)))
+  (printf " Execution time std-deviation : %10s%n" (format-nano-time (:standard-deviation stats)))
+  (printf "Execution time lower quartile : %10s (25%%)%n" (format-nano-time (:q1 stats)))
+  (printf "Execution time upper quartile : %10s (75%%)%n" (format-nano-time (:q3 stats)))
+  (printf "Execution time lower quantile : %10s (2.5%%)%n" (format-nano-time (:lower-quantile stats)))
+  (printf "Execution time upper quantile : %10s (97.5%%)%n" (format-nano-time (:higher-quantile stats)))
+  (printf "                     Outliers : %7d%n" (:outliers-cnt stats)))
 
 
 (defmacro
