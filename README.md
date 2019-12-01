@@ -47,6 +47,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/baf7fe4/cheatsheet.htm
 * [Datatypes](doc/readme/datatypes.md)
 * [Functions](doc/readme/functions.md)
 * [Control Flow](doc/readme/control-flow.md)
+* [Filter-Map-Reduce](doc/readme/filter-map-reduce.md)
 * [Transducers](doc/readme/transducers.md)
 * [Recursion](doc/readme/recursion.md)
 * [Mutable Refs](doc/readme/refs.md)

@@ -13,8 +13,8 @@ of the last expression is returned.
 ```clojure
 (do (println "1000")
     (println "2000")
-    1000)
-; => 1000
+    20)
+; => 20
 ```
 
 
@@ -56,5 +56,5 @@ side effects use `do`
 
 ## docoll
 
-## map-reduce
+
 
