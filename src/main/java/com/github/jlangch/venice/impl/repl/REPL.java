@@ -123,7 +123,7 @@ public class REPL {
 
 		final ReplParser parser = new ReplParser(venice);
 		
-		final ReplCompleter completer = new ReplCompleter(venice, env);
+		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
 		
 		final History history = new DefaultHistory();
 		

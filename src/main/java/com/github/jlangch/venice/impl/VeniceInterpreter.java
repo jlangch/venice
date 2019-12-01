@@ -190,12 +190,15 @@ public class VeniceInterpreter implements Serializable  {
 		
 		modules.forEach(m -> {
 			final long nanos = System.nanoTime();
+			
 			RE("(eval " + ModuleLoader.loadModule(m) + ")", m, env);
 			meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos);
 			
+			// remember the loaded module
 			env.setGlobal(
-				new Var(LOADED_MODULES_SYMBOL, 
-				((VncMutableSet)env.getGlobalOrNull(LOADED_MODULES_SYMBOL)).add(new VncKeyword(m))));
+				new Var(
+					LOADED_MODULES_SYMBOL, 
+					((VncMutableSet)env.getGlobalOrNull(LOADED_MODULES_SYMBOL)).add(new VncKeyword(m))));
 		});
 		
 		return env;

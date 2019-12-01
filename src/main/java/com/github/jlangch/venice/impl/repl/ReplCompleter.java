@@ -37,9 +37,10 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ReplCompleter implements Completer {
 	
-	public ReplCompleter(final VeniceInterpreter venice, final Env env) {
+	public ReplCompleter(final VeniceInterpreter venice, final Env env, final List<String> loadPaths) {
 		this.venice = venice;
 		this.env = env;
+		this.loadPaths = loadPaths;
 	}
 
     public void complete(
@@ -91,4 +92,5 @@ public class ReplCompleter implements Completer {
     
     private final VeniceInterpreter venice;
 	private final Env env;
+	private final List<String> loadPaths;
 }

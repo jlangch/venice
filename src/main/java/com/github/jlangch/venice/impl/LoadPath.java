@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +50,8 @@ public class LoadPath {
 			return paths
 					.stream()
 					.map(p -> StringUtil.trimToNull(p))
-					.filter(p -> p != null)
+					.filter(p -> p != null)					
+					.map(p -> makeCanocicalPath(p))
 					.collect(Collectors.toList());
 		}
 	}
@@ -61,6 +64,16 @@ public class LoadPath {
 			return new VncList(paths.stream()
 							 		.map(p -> new VncString(p))
 							 		.collect(Collectors.toList()));
+		}
+	}
+	
+	private static String makeCanocicalPath(final String path) {
+		try {
+			return new File(path).getCanonicalPath();
+		}
+		catch(IOException ex) {
+			throw new RuntimeException(
+					"Cannot make a canocical path form \"" + path + "\"");
 		}
 	}
 
