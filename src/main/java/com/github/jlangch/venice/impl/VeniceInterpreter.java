@@ -1250,7 +1250,19 @@ public class VeniceInterpreter implements Serializable  {
 
 				final Namespace curr_ns = Namespaces.getCurrentNamespace();
 				try {
-					Namespaces.setCurrentNamespace(ns);
+					if (!name.equals("macroexpand-all")) {
+						// Note:
+						// do not switch to the functions own namespace for the function 
+						// "core/macroexpand-all". Handle "macroexpand-all" like a special form. 
+						// This allows expanding locally defined macros from the REPL without 
+						// the need of qualifying them:
+						//    > (defmacro bench [expr] ...)
+						//    > (macroexpand-all '(bench (+ 1 2))
+						// instead of:
+						//    > (macroexpand-all '(user/bench (+ 1 2))
+						
+						Namespaces.setCurrentNamespace(ns);
+					}
 
 					// destructuring fn params -> args
 					localEnv.addLocalBindings(Destructuring.destructure(params, args));
