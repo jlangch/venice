@@ -39,6 +39,7 @@ expressions:
 ```
 
 Any Venice data can be thrown resulting in a ValueException:
+
 ```clojure
 (do
    (try
