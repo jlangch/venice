@@ -253,7 +253,7 @@
 
   when [test & body]
 
-  (list 'if test (cons 'do body)))
+  `(if ~test (do ~@body)))
 
 
 (defmacro
@@ -263,7 +263,7 @@
 
   when-not [test & body]
 
-  (list 'if test nil (cons 'do body)))
+  `(if ~test nil (do ~@body)))
 
 
 (defmacro
