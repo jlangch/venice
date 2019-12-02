@@ -15,7 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
   performance gain when using Venice as an expression or rules engine. 
   See the benchmark in [Embedding Venice](doc/readme/embedding.md) 
 - conj on maps to accept multiple elements
-- a tree walker (`prewalk`, `postwalk`)
+- a tree walker (`prewalk`, `postwalk`) for Venice data structures
+- function `macroexpand-all` to recursively expand macros in an s-expression 
 
 ### Fixed
 
