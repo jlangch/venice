@@ -13,6 +13,7 @@
    (let [f (fn [x y] (- x y))] (f 5 3)))
 ```
 
+
 ## Variadic functions
 
 ```clojure
@@ -23,6 +24,7 @@
 
    (log "message from" "192.0.0.76" "12:00" "Hello"))
 ```
+
 
 ## Multi-Arity functions
 
@@ -38,6 +40,7 @@
    (arity 1 2))
 ```
 
+
 ## Anonymous functions
 
 ```clojure
@@ -48,6 +51,7 @@
    (let [f #(+ %1 %2 %3)] (f 1 2 3)))
 ```
 
+
 ## Functions with preconditions
 
 ```clojure
@@ -56,6 +60,23 @@
       { :pre [(number? x) (number? y)] } 
       (+ x y)))
 ```
+
+
+## Applying Functions
+
+The `apply` function invokes a function with 0 or more fixed arguments, and draws the 
+rest of the needed arguments from a list or a vector. The last argument must be a 
+list or a vector.
+
+```clojure
+(do
+  (apply str '(1 2 3 4))    ;; same as (str 1 2 3 4)
+  (apply str 1 '(2 3 4))    ;; same as (str 1 2 3 4)
+  (apply str 1 2 '(3 4))    ;; same as (str 1 2 3 4)
+  (apply str 1 2 3 '(4))    ;; same as (str 1 2 3 4) 
+ )
+```
+
 
 ## Maps, Sets, and Keywords as functions
 
@@ -95,6 +116,7 @@
 )
 ```
 
+
 ## Function resolved from a string
 
 ```clojure
@@ -102,11 +124,13 @@
    (add 2 5))
 ```
 
+
 ## Partial functions
 
 ```clojure
 (map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
 ```
+
 
 ## Function composition
 
@@ -124,6 +148,7 @@
     
   (xform (range 0 10)))  ;; => (3 5 7 9)
 ```
+
 
 ## Function threading macros
 
@@ -174,6 +199,7 @@ Thread any `as->`, `-<>`
      (reduce + <>)
      (* <> 2))  ;; => "Result: 32"
 ```
+
 
 ## Multimethods
 
