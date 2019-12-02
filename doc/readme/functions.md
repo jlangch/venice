@@ -52,21 +52,11 @@
 ```
 
 
-## Functions with preconditions
-
-```clojure
-(do
-   (defn sum [x y] 
-      { :pre [(number? x) (number? y)] } 
-      (+ x y)))
-```
-
-
 ## Applying Functions
 
-The `apply` function invokes a function with 0 or more fixed arguments, and draws the 
-rest of the needed arguments from a list or a vector. The last argument must be a 
-list or a vector.
+The `apply` function invokes a function with 0 or more fixed arguments, and draws 
+the rest of the needed arguments from a list or a vector. The last argument must
+be a list or a vector.
 
 ```clojure
 (do
@@ -75,6 +65,75 @@ list or a vector.
   (apply str 1 2 '(3 4))    ;; same as (str 1 2 3 4)
   (apply str 1 2 3 '(4))    ;; same as (str 1 2 3 4) 
  )
+```
+
+
+## Locals and closures
+
+### let
+
+`let` binds symbols to values in a "lexical scope". A lexical scope creates a
+new context for names, nested inside the surrounding context. Names defined 
+in a `let` take precedence over the names in the outer context.
+
+```clojure
+(let [x 1
+      y (* 2 3)]
+  (+ x y))
+```
+
+This `let` expression creates two local bindings for `x` and `y`. The expression 
+`(+ x y)` is in the lexical scope of the `let` and resolves `x` to 1 and `y` to 6. 
+Outside the "lexical scope" (`let` expression), `x` and `y` will not 
+be accessible.
+
+
+### defn
+
+`defn` binds its function arguments in a new "lexical scope" as well. Unlike `let`
+the local bindings for `x` and `y` get their values from the caller.
+
+```clojure
+(do
+  (defn sum [x y]
+     (+ x y))
+   
+  (sum 1 2))
+```
+
+
+### Closures
+
+The `fn` special form creates a "closure". It "closes over" the surrounding 
+lexical scope and captures their values beyond the lexical scope.
+
+A function that returns function i.e. higher order functions are nice examples
+of a closure.
+
+```clojure
+(do
+  (defn pow [n]
+    (fn [x] (apply * (repeat n x))))  ; closes over n
+
+  ;; n is provided here as 2 and 3, then n goes out of scope
+  (def square (pow 2))
+  (def cubic (pow 3))
+  
+  ;; n value still available because square and cubic are closures
+  (square 4) ; => 16
+  (cubic 4) ; => 64
+
+)
+```
+
+
+## Functions with preconditions
+
+```clojure
+(do
+   (defn sum [x y] 
+      { :pre [(number? x) (number? y)] } 
+      (+ x y)))
 ```
 
 
