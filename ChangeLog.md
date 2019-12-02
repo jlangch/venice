@@ -25,9 +25,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Changed
 
-- the sandbox to a whitelist model for loading extension modules. This 
-  is less error prone, if Venice is adding more extension  modules in 
-  the future.
+- the sandbox to a whitelist model regarding loading extension modules. 
+  This is less error prone if Venice is providing more extension modules 
+  in the future.
 
 
 
