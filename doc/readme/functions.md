@@ -121,7 +121,7 @@ of a closure.
   
   ;; n value still available because square and cubic are closures
   (square 4) ; => 16   effectively as (apply * (repeat 2 4)) 
-  (cubic 4)  ; => 64   effectively as (apply * (repeat 2 4))
+  (cubic 4)  ; => 64   effectively as (apply * (repeat 3 4))
 )
 ```
 
