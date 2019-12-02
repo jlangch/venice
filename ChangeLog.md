@@ -22,6 +22,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - print functions (`println`, `newline`) to use the platform specific 
   newline LF or CR-LF
 
+### Changed
+
+- the sandbox to a whitelist model for loading extension modules. This 
+  is less error prone, if Venice is adding more extension  modules in 
+  the future.
+
 
 
 ## [1.7.10] - 2019-11-21
