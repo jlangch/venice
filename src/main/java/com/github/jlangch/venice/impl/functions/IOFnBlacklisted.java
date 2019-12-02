@@ -122,16 +122,4 @@ public class IOFnBlacklisted {
 					"io/ungzip-to-stream"));
 	}
 
-	public static Set<String> getModules() {
-		return new HashSet<>(
-				Arrays.asList(
-					"shell",
-					"tomcat",
-					"tomcat-util",
-					"ring",
-					"webdav",
-					"java",
-					"maven"));
-	}
-
 }

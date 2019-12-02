@@ -157,7 +157,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	public void validateLoadModule(
 			final String moduleName
 	) throws SecurityException {
-		if (sandboxRules.isBlackListedVeniceModule(moduleName)) {
+		if (!sandboxRules.isWhiteListedVeniceModule(moduleName)) {
 			throw new SecurityException(String.format(
 					"%s: Access denied to module %s", 
 					PREFIX,

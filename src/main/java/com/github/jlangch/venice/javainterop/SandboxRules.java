@@ -333,31 +333,36 @@ public class SandboxRules {
 	}
 
 	/**
-	 * Reject Venice module rules to the sandbox.
+	 * Add rules for whitelisted Venice modules.
 	 * 
 	 * @param rules rules
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules rejectVeniceModules(final String... rules) {
+	public SandboxRules withVeniceModules(final String... rules) {
 		if (rules != null) {
-			rejectVeniceModules(Arrays.asList(rules));
+			withVeniceModules(Arrays.asList(rules));
 		}
 		return this;
 	}
 	
 	/**
-	 * Reject Venice module rules to the sandbox.
+	 * Add rules for whitelisted Venice modules.
 	 * 
 	 * @param rules rules
 	 * @return this <code>SandboxRules</code>
 	 */
-	public SandboxRules rejectVeniceModules(final Collection<String> rules) {
+	public SandboxRules withVeniceModules(final Collection<String> rules) {
 		if (rules != null) {
 			this.rules.addAll(
 				rules.stream()
-				 	 .map(r -> r.startsWith("blacklist:venice:module:") ? r : "blacklist:venice:module:" + r)
+				 	 .map(r -> r.startsWith("venice:module:") ? r : "venice:module:" + r)
 					 .collect(Collectors.toList()));
 		}
+		return this;
+	}
+	
+	public SandboxRules withDefaultVeniceModules() {
+		withVeniceModules(DEFAULT_WHITELISTED_MODULES);
 		return this;
 	}
 	
@@ -629,6 +634,16 @@ public class SandboxRules {
 							"user.home",
 							"user.name")));
 
+
+	public static Set<String> DEFAULT_WHITELISTED_MODULES =
+			Collections.unmodifiableSet(
+				new HashSet<>(
+					Arrays.asList(
+						"crypt",
+						"kira",
+						"math",
+						"walk",
+						"xml")));
 
 	public static final Set<String> DEFAULT_SYSTEM_ENVS = 
 			Collections.unmodifiableSet(

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 
 
@@ -164,7 +165,7 @@ public class RejectAllInterceptor extends Interceptor {
 	public void validateLoadModule(
 			final String moduleName
 	) throws SecurityException {
-		if (blacklistedVeniceModules.contains(moduleName)) {
+		if (!SandboxRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
 			throw new SecurityException(String.format(
 					"%s: Access denied to Venice module %s.", 
 					PREFIX,
@@ -178,8 +179,8 @@ public class RejectAllInterceptor extends Interceptor {
 		return list;
 	}
 
-	public List<String> getBlacklistedVeniceModules() {
-		final List<String> list = new ArrayList<>(blacklistedVeniceModules);
+	public List<String> getWhitelistedVeniceModules() {
+		final List<String> list = new ArrayList<>(SandboxRules.DEFAULT_WHITELISTED_MODULES);
 		Collections.sort(list);
 		return list;
 	}
@@ -188,5 +189,4 @@ public class RejectAllInterceptor extends Interceptor {
 	private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
 	
 	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getIoFunctions();
-	private final Set<String> blacklistedVeniceModules = IOFnBlacklisted.getModules();
 }

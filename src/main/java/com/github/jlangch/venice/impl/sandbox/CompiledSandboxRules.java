@@ -42,7 +42,7 @@ public class CompiledSandboxRules {
 			final List<Pattern> whiteListMethodPatterns,
 			final List<Pattern> whiteListClasspathPatterns,
 			final Set<String> blackListVeniceFunctions,
-			final Set<String> blackListVeniceModules,
+			final Set<String> whiteListVeniceModules,
 			final Set<String> whiteListSystemProps,
 			final Set<String> whiteListSystemEnvs,
 			final Integer maxExecTimeSeconds,
@@ -64,9 +64,9 @@ public class CompiledSandboxRules {
 											? Collections.emptySet() 
 											: blackListVeniceFunctions;
 
-		this.blackListVeniceModules = blackListVeniceModules == null 
+		this.whiteListVeniceModules = whiteListVeniceModules == null 
 											? Collections.emptySet() 
-											: blackListVeniceModules;
+											: whiteListVeniceModules;
 										
 		this.whiteListSystemProps = whiteListSystemProps;
 		this.whiteListSystemEnvs = whiteListSystemEnvs;
@@ -124,11 +124,11 @@ public class CompiledSandboxRules {
 					.flatMap(Set::stream)
 					.collect(Collectors.toSet()),
 					
-				// blacklisted venice modules
+				// whitelisted venice modules
 				filtered
 					.stream()
-					.filter(s -> s.startsWith("blacklist:venice:module:"))
-					.map(s -> s.substring("blacklist:venice:module:".length()))
+					.filter(s -> s.startsWith("venice:module:"))
+					.map(s -> s.substring("venice:module:".length()))
 					.collect(Collectors.toSet()),
 					
 				// whitelisted system properties
@@ -261,8 +261,8 @@ public class CompiledSandboxRules {
 		return blackListVeniceFunctions.contains(funcName);
 	}
 
-	public boolean isBlackListedVeniceModule(final String moduleName) {
-		return blackListVeniceModules.contains(moduleName);
+	public boolean isWhiteListedVeniceModule(final String moduleName) {
+		return whiteListVeniceModules.contains(moduleName);
 	}
 	
 	public boolean isWhiteListedSystemProperty(final String property) {
@@ -305,7 +305,7 @@ public class CompiledSandboxRules {
 	private final List<Pattern> whiteListMethodPatterns;
 	private final List<Pattern> whiteListClasspathPatterns;
 	private final Set<String> blackListVeniceFunctions;
-	private final Set<String> blackListVeniceModules;
+	private final Set<String> whiteListVeniceModules;
 	private final Set<String> whiteListSystemProps;
 	private final Set<String> whiteListSystemEnvs;
 	private final Integer maxExecTimeSeconds;

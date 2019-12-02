@@ -38,9 +38,9 @@ that are available to the script in the JVM!
  - whitelist Java classes down to individual methods and fields
  - whitelist Java system property access down to individual properties
  - whitelist Java environment variables access down to individual vars
+ - whitelist individual Venice extension modules like :shell, :maven, ...
  - blacklist all Venice I/O functions like spit, slurp, ...
  - blacklist individual Venice functions like time/date, ...
- - blacklist individual Venice extension modules like :shell, :maven, ...
  - prohibit calls to all Venice I/O functions and Java fully
  - limiting the execution time of a script
  
@@ -71,17 +71,17 @@ final IInterceptor interceptor =
                 "java.util.ArrayList:new",
                 "java.util.ArrayList:add")
 
+              // Venice extension modules: whitelist rules
+              .withVeniceModules(
+                "crypt", 
+                "kira", 
+                "math")
+
               // Venice functions: blacklist rules
               .rejectAllVeniceIoFunctions()
               .rejectVeniceFunctions(
                 "time/date",
                 "time/zone-ids")
-
-              // Venice extension modules: blacklist rules
-              .rejectVeniceModules(
-                "shell", 
-                "tomcat", 
-                "tomcat-util")
 
               // Generic rules	
               .withMaxFutureThreadPoolSize(20)
@@ -158,14 +158,15 @@ venice> !sandbox config
 [reject-all] SAFE restricted sandbox
 Java calls:
    All rejected!
+Whitelisted Venice modules:
+   crypt
+   kira
+   math
+     :
 Blacklisted Venice functions:
    agent
    agent-error
    agent-error-mode
-     :
-Blacklisted Venice modules:
-   java
-   maven
      :
 venice> 
 ```

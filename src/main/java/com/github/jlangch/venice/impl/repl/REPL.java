@@ -387,21 +387,21 @@ public class REPL {
 					println(
 						terminal,
 						"stdout", 
+						"Whitelisted Venice modules:\n" 
+							+ ((RejectAllInterceptor)interceptor)
+									.getWhitelistedVeniceModules()
+									.stream()
+									.map(s -> "   " + s)
+									.collect(Collectors.joining("\n")));
+					println(
+						terminal,
+						"stdout", 
 						"Blacklisted Venice functions:\n" 
 							+ ((RejectAllInterceptor)interceptor)
 									.getBlacklistedVeniceFunctions()
 									.stream()
 									.map(s -> "   " + s)
 									.collect(Collectors.joining("\n")));
-					println(
-							terminal,
-							"stdout", 
-							"Blacklisted Venice modules:\n" 
-								+ ((RejectAllInterceptor)interceptor)
-										.getBlacklistedVeniceModules()
-										.stream()
-										.map(s -> "   " + s)
-										.collect(Collectors.joining("\n")));
 					return;
 				}
 				else if (interceptor instanceof SandboxInterceptor) {
@@ -437,11 +437,11 @@ public class REPL {
 				else if (rule.startsWith("system.env:")) {
 					rules.withSystemEnvs(rule);
 				}
+				else if (rule.startsWith("venice:module:")) {
+					rules.withVeniceModules(rule);
+				}
 				else if (rule.startsWith("blacklist:venice:func:")) {
 					rules.rejectVeniceFunctions(rule);
-				}
-				else if (rule.startsWith("blacklist:venice:module:")) {
-					rules.rejectVeniceModules(rule);
 				}
 				else {
 					terminal.writer().println(HELP_SANDBOX);
@@ -589,7 +589,7 @@ public class REPL {
 			"   !sandbox add-rule system.property:os.name\n" +
 			"   !sandbox add-rule blacklist:venice:func:io/exists-dir?\n" +
 			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
-			"   !sandbox add-rule blacklist:venice:module:shell\n";	
+			"   !sandbox add-rule venice:module:shell\n";	
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
 
