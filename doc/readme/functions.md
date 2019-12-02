@@ -107,7 +107,7 @@ the local bindings for `x` and `y` get their values from the caller.
 The `fn` special form creates a "closure". It "closes over" the surrounding 
 lexical scope and captures their values beyond the lexical scope.
 
-A function that returns function i.e. higher order functions are nice examples
+A function that returns a function i.e. higher order functions are nice examples
 of a closure.
 
 ```clojure
@@ -120,9 +120,8 @@ of a closure.
   (def cubic (pow 3))
   
   ;; n value still available because square and cubic are closures
-  (square 4) ; => 16
-  (cubic 4) ; => 64
-
+  (square 4) ; => 16   effectively as (apply * (repeat 2 4)) 
+  (cubic 4)  ; => 64   effectively as (apply * (repeat 2 4))
 )
 ```
 
