@@ -106,6 +106,7 @@ public class Env implements Serializable {
 	/**
 	 * Checks if a symbol is bound to a value
 	 *
+	 * @param sym a symbol
 	 * @return returns true if a symbol is bound to a value else false
 	 */
 	public boolean isBound(final VncSymbol sym) {
