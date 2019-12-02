@@ -18,7 +18,7 @@ each sub-form, uses f's return value in place of the original.
 *Example:*
 
 ```clojure
-postwalk (fn [x] (println "Walked:" (pr-str x)) x)
+(postwalk (fn [x] (println "Walked:" (pr-str x)) x)
          '(1 2 {:a 1 :b [5 6]}))
 ```
 
