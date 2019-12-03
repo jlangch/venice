@@ -90,26 +90,26 @@ final IInterceptor interceptor =
 final Venice venice = new Venice(interceptor);
 
 // rule: "java.lang.Math:PI"
-// => OK (static field)
+// => OK (whitelisted static field)
 venice.eval("(. :java.lang.Math :PI)"); 
 
 // rule: "java.lang.Math:min"
-// => OK (static method)
+// => OK (whitelisted static method)
 venice.eval("(. :java.lang.Math :min 20 30)"); 
     
 // rule: "java.time.ZonedDateTime:*
-// => OK (constructor & instance method)
+// => OK (whitelisted constructor & instance method)
 venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
  
 // rule: "java.util.ArrayList:new" and "java.util.ArrayList:add"
-// => OK (constructor & instance method)
+// => OK (whitelisted constructor & instance method)
 venice.eval(
     "(doto (. :java.util.ArrayList :new)  " +
     "      (. :add 1)                     " +
     "      (. :add 2))                    ");
 	
 // rule: "java.awt.**:*"
-// => OK
+// => OK (whitelisted)
 venice.eval(
     "(-<> (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)      " +
     "     (. :java.awt.color.ICC_ColorSpace :getInstance <>) " +
@@ -118,7 +118,7 @@ venice.eval(
 // => FAIL (invoking non whitelisted static method)
 venice.eval("(. :java.lang.System :exit 0)"); 
 
-// => FAIL (invoking rejected Venice I/O function)
+// => FAIL (invoking blacklisted Venice I/O function)
 venice.eval("(io/slurp \"/tmp/file\")"); 
 
 // => FAIL exceeded max exec time of 5s
