@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - the sandbox to a whitelist model regarding loading extension modules. 
   This is less error prone if Venice is providing more extension modules 
   in the future.
+- JLine3 lib to actual version 3.13.2
 
 
 
