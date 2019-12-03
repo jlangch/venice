@@ -3,22 +3,18 @@
 
 ## Filter
 
-Filter is core function that allows you to process your data and select 
-elements that meet a certain predicate.
+Filter processes a sequence of data and produced a new list with elements
+that meet a predicate.
 
 ```clojure
 (filter even? [1 2 3 4 5 6 7 8 9 10])
 ; => (2 4 6 8 10)
 ```
 
-Filter always takes a predicate and sequence of data and produces a 
-new list with the same or fewer elements after the filter has been applied.
-
-
 
 ## Map
 
-Map transform a sequence of data by applying a function to each element 
+Map transforms a sequence of data by applying a function to each element 
 of it. Map produces a new list with the transformed items.
 
 ```clojure
