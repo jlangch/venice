@@ -31,14 +31,14 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples : 3000
+                      Samples :    3000
           Execution time mean : 825,000 ns
- Execution time std-deviation : 50,529 ns
+ Execution time std-deviation :  50,529 ns
 Execution time lower quartile : 807,000 ns (25%)
 Execution time upper quartile : 904,000 ns (75%)
 Execution time lower quantile : 802,000 ns (2.5%)
 Execution time upper quantile : 943,000 ns (97.5%)
-                     Outliers : 25
+                     Outliers :      25
 ```
 
 ### Outliers
@@ -59,14 +59,14 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples : 300
+                      Samples :    300
           Execution time mean : 14,877 µs
- Execution time std-deviation : 2,761 µs
+ Execution time std-deviation :  2,761 µs
 Execution time lower quartile : 14,230 µs (25%)
 Execution time upper quartile : 18,289 µs (75%)
 Execution time lower quantile : 13,790 µs (2.5%)
 Execution time upper quantile : 26,689 µs (97.5%)
-                     Outliers : 5
+                     Outliers :      5
 Generating chart...
 Quantization step width: 4,757 µs 
 Saved chart to 'benchmark.png'.
@@ -87,14 +87,14 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples : 30000
+                      Samples :   30000
           Execution time mean : 801,000 ns
- Execution time std-deviation : 7,907 ns
+ Execution time std-deviation :   7,907 ns
 Execution time lower quartile : 798,000 ns (25%)
 Execution time upper quartile : 805,000 ns (75%)
 Execution time lower quantile : 778,000 ns (2.5%)
 Execution time upper quantile : 905,000 ns (97.5%)
-                     Outliers : 4196
+                     Outliers :    4196
 Generating chart...
 Quantization step width: 30,063 µs 
 Saved chart to 'benchmark.png'.
