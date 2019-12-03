@@ -3,7 +3,7 @@
 
 ## Filter
 
-Filter processes a sequence of data and produced a new list with elements
+Filter processes a sequence of data and produces a new list with elements
 that meet a predicate.
 
 ```clojure
