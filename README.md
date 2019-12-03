@@ -61,6 +61,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/baf7fe4/cheatsheet.htm
 * [JSON](doc/readme/json.md)
 * [PDF](doc/readme/pdf.md)
 * [Extension modules](doc/readme/extension-modules.md)
+* [Macros](doc/readme/macros.md)
 * See a larger [example](doc/readme/large-example.md)
 * [Benchmarks & Profiling](doc/readme/profiling.md)
 * [Tree walker](doc/readme/walk.md)

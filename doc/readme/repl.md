@@ -8,12 +8,6 @@ venice> (+ 1 1)
 venice>
 ```
 
-Type `!` from the REPL to get the help. Browse through the history expressions 
-with the up/down arrows.
-
-A history of the last three result values is kept by the REPL, accessible through 
-the symbols `*1`, `*2`, `*3`, `**`.
-
 The REPL supports multi-line editing:
 
 ```text
@@ -23,6 +17,12 @@ venice> (sum 1 4)
 => 5
 venice>
 ```
+
+Type `!` from the REPL to get the help. Browse through the history expressions 
+with the up/down arrows.
+
+A history of the last three result values is kept by the REPL, accessible through 
+the symbols `*1`, `*2`, `*3`, `**`.
 
 If the REPL colors don't harmonize well with your terminal color schema 
 omit the '-colors' option or place a 'repl.json' config file with customized 
