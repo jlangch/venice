@@ -82,9 +82,9 @@ flow of function calls, improving readability.
 
 ```clojure
 (->> [1 2 3 4 5 6 7 8]
-  (filter even?)
-  (map #(+ 10 %))
-  (reduce +))
+     (filter even?)
+     (map #(+ 10 %))
+     (reduce +))
 ; => 60
 ```
 
