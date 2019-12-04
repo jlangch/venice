@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - print functions (`println`, `newline`) to use the platform specific 
   newline LF or CR-LF
+- an edge case with auto gen symbols for macros
 
 ### Changed
 

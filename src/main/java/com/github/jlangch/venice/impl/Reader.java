@@ -280,6 +280,7 @@ public class Reader {
 			case '`': 
 				rdr.next();
 				try {
+					// Note: auto gen symbols can not be used across nested syntax quotes
 					rdr.autoGenSym.enterSyntaxQuote();
 					
 					return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
