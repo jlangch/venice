@@ -21,10 +21,7 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
@@ -40,20 +37,17 @@ public class ReplCompleter implements Completer {
 	public ReplCompleter(final VeniceInterpreter venice, final Env env, final List<String> loadPaths) {
 		this.venice = venice;
 		this.env = env;
-		this.loadPaths = loadPaths;
+		this.filePathCompleter = new FilePathCompleter(loadPaths);
 	}
 
+	@Override
     public void complete(
     		final LineReader reader, 
     		final ParsedLine line, 
     		final List<Candidate> candidates
     ) {
-    	if (line.line().endsWith("(load-file ")) {
-       		listFileNames().forEach(f -> candidates.add(new Candidate(
-       										"\"" + f + "\"", f, null, null, null, null, true)));
-    	}
-    	else if (line.line().endsWith("(load-file \"")) {
-    		listFileNames().forEach(f -> candidates.add(new Candidate(f)));
+    	if (line.line().contains("(load-file ")) {
+    		candidates.addAll(filePathCompleter.getCandidates(line));
     	}
     	else if (line.line().endsWith("(load-module ")) {
     		venice.getAvailableModules()
@@ -79,18 +73,8 @@ public class ReplCompleter implements Completer {
      	}
     }
     
-    private List<String> listFileNames() {
-    	return Arrays
-	    		.stream(new File(".").listFiles())
-	    		.filter(f -> f.isFile())
-	    		.filter(f -> f.getName().endsWith("venice"))
-	    		.map(f -> f.getName())
-	    		.sorted()
-	    		.collect(Collectors.toList());
-     }
-    
     
     private final VeniceInterpreter venice;
 	private final Env env;
-	private final List<String> loadPaths;
+	private final FilePathCompleter filePathCompleter;
 }
