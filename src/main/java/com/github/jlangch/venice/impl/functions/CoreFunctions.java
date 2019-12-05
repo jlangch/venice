@@ -879,7 +879,7 @@ public class CoreFunctions {
 							Types.getType(args.second())));
 				}
 
-				return Types._match_Q(args.first(), args.second()) ? True : False;
+				return matchesRegex(args.first(), args.second()) ? True : False;
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -911,7 +911,7 @@ public class CoreFunctions {
 							Types.getType(args.second())));
 				}
 
-				return Types._match_Q(args.first(), args.second()) ? False : True;
+				return matchesRegex(args.first(), args.second()) ? False : True;
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -6096,7 +6096,15 @@ public class CoreFunctions {
 		Collections.shuffle(copy, random);
 		return new VncVector(copy);
 	}
-
+	
+	private static boolean matchesRegex(VncVal text, VncVal regex) {
+		if (text instanceof VncString) {
+			return ((VncString)text).getValue().matches(((VncString)regex).getValue());
+		} 
+		else {
+			return false;
+		}
+	}
 
 
 	///////////////////////////////////////////////////////////////////////////

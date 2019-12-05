@@ -519,14 +519,5 @@ public class Types {
 			}
 		}
 	}
-	
-	public static boolean _match_Q(VncVal a, VncVal b) {
-		if (a instanceof VncString) {
-			return ((VncString)a).getValue().matches(((VncString)b).getValue());
-		} 
-		else {
-			return false;
-		}
-	}
 
 }
