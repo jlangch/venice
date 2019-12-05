@@ -18,14 +18,16 @@ venice> !sandbox config
 [reject-all] SAFE restricted sandbox
 Java calls:
    All rejected!
+Whitelisted Venice modules:
+   crypt
+   kira
+   math
+   walk
+   xml
 Blacklisted Venice functions:
    agent
    agent-error
    agent-error-mode
-     :
-Blacklisted Venice modules:
-   java
-   maven
      :
 venice> 
 ```
