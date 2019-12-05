@@ -72,10 +72,7 @@ public class FilePathCompleter {
 						.map(dir -> listFiles(dir, path))
 						.flatMap(List::stream)
         				.sorted()
-        				.forEach(f -> candidates.add(candidate(
-										f, 
-										f, 
-										true)));
+        				.forEach(f -> candidates.add(candidate(f, f, true)));
 				}
     		}
     	}
