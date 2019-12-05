@@ -117,6 +117,29 @@ venice> !reload
 ```
 
 
+## Using a load path for files
+
+To test Venice code one often uses the function `load-file` to load a file with 
+Venice functions. `load-file` loads the files by default from the current working 
+directory. The REPL accepts the command line option "-loadpath" that defines a 
+set of semi-colon separated paths files are searched for.
+
+The `load-file` file completion honors the load path.
+
+REPL Launcher with "-loadpath" option:
+
+```text
+> java \
+    -server \
+    -XX:-OmitStackTraceInFastThrow \
+    -Xmx2G \
+    -cp "libs/*" \
+    com.github.jlangch.venice.Launcher \
+    -loadpath "/users/foo/venice/scripts1;/users/foo/venice/scripts2" \
+    -colors
+```
+
+
 ## Sandbox with the REPL
 
 The Venice sandbox can be managed from within the REPL: [managing the sandbox](repl-sandbox.md)
