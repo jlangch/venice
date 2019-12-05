@@ -95,12 +95,12 @@ public class FilePathCompleter {
     		}
     		else if (start.isDirectory()) {
     		    return Files.walk(start.toPath())
-		    			.map(Path::toFile)
-			    		.filter(f -> f.getName().endsWith(".venice"))
-		    			.map(f -> makeRelativeFile(sRoot_, f))
-			    		.filter(f -> f != null)
-			    		.sorted()
-			    		.collect(Collectors.toList());
+			    			.map(Path::toFile)
+				    		.filter(f -> f.getName().endsWith(".venice"))
+			    			.map(f -> makeRelativeFile(sRoot_, f))
+				    		.filter(f -> f != null)
+				    		.sorted()
+				    		.collect(Collectors.toList());
     		}
     		else {
         		return new ArrayList<>();
