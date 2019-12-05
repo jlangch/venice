@@ -25,6 +25,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,24 +88,36 @@ public class FilePathCompleter {
     		final File root_ = new File(root).getAbsoluteFile().getCanonicalFile();
     		final String sRoot_ = root_.getPath() + "/";
     		
-		    return Files.walk(new File(root_, dir).toPath())
+    		final File start = new File(root_, dir);
+    		
+    		if (start.isFile()) {
+    			return Arrays.asList(makeRelativeFile(sRoot_, start));
+    		}
+    		else if (start.isDirectory()) {
+    		    return Files.walk(start.toPath())
 		    			.map(Path::toFile)
-		    			.map(f -> { 
-		    					try {
-		    						return f.getAbsoluteFile().getCanonicalPath(); 
-		    					} 
-		    					catch(Exception ex) {
-		    						return null; 
-		    					}
-		    				})
-			    		.filter(f -> f != null && f.endsWith(".venice"))
-			    		.map(f -> StringUtil.removeStart(f, sRoot_))
+			    		.filter(f -> f.getName().endsWith(".venice"))
+		    			.map(f -> makeRelativeFile(sRoot_, f))
+			    		.filter(f -> f != null)
 			    		.sorted()
 			    		.collect(Collectors.toList());
+    		}
+    		else {
+        		return new ArrayList<>();
+    		}
     	}
     	catch(Exception ex) {
     		return new ArrayList<>();
     	}
+    }
+    
+    private String makeRelativeFile(final String root, final File file) {
+		try {
+			 return StringUtil.removeStart(file.getAbsoluteFile().getCanonicalPath(), root); 
+		} 
+		catch(Exception ex) {
+			return null; 
+		}	
     }
          
     private Candidate candidate(final String value, final boolean complete) {
