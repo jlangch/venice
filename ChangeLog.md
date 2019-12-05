@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - conj on maps to accept multiple elements
 - a tree walker (`prewalk`, `postwalk`) for Venice data structures
 - function `macroexpand-all` to recursively expand macros in a s-expression 
-- load path file completion for the REPL with `(load-file file)`
+- load path file completion for the REPL with `(load-file file-path)`
 
 ### Fixed
 
