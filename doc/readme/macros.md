@@ -4,9 +4,7 @@
 * [Overview](#overview)
 * [Macros vs Functions](#macros-vs-functions)
 * [When to use Macros](#when-to-use-macros)
-* [Quote and Syntax Quote](#quote-and-syntax-quote)
-* [Unquote](#unquote)
-* [Unquote-splicing](#unquote-splicing)
+* [Toolbox](#toolbox)
 * [Macro Hygiene](#macro-hygiene)
 
 
@@ -128,15 +126,32 @@ predicate _false_:
 ```
 
 
-## Quote and Syntax Quote
+## Toolbox
+
+The Venice reader provides a few special forms to deal with macros:
+
+* Quote (')
+* Syntax quote (`)
+* Unquote (~)
+* Unquote splicing (~@)
+
+The functions `macroexpand` and `macroexpand-all` are your best friends when writing 
+and verifying macros.
+
+
+### Quote and Syntax Quote
 
 _TODO_
 
-## Unquote
+### Unquote
 
 _TODO_
 
-## Unquote-splicing
+### Unquote-splicing
+
+_TODO_
+
+### Macro expansion
 
 _TODO_
 
