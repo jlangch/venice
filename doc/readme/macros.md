@@ -31,6 +31,7 @@ In a more depth analysis function and macros can be compared regarding the aspec
 Regarding these those two aspects, here are the differences between macros and functions:
 
 |           | arguments evaluation                           | return value evaluated? |
+| :---      | :---                                           | :---                    |
 | functions | before function code execution                 | not evaluated           |
 | macros    | only when macro code evaluates them explicitly | evaluated               |
 
