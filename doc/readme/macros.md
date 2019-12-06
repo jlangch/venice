@@ -1,9 +1,8 @@
 # Macros
 
-_in progress_
-
 
 * [Overview](#overview)
+* [Macros vs Functions](#macros-vs-functions)
 * [When to use Macros](#when-to-use-macros)
 * [Quote and Syntax Quote](#quote-and-syntax-quote)
 * [Unquote](#unquote)
@@ -15,6 +14,26 @@ _in progress_
 ## Overview
 
 _TODO_
+
+
+## Macros vs Functions
+
+A simple explanation of the difference between functions and macros is:
+
+* a function transforms values into other values
+* a macro transforms code into other code
+
+In a more depth analysis function and macros can be compared regarding the aspects:
+
+* when the arguments are evaluated?
+* is the return value evaluated?
+
+Regarding these those two aspects, here are the differences between macros and functions:
+
+|           | arguments evaluation                           | return value evaluated? |
+| functions | before function code execution                 | not evaluated           |
+| macros    | only when macro code evaluates them explicitly | evaluated               |
+
 
 
 ## When to use Macros
@@ -44,6 +63,9 @@ This is a macro that is completely evaluated at parse/compile time.
   (str (time/local-date-time)))
 ```
 
+Another example for this kind of macros is performing expensive calculations at 
+parse/compile time as an optimization.
+
 
 ### 2. Access to unevaluated arguments is required
 
@@ -65,16 +87,16 @@ predicate _true_:
 
 ```clojure 
 (when true (println 100) 10)
-100
-=> 10
+; 100
+; => 10
 ```
 
 predicate _false_:
 
 ```clojure 
 (when false (println 100) 10)
-100
-=> nil
+; 100
+; => nil
 ```
 
 The body is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
@@ -93,15 +115,15 @@ predicate _true_:
 
 ```clojure 
 (when true (println 100) 10)
-100
-=> 10
+; 100
+; => 10
 ```
 
 predicate _false_:
 
 ```clojure 
 (when false (println 100) 10)
-=> nil
+; => nil
 ```
 
 
