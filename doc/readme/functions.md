@@ -1,6 +1,26 @@
 # Functions
 
-## Creating functions
+* [Creating Functions](#creating-functions)
+* [Variadic Functions](#variadic-functions)
+* [Multi-Arity Functions](#multi-arity-functions)
+* [Anonymous Functions](#anonymous-functions)
+* [Applying Functions](#applying-functions)
+* [Locals and Closures](#locals-and-closures)
+* [Functions with preconditions](#functions-with-preconditions)
+* [Maps, Sets, and Keywords as functions](#maps-sets-and-keywords-as-functions)
+* [Function resolved from a string](#function-resolved-from-a-string)
+* [Partial Functions](#partial-functions)
+* [Function Composition](#function-composition)
+* [Function threading macros](#function-threading-macros)
+* [Multimethods](#multimethods)
+* [Functions calling each other](#functions-calling-each-other)
+
+
+
+## Function composition
+
+
+## Creating Functions
 
 ```clojure
 (do
@@ -14,7 +34,7 @@
 ```
 
 
-## Variadic functions
+## Variadic Functions
 
 ```clojure
 (do
@@ -26,7 +46,7 @@
 ```
 
 
-## Multi-Arity functions
+## Multi-Arity Functions
 
 ```clojure
 (do
@@ -41,7 +61,7 @@
 ```
 
 
-## Anonymous functions
+## Anonymous Functions
 
 ```clojure
 (do
@@ -68,7 +88,7 @@ be a list or a vector.
 ```
 
 
-## Locals and closures
+## Locals and Closures
 
 ### let
 
@@ -183,14 +203,14 @@ of a closure.
 ```
 
 
-## Partial functions
+## Partial Functions
 
 ```clojure
 (map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
 ```
 
 
-## Function composition
+## Function Composition
 
 ```clojure
 (filter (comp not zero?) [0 1 0 2 0 3 0 4])  ;; => [1 2 3 4]
@@ -315,7 +335,7 @@ Simple recursion with multimethods:
 _Note: simple recursion suffers from Java's stack depth limit._
 
 
-## Functions calling each other:
+## Functions calling each other
 
 Venice supports functions calling each other without needing to declare them 
 or bind them with `letfn` as required with _Clojure_.

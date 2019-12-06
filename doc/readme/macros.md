@@ -3,6 +3,15 @@
 _in progress_
 
 
+* [Overview](#overview)
+* [When to use Macros](#when-to-use-macros)
+* [Quote and Syntax Quote](#quote-and-syntax-quote)
+* [Unquote](#unquote)
+* [Unquote-splicing](#unquote-splicing)
+* [Macro Hygiene](#macro-hygiene)
+
+
+
 ## Overview
 
 _TODO_
@@ -16,23 +25,87 @@ The reason is that macros are not first-class citizens in Venice. They cannot be
 accessed at runtime. You cannot passed them as an argument to a function, nor do any 
 of the other powerful things functional programming offers. 
 
-Macros are very powerful. But their power comes with a price: they are only available at 
+Macros are very powerful. But their power comes at a price: they are only available at 
 parse/compile time. The use of macros should be reserved for those special occasions 
 when their power is needed. Functions should always be preferred to macros.
 
 There are two circumstances where they are required.
 
-1. The code has to run at parse/compile time
 
-_TODO_
+### 1. The code has to run at parse/compile time
+
+Macros are very flexible in controlling which parts are evaluated at parse/compile time
+or at runtime.
+
+This is a macro that is completely evaluated at parse/compile time. 
+
+```clojure
+(defmacro build-time []
+  (str (time/local-date-time)))
+```
 
 
-2. Access to unevaluated arguments is required
+### 2. Access to unevaluated arguments is required
 
-_TODO_
+Macros are useful to create new control flow constructs. 
+
+As an example the `when` macro takes a test predicate and a body. The body is 
+only executed if the predicate evaluates to `true`.
+
+The macro which transforms into an _if_ with a _do_ for a _then_ without an _else_.
+
+Let's first implement `when` with function. 
+
+```clojure
+(defn when [test & body]
+   (if test (do (butlast body) (last body))))
+```
+
+predicate _true_:
+
+```clojure 
+(when true (println 100) 10)
+100
+=> 10
+```
+
+predicate _false_:
+
+```clojure 
+(when false (println 100) 10)
+100
+=> nil
+```
+
+The body is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
+because Venice evaluates expression before passing them as arguments to functions.
+The returned valued is in both cases correct.
 
 
-## Quote & Syntax Quote
+**when implemented as a macro:**
+
+```clojure
+(defmacro when [test & body]
+   (list 'if test (cons 'do body)))
+```
+
+predicate _true_:
+
+```clojure 
+(when true (println 100) 10)
+100
+=> 10
+```
+
+predicate _false_:
+
+```clojure 
+(when false (println 100) 10)
+=> nil
+```
+
+
+## Quote and Syntax Quote
 
 _TODO_
 
