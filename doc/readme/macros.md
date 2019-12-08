@@ -148,30 +148,33 @@ and verifying macros.
 
 _TODO_
 
+
 ### Unquote
 
 _TODO_
 
+
 ### Unquote-splicing
 
 _TODO_
+
 
 ### Macro expansion
 
 _TODO_
 
 
-
 ## Macro Hygiene
 
 _TODO_
+
 
 ### Symbol Capturing
 
 _TODO_
 
-### Auto Generate Symbols
 
+### Auto Generate Symbols
 
 _give an example_
 
