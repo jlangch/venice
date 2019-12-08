@@ -12,10 +12,10 @@
 ## Overview
 
 Macros give Venice a great power. Macros allow you to extend the language in a way
-that is not that is not possible with most other languages. In Java for example 
-you are limited to with what the language provides like the special forms `if`, 
+that is not possible with most other languages. In Java for example 
+you are limited to the features the language provides like the special forms `if`, 
 `do ..while`, `for` loops, or `new`. Venice Macros allow the creation of new
-control flow constructs and bend the language to suit you.
+control flow constructs and to bend the language to your needs.
 
 Macros are very powerful and come at the price to be not always simple. With
 great power comes great responsibility to the creator to not misuse it.
@@ -80,8 +80,6 @@ Macros are useful to create new control flow constructs.
 As an example the simplified `when` macro takes a test predicate and a form. 
 The form is only executed if the predicate evaluates to `true`.
 
-The macro which transforms into an _if_.
-
 Let's first implement `when` with function. 
 
 ```clojure
@@ -107,7 +105,7 @@ predicate _false_:
 
 The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
 because Venice evaluates expression before passing them as arguments to functions.
-The returned valued is in both cases correct.
+Nevertheless the returned valued is in both cases correct.
 
 
 **when implemented as a macro:**
