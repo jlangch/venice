@@ -11,7 +11,14 @@
 
 ## Overview
 
-_TODO_
+Macros give Venice a great power. Macros allow you to extend the language in a way
+that is not that is not possible with most other languages. In Java for example 
+you are limited to with what the language provides like the special forms `if`, 
+`do ..while`, `for` loops, or `new`. Venice Macros allow the creation of new
+control flow constructs and bend the language to suit you.
+
+Macros are very powerful and come at the price to be not always simple. With
+great power comes great responsibility to the creator to not misuse it.
 
 
 ## Macros vs Functions
@@ -70,22 +77,22 @@ parse/compile time as an optimization.
 
 Macros are useful to create new control flow constructs. 
 
-As an example the `when` macro takes a test predicate and a body. The body is 
-only executed if the predicate evaluates to `true`.
+As an example the simplified `when` macro takes a test predicate and a form. 
+The form is only executed if the predicate evaluates to `true`.
 
-The macro which transforms into an _if_ with a _do_ for a _then_ without an _else_.
+The macro which transforms into an _if_.
 
 Let's first implement `when` with function. 
 
 ```clojure
-(defn when [test & body]
-   (if test (do (butlast body) (last body))))
+(defn when [test form]
+   (if test form))
 ```
 
 predicate _true_:
 
 ```clojure 
-(when true (println 100) 10)
+(when true (do (println 100) 10))
 ; 100
 ; => 10
 ```
@@ -93,12 +100,12 @@ predicate _true_:
 predicate _false_:
 
 ```clojure 
-(when false (println 100) 10)
+(when false (do (println 100) 10))
 ; 100
 ; => nil
 ```
 
-The body is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
+The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
 because Venice evaluates expression before passing them as arguments to functions.
 The returned valued is in both cases correct.
 
@@ -106,14 +113,14 @@ The returned valued is in both cases correct.
 **when implemented as a macro:**
 
 ```clojure
-(defmacro when [test & body]
-   (list 'if test (cons 'do body)))
+(defmacro when [test form]
+   (list 'if test form))
 ```
 
 predicate _true_:
 
 ```clojure 
-(when true (println 100) 10)
+(when true (do (println 100) 10))
 ; 100
 ; => 10
 ```
@@ -121,7 +128,7 @@ predicate _true_:
 predicate _false_:
 
 ```clojure 
-(when false (println 100) 10)
+(when false (do (println 100) 10)0)
 ; => nil
 ```
 
