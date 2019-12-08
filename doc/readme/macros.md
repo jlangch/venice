@@ -28,12 +28,12 @@ A simple explanation of the difference between functions and macros is:
 * a function transforms values into other values
 * a macro transforms code into other code
 
-In a more depth analysis function and macros can be compared regarding the aspects:
+In more detail function and macros can be compared regarding the aspects:
 
 * when the arguments are evaluated?
 * is the return value evaluated?
 
-Regarding these those two aspects, here are the differences between macros and functions:
+Regarding these two aspects macros and functions can be compared as:
 
 |           | arguments evaluation                           | return value evaluated? |
 | :---      | :---                                           | :---                    |
@@ -44,7 +44,7 @@ Regarding these those two aspects, here are the differences between macros and f
 
 ## When to use Macros
 
-**Macros should be avoided whenever possible.**
+As basic rule: **Macros should be avoided whenever possible**
 
 The reason is that macros are not first-class citizens in Venice. They cannot be 
 accessed at runtime. You cannot passed them as an argument to a function, nor do any 
@@ -78,7 +78,7 @@ parse/compile time as an optimization.
 Macros are useful to create new control flow constructs. 
 
 As an example the simplified `when` macro takes a test predicate and a form. 
-The form is only executed if the predicate evaluates to `true`.
+The form is only to be executed if the predicate evaluates to `true`.
 
 Let's first implement `when` with function. 
 
@@ -104,7 +104,7 @@ predicate _false_:
 ```
 
 The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
-because Venice evaluates expression before passing them as arguments to functions.
+because Venice evaluates expressions before passing them as arguments to a function.
 Nevertheless the returned valued is in both cases correct.
 
 
@@ -133,7 +133,7 @@ predicate _false_:
 
 ## Toolbox
 
-The Venice reader provides a few special forms to deal with macros:
+The Venice _Reader_ provides a few special forms to deal with macros:
 
 * Quote (')
 * Syntax quote (`)
