@@ -146,7 +146,10 @@ E.g.: at macro expansion time `(when true (println 100))` is transformed to
   it though, but it makes the macro less readable.
 
 
-### Syntax Quote
+### Syntax Quote / Unquote
+
+Syntax quotes allow writing macros in a more elegant way regarding evaluation 
+rules at macro expansion time.
 
 ```clojure
 (defmacro when [test form]
@@ -156,12 +159,14 @@ E.g.: at macro expansion time `(when true (println 100))` is transformed to
 E.g.: at macro expansion time `(when true (println 100))` is transformed to 
 `(if true (println 100) nil)`
 
-_TODO_
+The syntax quote which is a backquote (`) supresses evaluation of the form that 
+follows it and all the nested forms. It is similar to templating languages where 
+parts of the template are _fixed_ and parts are _inserted_ (evaluated). 
+The syntax quote makes the form that follows it a _template_.
 
-
-### Unquote
-
-_TODO_
+The unquote which is a tilde (~) then is how parts of the template are forced to 
+be evaluated. It acts similarly to variable replacement in templates in templating 
+languages.
 
 
 ### Unquote-splicing
