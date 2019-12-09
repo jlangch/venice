@@ -87,11 +87,11 @@ Let's first implement `when` with a function.
    (if test form))
 ```
 
-|        | predicate _true_              | predicate _false_ |
-| :---   | :---                          | :---                           |
-| expr   | `(when true (do (print 99) 10))` | `(when false (do (print 99) 10))` |
-| stdout | `99`                          | `99`  _should not be printed!_  |
-| return | `10`                          | `nil`                           |
+|        | predicate _true_             | predicate _false_ |
+| :---   | :---                         | :---                           |
+| expr   | `(when true (do (print 99) 3))` | `(when false (do (print 99) 3))` |
+| stdout | `99`                         | `99`  _should not be printed!_  |
+| return | `3`                          | `nil`                           |
 
 The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
 because Venice evaluates expressions before passing them as arguments to a function.
@@ -106,10 +106,10 @@ Nevertheless the returned valued is in both cases correct.
 ```
 
 |        | predicate _true_              | predicate _false_ |
-| :---   | :---                          | :---                           |
-| expr   | `(when true (do (print 99) 10))` | `(when false (do (print 99) 10))` |
-| stdout | `99`                          |                                |
-| return | `10`                          | `nil`                           |
+| :---   | :---                          | :---                          |
+| expr   | `(when true (do (print 99) 3))` | `(when false (do (print 99) 3))` |
+| stdout | `99`                          |                               |
+| return | `3`                           | `nil`                          |
 
 
 ## Toolbox
