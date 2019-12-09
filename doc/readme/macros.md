@@ -227,7 +227,33 @@ Rewriting the macro to (see "core.venice")
 
 ### Macro expansion
 
-_TODO_
+While developing macros, it is important to be able to test the macro and see what code
+the macro expands to. Venice provides two functions for this:
+
+* `macroexpand`
+* `macroexpand-all`
+
+`macroexpand` expands the top-level macro in a form while `macroexpand-all` recursively 
+expands all macros in a form.
+
+```clojure
+(macroexpand '(-> c (+ 3) (* 2)))
+  
+; expanded   
+(* (+ c 3) 2)
+```
+
+```clojure
+(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))
+     
+; expanded   
+(let [n 5] 
+   (if (< n 0) 
+       -1 
+       (if (> n 0) 
+           1 
+           (if :else 0 nil))))
+```
 
 
 ## Macro Hygiene

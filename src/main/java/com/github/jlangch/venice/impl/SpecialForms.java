@@ -643,7 +643,7 @@ public class SpecialForms {
 					.doc(
 						"If form represents a macro form, returns its expansion, else " + 
 						"returns form.\n\n" +
-						"To recursively expand all macros in a form use (walk/macroexpand-all form).")
+						"To recursively expand all macros in a form use (macroexpand-all form).")
 					.examples("(macroexpand '(-> c (+ 3) (* 2)))")
 					.build()
 		) {
