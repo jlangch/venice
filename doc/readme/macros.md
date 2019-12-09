@@ -87,11 +87,11 @@ Let's first implement `when` with a function.
    (if test form))
 ```
 
-|            | predicate _true_                 | predicate _false_ |
-| :---       | :---                             | :---                              |
-| expression | `(when true (do (println 100) 10))` | `(when false (do (println 100) 10))` |
-| std output | `100`                            | `100`  _should not be printed!_    |
-| return     | `10`                             | `nil`                              |
+|        | predicate _true_              | predicate _false_ |
+| :---   | :---                          | :---                           |
+| expr   | `(when true (do (print 99) 10))` | `(when false (do (print 99) 10))` |
+| stdout | `99`                          | `99`  _should not be printed!_  |
+| return | `10`                          | `nil`                           |
 
 The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
 because Venice evaluates expressions before passing them as arguments to a function.
@@ -105,11 +105,11 @@ Nevertheless the returned valued is in both cases correct.
    (list 'if test form))
 ```
 
-|            | predicate _true_                 | predicate _false_ |
-| :---       | :---                             | :---                              |
-| expression | `(when true (do (println 100) 10))` | `(when false (do (println 100) 10))` |
-| std output | `100`                            |                                   |
-| return     | `10`                             | `nil`                              |
+|        | predicate _true_              | predicate _false_ |
+| :---   | :---                          | :---                           |
+| expr   | `(when true (do (print 99) 10))` | `(when false (do (print 99) 10))` |
+| stdout | `99`                          |                                |
+| return | `10`                          | `nil`                           |
 
 
 ## Toolbox
