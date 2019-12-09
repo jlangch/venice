@@ -171,7 +171,58 @@ languages.
 
 ### Unquote-splicing
 
-_TODO_
+So far our macro accepts a single form. What happens if we're going to extend the macro
+to use a body with multiple forms?
+
+#### A first approach
+
+Using syntax quote and unquote we can write it as:
+
+```clojure
+(defmacro when [test & body]
+   `(if ~test (do ~body) nil))
+```
+
+If we expand a macro call
+
+```clojure
+(macroexpand '(when true (println 100) (println 200)))
+```
+
+to see the transformed expressions, we get 
+
+```clojure 
+(if true (do ((println 100) (println 200))) nil)
+```
+
+The _body_ argument holds a list and thus a list is inserted in the template
+for the variable "body" resulting in `((println 100) (println 200))`. That is not 
+a function that can be executed. We do not want the surrounding parenthesis. 
+What we actually want is "body" to be splice into the `(do ...)` list as values.
+
+Unquote-splicing is exactly doing that. 
+
+
+#### A second approach with unquote-splicing
+
+Rewriting the macro to
+
+```clojure
+(defmacro when [test & body]
+   `(if ~test (do ~@body) nil))
+```
+
+... and expanding it
+
+```clojure
+(macroexpand '(when true (println 100) (println 200)))
+```
+
+... we see that the issue is solved now
+
+```clojure 
+(if true (do (println 100) (println 200)) nil)
+```
 
 
 ### Macro expansion
