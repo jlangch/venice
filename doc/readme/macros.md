@@ -14,7 +14,7 @@
 Macros give Venice a great power. Macros allow you to extend the language in a way
 that is not possible with most other languages. In Java for example 
 you are limited to the features the language provides like the special forms `if`, 
-`do ..while`, `for` loops, or `new`. Venice Macros allow the creation of new
+`do..while`, `for` loops, or `new`. Venice Macros allow the creation of new
 control flow constructs and to bend the language to your needs.
 
 Macros are very powerful and come at the price to be not always simple. With
@@ -80,7 +80,7 @@ Macros are useful to create new control flow constructs.
 As an example the simplified `when` macro takes a test predicate and a form. 
 The form is only to be executed if the predicate evaluates to `true`.
 
-Let's first implement `when` with function. 
+Let's first implement `when` with a function. 
 
 ```clojure
 (defn when [test form]
@@ -102,6 +102,10 @@ predicate _false_:
 ; 100
 ; => nil
 ```
+
+| predicate _true_ | predicate _false_ |
+| ---  | --- |
+| <code>(when true (do (println 100) 10))<br>; 100<br>; => 10</code>|<code>(when false (do (println 100) 10))<br>; 100<br>; => nil</code>|
 
 The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
 because Venice evaluates expressions before passing them as arguments to a function.
