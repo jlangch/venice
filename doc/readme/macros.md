@@ -137,13 +137,13 @@ E.g.: at macro expansion time `(when true (println 100))` is transformed to
 
 
 * By quoting `'if` Venice is prevented from evaluating `if` at macro expansion
-  time. Without quoting you get a `Symbol 'if' not found` exception, because `if` 
-  is a special form and not a symbol.
+  time. The `if` should be transformed as is to the output expression.
 
 * `test`and `form` do not need to be quoted because they are macro arguments and
   substituted at macro expansion time without evaluation.
 
-* `nil` does not need to be quoted either it evaluates to itself.
+* `nil` does not need to be quoted either it evaluates to itself. You can quote
+  it though, but it makes the macro less readable.
 
 
 ### Syntax Quote
