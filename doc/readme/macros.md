@@ -84,7 +84,7 @@ Let's first implement `when` with a function.
 
 ```clojure
 (defn when [test form]
-   (if test form))
+   (if test form nil))
 ```
 
 |        | predicate _true_             | predicate _false_ |
@@ -102,7 +102,7 @@ Nevertheless the returned valued is in both cases correct.
 
 ```clojure
 (defmacro when [test form]
-   (list 'if test form))
+   (list 'if test form nil))
 ```
 
 |        | predicate _true_              | predicate _false_ |
@@ -125,7 +125,28 @@ The functions `macroexpand` and `macroexpand-all` are your best friends when wri
 and verifying macros.
 
 
-### Quote and Syntax Quote
+### Quote
+
+```clojure
+(defmacro when [test form]
+   (list 'if test form nil))
+```
+
+E.g.: at macro expansion time `(when true (println 100))` is transformed to 
+`(if true (println 100) nil)`
+
+
+* By quoting `'if` Venice is prevented from evaluating `if` at macro expansion
+  time. Without quoting you get a `Symbol 'if' not found` exception, because `if` 
+  is a special form and not a symbol.
+
+* `test`and `form` do not need to be quoted because they are macro arguments and
+  substituted at macro expansion time without evaluation.
+
+* `nil` does not need to be quoted either it evaluates to itself.
+
+
+### Syntax Quote
 
 _TODO_
 
