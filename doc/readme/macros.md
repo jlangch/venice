@@ -205,7 +205,7 @@ Unquote-splicing is exactly doing that.
 
 #### A second approach with unquote-splicing
 
-Rewriting the macro to
+Rewriting the macro to (see "core.venice")
 
 ```clojure
 (defmacro when [test & body]
