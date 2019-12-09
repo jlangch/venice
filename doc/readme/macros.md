@@ -148,6 +148,14 @@ E.g.: at macro expansion time `(when true (println 100))` is transformed to
 
 ### Syntax Quote
 
+```clojure
+(defmacro when [test form]
+   `(if ~test ~form nil))
+```
+
+E.g.: at macro expansion time `(when true (println 100))` is transformed to 
+`(if true (println 100) nil)`
+
 _TODO_
 
 
