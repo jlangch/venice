@@ -105,7 +105,9 @@ predicate _false_:
 
 | predicate _true_ | predicate _false_ |
 | ---  | --- |
-| <code>(when true (do (println 100) 10))<br>; 100<br>; = 10</code>|<code>(when false (do (println 100) 10))<br>; 100<br>; = nil</code>|
+| `(when true (do (println 100) 10))` | `(when false (do (println 100) 10))` |
+| `; 100` | `; 100` |
+| `=> 10` | `=> nil` |
 
 The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
 because Venice evaluates expressions before passing them as arguments to a function.
