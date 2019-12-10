@@ -258,17 +258,99 @@ expands all macros in a form.
 
 ## Macro Hygiene
 
-_TODO_
+So far we haven't used local variables within macros. Venice supports a `time` macro
+to measure the execution time of a macro that uses local vars.
+
+Let's rebuild the macro:
+
+```clojure
+(defmacro time-1 [expr]
+  `(let [start (nano-time)
+         ret ~expr
+         end (nano-time)]
+     (printf "Elapsed time: %s%n" (- end start))
+     ret))
+```
+
+and testing it
+
+```clojure
+(time-1 (+ 1 2))
+  
+; Elapsed time: 32810
+; => 3
+```
+
+When writing a macro, there is a possibility that the macro will interact with vars or 
+locals outside of it in unexpected ways, for example, by shadowing them. Such macros are 
+known as unhygienic macros.
 
 
 ### Symbol Capturing
 
-_TODO_
+Let's see what happens when the macro interacts with vars outside of the macro:
+
+```clojure
+(let [start 1 end 2] 
+  (time-1 (+ start end)))
+      
+Elapsed time: 40438
+=> 424855845202275
+```
+
+Surprisingly the result of `(+ 1 2)` is now `424855845202275` instead of `3`. The 
+phenomenon happened here is called _symbol capturing_. The start var is captured
+by the macro itself.
+
+Expanding the call with `macroexpand-all` shows what happens:
+
+```clojure
+(let [start 1 end 2] 
+  (let [start (nano-time) 
+        ret (+ start end) 
+        end (nano-time)] 
+     (printf "Elapsed time: %s%n" (- end start)) 
+     ret))
+```
+
+To solve the problem the macro should use safe local var names.
+
+Venice provides two ways to create safe local var names for macros:
+
+* manually generated symbol names
+* auto generated symbols
 
 
-### Auto Generate Symbols
+### Manually generate safe symbol names
 
-_give an example_
+The `(gensym)` function lets you create manually safe symbol names:
+
+```clojure
+(defmacro time2 [expr]
+  (let [start (gensym "start__")
+        ret (gensym "ret__")
+        end (gensym "en__")]
+    `(let [~start (nano-time)
+           ~ret ~expr
+           ~end (nano-time)]
+       (printf "Elapsed time: %s%n" (- ~end ~start))
+       ~ret)))
+```
+
+
+### Auto generate symbols
+
+By suffixing a symbol with a `#` within _syntax quote_, Venice will create safe
+var names while expanding the nacro:
+
+```clojure
+(defmacro time3 [expr]
+  `(let [start# (nano-time)
+         ret# ~expr
+         end# (nano-time)]
+     (printf "Elapsed time: %s%n" (- end# start#))
+     ret#))
+```
 
 
 ### Limitations of auto generated symbols
