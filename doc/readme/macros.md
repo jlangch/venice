@@ -258,9 +258,11 @@ expands all macros in a form.
 
 ## Macro Hygiene
 
-So far we haven't used local variables within macros. Venice supports a `time` macro
-to measure the execution time of an expression that uses local vars. It prints the
-execution time and returns the evaluated expression.
+So far we haven't used local variables within macros. Locals var names in macros
+provide some pitfalls you have to be aware of when writing macros.
+
+Venice supports a `time` macro to measure the execution time of an expression that 
+uses local vars. It prints the execution time and returns the evaluated expression.
 
 Let's rebuild the macro:
 
@@ -318,13 +320,13 @@ To solve the problem the macro should use safe local var names.
 
 Venice provides two ways to create safe local var names for macros:
 
-* manually generated symbol names
-* auto generated symbols
+1. manually generate symbol names
+2. auto generate symbols
 
 
 ### Manually generate safe symbol names
 
-The `(gensym)` function lets you create manually safe symbol names:
+The `(gensym)` function lets you  manually create safe symbol names:
 
 ```clojure
 (defmacro time-2 [expr]
@@ -341,8 +343,8 @@ The `(gensym)` function lets you create manually safe symbol names:
 
 ### Auto generate symbols
 
-By suffixing a symbol with a `#` within _syntax quote_, Venice will create safe
-var names while expanding the nacro:
+By suffixing a symbol with a `#` within a _syntax quote_, Venice will 
+create safe var names automatically while expanding the macro:
 
 ```clojure
 (defmacro time-3 [expr]
