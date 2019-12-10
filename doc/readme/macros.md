@@ -362,6 +362,24 @@ create safe var names automatically while expanding the macro:
      ret#))
 ```
 
+Expanding the call with `macroexpand-all` shows what happens:
+
+```clojure
+(macroexpand-all '(let [start 1 end 2] 
+                    (time-3 (+ start end))))
+```
+
+results to
+
+```clojure
+(let [start 1 end 2] 
+   (let [start__89__auto (nano-time) 
+         ret__90__auto (+ start end) 
+         end__91__auto (nano-time)] 
+     (printf "Elapsed time: %s%n" (- end__91__auto start__89__auto)) 
+     ret__90__auto))
+```
+
 
 ### Limitations of auto generated symbols
 
