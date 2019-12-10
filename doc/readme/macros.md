@@ -362,7 +362,8 @@ create safe var names automatically while expanding the macro:
      ret#))
 ```
 
-Expanding the call with `macroexpand-all` shows what happens:
+Expanding the call with `macroexpand-all` shows how the problem is solved 
+now:
 
 ```clojure
 (macroexpand-all '(let [start 1 end 2] 
