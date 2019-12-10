@@ -302,7 +302,7 @@ Elapsed time: 40438
 ```
 
 Surprisingly the result of `(+ 1 2)` is now `424855845202275` instead of `3`. The 
-phenomenon happened here is called _symbol capturing_. The start var is captured
+phenomenon happened here is called _symbol capturing_. The _start_ var is captured
 by the macro itself.
 
 Expanding the call with `macroexpand-all` shows what happens:
