@@ -259,7 +259,8 @@ expands all macros in a form.
 ## Macro Hygiene
 
 So far we haven't used local variables within macros. Venice supports a `time` macro
-to measure the execution time of an expression that uses local vars.
+to measure the execution time of an expression that uses local vars. It prints the
+execution time and returns the evaluated expression.
 
 Let's rebuild the macro:
 
