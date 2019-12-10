@@ -316,7 +316,7 @@ results to
 
 ```clojure
 (let [start 1 end 2] 
-  (let [start (nano-time) ; 'start' is shadowed by (nano-time)
+  (let [start (nano-time) ; 'start' is shadowing the outer 'start'
         ret (+ start end)  
         end (nano-time)] 
      (printf "Elapsed time: %s%n" (- end start)) 
