@@ -326,7 +326,7 @@ Venice provides two ways to create safe local var names for macros:
 The `(gensym)` function lets you create manually safe symbol names:
 
 ```clojure
-(defmacro time2 [expr]
+(defmacro time-2 [expr]
   (let [start (gensym "start__")
         ret (gensym "ret__")
         end (gensym "en__")]
@@ -344,7 +344,7 @@ By suffixing a symbol with a `#` within _syntax quote_, Venice will create safe
 var names while expanding the nacro:
 
 ```clojure
-(defmacro time3 [expr]
+(defmacro time-3 [expr]
   `(let [start# (nano-time)
          ret# ~expr
          end# (nano-time)]
