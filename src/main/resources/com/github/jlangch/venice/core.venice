@@ -525,7 +525,7 @@
 
 (defmacro
   ^{ :arglists '("(time expr)")
-     :doc "Evaluates expr and prints the time it took.  Returns the value of expr."
+     :doc "Evaluates expr and prints the time it took. Returns the value of expr."
      :examples '("(time (+ 100 200))") }
 
   time [expr]
