@@ -256,7 +256,7 @@ expands all macros in a form.
 ```
 
 
-## Macro Hygiene
+## Macro hygiene
 
 So far we haven't used local variables within macros. Locals var names in macros
 provide some pitfalls you have to be aware of when writing macros.
@@ -289,7 +289,7 @@ locals outside of it in unexpected ways, for example, by shadowing them. Such ma
 known as unhygienic macros.
 
 
-### Symbol Capturing
+### Symbol capturing
 
 Let's see what happens when the macro interacts with vars outside of the macro:
 
