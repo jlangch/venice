@@ -308,9 +308,16 @@ by the macro itself.
 Expanding the call with `macroexpand-all` shows what happens:
 
 ```clojure
+(macroexpand-all '(let [start 1 end 2] 
+                    (time-1 (+ start end))))
+```
+
+results to
+
+```clojure
 (let [start 1 end 2] 
-  (let [start (nano-time) 
-        ret (+ start end) 
+  (let [start (nano-time) ; 'start' is shadowed by (nano-time)
+        ret (+ start end)  
         end (nano-time)] 
      (printf "Elapsed time: %s%n" (- end start)) 
      ret))
