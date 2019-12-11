@@ -11,13 +11,13 @@
 
 ## Overview
 
-Macros give Venice a great power. Macros allow you to extend the language in a way
+Macros give Venice a great power. They allow you to extend the language in a way
 that is not possible with most other languages. In Java for example 
 you are limited to the features the language provides like the special forms `if`, 
-`do..while`, `for` loops, or `new`. Venice Macros allow the creation of new
+`do..while`, `for` loops, or `new`. Venice macros allow the creation of new
 control flow constructs and to bend the language to your needs.
 
-Macros are very powerful and come at the price to be not always simple. With
+Macros are very powerful but come at the price to be not always simple. With
 great power comes great responsibility to the creator to not misuse it.
 
 
@@ -42,7 +42,7 @@ Regarding these two aspects macros and functions can be compared as:
 
 
 
-## When to use Macros
+## When to use macros
 
 As basic rule: **Macros should be avoided whenever possible**
 
@@ -51,18 +51,18 @@ accessed at runtime. You cannot passed them as an argument to a function, nor do
 of the other powerful things functional programming offers. 
 
 Macros are very powerful. But their power comes at a price: they are only available at 
-parse/compile time. The use of macros should be reserved for those special occasions 
+read/compile time. The use of macros should be reserved for those special occasions 
 when their power is needed. Functions should always be preferred to macros.
 
 There are two circumstances where they are required.
 
 
-### 1. The code has to run at parse/compile time
+### 1. The code has to run at read/compile time
 
 Macros are very flexible in controlling which parts are evaluated at parse/compile time
 or at runtime.
 
-This is a macro that is completely evaluated at parse/compile time. 
+This is a macro that is completely evaluated at read/compile time. 
 
 ```clojure
 (defmacro build-time []
@@ -70,7 +70,7 @@ This is a macro that is completely evaluated at parse/compile time.
 ```
 
 Another example for this kind of macros is performing expensive calculations at 
-parse/compile time as an optimization.
+read/compile time as an optimization.
 
 
 ### 2. Access to unevaluated arguments is required
@@ -93,9 +93,9 @@ Let's first implement `when` with a function.
 | stdout | `99`                         | `99`  _should not be printed!_  |
 | return | `3`                          | `nil`                           |
 
-The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ or _false_, 
-because Venice evaluates expressions before passing them as arguments to a function.
-Nevertheless the returned valued is in both cases correct.
+The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ 
+or _false_, because Venice evaluates expressions before passing them as arguments 
+to a function. Nevertheless the returned valued is in both cases correct.
 
 
 **when implemented as a macro:**
@@ -148,7 +148,7 @@ E.g.: at macro expansion time `(when true (println 100))` is transformed to
 
 ### Syntax Quote / Unquote
 
-Syntax quotes allow writing macros in a more elegant way regarding evaluation 
+_Syntax quotes_ allow writing macros in a more elegant way regarding evaluation 
 rules at macro expansion time.
 
 ```clojure
@@ -174,9 +174,10 @@ languages.
 So far our macro accepts a single form. What happens if we're going to extend the macro
 to use a body with multiple forms?
 
+
 #### A first approach
 
-Using syntax quote and unquote we can write it as:
+Using _syntax quote_ and _unquote_ we can write it as:
 
 ```clojure
 (defmacro when [test & body]
@@ -233,7 +234,7 @@ the macro expands to. Venice provides two functions for this:
 * `macroexpand`
 * `macroexpand-all`
 
-`macroexpand` expands the top-level macro in a form while `macroexpand-all` recursively 
+`macroexpand` expands a single macro form while `macroexpand-all` recursively 
 expands all macros in a form.
 
 ```clojure
@@ -261,8 +262,9 @@ expands all macros in a form.
 So far we haven't used local variables within macros. Locals var names in macros
 provide some pitfalls you have to be aware of when writing macros.
 
-Venice supports a `time` macro to measure the execution time of an expression that 
-uses local vars. It prints the execution time and returns the evaluated expression.
+Venice supports a simple `time` macro to measure the execution time of an expression 
+that uses local vars. It prints the execution time and returns the evaluated 
+expression.
 
 Let's rebuild the macro:
 
@@ -285,7 +287,7 @@ and testing it
 ```
 
 When writing a macro, there is a possibility that the macro will interact with vars or 
-locals outside of it in unexpected ways, for example, by shadowing them. Such macros are 
+locals outside of it in unexpected ways, for example by shadowing them. Such macros are 
 known as unhygienic macros.
 
 
