@@ -150,13 +150,13 @@ public class MakeFunctions {
 			}
 			catch (Exception ex) {
 				throw new VncException(String.format(
-						"Failed to load manifest from APP file '%s'.",
+						"Failed to load manifest from Venice application archive '%s'.",
 						app.getPath()));
 			}
 		}
 		else {
 			throw new VncException(String.format(
-					"The APP file '%s' does not exist",
+					"The Venice application archive '%s' does not exist",
 					app.getPath()));
 		}
 	}
