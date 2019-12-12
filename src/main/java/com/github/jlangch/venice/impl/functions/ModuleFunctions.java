@@ -26,8 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -44,6 +42,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -208,19 +207,13 @@ public class ModuleFunctions {
 		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
 	}
 	
-	private static FileSystem mountZip(final File zip) throws IOException {
-		return FileSystems.newFileSystem(
-				zip.toPath(),
-				ModuleFunctions.class.getClassLoader());
-	}
-	
-	private static VncVal loadFileFromZip(final File zip, final File file) throws IOException {
+	private static VncVal loadFileFromZip(final File zip, final File file) {
 		if (zip.exists()) {
-			try (FileSystem zipFS = mountZip(zip)) {
-				final VncVal code = load(zipFS.getPath(file.getPath()));
-				if (code != Nil) {
-					return code;
-				}
+			try {
+				return ZipFileSystemUtil.loadFileFromZip(zip, file);
+			}
+			catch(Exception ex) {
+				return Nil;
 			}
 		}
 		

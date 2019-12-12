@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
 import com.github.jlangch.venice.impl.util.Zipper;
 
 
@@ -75,7 +76,7 @@ public class MakeFunctions {
 					
 					final Map<String, Object> zipEntries = new LinkedHashMap<>();
 					
-					final VncString manifest = buildManifest(name, mainFileName);
+					final VncString manifest = buildJsonManifest(name, mainFileName);
 											
 					zipEntries.put("MANIFEST.MF", manifest.getValue().getBytes("utf-8"));
 									
@@ -116,9 +117,28 @@ public class MakeFunctions {
 	
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncMap getManifest(final File app) {
+		if (app.exists()) {
+			try {
+				final VncVal manifest = ZipFileSystemUtil.loadFileFromZip(app, new File("MANIFEST.MF"));
+				
+				return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(manifest)));
+			}
+			catch (Exception ex) {
+				throw new VncException(String.format(
+						"Failed to load manifest from APP file '%'.",
+						app.getPath()));
+			}
+		}
+		else {
+			throw new VncException(String.format(
+					"The APP file '%' does not exist",
+					app.getPath()));
+		}
+	}
 		
-		
-	private static VncString buildManifest(
+	private static VncString buildJsonManifest(
 		final VncString name,
 		final VncString mainFileName
 	) {

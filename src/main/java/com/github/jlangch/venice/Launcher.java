@@ -29,9 +29,13 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.functions.MakeFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -68,6 +72,24 @@ public class Launcher {
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
 			}
+			else if (cli.switchPresent("-app")) {
+				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
+				
+				final VncMap manifest = MakeFunctions.getManifest(appFile);
+				
+				final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
+				final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
+						
+				loadPaths.clear();
+				loadPaths.add(appFile.getAbsolutePath());
+				
+				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+				final Env env = createEnv(venice, cli);
+				
+				final String appBootstrap = String.format("(load-file \"%s\")", mainFile);
+				
+				System.out.println(venice.PRINT(venice.RE(appBootstrap, appName, env)));
+			}
 			else {
 				new REPL(interceptor, loadPaths).run(args);
 			}
@@ -92,6 +114,10 @@ public class Launcher {
 
 	private static String suffixWithVeniceFileExt(final String s) {
 		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
+	}
+
+	private static String suffixWithZipFileExt(final String s) {
+		return s == null ? null : (s.endsWith(".zip") ? s : s + ".zip");
 	}
 
 }
