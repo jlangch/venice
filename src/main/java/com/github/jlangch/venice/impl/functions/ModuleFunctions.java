@@ -150,33 +150,11 @@ public class ModuleFunctions {
 								for(VncVal p : loadPaths.getList()) {
 									if (p != Nil) {
 										final String loadPath = name(p);
-										if (loadPath.endsWith(".zip")) {
-											// load "file" from zip
-											final File zip = new File(loadPath);
-											if (zip.exists()) {
-												try (FileSystem zipFS = mountZIP(zip)) {
-													final VncVal code = load(zipFS.getPath(file.getPath()));
-													if (code != Nil) {
-														return code;
-													}
-												}
-											}
-										}
-										else {
-											final File dir = new File(loadPath).getAbsoluteFile();
-											if (dir.isDirectory()) {
-												final File fl = new File(dir, file.getPath());
-												if (fl.isFile()) {
-													if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
-														// Prevent accessing files outside the load-path.
-														// E.g.: ../../coffee
-														final VncVal code = load(new File(dir, file.getPath()).toPath());
-														if (code != Nil) {
-															return code;
-														}
-													}
-												}
-											}
+										final VncVal code = loadPath.endsWith(".zip")
+																? loadFileFromZip(new File(loadPath), file)
+																: loadFileFromDir(new File(loadPath), file);
+										if (code != Nil) {
+											return code;
 										}
 									}
 								}
@@ -230,10 +208,42 @@ public class ModuleFunctions {
 		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
 	}
 	
-	private static FileSystem mountZIP(final File zip) throws IOException {
+	private static FileSystem mountZip(final File zip) throws IOException {
 		return FileSystems.newFileSystem(
 				zip.toPath(),
 				ModuleFunctions.class.getClassLoader());
+	}
+	
+	private static VncVal loadFileFromZip(final File zip, final File file) throws IOException {
+		if (zip.exists()) {
+			try (FileSystem zipFS = mountZip(zip)) {
+				final VncVal code = load(zipFS.getPath(file.getPath()));
+				if (code != Nil) {
+					return code;
+				}
+			}
+		}
+		
+		return Nil;
+	}
+	
+	private static VncVal loadFileFromDir(final File path, final File file) throws IOException {
+		final File dir = path.getAbsoluteFile();
+		if (dir.isDirectory()) {
+			final File fl = new File(dir, file.getPath());
+			if (fl.isFile()) {
+				if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
+					// Prevent accessing files outside the load-path.
+					// E.g.: ../../coffee
+					final VncVal code = load(new File(dir, file.getPath()).toPath());
+					if (code != Nil) {
+						return code;
+					}
+				}
+			}
+		}
+		
+		return Nil;
 	}
 		
 	
