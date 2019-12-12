@@ -83,12 +83,12 @@ public class Launcher {
 				loadPaths.clear();
 				loadPaths.add(appFile.getAbsolutePath());
 
-				System.out.println(String.format("Launching Venice application '%' ...", appName));
+				System.out.println(String.format("Launching Venice application '%s' ...", appName));
 
 				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 				final Env env = createEnv(venice, cli);
 				
-				final String appBootstrap = String.format("(load-file \"%s\")", mainFile);
+				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", mainFile);
 				
 				System.out.println(venice.PRINT(venice.RE(appBootstrap, appName, env)));
 			}

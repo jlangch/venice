@@ -118,6 +118,29 @@ public class MakeFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction manifest = 
+			new VncFunction(
+					"manifest", 
+					VncFunction
+						.meta()
+						.arglists("(manifest app)")		
+						.doc("Returns the manifest of a Venice application archive.")
+						.build()
+			) {	
+				public VncVal apply(final VncList args) {
+					assertArity("manifest", args, 1);
+
+					final File app = IOFunctions.convertToFile(
+											args.first(),
+											"Function 'manifest' app is not a file");
+
+					return getManifest(app);
+				}
+		
+			    private static final long serialVersionUID = -1848883965231344442L;
+			};
+
+			
 	public static VncMap getManifest(final File app) {
 		if (app.exists()) {
 			try {
@@ -127,13 +150,13 @@ public class MakeFunctions {
 			}
 			catch (Exception ex) {
 				throw new VncException(String.format(
-						"Failed to load manifest from APP file '%'.",
+						"Failed to load manifest from APP file '%s'.",
 						app.getPath()));
 			}
 		}
 		else {
 			throw new VncException(String.format(
-					"The APP file '%' does not exist",
+					"The APP file '%s' does not exist",
 					app.getPath()));
 		}
 	}
@@ -186,5 +209,6 @@ public class MakeFunctions {
 			new VncHashMap
 					.Builder()
 					.add(make_app)
+					.add(manifest)
 					.toMap();
 }

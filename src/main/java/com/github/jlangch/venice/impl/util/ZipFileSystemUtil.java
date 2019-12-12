@@ -50,7 +50,7 @@ public class ZipFileSystemUtil {
 	public static VncVal loadFileFromZip(final File zip, final File file) {
 		if (!zip.exists()) {
 			throw new VncException(String.format(
-					"The ZIP file '%' does not exist",
+					"The ZIP file '%s' does not exist",
 					zip.getPath()));
 		}
 		
@@ -63,7 +63,7 @@ public class ZipFileSystemUtil {
 		}
 		catch(Exception ex) {
 			throw new VncException(String.format(
-						"Failed to load file '%' from ZIP '%s'",
+						"Failed to load file '%s' from ZIP '%s'",
 						file.getPath(),
 						zip.getPath()));
 		}
