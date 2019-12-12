@@ -82,7 +82,9 @@ public class Launcher {
 						
 				loadPaths.clear();
 				loadPaths.add(appFile.getAbsolutePath());
-				
+
+				System.out.println(String.format("Launching Venice application '%' ...", appName));
+
 				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 				final Env env = createEnv(venice, cli);
 				
