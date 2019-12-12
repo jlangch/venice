@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - a tree walker (`prewalk`, `postwalk`) for Venice data structures
 - function `macroexpand-all` to recursively expand macros in a s-expression 
 - load path file completion for the REPL with `(load-file file-path)`
+- load path to support ZIP files in addition to directories
+- support for Venice archives for simplified distribution of Venice apps
 
 ### Fixed
 
