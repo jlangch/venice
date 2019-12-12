@@ -31,6 +31,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -72,13 +73,16 @@ public class MakeFunctions {
 					
 					final String manifest = String.format(
 												"{ \n" +
-												"   \"version\" : \"%s\" \n" +
-												"   \"app-name\" : \"%s\" \n" +
+												"   \"manifest-version\" : \"%s\", \n" +
+												"   \"app-name\" : \"%s\", \n" +
 												"   \"main-file\" : \"%s\" \n" +
+												"   \"created-by\" : \"%s %s\" \n" +
 												"}",
 												"1.0",
 												name,
-												mainFileName);
+												mainFileName,
+												"Venice",
+												Version.VERSION);
 											
 					zipEntries.put("MANIFEST.MF", manifest.getBytes("utf-8"));
 									
