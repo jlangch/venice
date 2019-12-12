@@ -25,7 +25,11 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
@@ -132,7 +136,7 @@ public class ModuleFunctions {
 
 						if (file != null) {
 							if (loadPaths.isEmpty()) {
-								final VncVal code = load(file);
+								final VncVal code = load(file.toPath());
 								if (code != Nil) {
 									return code;
 								}
@@ -145,15 +149,27 @@ public class ModuleFunctions {
 							else {
 								for(VncVal p : loadPaths.getList()) {
 									if (p != Nil) {
-										final File dir = new File(name(p)).getAbsoluteFile();
-										final File fl = new File(dir, file.getPath());
-										if (fl.isFile()) {
-											if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
-												// Prevent accessing files outside the load-path.
-												// E.g.: ../../coffee
-												final VncVal code = load(new File(dir, file.getPath()));
+										final String loadPath = name(p);
+										if (loadPath.endsWith(".zip")) {
+											// load "file" from zip
+											try (FileSystem zipfs = mountZIP(new File(loadPath))) {
+												final VncVal code = load(zipfs.getPath(file.getPath()));
 												if (code != Nil) {
 													return code;
+												}
+											}
+										}
+										else {
+											final File dir = new File(loadPath).getAbsoluteFile();
+											final File fl = new File(dir, file.getPath());
+											if (fl.isFile()) {
+												if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
+													// Prevent accessing files outside the load-path.
+													// E.g.: ../../coffee
+													final VncVal code = load(new File(dir, file.getPath()).toPath());
+													if (code != Nil) {
+														return code;
+													}
 												}
 											}
 										}
@@ -179,9 +195,9 @@ public class ModuleFunctions {
 		};
 
 
-	private static VncVal load(final File file) {
+	private static VncVal load(final Path path) {
 		try {
-			final byte[] data = Files.readAllBytes(file.toPath());
+			final byte[] data = Files.readAllBytes(path);
 
 			return new VncString(new String(data, "utf-8"));
 		}
@@ -207,6 +223,12 @@ public class ModuleFunctions {
 	
 	private static String suffixWithVeniceFileExt(final String s) {
 		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
+	}
+	
+	private static FileSystem mountZIP(final File zip) throws IOException {
+		return FileSystems.newFileSystem(
+				zip.toPath(),
+				ModuleFunctions.class.getClassLoader());
 	}
 		
 	

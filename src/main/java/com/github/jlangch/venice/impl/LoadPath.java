@@ -57,14 +57,11 @@ public class LoadPath {
 	}
 
 	public static VncList toVncList(final List<String> paths) {
-		if (paths == null) {
-			return new VncList();
-		}
-		else {
-			return new VncList(paths.stream()
-							 		.map(p -> new VncString(p))
-							 		.collect(Collectors.toList()));
-		}
+		return paths == null || paths.isEmpty()
+				? new VncList()
+				: new VncList(paths.stream()
+							 	   .map(p -> new VncString(p))
+							 	   .collect(Collectors.toList()));
 	}
 	
 	private static String makeCanocicalPath(final String path) {
