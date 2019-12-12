@@ -106,6 +106,9 @@ public class MakeFunctions {
 					
 					return Nil;
 				} 
+				catch (VncException ex) {
+					throw ex;
+				}
 				catch (Exception ex) {
 					throw new VncException("Failed to build Venice app", ex);
 				}
