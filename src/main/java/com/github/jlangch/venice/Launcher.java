@@ -56,12 +56,14 @@ public class Launcher {
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
 				final String script = new String(FileUtil.load(new File(file)));
 				
-				run(cli, loadPaths, interceptor, script, new File(file).getName());
+				System.out.println(
+						runScript(cli, loadPaths, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-script")) {
 				final String script = cli.switchValue("-script");
 				
-				run(cli, loadPaths, interceptor, script, "script");
+				System.out.println(
+						runScript(cli, loadPaths, interceptor, script, "script"));
 			}
 			else if (cli.switchPresent("-app")) {
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
@@ -78,7 +80,7 @@ public class Launcher {
 
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", mainFile);
 
-				run(cli, loadPaths, interceptor, appBootstrap, appName);
+				runScript(cli, loadPaths, interceptor, appBootstrap, appName);
 			}
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
@@ -99,7 +101,7 @@ public class Launcher {
 		}	
 	}
 	
-	private static void run(
+	private static String runScript(
 			final CommandLineArgs cli,
 			final List<String> loadPaths,
 			final IInterceptor interceptor,
@@ -110,7 +112,7 @@ public class Launcher {
 		
 		final Env env = createEnv(venice, cli);
 	
-		System.out.println(venice.PRINT(venice.RE(script, name, env)));
+		return venice.PRINT(venice.RE(script, name, env));
 	}
 	
 	private static Env createEnv(final VeniceInterpreter venice, final CommandLineArgs cli) {
