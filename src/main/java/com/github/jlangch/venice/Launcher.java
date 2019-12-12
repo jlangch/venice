@@ -53,21 +53,15 @@ public class Launcher {
 
 		try {
 			if (cli.switchPresent("-file")) {
-				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
-				final Env env = createEnv(venice, cli);
-	
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
 				final String script = new String(FileUtil.load(new File(file)));
 				
-				System.out.println(venice.PRINT(venice.RE(script, new File(file).getName(), env)));
+				run(cli, loadPaths, interceptor, script, new File(file).getName());
 			}
 			else if (cli.switchPresent("-script")) {
-				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
-				final Env env = createEnv(venice, cli);
-	
 				final String script = cli.switchValue("-script");
 				
-				System.out.println(venice.PRINT(venice.RE(script, "script", env)));
+				run(cli, loadPaths, interceptor, script, "script");
 			}
 			else if (cli.switchPresent("-app")) {
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
@@ -82,12 +76,9 @@ public class Launcher {
 
 				System.out.println(String.format("Launching Venice application '%s' ...", appName));
 
-				final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
-				final Env env = createEnv(venice, cli);
-				
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", mainFile);
-				
-				System.out.println(venice.PRINT(venice.RE(appBootstrap, appName, env)));
+
+				run(cli, loadPaths, interceptor, appBootstrap, appName);
 			}
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
@@ -106,6 +97,20 @@ public class Launcher {
 			ex.printStackTrace();
 			System.exit(1);
 		}	
+	}
+	
+	private static void run(
+			final CommandLineArgs cli,
+			final List<String> loadPaths,
+			final IInterceptor interceptor,
+			final String script,
+			final String name
+	) {
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+		
+		final Env env = createEnv(venice, cli);
+	
+		System.out.println(venice.PRINT(venice.RE(script, name, env)));
 	}
 	
 	private static Env createEnv(final VeniceInterpreter venice, final CommandLineArgs cli) {
