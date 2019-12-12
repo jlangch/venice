@@ -152,10 +152,13 @@ public class ModuleFunctions {
 										final String loadPath = name(p);
 										if (loadPath.endsWith(".zip")) {
 											// load "file" from zip
-											try (FileSystem zipfs = mountZIP(new File(loadPath))) {
-												final VncVal code = load(zipfs.getPath(file.getPath()));
-												if (code != Nil) {
-													return code;
+											final File zip = new File(loadPath);
+											if (zip.exists()) {
+												try (FileSystem zipFS = mountZIP(zip)) {
+													final VncVal code = load(zipFS.getPath(file.getPath()));
+													if (code != Nil) {
+														return code;
+													}
 												}
 											}
 										}
