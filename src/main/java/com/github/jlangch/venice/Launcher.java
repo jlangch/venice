@@ -69,9 +69,6 @@ public class Launcher {
 				
 				System.out.println(venice.PRINT(venice.RE(script, "script", env)));
 			}
-			else if (cli.switchPresent("-repl")) {
-				new REPL(interceptor, loadPaths).run(args);
-			}
 			else if (cli.switchPresent("-app")) {
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
@@ -91,6 +88,9 @@ public class Launcher {
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", mainFile);
 				
 				System.out.println(venice.PRINT(venice.RE(appBootstrap, appName, env)));
+			}
+			else if (cli.switchPresent("-repl")) {
+				new REPL(interceptor, loadPaths).run(args);
 			}
 			else {
 				new REPL(interceptor, loadPaths).run(args);
