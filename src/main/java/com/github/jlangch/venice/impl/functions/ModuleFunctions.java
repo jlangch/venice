@@ -164,14 +164,16 @@ public class ModuleFunctions {
 										}
 										else {
 											final File dir = new File(loadPath).getAbsoluteFile();
-											final File fl = new File(dir, file.getPath());
-											if (fl.isFile()) {
-												if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
-													// Prevent accessing files outside the load-path.
-													// E.g.: ../../coffee
-													final VncVal code = load(new File(dir, file.getPath()).toPath());
-													if (code != Nil) {
-														return code;
+											if (dir.isDirectory()) {
+												final File fl = new File(dir, file.getPath());
+												if (fl.isFile()) {
+													if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
+														// Prevent accessing files outside the load-path.
+														// E.g.: ../../coffee
+														final VncVal code = load(new File(dir, file.getPath()).toPath());
+														if (code != Nil) {
+															return code;
+														}
 													}
 												}
 											}
