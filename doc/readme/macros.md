@@ -47,7 +47,7 @@ Regarding these two aspects macros and functions can be compared as:
 As basic rule: **Macros should be avoided whenever possible**
 
 The reason is that macros are not first-class citizens in Venice. They cannot be 
-accessed at runtime. You cannot passed them as an argument to a function, nor do any 
+accessed at runtime. You cannot pass them as an argument to a function, nor do any 
 of the other powerful things functional programming offers. 
 
 Macros are very powerful. But their power comes at a price: they are only available at 
