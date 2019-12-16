@@ -47,7 +47,7 @@ import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
 import com.github.jlangch.venice.impl.util.Zipper;
 
 
-public class MakeFunctions {
+public class AppFunctions {
 
 	public static VncFunction make_app = 
 		new VncFunction(

@@ -29,7 +29,7 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.functions.MakeFunctions;
+import com.github.jlangch.venice.impl.functions.AppFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -68,7 +68,7 @@ public class Launcher {
 			else if (cli.switchPresent("-app")) {
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
-				final VncMap manifest = MakeFunctions.getManifest(appFile);
+				final VncMap manifest = AppFunctions.getManifest(appFile);
 				
 				final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
 				final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
