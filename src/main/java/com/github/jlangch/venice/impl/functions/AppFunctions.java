@@ -119,26 +119,26 @@ public class AppFunctions {
 		};
 
 	public static VncFunction manifest = 
-			new VncFunction(
-					"app/manifest", 
-					VncFunction
-						.meta()
-						.arglists("(app/manifest app)")		
-						.doc("Returns the manifest of a Venice application archive.")
-						.build()
-			) {	
-				public VncVal apply(final VncList args) {
-					assertArity("manifest", args, 1);
+		new VncFunction(
+				"app/manifest", 
+				VncFunction
+					.meta()
+					.arglists("(app/manifest app)")		
+					.doc("Returns the manifest of a Venice application archive.")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				assertArity("manifest", args, 1);
 
-					final File app = IOFunctions.convertToFile(
-											args.first(),
-											"Function 'app/manifest' app is not a file");
+				final File app = IOFunctions.convertToFile(
+										args.first(),
+										"Function 'app/manifest' app is not a file");
 
-					return getManifest(app);
-				}
-		
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
+				return getManifest(app);
+			}
+	
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 			
 	public static VncMap getManifest(final File app) {

@@ -28,8 +28,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class ZipFileSystemUtil {
@@ -47,7 +47,7 @@ public class ZipFileSystemUtil {
 		}
 	}
 	
-	public static VncVal loadFileFromZip(final File zip, final File file) {
+	public static VncByteBuffer loadBinaryFileFromZip(final File zip, final File file) {
 		if (!zip.exists()) {
 			throw new VncException(String.format(
 					"The ZIP file '%s' does not exist",
@@ -57,7 +57,27 @@ public class ZipFileSystemUtil {
 		try {
 			try (FileSystem zipFS = mountZip(zip)) {
 				final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
-
+				return new VncByteBuffer(data);
+			}
+		}
+		catch(Exception ex) {
+			throw new VncException(String.format(
+						"Failed to load binary file '%s' from ZIP '%s'",
+						file.getPath(),
+						zip.getPath()));
+		}
+	}
+	
+	public static VncString loadFileFromZip(final File zip, final File file) {
+		if (!zip.exists()) {
+			throw new VncException(String.format(
+					"The ZIP file '%s' does not exist",
+					zip.getPath()));
+		}
+		
+		try {
+			try (FileSystem zipFS = mountZip(zip)) {
+				final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
 				return new VncString(new String(data, "utf-8"));
 			}
 		}
