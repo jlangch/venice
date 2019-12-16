@@ -120,7 +120,8 @@ public class DocGenerator {
 				getConcurrencySection(),
 				getSystemSection(),
 				getJavaInteropSection(),
-				getIOSection());
+				getIOSection(),
+				getAppSection());
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
@@ -1134,6 +1135,20 @@ public class DocGenerator {
 		other.addItem(getDocItem("io/load-classpath-resource"));
 		other.addItem(getDocItem("io/mime-type"));
 		other.addItem(getDocItem("io/default-charset"));
+
+		return section;
+	}
+
+	private DocSection getAppSection() {
+		final DocSection section = new DocSection("Application", id());
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection mgmt = new DocSection("Management");
+		all.addSection(mgmt);
+		mgmt.addItem(getDocItem("app/make-app"));
+		mgmt.addItem(getDocItem("app/manifest"));
 
 		return section;
 	}

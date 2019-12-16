@@ -51,15 +51,15 @@ public class MakeFunctions {
 
 	public static VncFunction make_app = 
 		new VncFunction(
-				"make-app", 
+				"app/make-app", 
 				VncFunction
 					.meta()
-					.arglists("(make-app name main-file file-map dest-dir)")		
+					.arglists("(app/make-app name main-file file-map dest-dir)")		
 					.doc("Creates a Venice application archive.")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("make-app", args, 4);
+				assertArity("app/make-app", args, 4);
 
 				try {
 					final VncString name = Coerce.toVncString(args.first());
@@ -70,7 +70,7 @@ public class MakeFunctions {
 					
 					final File destDir = IOFunctions.convertToFile(
 											args.fourth(),
-											"Function 'make-app' dest-dir is not a file");
+											"Function 'app/make-app' dest-dir is not a file");
 
 					validateDestDirExists(destDir);
 					
@@ -85,7 +85,7 @@ public class MakeFunctions {
 						final File file = IOFunctions.convertToFile(
 												e.getValue(),
 												String.format(
-														"Function 'make-app' not a file %s -> %s",
+														"Function 'app/make-app' not a file %s -> %s",
 														path,
 														Types.getType(e.getValue())));
 
@@ -120,10 +120,10 @@ public class MakeFunctions {
 
 	public static VncFunction manifest = 
 			new VncFunction(
-					"manifest", 
+					"app/manifest", 
 					VncFunction
 						.meta()
-						.arglists("(manifest app)")		
+						.arglists("(app/manifest app)")		
 						.doc("Returns the manifest of a Venice application archive.")
 						.build()
 			) {	
@@ -132,7 +132,7 @@ public class MakeFunctions {
 
 					final File app = IOFunctions.convertToFile(
 											args.first(),
-											"Function 'manifest' app is not a file");
+											"Function 'app/manifest' app is not a file");
 
 					return getManifest(app);
 				}
@@ -187,7 +187,7 @@ public class MakeFunctions {
 	private static void validateDestDirExists(final File dir) {
 		if (!dir.isDirectory()) {
 			throw new VncException(String.format(
-					"Function 'make-app' dest-dir '%s' does not exist.",
+					"Function 'app/make-app' dest-dir '%s' does not exist.",
 					dir.getPath()));
 		}
 	}
@@ -195,7 +195,7 @@ public class MakeFunctions {
 	private static void validateSourceFileExists(final File file) {
 		if (!file.isFile()) {
 			throw new VncException(String.format(
-					"Function 'make-app' file '%s' does not exist.",
+					"Function 'app/make-app' file '%s' does not exist.",
 					file.getPath()));
 		}
 	}
