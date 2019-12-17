@@ -1045,7 +1045,7 @@ public class Zipper {
 			}
 			else if (source instanceof File) {
 				try (FileInputStream fis = new FileInputStream((File)source)) {
-					return IOStreamUtil.copyIStoByteArray((InputStream)source);
+					return IOStreamUtil.copyIStoByteArray((InputStream)fis);
 				}
 			}
 			else {
