@@ -31,17 +31,19 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.functions.AppFunctions;
+import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
+import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -72,7 +74,7 @@ public class Launcher {
 			else if (cli.switchPresent("-app")) {
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
-				final VncMap manifest = AppFunctions.getManifest(appFile);
+				final VncMap manifest = getManifest(appFile);
 				
 				final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
 				final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
@@ -174,6 +176,25 @@ public class Launcher {
 
 	private static String suffixWithZipFileExt(final String s) {
 		return s == null ? null : (s.endsWith(".zip") ? s : s + ".zip");
+	}
+
+	private static VncMap getManifest(final File app) {
+		if (app.exists()) {
+			try {
+				final VncVal manifest = ZipFileSystemUtil.loadFileFromZip(app, new File("MANIFEST.MF"));			
+				return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(manifest)));
+			}
+			catch (Exception ex) {
+				throw new VncException(String.format(
+						"Failed to load manifest from Venice application archive '%s'.",
+						app.getPath()));
+			}
+		}
+		else {
+			throw new VncException(String.format(
+					"The Venice application archive '%s' does not exist",
+					app.getPath()));
+		}
 	}
 
 }
