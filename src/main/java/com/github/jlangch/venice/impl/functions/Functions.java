@@ -36,7 +36,6 @@ public class Functions {
 		functions.putAll(CoreFunctions.ns);
 		functions.putAll(TransducerFunctions.ns);
 		functions.putAll(ModuleFunctions.ns);
-		functions.putAll(AppFunctions.ns);
 		functions.putAll(StringFunctions.ns);
 		functions.putAll(RegexFunctions.ns);
 		functions.putAll(ArrayFunctions.ns);

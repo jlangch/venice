@@ -86,6 +86,7 @@ public class ModuleLoader {
 			Collections.unmodifiableSet(
 				new HashSet<>(
 					Arrays.asList(
+							"app", 
 							"benchmark", 
 							"core", 
 							"crypt", 
