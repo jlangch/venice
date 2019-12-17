@@ -44,7 +44,7 @@
 // Upgrade Gradle wrapper
 //   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
 //   Upgrade:
-//      $> ./gradlew wrapper --gradle-version=5.6.2
+//      $> ./gradlew wrapper --gradle-version=6.0.1
 //
 // Get initial Gradle wrapper
 //   See https://guides.gradle.org/creating-new-gradle-builds/
