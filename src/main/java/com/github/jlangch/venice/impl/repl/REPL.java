@@ -462,7 +462,7 @@ public class REPL {
 			final PrintStream ps
 	) {
 		return venice.createEnv(false)
-					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setStdoutPrintStream(ps);
 	}
 	

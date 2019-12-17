@@ -23,7 +23,9 @@ package com.github.jlangch.venice;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
@@ -32,8 +34,10 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.functions.AppFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
@@ -73,14 +77,11 @@ public class Launcher {
 				final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
 				final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
 						
-				loadPaths.clear();
-				loadPaths.add(appFile.getAbsolutePath());
-
 				System.out.println(String.format("Launching Venice application '%s' ...", appName));
 
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", mainFile);
 
-				runScript(cli, loadPaths, interceptor, appBootstrap, appName);
+				runApp(cli, interceptor, appBootstrap, appName, appFile);
 			}
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
@@ -101,6 +102,27 @@ public class Launcher {
 		}	
 	}
 	
+	private static String runApp(
+			final CommandLineArgs cli,
+			final IInterceptor interceptor,
+			final String script,
+			final String name,
+			final File appArchive
+	) {
+		final List<String> loadPaths = Arrays.asList(appArchive.getAbsolutePath());
+
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+		
+		final Env env = createEnv(
+							venice,
+							Arrays.asList(
+								convertCliArgsToVar(cli),
+								convertLoadPathToVar(loadPaths),
+								convertAppArchiveToVar(appArchive)));
+
+		return venice.PRINT(venice.RE(script, name, env));
+	}
+	
 	private static String runScript(
 			final CommandLineArgs cli,
 			final List<String> loadPaths,
@@ -110,17 +132,42 @@ public class Launcher {
 	) {
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 		
-		final Env env = createEnv(venice, cli);
+		final Env env = createEnv(
+							venice, 
+							Arrays.asList(
+								convertCliArgsToVar(cli),
+								convertLoadPathToVar(loadPaths)));
 	
 		return venice.PRINT(venice.RE(script, name, env));
 	}
 	
-	private static Env createEnv(final VeniceInterpreter venice, final CommandLineArgs cli) {
+	private static Env createEnv(
+			final VeniceInterpreter venice, 
+			final List<Var> vars
+	) {
 		return venice.createEnv(false)
-					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList()))
+					 .addGlobalVars(vars)
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}
 
+	private static Var convertAppArchiveToVar(final File appArchive) {
+		return new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false);
+	}
+
+	private static Var convertCliArgsToVar(final CommandLineArgs cli) {
+		return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
+	}
+
+	private static Var convertLoadPathToVar(final List<String> loadPaths) {
+		return new Var(
+					new VncSymbol("*load-path*"), 
+					new VncList(loadPaths
+									.stream()
+									.map(p -> new VncString(p))
+									.collect(Collectors.toList())), 
+					false);
+	}
+	
 	private static String suffixWithVeniceFileExt(final String s) {
 		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
 	}

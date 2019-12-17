@@ -250,7 +250,15 @@ public class Env implements Serializable {
 
 		return this;
 	}
-	
+
+	public Env addGlobalVars(final List<Var> vars) {
+		if (vars != null) {
+			vars.forEach(v -> setGlobal(v));
+		}
+
+		return this;
+	}
+
 	public void addLocalBindings(final List<Binding> bindings) {
 		for(Binding b : bindings) {
 			setLocal(b.sym, b.val);
