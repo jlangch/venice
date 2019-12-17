@@ -1147,7 +1147,7 @@ public class DocGenerator {
 
 		final DocSection mgmt = new DocSection("Management");
 		all.addSection(mgmt);
-		mgmt.addItem(getDocItem("app/make-app"));
+		mgmt.addItem(getDocItem("app/build"));
 		mgmt.addItem(getDocItem("app/manifest"));
 
 		return section;

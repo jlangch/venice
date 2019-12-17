@@ -49,17 +49,25 @@ import com.github.jlangch.venice.impl.util.Zipper;
 
 public class AppFunctions {
 
-	public static VncFunction make_app = 
+	public static VncFunction app_build = 
 		new VncFunction(
-				"app/make-app", 
+				"app/build", 
 				VncFunction
 					.meta()
-					.arglists("(app/make-app name main-file file-map dest-dir)")		
-					.doc("Creates a Venice application archive.")
+					.arglists("(app/build name main-file file-map dest-dir)")		
+					.doc(
+						"Creates a Venice application archive. \n\n" +
+						"E.g.: \n\n" +
+					    "(app/build \"test\" \n" +
+					    "           \"chart\" \n" +
+					    "           { \"chart\" \"./foo/chart.venice\" \n" +
+					    "             \"utils\" \"./foo/utils.venice\" } \n" +
+					    "           \".\") \n" +
+						"")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("app/make-app", args, 4);
+				assertArity("app/build", args, 4);
 
 				try {
 					final VncString name = Coerce.toVncString(args.first());
@@ -70,7 +78,7 @@ public class AppFunctions {
 					
 					final File destDir = IOFunctions.convertToFile(
 											args.fourth(),
-											"Function 'app/make-app' dest-dir is not a file");
+											"Function 'app/build' dest-dir is not a file");
 
 					validateDestDirExists(destDir);
 					
@@ -85,7 +93,7 @@ public class AppFunctions {
 						final File file = IOFunctions.convertToFile(
 												e.getValue(),
 												String.format(
-														"Function 'app/make-app' not a file %s -> %s",
+														"Function 'app/build' not a file %s -> %s",
 														path,
 														Types.getType(e.getValue())));
 
@@ -118,7 +126,7 @@ public class AppFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction manifest = 
+	public static VncFunction app_manifest = 
 		new VncFunction(
 				"app/manifest", 
 				VncFunction
@@ -187,7 +195,7 @@ public class AppFunctions {
 	private static void validateDestDirExists(final File dir) {
 		if (!dir.isDirectory()) {
 			throw new VncException(String.format(
-					"Function 'app/make-app' dest-dir '%s' does not exist.",
+					"Function 'app/build' dest-dir '%s' does not exist.",
 					dir.getPath()));
 		}
 	}
@@ -195,7 +203,7 @@ public class AppFunctions {
 	private static void validateSourceFileExists(final File file) {
 		if (!file.isFile()) {
 			throw new VncException(String.format(
-					"Function 'app/make-app' file '%s' does not exist.",
+					"Function 'app/build' file '%s' does not exist.",
 					file.getPath()));
 		}
 	}
@@ -208,7 +216,7 @@ public class AppFunctions {
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap
 					.Builder()
-					.add(make_app)
-					.add(manifest)
+					.add(app_build)
+					.add(app_manifest)
 					.toMap();
 }
