@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -81,7 +82,7 @@ public class Launcher {
 						
 				System.out.println(String.format("Launching Venice application '%s' ...", appName));
 
-				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", mainFile);
+				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", stripVeniceFileExt(mainFile));
 
 				runApp(cli, interceptor, appBootstrap, appName, appFile);
 			}
@@ -169,7 +170,11 @@ public class Launcher {
 									.collect(Collectors.toList())), 
 					false);
 	}
-	
+
+	private static String stripVeniceFileExt(final String s) {
+		return StringUtil.removeEnd(s, ".venice");
+	}
+
 	private static String suffixWithVeniceFileExt(final String s) {
 		return s == null ? null : (s.endsWith(".venice") ? s : s + ".venice");
 	}
