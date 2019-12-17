@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
@@ -120,7 +119,6 @@ public class Launcher {
 							venice,
 							Arrays.asList(
 								convertCliArgsToVar(cli),
-								convertLoadPathToVar(loadPaths),
 								convertAppArchiveToVar(appArchive)));
 
 		return venice.PRINT(venice.RE(script, name, env));
@@ -137,9 +135,7 @@ public class Launcher {
 		
 		final Env env = createEnv(
 							venice, 
-							Arrays.asList(
-								convertCliArgsToVar(cli),
-								convertLoadPathToVar(loadPaths)));
+							Arrays.asList(convertCliArgsToVar(cli)));
 	
 		return venice.PRINT(venice.RE(script, name, env));
 	}
@@ -159,16 +155,6 @@ public class Launcher {
 
 	private static Var convertCliArgsToVar(final CommandLineArgs cli) {
 		return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
-	}
-
-	private static Var convertLoadPathToVar(final List<String> loadPaths) {
-		return new Var(
-					new VncSymbol("*load-path*"), 
-					new VncList(loadPaths
-									.stream()
-									.map(p -> new VncString(p))
-									.collect(Collectors.toList())), 
-					false);
 	}
 
 	private static String stripVeniceFileExt(final String s) {
