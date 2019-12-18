@@ -20,13 +20,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - load path file completion for the REPL with `(load-file file-path)`
 - load path to support ZIP files in addition to directories
 - support for Venice archives for simplified distribution of Venice apps
+  (see extension module :app)
 
 ### Fixed
 
 - print functions (`println`, `newline`) to use the platform specific 
   newline LF or CR-LF
 - an edge case with auto gen symbols for macros
-- zipper writing entry from file
+- zipper: adding a ZIP entry from a java.io.File caused a ClassCastException
 
 ### Changed
 
