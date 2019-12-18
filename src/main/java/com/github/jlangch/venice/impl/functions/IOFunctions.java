@@ -1116,13 +1116,9 @@ public class IOFunctions {
 					final List<OpenOption> openOptions = new ArrayList<>();
 					openOptions.add(StandardOpenOption.CREATE);
 					openOptions.add(StandardOpenOption.WRITE);
-
-					if (append == True) {
-						openOptions.add(StandardOpenOption.APPEND);
-					}
-					else {
-						openOptions.add(StandardOpenOption.TRUNCATE_EXISTING);
-					}
+					openOptions.add(append == True 
+										? StandardOpenOption.APPEND 
+										: StandardOpenOption.TRUNCATE_EXISTING);
 
 					Files.write(
 							file.toPath(),
