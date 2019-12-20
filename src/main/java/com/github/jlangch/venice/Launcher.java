@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -59,19 +60,30 @@ public class Launcher {
 
 		try {
 			if (cli.switchPresent("-file")) {
+				// run the file from the filesystem
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
 				final String script = new String(FileUtil.load(new File(file)));
 				
 				System.out.println(
 						runScript(cli, loadPaths, interceptor, script, new File(file).getName()));
 			}
+			if (cli.switchPresent("-cp-file")) {
+				// run the file from the classpath
+				final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
+				final String script = new ClassPathResource(file).getResourceAsString();
+				
+				System.out.println(
+						runScript(cli, loadPaths, interceptor, script, new File(file).getName()));
+			}
 			else if (cli.switchPresent("-script")) {
+				// run the script passed as command line argument
 				final String script = cli.switchValue("-script");
 				
 				System.out.println(
 						runScript(cli, loadPaths, interceptor, script, "script"));
 			}
 			else if (cli.switchPresent("-app")) {
+				// run the Venice application archive
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
 				final VncMap manifest = getManifest(appFile);
