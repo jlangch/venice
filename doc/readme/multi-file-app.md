@@ -146,9 +146,7 @@ It can be started from a terminal with
 
 ```shell
 mars$ cd ~/foo
-mars$ java -server \
-           -Xmx2G \
-           -cp "libs/*" \
+mars$ java -cp "libs/*" \
            com.github.jlangch.venice.Launcher \
            -cp-file billing.venice
 ```
