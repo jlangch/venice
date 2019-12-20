@@ -56,7 +56,7 @@ demonstrates how to load additional files and resources from the archive.
       (bytebuf-to-string :utf-8)))
 
 ;; implementation code
-(println "Started app" *app-name*)
+(println "Started app")
 ...
 
 ```
