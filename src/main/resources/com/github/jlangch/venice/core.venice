@@ -1067,10 +1067,10 @@
   ^{ :arglists '("(load-resource res)")
      :doc """
           Loads a resource from the application archive if an archive is
-          available. If the resource is not found in the archive fallsback
-          to load the resource from the classpath. If an applocation archive
-          is not prsent loads the resource from the classpath. Returns a
-          bytebuffer or nil.
+          available. If the resource is not found in the archive or the
+          the application archive is not present fallsback to load the
+          resource through (io/load-classpath-resource res).
+          Returns a bytebuffer or nil.
           """ }
 
   load-resource [res]
