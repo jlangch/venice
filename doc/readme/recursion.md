@@ -17,10 +17,10 @@ mutual recursion is available for more involved forms of recursion.
         1 
         (math/bigint-mul n (factorial (dec n))))))
 
-  (factorial 2)     ; -> 2
-  (factorial 5)     ; -> 120
-  (factorial 200)   ; -> 78865786736479050355236...00000000 (375 digits)
-  (factorial 4000)  ; -> boooom...
+  (factorial 2)     ; => 2
+  (factorial 5)     ; => 120
+  (factorial 200)   ; => 78865786736479050355236...00000000 (375 digits)
+  (factorial 4000)  ; => boooom...
 )
 ```
 
@@ -32,9 +32,9 @@ mutual recursion is available for more involved forms of recursion.
   (defmethod factorial 0 [_] 1)
   (defmethod factorial :default [n] (math/bigint-mul n (factorial (dec n))))
 
-  (factorial 5)     ; -> 120
-  (factorial 200)   ; -> 78865786736479050355236...00000000 (375 digits)
-  (factorial 4000)  ; -> boooom...
+  (factorial 5)     ; => 120
+  (factorial 200)   ; => 78865786736479050355236...00000000 (375 digits)
+  (factorial 4000)  ; => boooom...
 )
 ```
 
@@ -51,7 +51,7 @@ Simple recursion a few thousand calls deep throws a _StackOverflowError_.
              acc
              (recur (dec cnt) (+ acc cnt)))))
 
-   (sum 100000))
+   (sum 100000)) ; => 5000050000
 ```
 
 ```clojure
@@ -64,7 +64,7 @@ Simple recursion a few thousand calls deep throws a _StackOverflowError_.
              acc
              (recur (dec n) (math/bigint-mul acc n)))))
     
-   (factorial 10000))
+   (factorial 10000)) ; => 441134000376444377299...00000000  (35660 digits)
 ```
 
 
