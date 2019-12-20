@@ -119,6 +119,7 @@ public class Launcher {
 							venice,
 							Arrays.asList(
 								convertCliArgsToVar(cli),
+								convertAppNameToVar(name),
 								convertAppArchiveToVar(appArchive)));
 
 		return venice.PRINT(venice.RE(script, name, env));
@@ -147,6 +148,10 @@ public class Launcher {
 		return venice.createEnv(false)
 					 .addGlobalVars(vars)
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
+	}
+
+	private static Var convertAppNameToVar(final String appName) {
+		return new Var(new VncSymbol("*app-name*"), new VncString(appName), false);
 	}
 
 	private static Var convertAppArchiveToVar(final File appArchive) {
