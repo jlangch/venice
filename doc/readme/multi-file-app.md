@@ -174,7 +174,7 @@ mars$ java -cp "libs/*" \
            -cp-file billing.venice
 ```
 
-Compared to a Venice application archive the apllication's main file must be
+Compared to a Venice application archive the application's main file must be
 known to launch the app (the '-cp-file' option in the example).
 
 
