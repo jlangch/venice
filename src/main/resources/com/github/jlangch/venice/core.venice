@@ -1063,6 +1063,26 @@
    ([msg ex] (. :VncException :new msg ex)))
 
 
+(defn
+  ^{ :arglists '("(load-resource res)")
+     :doc """
+          Loads a resource from the application archive if an archive is
+          available. If the resource is not found in the archive fallsback
+          to load the resource from the classpath. If an applocation archive
+          is not prsent loads the resource from the classpath. Returns a
+          bytebuffer or nil.
+          """ }
+
+  load-resource [res]
+
+  (if (bound? '*app-archive*)
+    (let [r (io/unzip f res)]
+      (if (some? r)
+        r
+        (io/load-classpath-resource res)))
+   (io/load-classpath-resource res)))
+
+
 (defn-
   ^{ :arglists '("(walk inner outer form)")
      :doc """
