@@ -1076,7 +1076,7 @@
   load-resource [res]
 
   (if (bound? '*app-archive*)
-    (let [r (io/unzip f res)]
+    (let [r (io/unzip *app-archive* res)]
       (if (some? r)
         r
         (io/load-classpath-resource res)))
