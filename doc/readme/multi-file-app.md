@@ -1,6 +1,9 @@
 # Multi-File Venice App
 
-_documentation in progress..._
+Assuming you've created a Venice application composed of multiple source
+and resource files, how do you distribute and deploy such an application?
+
+To hassle-free deliver the application some kind of packaging is required.
 
 ```text
 billing
@@ -29,6 +32,20 @@ and does not require 3rd party JARs.
 ### Build the application archive
 
 ```text
+staging
+├── billing.venice
+├── utils
+│   ├── util.venice
+│   └── render.venice
+└── data
+    ├── bill.template
+    └── logo.jpg
+```
+
+Building the application archive from a REPL:
+
+```text
+venice> (load-module :app) 
 venice> (app/build 
             "billing"
             "billing.venice"
@@ -83,26 +100,32 @@ It can be started from a terminal with
 
 ```shell
 mars$ cd ~/foo
-mars$ java -jar libs/venice-1.7.11.jar -app billing
+mars$ java -jar libs/venice-1.7.11.jar -app billing.zip
 ```
 
 
 
 ## Application JAR
 
-Alternatively the Venice files can be packaged to a Java JAR .
+Alternatively the Venice files can be packaged to a Java resource only JAR.
 
 
 ### Build the application JAR
 
+```text
+staging
+├── billing.venice
+├── utils
+│   ├── util.venice
+│   └── render.venice
+└── data
+    ├── bill.template
+    └── logo.jpg
+```
+
 ```shell
 mars$ cd ~/staging
-mars$ jar cf billing.jar \
-          billing.venice \
-          utils/util.venice \
-          utils/render.venice \
-          data/bill.template \
-          data/logo.jpg
+mars$ jar cf billing.jar utils data billing.venice
 ```
 
 
@@ -150,6 +173,9 @@ mars$ java -cp "libs/*" \
            com.github.jlangch.venice.Launcher \
            -cp-file billing.venice
 ```
+
+Compared to a Venice application archive the apllication's main file must be
+known to launch the app (the '-cp-file' option in the example).
 
 
 ## Uber JAR
