@@ -766,6 +766,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("name"));
 		misc.addItem(getDocItem("callstack"));
 		misc.addItem(getDocItem("coalesce"));
+		misc.addItem(getDocItem("load-resource"));
 
 		final DocSection env = new DocSection("Environment");
 		all.addSection(env);
