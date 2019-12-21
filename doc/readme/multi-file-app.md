@@ -91,7 +91,7 @@ bootstraps the application.
 
 ### Run the application
 
-The billing application may be deployed to file a structure like
+The billing application may be deployed to a file structure like
 
 ```text
 foo
