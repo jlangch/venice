@@ -57,7 +57,10 @@ venice> (app/build
             "./build")
 ```
 
-This creates the application archive `./build/billing.zip`.
+This creates the application archive `./build/billing.zip` with 
+the main file 'billing.venice'. The main file is automatically 
+executed when the app is started.
+
 
 
 ### A look at the implementation
