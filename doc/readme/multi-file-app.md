@@ -67,8 +67,8 @@ executed when the app is started.
 
 This fragment of the application archive's main file 'billing.venice' 
 demonstrates how to load additional files and resources from the archive.
-'billing.venice' is the application's main file and automatically executed
-when the app is started. It bootstraps the application.
+The main file is automatically executed when the app is started. It 
+bootstraps the application.
 
 ```clojure
 (ns billing)
