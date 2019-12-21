@@ -3,7 +3,7 @@
 Assuming you've created a Venice application composed of multiple source
 and resource files, how do you distribute and deploy such an application?
 
-To hassle-free deliver the application some kind of packaging is required.
+For a hassle-free delivery the application needs some kind of packaging is required.
 
 ```text
 billing
