@@ -108,6 +108,14 @@ mars$ cd ~/foo
 mars$ java -jar libs/venice-1.7.11.jar -app billing.zip
 ```
 
+or
+
+```shell
+mars$ cd ~/foo
+mars$ java -cp "libs/*" \
+           com.github.jlangch.venice.Launcher \
+           -app billing.zip
+```
 
 
 ## Application JAR
