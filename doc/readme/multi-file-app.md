@@ -16,7 +16,7 @@ billing
     └── logo.jpg
 ```
 
-Dependent on your needs there are three ways to package a Venice application:
+Depending on your needs there are three ways to package a Venice application:
 
 * [Venice Application Archive](#venice-application-archive)
 * [Application JAR](#application-jar)
