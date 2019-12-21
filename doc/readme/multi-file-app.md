@@ -171,7 +171,8 @@ foo
     └── openpdf-1.3.11.jar
 ```
 
-It can be started from a terminal with
+It can be started from a terminal with explicitly passing the application's
+main file 'billing.venice'
 
 ```shell
 mars$ cd ~/foo
@@ -180,8 +181,6 @@ mars$ java -cp "libs/*" \
            -cp-file billing.venice
 ```
 
-Compared to a Venice application archive the application's main file must be
-known to launch the app (the '-cp-file' option in the example).
 
 
 ## Uber JAR
