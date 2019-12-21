@@ -58,8 +58,9 @@ venice> (app/build
 ```
 
 This creates the application archive `./build/billing.zip` with 
-the main file 'billing.venice'. The main file is automatically 
-executed when the app is started.
+the main file 'billing.venice'. The main file is recorded in the
+archive's manifest and automatically executed when the app is 
+started.
 
 
 
