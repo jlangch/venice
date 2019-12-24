@@ -789,4 +789,15 @@ public class MacroTest {
 		assertEquals("101", venice.eval("(pr-str (if-not (not (== 1 1)) (+ 100 1) (+ 200 1)))"));
 	}
 
+	@Test
+	public void test_coalesce() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(coalesce )"));	
+		assertEquals(null, venice.eval("(coalesce nil)"));	
+		assertEquals(null, venice.eval("(coalesce nil nil nil)"));	
+		assertEquals(Long.valueOf(1L), venice.eval("(coalesce 1)"));	
+		assertEquals(Long.valueOf(1L), venice.eval("(coalesce nil 1 2)"));	
+	}
+
 }

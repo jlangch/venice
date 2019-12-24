@@ -249,17 +249,6 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(char? (char 65))"));
 		assertTrue((Boolean)venice.eval("(char? (char \"A\"))"));
 	}
-
-	@Test
-	public void test_coalesce() {
-		final Venice venice = new Venice();
-
-		assertEquals(null, venice.eval("(coalesce )"));	
-		assertEquals(null, venice.eval("(coalesce nil)"));	
-		assertEquals(null, venice.eval("(coalesce nil nil nil)"));	
-		assertEquals(Long.valueOf(1L), venice.eval("(coalesce 1)"));	
-		assertEquals(Long.valueOf(1L), venice.eval("(coalesce nil 1 2)"));	
-	}
 	
 	@Test
 	public void test_coll_Q() {

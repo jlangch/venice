@@ -4642,30 +4642,6 @@ public class CoreFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction coalesce =
-		new VncFunction(
-				"coalesce",
-				VncFunction
-					.meta()
-					.arglists("(coalesce args*)")
-					.doc("Returns the first non nil arg")
-					.examples(
-						"(coalesce )",
-						"(coalesce 1 2)",
-						"(coalesce nil)",
-						"(coalesce nil 1 2)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				return args.stream()
-						   .filter(v -> v != Nil)
-						   .findFirst()
-						   .orElse(Nil);
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
 	public static VncFunction emptyToNil =
 		new VncFunction(
 				"empty-to-nil",
@@ -6283,8 +6259,6 @@ public class CoreFunctions {
 				.add(meta)
 				.add(with_meta)
 				.add(vary_meta)
-
-				.add(coalesce)
 
 				.add(gensym)
 				.add(name)

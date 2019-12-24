@@ -267,6 +267,23 @@
 
 
 (defmacro
+  ^{ :arglists '("(coalesce args*)")
+     :doc """
+          Returns null if all of its arguments are null, otherwise it returns
+          the first non nil argument. The arguments are evaluated lazy.
+          """
+     :examples '(
+         "(coalesce)",
+         "(coalesce 2)"
+         "(coalesce nil 1 2)") }
+
+  coalesce
+    ([] nil)
+    ([x] x)
+    ([x & rest] `(let [c# ~x] (if (not (nil? c#)) c# (coalesce ~@rest)))))
+
+
+(defmacro
   ^{ :arglists '(
           "(if-let bindings then)"
           "(if-let bindings then else)")
@@ -1076,10 +1093,8 @@
   load-resource [res]
 
   (if (bound? '*app-archive*)
-    (let [r (io/unzip *app-archive* res)]
-      (if (some? r)
-        r
-        (io/load-classpath-resource res)))
+    (coalesce (io/unzip *app-archive* res)
+              (io/load-classpath-resource res))
     (io/load-classpath-resource res)))
 
 
