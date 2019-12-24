@@ -27,7 +27,7 @@ Depending on your needs there are three ways to package a Venice application:
 
 A Venice application archive is a lightweight solution for distributing and deploying 
 applications if the application is built from Venice source and resources files only
-and does not require 3rd party JARs. 
+and does not require additional 3rd party JARs. 
 
 ### Build the application archive
 
@@ -59,7 +59,7 @@ venice> (app/build
 
 This creates the application archive `./build/billing.zip` with 
 the main file 'billing.venice'. The main file is recorded in the
-archive's manifest and automatically executed when the app is 
+archive's MANIFEST file and automatically executed when the app is 
 started.
 
 
