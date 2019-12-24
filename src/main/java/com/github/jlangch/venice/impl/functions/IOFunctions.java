@@ -274,7 +274,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(io/file-ext f ext)")
+						"(io/file-ext? f ext)")
 					.doc(
 						"Returns true if the file f hast the extension ext. " +
 						"f must be a file or a string (file path).")
@@ -284,11 +284,11 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("io/file-ext", args, 2);
+				assertArity("io/file-ext?", args, 2);
 
 				final File f = convertToFile(
 									args.first(),
-									"Function 'io/file-ext' does not allow %s as f");
+									"Function 'io/file-ext?' does not allow %s as f");
 
 				final String ext = Coerce.toVncString(args.second()).getValue();
 				return f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext) ? True : False;
