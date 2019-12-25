@@ -115,7 +115,7 @@ shadowJar {
                    'Implementation-Version': "${version}"
     }
     
-    archiveName = "venice-${version}.jar"
+    archiveFileName = "venice-${version}.jar"
 }
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
@@ -138,14 +138,14 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
     
-    archiveName = "venice-${version}-sources.jar"
+    archiveFileName = "venice-${version}-sources.jar"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
     
-    archiveName = "venice-${version}-javadoc.jar"
+    archiveFileName = "venice-${version}-javadoc.jar"
 }
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
@@ -190,6 +190,6 @@ dependencies {
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
  
     // runtime dependencies (repackaged)
-    compile 'io.vavr:vavr:0.10.2'
-    compile 'org.jline:jline:3.13.2'
+    implementation 'io.vavr:vavr:0.10.2'
+    implementation 'org.jline:jline:3.13.2'
 }
