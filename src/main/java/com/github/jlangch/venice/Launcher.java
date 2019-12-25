@@ -189,7 +189,7 @@ public class Launcher {
 	private static VncMap getManifest(final File app) {
 		if (app.exists()) {
 			try {
-				final VncVal manifest = ZipFileSystemUtil.loadFileFromZip(app, new File("MANIFEST.MF"));			
+				final VncVal manifest = ZipFileSystemUtil.loadTextFileFromZip(app, new File("MANIFEST.MF"), "utf-8");			
 				return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(manifest)));
 			}
 			catch (Exception ex) {

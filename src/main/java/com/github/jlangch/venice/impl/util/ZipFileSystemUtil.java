@@ -68,7 +68,7 @@ public class ZipFileSystemUtil {
 		}
 	}
 	
-	public static VncString loadFileFromZip(final File zip, final File file) {
+	public static VncString loadTextFileFromZip(final File zip, final File file, final String encoding) {
 		if (!zip.exists()) {
 			throw new VncException(String.format(
 					"The ZIP file '%s' does not exist",
@@ -78,7 +78,7 @@ public class ZipFileSystemUtil {
 		try {
 			try (FileSystem zipFS = mountZip(zip)) {
 				final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
-				return new VncString(new String(data, "utf-8"));
+				return new VncString(new String(data, encoding == null ? "utf-8" : encoding));
 			}
 		}
 		catch(Exception ex) {

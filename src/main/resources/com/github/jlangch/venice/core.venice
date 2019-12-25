@@ -627,16 +627,19 @@
     `(load-file ~file false))
 
   ([file force]
-    `(let [fc# (name ~file)]
+    `(let [fc# (if (str/ends-with? (name ~file) ".venice")
+                   (name ~file)
+                   (str (name ~file) ".venice"))]
        (when (or force (not-contains? core/*loaded-files* fc#))
-         (let [code# (str "(do " (*load-file fc# core/*load-path*) ")")
-               parsed# (read-string code# fc#)
-               expanded# (if core/*macroexpand-on-load*
-                           (macroexpand-all parsed#)
-                           parsed#)]
-           (cons! fc# core/*loaded-files*)
-           (eval expanded#)
-           fc#)))))
+         (let [code# (*load-resource fc# core/*load-path* :binary false)]
+           (when (some? code#)
+             (let [parsed# (read-string (str "(do " code# ")") fc#)
+                   expanded# (if core/*macroexpand-on-load*
+                               (macroexpand-all parsed#)
+                               parsed#)]
+               (cons! fc# core/*loaded-files*)
+               (eval expanded#)
+               fc#)))))))
 
 
 (defmacro
@@ -1083,19 +1086,14 @@
 (defn
   ^{ :arglists '("(load-resource res)")
      :doc """
-          Loads a resource from the application archive if an archive is
-          available. If the resource is not found in the archive or the
-          the application archive is not present fallback to load the
-          resource through (io/load-classpath-resource res).
-          Returns a bytebuffer or nil.
+          Loads a resource from the application archive or the load-path.
+          Returns a bytebuffer or nil if the resource is not found in any
+          of the two locations.
           """ }
 
   load-resource [res]
 
-  (if (bound? '*app-archive*)
-    (coalesce (io/unzip *app-archive* res)
-              (io/load-classpath-resource res))
-    (io/load-classpath-resource res)))
+  (*load-resource res *load-path* :binary true))
 
 
 (defn-

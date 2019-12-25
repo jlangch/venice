@@ -279,7 +279,7 @@ public class IOFunctions {
 						"Returns true if the file f hast the extension ext. " +
 						"f must be a file or a string (file path).")
 					.examples(
-						"(io/file-ext? (io/file \"/tmp/test/x.txt\") \"txt\")",
+						"(io/file-ext? \"/tmp/test/x.txt\" \"txt\")",
 						"(io/file-ext? (io/file \"/tmp/test/x.txt\") \".txt\")")
 					.build()
 		) {
