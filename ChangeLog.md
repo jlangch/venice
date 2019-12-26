@@ -9,13 +9,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.7.12] - 2019-12-xx
 
+### Fixed
+
+- macro `load-file` to honor the 'force' option
+
 ### Changed
 
 - `coalesce` to evaluate its arguments lazy. It's now a macro.
-
-### Fixed
-
-- macro `load-file` to honor force option
 
 
 
