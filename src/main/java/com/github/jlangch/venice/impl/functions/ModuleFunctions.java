@@ -142,25 +142,19 @@ public class ModuleFunctions {
 
 					if (loadPaths.isEmpty()) {
 						final VncVal data = load(file.toPath());
-						if (data != Nil) {
-							return binary ? data : convertToString(data, encoding);
-						}
+						return data == Nil || binary ? data : convertToString(data, encoding);
 					}
 					else {
-						for(VncVal p : loadPaths.getList()) {
-							if (p != Nil) {
-								final String loadPath = name(p);
-								final VncVal data = loadPath.endsWith(".zip")
-														? loadFileFromZip(new File(loadPath), file)
-														: loadFileFromDir(new File(loadPath), file);
-								if (data != Nil) {
-									return binary ? data : convertToString(data, encoding);
-								}
-							}
-						}
+						final VncVal data = loadPaths.getList()
+											         .stream()
+											         .map(p -> name(p))
+											         .map(p -> loadFile(p, file))
+											         .filter(d -> d != Nil)
+											         .findFirst()
+											         .orElse(Nil);
+						
+						return data == Nil || binary ? data : convertToString(data, encoding);
 					}
-					
-					return Nil;
 				} 
 				catch (VncException ex) {
 					throw ex;
@@ -192,7 +186,16 @@ public class ModuleFunctions {
 	private static String suffixWithVeniceFileExt(final String s) {
 		return s.endsWith(".venice") ? s : s + ".venice";
 	}
-	
+
+	private static VncVal loadFile(
+			final String loadPath, 
+			final File file
+	) {
+		return loadPath.endsWith(".zip")
+					? loadFileFromZip(new File(loadPath), file)
+					: loadFileFromDir(new File(loadPath), file);
+	}
+
 	private static VncVal loadFileFromZip(
 			final File zip, 
 			final File file
@@ -209,13 +212,18 @@ public class ModuleFunctions {
 		return Nil;
 	}
 	
-	private static VncVal loadFileFromDir(final File path, final File file) throws IOException {
-		if (isFileWithinDirectory(path, file)) {
-			final File dir = path.getAbsoluteFile();
-			return load(new File(dir, file.getPath()).toPath());
+	private static VncVal loadFileFromDir(final File path, final File file) {
+		try {
+			if (isFileWithinDirectory(path, file)) {
+				final File dir = path.getAbsoluteFile();
+				return load(new File(dir, file.getPath()).toPath());
+			}
+			else {
+				return Nil;
+			}
 		}
-		else {
-			return Nil;
+		catch (Exception ex) {
+			throw new VncException(String.format("Failed to load file '%s'", file.getPath()), ex);
 		}
 	}
 
