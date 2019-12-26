@@ -59,7 +59,7 @@ There are two circumstances where they are required.
 
 ### 1. The code has to run at read/compile time
 
-Macros are very flexible in controlling which parts are evaluated at parse/compile time
+Macros are very flexible in controlling which parts are evaluated at read/compile time
 or at runtime.
 
 This is a macro that is completely evaluated at read/compile time. 
