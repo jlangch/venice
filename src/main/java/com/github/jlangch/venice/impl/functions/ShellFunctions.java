@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -192,9 +193,10 @@ public class ShellFunctions {
 		
 		try {
 			final String[] cmdArr = toStringArray(cmd);
+			
+			// options
 			final String[] envArr = toEnvStrings(opts.get(new VncKeyword(":env")));
 			final File dir_ = toFile(opts.get(new VncKeyword(":dir")));
-			
 			final VncVal in = opts.get(new VncKeyword(":in"));
 			final VncVal slurpOutFn = opts.get(new VncKeyword(":out-fn"));
 			final VncVal slurpErrFn = opts.get(new VncKeyword(":err-fn"));
@@ -202,7 +204,9 @@ public class ShellFunctions {
 			final VncVal outEnc = opts.get(new VncKeyword(":out-enc"));
 			
 			//new ProcessBuilder().inheritIO().directory(dir_).command(cmdArr).environment()
-					
+			
+			validateProcessDir(dir_);
+			 
 			final Process proc = Runtime.getRuntime().exec(cmdArr, envArr, dir_);
 
 			final OutputStream stdin = proc.getOutputStream();
@@ -307,6 +311,9 @@ public class ShellFunctions {
 		else if (Types.isVncJavaObject(dir, File.class)) {
 			return (File)((VncJavaObject)dir).getDelegate();
 		}
+		else if (Types.isVncJavaObject(dir, Path.class)) {
+			return ((Path)((VncJavaObject)dir).getDelegate()).toFile();
+		}
 	
 		return null;
 	}
@@ -382,6 +389,15 @@ public class ShellFunctions {
 									options.get(new VncKeyword(":env")))));
 		
 		return VncVector.of(cmd, opts);
+	}
+	
+	private static void validateProcessDir(final File dir) {
+		if (dir != null && !dir.isDirectory()) {
+			throw new ShellException(
+					String.format(
+						"Shell execution failed: The process directory '%s' does not exist!", 
+						dir.getPath())); 
+		}
 	}
 	
 	private static String getEncoding(final VncVal enc) {
