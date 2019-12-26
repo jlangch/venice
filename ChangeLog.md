@@ -9,9 +9,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.7.12] - 2019-12-xx
 
-### Added
+### Changed
 
-- `coalesce` to evaluate its arguments lazy
+- `coalesce` to evaluate its arguments lazy. It's now a macro.
 
 ### Fixed
 
