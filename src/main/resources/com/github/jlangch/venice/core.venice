@@ -630,7 +630,7 @@
     `(let [fc# (if (str/ends-with? (name ~file) ".venice")
                    (name ~file)
                    (str (name ~file) ".venice"))]
-       (when (or force (not-contains? core/*loaded-files* fc#))
+       (when (or ~force (not-contains? core/*loaded-files* fc#))
          (let [code# (*load-resource fc# core/*load-path* :binary false)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
