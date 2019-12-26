@@ -726,12 +726,7 @@
 
   with-sh-dir [dir & forms]
 
-  `(do
-      (when-not (io/exists-dir? (io/file ~dir))
-         (throw (. :VncException
-                   :new
-                   (str/format "The dir '%s' does not exist" ~dir))))
-      (binding [*sh-dir* ~dir] (do ~@forms))))
+  `(binding [*sh-dir* ~dir] (do ~@forms)))
 
 
 (defmacro
