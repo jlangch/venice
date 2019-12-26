@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - macro `load-file` to honor the 'force' option
+- deprecated Gradle build properties
 
 ### Changed
 
