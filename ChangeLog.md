@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - `coalesce` to evaluate its arguments lazy
 
+### Fixed
+
+- macro `load-file` to honor force option
+
 
 
 ## [1.7.11] - 2019-12-20
