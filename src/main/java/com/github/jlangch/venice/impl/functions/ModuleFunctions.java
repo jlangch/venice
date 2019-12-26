@@ -255,10 +255,8 @@ public class ModuleFunctions {
 	private static VncVal convertToString(final VncVal binary, final String encoding) {
 		try {
 			return binary == Nil
-						? Nil
-						: new VncString(new String((
-								(VncByteBuffer)binary).getValue().array(), 
-								encoding));
+					? Nil
+					: new VncString(new String(((VncByteBuffer)binary).getBytes(), encoding));
 		}
 		catch (Exception ex) {
 			return Nil;

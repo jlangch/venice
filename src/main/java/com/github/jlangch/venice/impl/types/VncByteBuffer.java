@@ -54,6 +54,10 @@ public class VncByteBuffer extends VncVal {
 		return value; 
 	}
 
+	public byte[] getBytes() { 
+		return value.array(); 
+	}
+
 	public int size() { 
 		return value.capacity(); 
 	}

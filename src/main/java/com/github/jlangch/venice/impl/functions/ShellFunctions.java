@@ -419,7 +419,7 @@ public class ShellFunctions {
 	
 	private static Object copyAndClose(final VncByteBuffer data, final OutputStream os) 
 	throws IOException {
-		IOStreamUtil.copyByteArrayToOS(((VncByteBuffer)data).getValue().array(), os);
+		IOStreamUtil.copyByteArrayToOS(((VncByteBuffer)data).getBytes(), os);
 		os.flush();
 		os.close();
 		return null;

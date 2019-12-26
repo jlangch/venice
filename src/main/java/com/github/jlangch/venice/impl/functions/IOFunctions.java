@@ -1105,7 +1105,7 @@ public class IOFunctions {
 						data = ((VncString)content).getValue().getBytes(encoding);
 					}
 					else if (Types.isVncByteBuffer(content)) {
-						data = ((VncByteBuffer)content).getValue().array();
+						data = ((VncByteBuffer)content).getBytes();
 					}
 					else {
 						throw new VncException(String.format(
@@ -1317,7 +1317,7 @@ public class IOFunctions {
 						data = ((VncString)content).getValue().getBytes(encoding);
 					}
 					else if (Types.isVncByteBuffer(content)) {
-						data = ((VncByteBuffer)content).getValue().array();
+						data = ((VncByteBuffer)content).getBytes();
 					}
 					else {
 						throw new VncException(String.format(

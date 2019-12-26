@@ -351,7 +351,7 @@ public class VncJsonWriter {
 	}
 
 	private void write_VncByteBuffer(final String key, final VncByteBuffer val) {
-		final String encoded = Base64.getEncoder().encodeToString(val.getValue().array());
+		final String encoded = Base64.getEncoder().encodeToString(val.getBytes());
 
 		if (key == null) {
 			writer.value(encoded);

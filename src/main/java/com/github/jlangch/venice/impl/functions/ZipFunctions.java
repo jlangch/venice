@@ -123,7 +123,7 @@ public class ZipFunctions {
 							data = new byte[0];
 						}
 						else if (Types.isVncByteBuffer(dataVal)) {
-							data = ((VncByteBuffer)dataVal).getValue().array();
+							data = ((VncByteBuffer)dataVal).getBytes();
 						}
 						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
 							data = (InputStream)((VncJavaObject)dataVal).getDelegate();
@@ -210,7 +210,7 @@ public class ZipFunctions {
 							data = new byte[0];
 						}
 						else if (Types.isVncByteBuffer(dataVal)) {
-							data = ((VncByteBuffer)dataVal).getValue().array();
+							data = ((VncByteBuffer)dataVal).getBytes();
 						}
 						else if (Types.isVncJavaObject(dataVal, InputStream.class)) {
 							data = (InputStream)((VncJavaObject)dataVal).getDelegate();
@@ -310,7 +310,7 @@ public class ZipFunctions {
 					final VncVal data = args.first();
 
 					if (Types.isVncByteBuffer(data)) {
-						return new VncLong(Zipper.listZipEntryNames(((VncByteBuffer)data).getValue().array()).size());
+						return new VncLong(Zipper.listZipEntryNames(((VncByteBuffer)data).getBytes()).size());
 					}
 					else if (Types.isVncJavaObject(data, InputStream.class)) {
 						return new VncLong(Zipper.listZipEntryNames((InputStream)((VncJavaObject)data).getDelegate()).size());
@@ -363,7 +363,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(buf)) {
-						final byte[] data = Zipper.unzip(((VncByteBuffer)buf).getValue().array(), entryName);
+						final byte[] data = Zipper.unzip(((VncByteBuffer)buf).getBytes(), entryName);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncJavaObject(buf, InputStream.class)) {
@@ -420,7 +420,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(buf)) {
-						final byte[] data = Zipper.unzipNthEntry(((VncByteBuffer)buf).getValue().array(), 0);
+						final byte[] data = Zipper.unzipNthEntry(((VncByteBuffer)buf).getBytes(), 0);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncJavaObject(buf, InputStream.class)) {
@@ -479,7 +479,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(buf)) {
-						final byte[] data = Zipper.unzipNthEntry(((VncByteBuffer)buf).getValue().array(), entryIdx);
+						final byte[] data = Zipper.unzipNthEntry(((VncByteBuffer)buf).getBytes(), entryIdx);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncJavaObject(buf, InputStream.class)) {
@@ -541,7 +541,7 @@ public class ZipFunctions {
 						final Map<String,byte[]> data;
 
 						if (Types.isVncByteBuffer(buf)) {
-							data = Zipper.unzipAll(((VncByteBuffer)buf).getValue().array());
+							data = Zipper.unzipAll(((VncByteBuffer)buf).getBytes());
 						}
 						else if (Types.isVncJavaObject(buf, InputStream.class)) {
 							data = Zipper.unzipAll((InputStream)((VncJavaObject)buf).getDelegate());
@@ -706,7 +706,7 @@ public class ZipFunctions {
 					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false;
 
 					if (Types.isVncByteBuffer(f)) {
-						Zipper.listZip(((VncByteBuffer)f).getValue().array(), System.out, verbose);
+						Zipper.listZip(((VncByteBuffer)f).getBytes(), System.out, verbose);
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
@@ -763,7 +763,7 @@ public class ZipFunctions {
 
 				try {
 					if (Types.isVncByteBuffer(f)) {
-						Zipper.unzipToDir(((VncByteBuffer)f).getValue().array(), dir);
+						Zipper.unzipToDir(((VncByteBuffer)f).getBytes(), dir);
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
@@ -819,7 +819,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(f)) {
-						return new VncByteBuffer(Zipper.gzip(((VncByteBuffer)f).getValue().array()));
+						return new VncByteBuffer(Zipper.gzip(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
@@ -878,7 +878,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(f)) {
-						Zipper.gzip(((VncByteBuffer)f).getValue().array(), os);
+						Zipper.gzip(((VncByteBuffer)f).getBytes(), os);
 						return Nil;
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
@@ -935,7 +935,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(f)) {
-						return new VncByteBuffer(Zipper.ungzip(((VncByteBuffer)f).getValue().array()));
+						return new VncByteBuffer(Zipper.ungzip(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
@@ -989,7 +989,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(buf)) {
-						return new VncJavaObject(Zipper.ungzipToStream(((VncByteBuffer)buf).getValue().array()));
+						return new VncJavaObject(Zipper.ungzipToStream(((VncByteBuffer)buf).getBytes()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -1030,7 +1030,7 @@ public class ZipFunctions {
 					final VncVal f = args.first();
 
 					if (Types.isVncByteBuffer(f)) {
-						return Zipper.isZipFile(((VncByteBuffer)f).getValue().array()) ? True : False;
+						return Zipper.isZipFile(((VncByteBuffer)f).getBytes()) ? True : False;
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
@@ -1084,7 +1084,7 @@ public class ZipFunctions {
 					final VncVal f = args.first();
 
 					if (Types.isVncByteBuffer(f)) {
-						return Zipper.isGZipFile(((VncByteBuffer)f).getValue().array()) ? True : False;
+						return Zipper.isGZipFile(((VncByteBuffer)f).getBytes()) ? True : False;
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();

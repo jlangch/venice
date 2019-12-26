@@ -1434,12 +1434,12 @@ public class StringFunctions {
 				final VncByteBuffer data = Coerce.toVncByteBuffer(args.first());
 
 				if (args.size() == 1) {
-					return new VncString(HexUtil.toString(data.getValue().array()));
+					return new VncString(HexUtil.toString(data.getBytes()));
 				}
 				else {
 					final VncKeyword opt = Coerce.toVncKeyword(args.second());
 					if (opt.getValue().equalsIgnoreCase("upper")) {
-						return new VncString(HexUtil.toStringUpperCase(data.getValue().array()));
+						return new VncString(HexUtil.toStringUpperCase(data.getBytes()));
 					}
 					else {
 						throw new VncException("Function 'str/bytebuf-to-hex' expects the option :upper");
@@ -1504,12 +1504,12 @@ public class StringFunctions {
 				final String delimiter = args.second() == Nil ? "" : Coerce.toVncString(args.second()).getValue();
 
 				if (args.size() == 2) {
-					return new VncString(HexFormatter.toHex(data.getValue().array(), delimiter, false));
+					return new VncString(HexFormatter.toHex(data.getBytes(), delimiter, false));
 				}
 				else {
 					final VncKeyword opt = Coerce.toVncKeyword(args.third());
 					if (opt.getValue().equalsIgnoreCase("prefix0x")) {
-						return new VncString(HexFormatter.toHex(data.getValue().array(), delimiter, true));
+						return new VncString(HexFormatter.toHex(data.getBytes(), delimiter, true));
 					}
 					else {
 						throw new VncException("Function 'str/format-bytebuf' expects the option :prefix0x");
@@ -1538,7 +1538,7 @@ public class StringFunctions {
 					return Nil;
 				}
 				else {
-					final byte[] buf = Coerce.toVncByteBuffer(arg).getValue().array();
+					final byte[] buf = Coerce.toVncByteBuffer(arg).getBytes();
 					return new VncString(Base64.getEncoder().encodeToString(buf));
 				}
 			}

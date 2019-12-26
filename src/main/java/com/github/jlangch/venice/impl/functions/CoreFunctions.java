@@ -1833,7 +1833,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf-sub", args, 2, 3);
 
-				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();
+				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getBytes();
 				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
 
