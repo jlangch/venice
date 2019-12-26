@@ -673,15 +673,19 @@
     `(load-classpath-file ~file false))
 
   ([file force]
-    `(when (or ~force (not-contains? core/*loaded-files* (name ~file)))
-       (let [code# (str "(do " (*load-classpath-file ~file) ")")
-             parsed# (read-string code# ~file)
-             expanded# (if core/*macroexpand-on-load*
-                         (macroexpand-all parsed#)
-                         parsed#)]
-         (cons! (name ~file) core/*loaded-files*)
-         (eval expanded#)
-         ~file))))
+    `(let [fc# (if (str/ends-with? (name ~file) ".venice")
+                   (name ~file)
+                   (str (name ~file) ".venice"))]
+       (when (or ~force (not-contains? core/*loaded-files* fc#))
+         (let [code# (*load-classpath-file fc#)]
+           (when (some? code#)
+             (let [parsed# (read-string (str "(do " code# ")") fc#)
+                   expanded# (if core/*macroexpand-on-load*
+                               (macroexpand-all parsed#)
+                               parsed#)]
+               (cons! fc# core/*loaded-files*)
+               (eval expanded#)
+               fc#)))))))
 
 
 (defmacro
