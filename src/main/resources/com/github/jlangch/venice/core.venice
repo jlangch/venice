@@ -736,7 +736,7 @@
 
   with-sh-env [env & forms]
 
-  `(do (binding [*sh-env* ~env] (do ~@forms))))
+  `(binding [*sh-env* ~env] (do ~@forms)))
 
 
 (defmacro
@@ -750,7 +750,7 @@
 
   with-sh-throw [& forms]
 
-  `(do (binding [*sh-throw-ex* true] (do ~@forms))))
+  `(binding [*sh-throw-ex* true] (do ~@forms)))
 
 
 (defmacro
@@ -764,10 +764,9 @@
 
   with-out-str [& forms]
 
-  `(do
-      (binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
-         (do ~@forms)
-         (. *out* :getOutput))))
+  `(binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
+     (do ~@forms)
+     (. *out* :getOutput)))
 
 
 (defmacro
