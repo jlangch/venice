@@ -64,13 +64,14 @@ public class LoadPath {
 							 	   .collect(Collectors.toList()));
 	}
 	
+	
 	private static String makeCanocicalPath(final String path) {
 		try {
 			return new File(path).getCanonicalPath();
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(
-					"Cannot make a canocical path form \"" + path + "\"");
+					"Cannot make a canonical path form \"" + path + "\"");
 		}
 	}
 
