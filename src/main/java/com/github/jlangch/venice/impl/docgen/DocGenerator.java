@@ -1181,6 +1181,7 @@ public class DocGenerator {
 		final DocSection bb_create = new DocSection("Create");
 		all.addSection(bb_create);
 		bb_create.addItem(getDocItem("bytebuf"));
+		bb_create.addItem(getDocItem("bytebuf-allocate"));
 		bb_create.addItem(getDocItem("bytebuf-from-string"));
 		
 		final DocSection bb_test = new DocSection("Test");
@@ -1194,6 +1195,7 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("count"));
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
 		bb_use.addItem(getDocItem("bytebuf-sub"));
+		bb_use.addItem(getDocItem("bytebuf-put!"));
 
 		final DocSection encode = new DocSection("Base64");
 		all.addSection(encode);

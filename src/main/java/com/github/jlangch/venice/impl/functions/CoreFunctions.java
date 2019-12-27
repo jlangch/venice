@@ -1695,7 +1695,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(bytebuf x)")
-					.doc( "Converts to bytebuf. x can be a bytebuf, a list/vector of longs, or a string")
+					.doc( "Converts x to bytebuf. x can be a bytebuf, a list/vector of longs, or a string")
 					.examples("(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
 					.build()
 		) {
@@ -1750,6 +1750,27 @@ public class CoreFunctions {
 				throw new VncException(String.format(
 							"Function 'bytebuf' does not allow %s as argument",
 							Types.getType(arg)));
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_allocate =
+		new VncFunction(
+				"bytebuf-allocate",
+				VncFunction
+					.meta()
+					.arglists("(bytebuf-allocate length)")
+					.doc( "Allocates a new bytebuf. The values will be all zero.")
+					.examples("(bytebuf-allocate 100)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("bytebuf-allocate", args, 1);
+
+				final int length = Coerce.toVncLong(args.first()).getValue().intValue();
+
+				return new VncByteBuffer(ByteBuffer.allocate(length));
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -1850,6 +1871,39 @@ public class CoreFunctions {
 													buf,
 													from.getValue().intValue(),
 													to.getValue().intValue())));
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_put_BANG =
+		new VncFunction(
+				"bytebuf-put!",
+				VncFunction
+					.meta()
+					.arglists("(bytebuf-put! dst src dst-offset src-offset length)")
+					.doc("This method transfers bytes from the src to the dst buffer.")
+					.examples(
+						"(bytebuf-put! (bytebuf-allocate 10) (bytebuf [1 2 3]) 7 0 3)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("bytebuf-put!", args, 5);
+
+				final ByteBuffer dst = Coerce.toVncByteBuffer(args.first()).getValue();
+				final ByteBuffer src = Coerce.toVncByteBuffer(args.second()).getValue();
+				final VncLong dst_offset = Coerce.toVncLong(args.third());
+				final VncLong src_offset = Coerce.toVncLong(args.fourth());
+				final VncLong length = Coerce.toVncLong(args.nth(4));
+
+
+				dst.position(dst_offset.getValue().intValue());
+				
+				return new VncByteBuffer(
+								dst.put(
+									src.array(), 
+									src_offset.getValue().intValue(), 
+									length.getValue().intValue()));
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -6137,6 +6191,7 @@ public class CoreFunctions {
 				.add(double_cast)
 				.add(decimal_cast)
 				.add(bytebuf_cast)
+				.add(bytebuf_allocate)
 				.add(bytebuf_to_string)
 				.add(bytebuf_from_string)
 
@@ -6180,6 +6235,7 @@ public class CoreFunctions {
 				.add(update_BANG)
 				.add(subvec)
 				.add(bytebuf_sub)
+				.add(bytebuf_put_BANG)
 				.add(empty)
 
 				.add(set_Q)

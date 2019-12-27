@@ -204,6 +204,13 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_bytebuf_allocate() {
+		final Venice venice = new Venice();
+
+		assertArrayEquals(new byte[] {0,0}, ((ByteBuffer)venice.eval("(bytebuf-allocate 2)")).array());	
+	}
+	
+	@Test
 	public void test_bytebuf_Q() {
 		final Venice venice = new Venice();
 
@@ -232,6 +239,19 @@ public class CoreFunctionsTest {
 		assertArrayEquals(new byte[] {3,4,5}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 3)")).array());		
 		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
 		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
+	}
+
+	@Test
+	public void test_bytebuf_put_BANG() {
+		final Venice venice = new Venice();
+
+		assertArrayEquals(new byte[] {1,2,3,0,0}, ((ByteBuffer)venice.eval("(bytebuf-put! (bytebuf-allocate 5) (bytebuf [1 2 3]) 0 0 3)")).array());		
+		assertArrayEquals(new byte[] {0,1,2,3,0}, ((ByteBuffer)venice.eval("(bytebuf-put! (bytebuf-allocate 5) (bytebuf [1 2 3]) 1 0 3)")).array());		
+		assertArrayEquals(new byte[] {0,0,1,2,3}, ((ByteBuffer)venice.eval("(bytebuf-put! (bytebuf-allocate 5) (bytebuf [1 2 3]) 2 0 3)")).array());		
+
+		assertArrayEquals(new byte[] {3,4,5,0,0}, ((ByteBuffer)venice.eval("(bytebuf-put! (bytebuf-allocate 5) (bytebuf [1 2 3 4 5]) 0 2 3)")).array());		
+		assertArrayEquals(new byte[] {0,3,4,5,0}, ((ByteBuffer)venice.eval("(bytebuf-put! (bytebuf-allocate 5) (bytebuf [1 2 3 4 5]) 1 2 3)")).array());		
+		assertArrayEquals(new byte[] {0,0,3,4,5}, ((ByteBuffer)venice.eval("(bytebuf-put! (bytebuf-allocate 5) (bytebuf [1 2 3 4 5]) 2 2 3)")).array());		
 	}
 
 	@Test
