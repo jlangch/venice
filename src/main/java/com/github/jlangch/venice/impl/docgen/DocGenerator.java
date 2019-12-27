@@ -1196,6 +1196,8 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
 		bb_use.addItem(getDocItem("bytebuf-sub"));
 		bb_use.addItem(getDocItem("bytebuf-put!"));
+		bb_use.addItem(getDocItem("bytebuf-put-long!"));
+		bb_use.addItem(getDocItem("bytebuf-put-int!"));
 
 		final DocSection encode = new DocSection("Base64");
 		all.addSection(encode);
