@@ -1193,11 +1193,16 @@ public class DocGenerator {
 		final DocSection bb_use = new DocSection("Use");
 		all.addSection(bb_use);
 		bb_use.addItem(getDocItem("count"));
+		bb_use.addItem(getDocItem("bytebuf-capacity"));
+		bb_use.addItem(getDocItem("bytebuf-limit"));
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
 		bb_use.addItem(getDocItem("bytebuf-sub"));
-		bb_use.addItem(getDocItem("bytebuf-put!"));
+		bb_use.addItem(getDocItem("bytebuf-pos"));
+		bb_use.addItem(getDocItem("bytebuf-pos!"));
+		bb_use.addItem(getDocItem("bytebuf-put-byte!"));
 		bb_use.addItem(getDocItem("bytebuf-put-long!"));
 		bb_use.addItem(getDocItem("bytebuf-put-int!"));
+		bb_use.addItem(getDocItem("bytebuf-put-buf!"));
 
 		final DocSection encode = new DocSection("Base64");
 		all.addSection(encode);

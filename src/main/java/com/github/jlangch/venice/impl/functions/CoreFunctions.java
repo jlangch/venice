@@ -31,10 +31,8 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1657,334 +1655,6 @@ public class CoreFunctions {
 							"Function 'reverse' requires a list, vector, set, " +
 							"map, or string as coll argument.");
 				}
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-
-	///////////////////////////////////////////////////////////////////////////
-	// ByteBuf functions
-	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction bytebuf_Q =
-		new VncFunction(
-				"bytebuf?",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf? x)")
-					.doc("Returns true if x is a bytebuf")
-					.examples(
-						"(bytebuf? (bytebuf [1 2]))",
-						"(bytebuf? [1 2])",
-						"(bytebuf? nil)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf?", args, 1);
-
-				return Types.isVncByteBuffer(args.first()) ? True : False;
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_cast =
-		new VncFunction(
-				"bytebuf",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf x)")
-					.doc( "Converts x to bytebuf. x can be a bytebuf, a list/vector of longs, or a string")
-					.examples("(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf", args, 0, 1);
-
-				if (args.isEmpty()) {
-					return new VncByteBuffer(ByteBuffer.wrap(new byte[0]));
-				}
-
-				final VncVal arg = args.first();
-
-				if (Types.isVncString(arg)) {
-					try {
-						return new VncByteBuffer(
-										ByteBuffer.wrap(
-											((VncString)arg).getValue().getBytes("UTF-8")));
-					}
-					catch(Exception ex) {
-						throw new VncException(
-								"Failed to coerce string to bytebuf", ex);
-					}
-				}
-				else if (Types.isVncJavaObject(arg)) {
-					final Object delegate = ((VncJavaObject)arg).getDelegate();
-					if (delegate.getClass() == byte[].class) {
-						return new VncByteBuffer(ByteBuffer.wrap((byte[])delegate));
-					}
-					else if (delegate instanceof ByteBuffer) {
-						return new VncByteBuffer((ByteBuffer)delegate);
-					}
-				}
-				else if (Types.isVncByteBuffer(arg)) {
-					return arg;
-				}
-				else if (Types.isVncSequence(arg)) {
-					if (!((VncSequence)arg).getList().stream().allMatch(v -> Types.isVncLong(v))) {
-						throw new VncException(String.format(
-								"Function 'bytebuf' a list as argument must contains long values"));
-					}
-
-					final List<VncVal> list = ((VncSequence)arg).getList();
-
-					final byte[] buf = new byte[list.size()];
-					for(int ii=0; ii<list.size(); ii++) {
-						buf[ii] = (byte)((VncLong)list.get(ii)).getValue().longValue();
-					}
-
-					return new VncByteBuffer(ByteBuffer.wrap(buf));
-				}
-
-				throw new VncException(String.format(
-							"Function 'bytebuf' does not allow %s as argument",
-							Types.getType(arg)));
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_allocate =
-		new VncFunction(
-				"bytebuf-allocate",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-allocate length)")
-					.doc( "Allocates a new bytebuf. The values will be all zero.")
-					.examples("(bytebuf-allocate 100)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-allocate", args, 1);
-
-				final int length = Coerce.toVncLong(args.first()).getValue().intValue();
-
-				return new VncByteBuffer(ByteBuffer.allocate(length));
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_from_string =
-		new VncFunction(
-				"bytebuf-from-string",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-from-string s encoding)")
-					.doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to :UTF-8")
-					.examples("(bytebuf-from-string \"abcdef\" :UTF-8)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-from-string", args, 1, 2);
-
-				final String s = Coerce.toVncString(args.first()).getValue();
-
-				final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-				final String encoding = encoding(encVal);
-
-				try {
-					return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(encoding)));
-				}
-				catch(Exception ex) {
-					throw new VncException(String.format(
-							"Failed to convert string to bytebuffer"));
-				}
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_to_string =
-		new VncFunction(
-				"bytebuf-to-string",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-to-string buf encoding)")
-					.doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
-					.examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-to-string", args, 1, 2);
-
-				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
-
-				final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-				final String encoding = encoding(encVal);
-
-				try {
-					return new VncString(new String(buf.array(), encoding));
-				}
-				catch(Exception ex) {
-					throw new VncException(String.format(
-							"Failed to convert bytebuf to string"));
-				}
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_sub =
-		new VncFunction(
-				"bytebuf-sub",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-sub x start) (bytebuf-sub x start end)")
-					.doc(
-						"Returns a byte buffer of the items in buffer from start (inclusive) "+
-						"to end (exclusive). If end is not supplied, defaults to " +
-						"(count bytebuffer)")
-					.examples(
-						"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 2)",
-						"(bytebuf-sub (bytebuf [1 2 3 4 5 6]) 4)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-sub", args, 2, 3);
-
-				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getBytes();
-				final VncLong from = Coerce.toVncLong(args.second());
-				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
-
-
-				return new VncByteBuffer(
-								to == null
-									? ByteBuffer.wrap(
-											Arrays.copyOfRange(
-													buf,
-													from.getValue().intValue(),
-													buf.length))
-									:  ByteBuffer.wrap(
-											Arrays.copyOfRange(
-													buf,
-													from.getValue().intValue(),
-													to.getValue().intValue())));
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_put_BANG =
-		new VncFunction(
-				"bytebuf-put!",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-put! dst src src-offset length)")
-					.doc("This method transfers bytes from the src to the dst buffer at " +
-						 "the current position, and then increments the position by length.")
-					.examples(
-					    "(-> (bytebuf-allocate 10)   \n" +
-						"    (bytebuf-pos! 4)        \n" +
-						"    (bytebuf-put! (bytebuf [1 2 3]) 0 2))")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-put!", args, 4);
-
-				final ByteBuffer dst = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final ByteBuffer src = Coerce.toVncByteBuffer(args.nth(1)).getValue();
-				final VncLong src_offset = Coerce.toVncLong(args.nth(2));
-				final VncLong length = Coerce.toVncLong(args.nth(3));
-
-				dst.put(
-					src.array(), 
-					src_offset.getValue().intValue(), 
-					length.getValue().intValue());
-				
-				return args.nth(0);
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_put_long_BANG =
-		new VncFunction(
-				"bytebuf-put-long!",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-put-long! buf l)")
-					.doc("Writes a long (8 bytes) to buffer at the current position, and then" + 
-						 "increments the position by eight.")
-					.examples(
-					    "(-> (bytebuf-allocate 16)   \n" +
-						"    (bytebuf-put-long! 4)   \n" +
-						"    (bytebuf-put-long! 8))")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-put-long!", args, 2);
-
-				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final VncLong val = Coerce.toVncLong(args.nth(1));
-
-				buf.putLong(val.getValue());
-				
-				return args.nth(0);
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_put_int_BANG =
-		new VncFunction(
-				"bytebuf-put-int!",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-put-int! buf i)")
-					.doc("Writes an integer (4 bytes) to buffer at the current position, and then" + 
-						 "increments the position by four.")
-					.examples(
-					    "(-> (bytebuf-allocate 8)   \n" +
-						"    (bytebuf-put-int! 4I)   \n" +
-						"    (bytebuf-put-int! 8I))")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-put-int!", args, 2);
-
-				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final VncInteger val = Coerce.toVncInteger(args.nth(1));
-
-				buf.putInt(val.getValue());
-				
-				return args.nth(0);
-			}
-
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction bytebuf_pos_BANG =
-		new VncFunction(
-				"bytebuf-pos!",
-				VncFunction
-					.meta()
-					.arglists("(bytebuf-pos! buf pos)")
-					.doc("Sets the buffer's position.")
-					.examples(
-						"(bytebuf-pos! (bytebuf-allocate 10) 4)")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("bytebuf-pos!", args, 2);
-
-				final ByteBuffer dst = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final VncLong pos = Coerce.toVncLong(args.nth(1));
-
-				dst.position(pos.getValue().intValue());
-				
-				return args.nth(0);
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
@@ -6188,14 +5858,6 @@ public class CoreFunctions {
 		}
 	}
 
-	private static String encoding(final VncVal enc) {
-		return enc == Nil
-				? "UTF-8"
-				: Types.isVncKeyword(enc)
-					? Coerce.toVncKeyword(enc).getValue()
-					: Coerce.toVncString(enc).getValue();
-	}
-
 	private static VncList shuffleList(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.shuffle(copy, random);
@@ -6237,7 +5899,6 @@ public class CoreFunctions {
 				.add(double_Q)
 				.add(decimal_Q)
 				.add(number_Q)
-				.add(bytebuf_Q)
 				.add(string_Q)
 				.add(char_Q)
 				.add(symbol)
@@ -6271,10 +5932,6 @@ public class CoreFunctions {
 				.add(long_cast)
 				.add(double_cast)
 				.add(decimal_cast)
-				.add(bytebuf_cast)
-				.add(bytebuf_allocate)
-				.add(bytebuf_to_string)
-				.add(bytebuf_from_string)
 
 				.add(new_char)
 				.add(new_list)
@@ -6315,11 +5972,6 @@ public class CoreFunctions {
 				.add(update)
 				.add(update_BANG)
 				.add(subvec)
-				.add(bytebuf_sub)
-				.add(bytebuf_put_BANG)
-				.add(bytebuf_put_long_BANG)
-				.add(bytebuf_put_int_BANG)
-				.add(bytebuf_pos_BANG)
 				.add(empty)
 
 				.add(set_Q)
