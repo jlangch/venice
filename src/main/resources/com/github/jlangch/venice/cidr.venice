@@ -37,6 +37,9 @@
      :examples (list
           """
           (cidr/parse "222.192.0.0/11")
+          """,
+          """
+          (cidr/parse "2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64")
           """ ) }
 
   cidr/parse [cidr]
@@ -69,15 +72,54 @@
 
         { :cidr     cidr
           :start-ip (. :InetAddress :getByAddress
-                       (pad-bytebuf (bytebuf (. start-ip :toByteArray)) target-size))
+                       (cidr/pad-bytebuf (bytebuf (. start-ip :toByteArray)) target-size))
           :end-ip   (. :InetAddress :getByAddress
-                       (pad-bytebuf (bytebuf (. end-ip :toByteArray)) target-size))
+                       (cidr/pad-bytebuf (bytebuf (. end-ip :toByteArray)) target-size))
         } ))
     (catch :java.net.UnknownHostException ex
            (throw (. :VncException :new (str "Unknown host. CIDR=" cidr) ex)))))
 
 
-(defn- pad-bytebuf [src size]
-  (-> (bytebuf-allocate size)
-      (bytebuf-pos! (- size (count src)))
-      (bytebuf-put-buf! src 0 size)))
+(defn
+  ^{ :arglists '("(cidr/in-range? ip cidr)")
+     :doc "Returns true if the ip is within the ip range of the cidr else false."
+     :examples '(
+          """
+          (cidr/in-range? "222.192.0.0/11")
+          """,
+          """
+          (cidr/parse "2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64")
+          """ ) }
+
+  in-range? [ip cidr]
+
+  (cond
+    (string? ip)
+        (cidr/in-range? (. :InetAddress :getByName ip) cidr)
+
+    (instance? :java.net.InetAddress ip)
+        (let [cidr_ (cond
+                      (map? cidr)     cidr
+                      (string? cidr)  (cidr/parse cidr)
+                      :else           (throw (. :VncException :new
+                                                "Invalid cidr data type! Expected string or map.")))
+              start  (. :BigInteger :new 1 (. (:start-ip cidr_) :getAddress))
+              end    (. :BigInteger :new 1 (. (:end-ip cidr_) :getAddress))
+              target (. :BigInteger :new 1 (. ip :getAddress))]
+
+          (and (>= (. target :compareTo start) 0)
+               (<= (. target :compareTo end) 0)))
+
+    (throw (. :VncException :new
+               (str "Invalid ip data type! "
+                    "Expected string or :java.net.InetAddress but got "
+                    "'" (type ip) "'")))))
+
+
+(defn- cidr/pad-bytebuf [source-buf target-size]
+  (let [source-size (count source-buf)
+        len (if (> source-size target-size) target-size source-size)
+        off (if (> source-size target-size) (- source-size target-size) 0)]
+    (-> (bytebuf-allocate target-size)
+        (bytebuf-pos! (- target-size len))
+        (bytebuf-put-buf! source-buf off len))))
