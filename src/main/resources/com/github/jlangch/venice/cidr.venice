@@ -34,7 +34,7 @@
 (defn
   ^{ :arglists '("(cidr/parse cidr)")
      :doc "Parses CIDR specifications to an IP address range. Supports both IPv4 and IPv6."
-     :examples (list
+     :examples '(
           """
           (cidr/parse "222.192.0.0/11")
           """,

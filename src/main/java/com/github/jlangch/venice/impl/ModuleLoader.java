@@ -91,6 +91,7 @@ public class ModuleLoader {
 							"cidr", 
 							"core", 
 							"crypt", 
+							"geoip", 
 							"http", 
 							"jackson", 
 							"java", 
