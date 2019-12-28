@@ -25,18 +25,18 @@
 ;;;; CIDR tool: // https://www.ipaddressguide.com/cidr
 
 
+(ns cidr)
+
 (import :java.math.BigInteger)
 (import :java.net.InetAddress)
 (import :java.nio.ByteBuffer)
-
-(ns cidr)
 
 (defn
   ^{ :arglists '("(cidr/parse cidr)")
      :doc "Parses CIDR specifications to an IP address range. Supports both IPv4 and IPv6."
      :examples (list
           """
-          (cidr/parse "222.192.0.0/11"
+          (cidr/parse "222.192.0.0/11")
           """ ) }
 
   cidr/parse [cidr]
@@ -46,11 +46,11 @@
 
   (try
     (let [index         (str/index-of cidr "/")
-          address-part  (str/subs 0 index)
-          network-part  (str/subs (inc index))
-          inet-address  (. :InetAddress : getByName address-part)
+          address-part  (str/subs cidr 0 index)
+          network-part  (str/subs cidr (inc index))
+          inet-address  (. :InetAddress :getByName address-part)
           prefix-length (long network-part)
-          ip4?          (= (-> (. inet-address :getAddress) (. :length)) 4)
+          ip4?          (= (count (. inet-address :getAddress)) 4)
           target-size   (if ip4? 4 16)
           mask-buffer   (bytebuf-allocate target-size)]
 
@@ -61,21 +61,23 @@
 
       (let [mask      (-> (. :BigInteger :new 1 mask-buffer)
                           (. :not)
-                          (. :shiftRight prefix-length))]
+                          (. :shiftRight prefix-length))
             buffer    (bytebuf (. inet-address :getAddress))
             ip-val    (. :BigInteger :new 1 buffer)
             start-ip  (. ip-val :and mask)
-            end-ip    (. start-ip :add (. mask :not))
+            end-ip    (. start-ip :add (. mask :not))]
 
         { :cidr     cidr
-          :start-ip (. :InetAddress :getByAddress (pad-bytebuf (. start-ip :toByteArray) target-size))
-          :end-ip   (. :InetAddress :getByAddress (pad-bytebuf (. end-ip :toByteArray) target-size))
+          :start-ip (. :InetAddress :getByAddress
+                       (pad-bytebuf (bytebuf (. start-ip :toByteArray)) target-size))
+          :end-ip   (. :InetAddress :getByAddress
+                       (pad-bytebuf (bytebuf (. end-ip :toByteArray)) target-size))
         } ))
     (catch :java.net.UnknownHostException ex
            (throw (. :VncException :new (str "Unknown host. CIDR=" cidr) ex)))))
 
 
-(defn pad-bytebuf [src size]
+(defn- pad-bytebuf [src size]
   (-> (bytebuf-allocate size)
       (bytebuf-pos! (- size (count src)))
       (bytebuf-put-buf! src 0 size)))

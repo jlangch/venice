@@ -460,7 +460,12 @@ public class BytebufFunctions {
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final VncLong pos = Coerce.toVncLong(args.nth(1));
 
-				buf.position(pos.getValue().intValue());
+				try {
+					buf.position(pos.getValue().intValue());
+				}
+				catch(RuntimeException ex) {
+					throw new VncException("Failed to set bytebuf position!", ex);					
+				}
 				
 				return args.nth(0);
 			}

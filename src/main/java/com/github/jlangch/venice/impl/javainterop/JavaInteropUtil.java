@@ -210,9 +210,11 @@ public class JavaInteropUtil {
 					ErrorMessage.buildErrLocation(args)));
 		}
 		catch(RuntimeException ex) {
-			throw new JavaMethodInvocationException(String.format(
-						"JavaInterop failure. %s", 
-						ErrorMessage.buildErrLocation(args)));
+			throw new JavaMethodInvocationException(
+						String.format(
+							"JavaInterop failure. %s", 
+							ErrorMessage.buildErrLocation(args)),
+						ex);
 		}
 	}
 	
