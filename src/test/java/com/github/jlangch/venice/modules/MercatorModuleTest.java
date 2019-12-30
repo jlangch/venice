@@ -65,8 +65,8 @@ public class MercatorModuleTest {
 				"(do                                      " +
 				"   (load-module :mercator)               " +
 				"                                         " +
-				"   [ (mercator/elliptical-x-axis 22)      " +
-				"     (mercator/elliptical-y-axis 44) ] )  ";
+				"   [ (mercator/elliptical-x-axis 22)     " +
+				"     (mercator/elliptical-y-axis 44) ] ) ";
 
 		@SuppressWarnings("unchecked")
 		final List<Object> map = (List<Object>)venice.eval(script);
