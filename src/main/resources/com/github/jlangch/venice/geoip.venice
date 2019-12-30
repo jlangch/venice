@@ -22,8 +22,24 @@
 ;;;; GEOIP functions. Maps IP adresses to country and city
 
 
+;;;; ---------------------------------------------------------------------------
+;;;;
+;;;;                        W O R K   I N    P R O G R E S S
+;;;;
+;;;; ---------------------------------------------------------------------------
+
 (ns geoip)
 
 (import :java.math.BigInteger)
 (import :java.net.InetAddress)
 (import :java.nio.ByteBuffer)
+
+; https://stackoverflow.com/questions/1441556/parsing-csv-input-with-a-regex-in-java
+; https://gist.github.com/hideaki-t/5954882
+
+(def geoip/csv-regex ",|[^,\"]+|\"(?:[^\"]|\"\")*\"")
+
+(def geoip/geolite-country-url "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip")
+
+(io/spit (io/file "./GeoLite2-Country-CSV.zip")
+         (io/download geoip/geolite-country-url :binary true))

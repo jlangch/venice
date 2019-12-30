@@ -98,6 +98,7 @@ public class ModuleLoader {
 							"kira", 
 							"math", 
 							"maven", 
+							"mercator", 
 							"parsatron",
 							"ring", 
 							"semver", 
