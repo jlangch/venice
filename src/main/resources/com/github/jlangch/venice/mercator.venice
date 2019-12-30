@@ -34,6 +34,7 @@
 ;;;; surface. Longitude is an angle which ranges from 0° at the prime meridian
 ;;;; to +180° eastward and -180° westward.
 
+;;;; https://commons.wikimedia.org/wiki/File:World_map_(Miller_cylindrical_projection,_blank).svg
 
 ;;;; ---------------------------------------------------------------------------
 ;;;;
@@ -50,6 +51,9 @@
 (defonce new-york [40.712778, -74.005833])
 (defonce tokyo [35.6894875, 139.6917064])
 (defonce perth [-31.953513, 115.857047])
+(defonce honolulu [21.3069444, -157.8583333])
+(defonce montevideo [-34.9011127, -56.1645314])
+
 
 ;; major and the minor radius of Earth measured in meters
 (defonce earth-radius-major 6378137.0)
@@ -58,9 +62,9 @@
 (defonce pi (. :java.lang.Math :PI))
 
 ;; spherical mercator projection bounding box
-(defonce spherical-box-top 23810769.32)
+(defonce spherical-box-top 44927335.42)
 (defonce spherical-box-right 20037508.34)
-(defonce spherical-box-bottom -23810769.32)
+(defonce spherical-box-bottom -44927335.42)
 (defonce spherical-box-left -20037508.34)
 
 ;; elliptical mercator projection bounding box
@@ -70,11 +74,14 @@
 (defonce elliptical-box-left -20037508.34)
 
 
+(defn- limit [val min max]
+  (core/min max (core/max min val)))
+
 (defn spherical-x-axis [longitude]
   (* (to-radians longitude) earth-radius-major))
 
 (defn spherical-y-axis [latitude]
-  (-<> (to-radians latitude)
+  (-<> (to-radians (limit latitude -89.9 89.9))
        (/ <> 2.0)
        (+ <> (/ pi 4.0))
        (tan <>)
@@ -86,10 +93,8 @@
   (* (to-radians longitude) earth-radius-major))
 
 (defn elliptical-y-axis [latitude]
-  (let [latitude
-            (min 89.5 (max -89.5 latitude))
-        latitude-radians
-            (to-radians latitude)
+  (let [latitude-radians
+            (to-radians (limit latitude -89.6 89.6))
         earth-dimensional-rate-normalized
             (- 1.0  (square (/ earth-radius-minor earth-radius-major)))
         latitude-on-earth-proj
@@ -102,13 +107,19 @@
         latitude-on-earth-proj-normalized
             (/ (tan (* 0.5 (- (* pi 0.5) latitude-radians)))
                latitude-on-earth-proj)]
-
       (* -1.0 earth-radius-major (log latitude-on-earth-proj-normalized))))
 
 (defn spherical-x-axis-normalize [x]
-  (/ (- x spherical-box-bottom)
-     (- spherical-box-top spherical-box-bottom)))
+  (/ (- x spherical-box-left)
+     (- spherical-box-right spherical-box-left)))
 
 (defn spherical-y-axis-normalize [y]
-  (/ (- y spherical-box-left)
-     (- spherical-box-right spherical-box-left)))
+  (/ (- y spherical-box-bottom)
+     (- spherical-box-top spherical-box-bottom)))
+
+(defn spherical-mapper [map-width map-height]
+  (fn map [longitude latitude]
+    { :longitude longitude
+      :latitude latitude
+      :x (long (* map-width (spherical-x-axis-normalize (spherical-x-axis longitude))))
+      :y (long (* map-height (spherical-y-axis-normalize (spherical-y-axis latitude)))) }))
