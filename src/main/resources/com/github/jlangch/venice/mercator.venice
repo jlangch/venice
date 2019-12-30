@@ -45,6 +45,10 @@
 
 (ns mercator)
 
+(import :javax.imageio.ImageIO)
+(import :java.awt.Color)
+(import :java.awt.RenderingHints)
+
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
 (defonce zurich [47.37174, 8.54226])
@@ -88,7 +92,6 @@
        (log <>)
        (* <> earth-radius-major)))
 
-
 (defn elliptical-x-axis [longitude]
   (* (to-radians longitude) earth-radius-major))
 
@@ -118,8 +121,46 @@
      (- spherical-box-top spherical-box-bottom)))
 
 (defn spherical-mapper [map-width map-height]
-  (fn map [longitude latitude]
+  (fn [longitude latitude]
     { :longitude longitude
       :latitude latitude
       :x (long (* map-width (spherical-x-axis-normalize (spherical-x-axis longitude))))
       :y (long (* map-height (spherical-y-axis-normalize (spherical-y-axis latitude)))) }))
+
+(defn load-image [file]
+  (. :ImageIO :read (io/file file)))
+
+(defn save-image [image file]
+  (. :ImageIO :write image "PNG" (io/file file)))
+
+(defn image-dimensions [image]
+  [ (. image :getWidth nil) (. image :getHeight nil)])
+
+(defn color [r g b a]
+  (. :Color :new r g b a))
+
+(defn draw-circle [image x y radius fill-color border-color]
+  (let [g (. image :createGraphics)]
+    (. g :setRenderingHints { (. :RenderingHints :KEY_ANTIALIASING)
+                              (. :RenderingHints :VALUE_ANTIALIAS_ON) } )
+    (. g :setColor fill-color)
+    (. g :fillOval (- x radius) (- y radius) (* 2 radius) (* 2 radius))
+    (. g :setColor border-color)
+    (. g :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
+  image)
+
+(defn draw [image]
+  (let [dim (image-dimensions image)
+        width (first dim)
+        height (second dim)
+        c1 (color 0I 0I 255I 120I)
+        c2 (color 128I 128I 255I 120I)
+        mapper (spherical-mapper width height)
+        render (fn [pos] (draw-circle image (:x pos) (- height (:y pos)) 10 c2 c1))]
+    (render (mapper (second zurich) (first zurich)))
+    (render (mapper (second new-york) (first new-york)))
+    (render (mapper (second tokyo) (first tokyo)))
+    (render (mapper (second perth) (first perth)))
+    (render (mapper (second honolulu) (first honolulu)))
+    (render (mapper (second montevideo) (first montevideo))))
+  image)
