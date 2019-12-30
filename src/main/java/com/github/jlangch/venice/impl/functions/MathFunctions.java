@@ -1679,6 +1679,7 @@ public class MathFunctions {
 					.add(negate)
 					.add(floor)
 					.add(ceil)
+					
 					.add(square)
 					.add(sqrt)
 					.add(pow)
@@ -1696,7 +1697,6 @@ public class MathFunctions {
 					.add(quartiles)
 					.add(quantile)
 					.add(standard_deviation)
-
 
 					.add(dec_add)
 					.add(dec_sub)
