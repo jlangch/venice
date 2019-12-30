@@ -177,10 +177,18 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("ceil"));
 		arithmetic.addItem(getDocItem("sqrt"));
 		arithmetic.addItem(getDocItem("square"));
+		arithmetic.addItem(getDocItem("pow"));
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
-		arithmetic.addItem(getDocItem("pow"));
-
+		
+		final DocSection trigonometry = new DocSection("Trigonometry");
+		numbers.addSection(trigonometry);
+		trigonometry.addItem(getDocItem("to-radians"));
+		trigonometry.addItem(getDocItem("to-degrees"));
+		trigonometry.addItem(getDocItem("sin"));
+		trigonometry.addItem(getDocItem("cos"));
+		trigonometry.addItem(getDocItem("tan"));
+		
 		final DocSection statistics = new DocSection("Statistics");
 		numbers.addSection(statistics);
 		statistics.addItem(getDocItem("mean"));

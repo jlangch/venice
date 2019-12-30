@@ -652,7 +652,117 @@ public class MathFunctions {
 				return Numeric.sqrt(args.first());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction sin =
+		new VncFunction(
+				"sin",
+				VncFunction
+					.meta()
+					.arglists("(sin x)")
+					.doc("sin x")
+					.examples(
+						"(sin 1)",
+						"(sin 1.23)",
+						"(sin 1.23M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("sin", args, 1);
+
+				return new VncDouble(Math.sin(Numeric.toDouble(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction cos =
+		new VncFunction(
+				"cos",
+				VncFunction
+					.meta()
+					.arglists("(cos x)")
+					.doc("cos x")
+					.examples(
+						"(cos 1)",
+						"(cos 1.23)",
+						"(cos 1.23M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("cos", args, 1);
+
+				return new VncDouble(Math.cos(Numeric.toDouble(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction tan =
+		new VncFunction(
+				"tan",
+				VncFunction
+					.meta()
+					.arglists("(tan x)")
+					.doc("tan x")
+					.examples(
+						"(tan 1)",
+						"(tan 1.23)",
+						"(tan 1.23M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("tan", args, 1);
+
+				return new VncDouble(Math.tan(Numeric.toDouble(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction to_radians =
+		new VncFunction(
+				"to-radians",
+				VncFunction
+					.meta()
+					.arglists("(to-radians x)")
+					.doc("to-radians x")
+					.examples(
+						"(to-radians 90)",
+						"(to-radians 90.0)",
+						"(to-radians 90.0M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("to-radians", args, 1);
+
+				return new VncDouble(Math.toRadians(Numeric.toDouble(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction to_degrees =
+		new VncFunction(
+				"to-degrees",
+				VncFunction
+					.meta()
+					.arglists("(to-degrees x)")
+					.doc("to-degrees x")
+					.examples(
+						"(to-degrees 3)",
+						"(to-degrees 3.1415926)",
+						"(to-degrees 3.1415926M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("to-degrees", args, 1);
+
+				return new VncDouble(Math.toDegrees(Numeric.toDouble(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction log =
@@ -699,29 +809,29 @@ public class MathFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-		public static VncFunction pow =
-			new VncFunction(
-					"pow",
-					VncFunction
-						.meta()
-						.arglists("(pow x y)")
-						.doc("Returns the value of x raised to the power of y")
-						.examples(
-							"(pow 10 2)",
-							"(pow 10.23 2)",
-							"(pow 10.23 2.5)")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					assertArity("pow", args, 2);
+	public static VncFunction pow =
+		new VncFunction(
+				"pow",
+				VncFunction
+					.meta()
+					.arglists("(pow x y)")
+					.doc("Returns the value of x raised to the power of y")
+					.examples(
+						"(pow 10 2)",
+						"(pow 10.23 2)",
+						"(pow 10.23 2.5)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("pow", args, 2);
 
-					return new VncDouble(Math.pow(
-											Numeric.toDouble(args.first()).getValue(),
-											Numeric.toDouble(args.second()).getValue()));
-				}
+				return new VncDouble(Math.pow(
+										Numeric.toDouble(args.first()).getValue(),
+										Numeric.toDouble(args.second()).getValue()));
+			}
 
-			    private static final long serialVersionUID = -1848883965231344442L;
-			};
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction mean =
 		new VncFunction(
@@ -1571,9 +1681,15 @@ public class MathFunctions {
 					.add(ceil)
 					.add(square)
 					.add(sqrt)
+					.add(pow)
+					
+					.add(to_radians)
+					.add(to_degrees)
+					.add(sin)
+					.add(cos)
+					.add(tan)
 					.add(log)
 					.add(log10)
-					.add(pow)
 
 					.add(mean)
 					.add(median)
