@@ -55,7 +55,7 @@
 (defonce earth-radius-major 6378137.0)
 (defonce earth-radius-minor 6356752.3142)
 
-(defonce pi (. :Math :PI))
+(defonce pi (. :java.lang.Math :PI))
 
 ;; spherical mercator projection bounding box
 (defonce spherical-box-top 23810769.32)
@@ -98,12 +98,12 @@
         latitude-on-earth-proj
             (pow (/ (- 1.0 latitude-on-earth-proj)
                     (+ 1.0 latitude-on-earth-proj))
-                 (* 0.5 (sqrt earthDimensionalRateNormalized)))
+                 (* 0.5 (sqrt earth-dimensional-rate-normalized)))
         latitude-on-earth-proj-normalized
-            (tan (/ (* 0.5 (- (* pi 0.5) latitude-radians))
-                    atitude-on-earth-proj))]
+            (/ (tan (* 0.5 (- (* pi 0.5) latitude-radians)))
+               latitude-on-earth-proj)]
 
-      (* -1.0 earth-radius-major (log atitude-on-earth-proj-normalized))))
+      (* -1.0 earth-radius-major (log latitude-on-earth-proj-normalized))))
 
 (defn spherical-x-axis-normalize [x]
   (/ (- x spherical-box-bottom)
