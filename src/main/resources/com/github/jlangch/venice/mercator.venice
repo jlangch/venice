@@ -90,8 +90,8 @@
                           :left   -20037508.34 })
 
 
-(defn- limit [val range]
-  (min (second range) (max (first range) val)))
+(defn- limit [val [lower upper]]
+  (min upper (max lower val)))
 
 (defn spherical-x-axis [longitude]
   (* (to-radians longitude) earth-radius-major))
@@ -166,8 +166,8 @@
   [ (. image :getWidth nil) (. image :getHeight nil)])
 
 (defn crop-image [image crop-top crop-bottom]
-  (let [dim (image-dimensions image )]
-    (. image :getSubimage 0 crop-top (first dim) (- (second dim) crop-top crop-bottom))))
+  (let [[width height] (image-dimensions image)]
+    (. image :getSubimage 0 crop-top width (- height crop-top crop-bottom))))
 
 (defn draw-circle [image x y radius fill-color border-color]
   (let [g (. image :createGraphics)]
@@ -190,9 +190,7 @@
   image)
 
 (defn draw-locations [image locations]
-  (let [dim (image-dimensions image)
-        img-width (first dim)
-        img-height (second dim)
+  (let [[img-width img-height] (image-dimensions image)
         fill-color (color 255I 128I 128I 255I)
         border-color (color 255I 0I 0I 255I)
         radius 10
