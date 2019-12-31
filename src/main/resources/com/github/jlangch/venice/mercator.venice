@@ -33,14 +33,16 @@
 ;;;; Longitude specifies the east-west position of a point on the Earth's
 ;;;; surface. Longitude is an angle which ranges from 0° at the prime meridian
 ;;;; to +180° eastward and -180° westward.
-
-;;;; https://commons.wikimedia.org/wiki/File:World_map_(Miller_cylindrical_projection,_blank).svg
-
-;;;; ---------------------------------------------------------------------------
 ;;;;
-;;;;                        W O R K   I N    P R O G R E S S
+;;;; The formulas are taken from:
+;;;; https://en.wikipedia.org/wiki/Web_Mercator_projection
 ;;;;
-;;;; ---------------------------------------------------------------------------
+;;;; A square Mercator map with a latitude range -85.0° to + 85.0°:
+;;;; https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG
+;;;;
+;;;; Resources:
+;;;; https://en.m.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
+;;;; https://www.glk.uni-mainz.de/files/2018/08/FB08_Masterarbeit_PaulWeber.pdf
 
 
 (ns mercator)
@@ -57,6 +59,9 @@
 (defonce perth [-31.953513, 115.857047])
 (defonce honolulu [21.3069444, -157.8583333])
 (defonce montevideo [-34.9011127, -56.1645314])
+(defonce greenwich [51.482577, 0])
+(defonce zero [0, 0])
+
 
 
 ;; major and the minor radius of Earth measured in meters
@@ -65,27 +70,29 @@
 
 (defonce pi (. :java.lang.Math :PI))
 
+(defonce latitude-range [-85.0 85.0])
+
 ;; spherical mercator projection bounding box
-(defonce spherical-box-top 44927335.42)
-(defonce spherical-box-right 20037508.34)
-(defonce spherical-box-bottom -44927335.42)
-(defonce spherical-box-left -20037508.34)
+(defonce spherical-box { :top     19971868.88
+                         :right   20037508.34
+                         :bottom -19971868.88
+                         :left   -20037508.34 })
 
 ;; elliptical mercator projection bounding box
-(defonce elliptical-box-top 34619289.37)
-(defonce elliptical-box-right 20037508.34)
-(defonce elliptical-box-bottom -34619289.37)
-(defonce elliptical-box-left -20037508.34)
+(defonce elliptical-box { :top     19929239.11
+                          :right   20037508.34
+                          :bottom -19929239.11
+                          :left   -20037508.34 })
 
 
-(defn- limit [val min max]
-  (core/min max (core/max min val)))
+(defn- limit [val range]
+  (core/min (second range) (core/max (first range) val)))
 
 (defn spherical-x-axis [longitude]
   (* (to-radians longitude) earth-radius-major))
 
 (defn spherical-y-axis [latitude]
-  (-<> (to-radians (limit latitude -89.9 89.9))
+  (-<> (to-radians (limit latitude latitude-range))
        (/ <> 2.0)
        (+ <> (/ pi 4.0))
        (tan <>)
@@ -97,7 +104,7 @@
 
 (defn elliptical-y-axis [latitude]
   (let [latitude-radians
-            (to-radians (limit latitude -89.6 89.6))
+            (to-radians (limit latitude latitude-range))
         earth-dimensional-rate-normalized
             (- 1.0  (square (/ earth-radius-minor earth-radius-major)))
         latitude-on-earth-proj
@@ -112,20 +119,31 @@
                latitude-on-earth-proj)]
       (* -1.0 earth-radius-major (log latitude-on-earth-proj-normalized))))
 
-(defn spherical-x-axis-normalize [x]
-  (/ (- x spherical-box-left)
-     (- spherical-box-right spherical-box-left)))
+(defn x-axis-normalize [x box]
+  (/ (- x (:left box))
+     (- (:right box) (:left box))))
 
-(defn spherical-y-axis-normalize [y]
-  (/ (- y spherical-box-bottom)
-     (- spherical-box-top spherical-box-bottom)))
+(defn y-axis-normalize [y box]
+  (/ (- y (:bottom box))
+     (- (:top box) (:bottom box))))
 
 (defn spherical-mapper [map-width map-height]
   (fn [longitude latitude]
     { :longitude longitude
       :latitude latitude
-      :x (long (* map-width (spherical-x-axis-normalize (spherical-x-axis longitude))))
-      :y (long (* map-height (spherical-y-axis-normalize (spherical-y-axis latitude)))) }))
+      :x (long (* map-width (x-axis-normalize (spherical-x-axis longitude)
+                                              spherical-box)))
+      :y (long (* map-height (y-axis-normalize (spherical-y-axis latitude)
+                                               spherical-box))) }))
+
+(defn elliptical-mapper [map-width map-height]
+  (fn [longitude latitude]
+    { :longitude longitude
+      :latitude latitude
+      :x (long (* map-width (x-axis-normalize (elliptical-x-axis longitude)
+                                              elliptical-box)))
+      :y (long (* map-height (y-axis-normalize (elliptical-y-axis latitude)
+                                               elliptical-box))) }))
 
 (defn load-image [file]
   (. :ImageIO :read (io/file file)))
@@ -149,18 +167,26 @@
     (. g :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
   image)
 
-(defn draw [image]
+(defn draw [image locations]
   (let [dim (image-dimensions image)
-        width (first dim)
-        height (second dim)
-        c1 (color 0I 0I 255I 120I)
-        c2 (color 128I 128I 255I 120I)
-        mapper (spherical-mapper width height)
-        render (fn [pos] (draw-circle image (:x pos) (- height (:y pos)) 10 c2 c1))]
-    (render (mapper (second zurich) (first zurich)))
-    (render (mapper (second new-york) (first new-york)))
-    (render (mapper (second tokyo) (first tokyo)))
-    (render (mapper (second perth) (first perth)))
-    (render (mapper (second honolulu) (first honolulu)))
-    (render (mapper (second montevideo) (first montevideo))))
+        img-width (first dim)
+        img-height (second dim)
+        fill-color (color 255I 128I 128I 255I)
+        border-color (color 255I 0I 0I 255I)
+        radius 10
+        mapper (spherical-mapper img-width img-height)
+        render (fn [pos] (draw-circle image
+                                      (:x pos)
+                                      (- img-height (:y pos))
+                                      radius
+                                      fill-color
+                                      border-color))]
+    (docoll (fn [l] (render (mapper (second l) (first l)))) locations))
   image)
+
+(defn test [src-img dst-img]
+  (-> (load-image src-img)
+      (draw [zurich new-york tokyo perth
+             honolulu montevideo greenwich
+             zero])
+      (save-image dst-img)))
