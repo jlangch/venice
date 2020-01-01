@@ -737,6 +737,58 @@ public class ZipFunctions {
 		    private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_zip_list_entry_names =
+		new VncFunction(
+				"io/zip-list-entry-names",
+				VncFunction
+					.meta()
+					.arglists("(io/zip-list-entry-names)")
+					.doc(
+						"Returns a list of the zip's entry names.")
+					.examples(
+						"(io/zip-list-entry-names \"test-file.zip\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/zip-list-entry-names", args, 1);
+
+				try {
+					final VncVal f = args.first();
+					List<String> entries;
+
+					if (Types.isVncByteBuffer(f)) {
+						entries = Zipper.listZipEntryNames(((VncByteBuffer)f).getBytes());
+					}
+					else if (Types.isVncJavaObject(f, File.class)) {
+						final File file = (File)((VncJavaObject)f).getDelegate();
+						validateReadableFile(file);
+						entries = Zipper.listZipEntryNames(file);
+					}
+					else if (Types.isVncString(f)) {
+						final File file = new File(Coerce.toVncString(f).getValue());
+						validateReadableFile(file);
+						entries = Zipper.listZipEntryNames(file);
+					}
+					else if (Types.isVncJavaObject(f, InputStream.class)) {
+						entries = Zipper.listZipEntryNames(Coerce.toVncJavaObject(f, InputStream.class));
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'io/zip-list-entry-names' does not allow %s as f",
+								Types.getType(f)));
+					}
+
+					return new VncList(entries.stream().map(s -> new VncString(s)).collect(Collectors.toList()));
+				}
+				catch (Exception ex) {
+					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+
+		    private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+
 	public static VncFunction io_unzip_to_dir =
 		new VncFunction(
 				"io/unzip-to-dir",
@@ -1167,6 +1219,7 @@ public class ZipFunctions {
 					.add(io_zip_remove)
 					.add(io_zip_file)
 					.add(io_zip_list)
+					.add(io_zip_list_entry_names)
 					.add(io_zip_Q)
 					.add(io_unzip)
 					.add(io_unzip_first)
