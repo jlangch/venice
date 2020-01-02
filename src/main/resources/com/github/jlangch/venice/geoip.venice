@@ -30,16 +30,55 @@
 
 (ns geoip)
 
-(import :java.math.BigInteger)
-(import :java.net.InetAddress)
-(import :java.nio.ByteBuffer)
+(load-module :csv)
 
 ; https://stackoverflow.com/questions/1441556/parsing-csv-input-with-a-regex-in-java
 ; https://gist.github.com/hideaki-t/5954882
 
-(def geoip/csv-regex ",|[^,\"]+|\"(?:[^\"]|\"\")*\"")
-
 (def geoip/geolite-country-url "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip")
 
-(io/spit (io/file "./GeoLite2-Country-CSV.zip")
-         (io/download geoip/geolite-country-url :binary true))
+(def geoip/ip4-file "GeoLite2-Country-Blocks-IPv4.csv")
+(def geoip/ip6-file "GeoLite2-Country-Blocks-IPv6.csv")
+(def geoip/country-file "GeoLite2-Country-Locations-de.csv")
+
+
+(defn geoip/download-country-db-to-file [zip-file]
+  (io/spit zip-file (geoip/download-country-db)))
+
+(defn geoip/download-country-db []
+  (io/download geoip/geolite-country-url :binary true))
+
+(defn- geoip/unzip-entry [zip name]
+  (let [entry (->> (io/zip-list-entry-names zip)
+                   (filter #(str/ends-with? % name))
+                   (first))]
+    (io/unzip (io/file zip) entry)))
+
+(defn- geoip/parse-file [zip name]
+  (-<> (geoip/unzip-entry zip name)
+       (bytebuf-to-string <> :utf-8)
+       (csv/read <>)))
+
+(defn- geoip/parse-ip [zip file countries]
+  (let [ip-data (->> (geoip/parse-file zip file)
+                     (filter #(and (not (nil? (nth % 2)))
+                                   (= "0" (nth % 4))
+                                   (= "0" (nth % 5)))))]
+    (if (some? countries)
+      (into {} (map (juxt #(nth % 0) #(get countries (nth % 2))) ip-data)) ; map network -> country-name
+      (map (fn [x] { :id (nth x 1)
+                          :network (nth x 0)
+                          :country-id (nth x 2) }) ip-data))))
+
+(defn geoip/parse-countries [zip]
+  (->> (geoip/parse-file zip geoip/country-file)
+       (map (juxt #(nth % 0) #(nth % 5))) ; map country-id -> country-name
+       (into {})))
+
+(defn geoip/parse-ip4
+  ([zip] (geoip/parse-ip zip geoip/ip4-file nil))
+  ([zip countries] (geoip/parse-ip zip geoip/ip4-file countries)))
+
+(defn geoip/parse-ip6
+  ([zip] (geoip/parse-ip zip geoip/ip6-file nil))
+  ([zip countries] (geoip/parse-ip zip geoip/ip6-file countries)))
