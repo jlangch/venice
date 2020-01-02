@@ -31,6 +31,7 @@
 (ns geoip)
 
 (load-module :csv)
+(load-module :cidr)
 
 
 (def geoip/geolite-country-url "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip")
@@ -39,6 +40,17 @@
 (def geoip/ip6-file "GeoLite2-Country-Blocks-IPv6.csv")
 (def geoip/country-file "GeoLite2-Country-Locations-en.csv")
 
+;; (def rx (geoip/resolver "resources/geoip.zip"))
+;; (rx "91.223.55.0")
+(defn geoip/resolver [zip]
+  (let [countries (geoip/parse-countries zip)
+        ip4-data (geoip/parse-ip4 zip countries)
+        ip6-data (geoip/parse-ip6 zip countries)]
+    (memoize (fn resolve [ip]
+                (cond
+                  (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
+                  (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
+                  :else nil)))))
 
 (defn geoip/download-country-db-to-file [zip-file]
   (io/spit zip-file (geoip/download-country-db)))
@@ -63,10 +75,13 @@
                                    (= "0" (nth % 4))
                                    (= "0" (nth % 5)))))]
     (if (some? countries)
-      (into {} (map (juxt #(nth % 0) #(get countries (nth % 2))) ip-data)) ; map network -> country-name
+      (map (juxt #(nth % 0) #(get countries (nth % 2))) ip-data) ; map network -> country-name
       (map (fn [x] { :id (nth x 1)
-                          :network (nth x 0)
-                          :country-id (nth x 2) }) ip-data))))
+                     :network (nth x 0)
+                     :country-id (nth x 2) }) ip-data))))
+
+(defn- geoip/find-ip-country [ip ip-data]
+  (some (fn [x] (if (cidr/in-range? ip (first x)) (second x) nil)) ip-data))
 
 (defn geoip/ip4? [ip]
   (case (type ip)
