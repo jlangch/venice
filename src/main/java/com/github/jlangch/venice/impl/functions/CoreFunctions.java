@@ -3398,7 +3398,9 @@ public class CoreFunctions {
 					.arglists("(some pred coll)")
 					.doc(
 						"Returns the first logical true value of (pred x) for any x in coll, " +
-						"else nil.")
+						"else nil. \n" +
+						"Stops processing the collection if the first value is found that meets " +
+						"the predicate.")
 					.examples(
 						"(some even? '(1 2 3 4))",
 						"(some even? '(1 3 5 7))",
