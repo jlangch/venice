@@ -31,8 +31,8 @@
           a file, a Java InputStream, or a Java Reader
 
           Options:
-            :binary true/false - e.g :binary true, defaults to false
-            :encoding enc - e.g :encoding :utf-8, defaults to :utf-8
+            :encoding enc - used when reading from a binary data source
+                            e.g :encoding :utf-8, defaults to :utf-8
             :separator val - e.g. ",", defaults to a comma
             :quote val - e.g. "'", defaults to a double quote
           """
@@ -50,7 +50,9 @@
 
   csv/read [source & options]
 
-  (let [data (if (string? source) source (io/slurp source options))
+  (let [data (if (string? source)
+                source
+                (io/slurp source (conj options :binary false)))
         opts (apply hash-map options)
         separator (coalesce (:separator opts) csv/comma)
         quote (coalesce (:quote opts) csv/double-quote)
