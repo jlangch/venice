@@ -34,14 +34,24 @@
 (load-module :cidr)
 
 
+;; MaxMind GEO IP databse
 (def geoip/geolite-country-url "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip")
 
 (def geoip/ip4-file "GeoLite2-Country-Blocks-IPv4.csv")
 (def geoip/ip6-file "GeoLite2-Country-Blocks-IPv6.csv")
 (def geoip/country-file "GeoLite2-Country-Locations-en.csv")
 
+
+;; Google country GPS data
+;;   https://developers.google.com/public-data/docs/canonical/countries_csv
+;;   https://github.com/google/dspl/tree/master/samples/google/canonical
+;;   https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
+(def geoip/google-country-url "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv")
+
+
+
 ;; (def rx (geoip/resolver "resources/geoip.zip"))
-;; (rx "91.223.55.0")
+;; (rx "91.223.55.1") ; => ["PL" "Poland"]
 (defn geoip/resolver [zip]
   (let [countries (geoip/parse-countries zip)
         ip4-data (geoip/parse-ip4 zip countries)
@@ -52,11 +62,17 @@
                   (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
                   :else nil)))))
 
-(defn geoip/download-country-db-to-file [zip-file]
-  (io/spit zip-file (geoip/download-country-db)))
+(defn geoip/download-country-ip-db-to-file [zip-file]
+  (io/spit zip-file (geoip/download-country-ip-db)))
 
-(defn geoip/download-country-db []
+(defn geoip/download-country-ip-db []
   (io/download geoip/geolite-country-url :binary true))
+
+(defn geoip/download-country-gps-db-to-file [csv-file]
+  (io/spit csv-file (geoip/download-country-gps-db)))
+
+(defn geoip/download-country-gps-db []
+  (io/download geoip/google-country-url :binary false))
 
 (defn- geoip/unzip-entry [zip name]
   (let [entry (->> (io/zip-list-entry-names zip)
@@ -99,7 +115,7 @@
 
 (defn geoip/parse-countries [zip]
   (->> (geoip/parse-file zip geoip/country-file)
-       (map (juxt #(nth % 0) #(nth % 5))) ; map country-id -> country-name
+       (map (juxt #(nth % 0) #(vector (nth % 4) (nth % 5)))) ; country: id, iso, name
        (into {})))
 
 (defn geoip/parse-ip4
