@@ -32,14 +32,12 @@
 
 (load-module :csv)
 
-; https://stackoverflow.com/questions/1441556/parsing-csv-input-with-a-regex-in-java
-; https://gist.github.com/hideaki-t/5954882
 
 (def geoip/geolite-country-url "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip")
 
 (def geoip/ip4-file "GeoLite2-Country-Blocks-IPv4.csv")
 (def geoip/ip6-file "GeoLite2-Country-Blocks-IPv6.csv")
-(def geoip/country-file "GeoLite2-Country-Locations-de.csv")
+(def geoip/country-file "GeoLite2-Country-Locations-en.csv")
 
 
 (defn geoip/download-country-db-to-file [zip-file]
@@ -69,6 +67,20 @@
       (map (fn [x] { :id (nth x 1)
                           :network (nth x 0)
                           :country-id (nth x 2) }) ip-data))))
+
+(defn geoip/ip4? [ip]
+  (case (type ip)
+    :venice.String         (str/contains? ip ".")
+    :java.net.Inet4Address true
+    :java.net.Inet6Address false
+    false))
+
+(defn geoip/ip6? [ip]
+  (case (type ip)
+    :venice.String         (str/contains? ip ":")
+    :java.net.Inet4Address false
+    :java.net.Inet6Address true
+    false))
 
 (defn geoip/parse-countries [zip]
   (->> (geoip/parse-file zip geoip/country-file)
