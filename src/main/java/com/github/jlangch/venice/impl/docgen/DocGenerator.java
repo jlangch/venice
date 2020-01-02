@@ -502,7 +502,7 @@ public class DocGenerator {
 		vec_access.addItem(getDocItem("nfirst"));
 		vec_access.addItem(getDocItem("nlast"));
 		vec_access.addItem(getDocItem("subvec"));
-		list_access.addItem(getDocItem("some"));
+		vec_access.addItem(getDocItem("some"));
 
 		final DocSection vec_modify = new DocSection("Modify");
 		vectors.addSection(vec_modify);
