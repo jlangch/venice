@@ -921,20 +921,26 @@ public class StringFunctions {
 					.arglists("(str/double-unquote str)")
 					.doc("Unquotes a double quoted string.")
 					.examples(
-						"(str/double-unquote \"\\\"abc\\\"\"))",
-						"(str/double-unquote \"\\\"\\\"\"))")
+						"(str/double-unquote \"\\\"abc\\\"\")",
+						"(str/double-unquote \"\\\"\\\"\")",
+						"(str/double-unquote nil)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("str/double-unquote", args, 1);
 
-				final String s = Coerce.toVncString(args.first()).getValue();
-				
-				if (s.startsWith("\"") && s.endsWith("\"")) {
-					return new VncString(s.length() == 2 ? "" : s.substring(1, s.length()-1));
+				if (args.first() == Nil) {
+					return Nil;
 				}
 				else {
-					return args.first();
+					final String s = Coerce.toVncString(args.first()).getValue();
+					
+					if (s.startsWith("\"") && s.endsWith("\"")) {
+						return new VncString(s.length() == 2 ? "" : s.substring(1, s.length()-1));
+					}
+					else {
+						return args.first();
+					}
 				}
 			}
 
@@ -954,9 +960,14 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/double-quoted?", args, 1);
 
-				final String s = Coerce.toVncString(args.first()).getValue();
-
-				return s.startsWith("\"") && s.endsWith("\"") ? True : False;
+				if (args.first() == Nil) {
+					return False;
+				}
+				else {
+					final String s = Coerce.toVncString(args.first()).getValue();
+	
+					return s.startsWith("\"") && s.endsWith("\"") ? True : False;
+				}
 			}
 
 		    private static final long serialVersionUID = -1848883965231344442L;
