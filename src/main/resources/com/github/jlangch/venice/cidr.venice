@@ -19,8 +19,10 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; CIDR functions. Parses CIDR specifications to IP address ranges. It
-;;;; supports both IPv4 and IPv6.
+;;;; CIDR (Classless Inter-Domain Routing) block functions. Parses CIDR
+;;;; specifications to IP address ranges. It supports both IPv4 and IPv6.
+;;;;
+;;;; See: https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 ;;;;
 ;;;; CIDR tool: // https://www.ipaddressguide.com/cidr
 
