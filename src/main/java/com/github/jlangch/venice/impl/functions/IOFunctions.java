@@ -119,7 +119,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_size =
@@ -144,7 +144,7 @@ public class IOFunctions {
 				return new VncLong(f.length());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_path =
@@ -167,7 +167,7 @@ public class IOFunctions {
 				return new VncString(f.getPath());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_canonical_path =
@@ -195,7 +195,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_absolute_path =
@@ -218,7 +218,7 @@ public class IOFunctions {
 				return new VncString(f.getAbsolutePath());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_parent =
@@ -242,7 +242,7 @@ public class IOFunctions {
 				return parent == null ? Nil : new VncJavaObject(parent);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_name =
@@ -265,7 +265,7 @@ public class IOFunctions {
 				return new VncString(f.getName());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_ext_Q =
@@ -294,7 +294,7 @@ public class IOFunctions {
 				return f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext) ? True : False;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_Q =
@@ -313,7 +313,7 @@ public class IOFunctions {
 				return Types.isVncJavaObject(args.first(), File.class) ? True : False;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_exists_file_Q =
@@ -336,7 +336,7 @@ public class IOFunctions {
 				return Constants.bool(f.isFile());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_exists_dir_Q =
@@ -361,7 +361,7 @@ public class IOFunctions {
 				return Constants.bool(f.isDirectory());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_can_read_Q =
@@ -386,7 +386,7 @@ public class IOFunctions {
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.canRead());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_can_write_Q =
@@ -411,7 +411,7 @@ public class IOFunctions {
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.canWrite());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_can_execute_Q =
@@ -436,7 +436,7 @@ public class IOFunctions {
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.canExecute());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_file_hidden_Q =
@@ -461,7 +461,7 @@ public class IOFunctions {
 				return Constants.bool((f.isFile() || f.isDirectory()) && f.isHidden());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_delete_file =
@@ -497,7 +497,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_delete_file_tree =
@@ -543,7 +543,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_delete_file_on_exit =
@@ -578,7 +578,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_list_files =
@@ -620,7 +620,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_list_file_tree =
@@ -664,7 +664,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_copy_file =
@@ -750,7 +750,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_move_file =
@@ -790,7 +790,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_mkdir =
@@ -821,7 +821,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_mkdirs =
@@ -854,7 +854,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_tmp_dir =
@@ -873,7 +873,7 @@ public class IOFunctions {
 				return new VncJavaObject(new File(System.getProperty("java.io.tmpdir")));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_user_dir =
@@ -891,7 +891,7 @@ public class IOFunctions {
 				return new VncJavaObject(new File(System.getProperty("user.dir")));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_user_home_dir =
@@ -909,7 +909,7 @@ public class IOFunctions {
 				return new VncJavaObject(new File(System.getProperty("user.home")));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_slurp_lines =
@@ -977,7 +977,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_slurp =
@@ -1064,7 +1064,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_spit =
@@ -1132,7 +1132,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_download =
@@ -1173,7 +1173,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_copy_stream =
@@ -1214,7 +1214,7 @@ public class IOFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_slurp_stream =
@@ -1270,7 +1270,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_spit_stream =
@@ -1338,7 +1338,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_uri_stream =
@@ -1366,7 +1366,7 @@ public class IOFunctions {
 					}
 				}
 
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
 	public static VncFunction io_wrap_os_with_buffered_writer =
@@ -1404,7 +1404,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_wrap_os_with_print_writer =
@@ -1441,7 +1441,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_wrap_is_with_buffered_reader =
@@ -1477,7 +1477,7 @@ public class IOFunctions {
 					}
 				}
 
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
 	public static VncFunction io_mime_type =
@@ -1514,7 +1514,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
@@ -1551,7 +1551,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_temp_dir =
@@ -1576,7 +1576,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_load_classpath_resource =
@@ -1621,7 +1621,7 @@ public class IOFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_default_charset =
@@ -1639,7 +1639,7 @@ public class IOFunctions {
 				return new VncString(Charset.defaultCharset().name());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 

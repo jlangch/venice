@@ -123,7 +123,7 @@ public class TransducerFunctions {
 				return Reduced.unreduced(xf.apply(VncList.of(ret)));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction reduced =
@@ -141,7 +141,7 @@ public class TransducerFunctions {
 				return Reduced.reduced(args.first());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction reduced_Q =
@@ -159,7 +159,7 @@ public class TransducerFunctions {
 				return Reduced.isReduced(args.first()) ? True : False;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction map =
@@ -211,11 +211,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -259,7 +259,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction map_indexed =
@@ -318,11 +318,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -364,7 +364,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction filter =
@@ -416,11 +416,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -440,7 +440,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction drop =
@@ -493,11 +493,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -508,7 +508,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction drop_while =
@@ -569,11 +569,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -589,7 +589,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction take =
@@ -645,11 +645,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 
 				}
@@ -661,7 +661,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction take_while =
@@ -715,11 +715,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 
 				}
@@ -736,7 +736,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction keep =
@@ -788,11 +788,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 
 				}
@@ -804,7 +804,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction dedupe =
@@ -858,11 +858,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -885,7 +885,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction remove =
@@ -934,7 +934,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction distinct =
@@ -988,11 +988,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -1010,7 +1010,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction sorted =
@@ -1065,11 +1065,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -1078,7 +1078,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction reverse =
@@ -1130,11 +1130,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -1166,7 +1166,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction flatten =
@@ -1225,11 +1225,11 @@ public class TransducerFunctions {
 									}
 								}
 
-							    private static final long serialVersionUID = -1L;
+								private static final long serialVersionUID = -1L;
 							};
 						}
 
-					    private static final long serialVersionUID = -1L;
+						private static final long serialVersionUID = -1L;
 					};
 				}
 				else {
@@ -1239,7 +1239,7 @@ public class TransducerFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction halt_when =
@@ -1322,15 +1322,15 @@ public class TransducerFunctions {
 								}
 							}
 
-						    private static final long serialVersionUID = -1L;
+							private static final long serialVersionUID = -1L;
 						};
 					}
 
-				    private static final long serialVersionUID = -1L;
+					private static final long serialVersionUID = -1L;
 				};
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 

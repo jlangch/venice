@@ -81,7 +81,7 @@ public class ModuleFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
 	public static VncFunction loadClasspathFile = 
@@ -112,7 +112,7 @@ public class ModuleFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
 	public static VncFunction loadResource = 
@@ -164,7 +164,7 @@ public class ModuleFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	

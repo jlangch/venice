@@ -72,7 +72,7 @@ public class BytebufFunctions {
 				return Types.isVncByteBuffer(args.first()) ? True : False;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_cast =
@@ -138,7 +138,7 @@ public class BytebufFunctions {
 							Types.getType(arg)));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_allocate =
@@ -159,7 +159,7 @@ public class BytebufFunctions {
 				return new VncByteBuffer(ByteBuffer.allocate(length));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_capacity =
@@ -180,7 +180,7 @@ public class BytebufFunctions {
 				return new VncLong(buf.capacity());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_limit =
@@ -201,7 +201,7 @@ public class BytebufFunctions {
 				return new VncLong(buf.limit());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_from_string =
@@ -231,7 +231,7 @@ public class BytebufFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_to_string =
@@ -261,7 +261,7 @@ public class BytebufFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_sub =
@@ -301,7 +301,7 @@ public class BytebufFunctions {
 													to.getValue().intValue())));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_put_buf_BANG =
@@ -334,7 +334,7 @@ public class BytebufFunctions {
 				return args.nth(0);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_put_byte_BANG =
@@ -362,7 +362,7 @@ public class BytebufFunctions {
 				return args.nth(0);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_put_long_BANG =
@@ -390,7 +390,7 @@ public class BytebufFunctions {
 				return args.nth(0);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_put_int_BANG =
@@ -418,7 +418,7 @@ public class BytebufFunctions {
 				return args.nth(0);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_pos =
@@ -440,7 +440,7 @@ public class BytebufFunctions {
 				return new VncLong(buf.position());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction bytebuf_pos_BANG =
@@ -470,7 +470,7 @@ public class BytebufFunctions {
 				return args.nth(0);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 

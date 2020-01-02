@@ -152,7 +152,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_append =
@@ -239,7 +239,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_remove =
@@ -283,7 +283,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_size =
@@ -336,7 +336,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_unzip =
@@ -393,7 +393,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_unzip_first =
@@ -450,7 +450,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_unzip_nth =
@@ -509,7 +509,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_unzip_all =
@@ -582,7 +582,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_file =
@@ -676,7 +676,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_list =
@@ -734,7 +734,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_list_entry_names =
@@ -785,7 +785,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
 
@@ -843,7 +843,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_gzip =
@@ -897,7 +897,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_gzip_to_stream =
@@ -960,7 +960,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_ungzip =
@@ -1013,7 +1013,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_ungzip_to_stream =
@@ -1054,7 +1054,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_zip_Q =
@@ -1108,7 +1108,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction io_gzip_Q =
@@ -1162,7 +1162,7 @@ public class ZipFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 

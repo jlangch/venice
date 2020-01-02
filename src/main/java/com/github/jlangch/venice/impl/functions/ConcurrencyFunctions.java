@@ -181,7 +181,7 @@ public class ConcurrencyFunctions {
 		
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction realized_Q = 
@@ -232,7 +232,7 @@ public class ConcurrencyFunctions {
 				return True;
 			}
 		
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
@@ -283,7 +283,7 @@ public class ConcurrencyFunctions {
 						Types.getType(ref)));
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction remove_watch = 
@@ -325,7 +325,7 @@ public class ConcurrencyFunctions {
 						Types.getType(ref)));
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	
@@ -352,7 +352,7 @@ public class ConcurrencyFunctions {
 				return new VncAtom(args.first(), args.getMeta());
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
 	public static VncFunction atom_Q = 
@@ -374,7 +374,7 @@ public class ConcurrencyFunctions {
 				return Types.isVncAtom(args.first()) ? True : False;
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction reset_BANG = 
@@ -411,7 +411,7 @@ public class ConcurrencyFunctions {
 				}
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction swap_BANG = 
@@ -511,7 +511,7 @@ public class ConcurrencyFunctions {
 				return new VncVolatile(args.first(), args.getMeta());
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
 	public static VncFunction volatile_Q = 
@@ -533,7 +533,7 @@ public class ConcurrencyFunctions {
 				return Types.isVncVolatile(args.first()) ? True : False;
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	
@@ -686,7 +686,7 @@ public class ConcurrencyFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction set_error_handler = 
@@ -1046,7 +1046,7 @@ public class ConcurrencyFunctions {
 				return new VncJavaObject(new CompletableFuture<VncVal>());
 			}
 			
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction promise_Q = 
@@ -1119,7 +1119,7 @@ public class ConcurrencyFunctions {
 						return new VncTunnelAsJavaObject(fn.apply(args));
 					}
 					
-				    private static final long serialVersionUID = -1L;
+					private static final long serialVersionUID = -1L;
 				};
 				
 				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(

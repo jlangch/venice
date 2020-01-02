@@ -101,7 +101,7 @@ public class ArrayFunctions {
 				return jo;
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
 	public static VncFunction aget = 
@@ -137,7 +137,7 @@ public class ArrayFunctions {
 					}
 				}
 		
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 			
 	public static VncFunction alength = 
@@ -166,7 +166,7 @@ public class ArrayFunctions {
 					return new VncLong(Array.getLength(delegate));
 				}
 		
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 			
 	public static VncFunction asub = 
@@ -203,7 +203,7 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 		
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
 	public static VncFunction amap = 
@@ -294,7 +294,7 @@ public class ArrayFunctions {
 				return new VncJavaObject(retArr);
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction acopy = 
@@ -349,7 +349,7 @@ public class ArrayFunctions {
 				return joDst;
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction make_array = 
@@ -398,7 +398,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction object_array = 
@@ -446,7 +446,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
 	public static VncFunction string_array = 
@@ -498,7 +498,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction byte_array = 
@@ -550,7 +550,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction int_array = 
@@ -603,7 +603,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 			
 	public static VncFunction long_array = 
@@ -656,7 +656,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
 	public static VncFunction float_array = 
@@ -709,7 +709,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 			
 	public static VncFunction double_array = 
@@ -762,7 +762,7 @@ public class ArrayFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static String arrayToString(final VncJavaObject val) {

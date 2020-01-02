@@ -68,7 +68,7 @@ public class RegexFunctions {
 									Coerce.toVncString(args.first()).getValue()));
 				}
 		
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
 	public static VncFunction matcher = 
@@ -97,7 +97,7 @@ public class RegexFunctions {
 				return new VncJavaObject(p.matcher(s));
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction find_Q = 
@@ -124,7 +124,7 @@ public class RegexFunctions {
 				return m.find() ? True : False;
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction matches = 
@@ -162,7 +162,7 @@ public class RegexFunctions {
 				return new VncList(groups);
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction matches_Q = 
@@ -189,7 +189,7 @@ public class RegexFunctions {
 				return m.matches() ? True : False;
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction find = 
@@ -220,7 +220,7 @@ public class RegexFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction find_all = 
@@ -249,7 +249,7 @@ public class RegexFunctions {
 				return new VncList(matches);
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction find_group = 
@@ -283,7 +283,7 @@ public class RegexFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 		public static VncFunction find_all_groups = 
@@ -313,7 +313,7 @@ public class RegexFunctions {
 					return new VncList(groups);
 				}
 		
-			    private static final long serialVersionUID = -1848883965231344442L;
+				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
 	public static VncFunction reset = 
@@ -340,7 +340,7 @@ public class RegexFunctions {
 				return new VncJavaObject(m.reset(s));
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction group = 
@@ -375,7 +375,7 @@ public class RegexFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
 	public static VncFunction groupcount = 
@@ -400,7 +400,7 @@ public class RegexFunctions {
 				return new VncLong(m.groupCount());
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 			

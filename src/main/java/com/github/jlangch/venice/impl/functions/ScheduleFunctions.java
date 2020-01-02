@@ -86,7 +86,7 @@ public class ScheduleFunctions {
 						return new VncTunnelAsJavaObject(fn.apply(args));
 					}
 					
-				    private static final long serialVersionUID = -1L;
+					private static final long serialVersionUID = -1L;
 				};
 				
 				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
@@ -166,7 +166,7 @@ public class ScheduleFunctions {
 						return new VncTunnelAsJavaObject(fn.apply(args));
 					}
 					
-				    private static final long serialVersionUID = -1L;
+					private static final long serialVersionUID = -1L;
 				};
 				
 				final Runnable task = (Runnable)DynamicInvocationHandler.proxify(

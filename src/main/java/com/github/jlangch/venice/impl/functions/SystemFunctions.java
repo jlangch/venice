@@ -77,7 +77,7 @@ public class SystemFunctions {
 				return new VncString(Version.VERSION);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
@@ -96,7 +96,7 @@ public class SystemFunctions {
 				return new VncString(UUID.randomUUID().toString());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
@@ -115,7 +115,7 @@ public class SystemFunctions {
 				return new VncLong(System.identityHashCode(args.first()));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
@@ -135,7 +135,7 @@ public class SystemFunctions {
 				return new VncLong(System.currentTimeMillis());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction nano_time =
@@ -156,7 +156,7 @@ public class SystemFunctions {
 				return new VncLong(System.nanoTime());
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction format_nano_time =
@@ -216,7 +216,7 @@ public class SystemFunctions {
 				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction sleep =
@@ -254,7 +254,7 @@ public class SystemFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pid =
@@ -274,7 +274,7 @@ public class SystemFunctions {
 							ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction host_name =
@@ -299,7 +299,7 @@ public class SystemFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction host_address =
@@ -324,7 +324,7 @@ public class SystemFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction gc =
@@ -348,7 +348,7 @@ public class SystemFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction shutdown_hook =
@@ -393,7 +393,7 @@ public class SystemFunctions {
 				return Nil;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 
@@ -432,7 +432,7 @@ public class SystemFunctions {
 							.collect(Collectors.toList()));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction os_type =
@@ -463,7 +463,7 @@ public class SystemFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction os_type_Q =
@@ -491,7 +491,7 @@ public class SystemFunctions {
 				}
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction sandboxed_Q =
@@ -510,7 +510,7 @@ public class SystemFunctions {
 				return JavaInterop.isSandboxed() ? True : False;
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction system_prop =
@@ -541,7 +541,7 @@ public class SystemFunctions {
 				return val == null ? defaultVal : new VncString(val);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction system_env =
@@ -571,7 +571,7 @@ public class SystemFunctions {
 				return val == null ? defaultVal : new VncString(val);
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction java_version =
@@ -590,7 +590,7 @@ public class SystemFunctions {
 				return new VncString(System.getProperty("java.version"));
 			}
 
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	private static TimeUnit toTimeUnit(final VncKeyword unit) {

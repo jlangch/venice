@@ -119,7 +119,7 @@ public class PdfFunctions {
 								Coerce.toVncDouble(dotsPerPoint).getValue().floatValue()));
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pdf_watermark = 
@@ -200,7 +200,7 @@ public class PdfFunctions {
 									skipBottomPages_));
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pdf_available_Q = 
@@ -234,7 +234,7 @@ public class PdfFunctions {
 				return Constants.True;
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pdf_merge = 
@@ -292,7 +292,7 @@ public class PdfFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pdf_copy = 
@@ -375,7 +375,7 @@ public class PdfFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pdf_pages = 
@@ -405,7 +405,7 @@ public class PdfFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 	public static VncFunction pdf_text_to_pdf = 
@@ -467,7 +467,7 @@ public class PdfFunctions {
 				}
 			}
 	
-		    private static final long serialVersionUID = -1848883965231344442L;
+			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
 		

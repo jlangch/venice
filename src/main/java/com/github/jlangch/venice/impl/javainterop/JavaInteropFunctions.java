@@ -68,7 +68,7 @@ public class JavaInteropFunctions {
 			return false;  // don't allow redefinition for security reasons
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	
@@ -107,7 +107,7 @@ public class JavaInteropFunctions {
 					Namespaces.getCurrentNamespace().getJavaImports());
 		}
 		
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 	
 	public static class ProxifyFn extends AbstractJavaFn {
@@ -153,7 +153,7 @@ public class JavaInteropFunctions {
 								Coerce.toVncMap(args.second())));
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	public static class JavaClassFn extends AbstractJavaFn {
@@ -178,7 +178,7 @@ public class JavaInteropFunctions {
 							Namespaces.getCurrentNamespace().getJavaImports()));
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	public static class SupersFn extends AbstractJavaFn {
@@ -212,7 +212,7 @@ public class JavaInteropFunctions {
 			return new VncList(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	public static class BasesFn extends AbstractJavaFn {
@@ -245,7 +245,7 @@ public class JavaInteropFunctions {
 			return new VncList(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
 		}
 	
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	public static class DescribeJavaClassFn extends AbstractJavaFn {
@@ -338,7 +338,7 @@ public class JavaInteropFunctions {
 			return map;
 		}
 
-	    private static final long serialVersionUID = -1848883965231344442L;
+		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
 	public static class JavaObjQFn extends AbstractJavaFn {
