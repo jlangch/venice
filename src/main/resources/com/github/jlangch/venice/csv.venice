@@ -1,0 +1,90 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2020 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; CSV reader / writer
+
+
+(ns csv)
+
+(defn
+  ^{ :arglists '("(csv/read source & options)")
+     :doc """
+          Reads CSV-data from a source. The source may be a a string, a bytebuf,
+          a file, a Java InputStream, or a Java Reader
+
+          Options:
+            :binary true/false - e.g :binary true, defaults to false
+            :encoding enc - e.g :encoding :utf-8, defaults to :utf-8
+            :separator val - e.g. ",", defaults to a comma
+            :quote val - e.g. "'", defaults to a double quote
+          """
+     :examples '(
+          """
+          (csv/read "1,\"ab\",false")
+          """,
+          """
+          (csv/read "1:::'ab':false" :separator ":" :quote "'")
+          """ ) }
+
+  csv/read [source & options]
+
+  (let [data (if (string? source) source (io/slurp source options))
+        opts (apply hash-map options)
+        separator (coalesce (:separator opts) csv/comma)
+        quote (coalesce (:quote opts) csv/double-quote)
+        pattern (regex/pattern (csv/make-regex separator quote))]
+
+    (map #(csv/parse-line % pattern separator quote) (str/split-lines data))))
+
+(def csv/double-quote (char 34))
+(def csv/comma (char 44))
+
+
+(defn- csv/make-regex [separator quote]
+  (str/format "[%c]|[^%c%c]+|[%c](?:[^%c]|[%c][%c])*[%c]"
+              (char separator)
+              (char separator)
+              (char quote)
+              (char quote)
+              (char quote)
+              (char quote)
+              (char quote)
+              (char quote)))
+
+(defn- csv/split [s pattern]
+  (regex/find-all (regex/matcher pattern s)))
+
+(defn- csv/unquote [s quote]
+  (if (== quote csv/double-quote)
+    (str/double-unquote s)
+    (if (and (str/starts-with? s quote) (str/ends-with? s quote))
+      (str/strip-end (str/strip-start s quote) quote)
+      s)))
+
+(defn- csv/parse-line [s pattern separator quote]
+  (let [elements (csv/split s pattern)]
+    (loop [items elements values []]
+       (let [head (first items)]
+         (cond
+           (nil? head) values
+           (== head separator) (recur (rest items) (conj values nil))
+           :else (recur (rest (rest items))
+                        (conj values (csv/unquote head quote))))))))
