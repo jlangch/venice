@@ -54,7 +54,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("app", "xml", "crypt"), false)
+							.createEnv(Arrays.asList("app", "xml", "crypt", "csv"), false)
 							.setStdoutPrintStream(null);
 	}
 
@@ -781,6 +781,11 @@ public class DocGenerator {
 		env.addItem(getDocItem("var-get"));
 		env.addItem(getDocItem("bound?"));
 		env.addItem(getDocItem("resolve"));
+		
+		final DocSection walk = new DocSection("Tree Walker");
+		all.addSection(walk);
+		walk.addItem(getDocItem("prewalk"));
+		walk.addItem(getDocItem("postwalk"));
 
 		final DocSection meta = new DocSection("Meta");
 		all.addSection(meta);
@@ -1372,11 +1377,6 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 		
-		final DocSection walk = new DocSection("Tree Walker");
-		all.addSection(walk);
-		walk.addItem(getDocItem("prewalk"));
-		walk.addItem(getDocItem("postwalk"));
-		
 		final DocSection json = new DocSection("JSON");
 		all.addSection(json);
 		json.addItem(getDocItem("json/write-str"));
@@ -1410,6 +1410,10 @@ public class DocGenerator {
 		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
 		crypt.addItem(getDocItem("crypt/encrypt"));
 		crypt.addItem(getDocItem("crypt/decrypt"));
+		
+		final DocSection csv = new DocSection("CSV");
+		all.addSection(csv);
+		csv.addItem(getDocItem("csv/read"));
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);

@@ -38,10 +38,14 @@
           """
      :examples '(
           """
-          (csv/read "1,\"ab\",false")
+          (do
+            (load-module :csv)
+            (csv/read "1,\\"ab\\",false"))
           """,
           """
-          (csv/read "1:::'ab':false" :separator ":" :quote "'")
+          (do
+            (load-module :csv)
+            (csv/read "1:::'ab':false" :separator ":" :quote "'"))
           """ ) }
 
   csv/read [source & options]
