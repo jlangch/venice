@@ -63,7 +63,7 @@
 (import :java.awt.Color)
 (import :java.awt.RenderingHints)
 (import :java.net.URL)
-(import :com.github.jlangch.venice.javainterop.proxy.Graphics2DComposite)
+(import :com.github.jlangch.venice.javainterop.delegate.Graphics2DComposite)
 
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
