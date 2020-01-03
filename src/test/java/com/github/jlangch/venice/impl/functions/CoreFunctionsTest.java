@@ -2183,21 +2183,6 @@ public class CoreFunctionsTest {
 					"  (ns A)                                      \n" +
 					"  (defn x [] 100)                             \n" +
 					"  (pr-str (into (sorted-map) (meta x)))))       "));
-		
-		assertEquals(
-				"{:column 9 :file \"unknown\" :line 2}", 
-				venice.eval(
-					"(do                                           \n" +
-					"  (let [x (fn [] 100)]                        \n" +
-					"     (pr-str (into (sorted-map) (meta x))))))   "));
-		
-		assertEquals(
-				"{:column 9 :file \"unknown\" :line 3}", 
-				venice.eval(
-					"(do                                           \n" +
-					"  (ns A)                                      \n" +
-					"  (let [x (fn [] 100)]                        \n" +
-					"     (pr-str (into (sorted-map) (meta x))))))   "));
 	}
 
 	@Test

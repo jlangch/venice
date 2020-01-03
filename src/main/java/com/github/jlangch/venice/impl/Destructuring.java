@@ -79,9 +79,8 @@ public class Destructuring {
 		final List<Binding> bindings = new ArrayList<>();
 		
 		if (Types.isVncSymbol(symVal)) {
-			// scalar value binding [n 10]
-			
-			bindings.add(new Binding((VncSymbol)symVal, bindVal.withMeta(symVal.getMeta())));
+			// scalar value binding [n 10]			
+			bindings.add(new Binding((VncSymbol)symVal, bindVal));
 		}
 		else if (Types.isVncSequence(symVal)) {
 			// sequential destructuring	

@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - deprecated Gradle build properties
 - function `empty` to support sets (required for `macroexpand-all`)
 - function `map` to support sets (required for `macroexpand-all`)
+- transfer of meta data in simple destructuring [x 10] from symbol to bind value
 
 ### Changed
 
