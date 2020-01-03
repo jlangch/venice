@@ -13,7 +13,7 @@ GEO IP database provider like _MaxMind_ publish their data with CIDR IP notation
 
   (load-module :cidr)
   
-  ;; parse a CIDR notation into an IP address range
+  ;; parse a CIDR notation into an IP address range (start/end IP address)
   (cidr/parse "222.192.0.0/11") 
   
   (cidr/parse "2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64")
