@@ -26,11 +26,11 @@ a comma and a double quote.
   (load-module :csv)
   
   (csv/read """
-            8000|'Zurich'|'Wipkingen 1'|ZH
-            3000|'Bern'|''|BE
-            5000|'Aarau'|||
+            8000,'Zurich','Wipkingen, X-''1''',ZH
+            3000,'Bern','',BE
+            5000,'Aarau',,,
             """
-            :separator "|" 
+            :separator "," 
             :quote "'")) 
 ```
 

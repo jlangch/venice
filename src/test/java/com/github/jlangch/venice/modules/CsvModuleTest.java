@@ -88,4 +88,24 @@ public class CsvModuleTest {
 		assertEquals(null, (String)values.get(1));
 		assertEquals(null, (String)values.get(2));
 	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void test_4() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                 \n" +
+				"   (load-module :csv)                                               \n" +
+				"                                                                    \n" +
+				"   (csv/read \"1,'Zurich','Wipkingen, X-''1''',ZH\" :quote \"'\"))    ";
+
+		final List<Object> parsed = (List<Object>)venice.eval(script);
+		final List<Object> values = (List<Object>)((List<Object>)parsed).get(0);
+		
+		assertEquals("1", (String)values.get(0));
+		assertEquals("Zurich", (String)values.get(1));
+		assertEquals("Wipkingen, X-'1'", (String)values.get(2));
+		assertEquals("ZH", (String)values.get(3));
+	}
 }

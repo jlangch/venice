@@ -54,11 +54,13 @@
                 source
                 (io/slurp source (conj options :binary false)))
         opts (apply hash-map options)
-        separator (coalesce (:separator opts) csv/comma)
-        quote (coalesce (:quote opts) csv/double-quote)
+        separator (str (coalesce (:separator opts) csv/comma))
+        quote (str (coalesce (:quote opts) csv/double-quote))
+        two-quotes (str quote quote)
         pattern (regex/pattern (csv/make-regex separator quote))]
 
-    (map #(csv/parse-line % pattern separator quote) (str/split-lines data))))
+    (map #(csv/parse-line % pattern separator quote two-quotes)
+         (str/split-lines data))))
 
 (def csv/double-quote (char 34))
 (def csv/comma (char 44))
@@ -78,14 +80,13 @@
 (defn- csv/split [s pattern]
   (regex/find-all (regex/matcher pattern s)))
 
-(defn- csv/unquote [s quote]
-  (if (== quote csv/double-quote)
-    (str/double-unquote s)
-    (if (and (str/starts-with? s quote) (str/ends-with? s quote))
-      (str/strip-end (str/strip-start s quote) quote)
-      s)))
+(defn- csv/unquote [s quote two-quotes]
+  (if (and (str/starts-with? s quote) (str/ends-with? s quote))
+      (-> (str/strip-end (str/strip-start s quote) quote)
+          (str/replace-all two-quotes quote))
+      s))
 
-(defn- csv/parse-line [s pattern separator quote]
+(defn- csv/parse-line [s pattern separator quote two-quotes]
   (let [elements (csv/split s pattern)]
     (loop [items elements values []]
        (let [head (first items)]
@@ -93,4 +94,4 @@
            (nil? head) values
            (== head separator) (recur (rest items) (conj values nil))
            :else (recur (rest (rest items))
-                        (conj values (csv/unquote head quote))))))))
+                        (conj values (csv/unquote head quote two-quotes))))))))

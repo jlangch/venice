@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - ...
 
+### Fixed
+
+- CSV module embedded quote characters in cells. They are represented by a pair 
+  of the quote character. 
 
 
 ## [1.7.12] - 2020-01-03
