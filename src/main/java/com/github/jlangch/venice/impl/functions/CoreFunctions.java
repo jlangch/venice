@@ -3606,6 +3606,9 @@ public class CoreFunctions {
 				else if (Types.isVncSequence(coll)) {
 					return ((VncSequence)coll).empty();
 				}
+				else if (Types.isVncSet(coll)) {
+					return ((VncSet)coll).empty();
+				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).empty();
 				}

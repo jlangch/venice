@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - macro `load-file` to honor the 'force' option
 - deprecated Gradle build properties
+- function `empty` to support sets (required for `macroexpand-all`)
 
 ### Changed
 
