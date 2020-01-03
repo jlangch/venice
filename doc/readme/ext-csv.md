@@ -7,7 +7,7 @@ The CSV reader reads CSV-data from a source that may be a a string, a bytebuf,
 a file, a Java InputStream, or a Java Reader.
 
 The separator and the quote char can optionally be specified. They default to
-',' and '"'.
+a comma and a double quote.
 
 
 ```clojure
