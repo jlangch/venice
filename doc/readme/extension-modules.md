@@ -9,6 +9,7 @@ explicitly `(load-module :name)`.
 
 * [Kira Template](ext-kira.md)
 * [XML](ext-xml.md)
+* [CSV](ext-csv.md)
 * [Charts](ext-charts.md)
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
