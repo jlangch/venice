@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
@@ -151,6 +152,36 @@ public class JavaInteropFunctions {
 								CallFrame.fromVal("proxify(:" + clazz.getName() +")", args),
 								clazz, 
 								Coerce.toVncMap(args.second())));
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class DelegateFn extends AbstractJavaFn {
+		public DelegateFn() {
+			super(
+				"delegate", 
+				VncFunction
+					.meta()
+					.arglists("(delegate classname object)")		
+					.doc("Wraps the delegate object with an instance of type classname")
+					.build());
+		}
+
+		@Override
+		public VncVal apply(final VncList args) {
+			if (args.size() != 2) {
+				throw new ArityException(2, "delegate");
+			}
+
+			final Class<?> clazz = JavaInteropUtil.toClass(
+										args.first(), 
+										Namespaces.getCurrentNamespace().getJavaImports());
+
+			final Object delegate = Coerce.toVncJavaObject(args.second()).getDelegate();
+
+			return new VncJavaObject(
+					ReflectionAccessor.invokeConstructor(clazz, new Object[] { delegate }));
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -559,6 +590,7 @@ public class JavaInteropFunctions {
 					.Builder()
 					.add(new JavaFn())
 					.add(new ProxifyFn())
+					.add(new DelegateFn())
 					.add(new SupersFn())
 					.add(new BasesFn())
 					.add(new DescribeJavaClassFn())

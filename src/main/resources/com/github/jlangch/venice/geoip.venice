@@ -32,11 +32,11 @@
 ;;;;        (load-module :mercator)
 ;;;;        (load-module :geiop)
 ;;;;
-;;;;        (defn draw [file locations]
+;;;;        (defn draw [format file locations]
 ;;;;          (-> (mercator/load-mercator-image)
 ;;;;              (mercator/draw-locations locations)
 ;;;;              (mercator/crop-image 400 600)
-;;;;              (mercator/save-image file))))
+;;;;              (mercator/save-image format file))))
 ;;;;
 ;;;;       (def rx (geoip/resolver "resources/geoip.zip"
 ;;;;                               (geoip/download-country-gps-db)))
@@ -44,7 +44,7 @@
 ;;;;       (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
 ;;;;            (map rx)
 ;;;;            (map fourth)
-;;;;            (draw "./world-map.png")))
+;;;;            (draw :png "./world-map.png")))
 ;;;;
 
 

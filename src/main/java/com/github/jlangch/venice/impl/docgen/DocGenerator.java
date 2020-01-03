@@ -1357,6 +1357,7 @@ public class DocGenerator {
 		
 		general.addItem(getDocItem("."));
 		general.addItem(getDocItem("proxify"));
+		general.addItem(getDocItem("delegate"));
 		general.addItem(getDocItem("import"));
 		general.addItem(getDocItem("imports"));
 		general.addItem(getDocItem("supers"));

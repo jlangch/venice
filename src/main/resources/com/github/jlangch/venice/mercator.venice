@@ -43,6 +43,18 @@
 ;;;; Resources:
 ;;;; https://en.m.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
 ;;;; https://www.glk.uni-mainz.de/files/2018/08/FB08_Masterarbeit_PaulWeber.pdf
+;;;;
+;;;;
+;;;; Example:
+;;;;
+;;;;      (do
+;;;;        (load-module :mercator)
+;;;;
+;;;;        (-> (mercator/load-mercator-image)
+;;;;            (mercator/draw-locations (vals mercator/cities))
+;;;;            (mercator/crop-image 400 600)
+;;;;            (mercator/save-image :png "./test-map.png")))
+;;;;
 
 
 (ns mercator)
@@ -51,43 +63,55 @@
 (import :java.awt.Color)
 (import :java.awt.RenderingHints)
 (import :java.net.URL)
+(import :com.github.jlangch.venice.javainterop.proxy.Graphics2DComposite)
 
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
-(defonce locations {
-  :zurich     [ 47.37174       8.54226  ]
-  :new-york   [ 40.712778    -74.005833 ]
-  :tokyo      [ 35.6894875   139.6917064]
-  :perth      [-31.953513    115.857047 ]
-  :honolulu   [ 21.3069444  -157.8583333]
-  :montevideo [-34.9011127   -56.1645314]
-  :greenwich  [ 51.482577      0.0      ]
-  :reykjavik  [ 64.13548     -21.89541  ]
-  :kapstadt   [-33.924869     18.424055 ]
-  :zero       [  0.0           0.0      ] })
+(def cities
+  { :zurich     [ 47.37174       8.54226  ]
+    :new-york   [ 40.712778    -74.005833 ]
+    :tokyo      [ 35.6894875   139.6917064]
+    :perth      [-31.953513    115.857047 ]
+    :honolulu   [ 21.3069444  -157.8583333]
+    :montevideo [-34.9011127   -56.1645314]
+    :greenwich  [ 51.482577      0.0      ]
+    :reykjavik  [ 64.13548     -21.89541  ]
+    :kapstadt   [-33.924869     18.424055 ]
+    :zero       [  0.0           0.0      ] })
 
 
-(defonce mercator-map "https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG")
+(def mercator-map "https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG")
 
 ;; major and the minor radius of Earth measured in meters
-(defonce earth-radius-major 6378137.0)
-(defonce earth-radius-minor 6356752.3142)
+(def earth-radius-major 6378137.0)
+(def earth-radius-minor 6356752.3142)
 
-(defonce pi (. :java.lang.Math :PI))
+(def pi (. :java.lang.Math :PI))
 
-(defonce latitude-range [-85.0 85.0])
+(def latitude-range [-85.0 85.0])
 
-;; spherical mercator projection bounding box
-(defonce spherical-box { :top     19971868.88
-                         :right   20037508.34
-                         :bottom -19971868.88
-                         :left   -20037508.34 })
+;; spherical mercator projection bounding box based on the
+;; latitude range [-85.0 85.0]
+(def spherical-box
+  { :top     19971868.88
+    :right   20037508.34
+    :bottom -19971868.88
+    :left   -20037508.34 })
 
-;; elliptical mercator projection bounding box
-(defonce elliptical-box { :top     19929239.11
-                          :right   20037508.34
-                          :bottom -19929239.11
-                          :left   -20037508.34 })
+;; elliptical mercator projection bounding box based on the
+;; latitude range [-85.0 85.0]
+(def elliptical-box
+  { :top     19929239.11
+    :right   20037508.34
+    :bottom -19929239.11
+    :left   -20037508.34 })
+
+(def bitmap-format
+  { :png  "PNG"
+    :gif  "GIF"
+    :bmp  "BMP"
+    :jpg  "JPG" })
+
 
 
 (defn- limit [val [lower upper]]
@@ -154,13 +178,13 @@
   (. :ImageIO :read (. :URL :new mercator-map)))
 
 (defn color [r g b a]
-  (. :Color :new r g b a))
+  (. :Color :new (int r) (int g) (int b) (int a)))
 
 (defn load-image [file]
   (. :ImageIO :read (io/file file)))
 
-(defn save-image [image file]
-  (. :ImageIO :write image "PNG" (io/file file)))
+(defn save-image [image format file]
+  (. :ImageIO :write image (get bitmap-format format) (io/file file)))
 
 (defn image-dimensions [image]
   [ (. image :getWidth nil) (. image :getHeight nil)])
@@ -170,17 +194,7 @@
     (. image :getSubimage 0 crop-top width (- height crop-top crop-bottom))))
 
 (defn draw-circle [image x y radius fill-color border-color]
-  (let [g (. image :createGraphics)]
-    (. g :setRenderingHints { (. :RenderingHints :KEY_ANTIALIASING)
-                              (. :RenderingHints :VALUE_ANTIALIAS_ON) } )
-    (. g :setColor fill-color)
-    (. g :fillOval (- x radius) (- y radius) (* 2 radius) (* 2 radius))
-    (. g :setColor border-color)
-    (. g :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
-  image)
-
-(defn draw-circle [image x y radius fill-color border-color]
-  (let [g (. image :createGraphics)]
+  (let [g (delegate :Graphics2DComposite (. image :createGraphics))]
     (. g :setRenderingHints { (. :RenderingHints :KEY_ANTIALIASING)
                               (. :RenderingHints :VALUE_ANTIALIAS_ON) } )
     (. g :setColor fill-color)
@@ -191,8 +205,8 @@
 
 (defn draw-locations [image locations]
   (let [[img-width img-height] (image-dimensions image)
-        fill-color (color 255I 128I 128I 255I)
-        border-color (color 255I 0I 0I 255I)
+        fill-color (color 255 128 128 255)
+        border-color (color 255 0 0 255)
         radius 10
         mapper (spherical-mapper img-width img-height)
         render (fn [pos] (draw-circle image
@@ -206,6 +220,6 @@
 
 (defn test []
   (-> (load-mercator-image)
-      (draw-locations (vals locations))
+      (draw-locations (vals cities))
       (crop-image 400 600)
-      (save-image "test-locations.png")))
+      (save-image :png "test-cities.png")))
