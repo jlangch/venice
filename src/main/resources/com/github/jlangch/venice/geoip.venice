@@ -54,7 +54,7 @@
 (load-module :cidr)
 
 
-;; MaxMind GEO IP databse
+;; MaxMind GEO IP database
 (def geoip/geolite-country-url "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country-CSV.zip")
 
 (def geoip/ip4-file "GeoLite2-Country-Blocks-IPv4.csv")

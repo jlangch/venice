@@ -20,7 +20,7 @@
 ;;;; limitations under the License.
 
 ;;;; CIDR (Classless Inter-Domain Routing) block functions. Parses CIDR
-;;;; specifications to IP address ranges. It supports both IPv4 and IPv6.
+;;;; IP notations to IP address ranges. It supports both IPv4 and IPv6.
 ;;;;
 ;;;; See: https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 ;;;;
