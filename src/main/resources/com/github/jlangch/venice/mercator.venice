@@ -194,6 +194,8 @@
     (. image :getSubimage 0 crop-top width (- height crop-top crop-bottom))))
 
 (defn draw-circle [image x y radius fill-color border-color]
+  ; use a delegate on Graphics2D to work around illegal reflective
+  ; access on JDK internal classes with Java 9+
   (let [g (delegate :Graphics2DComposite (. image :createGraphics))]
     (. g :setRenderingHints { (. :RenderingHints :KEY_ANTIALIASING)
                               (. :RenderingHints :VALUE_ANTIALIAS_ON) } )
