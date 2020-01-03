@@ -50,17 +50,34 @@
 
 
 
-;; (def rx (geoip/resolver "resources/geoip.zip"))
-;; (rx "91.223.55.1") ; => ["PL" "Poland"]
-(defn geoip/resolver [zip]
-  (let [countries (geoip/parse-countries zip)
-        ip4-data (geoip/parse-ip4 zip countries)
-        ip6-data (geoip/parse-ip6 zip countries)]
+;; (def rx (geoip/resolver "resources/geoip.zip" (geoip/download-country-gps-db)))
+;; (rx "91.223.55.1") ; => ["91.223.55.1", "PL", "Poland", ["51.919438", "19.145136"]]
+(defn geoip/resolver [geoip-zip location-csv]
+  (let [rc (geoip/country-resolver geoip-zip)
+        rl (geoip/location-resolver location-csv)]
+    (memoize (fn resolve [ip]
+               (let [i (rc ip)]
+                 (when (some? i)
+                   (cons ip (conj i (rl (first i))))))))))
+
+;; (def rx (geoip/country-resolver "resources/geoip.zip"))
+;; (rx "91.223.55.1") ; => ["PL", "Poland"]
+(defn geoip/country-resolver [geoip-zip]
+  (let [countries (geoip/parse-countries geoip-zip)
+        ip4-data (geoip/parse-ip4 geoip-zip countries)
+        ip6-data (geoip/parse-ip6 geoip-zip countries)]
     (memoize (fn resolve [ip]
                 (cond
                   (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
                   (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
                   :else nil)))))
+
+;; (def rx (geoip/location-resolver (geoip/download-country-gps-db)))
+;; (rx "PL") ; => ["51.919438", "19.145136"]
+(defn geoip/location-resolver [location-csv]
+  (let [locations (geoip/parse-locations location-csv)]
+    (memoize (fn resolve [country-iso]
+                (get locations country-iso)))))
 
 (defn geoip/download-country-ip-db-to-file [zip-file]
   (io/spit zip-file (geoip/download-country-ip-db)))
@@ -99,6 +116,11 @@
 (defn- geoip/find-ip-country [ip ip-data]
   (some (fn [x] (if (cidr/in-range? ip (first x)) (second x) nil)) ip-data))
 
+(defn- geoip/parse-locations [csv]
+  (->> (csv/read csv)
+       (map (juxt #(nth % 0) #(vector (nth % 1) (nth % 2))))  ; [iso, [lat, lon]]
+       (into {})))
+
 (defn geoip/ip4? [ip]
   (case (type ip)
     :venice.String         (str/contains? ip ".")
@@ -115,7 +137,7 @@
 
 (defn geoip/parse-countries [zip]
   (->> (geoip/parse-file zip geoip/country-file)
-       (map (juxt #(nth % 0) #(vector (nth % 4) (nth % 5)))) ; country: id, iso, name
+       (map (juxt #(nth % 0) #(vector (nth % 4) (nth % 5)))) ; [id, [iso, name]]
        (into {})))
 
 (defn geoip/parse-ip4
