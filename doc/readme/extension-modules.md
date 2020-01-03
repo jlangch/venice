@@ -19,4 +19,4 @@ explicitly `(load-module :name)`.
 * [Semantic Versioning](ext-semver.md)
 * [CIDR](ext-cidr.md)
 * [Mercator Maps](ext-mercator.md)
-* [GEO IP](ext-geoiop.md)
+* [GEO IP](ext-geoip.md)
