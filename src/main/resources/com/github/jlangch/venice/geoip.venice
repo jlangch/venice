@@ -19,14 +19,34 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; GEOIP functions. Maps IP adresses to country and city
-
-
-;;;; ---------------------------------------------------------------------------
+;;;; GEOIP functions. Maps IP adresses to country and location (latitude,
+;;;; longitude).
 ;;;;
-;;;;                        W O R K   I N    P R O G R E S S
+;;;; E.g.: "91.223.55.1"  => ["91.223.55.1", "PL", "Poland", ["51.919438", "19.145136"]]
 ;;;;
-;;;; ---------------------------------------------------------------------------
+;;;;
+;;;; You can use Venice's :mercator extension module to create a world map with
+;;;; the IP locations:
+;;;;
+;;;;      (do
+;;;;        (load-module :mercator)
+;;;;        (load-module :geiop)
+;;;;
+;;;;        (defn draw [file locations]
+;;;;          (-> (mercator/load-mercator-image)
+;;;;              (mercator/draw-locations locations)
+;;;;              (mercator/crop-image 400 600)
+;;;;              (mercator/save-image file))))
+;;;;
+;;;;       (def rx (geoip/resolver "resources/geoip.zip"
+;;;;                               (geoip/download-country-gps-db)))
+;;;;
+;;;;       (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
+;;;;            (map rx)
+;;;;            (map fourth)
+;;;;            (draw "./world-map.png")))
+;;;;
+
 
 (ns geoip)
 
