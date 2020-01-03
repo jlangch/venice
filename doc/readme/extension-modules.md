@@ -17,6 +17,6 @@ explicitly `(load-module :name)`.
 * [Jackson JSON](ext-jackson.md)
 * [Cryptographic Functions](ext-crypt.md)
 * [Semantic Versioning](ext-semver.md)
-* [CIDR](ext-cidr.md)
+* [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
 * [Mercator Maps](ext-mercator.md)
 * [GEO IP](ext-geoip.md)
