@@ -27,7 +27,8 @@ a comma and a double quote.
   
   (csv/read """
             8000|'Zurich'|'Wipkingen 1'|ZH
-            5000|'Aarau'||AG
+            3000|'Bern'|''|BE
+            5000|'Aarau'|||
             """
             :separator "|" 
             :quote "'")) 
