@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- modules `cidr`, `mercator`, and `geopip` to map IP address locations to a 2D map.
+- modules `cidr`, `mercator`, and `geoip` to map IP address locations to a 2D map.
   Use case: visualize Tomcat client IP addresses from the access log file on
   a world map.
 - function `io/zip-list-entry-names`
