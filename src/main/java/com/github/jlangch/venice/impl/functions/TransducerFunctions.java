@@ -233,11 +233,7 @@ public class TransducerFunctions {
 						final List<VncVal> fnArgs = new ArrayList<>();
 
 						for(int ii=0; ii<lists.size(); ii++) {
-							VncVal seq = lists.nth(ii);
-							if (Types.isVncString(seq)) {
-								seq = ((VncString)seq).toVncList();
-							}
-							
+							VncVal seq = lists.nth(ii);							
 							final VncSequence nthList = coerceToSequence(seq);
 							if (nthList.size() > index) {
 								fnArgs.add(nthList.nth(index));
@@ -1365,6 +1361,12 @@ public class TransducerFunctions {
 	private static VncSequence coerceToSequence(final VncVal val) {
 		if (Types.isVncMap(val)) {
 			return new VncList(((VncMap)val).entries());
+		}
+		else if (Types.isVncSet(val)) {
+			return ((VncSet)val).toVncList();
+		}
+		else if (Types.isVncString(val)) {
+			return ((VncString)val).toVncList();
 		}
 		else {
 			return Coerce.toVncSequence(val);
