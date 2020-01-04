@@ -38,7 +38,8 @@ With alternate quote and separator:
             :quote "'")) 
             
   ;; => (["8000" "Zurich" "Wipkingen, X-'1'" "ZH"] 
-  ;;     ["3000" "Bern" "" "BE"] ["5000" "Aarau" nil nil])
+  ;;     ["3000" "Bern" "" "BE"] 
+  ;;     ["5000" "Aarau" nil nil])
 ```
 
 
