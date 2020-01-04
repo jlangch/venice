@@ -75,7 +75,7 @@ Writes data in CSV format to a file:
 (do
   (load-module :csv)
   
-  (let [file (io/file "test.csv"
+  (let [file (io/file "test.csv")
         fs (. :java.io.FileOutputStream :new file)]
     (try-with [writer (. :java.io.OutputStreamWriter :new fs "utf-8")]
       (csv/write writer [[1 "AC" false] [2 "WS" true]])
