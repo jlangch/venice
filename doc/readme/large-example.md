@@ -1,6 +1,4 @@
-# A larger sample
-
-Alternative to UNIX shell scripts:
+# Alternative to UNIX shell scripts:
 
 ```clojure
 ;; -------------------------------------------------------------------------------
