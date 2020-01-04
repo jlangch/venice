@@ -23,6 +23,7 @@ a comma and a double quote.
          ["5000" "Aarau" "AG"])
 ```
 
+With alternate quote and separator:
 
 ```clojure
 (do
