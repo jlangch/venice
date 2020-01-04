@@ -62,7 +62,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/3cfc37b/cheatsheet.htm
 * [JSON](doc/readme/json.md)
 * [PDF](doc/readme/pdf.md)
 * [Extension modules](doc/readme/extension-modules.md)
-* See a larger [example](doc/readme/large-example.md)
+* [Alternative to shell scripts](doc/readme/large-example.md)
 * [Benchmarks & Profiling](doc/readme/profiling.md)
 * [Tree walker](doc/readme/walk.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)
