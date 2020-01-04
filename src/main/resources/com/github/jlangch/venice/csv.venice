@@ -207,4 +207,5 @@
         (when-not (empty? records)
           (. writer :write newline)
           (write-record writer (first records) separator quote)
-          (recur (rest records)))))))
+          (recur (rest records))))
+      (. writer :flush))))
