@@ -18,6 +18,9 @@ a comma and a double quote.
             8000,"Zurich",ZH
             5000,"Aarau",AG
             """)) 
+            
+  ;; => (["8000" "Zurich" "ZH"] 
+         ["5000" "Aarau" "AG"])
 ```
 
 
@@ -32,9 +35,49 @@ a comma and a double quote.
             """
             :separator "," 
             :quote "'")) 
+            
+  ;; => (["8000" "Zurich" "Wipkingen, X-'1'" "ZH"] 
+         ["3000" "Bern" "" "BE"] ["5000" "Aarau" nil nil])
 ```
 
 
 ## CSV writer
 
-_not yet available_
+Writes data in CSV format to a string:
+
+```clojure
+(do
+  (load-module :csv)
+  
+  (csv/write-str [[1 "AC" false] [2 "WS" true]]))
+  
+  ;; => "1,AC,false\n2,WS,true"
+```
+
+With alternate quote, separator, and newline:
+
+```clojure
+(do
+  (load-module :csv)
+  
+  (csv/write-str [[1 "AC" false] [2 "WS;'-1'" true]]
+                 :quote "'"
+                 :separator ";"
+                 :newline :cr+lf))
+                 
+   ;; => "1;AC;false\r\n2;'WS;''-1';true"
+```
+
+
+Writes data in CSV format to a file:
+
+```clojure
+(do
+  (load-module :csv)
+  
+  (let [file (io/file "test.csv"
+        fs (. :java.io.FileOutputStream :new file)]
+    (try-with [writer (. :java.io.OutputStreamWriter :new fs "utf-8")]
+      (csv/write writer [[1 "AC" false] [2 "WS" true]])
+      (. writer :flush))))
+  
