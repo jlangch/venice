@@ -1417,6 +1417,8 @@ public class DocGenerator {
 		final DocSection csv = new DocSection("CSV");
 		all.addSection(csv);
 		csv.addItem(getDocItem("csv/read"));
+		csv.addItem(getDocItem("csv/write", false));
+		csv.addItem(getDocItem("csv/write-str", false));
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);
