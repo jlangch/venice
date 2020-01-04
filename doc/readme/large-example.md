@@ -1,4 +1,4 @@
-# Alternative to UNIX shell scripts:
+# Alternative to shell scripts:
 
 ```clojure
 ;; -------------------------------------------------------------------------------
