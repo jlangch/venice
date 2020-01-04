@@ -17,7 +17,8 @@ surface. Longitude is an angle which ranges from 0° at the prime meridian
 to +180° eastward and -180° westward.
 
 
-Show a few cities given its coordinates on a world map:
+Show a few cities (Zurich, New York, Tokyo, ...) given by its coordinates on 
+a world map:
 
 ```clojure
 (do
