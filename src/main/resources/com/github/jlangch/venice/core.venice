@@ -312,6 +312,31 @@
 
 
 (defmacro
+  ^{ :arglists '("(when-let bindings & body)")
+     :doc """
+          bindings is a vector with 2 elements: binding-form test.
+          If test is true, evaluates the body expressions with 
+          binding-form bound to the value of test, if not, yields
+          nil
+          """
+     :examples (list
+          """
+          (when-let [value (* 100 2)]
+            (str "The expression is true. value=" value))
+          """ ) }
+
+  when-let [bindings & body]
+
+  (let [temp (gensym "temp_")
+        form (first bindings)
+        tst (second bindings)]
+    `(let [~temp ~tst]
+      (when ~temp
+        (let [~form ~temp]
+          ~@body)))))
+
+
+(defmacro
   ^{ :arglists '("(dotimes bindings & body)")
      :doc "Repeatedly executes body with name bound to integers from 0 through n-1."
      :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
