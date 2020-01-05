@@ -199,12 +199,11 @@
                   (map #(csv/quote (str %) quote separator) record)))))
 
 (defn- csv/write* [writer records separator quote newline]
-  (if-let [record (first records)]
-    (do
-      (write-record writer record separator quote)
-      (loop [records (rest records)]
-        (when-not (empty? records)
-          (. writer :write newline)
-          (write-record writer (first records) separator quote)
-          (recur (rest records))))
-      (. writer :flush))))
+  (when-let [record (first records)]
+    (write-record writer record separator quote)
+    (loop [records (rest records)]
+      (when-not (empty? records)
+        (. writer :write newline)
+        (write-record writer (first records) separator quote)
+        (recur (rest records))))
+    (. writer :flush)))

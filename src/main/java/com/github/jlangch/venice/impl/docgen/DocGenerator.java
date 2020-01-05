@@ -860,6 +860,7 @@ public class DocGenerator {
 		branch.addItem(getDocItem("when-not"));
 		branch.addItem(getDocItem("if-not"));
 		branch.addItem(getDocItem("if-let"));
+		branch.addItem(getDocItem("when-let"));
 
 		final DocSection loop = new DocSection("Loop");
 		all.addSection(loop);

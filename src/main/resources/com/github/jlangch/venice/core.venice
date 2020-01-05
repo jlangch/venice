@@ -301,12 +301,10 @@
 
   if-let [bindings then else]
 
-  (let [temp (gensym "temp_")
-        form (first bindings)
-        tst (second bindings)]
-    `(let [~temp ~tst]
-      (if ~temp
-        (let [~form ~temp]
+  (let [form (first bindings) tst (second bindings)]
+    `(let [temp# ~tst]
+      (if temp#
+        (let [~form temp#]
           ~then)
         ~else))))
 
@@ -315,7 +313,7 @@
   ^{ :arglists '("(when-let bindings & body)")
      :doc """
           bindings is a vector with 2 elements: binding-form test.
-          If test is true, evaluates the body expressions with 
+          If test is true, evaluates the body expressions with
           binding-form bound to the value of test, if not, yields
           nil
           """
@@ -327,12 +325,10 @@
 
   when-let [bindings & body]
 
-  (let [temp (gensym "temp_")
-        form (first bindings)
-        tst (second bindings)]
-    `(let [~temp ~tst]
-      (when ~temp
-        (let [~form ~temp]
+  (let [form (first bindings) tst (second bindings)]
+    `(let [temp# ~tst]
+      (when temp#
+        (let [~form temp#]
           ~@body)))))
 
 
