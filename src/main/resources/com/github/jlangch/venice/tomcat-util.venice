@@ -407,3 +407,46 @@
     (throw (venice-exception
              "Tomcat is running. Please stop it before uninstalling!")))
   (io/delete-file-tree tc-home))
+
+
+(defn
+  ^{ :arglists '("(parse-access-log log entry-parser)")
+     :doc """
+          Parses a Tomcat access log file. The entry-parser parses a log entry
+          text line to a map with the keys :ip, :timestamp, :url, :status,
+          :bytes, and :millis.
+          """
+     :examples '(
+          """
+          (tc-util/parse-access-log (io/file "tomcat/logs/localhost_access_log.log")
+                                    (tc-util/default-access-log-entry-parser))
+          """) }
+
+  parse-access-log [log entry-parser]
+
+  (cond
+    (string? log)  (-> (str/split-lines log)
+                       (parse-access-log entry-parser))
+    (io/file? log) (-> (io/slurp-lines log)
+                       (parse-access-log entry-parser))
+    (bytebuf? log) (-> (bytebuf-to-string log "utf-8")
+                       (str/split-lines )
+                       (parse-access-log entry-parser))
+    (list? log)    (->> (map #(entry-parser %) log)
+                        (filter not-empty?))
+    :else          (throw (venice-exception "Invalid log data type!"))))
+
+(defn default-access-log-entry-parser []
+  ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET /step/app/?debug HTTP/1.1" 200 842 731
+  (let [regex """^(\\S+) \\[(.*?)\\] (\\S+) (\\S+) "(.*?)" (\\S+) (\\S+) (\\S+)"""
+        pattern (regex/pattern regex)]
+    (fn [entry]
+      (let [matches (regex/matches pattern entry)]
+        (when-not (empty? matches)
+          (let [[_ ip timestamp _ user url status bytes millis] matches]
+            { :ip ip
+              :timestamp timestamp
+              :url url
+              :status status
+              :bytes bytes
+              :millis millis } ))))))
