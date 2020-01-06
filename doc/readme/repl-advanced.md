@@ -96,7 +96,7 @@ or
 > java -server -cp "./libs/*" com.github.jlangch.venice.Launcher -colors
 ```
 
-Java VM with 2GB of memory, disable using preallocated exceptions (stack traces are always generated)
+Start a Java VM with 2GB of memory, disable using preallocated exceptions (stack traces are always generated)
 
 ```text
 > java \
