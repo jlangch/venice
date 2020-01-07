@@ -436,8 +436,9 @@
                         (filter not-empty?))
     :else          (throw (venice-exception "Invalid log data type!"))))
 
+
 (defn default-access-log-entry-parser []
-  ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET /step/app/?debug HTTP/1.1" 200 842 731
+  ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET / HTTP/1.1" 200 842 731
   (let [regex """^(\\S+) \\[(.*?)\\] (\\S+) (\\S+) "(.*?)" (\\S+) (\\S+) (\\S+)"""
         pattern (regex/pattern regex)]
     (fn [entry]
@@ -450,3 +451,11 @@
               :status status
               :bytes bytes
               :millis millis } ))))))
+
+
+(defn simple-ipaddr-access-log-entry-parser []
+  ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET / HTTP/1.1" 200 842 731
+  (fn [entry]
+    (let [pos (str/index-of entry " ")]
+      (when (pos? pos)
+        { :ip (str/subs entry 0 pos) } ))))
