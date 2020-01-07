@@ -31,7 +31,7 @@ The REPL prompts for input:
 
 ```text
 jupiter> java -jar venice-1.7.12.jar -colors
-Venice REPL: V1.7.10
+Venice REPL: V1.7.12
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>

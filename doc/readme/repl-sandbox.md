@@ -103,7 +103,7 @@ venice> !sandbox customized
 #### Customize the sandbox...
 * enable calls to _java.lang.Math_
 * enable access to system property _java.class.path_
-* enable access to system environment variable _JAVA___HOME_
+* enable access to system environment variable _JAVA_HOME_
 * blacklist all Venice I/O functions
 * blacklist the Venice 'count' function
 
