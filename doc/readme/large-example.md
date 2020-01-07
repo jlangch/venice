@@ -1,4 +1,35 @@
-# Alternative to shell scripts:
+# Alternative to shell scripts
+
+
+Venice allows you to write shell scripts without a hassle. The 'io' functions
+are pretty powerful when dealing with files. You're not going to miss Unix tools
+like 'awk, 'sed'.
+
+The REPL let's you interactively run and test commands.
+
+If you need to deal with processes the `sh` function is the place to go (see the
+Venice _cheatsheet_ for details)
+
+```clojure
+(sh "kill" "-9" 56789 :throw-ex true)
+
+;; printing 
+(println (sh "ls" "-l"))
+(sh "ls" "-l" :out-fn println :err-fn println)
+
+;; background process
+(println (sh "/bin/sh" "-c" "sleep 30 >/dev/null 2>&1 &")) 
+(println (sh "/bin/sh" "-c" "nohup sleep 30 >/dev/null 2>&1 &"))
+
+;; working directory
+(println (with-sh-dir "/tmp" (sh "ls" "-l") (sh "pwd")))
+(println (sh "pwd" :dir "/tmp"))
+```
+
+
+## Example
+
+A larger example that zips Tomcat log files
 
 ```clojure
 ;; -------------------------------------------------------------------------------
