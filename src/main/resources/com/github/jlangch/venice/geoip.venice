@@ -28,7 +28,8 @@
 ;;;; To download the free MaxMind GeoLite databases you need a license key that
 ;;;; can be obtained from the MaxMind 'https://www.maxmind.com/en/home' home
 ;;;; page.
-;;;
+;;;; Doc: https://dev.maxmind.com/geoip/geoip2/geoip2-city-country-csv-databases/
+;;;;
 ;;;; You can use Venice's :mercator extension module to create a world map with
 ;;;; the IP locations:
 ;;;;
@@ -61,14 +62,16 @@
 ;; MaxMind GEO IP database
 ;;    GeoLite2-Country-CSV
 ;;    GeoLite2-City-CSV
-(def geoip/maxmind-geoip-url "https://download.maxmind.com/app/geoip_download?edition_id={db}&license_key={key}&suffix=zip")
+(def geoip/maxmind-geoip-url
+       "https://download.maxmind.com/app/geoip_download?edition_id={db}&license_key={key}&suffix=zip")
 
 
 ;; Google country GPS data
 ;;   https://developers.google.com/public-data/docs/canonical/countries_csv
 ;;   https://github.com/google/dspl/tree/master/samples/google/canonical
 ;;   https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
-(def geoip/google-country-url "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv")
+(def geoip/google-country-url
+       "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv")
 
 
 
@@ -148,9 +151,9 @@
 
   geoip/ip-to-city-loc-resolver [geoip-zip location-csv]
 
-  (let [countries (geoip/parse-maxmind-city-db geoip-zip)
-        ip4-data (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip countries)
-        ip6-data (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip countries)]
+  (let [cities (geoip/parse-maxmind-city-db geoip-zip)
+        ip4-data (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip cities)
+        ip6-data (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip cities)]
     (memoize (fn resolve-ip-to-city [ip]
                 (cond
                   (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
@@ -266,17 +269,105 @@
                            "GeoLite2-Country-Blocks-IPv4.csv")
         ip-blocks (->> (geoip/unzip-entry zip zip-entry-name)
                        (csv/read)
-                       (filter #(and (not (nil? (nth % 2)))
+                       (filter #(and (not (nil? (nth % 1)))
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
     (if (some? maxmind-countries)
       (map (juxt #(nth % 0)
-                 #(assoc (get maxmind-countries (nth % 2))
-                         :country-id (nth % 2)))
+                 #(assoc (get maxmind-countries (nth % 1))
+                         :country-id (nth % 1)))
            ip-blocks)
       (map (juxt #(nth % 0)
-                 #(map :country-id (nth % 2)))
+                 #(hash-map :country-id (nth % 1)))
            ip-blocks))))
+
+
+(defn
+  ^{ :arglists '("(geoip/parse-maxmind-city-ip-db ip-type zip maxmind-cities)")
+     :doc """
+          Parses the MaxMind city IP blocks database. Expects a Maxmind
+          city IP database zip. ip-type is either :IPv4 or :IPv6. The zip may
+          be a bytebuf, a file, a string (file path) or an InputStream.
+          The maxmind-countries are optional and map the geoname-id to country
+          data.
+
+          maxmind-cities:
+             { "49518" {:country-iso "RW" :country-name "Rwanda"}
+               "51537" {:country-iso "SO" :country-name "Somalia"} }
+
+          Return:
+            [["223.255.254.0/24" {:country-iso "SG" :country-name"Singapore"}]
+             ["223.255.255.0/24" {:country-iso "AU" :country-name"Australia"}]]
+
+            [ ["2c0f:fff0::/32" {:loc ["10.0000" "8.0000"] :city-id "2328926"}]
+              ["2c0f:feb8::/32" {:loc ["-15.0000" "30.0000"] :city-id "895949"}] ]
+          """
+     :examples '(
+           """
+           (geoip/parse-maxmind-city-ip-db
+               :IPv4
+               "resources/geoip-city.zip"
+               nil)
+           """,
+           """
+           (geoip/parse-maxmind-city-ip-db
+               :IPv6
+               "resources/geoip-country.zip"
+               (geoip/parse-maxmind-city-db "resources/geoip-city.zip"))
+           """,
+           ) }
+  ;; Format MaxMind city IP blocks DB:
+  ;;
+  ;; network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider,postal_code,latitude,longitude,accuracy_radius
+  ;; 0.60.48.124/30,5164706,6252001,,0,0,44720,40.7961,-81.3798,200
+  ;; 70.60.48.128/29,5164706,6252001,,0,0,44720,40.7961,-81.3798,200
+
+  geoip/parse-maxmind-city-ip-db [ip-type zip maxmind-cities]
+
+  (let [zip-entry-name (if (= ip-type :IPv6)
+                           "GeoLite2-City-Blocks-IPv6.csv"
+                           "GeoLite2-City-Blocks-IPv4.csv")
+        ip-blocks (->> (geoip/unzip-entry zip zip-entry-name)
+                       (csv/read)
+                       (filter #(and (not (nil? (nth % 1)))
+                                     (= "0" (nth % 4))
+                                     (= "0" (nth % 5)))))]
+    (if (some? maxmind-cities)
+      (map (juxt #(nth % 0)
+                 #(assoc (get maxmind-cities (nth % 1))
+                         :loc [(nth % 7) (nth % 8)]
+                         :city-id (nth % 2)))
+           ip-blocks)
+      (map (juxt #(nth % 0)
+                 #(hash-map :loc [(nth % 7) (nth % 8)]
+                            :city-id (nth % 1)))
+           ip-blocks))))
+
+
+(defn
+  ^{ :arglists '("(geoip/parse-maxmind-country-db zip)")
+     :doc """
+          Parses the MaxMind country-location CSV file. Returns a map with
+          key = geoname-id and the country data as value.
+
+          Return:
+             { "49518" {:country-iso "RW" :country-name "Rwanda"}
+               "51537" {:country-iso "SO" :country-name "Somalia"} }
+          """ }
+  ;; format:
+  ;;
+  ;; geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,is_in_european_union
+  ;; 49518,en,AF,Africa,RW,Rwanda,0
+  ;; 51537,en,AF,Africa,SO,Somalia,0
+
+  geoip/parse-maxmind-country-db [zip]
+
+  (->> (geoip/unzip-entry zip "GeoLite2-Country-Locations-en.csv")
+       (csv/read)
+       (map (juxt #(nth % 0)
+                  #(hash-map :country-iso (nth % 4)
+                             :country-name (nth % 5))))
+       (into {})))
 
 
 (defn
@@ -301,35 +392,11 @@
 
   (->> (geoip/unzip-entry zip "GeoLite2-City-Locations-en.csv")
        (csv/read)
-       (map (juxt #(nth % 0) #(hash-map :country-iso (nth % 4)
-                                        :country-name (nth % 5)
-                                        :region (nth % 7)
-                                        :city (nth % 10))))
-       (into {})))
-
-
-(defn
-  ^{ :arglists '("(geoip/parse-maxmind-country-db zip)")
-     :doc """
-          Parses the MaxMind country-location CSV file. Returns a map with
-          key = geoname-id and the country data as value.
-
-          Return:
-             { "49518" {:country-iso "RW" :country-name "Rwanda"}
-               "51537" {:country-iso "SO" :country-name "Somalia"} }
-          """ }
-  ;; format:
-  ;;
-  ;; geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,is_in_european_union
-  ;; 49518,en,AF,Africa,RW,Rwanda,0
-  ;; 51537,en,AF,Africa,SO,Somalia,0
-
-  geoip/parse-maxmind-country-db [zip]
-
-  (->> (geoip/unzip-entry zip "GeoLite2-Country-Locations-en.csv")
-       (csv/read)
-       (map (juxt #(nth % 0) #(hash-map :country-iso (nth % 4)
-                                        :country-name (nth % 5))))
+       (map (juxt #(nth % 0)
+                  #(hash-map :country-iso (nth % 4)
+                             :country-name (nth % 5)
+                             :region (nth % 7)
+                             :city (nth % 10))))
        (into {})))
 
 
