@@ -606,7 +606,7 @@
            fn-perf-test# (fn _test [] (dorun ~test-iterations ~expr))]
        (fn-perf-warmup#)
        (fn-perf-gc#)
-       (prof :clear-all-but ["_warmup" "_warmup-gc"])
+       (prof :clear)
        (fn-perf-test#)
        (prof :off))
      nil))
@@ -734,9 +734,12 @@
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
        (let [code# (str "(do " (*load-module ~m) ")")
-             parsed# (read-string code# ~m)]
+             parsed# (read-string code# ~m)
+             expanded# (if core/*macroexpand-on-load*
+                         (macroexpand-all parsed#)
+                         parsed#)]
          (cons! (keyword (name ~m)) core/*loaded-modules*)
-         (eval parsed#)
+         (eval expanded#)
          (keyword (name ~m))))))
 
 

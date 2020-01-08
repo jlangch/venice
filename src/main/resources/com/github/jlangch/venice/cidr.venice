@@ -105,27 +105,23 @@
 
   in-range? [ip cidr]
 
-  (cond
-    (string? ip)
-        (cidr/in-range? (. :InetAddress :getByName ip) cidr)
+  (let [ip (if (string? ip) (. :InetAddress :getByName ip) ip)]
+    (if (instance? :java.net.InetAddress ip)
+      (let [cidr_ (cond
+                    (map? cidr)     cidr
+                    (string? cidr)  (cidr/parse cidr)
+                    :else           (throw (. :VncException :new
+                                              "Invalid cidr data type! Expected string or map.")))
+            start  (. :BigInteger :new 1 (. (:start-ip cidr_) :getAddress))
+            end    (. :BigInteger :new 1 (. (:end-ip cidr_) :getAddress))
+            target (. :BigInteger :new 1 (. ip :getAddress))]
 
-    (instance? :java.net.InetAddress ip)
-        (let [cidr_ (cond
-                      (map? cidr)     cidr
-                      (string? cidr)  (cidr/parse cidr)
-                      :else           (throw (. :VncException :new
-                                                "Invalid cidr data type! Expected string or map.")))
-              start  (. :BigInteger :new 1 (. (:start-ip cidr_) :getAddress))
-              end    (. :BigInteger :new 1 (. (:end-ip cidr_) :getAddress))
-              target (. :BigInteger :new 1 (. ip :getAddress))]
-
-          (and (>= (. target :compareTo start) 0)
-               (<= (. target :compareTo end) 0)))
-
-    (throw (. :VncException :new
-               (str "Invalid ip data type! "
-                    "Expected string or :java.net.InetAddress but got "
-                    "'" (type ip) "'")))))
+        (and (>= (. target :compareTo start) 0)
+             (<= (. target :compareTo end) 0)))
+      (throw (. :VncException :new
+                 (str "Invalid ip data type! "
+                      "Expected string or :java.net.InetAddress but got "
+                      "'" (type ip) "'"))))))
 
 
 (defn- cidr/pad-bytebuf [source-buf target-size]
