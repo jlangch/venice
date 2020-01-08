@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -169,6 +172,12 @@ public class REPL {
 					if (cmd.equals("reload")) {
 						env = loadEnv(cli, ps);
 						println(terminal, "system", "reloaded");					
+						continue;
+					}
+					if (cmd.equals("macroexpand")) {
+						macroexpand = true;
+						setMacroexpandOnLoad(env, true);
+						println(terminal, "system", "macroexpansion enabled");					
 						continue;
 					}
 					else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
@@ -461,11 +470,17 @@ public class REPL {
 			final CommandLineArgs cli,
 			final PrintStream ps
 	) {
-		return venice.createEnv(false)
+		return venice.createEnv(macroexpand)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setStdoutPrintStream(ps);
 	}
 	
+	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {
+		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), 
+				              macroexpandOnLoad ? True : False, 
+				              true));
+	}
+
 	private void print(
 			final Terminal terminal,
 			final String colorID,
@@ -533,27 +548,29 @@ public class REPL {
 	private final static String HELP =
 			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
 			"Commands: \n" +	
-			"  !reload     reload Venice environment\n" +	
-			"  !?, !help   help\n" +	
-			"  !config     show a sample REPL config\n" +	
-			"  !lic        prints the licenses for 3rd party\n" +
-			"              libs included with Venice\n" +	
-			"  !env        print env symbols:\n" +	
-			"                !env print {symbol-name}\n" +	
-			"                !env global\n" +	
-			"                !env global io/*\n" +	
-			"                !env global *file*\n" +	
-			"                !env local {level}\n" +	
-			"                !env levels\n" +	
-			"  !sandbox    sandbox\n" +	
-			"                !sandbox status\n" +	
-			"                !sandbox config\n" +	
-			"                !sandbox accept-all\n" +	
-			"                !sandbox reject-all\n" +	
-			"                !sandbox customized\n" +	
-			"                !sandbox add-rule rule\n" +
-			"  !java-ex    print Java exception\n" +	
-			"  !exit       quit the REPL\n\n" +	
+			"  !reload      reload Venice environment\n" +	
+			"  !?, !help    help\n" +	
+			"  !config      show a sample REPL config\n" +	
+			"  !lic         prints the licenses for 3rd party\n" +
+			"               libs included with Venice\n" +	
+			"  !macroexpand enable macroexpansion while loading\n" +
+			"               files and modules\n" +
+			"  !env         print env symbols:\n" +	
+			"                 !env print {symbol-name}\n" +	
+			"                 !env global\n" +	
+			"                 !env global io/*\n" +	
+			"                 !env global *file*\n" +	
+			"                 !env local {level}\n" +	
+			"                 !env levels\n" +	
+			"  !sandbox     sandbox\n" +	
+			"                 !sandbox status\n" +	
+			"                 !sandbox config\n" +	
+			"                 !sandbox accept-all\n" +	
+			"                 !sandbox reject-all\n" +	
+			"                 !sandbox customized\n" +	
+			"                 !sandbox add-rule rule\n" +
+			"  !java-ex     print Java exception\n" +	
+			"  !exit        quit the REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
 			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +	
@@ -599,4 +616,5 @@ public class REPL {
 	private IInterceptor interceptor;
 	private VeniceInterpreter venice;
 	private boolean printJavaEx = false;
+	private boolean macroexpand = false;
 }

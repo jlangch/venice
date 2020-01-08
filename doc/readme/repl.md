@@ -33,4 +33,15 @@ ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
 
 
+## Built-in documentation
+
+The documentation for a function can printed from the REPL:
+
+```text
+venice> (doc map)
+
+venice> (doc +)
+```
+
+
 To learn more about the REPL see [Advanced REPL](repl-advanced.md)

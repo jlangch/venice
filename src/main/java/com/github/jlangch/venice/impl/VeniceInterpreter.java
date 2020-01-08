@@ -174,7 +174,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
 
 		// set macroexpand-all on load
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, false));
+		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true));
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(), true));
@@ -873,6 +873,8 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		
 		final long count = Coerce.toVncLong(ast.second()).getValue();
+		if (count <= 0) return Nil;
+		
 		final VncVal expr = ast.third();
 
 		try {
