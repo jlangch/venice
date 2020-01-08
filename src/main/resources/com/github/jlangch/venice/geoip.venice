@@ -55,7 +55,6 @@
 (ns geoip)
 
 (load-module :csv)
-(load-module :cidr)
 
 
 ;; MaxMind GEO IP database
@@ -163,14 +162,14 @@
                        (filter #(and (not (nil? (nth % 2)))
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
-    (into {} (if (some? maxmind-countries)
-               (map (juxt #(nth % 0)
-                          #(assoc (get maxmind-countries (nth % 2))
-                                  :country-id (nth % 2)))
-                    ip-blocks)
-               (map (juxt #(nth % 0)
-                          #(map :country-id (nth % 2)))
-                    ip-blocks)))))
+    (if (some? maxmind-countries)
+      (map (juxt #(nth % 0)
+                 #(assoc (get maxmind-countries (nth % 2))
+                         :country-id (nth % 2)))
+           ip-blocks)
+      (map (juxt #(nth % 0)
+                 #(map :country-id (nth % 2)))
+           ip-blocks))))
 
 
 (defn

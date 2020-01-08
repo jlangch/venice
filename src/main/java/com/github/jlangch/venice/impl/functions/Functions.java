@@ -51,6 +51,7 @@ public class Functions {
 		functions.putAll(JsonFunctions.ns);
 		functions.putAll(PdfFunctions.ns);
 		functions.putAll(JavaInteropFunctions.ns);
+		functions.putAll(CidrFunctions.ns);
 	}
 
 }

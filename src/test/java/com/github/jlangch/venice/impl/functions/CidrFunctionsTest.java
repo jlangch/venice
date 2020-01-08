@@ -19,44 +19,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.modules;
+package com.github.jlangch.venice.impl.functions;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.net.InetAddress;
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.CIDR;
 
 
-public class CidrModuleTest {
+public class CidrFunctionsTest {
 
 	@Test
 	public void test_IP4() {
 		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                  " +
-				"   (load-module :cidr)               " +
-				"                                     " +
-				"   (cidr/parse \"222.192.0.0/11\"))  ";
+		final String script = "(cidr/parse \"222.192.0.0/11\")";
 
-		@SuppressWarnings("unchecked")
-		final Map<Object,Object> map = (Map<Object,Object>)venice.eval(script);
+		final CIDR cidr = (CIDR)venice.eval(script);
 		
-		assertEquals(
-				"222.192.0.0/11",  
-				(String)map.get("cidr"));
+		assertEquals("222.192.0.0/11", cidr.getCidr());
 		
-		assertEquals(
-				"222.192.0.0", 
-				((InetAddress)map.get("start-ip")).getHostAddress());
+		assertEquals("222.192.0.0", cidr.getStartAddress());
 		
-		assertEquals(
-				"222.223.255.255", 
-				((InetAddress)map.get("end-ip")).getHostAddress());
+		assertEquals("222.223.255.255", cidr.getEndAddress());
 	}
 
 	@Test
@@ -64,25 +53,15 @@ public class CidrModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                              " +
-				"   (load-module :cidr)                                           " +
-				"                                                                 " +
-				"   (cidr/parse \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64\"))  ";
+				"(cidr/parse \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64\")";
 
-		@SuppressWarnings("unchecked")
-		final Map<Object,Object> map = (Map<Object,Object>)venice.eval(script);
+		final CIDR cidr = (CIDR)venice.eval(script);
 		
-		assertEquals(
-				"2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64",
-				(String)map.get("cidr"));
+		assertEquals("2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64", cidr.getCidr());
 		
-		assertEquals(
-				"2001:db8:85a3:8d3:0:0:0:0",
-				((InetAddress)map.get("start-ip")).getHostAddress());
+		assertEquals("2001:db8:85a3:8d3:0:0:0:0", cidr.getStartAddress());
 		
-		assertEquals(
-				"2001:db8:85a3:8d3:ffff:ffff:ffff:ffff", 
-				((InetAddress)map.get("end-ip")).getHostAddress());
+		assertEquals("2001:db8:85a3:8d3:ffff:ffff:ffff:ffff", cidr.getEndAddress());
 	}
 
 	@Test
@@ -90,10 +69,7 @@ public class CidrModuleTest {
 		final Venice venice = new Venice();
 
 		final String script_tpl =
-				"(do                         " +
-				"   (load-module :cidr)      " +
-				"                            " +
-				"   (cidr/in-range? %s %s))  ";
+				"(cidr/in-range? %s %s)";
 
 		assertFalse((Boolean)venice.eval(String.format(script_tpl, "\"100.0.0.0\"",       "(cidr/parse \"222.192.0.0/11\")")));
 		assertTrue ((Boolean)venice.eval(String.format(script_tpl, "\"222.192.0.0\"",     "(cidr/parse \"222.192.0.0/11\")")));

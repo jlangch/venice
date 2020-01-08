@@ -88,7 +88,6 @@ public class ModuleLoader {
 					Arrays.asList(
 							"app", 
 							"benchmark", 
-							"cidr", 
 							"core", 
 							"crypt", 
 							"csv", 
