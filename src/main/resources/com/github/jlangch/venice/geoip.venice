@@ -94,8 +94,12 @@
            """
            (do
              (def rv (geoip/resolver "resources/geoip.zip"
-                                          (geoip/download-google-country-db)))
-             (rv "91.223.55.1")) ;; => ["51.919438", "19.145136"]
+                                     (geoip/download-google-country-db)))
+             (rv "91.223.55.1")) ;; => {:ip "91.223.55.6"
+                                 ;;     :loc ["51.919438" "19.145136"]
+                                 ;;     :country-name "Poland"
+                                 ;;     :country-iso "PL"
+                                 ;;     :country-id "798544"}
            """
            ) }
 
@@ -104,9 +108,11 @@
   (let [ip-to-country (geoip/ip-to-country-resolver geoip-zip)
         country-to-loc (geoip/country-to-location-resolver location-csv)]
     (memoize (fn resolve-ip-to-country [ip]
-               (let [i (ip-to-country ip)]
-                 (when (some? i)
-                   (cons ip (conj i (country-to-loc (first i))))))))))
+               (let [country (ip-to-country ip)]
+                 (when (some? country)
+                   (assoc country
+                          :ip ip
+                          :loc (country-to-loc (:country-iso country)))))))))
 
 
 (defn

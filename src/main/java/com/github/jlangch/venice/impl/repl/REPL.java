@@ -553,7 +553,7 @@ public class REPL {
 			"  !config      show a sample REPL config\n" +	
 			"  !lic         prints the licenses for 3rd party\n" +
 			"               libs included with Venice\n" +	
-			"  !macroexpand enable macroexpansion while loading\n" +
+			"  !macroexpand enable macro expansion while loading\n" +
 			"               files and modules. \n" +
 			"               This can speed-up script execution by \n" +
 			"               a factor 3 and more!\n" +
