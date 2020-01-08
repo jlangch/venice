@@ -554,7 +554,9 @@ public class REPL {
 			"  !lic         prints the licenses for 3rd party\n" +
 			"               libs included with Venice\n" +	
 			"  !macroexpand enable macroexpansion while loading\n" +
-			"               files and modules\n" +
+			"               files and modules. \n" +
+			"               This can speed-up script execution by \n" +
+			"               a factor 3 and more!\n" +
 			"  !env         print env symbols:\n" +	
 			"                 !env print {symbol-name}\n" +	
 			"                 !env global\n" +	
