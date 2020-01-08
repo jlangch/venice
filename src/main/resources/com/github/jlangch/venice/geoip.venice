@@ -42,12 +42,13 @@
 ;;;;              (mercator/crop-image 400 600)
 ;;;;              (mercator/save-image format file))))
 ;;;;
-;;;;       (def rx (geoip/resolver "resources/geoip.zip"
-;;;;                               (geoip/download-country-gps-db)))
+;;;;        (def rv (geoip/ip-to-country-loc-resolver
+;;;;                         "resources/geoip-country.zip"
+;;;;                         (geoip/download-google-country-db)))
 ;;;;
 ;;;;       (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
-;;;;            (map rx)
-;;;;            (map fourth)
+;;;;            (map rv)
+;;;;            (map :loc)
 ;;;;            (draw :png "./world-map.png")))
 ;;;;
 
@@ -62,11 +63,6 @@
 ;;    GeoLite2-City-CSV
 (def geoip/maxmind-geoip-url "https://download.maxmind.com/app/geoip_download?edition_id={db}&license_key={key}&suffix=zip")
 
-(def geoip/ip4-file "GeoLite2-Country-Blocks-IPv4.csv")
-(def geoip/ip6-file "GeoLite2-Country-Blocks-IPv6.csv")
-(def geoip/country-file "GeoLite2-Country-Locations-en.csv")
-(def geoip/city-file "GeoLite2-City-Locations-en.csv")
-
 
 ;; Google country GPS data
 ;;   https://developers.google.com/public-data/docs/canonical/countries_csv
@@ -77,12 +73,12 @@
 
 
 (defn
-  ^{ :arglists '("(geoip/resolver geoip-zip location-csv)")
+  ^{ :arglists '("(geoip/ip-to-country-loc-resolver geoip-zip location-csv)")
      :doc """
           Returns a resolve function that resolves IP address to its
           asscioated country and latitude/longitude location. The resolve
-          function returns the coountry and the latitude/longitude or nil
-          no data is found.
+          function returns the country and the latitude/longitude or nil
+          if no data is found.
 
           The MindMax country geoip-zip may be a bytebuf, a file,
           a string (file path) or an InputStream.
@@ -93,8 +89,10 @@
      :examples '(
            """
            (do
-             (def rv (geoip/resolver "resources/geoip.zip"
-                                     (geoip/download-google-country-db)))
+             (def rv (geoip/ip-to-country-loc-resolver
+                                    "resources/geoip-country.zip"
+                                    (geoip/download-google-country-db)))
+
              (rv "91.223.55.1")) ;; => {:ip "91.223.55.6"
                                  ;;     :loc ["51.919438" "19.145136"]
                                  ;;     :country-name "Poland"
@@ -103,7 +101,7 @@
            """
            ) }
 
-  geoip/resolver [geoip-zip location-csv]
+  geoip/ip-to-country-loc-resolver [geoip-zip location-csv]
 
   (let [ip-to-country (geoip/ip-to-country-resolver geoip-zip)
         country-to-loc (geoip/country-to-location-resolver location-csv)]
@@ -113,6 +111,51 @@
                    (assoc country
                           :ip ip
                           :loc (country-to-loc (:country-iso country)))))))))
+
+
+(defn
+  ^{ :arglists '("(geoip/ip-to-city-loc-resolver geoip-zip)")
+     :doc """
+          Returns a resolve function that resolves IP address to its
+          asscioated city and latitude/longitude location. The resolve
+          function returns the city and the latitude/longitude or nil
+          if no data is found.
+
+          The MindMax city geoip-zip may be a bytebuf, a file,
+          a string (file path) or an InputStream.
+
+          The resolver loads the MindMax IPv4 and IPv6 city database and
+          caches the data for IP address resolves.
+
+          Note: The MaxMind city IPv4 and IPv6 databases have 200MB of size. It
+                takes considerable time to load and lookup the data. If you can
+                live with the lower accuracy of the country database use the
+                country locations!
+          """
+     :examples '(
+           """
+           (do
+             (def rv (geoip/ip-to-city-loc-resolver "resources/geoip-city.zip"))
+
+             (rv "91.223.55.1")) ;; => {:ip "91.223.55.6"
+                                 ;;     :loc ["51.919438" "19.145136"]
+                                 ;;     :country-name "Poland"
+                                 ;;     :country-iso "PL"
+                                 ;;     :region "xxxx"
+                                 ;;     :city "xxx"}
+           """
+           ) }
+
+  geoip/ip-to-city-loc-resolver [geoip-zip location-csv]
+
+  (let [countries (geoip/parse-maxmind-city-db geoip-zip)
+        ip4-data (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip countries)
+        ip6-data (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip countries)]
+    (memoize (fn resolve-ip-to-city [ip]
+                (cond
+                  (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
+                  (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
+                  :else nil)))))
 
 
 (defn
@@ -200,14 +243,14 @@
            """
            (geoip/parse-maxmind-country-ip-db
                :IPv4
-               "resources/geoip.zip"
+               "resources/geoip-country.zip"
                nil)
            """,
            """
            (geoip/parse-maxmind-country-ip-db
                :IPv6
-               "resources/geoip.zip"
-               (geoip/parse-maxmind-country-db "resources/geoip.zip"))
+               "resources/geoip-country.zip"
+               (geoip/parse-maxmind-country-db "resources/geoip-country.zip"))
            """,
            ) }
   ;; Format MaxMind country IP blocks DB:
@@ -256,7 +299,7 @@
 
   geoip/parse-maxmind-city-db [zip]
 
-  (->> (geoip/unzip-entry zip geoip/city-file)
+  (->> (geoip/unzip-entry zip "GeoLite2-City-Locations-en.csv")
        (csv/read)
        (map (juxt #(nth % 0) #(hash-map :country-iso (nth % 4)
                                         :country-name (nth % 5)
@@ -283,7 +326,7 @@
 
   geoip/parse-maxmind-country-db [zip]
 
-  (->> (geoip/unzip-entry zip geoip/country-file)
+  (->> (geoip/unzip-entry zip "GeoLite2-Country-Locations-en.csv")
        (csv/read)
        (map (juxt #(nth % 0) #(hash-map :country-iso (nth % 4)
                                         :country-name (nth % 5))))
