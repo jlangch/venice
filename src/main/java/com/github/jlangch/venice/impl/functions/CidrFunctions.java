@@ -52,7 +52,7 @@ public class CidrFunctions {
 				VncFunction
 					.meta()
 					.arglists("(cidr/parse cidr)")		
-					.doc("Parses CIDR specifications to an IP address range. Supports both IPv4 and IPv6.")
+					.doc("Parses CIDR IP blocks to an IP address range. Supports both IPv4 and IPv6.")
 					.examples(
 						"(cidr/parse \"222.192.0.0/11\")",
 						"(cidr/parse \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64\")")
@@ -81,12 +81,12 @@ public class CidrFunctions {
 					.meta()
 					.arglists("(cidr/in-range? ip cidr)")		
 					.doc(
-						"Returns true if the ip is within the ip range of the cidr else false. " + 
+						"Returns true if the ip adress is within the ip range of the cidr else false. " + 
 						"ip may be a string or a :java.net.InetAddress, cidr may be a string " + 
-						"or a cidr map obtained from 'cidr/parse'.")
+						"or a CIDR Java object obtained from 'cidr/parse'.")
 					.examples(
 						"(cidr/in-range? \"222.220.0.0\" \"222.220.0.0/11\")",
-						"(cidr/in-range? (. :InetAddress :getByName \"222.220.0.0\") \"222.220.0.0/11\")",
+						"(cidr/in-range? (. :java.net.Inet4Address :getByName \"222.220.0.0\") \"222.220.0.0/11\")",
 						"(cidr/in-range? \"222.220.0.0\" (cidr/parse \"222.220.0.0/11\"))")
 					.build()
 		) {		
@@ -114,12 +114,12 @@ public class CidrFunctions {
 				}
 				else if (Types.isVncJavaObject(ip, InetAddress.class)) {				
 					if (Types.isVncString(cidr_)) {
-						final InetAddress inet = (InetAddress)((VncJavaObject)cidr_).getDelegate();
+						final InetAddress inet = (InetAddress)((VncJavaObject)ip).getDelegate();
 						final CIDR cidr = CIDR.parse(((VncString)cidr_).getValue());
 						return cidr.isInRange(inet) ? True : False;
 					}
 					else if (Types.isVncJavaObject(cidr_, CIDR.class)) {
-						final InetAddress inet = (InetAddress)((VncJavaObject)cidr_).getDelegate();
+						final InetAddress inet = (InetAddress)((VncJavaObject)ip).getDelegate();
 						final CIDR cidr = (CIDR)((VncJavaObject)cidr_).getDelegate();
 						return cidr.isInRange(inet) ? True : False;
 					}

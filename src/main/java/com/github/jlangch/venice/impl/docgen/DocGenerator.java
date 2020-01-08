@@ -1421,6 +1421,11 @@ public class DocGenerator {
 		csv.addItem(getDocItem("csv/write", false));
 		csv.addItem(getDocItem("csv/write-str", false));
 		
+		final DocSection cidr = new DocSection("CIDR");
+		all.addSection(cidr);
+		cidr.addItem(getDocItem("cidr/parse"));
+		cidr.addItem(getDocItem("cidr/in-range?"));
+		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);
 		other.addItem(getDocItem("*version*"));
