@@ -60,7 +60,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/3cfc37b/cheatsheet.htm
 * [Macros](doc/readme/macros.md)
 * [Sandbox](doc/readme/sandbox.md)
 * [JSON](doc/readme/json.md)
-* [CSV](doc/csv.md)
+* [CSV](doc/readme/csv.md)
 * [PDF](doc/readme/pdf.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * [Alternative to shell scripts](doc/readme/large-example.md)
