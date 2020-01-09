@@ -56,8 +56,6 @@
 
 (ns geoip)
 
-(load-module :csv)
-
 
 ;; MaxMind GEO IP database
 ;;    GeoLite2-Country-CSV

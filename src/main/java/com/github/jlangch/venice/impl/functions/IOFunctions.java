@@ -1643,7 +1643,7 @@ public class IOFunctions {
 		};
 
 
-	private static String encoding(final VncVal enc) {
+	public static String encoding(final VncVal enc) {
 		return enc == Nil
 				? "UTF-8"
 				: Types.isVncKeyword(enc)
@@ -1666,7 +1666,7 @@ public class IOFunctions {
 		}
 	}
 
-	private static void validateReadableFile(final File file) {
+	public static void validateReadableFile(final File file) {
 		if (!file.isFile()) {
 			throw new VncException(String.format("'%s' is not a file", file.getPath()));
 		}
@@ -1675,7 +1675,7 @@ public class IOFunctions {
 		}
 	}
 
-	private static void validateReadableDirectory(final File file) {
+	public static void validateReadableDirectory(final File file) {
 		if (!file.isDirectory()) {
 			throw new VncException(String.format("'%s' is not a directory", file.getPath()));
 		}

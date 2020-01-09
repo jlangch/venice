@@ -52,6 +52,7 @@ public class Functions {
 		functions.putAll(PdfFunctions.ns);
 		functions.putAll(JavaInteropFunctions.ns);
 		functions.putAll(CidrFunctions.ns);
+		functions.putAll(CsvFunctions.ns);
 	}
 
 }

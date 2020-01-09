@@ -555,8 +555,9 @@ public class REPL {
 			"               libs included with Venice\n" +	
 			"  !macroexpand enable macro expansion while loading\n" +
 			"               files and modules. \n" +
-			"               This can speed-up script execution by \n" +
-			"               a factor 3 and more!\n" +
+			"               This can speed-up script execution by\n" +
+			"               a factor 3 or 5 and even more with\n" +
+			"               complex code!\n" +
 			"  !env         print env symbols:\n" +	
 			"                 !env print {symbol-name}\n" +	
 			"                 !env global\n" +	

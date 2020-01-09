@@ -22,14 +22,14 @@
 ;;;; CSV reader / writer
 
 
-(ns csv)
+(ns csv2)
 
 (import :java.io.Writer)
 (import :java.io.StringWriter)
 
 
 (defn
-  ^{ :arglists '("(csv/read source & options)")
+  ^{ :arglists '("(csv2/read source & options)")
      :doc """
           Reads CSV-data from a source. The source may be a a string, a bytebuf,
           a file, a Java InputStream, or a Java Reader
@@ -44,31 +44,31 @@
           """
           (do
             (load-module :csv)
-            (csv/read "1,\\"ab\\",false"))
+            (csv2/read "1,\\"ab\\",false"))
           """,
           """
           (do
             (load-module :csv)
-            (csv/read "1:::'ab':false" :separator ":" :quote "'"))
+            (csv2/read "1:::'ab':false" :separator ":" :quote "'"))
           """ ) }
 
-  csv/read [source & options]
+  csv2/read [source & options]
 
   (let [data (if (string? source)
                 source
                 (io/slurp source (conj options :binary false)))
         opts (apply hash-map options)
-        separator (str (coalesce (:separator opts) csv/comma))
-        quote (str (coalesce (:quote opts) csv/double-quote))
+        separator (str (coalesce (:separator opts) csv2/comma))
+        quote (str (coalesce (:quote opts) csv2/double-quote))
         two-quotes (str quote quote)
-        pattern (regex/pattern (csv/make-regex separator quote))]
+        pattern (regex/pattern (csv2/make-regex separator quote))]
 
-    (map #(csv/parse-line % pattern separator quote two-quotes)
+    (map #(csv2/parse-line % pattern separator quote two-quotes)
          (str/split-lines data))))
 
 
 (defn
-  ^{ :arglists '("(csv/write writer records & options)")
+  ^{ :arglists '("(csv2/write writer records & options)")
      :doc """
           Writes data to a writer in CSV format. The writer is a
           Java java.io.Writer
@@ -81,29 +81,29 @@
      :examples '(
           """
           (do
-            (load-module :csv)
+            (load-module :csv2)
 
             (let [file (io/file "test.csv")
                   fs (. :java.io.FileOutputStream :new file)]
               (try-with [writer (. :java.io.OutputStreamWriter :new fs "utf-8")]
-                (csv/write writer [[1 "AC" false] [2 "WS" true]]))))
+                (csv2/write writer [[1 "AC" false] [2 "WS" true]]))))
           """ ) }
 
-  csv/write [writer records & options]
+  csv2/write [writer records & options]
 
   (let [opts (apply hash-map options)
-        separator (str (coalesce (:separator opts) csv/comma))
-        quote (str (coalesce (:quote opts) csv/double-quote))
+        separator (str (coalesce (:separator opts) csv2/comma))
+        quote (str (coalesce (:quote opts) csv2/double-quote))
         newline (:newline opts :lf)]
-    (csv/write* writer
+    (csv2/write* writer
                 records
                 separator
                 quote
-                (csv/newlines newline))))
+                (csv2/newlines newline))))
 
 
 (defn
-  ^{ :arglists '("(csv/write-str records & options)")
+  ^{ :arglists '("(csv2/write-str records & options)")
      :doc """
           Writes data to a string in CSV format.
 
@@ -115,40 +115,40 @@
      :examples '(
           """
           (do
-            (load-module :csv)
-            (csv/write-str [[1 "AC" false] [2 "WS" true]]))
+            (load-module :csv2)
+            (csv2/write-str [[1 "AC" false] [2 "WS" true]]))
           """,
           """
           (do
-            (load-module :csv)
-            (csv/write-str [[1 "AC" false] [2 "WS, '-1'" true]]
+            (load-module :csv2)
+            (csv2/write-str [[1 "AC" false] [2 "WS, '-1'" true]]
                            :quote "'"
                            :separator ","
                            :newline :cr+lf))
           """ ) }
 
-  csv/write-str [records & options]
+  csv2/write-str [records & options]
 
   (let [opts (apply hash-map options)
-        separator (str (coalesce (:separator opts) csv/comma))
-        quote (str (coalesce (:quote opts) csv/double-quote))
+        separator (str (coalesce (:separator opts) csv2/comma))
+        quote (str (coalesce (:quote opts) csv2/double-quote))
         newline (:newline opts :lf)]
     (try-with [writer (. :StringWriter :new)]
-      (csv/write* writer
+      (csv2/write* writer
                   records
                   separator
                   quote
-                  (csv/newlines newline))
+                  (csv2/newlines newline))
       (. writer :flush)
       (str writer))))
 
 
-(def csv/double-quote (char 34))
-(def csv/comma (char 44))
-(def csv/newlines {:lf "\n" :cr+lf "\r\n"})
+(def csv2/double-quote (char 34))
+(def csv2/comma (char 44))
+(def csv2/newlines {:lf "\n" :cr+lf "\r\n"})
 
 
-(defn- csv/make-regex [separator quote]
+(defn- csv2/make-regex [separator quote]
   (str/format "[%c]|[^%c%c]+|[%c](?:[^%c]|[%c][%c])*[%c]"
               (char separator)
               (char separator)
@@ -159,46 +159,46 @@
               (char quote)
               (char quote)))
 
-(defn- csv/split [s pattern]
+(defn- csv2/split [s pattern]
   (regex/find-all (regex/matcher pattern s)))
 
-(defn- csv/unquote [s quote two-quotes]
+(defn- csv2/unquote [s quote two-quotes]
   (if (and (str/starts-with? s quote) (str/ends-with? s quote))
       (-> (str/strip-end (str/strip-start s quote) quote)
           (str/replace-all two-quotes quote))
       s))
 
-(defn- csv/parse-line [s pattern separator quote two-quotes]
-  (let [elements (csv/split s pattern)]
+(defn- csv2/parse-line [s pattern separator quote two-quotes]
+  (let [elements (csv2/split s pattern)]
     (loop [items elements values []]
        (let [head (first items)]
          (cond
            (nil? head) values
            (== head separator) (recur (rest items) (conj values nil))
            :else (recur (rest (rest items))
-                        (conj values (csv/unquote head quote two-quotes))))))))
+                        (conj values (csv2/unquote head quote two-quotes))))))))
 
-(defn- csv/escape [s quote]
+(defn- csv2/escape [s quote]
   (->> (str/split s (str "[" quote "]"))
        (str/join (str quote quote))))
 
-(defn- csv/quote? [s quote separator]
+(defn- csv2/quote? [s quote separator]
   (or (str/contains? s " ")
       (str/contains? s quote)
       (str/contains? s separator)))
 
-(defn- csv/quote [s quote separator]
-  (if (csv/quote? s quote separator)
-      (str quote (csv/escape s quote) quote)
+(defn- csv2/quote [s quote separator]
+  (if (csv2/quote? s quote separator)
+      (str quote (csv2/escape s quote) quote)
       s))
 
-(defn- csv/write-record [writer record separator quote]
+(defn- csv2/write-record [writer record separator quote]
   (when (some? record)
      (. writer :write
         (str/join separator
-                  (map #(csv/quote (str %) quote separator) record)))))
+                  (map #(csv2/quote (str %) quote separator) record)))))
 
-(defn- csv/write* [writer records separator quote newline]
+(defn- csv2/write* [writer records separator quote newline]
   (when-let [record (first records)]
     (write-record writer record separator quote)
     (loop [records (rest records)]
