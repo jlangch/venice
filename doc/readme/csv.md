@@ -39,7 +39,7 @@ With alternate quote and separator:
 
 ## CSV writer
 
-Writes data in CSV format to a string:
+Writes data in CSV format to a string or a Java Writer
 
 ```clojure
 (csv/write-str [[1 "AC" false] [2 "WS" true]])
