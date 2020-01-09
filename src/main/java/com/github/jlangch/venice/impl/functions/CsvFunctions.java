@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,7 +166,7 @@ public class CsvFunctions {
 					final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
 					final char separator = toChar(options.get(new VncKeyword("separator")), ',');
 					final char quote = toChar(options.get(new VncKeyword("quote")), '"');
-					final String newline = Coerce.toVncString(options.get(new VncKeyword("newline"))).getValue();
+					final String newline = toNewLine(options.get(new VncKeyword("newline")));
 
 					final CSVWriter csvWriter = new CSVWriter(separator, quote, newline);
 
@@ -193,6 +194,53 @@ public class CsvFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction write_str = 
+			new VncFunction(
+					"csv/write-str", 
+					VncFunction
+						.meta()
+						.arglists("(csv/write-str records & options)")		
+						.doc(
+							"Writes data to a string in CSV format.\n" + 
+							"\n" + 
+							"Options:\n" + 
+							"  :separator val - e.g. \",\", defaults to a comma\n" + 
+							"  :quote val - e.g. \"'\", defaults to a double quote\n" + 
+							"  :newline val (:lf (default) or :cr+lf)\n" + 
+							"")
+						.examples(
+							"(csv/write-str [[1 \"AC\" false] [2 \"WS\" true]])",
+						    "(csv/write-str [[1 \"AC\" false] [2 \"WS, '-1'\" true]]\n" + 
+						    "               :quote \"'\"\n" + 
+						    "               :separator \",\"\n" + 
+						    "               :newline :cr+lf)")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertMinArity("cvs/write-str", args, 1);
+		
+					try {
+						final VncHashMap options = VncHashMap.ofAll(args.rest());
+						final char separator = toChar(options.get(new VncKeyword("separator")), ',');
+						final char quote = toChar(options.get(new VncKeyword("quote")), '"');
+						final String newline = toNewLine(options.get(new VncKeyword("newline")));
+
+						final CSVWriter csvWriter = new CSVWriter(separator, quote, newline);
+
+						final StringWriter sw = new StringWriter();
+						csvWriter.write(sw, Coerce.toVncSequence(args.first()));
+						return new VncString(sw.toString());
+					}
+					catch (VncException ex) {
+						throw ex;
+					}
+					catch (Exception ex) {
+						throw new VncException(ex.getMessage(), ex);
+					}
+				}
+		
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
 		
 		
 	private static VncList map(final List<List<String>> data) {
@@ -222,7 +270,22 @@ public class CsvFunctions {
 			return defaultChar;
 		}
 	}
-		
+
+	private static String toNewLine(final VncVal v) {
+		if (Types.isVncKeyword(v)) {
+			final String s = ((VncKeyword)v).getValue();
+			if (s.equals("lf")) return "\n";
+			else if (s.equals("cr+lf")) return "\r\n";
+			else return "\n";
+		}
+		else if (Types.isVncString(v)) {
+			return ((VncString)v).getValue();
+		}
+		else {
+			return "\n";
+		}
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -233,5 +296,6 @@ public class CsvFunctions {
 					.Builder()
 					.add(read)
 					.add(write)
+					.add(write_str)
 					.toMap();	
 }

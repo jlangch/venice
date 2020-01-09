@@ -54,7 +54,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("app", "xml", "crypt", "csv"), false)
+							.createEnv(Arrays.asList("app", "xml", "crypt"), false)
 							.setStdoutPrintStream(null);
 	}
 
@@ -1419,7 +1419,7 @@ public class DocGenerator {
 		all.addSection(csv);
 		csv.addItem(getDocItem("csv/read"));
 		csv.addItem(getDocItem("csv/write", false));
-		csv.addItem(getDocItem("csv/write-str", false));
+		csv.addItem(getDocItem("csv/write-str"));
 		
 		final DocSection cidr = new DocSection("CIDR");
 		all.addSection(cidr);
