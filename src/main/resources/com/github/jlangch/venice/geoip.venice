@@ -50,7 +50,7 @@
 ;;;;        (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
 ;;;;             (map rv)
 ;;;;             (map :loc)
-;;;;             (geoip/map-locations-to-numerics)
+;;;;             (map geoip/map-location-to-numerics)
 ;;;;             (draw :png "./world-map.png")))
 ;;;;
 
@@ -515,16 +515,15 @@
       (str/replace-all  "{key}" lic-key)))
 
 (defn
-  ^{ :arglists '("(map-locations-to-numerics locations)")
+  ^{ :arglists '("(map-location-to-numerics loc)")
      :doc """
-          Maps a list of locations from to numerical coordinates. A locations
+          Maps a location to numerical coordinates. A location
           is given as a vector of a latitude and a longitude.
           """ }
 
-  map-locations-to-numerics [locations]
+  map-location-to-numerics [loc]
 
-  (map (fn [loc] [(double (first loc))
-                  (double (second loc))]) locations))
+  [(double (first loc)) (double (second loc))])
 
 
 
