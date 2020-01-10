@@ -35,22 +35,23 @@
 ;;;;
 ;;;;      (do
 ;;;;        (load-module :mercator)
-;;;;        (load-module :geiop)
+;;;;        (load-module :geoip)
 ;;;;
 ;;;;        (defn draw [format file locations]
 ;;;;          (-> (mercator/load-mercator-image)
 ;;;;              (mercator/draw-locations locations)
 ;;;;              (mercator/crop-image 400 600)
-;;;;              (mercator/save-image format file))))
+;;;;              (mercator/save-image format file)))
 ;;;;
 ;;;;        (def rv (geoip/ip-to-country-loc-resolver
 ;;;;                         "resources/geoip-country.zip"
 ;;;;                         (geoip/download-google-country-db)))
 ;;;;
-;;;;       (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
-;;;;            (map rv)
-;;;;            (map :loc)
-;;;;            (draw :png "./world-map.png")))
+;;;;        (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
+;;;;             (map rv)
+;;;;             (map :loc)
+;;;;             (geoip/map-locations-to-numerics)
+;;;;             (draw :png "./world-map.png")))
 ;;;;
 
 
@@ -512,6 +513,19 @@
 
   (-> (str/replace-all geoip/maxmind-geoip-url "{db}" "GeoLite2-City-CSV")
       (str/replace-all  "{key}" lic-key)))
+
+(defn
+  ^{ :arglists '("(map-locations-to-numerics locations)")
+     :doc """
+          Maps a list of locations from to numerical coordinates. A locations
+          is given as a vector of a latitude and a longitude.
+          """ }
+
+  map-locations-to-numerics [locations]
+
+  (map (fn [loc] [(double (first loc))
+                  (double (second loc))]) locations))
+
 
 
 ;; - private -------------------------------------------------------------------
