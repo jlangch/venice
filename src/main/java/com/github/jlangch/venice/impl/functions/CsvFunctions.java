@@ -70,12 +70,8 @@ public class CsvFunctions {
 						"   :separator val - e.g. \",\", defaults to a comma\n" + 
 						"	:quote val - e.g. \"'\", defaults to a double quote")
 					.examples(
-					    "(do \n" +
-					    "  (load-module :csv) \n" +
-					    "  (csv/read \"1,\\\"ab\\\",false\")) ",
-					    "(do \n" + 
-					    "  (load-module :csv) \n" + 
-					    "  (csv/read \"1:::'ab':false\" :separator \":\" :quote \"'\"))") 
+					    "(csv/read \"1,\\\"ab\\\",false\")",
+					    "(csv/read \"1:::'ab':false\" :separator \":\" :quote \"'\")") 
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
