@@ -25,6 +25,8 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Map;
 
@@ -73,7 +75,6 @@ public class CidrFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-
 	public static VncFunction in_range_Q = 
 		new VncFunction(
 				"cidr/in-range?", 
@@ -86,7 +87,7 @@ public class CidrFunctions {
 						"or a CIDR Java object obtained from 'cidr/parse'.")
 					.examples(
 						"(cidr/in-range? \"222.220.0.0\" \"222.220.0.0/11\")",
-						"(cidr/in-range? (. :java.net.Inet4Address :getByName \"222.220.0.0\") \"222.220.0.0/11\")",
+						"(cidr/in-range? (cidr/inet-addr \"222.220.0.0\") \"222.220.0.0/11\")",
 						"(cidr/in-range? \"222.220.0.0\" (cidr/parse \"222.220.0.0/11\"))")
 					.build()
 		) {		
@@ -139,6 +140,35 @@ public class CidrFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction inet_addr = 
+		new VncFunction(
+				"cidr/inet-addr", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/inet-addr addr)")		
+					.doc("Converts an stringified IPv4 or IPv6 to a Java InetAddress.")
+					.examples(
+						"(cidr/inet-addr \"222.192.0.0\")",
+						"(cidr/inet-addr \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347\")")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/inet-addr", args, 1);
+	
+				final String ip = Coerce.toVncString(args.first()).getValue();
+				
+				try {
+					return ip.contains(".")
+							? new VncJavaObject(Inet4Address.getByName(ip))
+							: new VncJavaObject(Inet6Address.getByName(ip));
+				}
+				catch(Exception ex) {
+					throw new VncException("Not an IP address: '" + ip + "'");
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 		
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -149,5 +179,6 @@ public class CidrFunctions {
 					.Builder()
 					.add(parse)
 					.add(in_range_Q)
+					.add(inet_addr)
 					.toMap();	
 }

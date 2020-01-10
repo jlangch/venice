@@ -1425,6 +1425,7 @@ public class DocGenerator {
 		all.addSection(cidr);
 		cidr.addItem(getDocItem("cidr/parse"));
 		cidr.addItem(getDocItem("cidr/in-range?"));
+		cidr.addItem(getDocItem("cidr/inet-addr"));
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);
