@@ -25,8 +25,6 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Map;
 
@@ -158,9 +156,7 @@ public class CidrFunctions {
 				final String ip = Coerce.toVncString(args.first()).getValue();
 				
 				try {
-					return ip.contains(".")
-							? new VncJavaObject(Inet4Address.getByName(ip))
-							: new VncJavaObject(Inet6Address.getByName(ip));
+					return new VncJavaObject(InetAddress.getByName(ip));
 				}
 				catch(Exception ex) {
 					throw new VncException("Not an IP address: '" + ip + "'");
