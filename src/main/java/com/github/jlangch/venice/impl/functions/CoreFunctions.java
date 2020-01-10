@@ -3219,7 +3219,8 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(sequential? obj)")
 					.doc("Returns true if obj is a sequential collection")
-					.examples("(sequential? '(1))",
+					.examples(
+						"(sequential? '(1))",
 						"(sequential? [1])",
 						"(sequential? {:a 1})",
 						"(sequential? nil)",
