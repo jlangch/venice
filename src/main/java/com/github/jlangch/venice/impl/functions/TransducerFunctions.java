@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -190,7 +191,7 @@ public class TransducerFunctions {
 						public VncVal apply(final VncList args) {
 							assertArity(this.getQualifiedName(), args, 1);
 
-							final VncFunction rf = Coerce.toVncFunction(args.first());
+							final IVncFunction rf = Coerce.toIVncFunction(args.first());
 
 							return new VncFunction(createAnonymousFuncName("map:transducer")) {
 								public VncVal apply(final VncList args) {
@@ -219,7 +220,7 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final IVncFunction fn = Coerce.toIVncFunction(args.first());
 					final VncList lists = removeNilValues((VncList)args.rest());
 					final List<VncVal> result = new ArrayList<>();
 

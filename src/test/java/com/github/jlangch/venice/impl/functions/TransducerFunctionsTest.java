@@ -708,7 +708,9 @@ public class TransducerFunctionsTest {
 		assertEquals("(true false true)", venice.eval("(pr-str (map not [false, true, false]))"));
 		
 		assertEquals("((1 1) (2 2) (3 3))", venice.eval("(pr-str (map list [1 2 3] [1 2 3]))"));
-		
+
+		assertEquals("(1 2 3)", venice.eval("(pr-str (map :p [{:p 1} {:p 2} {:p 3}]))"));
+
 		// strings
 		assertEquals("(true false true false true)", venice.eval("(pr-str (map str/digit? \"1-3-5\"))"));
 	}	
