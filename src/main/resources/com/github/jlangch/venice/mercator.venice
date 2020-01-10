@@ -55,6 +55,34 @@
 ;;;;            (mercator/crop-image 400 600)
 ;;;;            (mercator/save-image :png "./test-map.png")))
 ;;;;
+;;;;
+;;;;
+;;;; Customizing visualization:
+;;;;
+;;;; The IP markers can be customized with various properties. The
+;;;; properties are passed as an optional map as 3rd value in the location
+;;;; list that is passed to 'draw-locations'
+;;;;
+;;;; Location   [<latitude> <longitude>]
+;;;;            [<latitude> <longitude> <options>]
+;;;;
+;;;; E.g.:  [ 47.37174  8.54226  { :label "Zurich"
+;;;;                               :radius 12
+;;;;                               :fill-color (color 128 128 255 255)
+;;;;                               :border-color (color 0 0 255 255)
+;;;;                               :label-color (color 255 255 255 255)
+;;;;                               :font-size-px 20 } ]
+;;;;
+;;;; Only the :label parameter is mandatory if an option map is passed. All
+;;;; other parameters are optional and have default values.
+;;;;
+;;;;   :label          the label string
+;;;;   :radius         the marker circle radius in pixel
+;;;;   :fill-color     the marker circle fill color (:java.awt.Color)
+;;;;   :border-color   the marker circle border color (:java.awt.Color)
+;;;;   :label-color    the label color (:java.awt.Color)
+;;;;   :font-size-px   the label font size in pixel
+
 
 
 (ns mercator)
