@@ -27,7 +27,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - CSV module embedded quote characters in cells. They are represented by a pair 
   of the quote character. 
-- function `map`to accept a keyword as mapping function
+- function `map` to accept a keyword as mapping function
+
+### Changed
+
+- improved performance of the CSV reader and the CIDR IP block parser
 
 
 
