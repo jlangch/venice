@@ -429,10 +429,12 @@
                        (parse-access-log entry-parser))
     (io/file? log) (-> (io/slurp-lines log)
                        (parse-access-log entry-parser))
-    (bytebuf? log) (-> (bytebuf-to-string log "utf-8")
-                       (str/split-lines )
+    (bytebuf? log) (-> (bytebuf-to-string log :utf-8)
+                       (str/split-lines)
                        (parse-access-log entry-parser))
     (list? log)    (->> (map #(entry-parser %) log)
+                        (filter not-empty?))
+    (vector? log)  (->> (map #(entry-parser %) log)
                         (filter not-empty?))
     :else          (throw (venice-exception "Invalid log data type!"))))
 
@@ -457,5 +459,5 @@
   ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET / HTTP/1.1" 200 842 731
   (fn [entry]
     (let [pos (str/index-of entry " ")]
-      (when (pos? pos)
+      (when (long? pos)
         { :ip (str/subs entry 0 pos) } ))))
