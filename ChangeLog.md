@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - customizable labels to the 'mercator' map module
 
+### Fixed
+
+- 'tomcat-util' module access log file parser
+
 
 
 ## [1.7.13] - 2020-01-10
