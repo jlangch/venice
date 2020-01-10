@@ -580,7 +580,7 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(java-version)")
-					.doc("Returns the Jvav VM version.")
+					.doc("Returns the Java VM version.")
 					.examples("(java-version)")
 					.build()
 		) {
@@ -593,6 +593,30 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction used_memory =
+		new VncFunction(
+				"used-memory",
+				VncFunction
+					.meta()
+					.arglists("(used-memory)")
+					.doc("Returns the memory used by the Java VM memory.")
+					.examples("(used-memory)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("vm-memory", args, 0);
+
+			    System.gc();		    
+			    final Runtime rt = Runtime.getRuntime();
+			    double usedMB = (rt.totalMemory() - rt.freeMemory()) / 1024.0D / 1024.0D;
+			    
+			    return new VncString(String.format("%.1fMB", usedMB));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 	private static TimeUnit toTimeUnit(final VncKeyword unit) {
 		switch(unit.getValue()) {
 			case "milliseconds": return TimeUnit.MILLISECONDS;
@@ -604,6 +628,7 @@ public class SystemFunctions {
 		}
 	}
 
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -630,6 +655,7 @@ public class SystemFunctions {
 					.add(system_prop)
 					.add(system_env)
 					.add(java_version)
+					.add(used_memory)				
 					.toMap();
 
 
