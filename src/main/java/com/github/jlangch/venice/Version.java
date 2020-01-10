@@ -27,5 +27,5 @@ public class Version {
 		return Version.class.getPackage().getImplementationVersion();
 	}
 
-	public final static String VERSION = "1.7.13";
+	public final static String VERSION = "1.7.14-snapshot";
 }
