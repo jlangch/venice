@@ -191,5 +191,5 @@ dependencies {
  
     // runtime dependencies (repackaged)
     implementation 'io.vavr:vavr:0.10.2'
-    implementation 'org.jline:jline:3.13.2'
+    implementation 'org.jline:jline:3.13.3'
 }

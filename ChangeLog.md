@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - 'tomcat-util' module access log file parser
 
+### Changed
+
+- JLine3 lib to version 3.13.3
+
 
 
 ## [1.7.13] - 2020-01-10
