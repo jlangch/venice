@@ -1,6 +1,14 @@
 # GEO IP
 
-_TODO_
+The 'geoip' module maps IP adresses to country and location (latitude, longitude)
+that can be visualized on a world map. The 'geoip' module used the free 
+[MaxMind](https://www.maxmind.com/) location databases.
+
+
+## Example: Visualize Tomcat IP addresses on a map
+
+The script `tomcat-geoip.venice` parses Tomcat access log files, maps IP addresses
+to locations and visualize them on a map.
 
 ```clojure
 (do
@@ -121,4 +129,11 @@ _TODO_
              """)))
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-tomcat.png" width="600">
+
+```text
+venice> !macroexpand
+venice> (load-file "tomcat-geoip.venice")
+venice> (run "localhost_access_log.2019-12.zip" "./ip-map.png")
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-tomcat.png">
