@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -129,6 +130,7 @@ public class Launcher {
 		
 		final Env env = createEnv(
 							venice,
+							new VncKeyword("app"),
 							Arrays.asList(
 								convertCliArgsToVar(cli),
 								convertAppNameToVar(name),
@@ -148,6 +150,7 @@ public class Launcher {
 		
 		final Env env = createEnv(
 							venice, 
+							new VncKeyword("script"),
 							Arrays.asList(convertCliArgsToVar(cli)));
 	
 		return venice.PRINT(venice.RE(script, name, env));
@@ -155,9 +158,10 @@ public class Launcher {
 	
 	private static Env createEnv(
 			final VeniceInterpreter venice, 
+			final VncKeyword runMode,
 			final List<Var> vars
 	) {
-		return venice.createEnv(false)
+		return venice.createEnv(false, runMode)
 					 .addGlobalVars(vars)
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}

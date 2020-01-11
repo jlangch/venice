@@ -145,13 +145,14 @@ public class VeniceInterpreter implements Serializable  {
 		return result;
 	}
 	
-	public Env createEnv(final boolean macroexpandOnLoad) {  
-		return createEnv(null, macroexpandOnLoad);
+	public Env createEnv(final boolean macroexpandOnLoad, final VncKeyword runMode) {  
+		return createEnv(null, macroexpandOnLoad, runMode);
 	}
 
 	public Env createEnv(
 			final List<String> preloadExtensionModules,
-			final boolean macroexpandOnLoad
+			final boolean macroexpandOnLoad, 
+			final VncKeyword runMode
 	) {
 		final Env env = new Env(null);
 			
@@ -175,6 +176,10 @@ public class VeniceInterpreter implements Serializable  {
 
 		// set macroexpand-all on load
 		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true));
+		
+		// set the run mode
+		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
+
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(ModuleLoader.PRELOADED_MODULES), true));

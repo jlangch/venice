@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -54,7 +55,7 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("app", "xml", "crypt"), false)
+							.createEnv(Arrays.asList("app", "xml", "crypt"), false, new VncKeyword("docgen"))
 							.setStdoutPrintStream(null);
 	}
 
@@ -1434,6 +1435,7 @@ public class DocGenerator {
 		other.addItem(getDocItem("*loaded-modules*"));
 		other.addItem(getDocItem("*loaded-files*"));
 		other.addItem(getDocItem("*ns*"));
+		other.addItem(getDocItem("*run-mode*"));
 
 		return section;
 	}

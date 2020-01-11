@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -299,7 +300,7 @@ public class Venice {
 	
 	
 	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		return addParams(venice.createEnv(false), params);
+		return addParams(venice.createEnv(false, new VncKeyword("script")), params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
@@ -394,7 +395,7 @@ public class Venice {
 		Env env = precompiledEnv.get();
 		if (env == null) {
 			env = new VeniceInterpreter()
-						.createEnv(true)
+						.createEnv(true, new VncKeyword("script"))
 						.setStdoutPrintStream(null);
 			precompiledEnv.set(env);
 		}
@@ -404,7 +405,7 @@ public class Venice {
 	}
 	
 	private VncVal expandMacros(final VncVal ast, final VeniceInterpreter venice) {
-		final Env env = venice.createEnv(false)
+		final Env env = venice.createEnv(false, new VncKeyword("macroexpand"))
 							  .setStdoutPrintStream(null);
 
 		final VncFunction macroexpand_all = (VncFunction)env.get(new VncSymbol("core/macroexpand-all"));
