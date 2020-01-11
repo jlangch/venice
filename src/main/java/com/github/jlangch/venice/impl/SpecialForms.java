@@ -783,6 +783,19 @@ public class SpecialForms {
 		) {
 		    private static final long serialVersionUID = -1;
 		};
+
+	public static VncFunction var_run_mode = 
+		new SpecialFormsDocFunction(
+				"*run-mode*",
+				VncFunction
+					.meta()
+					.doc("The current run-mode one of (:repl, :script, :app)")
+					.examples(
+						"*run-mode*")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
 	
 	
 	private static class SpecialFormsDocFunction extends VncFunction {
@@ -839,5 +852,6 @@ public class SpecialForms {
 					.put("*loaded-modules*",var_loaded_modules)
 					.put("*loaded-files*",  var_loaded_files)
 					.put("*ns*",			var_ns)
+					.put("*run-mode*",		var_run_mode)
 					.toMap();
 }
