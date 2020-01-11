@@ -14,6 +14,7 @@ script.venice:
 (+ 1 1)
 ```
 
+run:
 ```text
 foo> java -jar venice-1.7.13.jar -file script.venice
 => 2
@@ -21,16 +22,26 @@ foo> java -jar venice-1.7.13.jar -file script.venice
 
 ### Passing a load-path:
 
+script.venice:
 ```text
-foo> echo "(+ 1 1)" > script.venice
+(+ 1 1)
+```
+
+run:
+```text
 foo> java -jar venice-1.7.13.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 => 2
 ```
 
 ### Venice passes the command line args as \*ARGV\* vector:
 
+script.venice:
 ```text
-foo> echo "(+ 1 (long (nth *ARGV* 2)))" > script.venice
+(+ 1 (long (nth *ARGV* 2)))
+```
+
+run:
+```text
 foo> java -jar venice-1.7.13.jar -file script.venice 3
 => 4
 ```
