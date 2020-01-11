@@ -119,8 +119,8 @@ to locations and visualize them on a map.
            """)
 
   (when (false? *macroexpand-on-load*)
+    (println)
     (println """
-             
              Warning: macroexpand-on-load is not activated. To get a much better
                       performance activate macroexpand-on-load before loading
                       this script.
