@@ -31,4 +31,4 @@ a world map:
       (mercator/save-image :png "./test-map.png")))
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/mercator.png" width="600">
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/mercator.png">
