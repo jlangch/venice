@@ -3,7 +3,7 @@
 ### Run a script:
 
 ```text
-foo> java -jar venice-1.7.13.jar -script "(+ 1 1)"
+foo> java -jar venice-1.7.14.jar -script "(+ 1 1)"
 => 2
 ```
 
@@ -16,7 +16,7 @@ File "script.venice":
 
 run:
 ```text
-foo> java -jar venice-1.7.13.jar -file script.venice
+foo> java -jar venice-1.7.14.jar -file script.venice
 => 2
 ```
 
@@ -35,7 +35,7 @@ File "script.venice":
 
 run:
 ```text
-foo> java -jar venice-1.7.13.jar -file script.venice -loadpath "/users/foo/venice/scripts"
+foo> java -jar venice-1.7.14.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 ```
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
@@ -51,7 +51,7 @@ File "script.venice":
 
 run:
 ```text
-foo> java -jar venice-1.7.13.jar -file script.venice 3
+foo> java -jar venice-1.7.14.jar -file script.venice 3
 => 4
 ```
 

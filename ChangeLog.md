@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.7.14] - 2020-01-xx
+## [1.7.14] - 2020-01-11
 
 ### Added
 
@@ -45,7 +45,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 
 
-## [1.7.13] - 2020-01-03
+## [1.7.12] - 2020-01-03
 
 ### Added
 
