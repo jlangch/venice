@@ -20,18 +20,27 @@ foo> java -jar venice-1.7.13.jar -file script.venice
 => 2
 ```
 
+
 ### Passing a load-path:
+
+Venice scripts often uses the function `load-file` to load a file with 
+Venice functions. `load-file` loads the files by default from the current working 
+directory. The command line option "-loadpath" defines a set of semi-colon 
+separated paths files are searched for.
 
 File "script.venice":
 ```text
-(+ 1 1)
+(load-file "test.venice")
 ```
 
 run:
 ```text
 foo> java -jar venice-1.7.13.jar -file script.venice -loadpath "/users/foo/venice/scripts"
-=> 2
 ```
+
+The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
+
+
 
 ### Venice passes the command line args as \*ARGV\* vector:
 

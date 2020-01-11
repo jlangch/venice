@@ -119,7 +119,7 @@ venice> !reload
 
 ## Using a load path for files
 
-To test Venice code one often uses the function `load-file` to load a file with 
+Venice code often uses the function `load-file` to load a file with 
 Venice functions. `load-file` loads the files by default from the current working 
 directory. The REPL accepts the command line option "-loadpath" that defines a 
 set of semi-colon separated paths files are searched for.
