@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - 'tomcat-util' module access log file parser
+- function 'disj' to work with all set types
 
 ### Changed
 

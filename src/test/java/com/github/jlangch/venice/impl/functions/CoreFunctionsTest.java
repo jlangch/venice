@@ -631,6 +631,14 @@ public class CoreFunctionsTest {
 		assertEquals("#{}", venice.eval("(str (disj (set 1) 1))"));
 		assertEquals("#{1}", venice.eval("(str (disj (set 1) 2))"));
 		assertEquals("#{1}", venice.eval("(str (disj (set 1 2) 2))"));
+		assertEquals("#{1}", venice.eval("(str (disj (set 1 2 3) 2 3))"));
+		
+		// Set
+		assertEquals("#{}", venice.eval("(str (disj (sorted-set 1) 1))"));
+		assertEquals("#{1}", venice.eval("(str (disj (sorted-set 1) 2))"));
+		assertEquals("#{1}", venice.eval("(str (disj (sorted-set 1 2) 2))"));
+		assertEquals("#{1}", venice.eval("(str (disj (sorted-set 1 2 3) 2 3))"));
+		assertEquals("#{1 4}", venice.eval("(str (disj (sorted-set 1 2 3 4) 2 3))"));
 	}
 	
 	@Test

@@ -5516,7 +5516,7 @@ public class CoreFunctions {
 				"disj",
 				VncFunction
 					.meta()
-					.arglists("(disj coll x)", "(disj coll x & xs)")
+					.arglists("(disj set x)", "(disj set x & xs)")
 					.doc( "Returns a new set with the x, xs removed.")
 					.examples("(disj (set 1 2 3) 3)")
 					.build()
@@ -5524,8 +5524,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("disj", args, 2);
 
-				if (args.first() instanceof VncHashSet) {
-					return ((VncHashSet)args.first()).removeAll(args.rest());
+				if (args.first() instanceof VncSet) {
+					return ((VncSet)args.first()).removeAll(args.rest());
 				}
 				else {
 					throw new VncException(String.format(
