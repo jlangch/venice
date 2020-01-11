@@ -1,6 +1,6 @@
 # Advanced String features
 
-## Triple quoted, multi-line strings
+## Text blocks
 
 ```clojure
 (do
