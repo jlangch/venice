@@ -104,6 +104,7 @@ public class TerminalPrinter {
 		}
 	}
 	
+	
 	private final Terminal terminal;
 	private ReplConfig config;
 	private boolean printJavaEx;
