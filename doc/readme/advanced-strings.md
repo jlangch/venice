@@ -13,22 +13,8 @@
            }
            """)
 
-   (def s3 (str/strip-indent """\
-                {
-                  "fruit": "apple",
-                  "color": "red"
-                }"""))
-
-   (def s4 (str/strip-margin
-             """{
-                |  "fruit": "apple",
-                |  "color": "red"
-                |}"""))
-
    (println s1)
-   (println s2)
-   (println s3)
-   (println s4))
+   (println s2))
 ```
 
 ## Interpolation 
