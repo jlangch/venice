@@ -3,8 +3,8 @@
 Venice supports generating PDF files if the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
 libs are on the runtime classpath:
 
- - org.xhtmlrenderer:flying-saucer-core:9.1.18
- - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.18
+ - org.xhtmlrenderer:flying-saucer-core:9.1.20
+ - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20
  - com.github.librepdf:openpdf:1.3.11
  - com.github.librepdf:pdf-toolbox:1.3.11
  
@@ -1106,8 +1106,8 @@ Copy pages from a PDF to a new PDF
 (do
   (load-module :maven)
   
-  (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.19")
-  (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.19")
+  (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.20")
+  (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20")
   (maven/download "com.github.librepdf:openpdf:1.3.11")
   (maven/download "com.github.librepdf:pdf-toolbox:1.3.11"))
 ```
