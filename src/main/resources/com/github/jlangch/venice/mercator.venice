@@ -250,23 +250,20 @@
   (. g :setColor color)
   (. g :drawString label x y))
 
-(defn draw-marker [g2d img-width img-height pos opts]
+(defn draw-marker [g2d img-width img-height pos opts circle? label?]
   (let [x (:x pos)
         y (- img-height (:y pos))
         label (:label opts)
         radius (:radius opts marker-radius)
         font-size (:font-size-px opts marker-font-size-px)
         label-y-off (- (long (/ (- (+ radius radius) font-size) 2)))]
-    (draw-circle g2d
-                 x
-                 y
-                 radius
-                 (:fill-color opts marker-fill-color)
-                 (:border-color opts marker-border-color))
-    (when (some? label)
-      (draw-text g2d
-                 (+ x radius radius)
-                 (+ y radius label-y-off)
+    (when circle?
+      (draw-circle g2d x y
+                   radius
+                   (:fill-color opts marker-fill-color)
+                   (:border-color opts marker-border-color)))
+    (when (and label? (some? label))
+      (draw-text g2d (+ x radius radius) (+ y radius label-y-off)
                  (:label-color opts marker-label-color)
                  label
                  font-size))))
@@ -278,9 +275,17 @@
         g2d (delegate :Graphics2DComposite (. image :createGraphics))
         mapper (spherical-mapper img-width img-height)]
     (. g2d :setFont (font marker-font-size-px))
-    (docoll (fn [l] (draw-marker g2d img-width img-height
-                                 (mapper (second l) (first l)) (third l)))
-            locations))
+    (let [data (map #(vector (mapper (second %) (first %)) (third %)) locations)]
+      ;; layer 1: circles
+      (docoll (fn [l] (draw-marker g2d img-width img-height
+                                   (first l) (second l) true false))
+              data)
+
+      ;; layer 2: labels
+      (docoll (fn [l] (draw-marker g2d img-width img-height
+                                   (first l) (second l) false true))
+              data)
+      ))
   image)
 
 (defn test []
