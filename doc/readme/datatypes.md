@@ -91,6 +91,8 @@ Keywords (e.g. `:a`) are symbolic identifiers.
 
 ```clojure
 {:a 100, :b 200}
+
+[:a :b]
 ```
 
 ## Symbols
@@ -100,7 +102,11 @@ let bindings, and global vars.
 
 ```clojure
 (defn sum [x y] (+ x y))
+
 (def x 100)
+
+(let [a 100]
+  (println a))
 ```
 
 
