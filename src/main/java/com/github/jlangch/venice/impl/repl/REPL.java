@@ -28,7 +28,6 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.jline.reader.EndOfFileException;
@@ -45,16 +44,13 @@ import org.jline.terminal.TerminalBuilder;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
-import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Env;
-import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
@@ -120,6 +116,8 @@ public class REPL {
 											terminal, 
 											config.getColor("colors.stdout"))
 									: System.out;
+											
+		printer = new TerminalPrinter(config, terminal, false);
 		
 		venice = new VeniceInterpreter(interceptor, loadPaths);
 		
@@ -146,13 +144,13 @@ public class REPL {
 		try {
 			final String loadFile = config.getLoadFile();
 			if (loadFile != null) {
-				println(terminal, "stdout", "loading file \"" + loadFile + "\"");
+				printer.println("stdout", "loading file \"" + loadFile + "\"");
 				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
-				println(terminal, "stdout", resultPrefix + venice.PRINT(result));
+				printer.println("stdout", resultPrefix + venice.PRINT(result));
 			}
 		}
 		catch(Exception ex) {
-			printex(terminal, "error", ex);
+			printer.printex("error", ex);
 		}
 		
 		// REPL loop
@@ -172,34 +170,35 @@ public class REPL {
 					final String cmd = StringUtil.trimToEmpty(line.substring(1));				
 					if (cmd.equals("reload")) {
 						env = loadEnv(cli, ps);
-						println(terminal, "system", "reloaded");					
+						printer.println("system", "reloaded");					
 						continue;
 					}
 					if (cmd.equals("macroexpand")) {
 						macroexpand = true;
 						setMacroexpandOnLoad(env, true);
-						println(terminal, "system", "macroexpansion enabled");					
+						printer.println("system", "macroexpansion enabled");					
 						continue;
 					}
 					else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
-						terminal.writer().println(HELP);
+						printer.println("stdout", HELP);					
 						continue;
 					}
 					else if (cmd.equals("config")) {
-						handleConfigCommand(terminal);
+						handleConfigCommand();
 						continue;
 					}
 					else if (cmd.equals("env")) {
-						handleEnvCommand(new String[0], terminal, env);
+						handleEnvCommand(new String[0], env);
 						continue;
 					}
 					else if (cmd.startsWith("env ")) {
 						final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
-						handleEnvCommand(params, terminal, env);
+						handleEnvCommand(params, env);
 						continue;
 					}
 					else if (cmd.startsWith("java-ex")) {
-						printJavaEx = true;
+						printer.setPrintJavaEx(true);
+						printer.println("stdout", "Printing Java exceptions");
 						continue;
 					}
 					else if (cmd.equals("sandbox")) {
@@ -213,30 +212,30 @@ public class REPL {
 					}
 					else if (cmd.equals("lic")) {
 						Licenses.lics().entrySet().forEach(e -> {
-							println(terminal, "stdout", "");
-							println(terminal, "stdout", DELIM);
-							println(terminal, "stdout", e.getKey() + " License");
-							println(terminal, "stdout", DELIM);
-							println(terminal, "stdout", e.getValue());
+							printer.println("stdout", "");
+							printer.println("stdout", DELIM);
+							printer.println("stdout", e.getKey() + " License");
+							printer.println("stdout", DELIM);
+							printer.println("stdout", e.getValue());
 						});
 						continue;
 					}
 					else if (cmd.equals("colors")) {
-						println(terminal, "default",   "default");
-						println(terminal, "result",    "result");
-						println(terminal, "stdout",    "stdout");
-						println(terminal, "error",     "error");
-						println(terminal, "system",    "system");
-						println(terminal, "interrupt", "interrupt");
+						printer.println("default",   "default");
+						printer.println("result",    "result");
+						printer.println("stdout",    "stdout");
+						printer.println("error",     "error");
+						printer.println("system",    "system");
+						printer.println("interrupt", "interrupt");
 						continue;
 					}
 					else if (cmd.equals("exit")) {
-						println(terminal, "interrupt", " good bye ");
+						printer.println("interrupt", " good bye ");
 						Thread.sleep(1000);
 						break;
 					}
 					
-					println(terminal, "error", "invalid command");
+					printer.println("error", "invalid command");
 					continue;
 				}
 			} 
@@ -249,13 +248,13 @@ public class REPL {
 				// User typed ctrl-C
 				if (parser.isEOF()) {
 					// cancel multi-line edit
-					println(terminal, "interrupt", " cancel ");					
+					printer.println("interrupt", " cancel ");					
 					parser.reset();
 					continue;
 				}
 				else {
 					// quit the REPL
-					println(terminal, "interrupt", " ! interrupted ! ");
+					printer.println("interrupt", " ! interrupted ! ");
 					Thread.sleep(1000);
 					break;
 				}
@@ -266,11 +265,11 @@ public class REPL {
 			catch (ParseError ex) {
 				// put the script to the history to allow to fix it
 				history.add(reader.getBuffer().toString());
-				printex(terminal, "error", ex);
+				printer.printex("error", ex);
 				continue;
 			}
 			catch (Exception ex) {
-				printex(terminal, "error", ex);
+				printer.printex("error", ex);
 				continue;
 			}
 			
@@ -278,71 +277,70 @@ public class REPL {
 				ThreadLocalMap.clearCallStack();
 				final VncVal result = venice.RE(line, "user", env);
 				resultHistory.add(result);
-				println(terminal, "result", resultPrefix + venice.PRINT(result));
+				printer.println("result", resultPrefix + venice.PRINT(result));
 			} 
 			catch (ContinueException ex) {
 				continue;
 			} 
 			catch (Exception ex) {
-				printex(terminal, "error", ex);
+				printer.printex("error", ex);
 				continue;
 			}
 			catch (Throwable ex) {
-				printex(terminal, "error", ex);
+				printer.printex("error", ex);
 			}
 		}
 	}
 
-	private void handleConfigCommand(final Terminal terminal) {
-		terminal.writer().println("Sample REPL configuration. Save it as 'repl.json'");
-		terminal.writer().println("in the REPL's working directory:");
-		terminal.writer().println();
-		terminal.writer().println(ReplConfig.getRawClasspathConfig());
+	private void handleConfigCommand() {
+		printer.println("stdout", "Sample REPL configuration. Save it as 'repl.json'");
+		printer.println("stdout", "in the REPL's working directory:");
+		printer.println();
+		printer.println("stdout", ReplConfig.getRawClasspathConfig());
 	}
 
 	private void handleEnvCommand(
 			final String[] params,
-			final Terminal terminal,
 			final Env env
 	) {
 		if (params.length == 0) {
-			terminal.writer().println(HELP_ENV);
+			printer.println("stdout", HELP_ENV);
 			return;
 		}
 		else if (params[0].equals("levels")) {
 			if (params.length == 1) {
-				println(terminal, "stdout", "Levels: " + (env.level() + 1));
+				printer.println("stdout", "Levels: " + (env.level() + 1));
 				return;
 			}
 		}
 		else if (params[0].equals("print")) {
 			if (params.length == 2) {
 				final VncVal val = env.get(new VncSymbol(params[1]));
-				println(terminal, "stdout", venice.PRINT(val));
+				printer.println("stdout", venice.PRINT(val));
 				return;
 			}
 		}
 		else if (params[0].equals("global")) {
 			if (params.length == 1) {
-				println(terminal, "stdout", env.globalsToString());
+				printer.println("stdout", env.globalsToString());
 				return;
 			}
 			else if (params.length == 2) {
 				String filter = StringUtil.trimToNull(params[1]);
 				filter = filter == null ? null : filter.replaceAll("[*]", ".*");
-				println(terminal, "stdout", env.globalsToString(filter));
+				printer.println("stdout", env.globalsToString(filter));
 				return;
 			}
 		}
 		else if (params[0].equals("local")) {
 			if (params.length == 2) {
 				final int level = Integer.valueOf(params[1]);
-				println(terminal, "stdout", env.getLevelEnv(level).localsToString());
+				printer.println("stdout", env.getLevelEnv(level).localsToString());
 				return;
 			}
 		}
 				
-		println(terminal, "error", "invalid env command");					
+		printer.println("error", "invalid env command");					
 	}
 
 	private void handleSandboxCommand(
@@ -360,12 +358,11 @@ public class REPL {
 		if (params.length == 1) {
 			if (params[0].equals("status")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
-					println(terminal, "stdout", "No sandbox active (" + interceptorName +")");
+					printer.println("stdout", "No sandbox active (" + interceptorName +")");
 					return;
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
-					println(
-						terminal, 
+					printer.println(
 						"stdout", 
 						"Sandbox active (" + interceptorName + "). "
 							+ "Rejects all Java calls and default "
@@ -373,11 +370,11 @@ public class REPL {
 					return;
 				}
 				else if (interceptor instanceof SandboxInterceptor) {
-					println(terminal, "stdout", "Customized sandbox active (" + interceptorName + ")");
+					printer.println("stdout", "Customized sandbox active (" + interceptorName + ")");
 					return;
 				}
 				else {
-					println(terminal, "stdout", "Sandbox: " + interceptorName);
+					printer.println("stdout", "Sandbox: " + interceptorName);
 					return;
 				}
 			}
@@ -395,15 +392,14 @@ public class REPL {
 			}
 			else if (params[0].equals("config")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
-					println(terminal, "stdout", "[accept-all] NO sandbox active");
-					println(terminal, "stdout", "All Java calls accepted, no Venice calls rejected");
+					printer.println("stdout", "[accept-all] NO sandbox active");
+					printer.println("stdout", "All Java calls accepted, no Venice calls rejected");
 					return;
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
-					println(terminal, "stdout", "[reject-all] SAFE restricted sandbox");
-					println(terminal, "stdout", "Java calls:\n   All rejected!");
-					println(
-						terminal,
+					printer.println("stdout", "[reject-all] SAFE restricted sandbox");
+					printer.println("stdout", "Java calls:\n   All rejected!");
+					printer.println(
 						"stdout", 
 						"Whitelisted Venice modules:\n" 
 							+ ((RejectAllInterceptor)interceptor)
@@ -411,8 +407,7 @@ public class REPL {
 									.stream()
 									.map(s -> "   " + s)
 									.collect(Collectors.joining("\n")));
-					println(
-						terminal,
+					printer.println(
 						"stdout", 
 						"Blacklisted Venice functions:\n" 
 							+ ((RejectAllInterceptor)interceptor)
@@ -423,16 +418,15 @@ public class REPL {
 					return;
 				}
 				else if (interceptor instanceof SandboxInterceptor) {
-					println(terminal, "stdout", "[customized] Customized sandbox");
-					println(
-						terminal, 
+					printer.println("stdout", "[customized] Customized sandbox");
+					printer.println(
 						"stdout", 
 						"Sandbox rules:\n" + ((SandboxInterceptor)interceptor).getRules().toString());
 						return;
 				}
 				else {
-					println(terminal, "stdout", "[" + interceptorName + "]");
-					println(terminal, "stdout", "no info");
+					printer.println("stdout", "[" + interceptorName + "]");
+					printer.println("stdout", "no info");
 					return;
 				}
 			}
@@ -441,7 +435,7 @@ public class REPL {
 			if (params[0].equals("add-rule")) {
 				final String rule = params[1];
 				if (!(interceptor instanceof SandboxInterceptor)) {
-					println(terminal, "system", "rules can only be added to a customized sandbox");
+					printer.println("system", "rules can only be added to a customized sandbox");
 					return;
 				}
 				
@@ -472,7 +466,7 @@ public class REPL {
 			}
 		}
 		
-		println(terminal, "error", "invalid sandbox command: " + Arrays.asList(params));
+		printer.println("error", "invalid sandbox command: " + Arrays.asList(params));
 	}
 
 	private Env loadEnv(
@@ -490,62 +484,6 @@ public class REPL {
 				              true));
 	}
 
-	private void print(
-			final Terminal terminal,
-			final String colorID,
-			final Consumer<Terminal> fn
-	) {
-		final String color = config.getColor("colors." + colorID);
-		if (color != null) {
-			terminal.writer().print(color);
-		}
-		
-		fn.accept(terminal);
-		
-		if (color != null) {
-			terminal.writer().print(ReplConfig.ANSI_RESET);
-		}
-		
-		terminal.flush();
-	}
-	
-	private void println(
-			final Terminal terminal,
-			final String colorID,
-			final String text
-	) {
-		print(terminal, colorID, t -> t.writer().print(text));
-		terminal.writer().println();
-		terminal.flush();
-	}
-	
-	private void printex(
-			final Terminal terminal,
-			final String colorID,
-			final Throwable ex
-	) {
-		try {
-			if (ex instanceof ValueException) {
-				print(terminal, colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
-				println(terminal, colorID, "Thrown value: " + Printer.pr_str(((ValueException)ex).getValue(), false));			
-			}
-			else if (ex instanceof VncException) {
-				if (printJavaEx) {
-					print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
-				}
-				else {
-					print(terminal, colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
-				}
-			}
-			else {
-				print(terminal, colorID, t -> ex.printStackTrace(t.writer()));			
-			}
-		}
-		catch(Throwable e) {
-			System.out.println("Internal REPL error while printing exception.");
-			e.printStackTrace();
-		}
-	}
 	
 	private void activate(final IInterceptor interceptor) {
 		this.interceptor = interceptor; 
@@ -627,6 +565,6 @@ public class REPL {
 	private ReplConfig config;
 	private IInterceptor interceptor;
 	private VeniceInterpreter venice;
-	private boolean printJavaEx = false;
+	private TerminalPrinter printer;
 	private boolean macroexpand = false;
 }
