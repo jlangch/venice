@@ -10,7 +10,9 @@ like Linux, MacOSX, or Windows.
 
 Venice requires Java 8 or higher.
 
-Java can be downloaded from [AdoptOpenJDK](https://adoptopenjdk.net/)
+Java can be downloaded from 
+- [AdoptOpenJDK](https://adoptopenjdk.net/)
+- [Zulu](https://www.azul.com/downloads/zulu-community/)
 
 
 ### 2. Get the Venice JAR file
