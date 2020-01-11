@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 
 
@@ -109,4 +110,17 @@ public class ModuleLoader {
 							"webdav", 
 							"xchart", 
 							"xml")));
+	
+	public static final Set<VncKeyword> PRELOADED_MODULES = 
+			Collections.unmodifiableSet(
+				new HashSet<>(
+					Arrays.asList(
+							new VncKeyword("str"), 
+							new VncKeyword("regex"), 
+							new VncKeyword("time"), 
+							new VncKeyword("io"), 
+							new VncKeyword("json"), 
+							new VncKeyword("pdf"), 
+							new VncKeyword("cidr"), 
+							new VncKeyword("csv"))));
 }

@@ -177,7 +177,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true));
 		
 		// loaded modules & files
-		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(), true));
+		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(ModuleLoader.PRELOADED_MODULES), true));
 		env.setGlobal(new Var(LOADED_FILES_SYMBOL, new VncMutableSet(), true));
 
 		// init namespaces
