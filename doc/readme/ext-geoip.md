@@ -1,7 +1,7 @@
 # GEO IP
 
 The 'geoip' module maps IP adresses to country and location (latitude, longitude)
-that can be visualized on a world map. The 'geoip' module used the free 
+that can be visualized on a world map. The 'geoip' module uses the free 
 [MaxMind](https://www.maxmind.com/) location databases.
 
 
@@ -129,6 +129,7 @@ to locations and visualize them on a map.
              """)))
 ```
 
+Run the script from a REPL:
 
 ```text
 venice> !macroexpand
