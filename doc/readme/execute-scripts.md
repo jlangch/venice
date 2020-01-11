@@ -9,8 +9,12 @@ foo> java -jar venice-1.7.13.jar -script "(+ 1 1)"
 
 ### Load the script from a file and run it:
 
+script.venice:
 ```text
-foo> echo "(+ 1 1)" > script.venice
+(+ 1 1)
+```
+
+```text
 foo> java -jar venice-1.7.13.jar -file script.venice
 => 2
 ```
