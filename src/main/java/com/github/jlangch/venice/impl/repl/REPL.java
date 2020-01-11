@@ -221,13 +221,22 @@ public class REPL {
 						});
 						continue;
 					}
+					else if (cmd.equals("colors")) {
+						println(terminal, "default",   "default");
+						println(terminal, "result",    "result");
+						println(terminal, "stdout",    "stdout");
+						println(terminal, "error",     "error");
+						println(terminal, "system",    "system");
+						println(terminal, "interrupt", "interrupt");
+						continue;
+					}
 					else if (cmd.equals("exit")) {
 						println(terminal, "interrupt", " good bye ");
 						Thread.sleep(1000);
 						break;
 					}
 					
-					println(terminal, "system", "invalid command");
+					println(terminal, "error", "invalid command");
 					continue;
 				}
 			} 
@@ -279,8 +288,7 @@ public class REPL {
 				continue;
 			}
 			catch (Throwable ex) {
-				System.out.println("Error.");
-				ex.printStackTrace();
+				printex(terminal, "error", ex);
 			}
 		}
 	}
@@ -334,7 +342,7 @@ public class REPL {
 			}
 		}
 				
-		println(terminal, "system", "invalid env command");					
+		println(terminal, "error", "invalid env command");					
 	}
 
 	private void handleSandboxCommand(
@@ -464,7 +472,7 @@ public class REPL {
 			}
 		}
 		
-		println(terminal, "system", "invalid sandbox command: " + Arrays.asList(params));
+		println(terminal, "error", "invalid sandbox command: " + Arrays.asList(params));
 	}
 
 	private Env loadEnv(
@@ -514,7 +522,7 @@ public class REPL {
 	private void printex(
 			final Terminal terminal,
 			final String colorID,
-			final Exception ex
+			final Throwable ex
 	) {
 		try {
 			if (ex instanceof ValueException) {
