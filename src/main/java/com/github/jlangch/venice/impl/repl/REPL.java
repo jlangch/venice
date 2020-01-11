@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
@@ -472,6 +473,7 @@ public class REPL {
 	) {
 		return venice.createEnv(macroexpand)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
+					 .setGlobal(new Var(new VncSymbol("*run-mode"), new VncKeyword("repl"), false))
 					 .setStdoutPrintStream(ps);
 	}
 	
