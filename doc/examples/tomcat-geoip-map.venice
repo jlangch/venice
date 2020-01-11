@@ -25,6 +25,8 @@
   (load-module :geoip)
 
 
+  (def maxmind-country-zip "resources/geoip-country.zip")
+
   (def private-ip-addresses
         [ (cidr/parse "10.0.0.0/8")
           (cidr/parse "172.16.0.0/12")
@@ -57,17 +59,17 @@
            (->> (io/zip-list-entry-names zip)
                 (map #(parse-ip (io/unzip zip %))))))
 
-  (defn map-to-location [ip-freq]
-    (let [ip (key ip-freq) data (rv ip)]
+  (defn map-to-location [ip-freq ip-loc-resolver]
+    (let [ip (key ip-freq) data (ip-loc-resolver ip)]
       { :loc (geoip/map-location-to-numerics (:loc data))
         :ip ip
         :freq (val ip-freq)
         :country (:country-name data)
         :country-iso (:country-iso data) } ))
 
-  (defn create-map [ip-freq-map]
+  (defn create-map [ip-freq-map ip-loc-resolver]
     (->> (entries ip-freq-map)
-         (map map-to-location)
+         (map #(map-to-location % ip-loc-resolver))
          (filter #(not (private-ip? (:ip %))))
          (reduce (fn [x y]
                   (let [country (:country-iso y)
@@ -83,11 +85,48 @@
                          :font-size-px 14}]))
          (draw :png "./ip-map.png")))
 
-  (def rv (geoip/ip-to-country-loc-resolver
-                   "resources/geoip-country.zip"
-                   (geoip/download-google-country-db)))
+  (defn create-ip-loc-resolver []
+    ; this may take some time
+    (when (io/exists-file? maxmind-country-zip)
+      (println "Parsing MaxMind country DB...")
+      (geoip/ip-to-country-loc-resolver
+                     maxmind-country-zip
+                     (geoip/download-google-country-db))))
 
-  (-> (io/file "resources/localhost_access_log.2019-12.zip")
-      (parse-logs)
-      (create-map))
-)
+  (def ip-loc-rv nil)
+
+  (defn download-maxmind-db [lic-key]
+    (io/mkdirs (io/file-parent maxmind-country-zip))
+    (geoip/download-maxmind-db-to-zipfile
+      (io/file maxmind-country-zip) :country lic-key))
+
+  (defn run [log-zip]
+    (if (io/exists-file? maxmind-country-zip)
+      (do
+        (when (nil? ip-loc-rv)
+          (def ip-loc-rv (create-ip-loc-resolver)))
+        (println "Processing log file...")
+        (-> (io/file log-zip)
+              (parse-logs)
+              (create-map ip-loc-rv)))
+      (do
+        (println "The MaxMind country file" maxmind-country-zip " does not exist!")
+        (println "Please download it:")
+        (println "    (download-maxmind-db -your-maxmind-lic-key-)"))))
+
+
+  (println """
+           Actions:
+              [1] (run "resources/localhost_access_log.2019-12.zip")
+              [2] (download-maxmind-db -your-maxmind-lic-key-)
+           """)
+
+  (when (false? *macroexpand-on-load*)
+    (println """
+
+             Warning: macroexpand-on-load is not activated. To get a much better
+                      performance activate macroexpand-on-load before loading
+                      this script.
+
+                      From the REPL run: !macroexpand
+             """)))
