@@ -38,8 +38,9 @@
 
   (defn format-label [country-iso freq]
     (cond
-      (> freq 1000) (str country-iso " " (/ freq 1000) "k")
-      :else         (str country-iso " " freq)))
+      (> freq 1000000) (str country-iso " " (/ freq 1000000) "m")
+      (> freq 1000)    (str country-iso " " (/ freq 1000) "k")
+      :else            (str country-iso " " freq)))
 
   (defn draw [format file locations]
     (-> (mercator/load-mercator-image)
@@ -74,17 +75,17 @@
          (map #(map-to-location % ip-loc-resolver))
          (filter #(not (private-ip? (:ip %))))
          (reduce (fn [x y]
-                  (let [country (:country-iso y)
-                        r (get x country)]
-                    (if (nil? r)
-                      (assoc x country y)
-                      (let [freq (+ (:freq r) (:freq y))]
-                        (assoc x country (assoc r :freq freq)))))) {} )
+                   (let [country (:country-iso y)
+                         r (get x country)]
+                     (if (nil? r)
+                       (assoc x country y)
+                       (let [freq (+ (:freq r) (:freq y))]
+                         (assoc x country (assoc r :freq freq)))))) {} )
          (vals)
          (map (fn [x] [ (first (:loc x))
                         (second (:loc x))
-                        {:label (format-label (:country-iso x) (:freq x))
-                         :font-size-px 14}]))
+                        { :label (format-label (:country-iso x) (:freq x))
+                          :font-size-px 14 } ]))
          (draw :png out-file)))
 
   (defn create-ip-loc-resolver []
@@ -127,8 +128,8 @@
            """)
 
   (when (false? *macroexpand-on-load*)
+    (println)
     (println """
-             
              Warning: macroexpand-on-load is not activated. To get a much better
                       performance activate macroexpand-on-load before loading
                       this script.
