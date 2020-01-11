@@ -9,7 +9,7 @@ foo> java -jar venice-1.7.13.jar -script "(+ 1 1)"
 
 ### Load the script from a file and run it:
 
-script.venice:
+File "script.venice":
 ```text
 (+ 1 1)
 ```
@@ -22,7 +22,7 @@ foo> java -jar venice-1.7.13.jar -file script.venice
 
 ### Passing a load-path:
 
-script.venice:
+File "script.venice":
 ```text
 (+ 1 1)
 ```
@@ -35,7 +35,7 @@ foo> java -jar venice-1.7.13.jar -file script.venice -loadpath "/users/foo/venic
 
 ### Venice passes the command line args as \*ARGV\* vector:
 
-script.venice:
+File "script.venice":
 ```text
 (+ 1 (long (nth *ARGV* 2)))
 ```
