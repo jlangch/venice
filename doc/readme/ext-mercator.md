@@ -16,6 +16,7 @@ at north and -90° at south pole.
 surface. Longitude is an angle which ranges from 0° at the prime meridian
 to +180° eastward and -180° westward.
 
+### Example
 
 Show a few cities (Zurich, New York, Tokyo, ...) given by its coordinates on 
 a world map:
