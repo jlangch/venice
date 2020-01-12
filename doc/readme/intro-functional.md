@@ -3,7 +3,7 @@
 _THIS IS WORK IN PROGRESS_
 
 * [Basics](#basics)
-* [Functional concepts](#functional-concepts)
+* [Functional Concepts](#functional-concepts)
 
 
 ## Basics
@@ -108,4 +108,16 @@ larger blocks that are a single expression.
 ```
 
 
-## Functional concepts
+## Functional Concepts
+
+
+### Pure Functions
+
+### Recursion
+
+### Referential Transparency
+
+### Functions are First-Class citizens
+
+### Immutability
+
