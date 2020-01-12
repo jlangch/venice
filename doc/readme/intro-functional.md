@@ -20,7 +20,7 @@ true                ; a boolean
 
 **2. Operations, this is how you do things**
 
-All operations take the form `(`, operator, operands, `)`:
+All operations take the form `(`, operator, operands, `)` and return always a value:
 
 ```clojure
 (operator operand-1 operand-2 ... operand-n)
@@ -54,5 +54,55 @@ you’re operating on, the structure is the same.
 In functional parlance Venice is based on symbolic expressions, in-short [s-expression](https://en.wikipedia.org/wiki/S-expression).
 
 
-## Control Flow
 
+### Control Flow
+
+In Venice, flow control operators are expressions too. `if` and `do` are the two basic 
+control flows. More complex control flows like `case` are based on these fundamental 
+operations.
+
+#### if
+
+`if` is the most important conditional expression. It consists of a predicate, a "then", 
+and an "else" part. `if` will only evaluate the branch selected by the predicate.
+
+```
+(if predicate then-expression else-expression)
+```
+
+Example:
+
+```clojure
+(if (< 10 100) 
+  "lower than 100" 
+  "equal or larger than 100")
+```
+
+#### do
+
+`do` blocks sequentially execute multiple expressions. The value of the last expression 
+is returned.
+
+```clojure
+(do
+  (println 100) 
+  (println 200) 
+  (println 300)
+  20)
+```
+
+`if` only takes a single expression for the "then" and "else" parts. Use `do` to build 
+larger blocks that are a single expression.
+
+```clojure
+(if (even? 10) 
+  (do  
+    (println "10 is even")
+    "even") 
+  (do  
+    (println "10 is odd")
+    "odd"))
+```
+
+
+## Functional concepts
