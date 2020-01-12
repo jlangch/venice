@@ -2,6 +2,9 @@
 
 _THIS IS WORK IN PROGRESS_
 
+* [Basics](#basics)
+* [Functional concepts](#functional-concepts)
+
 
 ## Basics
 
