@@ -1,4 +1,4 @@
-# Introduction to functional programming
+# Introduction to Functional Programming
 
 _THIS IS WORK IN PROGRESS_
 
