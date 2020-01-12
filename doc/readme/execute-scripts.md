@@ -12,14 +12,20 @@ foo> java -jar venice-1.7.14.jar -script "(+ 1 1)"
 File "script.venice":
 
 ```text
-(+ 1 1)
+(do
+  (defonce PI (. :java.lang.Math :PI))
+  
+  (defn circle-area [radius]
+    (* PI radius radius))
+    
+  (println (circle-area 2.5)))
 ```
 
 run:
 
 ```text
 foo> java -jar venice-1.7.14.jar -file script.venice
-=> 2
+=> 19.634954084936208
 ```
 
 
@@ -30,16 +36,41 @@ Venice functions. `load-file` loads the files by default from the current workin
 directory. The command line option "-loadpath" defines a set of semi-colon 
 separated paths files are searched for.
 
-File "script.venice":
+File "/users/foo/venice/test.venice":
 
 ```text
-(load-file "test.venice")
+(do
+  (defonce PI (. :java.lang.Math :PI))
+  
+  (defn circle-area [radius]
+    (* PI radius radius)))
 ```
 
-run:
+File "/users/foo/venice/script.venice":
 
 ```text
-foo> java -jar venice-1.7.14.jar -file script.venice -loadpath "/users/foo/venice/scripts"
+(do
+  (load-file "test.venice")
+
+  (println (circle-area 2.5))
+```
+
+Files:
+
+```text
+/users/foo/venice
+├── script.venice
+├── bin
+│   └── venice-1.7.14.jar
+└── scripts
+    └── test.venice
+```
+
+Run:
+
+```text
+foo> cd /users/foo/venice
+foo> java -jar bin/venice-1.7.14.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 ```
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
