@@ -10,11 +10,13 @@ foo> java -jar venice-1.7.14.jar -script "(+ 1 1)"
 ### Load the script from a file and run it:
 
 File "script.venice":
+
 ```text
 (+ 1 1)
 ```
 
 run:
+
 ```text
 foo> java -jar venice-1.7.14.jar -file script.venice
 => 2
@@ -29,11 +31,13 @@ directory. The command line option "-loadpath" defines a set of semi-colon
 separated paths files are searched for.
 
 File "script.venice":
+
 ```text
 (load-file "test.venice")
 ```
 
 run:
+
 ```text
 foo> java -jar venice-1.7.14.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 ```
@@ -45,11 +49,13 @@ The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
 ### Venice passes the command line args as \*ARGV\* vector:
 
 File "script.venice":
+
 ```text
 (+ 1 (long (nth *ARGV* 2)))
 ```
 
 run:
+
 ```text
 foo> java -jar venice-1.7.14.jar -file script.venice 3
 => 4
