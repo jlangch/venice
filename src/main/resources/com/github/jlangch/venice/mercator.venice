@@ -103,20 +103,20 @@
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
 (def cities
-  { :zurich     [ 47.37174       8.54226  { :label "Zurich"
-                                            :radius 12
-                                            :fill-color (color 128 128 255 255)
-                                            :border-color (color 0 0 255 255)
-                                            :label-color (color 255 255 255 255)
-                                            :font-size-px 20 } ]
-    :new-york   [ 40.712778    -74.005833 ]
-    :tokyo      [ 35.6894875   139.6917064]
-    :perth      [-31.953513    115.857047 ]
-    :honolulu   [ 21.3069444  -157.8583333]
-    :montevideo [-34.9011127   -56.1645314]
-    :greenwich  [ 51.482577      0.0      ]
-    :reykjavik  [ 64.13548     -21.89541  ]
-    :kapstadt   [-33.924869     18.424055 ]
+  { :zurich     [ 47.37174       8.54226   { :label "Zurich"
+                                             :radius 10
+                                             :fill-color (color 128 128 255 255)
+                                             :border-color (color 0 0 255 255)
+                                             :label-color (color 255 255 255 255)
+                                             :font-size-px 14 } ]
+    :new-york   [ 40.712778    -74.005833  { :label "New York" } ]
+    :tokyo      [ 35.6894875   139.6917064 { :label "Tokyo" } ]
+    :perth      [-31.953513    115.857047  { :label "Perth" } ]
+    :honolulu   [ 21.3069444  -157.8583333 { :label "Honolulu" } ]
+    :montevideo [-34.9011127   -56.1645314 { :label "Montevideo" } ]
+    :greenwich  [ 51.482577      0.0       { :label "Greenwich" } ]
+    :reykjavik  [ 64.13548     -21.89541   { :label "Reykjavik" } ]
+    :kapstadt   [-33.924869     18.424055  { :label "Kapstadt" } ]
     :zero       [  0.0           0.0      ] })
 
 
@@ -157,7 +157,7 @@
 (def marker-border-color (color 255 0 0 255))
 (def marker-label-color (color 255 255 255 255))
 (def marker-radius 10)
-(def marker-font-size-px 20)
+(def marker-font-size-px 14)
 
 
 
