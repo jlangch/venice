@@ -66,7 +66,8 @@ operations.
 #### if
 
 `if` is the most important conditional expression. It consists of a predicate, a "then", 
-and an "else" part. `if` will only evaluate the branch selected by the predicate.
+and an "else" part. `if` will only evaluate the branch selected by the predicate. It
+returns the value of the evaluated branch.
 
 ```
 (if predicate then-expression else-expression)
