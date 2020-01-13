@@ -673,11 +673,11 @@ public class IOFunctions {
 				"io/list-files-glob",
 				VncFunction
 					.meta()
-					.arglists("(io/list-files-regex dir glob)")
+					.arglists("(io/list-files-glob dir glob)")
 					.doc(
-						"Lists all files in a directory tree that match the glob pattern. " +
+						"Lists all files in a directory that match the glob pattern. " +
 					    "dir must be a file or a string (file path). \n" +
-						"E.g. (io/list-files-regex \".\" \"Test?/sample*.txt\".")
+						"E.g. (io/list-files-glob \".\" \"sample*.txt\".")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
