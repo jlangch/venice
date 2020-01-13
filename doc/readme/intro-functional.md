@@ -110,6 +110,9 @@ larger blocks that are a single expression.
 
 ## Functional Concepts
 
+Instead of statements, functional programming makes use of expressions. Unlike a statement, 
+which is executed to assign variables, the evaluation of an expression produces a value.
+
 
 ### Pure Functions
 

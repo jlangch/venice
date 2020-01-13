@@ -1096,7 +1096,8 @@ public class CoreFunctions {
 					.examples(
 						"(boolean false)",
 						"(boolean true)",
-						"(boolean nil)")
+						"(boolean nil)",
+						"(boolean 100)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

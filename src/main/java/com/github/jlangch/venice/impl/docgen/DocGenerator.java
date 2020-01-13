@@ -181,22 +181,6 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("pow"));
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
-		
-		final DocSection trigonometry = new DocSection("Trigonometry");
-		numbers.addSection(trigonometry);
-		trigonometry.addItem(getDocItem("to-radians"));
-		trigonometry.addItem(getDocItem("to-degrees"));
-		trigonometry.addItem(getDocItem("sin"));
-		trigonometry.addItem(getDocItem("cos"));
-		trigonometry.addItem(getDocItem("tan"));
-		
-		final DocSection statistics = new DocSection("Statistics");
-		numbers.addSection(statistics);
-		statistics.addItem(getDocItem("mean"));
-		statistics.addItem(getDocItem("median"));
-		statistics.addItem(getDocItem("quartiles"));
-		statistics.addItem(getDocItem("quantile"));
-		statistics.addItem(getDocItem("standard-deviation"));
 
 		final DocSection convert = new DocSection("Convert");
 		numbers.addSection(convert);
@@ -233,6 +217,22 @@ public class DocGenerator {
 		random.addItem(getDocItem("rand-long"));
 		random.addItem(getDocItem("rand-double"));
 		random.addItem(getDocItem("rand-gaussian"));
+		
+		final DocSection trigonometry = new DocSection("Trigonometry");
+		numbers.addSection(trigonometry);
+		trigonometry.addItem(getDocItem("to-radians"));
+		trigonometry.addItem(getDocItem("to-degrees"));
+		trigonometry.addItem(getDocItem("sin"));
+		trigonometry.addItem(getDocItem("cos"));
+		trigonometry.addItem(getDocItem("tan"));
+		
+		final DocSection statistics = new DocSection("Statistics");
+		numbers.addSection(statistics);
+		statistics.addItem(getDocItem("mean"));
+		statistics.addItem(getDocItem("median"));
+		statistics.addItem(getDocItem("quartiles"));
+		statistics.addItem(getDocItem("quantile"));
+		statistics.addItem(getDocItem("standard-deviation"));
 
 		final DocSection bigdecimal = new DocSection("BigDecimal");
 		numbers.addSection(bigdecimal);
