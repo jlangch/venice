@@ -33,6 +33,9 @@ to locations and visualize them on a map.
       (> freq 1000) (str country-iso " " (/ freq 1000) "k")
       :else         (str country-iso " " freq)))
 
+  (defn merge-freq-maps [freq-maps]
+    (apply (partial merge-with +) freq-maps))
+
   (defn draw [format file locations]
     (-> (mercator/load-mercator-image)
         (mercator/draw-locations locations)
@@ -45,13 +48,20 @@ to locations and visualize them on a map.
          (map :ip)
          (frequencies)))
 
-  (defn parse-logs [log-file]
-    ;; returns a map with IP frequencies: { "196.52.43.56" 3 "178.197.226.244" 8 }
+  (defn parse-zip-logs [log-file]
+    (->> (io/zip-list-entry-names log-file)
+         (map #(parse-ip (io/unzip log-file %)))))
+
+  (defn parse-log-file [log-file]
+    (println "Parsing" log-file "...")
     (if (io/file-ext? log-file "zip")
-      (apply (partial merge-with +)
-             (->> (io/zip-list-entry-names log-file)
-                  (map #(parse-ip (io/unzip log-file %)))))
+      (parse-zip-logs log-file)
       (parse-ip log-file)))
+
+  (defn parse-log-files [log-files]
+    ;; returns an aggregated map with IP frequencies:
+    ;;    { "196.52.43.56" 3 "178.197.226.244" 8 }
+    (merge-freq-maps (flatten (map parse-log-file log-files))))
 
   (defn map-to-location [ip-freq ip-loc-resolver]
     (let [ip (key ip-freq) data (ip-loc-resolver ip)]
@@ -94,15 +104,15 @@ to locations and visualize them on a map.
     (geoip/download-maxmind-db-to-zipfile
       (io/file maxmind-country-zip) :country lic-key))
 
-  (defn run [log-file out-file]
+  (defn run [out-file & log-files]
     (if (io/exists-file? maxmind-country-zip)
       (do
         (when (nil? ip-loc-rv)
           (def ip-loc-rv (create-ip-loc-resolver)))
-        (println "Processing log file...")
-        (-> (io/file log-file)
-              (parse-logs)
-              (create-map ip-loc-rv out-file)))
+        (println "Processing log files...")
+        (-<> (map io/file log-files)
+             (parse-log-files <>)
+             (create-map <> ip-loc-rv out-file)))
       (do
         (println "The MaxMind country file" maxmind-country-zip " does not exist!")
         (println "Please download it:")
@@ -111,16 +121,19 @@ to locations and visualize them on a map.
 
   (println """
            Actions:
-              [1] (run "resources/localhost_access_log.2019-12.zip"
-                       "./ip-map.png")
-              [2] (run "resources/localhost_access_log.2019-12-01.log"
-                       "./ip-map.png")
-              [3] (download-maxmind-db -your-maxmind-lic-key-)
+              [1] (run "./ip-map.png"
+                       "resources/localhost_access_log.2019-12.zip")
+              [2] (run "./ip-map.png"
+                       "resources/localhost_access_log.2019-12-01.log")
+              [3] (apply (partial run "./ip-map.png")
+                         (io/list-files-glob "resources"
+                                             "localhost_access_log.*.log"))
+              [4] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
   (when (false? *macroexpand-on-load*)
-    (println)
     (println """
+
              Warning: macroexpand-on-load is not activated. To get a much better
                       performance activate macroexpand-on-load before loading
                       this script.
