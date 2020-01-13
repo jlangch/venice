@@ -17,6 +17,6 @@ config.json (via the Atom -> Config... menu). Specify a pattern to match for the
     "*.venice": "source.clojure"
 ```
 
-**Editing a Venice file**
+**Editing a Venice file and verifying brackets**
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/atom-editor.png">
