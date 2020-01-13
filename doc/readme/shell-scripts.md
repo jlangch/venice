@@ -17,13 +17,17 @@ Venice _cheatsheet_ for details)
 (println (sh "ls" "-l"))
 (sh "ls" "-l" :out-fn println :err-fn println)
 
-;; background process
+;; run background process
 (println (sh "/bin/sh" "-c" "sleep 30 >/dev/null 2>&1 &")) 
 (println (sh "/bin/sh" "-c" "nohup sleep 30 >/dev/null 2>&1 &"))
 
 ;; working directory
 (println (with-sh-dir "/tmp" (sh "ls" "-l") (sh "pwd")))
 (println (sh "pwd" :dir "/tmp"))
+
+;; list files in a directory with a glob pattern
+(->> (io/list-files-glob "." "*.png")
+     (docoll println))
 ```
 
 
