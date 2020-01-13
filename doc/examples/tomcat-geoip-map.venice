@@ -44,6 +44,17 @@
   (defn merge-freq-maps [freq-maps]
     (apply (partial merge-with +) freq-maps))
 
+  (defn merge-ip-locations-by-country [ip-locations]
+    (vals (reduce (fn [x y]
+                   (let [country (:country-iso y)
+                         r (get x country)]
+                     (if (nil? r)
+                       (assoc x country y)
+                       (let [freq (+ (:freq r) (:freq y))]
+                         (assoc x country (assoc r :freq freq))))))
+                  {}
+                  ip-locations)))
+
   (defn draw [format file locations]
     (-> (mercator/load-mercator-image)
         (mercator/draw-locations locations)
@@ -83,14 +94,7 @@
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
          (filter #(not (private-ip? (:ip %))))
-         (reduce (fn [x y]
-                  (let [country (:country-iso y)
-                        r (get x country)]
-                    (if (nil? r)
-                      (assoc x country y)
-                      (let [freq (+ (:freq r) (:freq y))]
-                        (assoc x country (assoc r :freq freq)))))) {} )
-         (vals)
+         (merge-ip-locations-by-country)
          (map (fn [x] [ (first (:loc x))
                         (second (:loc x))
                         {:label (format-label (:country-iso x) (:freq x))
