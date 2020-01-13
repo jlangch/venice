@@ -8,8 +8,7 @@ _THIS IS WORK IN PROGRESS_
 
 ## Basics
 
-Venice is a Lisp dialect and completely dynamic. Venice recognizes two kinds 
-of structures:
+Venice is a Lisp dialect and recognizes two kinds of structures:
 
 **1. Literal representations of data**
 
