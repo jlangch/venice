@@ -42,6 +42,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.CopyOption;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -667,6 +668,49 @@ public class IOFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_list_files_glob_pattern =
+		new VncFunction(
+				"io/list-files-glob",
+				VncFunction
+					.meta()
+					.arglists("(io/list-files-regex dir glob)")
+					.doc(
+						"Lists all files in a directory tree that match the glob pattern. " +
+					    "dir must be a file or a string (file path). \n" +
+						"E.g. (io/list-files-regex \".\" \"Test?/sample*.txt\".")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/list-files-glob", args, 2);
+
+				final File dir = convertToFile(
+									args.first(),
+									"Function 'io/list-files-glob' does not allow %s as dir");
+
+				final String glob = Coerce.toVncString(args.second()).getValue();
+				
+				validateReadableDirectory(dir);
+
+				try {
+					final List<VncVal> files = new ArrayList<>();
+					
+					try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir.toPath(), glob)) {
+				        dirStream.forEach(path -> files.add(new VncJavaObject(path.toFile())));
+				    }
+
+					return new VncList(files);
+				}
+				catch(Exception ex) {
+					throw new VncException(
+							String.format("Failed to list files %s", dir.getPath()),
+							ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 	public static VncFunction io_copy_file =
 		new VncFunction(
 				"io/copy-file",
@@ -1710,6 +1754,7 @@ public class IOFunctions {
 					.add(io_file_hidden_Q)
 					.add(io_list_files)
 					.add(io_list_file_tree)
+					.add(io_list_files_glob_pattern)
 					.add(io_delete_file)
 					.add(io_delete_file_on_exit)
 					.add(io_delete_file_tree)

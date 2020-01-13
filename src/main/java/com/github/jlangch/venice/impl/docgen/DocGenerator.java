@@ -1084,6 +1084,7 @@ public class DocGenerator {
 		file_io.addItem(getDocItem("io/file-canonical-path"));
 		file_io.addItem(getDocItem("io/file-ext?"));
 		file_io.addItem(getDocItem("io/list-files"));
+		file_io.addItem(getDocItem("io/list-files-glob"));
 		file_io.addItem(getDocItem("io/list-file-tree"));
 		file_io.addItem(getDocItem("io/file-size"));
 		file_io.addItem(getDocItem("io/delete-file"));
