@@ -42,7 +42,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/b3f6190/cheatsheet.htm
 
 * [Getting started](doc/readme/start.md)
 * [REPL](doc/readme/repl.md)
-* [Development Tool](doc/readme/dev-tools.md)
+* [Development Tools](doc/readme/dev-tools.md)
 * [Introduction to Functional Programming](doc/readme/intro-functional.md)
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
