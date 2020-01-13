@@ -42,7 +42,6 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/b3f6190/cheatsheet.htm
 
 * [Getting started](doc/readme/start.md)
 * [REPL](doc/readme/repl.md)
-* [Development Tools](doc/readme/dev-tools.md)
 * [Introduction to Functional Programming](doc/readme/intro-functional.md)
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
@@ -69,6 +68,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/b3f6190/cheatsheet.htm
 * [Benchmarks & Profiling](doc/readme/profiling.md)
 * [Tree walker](doc/readme/walk.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)
+* [Development Tools](doc/readme/dev-tools.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
 * [3rd Party Libs](doc/readme/3rdparty-lic.md)
 * [Change Log](ChangeLog.md)
