@@ -95,11 +95,13 @@
 (import :com.github.jlangch.venice.javainterop.delegate.Graphics2DComposite)
 
 
+(def default-font-style (. :Font :PLAIN))
+
 (defn color [r g b a]
   (. :Color :new (int r) (int g) (int b) (int a)))
 
-(defn font [size]
-  (. :Font :new "SansSerif" (. :Font :PLAIN) size))
+(defn font [size style]
+  (memoize (fn [size style] (. :Font :new "SansSerif" style size))))
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
 (def cities
@@ -246,7 +248,7 @@
   (. g :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
 
 (defn draw-text [g x y color label font-size-px]
-  (. g :setFont (font font-size-px))
+  (. g :setFont (font font-size-px default-font-style))
   (. g :setColor color)
   (. g :drawString label x y))
 
@@ -274,7 +276,7 @@
         ; access on JDK internal classes with Java 9+
         g2d (delegate :Graphics2DComposite (. image :createGraphics))
         mapper (spherical-mapper img-width img-height)]
-    (. g2d :setFont (font marker-font-size-px))
+    (. g2d :setFont (font marker-font-size-px default-font-style))
     (let [data (map #(vector (mapper (second %) (first %)) (third %)) locations)]
       ;; layer 1: circles
       (docoll (fn [l] (draw-marker g2d img-width img-height
