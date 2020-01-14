@@ -68,7 +68,7 @@ public class Launcher {
 				System.out.println(
 						runScript(cli, loadPaths, interceptor, script, new File(file).getName()));
 			}
-			if (cli.switchPresent("-cp-file")) {
+			else if (cli.switchPresent("-cp-file")) {
 				// run the file from the classpath
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
 				final String script = new ClassPathResource(file).getResourceAsString();
