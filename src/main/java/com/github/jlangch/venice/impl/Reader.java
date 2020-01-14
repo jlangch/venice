@@ -46,7 +46,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncTinyList;
-import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -259,7 +259,7 @@ public class Reader {
 	private static VncHashMap read_hash_map(final Reader rdr) {
 		final Token refToken = rdr.peek();
 		
-		final VncSequence lst = read_list(rdr, new VncList(), '{', '}');
+		final VncSequence lst = read_list(rdr, new VncTinyList(), '{', '}');
 		return VncHashMap.ofAll(lst).withMeta(MetaUtil.toMeta(refToken));
 	}
 
@@ -274,8 +274,8 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return VncList.of(new VncSymbol("quote"), read_form(rdr))
-							  .withMeta(MetaUtil.toMeta(token));
+				return VncTinyList.of(new VncSymbol("quote"), read_form(rdr))
+								  .withMeta(MetaUtil.toMeta(token));
 			
 			case '`': 
 				rdr.next();
@@ -284,8 +284,8 @@ public class Reader {
 					//       Use gensym in these cases.
 					rdr.autoGenSym.enterSyntaxQuote();
 					
-					return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
-								  .withMeta(MetaUtil.toMeta(token));
+					return VncTinyList.of(new VncSymbol("quasiquote"), read_form(rdr))
+									  .withMeta(MetaUtil.toMeta(token));
 				}
 				finally {
 					rdr.autoGenSym.leaveSyntaxQuote();
@@ -294,13 +294,13 @@ public class Reader {
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return VncList.of(new VncSymbol("unquote"), read_form(rdr))
-								   .withMeta(MetaUtil.toMeta(token));
+					return VncTinyList.of(new VncSymbol("unquote"), read_form(rdr))
+								      .withMeta(MetaUtil.toMeta(token));
 				} 
 				else {
 					rdr.next();
-					return VncList.of(new VncSymbol("splice-unquote"), read_form(rdr))
-								  .withMeta(MetaUtil.toMeta(token));
+					return VncTinyList.of(new VncSymbol("splice-unquote"), read_form(rdr))
+								      .withMeta(MetaUtil.toMeta(token));
 				}
 			
 			case '^': {
@@ -323,15 +323,15 @@ public class Reader {
 			
 			case '@': 
 				rdr.next();
-				return VncList.of(new VncSymbol("deref"), read_form(rdr))
-							  .withMeta(MetaUtil.toMeta(token));
+				return VncTinyList.of(new VncSymbol("deref"), read_form(rdr))
+							      .withMeta(MetaUtil.toMeta(token));
 				
 			case '#': 
 				rdr.next();
 				Token t = rdr.peek();
 				if (t.charAt(0) == '{') {
 					// set literal #{1 2}
-					form = VncHashSet.ofAll(read_list(rdr, new VncList(), '{' , '}')); 
+					form = VncHashSet.ofAll(read_list(rdr, new VncTinyList(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
 					final VncVal meta = MetaUtil.toMeta(t);
@@ -340,9 +340,9 @@ public class Reader {
 						throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
 					}
 					rdr.anonymousFnArgs.startCapture();
-					final VncVal body = read_list(rdr, new VncList(), '(' , ')').withMeta(meta);
+					final VncVal body = read_list(rdr, new VncTinyList(), '(' , ')').withMeta(meta);
 					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
-					form = VncList.of(new VncSymbol("fn", meta), argsDef, body);
+					form = VncTinyList.of(new VncSymbol("fn", meta), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
 				}
 				else {
@@ -358,7 +358,7 @@ public class Reader {
 				throw new ParseError(formatParseError(token, "Unexpected ')'"));
 			
 			case '[': 
-				form = read_list(rdr, new VncVector(), '[' , ']'); 
+				form = read_list(rdr, new VncTinyVector(), '[' , ']'); 
 				break;
 			
 			case ']': 

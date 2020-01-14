@@ -2348,7 +2348,8 @@ public class CoreFunctions {
 						"(assoc {} :a 1 :b 2)",
 						"(assoc nil :a 1 :b 2)",
 						"(assoc [1 2 3] 0 10)",
-						"(assoc [1 2 3] 3 10)")
+						"(assoc [1 2 3] 3 10)",
+						"(assoc [1 2 3] 6 10)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

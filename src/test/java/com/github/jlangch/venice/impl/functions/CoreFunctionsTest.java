@@ -2679,7 +2679,7 @@ public class CoreFunctionsTest {
 		assertEquals("#{}", venice.eval("(str (set ))"));
 		assertEquals("#{1 2 3}", venice.eval("(str (set 1 2 3))"));
 		assertEquals("#{[1 2]}", venice.eval("(str (set [1 2]))"));
-		assertEquals("#{0 1 2 [1 2] [2 3]}", venice.eval("(str (set 0  [2 3] [1 2] 1 2))"));
+		assertEquals("#{0 1 2 [1 2] [2 3]}", venice.eval("(str (sorted-set 0 [2 3] [1 2] 1 2))"));
 		assertEquals("#{0 [1 2]}", venice.eval("(str (set 0 [1 2]))"));
 		assertEquals("2", venice.eval("(str (count (set 0 [1 2])))"));
 

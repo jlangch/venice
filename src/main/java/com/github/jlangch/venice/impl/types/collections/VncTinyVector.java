@@ -28,106 +28,131 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 /**
- * An immutable list optimized for keeping 1 to 3 values.
- * Returns a VncList if the list grows beyond its max length.
+ * An immutable vector optimized for keeping 1 to 4 values.
+ * Returns a VncVector if the list grows beyond its max length.
  * 
- * <p>Most of the lists in a typical Venice application have less than 4
- * items. This optimized implementation for an immutable tiny list is 
- * much faster than a VAVR persistent list that can hold an arbitrary 
+ * <p>Most of the vectors in a typical Venice application have less than 5
+ * items. This optimized implementation for an immutable tiny vector is 
+ * much faster than a VAVR persistent vector that can hold an arbitrary 
  * number of items.
  */
-public class VncTinyList extends VncList {
+public class VncTinyVector extends VncVector {
 
-	public VncTinyList() {
+	public VncTinyVector() {
 		this(null);
 	}
 	
-	public VncTinyList(final VncVal meta) {
+	public VncTinyVector(final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 0;
 		this.first = null;
 		this.second = null;
 		this.third = null;
+		this.fourth = null;
 	}
 	
-	public VncTinyList(final VncVal first, final VncVal meta) {
+	public VncTinyVector(final VncVal first, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 1;
 		this.first = first;
 		this.second = null;
 		this.third = null;
+		this.fourth = null;
 	}
 
-	public VncTinyList(final VncVal first, final VncVal second, final VncVal meta) {
+	public VncTinyVector(final VncVal first, final VncVal second, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 2;
 		this.first = first;
 		this.second = second;
 		this.third = null;
+		this.fourth = null;
 	}
 
-	public VncTinyList(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
+	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 3;
 		this.first = first;
 		this.second = second;
 		this.third = third;
+		this.fourth = null;
+	}
+
+	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		this.len = 4;
+		this.first = first;
+		this.second = second;
+		this.third = third;
+		this.fourth = fourth;
 	}
 	
-	public static VncList of(final VncVal... mvs) {
+	public static VncVector of(final VncVal... mvs) {
 		switch (mvs.length) {
-			case 0:	return new VncTinyList();
-			case 1:	return new VncTinyList(mvs[0], null);
-			case 2:	return new VncTinyList(mvs[0], mvs[1], null);
-			case 3:	return new VncTinyList(mvs[0], mvs[1], mvs[2], null);
-			default: return VncList.of(mvs);
+			case 0:	return new VncTinyVector();
+			case 1:	return new VncTinyVector(mvs[0], null);
+			case 2:	return new VncTinyVector(mvs[0], mvs[1], null);
+			case 3:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], null);
+			case 4:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], mvs[3], null);
+			default: return VncVector.of(mvs);
 		}
 	}
 	
-	private static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
+	private static VncVector ofList(final List<? extends VncVal> list, final VncVal meta) {
 		switch (list.size()) {
-			case 0:	return new VncTinyList(meta);
-			case 1:	return new VncTinyList(list.get(0), meta);
-			case 2:	return new VncTinyList(list.get(0), list.get(1), meta);
-			case 3:	return new VncTinyList(list.get(0), list.get(1), list.get(2), meta);
-			default: return new VncList(list, meta);
+			case 0:	return new VncTinyVector(meta);
+			case 1:	return new VncTinyVector(list.get(0), meta);
+			case 2:	return new VncTinyVector(list.get(0), list.get(1), meta);
+			case 3:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), meta);
+			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), meta);
+			default: return new VncVector(list, meta);
 		}
 	}
-	
+
 	@Override
-	public VncList empty() {
-		return new VncTinyList(getMeta());
+	public VncVal apply(final VncList args) {
+		FunctionsUtil.assertArity("map", args, 1);
+		
+		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
 	}
 	
 	@Override
-	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncTinyList.of(replaceVals);
+	public VncVector empty() {
+		return new VncTinyVector(getMeta());
 	}
 	
 	@Override
-	public VncList withValues(final List<? extends VncVal> replaceVals) {
-		return VncTinyList.ofList(replaceVals, getMeta());
+	public VncVector withVariadicValues(final VncVal... replaceVals) {
+		return VncTinyVector.of(replaceVals);
+	}
+	
+	@Override
+	public VncVector withValues(final List<? extends VncVal> replaceVals) {
+		return VncTinyVector.ofList(replaceVals, getMeta());
 	}
 
 	@Override
-	public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncTinyList.ofList(replaceVals, meta);
+	public VncVector withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
+		return VncTinyVector.ofList(replaceVals, meta);
 	}
 
 	@Override
-	public VncList withMeta(final VncVal meta) {
+	public VncVector withMeta(final VncVal meta) {
 		switch (len) {
-			case 0:	return new VncTinyList(meta);
-			case 1:	return new VncTinyList(first, meta);
-			case 2:	return new VncTinyList(first, second, meta);
-			case 3:	return new VncTinyList(first, second, third, meta);
+			case 0:	return new VncTinyVector(meta);
+			case 1:	return new VncTinyVector(first, meta);
+			case 2:	return new VncTinyVector(first, second, meta);
+			case 3:	return new VncTinyVector(first, second, third, meta);
+			case 4:	return new VncTinyVector(first, second, third, fourth, meta);
 			default: throw new IllegalStateException("Length out of range");
 		}
 	}
@@ -155,8 +180,14 @@ public class VncTinyList extends VncList {
 				list.add(second); 
 				list.add(third); 
 				break;
+			case 4:	
+				list.add(first); 
+				list.add(second); 
+				list.add(third); 
+				list.add(fourth); 
+				break;
 			default: 
-				throw new IllegalStateException("List length out of range");
+				throw new IllegalStateException("Vector length out of range");
 		}
 		return list;
 	}
@@ -175,7 +206,7 @@ public class VncTinyList extends VncList {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= len) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a list of size %d. %s", 
+						"nth: index %d out of range for a vector of size %d. %s", 
 						idx, 
 						len,
 						isEmpty() ? "" : ErrorMessage.buildErrLocation(first)));
@@ -185,6 +216,7 @@ public class VncTinyList extends VncList {
 			case 0:	return first;
 			case 1:	return second;
 			case 2:	return third;
+			case 3:	return fourth;
 			default: throw new IllegalStateException("Length out of range");
 		}
 	}
@@ -199,6 +231,7 @@ public class VncTinyList extends VncList {
 				case 0:	return first;
 				case 1:	return second;
 				case 2:	return third;
+				case 3:	return fourth;
 				default: return defaultVal;
 			}
 		}
@@ -220,116 +253,126 @@ public class VncTinyList extends VncList {
 	}
 
 	@Override
+	public VncVal fourth() {
+		return len >= 4 ? fourth : Constants.Nil;
+	}
+
+	@Override
 	public VncVal last() {
 		switch (len) {
 			case 0:	return Constants.Nil;
 			case 1:	return first;
 			case 2:	return second;
 			case 3:	return third;
+			case 4:	return fourth;
 			default: throw new IllegalStateException("Length out of range");
 		}
 	}
 	
 	@Override
-	public VncList rest() {
+	public VncVector rest() {
 		switch (len) {
 			case 0:	return this;
-			case 1:	return new VncTinyList(getMeta());
-			case 2:	return new VncTinyList(second, getMeta());
-			case 3:	return new VncTinyList(second, third, getMeta());
+			case 1:	return new VncTinyVector(getMeta());
+			case 2:	return new VncTinyVector(second, getMeta());
+			case 3:	return new VncTinyVector(second, third, getMeta());
+			case 4:	return new VncTinyVector(second, third, fourth, getMeta());
 			default: throw new IllegalStateException("Length out of range");
 		}
 	}
 
 	@Override
-	public VncList slice(final int start, final int end) {
+	public VncVector slice(final int start, final int end) {
 		return start == 0 && end >= len
 				? this
-				: VncTinyList.ofList(getList().subList(start, end), getMeta());
+				: VncTinyVector.ofList(getList().subList(start, end), getMeta());
 	}
 	
 	@Override
-	public VncList slice(final int start) {
+	public VncVector slice(final int start) {
 		return start == 0
 				? this
-				: VncTinyList.ofList(getList().subList(start, len), getMeta());
+				: VncTinyVector.ofList(getList().subList(start, len), getMeta());
 	}
 	
 	@Override
-	public VncList toVncList() {
+	public VncVector toVncVector() {
 		return this;
 	}
 
 	@Override
-	public VncVector toVncVector() {
+	public VncList toVncList() {
 		switch (len) {
-			case 0:	return new VncVector(getMeta());
-			case 1: return VncVector.of(first).withMeta(getMeta()); 
-			case 2:	return VncVector.of(first, second).withMeta(getMeta()); 
-			case 3:	return VncVector.of(first, second, third).withMeta(getMeta());
-			default: throw new IllegalStateException("List length out of range");
+			case 0:	return new VncTinyList(getMeta());
+			case 1: return VncTinyList.of(first).withMeta(getMeta()); 
+			case 2:	return VncTinyList.of(first, second).withMeta(getMeta()); 
+			case 3:	return VncTinyList.of(first, second, third).withMeta(getMeta());
+			case 4:	return VncTinyList.of(first, second, third, fourth).withMeta(getMeta());
+			default: throw new IllegalStateException("Vector length out of range");
 		}
 	}
 
 	
 	@Override
-	public VncList addAtStart(final VncVal val) {
+	public VncVector addAtStart(final VncVal val) {
 		switch (len) {
-			case 0:	return new VncTinyList(val, getMeta()); 
-			case 1: return new VncTinyList(val, first, getMeta()); 
-			case 2:	return new VncTinyList(val, first, second, getMeta()); 
-			case 3:	return VncList.of(val, first, second, third).withMeta(getMeta());
-			default: throw new IllegalStateException("List length out of range");
+			case 0:	return new VncTinyVector(val, getMeta()); 
+			case 1: return new VncTinyVector(val, first, getMeta()); 
+			case 2:	return new VncTinyVector(val, first, second, getMeta()); 
+			case 3:	return VncVector.of(val, first, second, third).withMeta(getMeta());
+			case 4:	return VncVector.of(val, first, second, third, fourth).withMeta(getMeta());
+			default: throw new IllegalStateException("Vector length out of range");
 		}
 	}
 	
 	@Override
-	public VncList addAllAtStart(final VncSequence list) {
+	public VncVector addAllAtStart(final VncSequence list) {
 		final List<VncVal> vals = new ArrayList<>(list.getList());
 		Collections.reverse(vals);
 		vals.addAll(getList());
 
-		return VncTinyList.ofList(vals, getMeta());
+		return VncTinyVector.ofList(vals, getMeta());
 	}
 	
 	@Override
-	public VncList addAtEnd(final VncVal val) {
+	public VncVector addAtEnd(final VncVal val) {
 		switch (len) {
-			case 0:	return new VncTinyList(val, getMeta()); 
-			case 1: return new VncTinyList(first, val, getMeta()); 
-			case 2:	return new VncTinyList(first, second, val, getMeta()); 
-			case 3:	return VncList.of(first, second, third, val).withMeta(getMeta());
-			default: throw new IllegalStateException("List length out of range");
+			case 0:	return new VncTinyVector(val, getMeta()); 
+			case 1: return new VncTinyVector(first, val, getMeta()); 
+			case 2:	return new VncTinyVector(first, second, val, getMeta()); 
+			case 3:	return new VncTinyVector(first, second, third, val, getMeta()).withMeta(getMeta());
+			case 4:	return VncVector.of(first, second, third, fourth, val).withMeta(getMeta());
+			default: throw new IllegalStateException("Vector length out of range");
 		}
 	}
 	
 	@Override
-	public VncList addAllAtEnd(final VncSequence list) {
+	public VncVector addAllAtEnd(final VncSequence list) {
 		final List<VncVal> vals = getList();
 		vals.addAll(list.getList());
 		
-		return VncTinyList.ofList(vals, getMeta());
+		return VncTinyVector.ofList(vals, getMeta());
 	}
 	
 	@Override
-	public VncList setAt(final int idx, final VncVal val) {
+	public VncVector setAt(final int idx, final VncVal val) {
 		final List<VncVal> vals = getList();
 		vals.set(idx, val);
 		
-		return VncTinyList.ofList(vals, getMeta());
+		return VncTinyVector.ofList(vals, getMeta());
 	}
 	
 	@Override
-	public VncList removeAt(final int idx) {
+	public VncVector removeAt(final int idx) {
 		final List<VncVal> vals = getList();
 		vals.remove(idx);
 		
-		return VncTinyList.ofList(vals, getMeta());
+		return VncTinyVector.ofList(vals, getMeta());
 	}
 	
 	@Override 
 	public int typeRank() {
-		return 200;
+		return 201;
 	}
 
 	@Override
@@ -350,8 +393,14 @@ public class VncTinyList extends VncList {
 				list.add(second.convertToJavaObject()); 
 				list.add(third.convertToJavaObject()); 
 				break;
+			case 4:	
+				list.add(first.convertToJavaObject()); 
+				list.add(second.convertToJavaObject()); 
+				list.add(third.convertToJavaObject()); 
+				list.add(fourth.convertToJavaObject()); 
+				break;
 			default: 
-				throw new IllegalStateException("List length out of range");
+				throw new IllegalStateException("Vector length out of range");
 		}
 		return list;
 	}
@@ -363,14 +412,14 @@ public class VncTinyList extends VncList {
 		}
 		else if (Types.isVncList(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncTinyList)o).size();
+			final Integer sizeOther = ((VncTinyVector)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
 			}
 			else {
 				for(int ii=0; ii<sizeThis; ii++) {
-					c = nth(ii).compareTo(((VncTinyList)o).nth(ii));
+					c = nth(ii).compareTo(((VncTinyVector)o).nth(ii));
 					if (c != 0) {
 						return c;
 					}
@@ -383,11 +432,13 @@ public class VncTinyList extends VncList {
 	}
 
 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		result = prime * result + len;
 		result = prime * result + ((second == null) ? 0 : second.hashCode());
 		result = prime * result + ((third == null) ? 0 : third.hashCode());
@@ -402,11 +453,16 @@ public class VncTinyList extends VncList {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		VncTinyList other = (VncTinyList) obj;
+		VncTinyVector other = (VncTinyVector) obj;
 		if (first == null) {
 			if (other.first != null)
 				return false;
 		} else if (!first.equals(other.first))
+			return false;
+		if (fourth == null) {
+			if (other.fourth != null)
+				return false;
+		} else if (!fourth.equals(other.fourth))
 			return false;
 		if (len != other.len)
 			return false;
@@ -425,11 +481,11 @@ public class VncTinyList extends VncList {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(getList(), " ", true) + ")";
+		return "[" + Printer.join(getList(), " ", true) + "]";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(getList(), " ", print_readably) + ")";
+		return "[" + Printer.join(getList(), " ", print_readably) + "]";
 	}
 
 
@@ -439,4 +495,5 @@ public class VncTinyList extends VncList {
 	private final VncVal first;
 	private final VncVal second;
 	private final VncVal third;
+	private final VncVal fourth;
 }
