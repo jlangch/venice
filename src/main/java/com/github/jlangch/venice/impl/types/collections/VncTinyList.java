@@ -37,6 +37,11 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 /**
  * An immutable list optimized for keeping 1 to 3 values.
  * Returns a VncList if the list grows beyond its max length.
+ * 
+ * <p>Most of the lists in a typical Venice application have less than 4
+ * items. This optimized implementation for an immutable tiny lists is 
+ * much faster than a VAVR persistent list that can hold an arbitrary 
+ * number of items.
  */
 public class VncTinyList extends VncList {
 
@@ -228,7 +233,7 @@ public class VncTinyList extends VncList {
 	@Override
 	public VncList rest() {
 		switch (len) {
-			case 0:	return new VncTinyList(getMeta());
+			case 0:	return this;
 			case 1:	return new VncTinyList(getMeta());
 			case 2:	return new VncTinyList(second, getMeta());
 			case 3:	return new VncTinyList(second, third, getMeta());
@@ -238,12 +243,16 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncList slice(final int start, final int end) {
-		return VncTinyList.ofList(getList().subList(start, end), getMeta());
+		return start == 0 && end >= len
+				? this
+				: VncTinyList.ofList(getList().subList(start, end), getMeta());
 	}
 	
 	@Override
 	public VncList slice(final int start) {
-		return VncTinyList.ofList(getList().subList(start, len), getMeta());
+		return start == 0
+				? this
+				: VncTinyList.ofList(getList().subList(start, len), getMeta());
 	}
 	
 	@Override
