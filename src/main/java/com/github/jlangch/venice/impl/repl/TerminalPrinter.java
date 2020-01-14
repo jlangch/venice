@@ -25,9 +25,9 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.Terminal;
 
-import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.ValueException;
 
 
 public class TerminalPrinter {

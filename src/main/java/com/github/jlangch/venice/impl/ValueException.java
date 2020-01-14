@@ -19,8 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.impl;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 

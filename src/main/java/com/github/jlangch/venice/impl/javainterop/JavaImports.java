@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.ValueException;
+import com.github.jlangch.venice.impl.ValueException;
 
 
 public class JavaImports implements Serializable {
