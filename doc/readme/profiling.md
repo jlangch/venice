@@ -21,7 +21,7 @@ Benchmarking an expression incorporates four phases:
 ```clojure
 (do
   (load-module :benchmark)
-  (bench/benchmark (+ 1 2 3 4) 100000 3000))
+  (bench/benchmark (+ 1 2 3 4) 1000000 30000))
 ```
 
 The benchmark output: 
@@ -31,14 +31,14 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples :    3000
-          Execution time mean : 825,000 ns
- Execution time std-deviation :  50,529 ns
-Execution time lower quartile : 807,000 ns (25%)
-Execution time upper quartile : 904,000 ns (75%)
-Execution time lower quantile : 802,000 ns (2.5%)
-Execution time upper quantile : 943,000 ns (97.5%)
-                     Outliers :      25
+                      Samples :   30000
+          Execution time mean : 672,000 ns
+ Execution time std-deviation :  20,048 ns
+Execution time lower quartile : 660,000 ns (25%)
+Execution time upper quartile : 692,000 ns (75%)
+Execution time lower quantile : 653,000 ns (2.5%)
+Execution time upper quantile : 727,000 ns (97.5%)
+                     Outliers :     326
 ```
 
 ### Outliers
@@ -88,15 +88,15 @@ GC...
 Sampling...
 Analyzing...
                       Samples :   30000
-          Execution time mean : 801,000 ns
- Execution time std-deviation :   7,907 ns
-Execution time lower quartile : 798,000 ns (25%)
-Execution time upper quartile : 805,000 ns (75%)
-Execution time lower quantile : 778,000 ns (2.5%)
-Execution time upper quantile : 905,000 ns (97.5%)
-                     Outliers :    4196
+          Execution time mean : 698,000 ns
+ Execution time std-deviation :   9,098 ns
+Execution time lower quartile : 694,000 ns (25%)
+Execution time upper quartile : 705,000 ns (75%)
+Execution time lower quantile : 687,000 ns (2.5%)
+Execution time upper quantile : 727,000 ns (97.5%)
+                     Outliers :     436
 Generating chart...
-Quantization step width: 30,063 µs 
+Quantization step width: 288 ns
 Saved chart to 'benchmark.png'.
 ```
 
