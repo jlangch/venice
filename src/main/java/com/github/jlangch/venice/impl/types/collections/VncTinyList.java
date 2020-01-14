@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -135,7 +134,7 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public List<VncVal> getList() { 
-		final ArrayList<VncVal> list = new ArrayList<>();
+		final ArrayList<VncVal> list = new ArrayList<>(len);
 		switch (len) {
 			case 0:	
 				break;
@@ -187,16 +186,16 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		if (idx >= 0 && idx < size()) {
+		if (idx < 0 || idx >= len) {
+			return defaultVal;
+		}
+		else {
 			switch(idx) {
 				case 0:	return first;
 				case 1:	return second;
 				case 2:	return third;
-				default: return defaultVal == null ? Constants.Nil : defaultVal;
+				default: return defaultVal;
 			}
-		}
-		else {
-			return defaultVal;
 		}
 	}
 
@@ -249,21 +248,30 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList(), getMeta());
+		return this;
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getList(), getMeta());
+		switch (len) {
+			case 0:	return new VncVector(getMeta());
+			case 1: return VncVector.of(first).withMeta(getMeta()); 
+			case 2:	return VncVector.of(first, second).withMeta(getMeta()); 
+			case 3:	return VncVector.of(first, second, third).withMeta(getMeta());
+			default: throw new IllegalStateException("List length out of range");
+		}
 	}
 
 	
 	@Override
 	public VncList addAtStart(final VncVal val) {
-		final List<VncVal> vals = getList();
-		vals.add(0, val);
-		
-		return VncTinyList.ofList(vals, getMeta());
+		switch (len) {
+			case 0:	return new VncTinyList(val, getMeta()); 
+			case 1: return new VncTinyList(val, first, getMeta()); 
+			case 2:	return new VncTinyList(val, first, second, getMeta()); 
+			case 3:	return VncList.of(val, first, second, third).withMeta(getMeta());
+			default: throw new IllegalStateException("List length out of range");
+		}
 	}
 	
 	@Override
@@ -277,10 +285,13 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList addAtEnd(final VncVal val) {
-		final List<VncVal> vals = getList();
-		vals.add(val);
-		
-		return VncTinyList.ofList(vals, getMeta());
+		switch (len) {
+			case 0:	return new VncTinyList(val, getMeta()); 
+			case 1: return new VncTinyList(first, val, getMeta()); 
+			case 2:	return new VncTinyList(first, second, val, getMeta()); 
+			case 3:	return VncList.of(first, second, third, val).withMeta(getMeta());
+			default: throw new IllegalStateException("List length out of range");
+		}
 	}
 	
 	@Override
@@ -314,10 +325,26 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public Object convertToJavaObject() {
-		return getList()
-				.stream()
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toList());
+		final ArrayList<Object> list = new ArrayList<>(len);
+		switch (len) {
+			case 0:	
+				break;
+			case 1:	
+				list.add(first.convertToJavaObject()); 
+				break;
+			case 2:	
+				list.add(first.convertToJavaObject()); 
+				list.add(second.convertToJavaObject());
+				break;
+			case 3:	
+				list.add(first.convertToJavaObject()); 
+				list.add(second.convertToJavaObject()); 
+				list.add(third.convertToJavaObject()); 
+				break;
+			default: 
+				throw new IllegalStateException("List length out of range");
+		}
+		return list;
 	}
 	
 	@Override
