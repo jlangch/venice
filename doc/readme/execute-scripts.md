@@ -1,13 +1,15 @@
 # Executing scripts
 
-### Run a script:
+
+### Run a script
 
 ```text
 foo> java -jar venice-1.7.14.jar -script "(+ 1 1)"
 => 2
 ```
 
-### Load the script from a file and run it:
+
+### Load the script from a file and run it
 
 File "script.venice":
 
@@ -29,7 +31,31 @@ foo> java -jar venice-1.7.14.jar -file script.venice
 ```
 
 
-### Passing a load-path:
+
+### Using command line arguments
+
+Venice passes the command line args as **ARGV** vector.
+
+File "script.venice":
+
+```clojure
+(+ 1 (long (nth *ARGV* 2)))
+```
+
+run:
+
+```text
+foo> java -jar venice-1.7.14.jar -file script.venice 3
+=> 4
+```
+
+*Note:* the command line args are only available when executing a script 
+in the ways shown above. The command line args are not available in the REPL
+and for security reasons they are not available with embedding Venice in Java! 
+
+
+
+### Passing a load-path
 
 Venice scripts often uses the function `load-file` to load a file with 
 Venice functions. `load-file` loads the files by default from the current working 
@@ -74,25 +100,4 @@ foo> java -jar bin/venice-1.7.14.jar -file script.venice -loadpath "/users/foo/v
 ```
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
-
-
-
-### Venice passes the command line args as \*ARGV\* vector:
-
-File "script.venice":
-
-```clojure
-(+ 1 (long (nth *ARGV* 2)))
-```
-
-run:
-
-```text
-foo> java -jar venice-1.7.14.jar -file script.venice 3
-=> 4
-```
-
-*Note:* the command line args are only available when executing a script 
-in the ways shown above. The command line args are not available in the REPL
-and for security reasons they are not available with embedding Venice in Java! 
 
