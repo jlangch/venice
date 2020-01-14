@@ -13,7 +13,7 @@ File "script.venice":
 
 ```text
 (do
-  (defonce PI (. :java.lang.Math :PI))
+  (def PI (. :java.lang.Math :PI))
   
   (defn circle-area [radius]
     (* PI radius radius))
@@ -40,7 +40,7 @@ File "/users/foo/venice/test.venice":
 
 ```text
 (do
-  (defonce PI (. :java.lang.Math :PI))
+  (def PI (. :java.lang.Math :PI))
   
   (defn circle-area [radius]
     (* PI radius radius)))
