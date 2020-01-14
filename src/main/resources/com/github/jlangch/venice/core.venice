@@ -624,7 +624,11 @@
 
   load-string [s]
 
-  `(eval (read-string (str "(do " ~s ")"))))
+  `(let [parsed# (read-string (str "(do " ~s ")"))
+         expanded# (if core/*macroexpand-on-load*
+                     (macroexpand-all parsed#)
+                     parsed#)]
+     (eval expanded#)))
 
 
 (defmacro
