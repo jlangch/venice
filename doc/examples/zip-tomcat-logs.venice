@@ -1,46 +1,30 @@
-# Alternative to shell scripts
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2020 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
 
+;;;; ---------------------------------------------------------------------------
+;;;; Zips the last month's Tomcat log files
+;;;;
+;;;; > java -jar venice-1.7.14.jar -file zip-tomcat-logs.venice ./logs
+;;;; ---------------------------------------------------------------------------
 
-Venice allows you to write shell scripts without a hassle. The 'io' functions
-are pretty powerful when dealing with files. You're not going to miss Unix tools
-like 'awk, 'sed'.
-
-The REPL let's you interactively run and test commands.
-
-If you need to deal with processes the `sh` function is the place to go (see the
-Venice _cheatsheet_ for details)
-
-```clojure
-(sh "kill" "-9" 56789 :throw-ex true)
-
-;; printing 
-(println (sh "ls" "-l"))
-(sh "ls" "-l" :out-fn println :err-fn println)
-
-;; run background process
-(println (sh "/bin/sh" "-c" "sleep 30 >/dev/null 2>&1 &")) 
-(println (sh "/bin/sh" "-c" "nohup sleep 30 >/dev/null 2>&1 &"))
-
-;; working directory
-(println (with-sh-dir "/tmp" (sh "ls" "-l") (sh "pwd")))
-(println (sh "pwd" :dir "/tmp"))
-
-;; list files in a directory with a glob pattern
-(->> (io/list-files-glob "." "*.png")
-     (docoll println))
-```
-
-
-## Example
-
-A larger example that zips Tomcat log files
-
-```clojure
-;; -------------------------------------------------------------------------------
-;; Zips the last month's Tomcat log files
-;;
-;; > java -jar venice-1.7.14.jar -file zip-tomcat-logs.venice ./logs
-;; -------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
      (let [regex (str/format "%s[.]%d-%02d-[0-9][0-9][.]log" prefix year month)]
@@ -70,8 +54,8 @@ A larger example that zips Tomcat log files
            (printf "Error compacting %s: %s" prefix (:message ex)))))
 
    (defn first-day-of-month [offset]
-     (-> (time/local-date) 
-         (time/first-day-of-month) 
+     (-> (time/local-date)
+         (time/first-day-of-month)
          (time/plus :month offset)))
 
    (let [dir (io/file (nth *ARGV* 2))
@@ -88,4 +72,3 @@ A larger example that zips Tomcat log files
             (zip-tomcat-logs "catalina" dir year month)
             (println "Done."))
          (printf "Error: The Tomcat log dir '%s' does not exist" dir))))
-```

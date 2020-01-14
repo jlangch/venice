@@ -590,7 +590,10 @@ public class IOFunctions {
 					.arglists("(io/list-files dir filterFn?)")
 					.doc(
 						"Lists files in a directory. dir must be a file or a string (file path). " +
-						"filterFn is an optional filter that filters the files found.")
+						"filterFn is an optional filter that filters the files found. The filter " +
+						"gets a java.io.File as argument. \n\n" +
+						"(io/list-files /tmp) \n" +
+						"(io/list-files /tmp #(io/file-ext? % \".log\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -631,8 +634,11 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/list-file-tree dir filterFn?)")
 					.doc(
-						"Lists all files in a directory tree. dir must be a file or a string (file path). " +
-						"filterFn is an optional filter that filters the files found.")
+						"Lists all files in a directory tree. dir must be a file or a " +
+						"string (file path). filterFn is an optional filter that filters " + 
+						"the files found. The filter gets a java.io.File as argument.\n\n" +
+						"(io/list-file-tree /tmp) \n" +
+						"(io/list-file-tree /tmp #(io/file-ext? % \".log\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -676,8 +682,8 @@ public class IOFunctions {
 					.arglists("(io/list-files-glob dir glob)")
 					.doc(
 						"Lists all files in a directory that match the glob pattern. " +
-					    "dir must be a file or a string (file path). \n" +
-						"E.g. (io/list-files-glob \".\" \"sample*.txt\".")
+					    "dir must be a file or a string (file path). \n\n" +
+						"(io/list-files-glob \".\" \"sample*.txt\".")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
