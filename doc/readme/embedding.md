@@ -135,7 +135,9 @@ public class Embed_04_Precompile {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
-        final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
+
+        // precompile and expand macros
+        final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
 
         // single-threaded
         IntStream.range(0, 100).sequential().forEach(
