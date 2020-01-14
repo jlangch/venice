@@ -86,6 +86,15 @@ public class JavaInteropTest {
 	}
 	
 	@Test
+	public void test_Math_max() {
+		final Venice venice = new Venice();
+
+		final String script = "(. :java.lang.Math :max 10 20)";
+		
+		assertEquals(20L, venice.eval(script));
+	}
+	
+	@Test
 	public void testImport() {
 		final Venice venice = new Venice();
 
