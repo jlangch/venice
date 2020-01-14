@@ -11,7 +11,7 @@ foo> java -jar venice-1.7.14.jar -script "(+ 1 1)"
 
 File "script.venice":
 
-```text
+```clojure
 (do
   (def PI (. :java.lang.Math :PI))
   
@@ -38,7 +38,7 @@ separated paths files are searched for.
 
 File "/users/foo/venice/test.venice":
 
-```text
+```clojure
 (do
   (def PI (. :java.lang.Math :PI))
   
@@ -81,7 +81,7 @@ The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
 
 File "script.venice":
 
-```text
+```clojure
 (+ 1 (long (nth *ARGV* 2)))
 ```
 
