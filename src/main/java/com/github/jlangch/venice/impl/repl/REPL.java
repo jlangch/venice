@@ -280,9 +280,10 @@ public class REPL {
 				
 				VncVal ast = venice.READ(line, "user");			
 				if (macroexpand) {
-					final VncFunction macroexpand_all = (VncFunction)env.getGlobalOrNull(new VncSymbol("core/macroexpand-all"));			
-					if (macroexpand_all != null) {
-						ast = macroexpand_all.apply(VncList.of(ast));
+					final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
+															new VncSymbol("core/macroexpand-all"));
+					if (macroexpandFn != null) {
+						ast = macroexpandFn.apply(VncList.of(ast));
 					}
 				}
 				final VncVal result = venice.EVAL(ast, env);
