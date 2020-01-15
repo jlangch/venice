@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -574,6 +575,35 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction system_exit_code =
+		new VncFunction(
+				"system-exit-code",
+				VncFunction
+					.meta()
+					.arglists("(system-exit-code code)")
+					.doc(
+						"Defines the exit code that is used if the Java VM exits. " +
+						"Defaults to 0. \n\n" +
+						"Note: The exit code is only used when the Venice launcher " +
+						"has been used to run a script file, a command line script, " +
+						"a Venice app archive, or the REPL.")
+					.examples(
+						"(system-exit-code 0)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("system-exit-code", args, 1);
+
+				final VncLong code = Coerce.toVncLong(args.first());
+				
+				SYSTEM_EXIT_CODE.set(code.getIntValue());
+				
+				return Constants.Nil;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction java_version =
 		new VncFunction(
 				"java-version",
@@ -654,6 +684,7 @@ public class SystemFunctions {
 					.add(version)
 					.add(system_prop)
 					.add(system_env)
+					.add(system_exit_code)
 					.add(java_version)
 					.add(used_memory)				
 					.toMap();
@@ -664,4 +695,6 @@ public class SystemFunctions {
 	public static final VncKeyword CALLSTACK_KEY_FILE = new VncKeyword(":file");
 	public static final VncKeyword CALLSTACK_KEY_LINE = new VncKeyword(":line");
 	public static final VncKeyword CALLSTACK_KEY_COL = new VncKeyword(":col");
+	
+	public static final AtomicInteger SYSTEM_EXIT_CODE = new AtomicInteger(0);
 }

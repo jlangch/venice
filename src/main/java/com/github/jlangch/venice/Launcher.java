@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
+import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -105,15 +106,15 @@ public class Launcher {
 				new REPL(interceptor, loadPaths).run(args);
 			}
 			
-			System.exit(0);
+			System.exit(SystemFunctions.SYSTEM_EXIT_CODE.get());
 		}
 		catch (VncException ex) {
 			ex.printVeniceStackTrace();
-			System.exit(1);
+			System.exit(99);
 		}	
 		catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(1);
+			System.exit(99);
 		}	
 	}
 	
