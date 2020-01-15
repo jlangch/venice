@@ -175,70 +175,15 @@ public class REPL {
 						printer.println("system", "reloaded");					
 						continue;
 					}
-					if (cmd.equals("macroexpand")) {
-						macroexpand = true;
-						setMacroexpandOnLoad(env, true);
-						printer.println("system", "macroexpansion enabled");					
-						continue;
-					}
-					else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
-						printer.println("stdout", HELP);					
-						continue;
-					}
-					else if (cmd.equals("config")) {
-						handleConfigCommand();
-						continue;
-					}
-					else if (cmd.equals("env")) {
-						handleEnvCommand(new String[0], env);
-						continue;
-					}
-					else if (cmd.startsWith("env ")) {
-						final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
-						handleEnvCommand(params, env);
-						continue;
-					}
-					else if (cmd.startsWith("java-ex")) {
-						printer.setPrintJavaEx(true);
-						printer.println("stdout", "Printing Java exceptions");
-						continue;
-					}
-					else if (cmd.equals("sandbox")) {
-						handleSandboxCommand(new String[0], terminal, env);
-						continue;
-					}
-					else if (cmd.startsWith("sandbox ")) {
-						final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
-						handleSandboxCommand(params, terminal, env);
-						continue;
-					}
-					else if (cmd.equals("lic")) {
-						Licenses.lics().entrySet().forEach(e -> {
-							printer.println("stdout", "");
-							printer.println("stdout", DELIM);
-							printer.println("stdout", e.getKey() + " License");
-							printer.println("stdout", DELIM);
-							printer.println("stdout", e.getValue());
-						});
-						continue;
-					}
-					else if (cmd.equals("colors")) {
-						printer.println("default",   "default");
-						printer.println("result",    "result");
-						printer.println("stdout",    "stdout");
-						printer.println("error",     "error");
-						printer.println("system",    "system");
-						printer.println("interrupt", "interrupt");
-						continue;
-					}
 					else if (cmd.equals("exit")) {
 						printer.println("interrupt", " good bye ");
 						Thread.sleep(1000);
 						break;
 					}
-					
-					printer.println("error", "invalid command");
-					continue;
+					else {			
+						handleCommand(cmd, env, terminal);
+						continue;
+					}
 				}
 			} 
 			catch (ContinueException ex) {
@@ -275,32 +220,96 @@ public class REPL {
 				continue;
 			}
 			
-			try {				
-				ThreadLocalMap.clearCallStack();
-				
-				VncVal ast = venice.READ(line, "user");			
-				if (macroexpand) {
-					final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
-															new VncSymbol("core/macroexpand-all"));
-					if (macroexpandFn != null) {
-						ast = macroexpandFn.apply(VncList.of(ast));
-					}
-				}
-				final VncVal result = venice.EVAL(ast, env);
-
-				resultHistory.add(result);
+			final VncVal result = runCodeFragment(line, env);
+			if (result != null) {
 				printer.println("result", resultPrefix + venice.PRINT(result));
-			} 
-			catch (ContinueException ex) {
-				continue;
-			} 
-			catch (Exception ex) {
-				printer.printex("error", ex);
-				continue;
+				resultHistory.add(result);
 			}
-			catch (Throwable ex) {
-				printer.printex("error", ex);
+		}
+	}
+
+	private VncVal runCodeFragment(final String snippet, final Env env) {
+		try {				
+			ThreadLocalMap.clearCallStack();
+			
+			VncVal ast = venice.READ(snippet, "user");			
+			if (macroexpand) {
+				final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
+														new VncSymbol("core/macroexpand-all"));
+				if (macroexpandFn != null) {
+					ast = macroexpandFn.apply(VncList.of(ast));
+				}
 			}
+			
+			return venice.EVAL(ast, env);
+		} 
+		catch (ContinueException ex) {
+			// just continue
+			return null;
+		} 
+		catch (Exception ex) {
+			printer.printex("error", ex);
+			return null;
+		}
+		catch (Throwable ex) {
+			printer.printex("error", ex);
+			return null;
+		}
+	}
+	
+	private void handleCommand(
+			final String cmd, 
+			final Env env, 
+			final Terminal terminal
+	) {
+		if (cmd.equals("macroexpand")) {
+			macroexpand = true;
+			setMacroexpandOnLoad(env, true);
+			printer.println("system", "macroexpansion enabled");					
+		}
+		else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
+			printer.println("stdout", HELP);					
+		}
+		else if (cmd.equals("config")) {
+			handleConfigCommand();
+		}
+		else if (cmd.equals("env")) {
+			handleEnvCommand(new String[0], env);
+		}
+		else if (cmd.startsWith("env ")) {
+			final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
+			handleEnvCommand(params, env);
+		}
+		else if (cmd.startsWith("java-ex")) {
+			printer.setPrintJavaEx(true);
+			printer.println("stdout", "Printing Java exceptions");
+		}
+		else if (cmd.equals("sandbox")) {
+			handleSandboxCommand(new String[0], terminal, env);
+		}
+		else if (cmd.startsWith("sandbox ")) {
+			final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
+			handleSandboxCommand(params, terminal, env);
+		}
+		else if (cmd.equals("lic")) {
+			Licenses.lics().entrySet().forEach(e -> {
+				printer.println("stdout", "");
+				printer.println("stdout", DELIM);
+				printer.println("stdout", e.getKey() + " License");
+				printer.println("stdout", DELIM);
+				printer.println("stdout", e.getValue());
+			});
+		}
+		else if (cmd.equals("colors")) {
+			printer.println("default",   "default");
+			printer.println("result",    "result");
+			printer.println("stdout",    "stdout");
+			printer.println("error",     "error");
+			printer.println("system",    "system");
+			printer.println("interrupt", "interrupt");
+		}
+		else {	
+			printer.println("error", "invalid command");
 		}
 	}
 
