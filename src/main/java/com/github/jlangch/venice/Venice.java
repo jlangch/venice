@@ -128,9 +128,10 @@ public class Venice {
 
 		VncVal ast = venice.READ(script, scriptName);	
 		if (expandMacros) {
-			final VncFunction macroexpand_all = (VncFunction)env.getGlobalOrNull(new VncSymbol("core/macroexpand-all"));
-			if (macroexpand_all != null) {
-				ast = macroexpand_all.apply(VncList.of(ast));
+			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
+												new VncSymbol("core/macroexpand-all"));
+			if (macroexpandFn != null) {
+				ast = macroexpandFn.apply(VncList.of(ast));
 			}
 		}
 		
