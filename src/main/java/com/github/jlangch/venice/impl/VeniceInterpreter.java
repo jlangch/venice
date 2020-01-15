@@ -110,7 +110,7 @@ public class VeniceInterpreter implements Serializable  {
 		final long nanos = System.nanoTime();
 
 		final VncVal val = Reader.read_str(script, filename);
-	
+
 		if (meterRegistry.enabled) {
 			meterRegistry.record("venice.read", System.nanoTime() - nanos);
 		}
@@ -180,6 +180,7 @@ public class VeniceInterpreter implements Serializable  {
 		// set the run mode
 		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
 
+		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), False, true));
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, loadedModules, true));

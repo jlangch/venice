@@ -49,9 +49,11 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.Licenses;
@@ -275,7 +277,16 @@ public class REPL {
 			
 			try {				
 				ThreadLocalMap.clearCallStack();
-				final VncVal result = venice.RE(line, "user", env);
+				
+				VncVal ast = venice.READ(line, "user");			
+				if (macroexpand) {
+					final VncFunction macroexpand_all = (VncFunction)env.getGlobalOrNull(new VncSymbol("core/macroexpand-all"));			
+					if (macroexpand_all != null) {
+						ast = macroexpand_all.apply(VncList.of(ast));
+					}
+				}
+				final VncVal result = venice.EVAL(ast, env);
+
 				resultHistory.add(result);
 				printer.println("result", resultPrefix + venice.PRINT(result));
 			} 
@@ -483,7 +494,6 @@ public class REPL {
 				              macroexpandOnLoad ? True : False, 
 				              true));
 	}
-
 	
 	private void activate(final IInterceptor interceptor) {
 		this.interceptor = interceptor; 

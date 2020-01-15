@@ -123,10 +123,15 @@ public class Venice {
 												new AcceptAllInterceptor(), 
 												loadPaths);
 		
-		VncVal ast = venice.READ(script, scriptName);
-		
+		final Env env = venice.createEnv(false, new VncKeyword("macroexpand"))
+							  .setStdoutPrintStream(null);
+
+		VncVal ast = venice.READ(script, scriptName);	
 		if (expandMacros) {
-			ast = expandMacros(ast, venice);
+			final VncFunction macroexpand_all = (VncFunction)env.getGlobalOrNull(new VncSymbol("core/macroexpand-all"));
+			if (macroexpand_all != null) {
+				ast = macroexpand_all.apply(VncList.of(ast));
+			}
 		}
 		
 		final PreCompiled pc = new PreCompiled(scriptName, ast);
@@ -403,15 +408,6 @@ public class Venice {
 		
 		// make the env safe for reuse
 		return env.copyGlobalToPrecompiledSymbols();
-	}
-	
-	private VncVal expandMacros(final VncVal ast, final VeniceInterpreter venice) {
-		final Env env = venice.createEnv(false, new VncKeyword("macroexpand"))
-							  .setStdoutPrintStream(null);
-
-		final VncFunction macroexpand_all = (VncFunction)env.get(new VncSymbol("core/macroexpand-all"));
-		
-		return macroexpand_all.apply(VncList.of(ast));
 	}
 	
 	
