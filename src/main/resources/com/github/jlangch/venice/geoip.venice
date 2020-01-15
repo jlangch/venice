@@ -58,17 +58,19 @@
 (ns geoip)
 
 
-;; MaxMind GEO IP database
-;;    GeoLite2-Country-CSV
-;;    GeoLite2-City-CSV
+;; MaxMind GEO IP database download URL.
+;;
+;; Placeholders:
+;;   {db}  the DB type. One of GeoLite2-Country-CSV, GeoLite2-City-CSV
+;;   {key} your MaxMind license key
 (def geoip/maxmind-geoip-url
        "https://download.maxmind.com/app/geoip_download?edition_id={db}&license_key={key}&suffix=zip")
 
 
 ;; Google country GPS data
-;;   https://developers.google.com/public-data/docs/canonical/countries_csv
-;;   https://github.com/google/dspl/tree/master/samples/google/canonical
-;;   https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
+;;
+;; See: https://developers.google.com/public-data/docs/canonical/countries_csv
+;;      https://github.com/google/dspl/tree/master/samples/google/canonical
 (def geoip/google-country-url
        "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv")
 
