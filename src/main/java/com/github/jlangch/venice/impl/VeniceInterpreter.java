@@ -156,6 +156,9 @@ public class VeniceInterpreter implements Serializable  {
 	) {
 		final Env env = new Env(null);
 			
+		// loaded modules: preset with implicitly preloaded modules
+		final VncMutableSet loadedModules = new VncMutableSet(ModuleLoader.PRELOADED_MODULES);
+		
 		Functions
 			.functions
 			.entrySet()
@@ -173,38 +176,26 @@ public class VeniceInterpreter implements Serializable  {
 
 		// set the load path
 		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
-
-		// set macroexpand-all on load
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true));
 		
 		// set the run mode
 		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
 
 		
 		// loaded modules & files
-		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, new VncMutableSet(ModuleLoader.PRELOADED_MODULES), true));
+		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, loadedModules, true));
 		env.setGlobal(new Var(LOADED_FILES_SYMBOL, new VncMutableSet(), true));
 
 		// init namespaces
 		initNS();
 
-		// load modules
-		final List<String> modules = new ArrayList<>();
-		modules.add("core");
-		modules.addAll(toEmpty(preloadExtensionModules));
+		// load core module (take care that macro expansion is not active!)
+		loadModule("core", env, loadedModules);
 		
-		modules.forEach(m -> {
-			final long nanos = System.nanoTime();
-			
-			RE("(eval " + ModuleLoader.loadModule(m) + ")", m, env);
-			meterRegistry.record("venice.module." + m + ".load", System.nanoTime() - nanos);
-			
-			// remember the loaded module
-			env.setGlobal(
-				new Var(
-					LOADED_MODULES_SYMBOL, 
-					((VncMutableSet)env.getGlobalOrNull(LOADED_MODULES_SYMBOL)).add(new VncKeyword(m))));
-		});
+		// set macroexpand on load
+		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true));
+		
+		// load other modules requested for preload
+		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
 		
 		return env;
 	}
@@ -215,8 +206,20 @@ public class VeniceInterpreter implements Serializable  {
 		Collections.sort(modules);
 		return modules;
 	}
+	
+	private void loadModule(final String module, final Env env, final VncMutableSet loadedModules) {
+		final long nanos = System.nanoTime();
+		
+		RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
 
-
+		if (meterRegistry.enabled) {
+			meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
+		}
+		
+		// remember the loaded module
+		loadedModules.add(new VncKeyword(module));
+	}
+	
 	private VncVal evaluate(VncVal orig_ast, Env env) {
 		RecursionPoint recursionPoint = null;
 		
