@@ -47,14 +47,14 @@ A namespace is a set of symbols that are used to organize vars, so that these va
 
 ```clojure
 (do
-  (ns alpha)
+  (ns A)
   (import :java.lang.Math)
   (. :Math :max 2 10) ; => ok
 
-  (ns beta)
+  (ns B)
   (. :Math :max 2 10) ; => error
 
-  (ns alpha)
+  (ns A)
   (. :Math :max 2 10) ; => ok
 )
 ```
