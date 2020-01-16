@@ -130,7 +130,7 @@ public class Namespaces {
 			Collections.unmodifiableSet(
 				new HashSet<>(
 					Arrays.asList(
-							"core", "io", "str", "regex", "time",
+							"core", "cidr", "cvs", "io", "str", "regex", "time",
 							"crypt", "json", "pdf", "xml", "bench",
 							"test",
 							"xchart", "kira", "parsatron",

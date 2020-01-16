@@ -98,10 +98,14 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public void initNS() {
 		nsRegistry.clear();
-		nsRegistry.add(new Namespace(Namespaces.NS_IO));
-		nsRegistry.add(new Namespace(Namespaces.NS_STR));
-		nsRegistry.add(new Namespace(Namespaces.NS_REGEX));
-		nsRegistry.add(new Namespace(Namespaces.NS_TIME));
+//		nsRegistry.add(new Namespace(Namespaces.NS_CSV));
+//		nsRegistry.add(new Namespace(Namespaces.NS_CIDR));
+//		nsRegistry.add(new Namespace(Namespaces.NS_IO));
+//		nsRegistry.add(new Namespace(Namespaces.NS_JSON));
+//		nsRegistry.add(new Namespace(Namespaces.NS_PDF));
+//		nsRegistry.add(new Namespace(Namespaces.NS_REGEX));
+//		nsRegistry.add(new Namespace(Namespaces.NS_STR));
+//		nsRegistry.add(new Namespace(Namespaces.NS_TIME));
 		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
 	
@@ -141,8 +145,7 @@ public class VeniceInterpreter implements Serializable  {
 			final Env env
 	) {
 		final VncVal ast = READ(script, filename);			
-		final VncVal result = EVAL(ast, env);		
-		return result;
+		return EVAL(ast, env);		
 	}
 	
 	public Env createEnv(final boolean macroexpandOnLoad, final VncKeyword runMode) {  
@@ -159,28 +162,26 @@ public class VeniceInterpreter implements Serializable  {
 		// loaded modules: preset with implicitly preloaded modules
 		final VncMutableSet loadedModules = new VncMutableSet(ModuleLoader.PRELOADED_MODULES);
 		
-		Functions
-			.functions
-			.entrySet()
-			.forEach(e -> {
-				final VncSymbol sym = (VncSymbol)e.getKey();
-				final VncFunction fn = (VncFunction)e.getValue();			
-				env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
-			});
+		for(Map.Entry<VncVal,VncVal> e: Functions.functions.entrySet()) {
+			final VncSymbol sym = (VncSymbol)e.getKey();
+			final VncFunction fn = (VncFunction)e.getValue();			
+			env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
+		}
 
 		// set Venice version
-		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
+		env.setGlobal(VERSION_VAR);
 
 		// set system newline
-		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
+		env.setGlobal(NEWLINE_VAR);
 
 		// set the load path
-		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
+		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));
 		
 		// set the run mode
-		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
+		env.setGlobal(new Var(RUN_MODE_SYMBOL, runMode == null ? Constants.Nil : runMode, false));
 
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), False, true));
+		// start off with disabled macroexpand-on-load
+		env.setGlobal(DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR);
 		
 		// loaded modules & files
 		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, loadedModules, true));
@@ -193,7 +194,9 @@ public class VeniceInterpreter implements Serializable  {
 		loadModule("core", env, loadedModules);
 		
 		// set macroexpand on load
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true));
+		if (macroexpandOnLoad) {
+			env.setGlobal(new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, True, true));
+		}
 		
 		// load other modules requested for preload
 		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
@@ -1087,8 +1090,7 @@ public class VeniceInterpreter implements Serializable  {
 				throw th;
 			}
 			else {
-				env.setLocal(catchBlock.getExSym(), new VncJavaObject(th));
-				
+				env.setLocal(catchBlock.getExSym(), new VncJavaObject(th));			
 				return evaluateBody(catchBlock.getBody(), env);
 			}
 		}
@@ -1409,6 +1411,18 @@ public class VeniceInterpreter implements Serializable  {
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 	private static final VncSymbol LOADED_MODULES_SYMBOL = new VncSymbol("*loaded-modules*");
 	private static final VncSymbol LOADED_FILES_SYMBOL = new VncSymbol("*loaded-files*");
+	private static final VncSymbol VERSION_SYMBOL = new VncSymbol("*version*");
+	private static final VncSymbol NEWLINE_SYMBOL = new VncSymbol("*newline*");
+	private static final VncSymbol LOAD_PATH_SYMBOL = new VncSymbol("*load-path*");
+	private static final VncSymbol RUN_MODE_SYMBOL = new VncSymbol("*run-mode*");
+	private static final VncSymbol MACRO_EXPAND_ON_LOAD_SYMBOL = new VncSymbol("*macroexpand-on-load*");
+
+	private static final VncString VERSION = new VncString(Version.VERSION);
+	private static final VncString NEWLINE = new VncString(System.lineSeparator());
+
+	private static final Var VERSION_VAR = new Var(VERSION_SYMBOL, VERSION, false);
+	private static final Var NEWLINE_VAR = new Var(NEWLINE_SYMBOL, NEWLINE, false);
+	private static final Var DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR = new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, False, true);
 	
 	private final IInterceptor interceptor;	
 	private final List<String> loadPaths;

@@ -657,16 +657,29 @@ public class SpecialForms {
 					.meta()
 					.arglists("(import class)")		
 					.doc(
-						"Imports a Java class. \n\n" +
+						"Imports a Java class. Imports bound to the current namespace.\n\n" +
 						"Default imports: \n" +
 						"  java.lang.Throwable \n" +
 						"  java.lang.Exception \n" +
 						"  java.lang.RuntimeException \n" +
 						"  java.lang.NullPointerException \n" +
 						"  java.lang.IllegalArgumentException \n" +
-						"  com.github.jlangch.venice.VncException \n" +
-						"  com.github.jlangch.venice.ValueException")
-					.examples("(do\n   (import :java.lang.Long)\n   (. :Long :new 10))")
+						"  com.github.jlangch.venice.VncException")
+					.examples(
+						"(do                        \n" +
+						"  (import :java.lang.Math) \n" +
+						"  (. :Math :max 2 10))      ",
+						"(do                                                                \n" +
+						"  (ns alpha)                                                       \n" +
+						"  (import :java.lang.Math)                                         \n" +
+						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (imports)))    \n" +
+						"                                                                   \n" +
+						"  (ns beta)                                                        \n" +
+						"  (println \"beta:\" (any? #(== % :java.lang.Math) (imports)))     \n" +
+						"                                                                   \n" +
+						"  (ns alpha)                                                       \n" +
+						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (imports)))    \n" +
+						")")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -678,8 +691,11 @@ public class SpecialForms {
 				VncFunction
 					.meta()
 					.arglists("(imports)")		
-					.doc("List the registered imports")
-					.examples("(do\n   (import :java.lang.Long)\n   (imports))")
+					.doc("List the registered imports for the current namespace.")
+					.examples(
+						"(do                        \n" +
+						"  (import :java.lang.Math) \n" +
+						"  (imports))                 ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
