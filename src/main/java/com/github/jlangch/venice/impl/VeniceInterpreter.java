@@ -98,14 +98,6 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public void initNS() {
 		nsRegistry.clear();
-//		nsRegistry.add(new Namespace(Namespaces.NS_CSV));
-//		nsRegistry.add(new Namespace(Namespaces.NS_CIDR));
-//		nsRegistry.add(new Namespace(Namespaces.NS_IO));
-//		nsRegistry.add(new Namespace(Namespaces.NS_JSON));
-//		nsRegistry.add(new Namespace(Namespaces.NS_PDF));
-//		nsRegistry.add(new Namespace(Namespaces.NS_REGEX));
-//		nsRegistry.add(new Namespace(Namespaces.NS_STR));
-//		nsRegistry.add(new Namespace(Namespaces.NS_TIME));
 		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
 	
@@ -647,8 +639,10 @@ public class VeniceInterpreter implements Serializable  {
 						// validate function call allowed by sandbox
 						interceptor.validateVeniceFunction(fnName);	
 	
-						checkInterrupted("interrupted while about processing function " + fnName);
-						sandboxMaxExecutionTimeChecker.check();
+						checkInterrupted(fnName);
+						if (sandboxMaxExecutionTimeChecker.enabled) {
+							sandboxMaxExecutionTimeChecker.check();
+						}
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
@@ -660,9 +654,10 @@ public class VeniceInterpreter implements Serializable  {
 						}
 						finally {
 							callStack.pop();
-							checkInterrupted("interrupted after processing function " + fnName);
-							sandboxMaxExecutionTimeChecker.check();
-							
+							checkInterrupted(fnName);
+							if (sandboxMaxExecutionTimeChecker.enabled) {
+								sandboxMaxExecutionTimeChecker.check();
+							}							
 							if (meterRegistry.enabled) {
 								meterRegistry.record(fn.getQualifiedName(), System.nanoTime() - nanos);
 							}
@@ -895,7 +890,7 @@ public class VeniceInterpreter implements Serializable  {
 			for(int ii=1; ii<count; ii++) {
 				final VncVal result = evaluate(expr, env);
 
-				checkInterrupted("interrupted while in (dorun ...)");
+				checkInterrupted("dorun");
 
 				// store value to a mutable place to prevent JIT from optimizing too much
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
@@ -928,7 +923,7 @@ public class VeniceInterpreter implements Serializable  {
 				final long end = System.nanoTime();
 				elapsed.add(new VncLong(end-start));
 
-				checkInterrupted("interrupted while in (dobench ...)");
+				checkInterrupted("dobench");
 
 				// store value to a mutable place to prevent JIT from optimizing too much
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
@@ -1367,9 +1362,10 @@ public class VeniceInterpreter implements Serializable  {
 					.resolveClassName(className);
 	}
 	
-	private void checkInterrupted(final String message) {
+	private void checkInterrupted(final String fnName) {
 		if (Thread.currentThread().isInterrupted()) {
-			throw new com.github.jlangch.venice.InterruptedException(message);
+			throw new com.github.jlangch.venice.InterruptedException(
+						"Interrupted while processing function " + fnName);
 		}
 	}
 	

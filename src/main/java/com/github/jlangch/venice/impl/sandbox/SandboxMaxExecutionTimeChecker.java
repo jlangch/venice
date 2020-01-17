@@ -29,8 +29,8 @@ public class SandboxMaxExecutionTimeChecker implements Serializable {
 
 	public SandboxMaxExecutionTimeChecker() {
 		this.sandboxDeadlineTime = getSandboxDeadlineTime();
+		this.enabled = sandboxDeadlineTime > 0;
 	}
-	
 	
 	public void check() {
 		if (sandboxDeadlineTime > 0 && System.currentTimeMillis() > sandboxDeadlineTime) {
@@ -39,15 +39,18 @@ public class SandboxMaxExecutionTimeChecker implements Serializable {
 		}
 	}
 
+
 	private static long getSandboxDeadlineTime() {
 		final Integer maxExecTimeSeconds = JavaInterop.getInterceptor().getMaxExecutionTimeSeconds();
 		return maxExecTimeSeconds == null 
-					? -1
-					: System.currentTimeMillis() + 1000 * maxExecTimeSeconds.longValue();
+					? -1L
+					: System.currentTimeMillis() + 1000L * maxExecTimeSeconds.longValue();
 	}
 
 	
 	private static final long serialVersionUID = -2470884288885597614L;
 
+	public final boolean enabled;
+	
 	private final long sandboxDeadlineTime;
 }
