@@ -696,6 +696,11 @@ public class VeniceInterpreter implements Serializable  {
 					return seq.withVariadicValues(
 								evaluate(seq.first(), env), 
 								evaluate(seq.second(), env));
+				case 3: 
+					return seq.withVariadicValues(
+								evaluate(seq.first(), env), 
+								evaluate(seq.second(), env),
+								evaluate(seq.third(), env));
 				default: 
 					final List<VncVal> vals = new ArrayList<>();
 					for(VncVal v : seq.getList()) {

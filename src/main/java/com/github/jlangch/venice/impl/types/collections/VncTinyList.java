@@ -108,7 +108,7 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncTinyList.of(replaceVals);
+		return VncTinyList.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override

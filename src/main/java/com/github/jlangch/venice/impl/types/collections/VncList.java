@@ -79,7 +79,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncList.of(replaceVals);
+		return VncList.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override

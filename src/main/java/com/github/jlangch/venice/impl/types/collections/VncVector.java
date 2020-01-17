@@ -88,7 +88,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector withVariadicValues(final VncVal... replaceVals) {
-		return VncVector.of(replaceVals);
+		return VncVector.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override

@@ -132,7 +132,7 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector withVariadicValues(final VncVal... replaceVals) {
-		return VncTinyVector.of(replaceVals);
+		return VncTinyVector.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override
