@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- performance improvements to function invocation
 
 
 
