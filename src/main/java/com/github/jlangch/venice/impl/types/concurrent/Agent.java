@@ -154,8 +154,8 @@ public class Agent implements IDeref {
 		};
 		
 		try {
-			agents.forEach(a -> a.send(fn, VncTinyList.EMPTY));			
-			agents.forEach(a -> a.send_off(fn, VncTinyList.EMPTY));			
+			agents.forEach(a -> a.send(fn, VncTinyList.empty()));			
+			agents.forEach(a -> a.send_off(fn, VncTinyList.empty()));			
 			
 			if (timeoutMillis <= 0) {
 				latch.await(); 

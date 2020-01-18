@@ -98,7 +98,7 @@ public class VncTinyVector extends VncVector {
 	
 	public static VncVector of(final VncVal... mvs) {
 		switch (mvs.length) {
-			case 0:	return VncTinyVector.EMPTY;
+			case 0:	return VncTinyVector.empty();
 			case 1:	return new VncTinyVector(mvs[0], null);
 			case 2:	return new VncTinyVector(mvs[0], mvs[1], null);
 			case 3:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], null);
@@ -488,10 +488,14 @@ public class VncTinyVector extends VncVector {
 		return "[" + Printer.join(getList(), " ", print_readably) + "]";
 	}
 
+	public static VncTinyVector empty() {
+		return EMPTY;
+	}
 
-    public static final VncTinyVector EMPTY = new VncTinyVector();
+
 
     private static final long serialVersionUID = -1848883965231344442L;
+    private static final VncTinyVector EMPTY = new VncTinyVector();
 
     private final int len;
 	private final VncVal first;

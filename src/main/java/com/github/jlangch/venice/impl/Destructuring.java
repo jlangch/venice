@@ -97,7 +97,7 @@ public class Destructuring {
 			}
 
 			else if (bindVal == Nil) {
-				sequential_list_destructure((VncSequence)symVal, VncTinyList.EMPTY, bindings);
+				sequential_list_destructure((VncSequence)symVal, VncTinyList.empty(), bindings);
 			}
 			else {
 				throw new VncException(
@@ -172,7 +172,7 @@ public class Destructuring {
 					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
 					final VncVal val = valIdx < values.size() 
 											? ((VncSequence)bindVal).slice(valIdx) 
-											: VncTinyList.EMPTY;
+											: VncTinyList.empty();
 					bindings.add(new Binding(sym, val));
 					symIdx += 2; 
 					valIdx = values.size(); // all values read
@@ -236,7 +236,7 @@ public class Destructuring {
 					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
 					final VncVal val = valIdx < values.size() 
 									? (((VncString)bindVal).toVncList()).slice(valIdx) 
-									: VncTinyList.EMPTY;
+									: VncTinyList.empty();
 					bindings.add(new Binding(sym, val));
 					symIdx += 2; 
 					valIdx = values.size(); // all values read

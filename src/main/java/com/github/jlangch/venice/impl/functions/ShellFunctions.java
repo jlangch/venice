@@ -351,7 +351,7 @@ public class ShellFunctions {
 		final VncThreadLocal th = new VncThreadLocal();
 	
 		VncHashMap options = new VncHashMap();
-		VncList cmd = VncTinyList.EMPTY;		
+		VncList cmd = VncTinyList.empty();		
 		VncList args_ = args;
 		while(!args_.isEmpty()) {
 			final VncVal v = args_.first();

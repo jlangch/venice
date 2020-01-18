@@ -167,7 +167,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	private static VncList toVncArgs(final Object[] args) {
 		if (args == null || args.length == 0) {
-			return VncTinyList.EMPTY;
+			return VncTinyList.empty();
 		}
 		else {
 			final VncVal[] vncArgs = new VncVal[args.length];		

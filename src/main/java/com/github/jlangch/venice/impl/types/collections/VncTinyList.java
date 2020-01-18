@@ -83,7 +83,7 @@ public class VncTinyList extends VncList {
 	
 	public static VncList of(final VncVal... mvs) {
 		switch (mvs.length) {
-			case 0:	return VncTinyList.EMPTY;
+			case 0:	return VncTinyList.empty();
 			case 1:	return new VncTinyList(mvs[0], null);
 			case 2:	return new VncTinyList(mvs[0], mvs[1], null);
 			case 3:	return new VncTinyList(mvs[0], mvs[1], mvs[2], null);
@@ -432,10 +432,14 @@ public class VncTinyList extends VncList {
 		return "(" + Printer.join(getList(), " ", print_readably) + ")";
 	}
 
-
-    public static VncTinyList EMPTY = new VncTinyList();
-
+	public static VncTinyList empty() {
+		return EMPTY;
+	}
+	
+	
+	
     private static final long serialVersionUID = -1848883965231344442L;
+    private static final VncTinyList EMPTY = new VncTinyList();
 
     private final int len;
 	private final VncVal first;

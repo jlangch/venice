@@ -259,7 +259,7 @@ public class Reader {
 	private static VncHashMap read_hash_map(final Reader rdr) {
 		final Token refToken = rdr.peek();
 		
-		final VncSequence lst = read_list(rdr, VncTinyList.EMPTY, '{', '}');
+		final VncSequence lst = read_list(rdr, VncTinyList.empty(), '{', '}');
 		return VncHashMap.ofAll(lst).withMeta(MetaUtil.toMeta(refToken));
 	}
 
@@ -331,7 +331,7 @@ public class Reader {
 				Token t = rdr.peek();
 				if (t.charAt(0) == '{') {
 					// set literal #{1 2}
-					form = VncHashSet.ofAll(read_list(rdr, VncTinyList.EMPTY, '{' , '}')); 
+					form = VncHashSet.ofAll(read_list(rdr, VncTinyList.empty(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
 					final VncVal meta = MetaUtil.toMeta(t);
@@ -340,7 +340,7 @@ public class Reader {
 						throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
 					}
 					rdr.anonymousFnArgs.startCapture();
-					final VncVal body = read_list(rdr, VncTinyList.EMPTY, '(' , ')').withMeta(meta);
+					final VncVal body = read_list(rdr, VncTinyList.empty(), '(' , ')').withMeta(meta);
 					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
 					form = VncTinyList.of(new VncSymbol("fn", meta), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
@@ -351,14 +351,14 @@ public class Reader {
 				break;
 			
 			case '(': 
-				form = read_list(rdr, VncTinyList.EMPTY, '(' , ')'); 
+				form = read_list(rdr, VncTinyList.empty(), '(' , ')'); 
 				break;
 			
 			case ')': 
 				throw new ParseError(formatParseError(token, "Unexpected ')'"));
 			
 			case '[': 
-				form = read_list(rdr, VncTinyVector.EMPTY, '[' , ']'); 
+				form = read_list(rdr, VncTinyVector.empty(), '[' , ']'); 
 				break;
 			
 			case ']': 
@@ -402,7 +402,7 @@ public class Reader {
 				if (rest.startsWith("~(")) {
 					final String s_ = rest.substring(1);
 					final Reader rdr = new Reader(filename, s_, tokenize(s_, filename, false));
-					list.add(read_list(rdr, VncTinyList.EMPTY, '(' , ')'));
+					list.add(read_list(rdr, VncTinyList.empty(), '(' , ')'));
 					
 					tail = rdr.unprocessedRest().substring(1);
 				}

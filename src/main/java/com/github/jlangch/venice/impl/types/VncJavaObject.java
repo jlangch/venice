@@ -166,12 +166,12 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncList toVncList() {
-		return VncTinyList.EMPTY;
+		return VncTinyList.empty();
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return VncTinyVector.EMPTY;
+		return VncTinyVector.empty();
 	}
 
 	public VncMap toVncMap() {

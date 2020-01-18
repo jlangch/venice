@@ -107,7 +107,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 
 	public VncList getArgLists() { 
-		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncTinyList.EMPTY);
+		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncTinyList.empty());
 	}
 	
 	public VncVal getDoc() { 
@@ -115,7 +115,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 	
 	public VncList getExamples() { 
-		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncTinyList.EMPTY);
+		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncTinyList.empty());
 	}
 	
 	public int getFixedArgsCount() {

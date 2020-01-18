@@ -382,7 +382,7 @@ public class SystemFunctions {
 							ThreadLocalMap.clearCallStack();
 							JavaInterop.register(parentInterceptor);
 
-							fn.apply(VncTinyList.EMPTY);
+							fn.apply(VncTinyList.empty());
 						}
 						finally {
 							// clean up

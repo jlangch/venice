@@ -47,7 +47,7 @@ public class Delay implements IDeref {
 	
 	private Result compute() {
 		try {
-			return new Result(fn.apply(VncTinyList.EMPTY), null);
+			return new Result(fn.apply(VncTinyList.empty()), null);
 		}
 		catch(RuntimeException ex) {
 			return new Result(null, ex);

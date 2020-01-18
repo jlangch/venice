@@ -672,7 +672,7 @@ public class StringFunctions {
 					assertArity("str/chars", args, 1);
 
 					if (args.first() == Nil) {
-						return VncTinyList.EMPTY;
+						return VncTinyList.empty();
 					}
 					else {
 						final String s = Coerce.toVncString(args.first()).getValue();
@@ -705,7 +705,7 @@ public class StringFunctions {
 				assertArity("str/split", args, 2);
 
 				if (args.first() == Nil) {
-					return VncTinyList.EMPTY;
+					return VncTinyList.empty();
 				}
 				else {
 					final VncString string = Coerce.toVncString(args.first());
@@ -737,7 +737,7 @@ public class StringFunctions {
 				assertArity("str/split-lines", args, 1);
 
 				return args.first() == Nil
-						? VncTinyList.EMPTY
+						? VncTinyList.empty()
 						: new VncList(
 								StringUtil
 									.splitIntoLines(Coerce.toVncString(args.first()).getValue())

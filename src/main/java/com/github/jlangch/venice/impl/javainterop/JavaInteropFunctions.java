@@ -313,7 +313,7 @@ public class JavaInteropFunctions {
 
 			map = map.assoc(
 					new VncKeyword("methods"),
-					VncTinyList.EMPTY
+					VncTinyList.empty()
 							.addAllAtEnd(
 								new VncList(
 									ReflectionUtil
@@ -333,7 +333,7 @@ public class JavaInteropFunctions {
 
 			map = map.assoc(
 					new VncKeyword("fields"),
-					VncTinyList.EMPTY
+					VncTinyList.empty()
 						.addAllAtEnd(
 							new VncList(
 								ReflectionUtil
@@ -351,7 +351,7 @@ public class JavaInteropFunctions {
 			
 			map = map.assoc(
 					new VncKeyword("bean"),
-					VncTinyList.EMPTY
+					VncTinyList.empty()
 						.addAllAtEnd(
 							new VncList(
 								ReflectionUtil
