@@ -151,7 +151,7 @@ Run the script from a REPL:
 ```text
 venice> !macroexpand
 venice> (load-file "tomcat-geoip.venice")
-venice> (run "localhost_access_log.2019-12.zip" "./ip-map.png")
+venice> (run "./ip-map.png" "localhost_access_log.2019-12.zip")
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-tomcat.png">
