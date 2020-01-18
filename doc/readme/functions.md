@@ -210,6 +210,9 @@ created.
 
 ## Partial Functions
 
+A partial function creates a new function by holding one or
+more parameters constant:
+
 ```clojure
 (map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
 ```
