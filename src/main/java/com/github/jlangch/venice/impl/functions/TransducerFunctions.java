@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -112,7 +113,7 @@ public class TransducerFunctions {
 
 				final VncVal init = args.size() == 4
 										? args.third()
-										: reduction_fn.apply(new VncList());
+										: reduction_fn.apply(VncTinyList.EMPTY);
 
 
 				final VncFunction xf = (VncFunction)xform.apply(VncList.of(reduction_fn));
@@ -198,7 +199,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -297,7 +298,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -396,7 +397,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -471,7 +472,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -540,7 +541,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -623,7 +624,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -692,7 +693,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -770,7 +771,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -835,7 +836,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -864,7 +865,7 @@ public class TransducerFunctions {
 				}
 				else {
 					if (args.first() == Nil) {
-						return new VncList();
+						return VncTinyList.EMPTY;
 					}
 
 					VncVal seen = NONE;
@@ -965,7 +966,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -994,7 +995,7 @@ public class TransducerFunctions {
 				}
 				else {
 					if (args.first() == Nil) {
-						return new VncList();
+						return VncTinyList.EMPTY;
 					}
 
 					return ((VncSequence)args.first()).withValues(
@@ -1044,7 +1045,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										VncVal result = args.first();
@@ -1109,7 +1110,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										VncVal result = args.first();
@@ -1200,7 +1201,7 @@ public class TransducerFunctions {
 									assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 									if (args.size() == 0) {
-										return rf.apply(new VncList());
+										return rf.apply(VncTinyList.EMPTY);
 									}
 									else if (args.size() == 1) {
 										final VncVal result = args.first();
@@ -1284,7 +1285,7 @@ public class TransducerFunctions {
 								assertArity(this.getQualifiedName(), args, 1, 2, 3);
 
 								if (args.size() == 0) {
-									return rf.apply(new VncList());
+									return rf.apply(VncTinyList.EMPTY);
 								}
 								else if (args.size() == 1) {
 									final VncVal result = args.first();

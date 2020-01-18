@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.HexFormatter;
@@ -610,7 +611,7 @@ public class StringFunctions {
 				assertArity("str/join", args, 1, 2);
 
 				final VncSequence coll = Coerce.toVncSequence(args.last());
-				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.first()) : new VncString("");
+				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.first()) : VncString.empty();
 
 				return new VncString(
 							coll.size() > 0
@@ -671,7 +672,7 @@ public class StringFunctions {
 					assertArity("str/chars", args, 1);
 
 					if (args.first() == Nil) {
-						return new VncList();
+						return VncTinyList.EMPTY;
 					}
 					else {
 						final String s = Coerce.toVncString(args.first()).getValue();
@@ -704,7 +705,7 @@ public class StringFunctions {
 				assertArity("str/split", args, 2);
 
 				if (args.first() == Nil) {
-					return new VncList();
+					return VncTinyList.EMPTY;
 				}
 				else {
 					final VncString string = Coerce.toVncString(args.first());
@@ -736,7 +737,7 @@ public class StringFunctions {
 				assertArity("str/split-lines", args, 1);
 
 				return args.first() == Nil
-						? new VncList()
+						? VncTinyList.EMPTY
 						: new VncList(
 								StringUtil
 									.splitIntoLines(Coerce.toVncString(args.first()).getValue())

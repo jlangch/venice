@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -246,7 +247,7 @@ public class ShellFunctions {
 				}
 				else if (Types.isVncFunction(slurpOutFn)) {
 					slurp(stdout, enc, (VncFunction)slurpOutFn);
-					future_stdout = executor.submit(() -> new VncString(""));
+					future_stdout = executor.submit(() -> VncString.empty());
 				}
 				else {
 					future_stdout = executor.submit(() -> slurpToString(stdout, enc));
@@ -256,7 +257,7 @@ public class ShellFunctions {
 				Future<VncVal> future_stderr; 
 				if (Types.isVncFunction(slurpErrFn)) {
 					slurp(stderr, enc, (VncFunction)slurpErrFn);
-					future_stderr = executor.submit(() -> new VncString(""));
+					future_stderr = executor.submit(() -> VncString.empty());
 				}
 				else {
 					future_stderr = executor.submit(() -> slurpToString(stderr, enc));
@@ -350,7 +351,7 @@ public class ShellFunctions {
 		final VncThreadLocal th = new VncThreadLocal();
 	
 		VncHashMap options = new VncHashMap();
-		VncList cmd = new VncList();		
+		VncList cmd = VncTinyList.EMPTY;		
 		VncList args_ = args;
 		while(!args_.isEmpty()) {
 			final VncVal v = args_.first();

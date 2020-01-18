@@ -40,6 +40,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
+import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -164,12 +166,12 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncList toVncList() {
-		return new VncList();
+		return VncTinyList.EMPTY;
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector();
+		return VncTinyVector.EMPTY;
 	}
 
 	public VncMap toVncMap() {

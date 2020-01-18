@@ -58,7 +58,7 @@ public class VncString extends VncVal {
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
-
+	
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.length()) {
 			throw new VncException(String.format(
@@ -162,8 +162,13 @@ public class VncString extends VncVal {
 		}
 	}
 	
+	public static VncString empty() {
+		return EMPTY;
+	}
+	
 
     private static final long serialVersionUID = -1848883965231344442L;
+    private static VncString EMPTY = new VncString("");
 
 	private final String value;
 }

@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -381,7 +382,7 @@ public class SystemFunctions {
 							ThreadLocalMap.clearCallStack();
 							JavaInterop.register(parentInterceptor);
 
-							fn.apply(new VncList());
+							fn.apply(VncTinyList.EMPTY);
 						}
 						finally {
 							// clean up

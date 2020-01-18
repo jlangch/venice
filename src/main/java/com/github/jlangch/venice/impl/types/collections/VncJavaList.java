@@ -129,7 +129,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	@Override
 	public VncList rest() {
 		if (isEmpty()) {
-			return new VncList();
+			return VncTinyList.EMPTY;
 		} 
 		else {
 			return new VncList(

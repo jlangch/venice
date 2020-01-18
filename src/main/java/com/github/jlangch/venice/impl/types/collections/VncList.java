@@ -276,8 +276,9 @@ public class VncList extends VncSequence {
 		return "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")";
 	}
 
-
+   
     private static final long serialVersionUID = -1848883965231344442L;
+ 
 
 	private final io.vavr.collection.Vector<VncVal> value;
 }

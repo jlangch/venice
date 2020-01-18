@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -106,7 +107,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 
 	public VncList getArgLists() { 
-		return (VncList)getMetaVal(MetaUtil.ARGLIST, new VncList());
+		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncTinyList.EMPTY);
 	}
 	
 	public VncVal getDoc() { 
@@ -114,7 +115,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 	
 	public VncList getExamples() { 
-		return (VncList)getMetaVal(MetaUtil.EXAMPLES, new VncList());
+		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncTinyList.EMPTY);
 	}
 	
 	public int getFixedArgsCount() {

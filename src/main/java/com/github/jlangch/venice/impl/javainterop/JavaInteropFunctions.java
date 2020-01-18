@@ -49,6 +49,7 @@ import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
@@ -312,7 +313,7 @@ public class JavaInteropFunctions {
 
 			map = map.assoc(
 					new VncKeyword("methods"),
-					new VncList()
+					VncTinyList.EMPTY
 							.addAllAtEnd(
 								new VncList(
 									ReflectionUtil
@@ -332,7 +333,7 @@ public class JavaInteropFunctions {
 
 			map = map.assoc(
 					new VncKeyword("fields"),
-					new VncList()
+					VncTinyList.EMPTY
 						.addAllAtEnd(
 							new VncList(
 								ReflectionUtil
@@ -350,7 +351,7 @@ public class JavaInteropFunctions {
 			
 			map = map.assoc(
 					new VncKeyword("bean"),
-					new VncList()
+					VncTinyList.EMPTY
 						.addAllAtEnd(
 							new VncList(
 								ReflectionUtil
