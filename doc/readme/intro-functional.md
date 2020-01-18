@@ -117,20 +117,35 @@ Functional Programming is all about programming with functions.
 - Pure Functions / Referential Transparency
 - Function Composition
 - Anonymous Functions
-- Higer Order Functions
+- Higher Order Functions
 - Partial Function Application
-- Closure - returning functions from functions
+- Closures - returning functions from functions
 - Data Immutability
-- Lists are the fundamental data Structure
+- Lists are the fundamental data structure
 
 
 ### Pure Functions
 
+_TODO_
+
+
 ### Recursion
+
+_TODO_
+
 
 ### Referential Transparency
 
+_TODO_
+
+
 ### First-Class Functions
 
+_TODO_
+
+
 ### Immutability
+
+_TODO_
+
 
