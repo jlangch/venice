@@ -71,7 +71,7 @@ Simple recursion a few thousand calls deep throws a _StackOverflowError_.
 ## mutually recursive calls (trampoline)
 
 `trampoline` can be used to convert algorithms requiring mutual
-recursion without stack consumption. Calls f, if f returns a fn, 
+recursion without stack consumption. Calls f, if f returns a function, 
 calls that function with no arguments, and continues to repeat, until 
 the return value is not a function, then returns that 
 non-function value.
