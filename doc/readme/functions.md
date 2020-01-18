@@ -36,6 +36,9 @@
 
 ## Variadic Functions
 
+A variadic function is a function of indefinite arity, accepting 
+a variable number of arguments.
+
 ```clojure
 (do
    (defn log
