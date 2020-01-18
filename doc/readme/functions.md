@@ -128,10 +128,9 @@ the local bindings for `x` and `y` get their values from the caller.
 The `fn` special form creates a "closure". It "closes over" the surrounding 
 lexical scope and captures their values beyond the lexical scope.
 
-Closure is a function that remembers the environment at which it was created.
+A closure is a function that remembers the environment at which it was 
+created.
 
-A function that returns a function i.e. higher order functions are nice examples
-of a closure.
 
 ```clojure
 (do
