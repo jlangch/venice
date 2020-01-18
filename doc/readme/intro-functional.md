@@ -120,7 +120,7 @@ which is executed to assign variables, the evaluation of an expression produces 
 
 ### Referential Transparency
 
-### Functions are First-Class citizens
+### First-Class Functions
 
 ### Immutability
 
