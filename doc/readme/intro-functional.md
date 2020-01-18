@@ -117,7 +117,7 @@ Functional Programming is all about programming with functions.
 - Pure Functions / Referential Transparency
 - Function Composition
 - Anonymous Functions
-- High Order Functions
+- Higer Order Functions
 - Partial Function Application
 - Closure - returning functions from functions
 - Data Immutability
