@@ -73,7 +73,7 @@ public class VncList extends VncSequence {
 	
 	
 	@Override
-	public VncList empty() {
+	public VncList emptyWithMeta() {
 		return new VncList(getMeta());
 	}
 	

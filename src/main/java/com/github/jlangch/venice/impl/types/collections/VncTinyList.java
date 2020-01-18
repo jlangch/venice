@@ -102,7 +102,7 @@ public class VncTinyList extends VncList {
 	}
 	
 	@Override
-	public VncList empty() {
+	public VncList emptyWithMeta() {
 		return new VncTinyList(getMeta());
 	}
 	

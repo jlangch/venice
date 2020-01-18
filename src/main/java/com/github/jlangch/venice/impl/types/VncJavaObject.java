@@ -69,7 +69,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override
-	public VncMap empty() {
+	public VncMap emptyWithMeta() {
 		throw new VncException("not supported");
 	}
 	@Override

@@ -583,7 +583,7 @@ public class TransducerFunctions {
 							return coll.slice(i);
 						}
 					}
-					return coll.empty();
+					return coll.emptyWithMeta();
 				}
 			}
 

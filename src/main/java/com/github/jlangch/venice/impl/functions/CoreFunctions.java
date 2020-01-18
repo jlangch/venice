@@ -3609,13 +3609,13 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (Types.isVncSequence(coll)) {
-					return ((VncSequence)coll).empty();
+					return ((VncSequence)coll).emptyWithMeta();
 				}
 				else if (Types.isVncSet(coll)) {
-					return ((VncSet)coll).empty();
+					return ((VncSet)coll).emptyWithMeta();
 				}
 				else if (Types.isVncMap(coll)) {
-					return ((VncMap)coll).empty();
+					return ((VncMap)coll).emptyWithMeta();
 				}
 				else {
 					throw new VncException(String.format(

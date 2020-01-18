@@ -61,7 +61,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	}
 
 	@Override
-	public VncJavaSet empty() {
+	public VncJavaSet emptyWithMeta() {
 		return new VncJavaSet(getMeta());
 	}
 	

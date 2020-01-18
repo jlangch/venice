@@ -51,7 +51,7 @@ public class VncQueue extends VncCollection {
 
 	
 	@Override
-	public VncCollection empty() {
+	public VncCollection emptyWithMeta() {
 		return new VncQueue(capacity);
 	}
 

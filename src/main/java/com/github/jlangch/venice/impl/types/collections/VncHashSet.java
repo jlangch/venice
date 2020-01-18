@@ -74,7 +74,7 @@ public class VncHashSet extends VncSet {
 	
 	
 	@Override
-	public VncHashSet empty() {
+	public VncHashSet emptyWithMeta() {
 		return new VncHashSet(getMeta());
 	}
 	

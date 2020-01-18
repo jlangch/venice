@@ -74,7 +74,7 @@ public class VncSortedSet extends VncSet {
 	
 	
 	@Override
-	public VncSortedSet empty() {
+	public VncSortedSet emptyWithMeta() {
 		return new VncSortedSet(getMeta());
 	}
 	

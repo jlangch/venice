@@ -70,7 +70,7 @@ public class VncMutableSet extends VncSet {
 
 	
 	@Override
-	public VncMutableSet empty() {
+	public VncMutableSet emptyWithMeta() {
 		return new VncMutableSet(getMeta());
 	}
 	

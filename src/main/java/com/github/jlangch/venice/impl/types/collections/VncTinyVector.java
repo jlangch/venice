@@ -126,7 +126,7 @@ public class VncTinyVector extends VncVector {
 	}
 	
 	@Override
-	public VncVector empty() {
+	public VncVector emptyWithMeta() {
 		return new VncTinyVector(getMeta());
 	}
 	

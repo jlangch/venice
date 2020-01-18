@@ -54,7 +54,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 	}
 	
 	@Override
-	public abstract VncSet empty();
+	public abstract VncSet emptyWithMeta();
 
 	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
 	

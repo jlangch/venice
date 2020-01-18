@@ -111,7 +111,7 @@ public class VncHashMap extends VncMap {
 	
 
 	@Override
-	public VncHashMap empty() {
+	public VncHashMap emptyWithMeta() {
 		return new VncHashMap(getMeta());
 	}
 

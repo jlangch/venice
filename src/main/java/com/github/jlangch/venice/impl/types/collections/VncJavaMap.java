@@ -65,7 +65,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public VncJavaMap empty() {
+	public VncJavaMap emptyWithMeta() {
 		return new VncJavaMap(getMeta());
 	}
 

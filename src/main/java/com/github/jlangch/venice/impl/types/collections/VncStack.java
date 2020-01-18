@@ -44,7 +44,7 @@ public class VncStack extends VncCollection {
 
 	
 	@Override
-	public VncCollection empty() {
+	public VncCollection emptyWithMeta() {
 		return new VncStack();
 	}
 

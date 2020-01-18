@@ -110,7 +110,7 @@ public class VncOrderedMap extends VncMap {
 	
 
 	@Override
-	public VncOrderedMap empty() {
+	public VncOrderedMap emptyWithMeta() {
 		return new VncOrderedMap(getMeta());
 	}
 

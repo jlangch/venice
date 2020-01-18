@@ -56,7 +56,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	
 	@Override
-	public abstract VncMap empty();
+	public abstract VncMap emptyWithMeta();
 
 	public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals);
 	

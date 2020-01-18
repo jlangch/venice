@@ -82,7 +82,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 	}
 	
 	@Override
-	public VncVector empty() {
+	public VncVector emptyWithMeta() {
 		return new VncVector(getMeta());
 	}
 	

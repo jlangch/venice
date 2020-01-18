@@ -34,7 +34,7 @@ public abstract class VncCollection extends VncVal {
 	@Override
 	public abstract VncCollection withMeta(VncVal meta);
 	
-	public abstract VncCollection empty();
+	public abstract VncCollection emptyWithMeta();
 		
 	public abstract VncList toVncList();
 	

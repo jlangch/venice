@@ -36,7 +36,7 @@ public abstract class VncSequence extends VncCollection {
 	}
 
 	
-	public abstract VncSequence empty();
+	public abstract VncSequence emptyWithMeta();
 
 	public abstract VncSequence withVariadicValues(VncVal... replaceVals);
 

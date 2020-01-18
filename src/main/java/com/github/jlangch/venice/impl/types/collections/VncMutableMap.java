@@ -83,7 +83,7 @@ public class VncMutableMap extends VncMap {
 
 	
 	@Override
-	public VncMutableMap empty() {
+	public VncMutableMap emptyWithMeta() {
 		return new VncMutableMap(getMeta());
 	}
 
