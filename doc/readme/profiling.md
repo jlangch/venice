@@ -1,6 +1,6 @@
 # Benchmarks & Profiling
 
-All benchmarks and profiling did run on a 2017 QuadCore MacBook Pro with a 
+All benchmarks and profiling did run on a 2017 Quad Core MacBook Pro with a 
 Java 11 server VM.
 
 ## Benchmark
