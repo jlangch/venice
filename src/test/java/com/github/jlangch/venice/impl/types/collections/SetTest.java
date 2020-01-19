@@ -45,4 +45,11 @@ public class SetTest {
 		assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} nil :e))"));
 		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil :e))"));
 	}
+
+	@Test
+	public void test_set_eval() {
+		final Venice venice = new Venice();
+
+		assertEquals("#{2 3}", venice.eval("(pr-str #{2 (+ 1 2) (+ 1 1)})"));
+	}
 }

@@ -43,4 +43,11 @@ public class MapTest {
 		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} :c 9))"));
 		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} nil 9))"));
 	}
+
+	@Test
+	public void test_map_eval() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a 2 :b 3}", venice.eval("(pr-str {:a 2 :b (+ 1 2)})"));
+	}
 }

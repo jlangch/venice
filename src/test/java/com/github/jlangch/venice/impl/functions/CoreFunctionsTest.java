@@ -1590,6 +1590,14 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_list_eval() {
+		final Venice venice = new Venice();
+
+		assertEquals("(1 (+ 1 2))", venice.eval("(pr-str '(1 (+ 1 2)))"));
+		assertEquals("(1 3)", venice.eval("(pr-str (list 1 (+ 1 2)))"));
+	}
+	
+	@Test
 	public void test_list_ASTERISK() {
 		final Venice venice = new Venice();
 
@@ -3218,6 +3226,14 @@ public class CoreFunctionsTest {
 		assertEquals("[()]", venice.eval("(str (vector '()))"));
 		assertEquals("[[1 2]]", venice.eval("(str (vector [1 2]))"));
 		assertEquals("[[1 2] 3 4]", venice.eval("(str (vector [1 2] 3 4))"));
+	}
+	
+	@Test
+	public void test_vector_eval() {
+		final Venice venice = new Venice();
+
+		assertEquals("[1 3]", venice.eval("(pr-str [1 (+ 1 2)])"));
+		assertEquals("[1 3]", venice.eval("(pr-str (vector 1 (+ 1 2)))"));
 	}
 	
 	@Test
