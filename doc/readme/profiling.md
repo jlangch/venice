@@ -188,11 +188,11 @@ inc         [10000000]:   687,99 ms       68 ns
 
 Analysis loop-recur performance:
 
-* (sum 100000) takes 105.8ms
+* `(sum 100000)` takes 105.8ms
 * the functions `inc`  and `<` take 100'000 * 134ns = 13.4ms
 * the loop-recur overhead is (105.8ms - 13.4ms) / 100'000 = 924ns
 * every loop-recur iteration takes 924ns to process the `if` logic, initiate a new 
-  iteration and setup the local environment with the variable _i_ 
+  iteration and setup the local environment with the variable _i_.
 
 
 
