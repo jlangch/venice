@@ -262,7 +262,7 @@ public class REPL {
 			final Env env, 
 			final Terminal terminal
 	) {
-		if (cmd.equals("macroexpand")) {
+		if (cmd.equals("macroexpand") || cmd.equals("me")) {
 			macroexpand = true;
 			setMacroexpandOnLoad(env, true);
 			printer.println("system", "macroexpansion enabled");					

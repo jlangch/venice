@@ -44,6 +44,11 @@ public abstract class VncCollection extends VncVal {
 	
 	public abstract boolean isEmpty();
 
+	@Override
+	public boolean isCollection() {
+		return true;
+	}
+	
 	
     private static final long serialVersionUID = -1848883965231344442L;
 }

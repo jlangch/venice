@@ -43,7 +43,11 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	abstract public VncVal withMeta(final VncVal meta);
 		
 	abstract public int typeRank();
-	
+
+	public boolean isCollection() {
+		return false;
+	}
+
 	abstract public Object convertToJavaObject();
 
 	public VncVal getMeta() {
