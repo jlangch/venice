@@ -509,7 +509,8 @@ public class VeniceInterpreter implements Serializable  {
 				}
 					
 				case "loop": { // (loop [bindings*] exprs*)
-					env = new Env(env);					
+					recursionPoint = null;
+					env = new Env(env);
 	
 					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncVal expressions = ast.nth(2);
@@ -528,7 +529,7 @@ public class VeniceInterpreter implements Serializable  {
 						//}
 					}
 					
-					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
+					recursionPoint = new RecursionPoint(new VncList(bindingNames), expressions, env);
 					orig_ast = expressions;
 					break;
 				}
@@ -548,19 +549,19 @@ public class VeniceInterpreter implements Serializable  {
 					// | or, and        | (or test test ... tail)                   | No            |
 					// +----------------+-------------------------------------------+---------------+
 	
-					final List<VncSymbol> bindingNames = recursionPoint.getLoopBindingNames();
 					final Env recur_env = recursionPoint.getLoopEnv();
 	
 					if (ast.size() == 2) {
 						// [1][2] calculate and bind the single new value
-						recur_env.setLocal(bindingNames.get(0), evaluate(ast.second(), env));
+						recur_env.setLocal(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env));
 					}
 					else if (ast.size() == 3) {
-						// [1][2] calculate and bind the new values
+						// [1] calculate the new values
 						final VncVal v1 = evaluate(ast.second(), env);
 						final VncVal v2 = evaluate(ast.third(), env);
-						recur_env.setLocal(bindingNames.get(0), v1);
-						recur_env.setLocal(bindingNames.get(1), v2);
+						// [2] bind the new values
+						recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1);
+						recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2);
 					}
 					else {
 						// [1] calculate new values
@@ -572,8 +573,8 @@ public class VeniceInterpreter implements Serializable  {
 						}
 						
 						// [2] bind the new values
-						for(int ii=0; ii<bindingNames.size(); ii++) {
-							recur_env.setLocal(bindingNames.get(ii), newValues[ii]);
+						for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
+							recur_env.setLocal(recursionPoint.getLoopBindingName(ii), newValues[ii]);
 						}
 					}
 					
@@ -684,7 +685,7 @@ public class VeniceInterpreter implements Serializable  {
 		if (Types.isVncSymbol(ast)) {
 			return env.get((VncSymbol)ast);
 		}
-		else if (ast.isCollection()) {
+		else if (ast.isVncCollection()) {
 			if (Types.isVncSequence(ast)) {
 				final VncSequence seq = (VncSequence)ast;
 				
@@ -770,7 +771,7 @@ public class VeniceInterpreter implements Serializable  {
 		VncVal ast_ = ast;
 		boolean expanded = false;
 		
-		while(Types.isVncList(ast_)) {
+		do {
 			final VncVal a0 = ((VncList)ast_).first();
 			if (!Types.isVncSymbol(a0)) break;
 			
@@ -785,7 +786,7 @@ public class VeniceInterpreter implements Serializable  {
 			expanded = true; 
 
 			ast_ = macro.apply(((VncList)ast_).rest());
-		}
+		} while(Types.isVncList(ast_));
 	
 		if (expanded && meterRegistry.enabled) {
 			meterRegistry.record("macroexpand", System.nanoTime() - nanos);

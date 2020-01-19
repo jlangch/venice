@@ -179,12 +179,20 @@ total and average time for the function's calls:
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
-user/_test  [       1]:    11,34 s             
-user/sum    [     100]:    11,34 s    113,39 ms
-inc         [10000000]:   697,57 ms       69 ns
-<           [10000100]:   680,45 ms       68 ns
+user/_test  [       1]:    10,58 s             
+user/sum    [     100]:    10,58 s    105,83 ms
+inc         [10000000]:   687,99 ms       68 ns
+<           [10000100]:   664,14 ms       66 ns
 -----------------------------------------------
 ```
+
+Analysis loop-recur performance:
+
+* (sum 100000) takes 105.8ms
+* the functions `inc`  and `<` take 100'000 * 134ns = 13.4ms
+* the loop-recur overhead is (105.8ms - 13.4ms) / 100'000 = 924ns
+* every loop-recur iteration takes 924ns to process the `if` logic, initiate a new 
+  iteration and setup the local environment with the variable _i_ 
 
 
 

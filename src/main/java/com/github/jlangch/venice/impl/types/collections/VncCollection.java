@@ -45,7 +45,7 @@ public abstract class VncCollection extends VncVal {
 	public abstract boolean isEmpty();
 
 	@Override
-	public boolean isCollection() {
+	public boolean isVncCollection() {
 		return true;
 	}
 	

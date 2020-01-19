@@ -44,7 +44,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		
 	abstract public int typeRank();
 
-	public boolean isCollection() {
+	public boolean isVncCollection() {
 		return false;
 	}
 
