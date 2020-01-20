@@ -76,7 +76,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("map", args, 1);
+		FunctionsUtil.assertArity("nth", args, 1);
 		
 		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
 	}

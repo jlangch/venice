@@ -120,7 +120,7 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("map", args, 1);
+		FunctionsUtil.assertArity("nth", args, 1);
 		
 		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
 	}
@@ -302,9 +302,15 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector slice(final int start) {
-		return start == 0
-				? this
-				: VncTinyVector.ofList(getList().subList(start, len), getMeta());
+		if (start == 0) {
+			return this;
+		}
+		else if (start == 1) {
+			return rest();
+		}
+		else {
+			return VncTinyVector.ofList(getList().subList(start, len), getMeta());
+		}
 	}
 	
 	@Override
@@ -376,10 +382,18 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector removeAt(final int idx) {
-		final List<VncVal> vals = getList();
-		vals.remove(idx);
-		
-		return VncTinyVector.ofList(vals, getMeta());
+		if (idx == 0) {
+			return rest();
+		}
+		else if (idx == (len-1)) {
+			return butlast();
+		}
+		else {
+			final List<VncVal> vals = getList();
+			vals.remove(idx);
+			
+			return VncTinyVector.ofList(vals, getMeta());
+		}
 	}
 	
 	@Override 

@@ -292,9 +292,15 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList slice(final int start) {
-		return start == 0
-				? this
-				: VncTinyList.ofList(getList().subList(start, len), getMeta());
+		if (start == 0) {
+			return this;
+		}
+		else if (start == 1) {
+			return rest();
+		}
+		else {
+			return VncTinyList.ofList(getList().subList(start, len), getMeta());
+		}
 	}
 	
 	@Override
@@ -366,10 +372,18 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList removeAt(final int idx) {
-		final List<VncVal> vals = getList();
-		vals.remove(idx);
-		
-		return VncTinyList.ofList(vals, getMeta());
+		if (idx == 0) {
+			return rest();
+		}
+		else if (idx == (len-1)) {
+			return butlast();
+		}
+		else {
+			final List<VncVal> vals = getList();
+			vals.remove(idx);
+			
+			return VncTinyList.ofList(vals, getMeta());
+		}
 	}
 	
 	@Override 
