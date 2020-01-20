@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -241,14 +242,10 @@ public class VeniceInterpreter implements Serializable  {
 			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
 			switch (a0sym) {		
-				case "do":
-					if (ast.size() < 2) {
-						orig_ast = Constants.Nil;
-					}
-					else {
-						final VncList head_exprs = ast.slice(1, ast.size()-1);
-						eval_ast(head_exprs, env);
-						orig_ast = ast.last();
+				case "do": {
+						final VncList expressions = ast.rest();						
+						eval_ast(expressions.butlast(), env);
+						orig_ast = expressions.last();
 					}
 					break;
 					
@@ -460,7 +457,7 @@ public class VeniceInterpreter implements Serializable  {
 					if (docVal == null) {
 						docVal = env.get(new VncSymbol(name));
 					}
-					orig_ast = VncList.of(new VncSymbol("println"), Doc.getDoc(docVal));
+					orig_ast = VncTinyList.of(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
 					
 				case "eval": {
@@ -490,7 +487,7 @@ public class VeniceInterpreter implements Serializable  {
 						orig_ast = Constants.Nil;
 					}
 					else {
-						eval_ast(expressions.slice(0, expressions.size()-1), env);
+						eval_ast(expressions.butlast(), env);
 						orig_ast = expressions.last();
 					}
 					break;
@@ -563,6 +560,16 @@ public class VeniceInterpreter implements Serializable  {
 							// [2] bind the new values
 							recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1);
 							recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2);
+							break;
+						case 4:
+							// [1] calculate the new values
+							final VncVal v1_ = evaluate(ast.second(), env);
+							final VncVal v2_ = evaluate(ast.third(), env);
+							final VncVal v3_ = evaluate(ast.fourth(), env);
+							// [2] bind the new values
+							recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1_);
+							recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2_);
+							recur_env.setLocal(recursionPoint.getLoopBindingName(2), v3_);
 							break;
 						default:
 							// [1] calculate new values
@@ -803,7 +810,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private static VncVal quasiquote(final VncVal ast) {
 		if (!is_pair(ast)) {
-			return VncList.of(new VncSymbol("quote"), ast);
+			return VncTinyList.of(new VncSymbol("quote"), ast);
 		} 
 		else {
 			final VncVal a0 = Coerce.toVncSequence(ast).first();
@@ -813,13 +820,13 @@ public class VeniceInterpreter implements Serializable  {
 			else if (is_pair(a0)) {
 				final VncVal a00 = Coerce.toVncSequence(a0).first();
 				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
-					return VncList.of(
+					return VncTinyList.of(
 								new VncSymbol("concat"),
 								Coerce.toVncSequence(a0).second(),
 								quasiquote(((VncSequence)ast).rest()));
 				}
 			}
-			return VncList.of(
+			return VncTinyList.of(
 						new VncSymbol("cons"),
 						quasiquote(a0),
 						quasiquote(((VncSequence)ast).rest()));
@@ -864,7 +871,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncFunction macroFn = buildFunction(
 											macroName_.getName(), 
 											params, 
-											VncList.of(body), 
+											VncTinyList.of(body), 
 											null, 
 											env);
 	
@@ -1089,13 +1096,8 @@ public class VeniceInterpreter implements Serializable  {
 		try {
 			vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
 			
-			if (expressions.isEmpty()) {
-				return Constants.Nil;
-			}
-			else {
-				eval_ast(expressions.slice(0, expressions.size()-1), env);
-				return ((VncList)eval_ast(VncList.of(expressions.last()), env)).first();
-			}
+			eval_ast(expressions.butlast(), env);
+			return evaluate(expressions.last(), env);
 		}
 		finally {
 			vars.forEach(v -> env.popGlobalDynamic(v.getName()));
@@ -1351,7 +1353,7 @@ public class VeniceInterpreter implements Serializable  {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fnName, v))) {
 						throw new AssertionException(String.format(
 								"pre-condition assert failed: %s",
-								((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
+								((VncString)CoreFunctions.str.apply(VncTinyList.of(v))).getValue()));
 					}
 				}
  			}
@@ -1370,7 +1372,7 @@ public class VeniceInterpreter implements Serializable  {
 			return evaluate(body.last(), env);
 		}
 		else {
-			eval_ast(body.slice(0, body.size()-1), env);
+			eval_ast(body.butlast(), env);
 			return evaluate(body.last(), env);
 		}
 	}
