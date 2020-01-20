@@ -194,7 +194,7 @@ Analysis loop-recur performance:
 * the functions `inc`  and `<` take 100'000 * 134ns = 13.4ms
 * the loop-recur overhead is (105.8ms - 13.4ms) / 100'000 = 924ns
 * every loop-recur iteration takes 924ns to process the `if` logic, initiate a new 
-  iteration and setup the local environment with the variable _i_.
+  iteration and setup the local environment with the loop variables.
 
 
 
