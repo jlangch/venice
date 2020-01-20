@@ -142,6 +142,21 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
+	public VncList butlast() {
+		if (value.size() <= 1) {
+			return VncTinyList.empty();
+		} 
+		else {
+			return new VncList(
+							value
+								.subList(0, value.size()-1)
+								.stream()
+								.map(v -> JavaInteropUtil.convertToVncVal(v))
+								.collect(Collectors.toList()));
+		}
+	}
+
+	@Override
 	public VncList slice(final int start, final int end) {
 		return new VncList(
 					value

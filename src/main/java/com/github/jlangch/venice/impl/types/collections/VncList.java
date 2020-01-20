@@ -149,6 +149,11 @@ public class VncList extends VncSequence {
 	public VncList rest() {
 		return isEmpty() ? new VncList(getMeta()) : new VncList(value.tail(), getMeta());
 	}
+	
+	@Override
+	public VncList butlast() {
+		return new VncList(value.dropRight(1), getMeta());
+	}
 
 	@Override
 	public VncList slice(final int start, final int end) {

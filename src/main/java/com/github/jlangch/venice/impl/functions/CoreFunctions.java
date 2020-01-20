@@ -4242,17 +4242,8 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					return Nil;
 				}
-				else if (Types.isVncVector(coll)) {
-					final VncVector vec = (VncVector)coll;
-					return vec.size() > 1 ? vec.slice(0, vec.size()-1) : VncTinyVector.empty();
-				}
-				else if (Types.isVncList(coll)) {
-					final VncList list = (VncList)coll;
-					return list.size() > 1 ? list.slice(0, list.size()-1) : VncTinyList.empty();
-				}
-				else if (Types.isVncJavaList(coll)) {
-					final VncList list = ((VncJavaList)coll).toVncList();
-					return list.size() > 1 ? list.slice(0, list.size()-1) : VncTinyList.empty();
+				else if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).butlast();
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();

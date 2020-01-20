@@ -551,31 +551,33 @@ public class VeniceInterpreter implements Serializable  {
 	
 					final Env recur_env = recursionPoint.getLoopEnv();
 	
-					if (ast.size() == 2) {
-						// [1][2] calculate and bind the single new value
-						recur_env.setLocal(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env));
-					}
-					else if (ast.size() == 3) {
-						// [1] calculate the new values
-						final VncVal v1 = evaluate(ast.second(), env);
-						final VncVal v2 = evaluate(ast.third(), env);
-						// [2] bind the new values
-						recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1);
-						recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2);
-					}
-					else {
-						// [1] calculate new values
-						final VncList values = ast.rest();
-						final VncVal[] newValues = new VncVal[values.size()];
-						int kk=0;
-						for(VncVal v : values.getList()) {
-							newValues[kk++] = evaluate(v, env);
-						}
-						
-						// [2] bind the new values
-						for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
-							recur_env.setLocal(recursionPoint.getLoopBindingName(ii), newValues[ii]);
-						}
+					switch(ast.size()) {
+						case 2:
+							// [1][2] calculate and bind the single new value
+							recur_env.setLocal(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env));
+							break;
+						case 3:
+							// [1] calculate the new values
+							final VncVal v1 = evaluate(ast.second(), env);
+							final VncVal v2 = evaluate(ast.third(), env);
+							// [2] bind the new values
+							recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1);
+							recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2);
+							break;
+						default:
+							// [1] calculate new values
+							final VncList values = ast.rest();
+							final VncVal[] newValues = new VncVal[values.size()];
+							int kk=0;
+							for(VncVal v : values.getList()) {
+								newValues[kk++] = evaluate(v, env);
+							}
+							
+							// [2] bind the new values
+							for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
+								recur_env.setLocal(recursionPoint.getLoopBindingName(ii), newValues[ii]);
+							}
+							break;
 					}
 					
 					// [3] continue on the loop with the new parameters

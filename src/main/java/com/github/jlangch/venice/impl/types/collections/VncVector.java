@@ -158,6 +158,11 @@ public class VncVector extends VncSequence implements IVncFunction {
 	public VncVector rest() {
 		return isEmpty() ? new VncVector(getMeta()) : new VncVector(value.tail(), getMeta());
 	}
+	
+	@Override
+	public VncVector butlast() {
+		return new VncVector(value.dropRight(1), getMeta());
+	}
 
 	@Override
 	public VncVector slice(final int start, final int end) {

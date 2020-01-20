@@ -72,6 +72,8 @@ public abstract class VncSequence extends VncCollection {
 	public abstract VncVal last();
 
 	public abstract VncSequence rest();
+	
+	public abstract VncSequence butlast();
 
 	public abstract VncSequence slice(int start, int end);
 	

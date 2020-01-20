@@ -184,11 +184,15 @@ public class CoreFunctionsTest {
 		assertEquals("()", venice.eval("(str (butlast '(1)))"));
 		assertEquals("(1)", venice.eval("(str (butlast '(1 2)))"));
 		assertEquals("(1 2)", venice.eval("(str (butlast '(1 2 3)))"));
+		assertEquals("(1 2 3)", venice.eval("(str (butlast '(1 2 3 4)))"));
+		assertEquals("(1 2 3 4)", venice.eval("(str (butlast '(1 2 3 4 5)))"));
 
 		assertEquals("[]", venice.eval("(str (butlast []))"));
 		assertEquals("[]", venice.eval("(str (butlast [1]))"));
 		assertEquals("[1]", venice.eval("(str (butlast [1 2]))"));
 		assertEquals("[1 2]", venice.eval("(str (butlast [1 2 3]))"));
+		assertEquals("[1 2 3]", venice.eval("(str (butlast [1 2 3 4]))"));
+		assertEquals("[1 2 3 4]", venice.eval("(str (butlast [1 2 3 4 5]))"));
 	}
 	
 	@Test
