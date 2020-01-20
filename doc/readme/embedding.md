@@ -185,7 +185,7 @@ public class Embed_11_PrecompileSerialize {
 
 ## Precompilation Benchmark
 
-The benchmark did run on a 2017 MacBook Pro with a Java 11 server VM.
+The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz) with a Java 11 server VM.
 
 **Results:**
 
