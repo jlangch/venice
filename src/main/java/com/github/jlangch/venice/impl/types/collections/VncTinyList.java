@@ -149,7 +149,10 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
-		getList().forEach(v -> action.accept(v));
+		if (len > 0) action.accept(first);
+		if (len > 1) action.accept(second);
+		if (len > 2) action.accept(third);
+		if (len > 3) action.accept(fourth);
 	}
 
 	@Override

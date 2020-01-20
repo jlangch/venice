@@ -213,6 +213,11 @@ public class VncList extends VncSequence {
 		return 200;
 	}
 
+	@Override 
+	public boolean isVncList() {
+		return true;
+	}
+
 	@Override
 	public Object convertToJavaObject() {
 		return getList()

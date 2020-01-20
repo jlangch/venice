@@ -48,6 +48,10 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		return false;
 	}
 
+	public boolean isVncList() {
+		return false;
+	}
+
 	abstract public Object convertToJavaObject();
 
 	public VncVal getMeta() {
