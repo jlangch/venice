@@ -597,13 +597,10 @@ public class VeniceInterpreter implements Serializable  {
 					final VncList expressions = recursionPoint.getLoopExpressions();
 					
 					env = recur_env;
-					if (expressions.size() == 1) {
-						orig_ast = expressions.first();
-					}
-					else {
+					if (expressions.size() > 1) {
 						eval_ast(expressions.butlast(), env);
-						orig_ast = expressions.last();						
 					}
+					orig_ast = expressions.last();						
 					break;
 				}
 					
