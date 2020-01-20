@@ -510,7 +510,7 @@ public class VeniceInterpreter implements Serializable  {
 					env = new Env(env);
 	
 					final VncVector bindings = Coerce.toVncVector(ast.second());
-					final VncVal expressions = ast.nth(2);
+					final VncList expressions = ast.slice(2);
 					
 					final List<VncSymbol> bindingNames = new ArrayList<>();
 					for(int i=0; i<bindings.size(); i+=2) {
@@ -527,7 +527,13 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					
 					recursionPoint = new RecursionPoint(new VncList(bindingNames), expressions, env);
-					orig_ast = expressions;
+					if (expressions.size() == 1) {
+						orig_ast = expressions.first();
+					}
+					else {
+						eval_ast(expressions.butlast(), env);
+						orig_ast = expressions.last();						
+					}
 					break;
 				}
 	
@@ -587,9 +593,17 @@ public class VeniceInterpreter implements Serializable  {
 							break;
 					}
 					
-					// [3] continue on the loop with the new parameters
-					orig_ast = recursionPoint.getLoopExpressions();
+					// [3] continue on the loop with the new bindings
+					final VncList expressions = recursionPoint.getLoopExpressions();
+					
 					env = recur_env;
+					if (expressions.size() == 1) {
+						orig_ast = expressions.first();
+					}
+					else {
+						eval_ast(expressions.butlast(), env);
+						orig_ast = expressions.last();						
+					}
 					break;
 				}
 					

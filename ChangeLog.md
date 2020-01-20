@@ -16,6 +16,9 @@ and this project adheres to
 
 - performance improvements to function invocation
 
+### Fixed
+
+- loop-recur to allow multiple expressions in the body
 
 
 
