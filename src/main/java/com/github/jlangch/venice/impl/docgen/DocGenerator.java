@@ -819,6 +819,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("system-env"));
 		util.addItem(getDocItem("system-exit-code"));
 		util.addItem(getDocItem("java-version"));
+		util.addItem(getDocItem("java-version-info"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("host-name"));
