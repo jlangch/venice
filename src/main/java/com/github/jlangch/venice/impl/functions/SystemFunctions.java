@@ -625,33 +625,33 @@ public class SystemFunctions {
 		};
 		
 	public static VncFunction java_version_info =
-			new VncFunction(
-					"java-version-info",
-					VncFunction
-						.meta()
-						.arglists("(java-version-info)")
-						.doc("Returns the Java VM version.")
-						.examples("(java-version-info)")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					assertArity("java-version-info", args, 0);
+		new VncFunction(
+				"java-version-info",
+				VncFunction
+					.meta()
+					.arglists("(java-version-info)")
+					.doc("Returns the Java VM version info.")
+					.examples("(java-version-info)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("java-version-info", args, 0);
 
-					return VncOrderedMap.of(
-							new VncKeyword("version"),
-							new VncString(System.getProperty("java.version")),
-							new VncKeyword("vendor"),
-							new VncString(System.getProperty("java.vendor")),
-							new VncKeyword("vm-version"),
-							new VncString(System.getProperty("java.vm.version")),
-							new VncKeyword("vm-name"),
-							new VncString(System.getProperty("java.vm.name")),
-							new VncKeyword("vm-vendor"),
-							new VncString(System.getProperty("java.vm.vendor")));
-				}
+				return VncOrderedMap.of(
+						new VncKeyword("version"),
+						new VncString(System.getProperty("java.version")),
+						new VncKeyword("vendor"),
+						new VncString(System.getProperty("java.vendor")),
+						new VncKeyword("vm-version"),
+						new VncString(System.getProperty("java.vm.version")),
+						new VncKeyword("vm-name"),
+						new VncString(System.getProperty("java.vm.name")),
+						new VncKeyword("vm-vendor"),
+						new VncString(System.getProperty("java.vm.vendor")));
+			}
 
-				private static final long serialVersionUID = -1848883965231344442L;
-			};
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction used_memory =
 		new VncFunction(
