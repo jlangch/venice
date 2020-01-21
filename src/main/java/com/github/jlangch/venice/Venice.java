@@ -184,6 +184,7 @@ public class Venice {
 
 			// re-init namespaces!
 			venice.initNS();
+			venice.sealSystemNS();
 			
 			if (meterRegistry.enabled) {
 				meterRegistry.record("venice.setup", System.nanoTime() - nanos);

@@ -99,6 +99,10 @@ public class Namespaces {
 		return NS_CURRENT_NAME.equals(nsSym.getName());
 	}
 
+	public static boolean isSystemNS(final String nsName) {
+		return SYSTEM_NAMESPACES.contains(nsName);
+	}
+
 	public static boolean isCurrentNSSymbol(final String nsName) {
 		return NS_CURRENT_NAME.equals(nsName);
 	}
@@ -121,6 +125,12 @@ public class Namespaces {
 	
 	public static final VncSymbol NS_USER = new VncSymbol("user");
 	public static final VncSymbol NS_CORE = new VncSymbol("core");
+
+	public static final Set<String> SYSTEM_NAMESPACES = 
+			Collections.unmodifiableSet(
+					new HashSet<>(
+						Arrays.asList(
+								"core", "cidr", "csv", "io", "str", "regex", "time")));
 
 	public static final Set<String> RESERVED_NAMESPACES = 
 			Collections.unmodifiableSet(

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -103,6 +104,10 @@ public class VeniceInterpreter implements Serializable  {
 		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
 	
+	public void sealSystemNS() {
+		sealedSystemNS.set(true);
+	}
+	
 	// read
 	public VncVal READ(final String script, final String filename) {
 		final long nanos = System.nanoTime();
@@ -151,6 +156,8 @@ public class VeniceInterpreter implements Serializable  {
 			final boolean macroexpandOnLoad, 
 			final VncKeyword runMode
 	) {
+		sealedSystemNS.set(false);
+
 		final Env env = new Env(null);
 			
 		// loaded modules: preset with implicitly preloaded modules
@@ -191,10 +198,12 @@ public class VeniceInterpreter implements Serializable  {
 		if (macroexpandOnLoad) {
 			env.setGlobal(new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, True, true));
 		}
-		
+
+		sealedSystemNS.set(true);
+
 		// load other modules requested for preload
 		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
-		
+
 		return env;
 	}
 	
@@ -368,14 +377,19 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "ns": { // (ns alpha)
 					final VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
+						// prevent Venice's system namespaces from being altered
+						throw new VncException("Namespace '" + ns.getName() + "' cannot be reopened!");
+					}
 					Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns));
 					return ns;
 				}
 				
 				case "ns-remove": { // (ns-remove ns)
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
-					if (Namespaces.isCoreNS(ns)) {
-						throw new VncException("Cannot remove namespace core");
+					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
+						// prevent Venice's system namespaces from being altered
+						throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
 					}
 					else {
 						env.removeGlobalSymbolsByNS(ns);
@@ -386,8 +400,9 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "ns-unmap": { // (ns-unmap ns sym)
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
-					if (Namespaces.isCoreNS(ns)) {
-						throw new VncException("Cannot remove a core symbol");
+					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
+						// prevent Venice's system namespaces from being altered
+						throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
 					}
 					else {
 						final VncSymbol sym = Namespaces.qualifySymbol(ns, Coerce.toVncSymbol(ast.third()));
@@ -560,7 +575,7 @@ public class VeniceInterpreter implements Serializable  {
 
 					final Env recur_env = recursionPoint.getLoopEnv();
 	
-					// denormalize for best performance (loops are performance critical)
+					// denormalize for best performance (short loops are performance critical)
 					switch(ast.size()) {
 						case 2:
 							// [1][2] calculate and bind the single new value
@@ -588,9 +603,8 @@ public class VeniceInterpreter implements Serializable  {
 							// [1] calculate new values
 							final VncList values = ast.rest();
 							final VncVal[] newValues = new VncVal[values.size()];
-							int kk=0;
-							for(VncVal v : values.getList()) {
-								newValues[kk++] = evaluate(v, env);
+							for(int kk=0; kk<values.size(); kk++) {
+								newValues[kk++] = evaluate(values.nth(kk), env);
 							}
 							
 							// [2] bind the new values
@@ -1474,4 +1488,5 @@ public class VeniceInterpreter implements Serializable  {
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
+	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
 }
