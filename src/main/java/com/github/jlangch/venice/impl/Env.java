@@ -110,12 +110,16 @@ public class Env implements Serializable {
 	 * @return returns true if a symbol is bound to a value else false
 	 */
 	public boolean isBound(final VncSymbol sym) {
-		final Env e = findEnv(sym);
-		if (e != null) {
-			return e.getLocalVar(sym) != null;
+		final String ns = Namespaces.getNamespace(sym.getName());
+		if (ns != null) {
+			// if we got a namespace it must be a global var
+			return getGlobalVar(sym) != null;
 		}
 		else {
-			return getGlobalVar(sym) != null;
+			final Env e = findEnv(sym);
+			return e != null
+					? e.getLocalVar(sym) != null
+					: getGlobalVar(sym) != null;
 		}
 	}
 
@@ -437,14 +441,22 @@ public class Env implements Serializable {
 	}
 	
 	private VncVal getOrElse(final VncSymbol sym, final VncVal defaultVal) {
-		final Env e = findEnv(sym);
-		if (e != null) {
-			final Var loc = e.getLocalVar(sym);
-			return loc == null ? defaultVal : loc.getVal();
-		}
-		else {
+		final String ns = Namespaces.getNamespace(sym.getName());
+		if (ns != null) {
+			// if we got a namespace it must be a global var
 			final Var glob = getGlobalVar(sym);
 			return glob == null ? defaultVal : glob.getVal();
+		}
+		else {
+			final Env e = findEnv(sym);
+			if (e != null) {
+				final Var loc = e.getLocalVar(sym);
+				return loc == null ? defaultVal : loc.getVal();
+			}
+			else {
+				final Var glob = getGlobalVar(sym);
+				return glob == null ? defaultVal : glob.getVal();
+			}
 		}
 	}
 	

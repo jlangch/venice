@@ -77,12 +77,12 @@ public class DocGenerator {
 			data.put("details", getDocItems(concat(left, right)));
 			data.put("snippets", new CodeSnippetReader().readSnippets());
 			
-			// HTML
+			// [1] create a HTML
 			data.put("pdfmode", false);
 			final String html = CheatsheetRenderer.renderXHTML(data);
 			save(new File(getUserDir(), "cheatsheet.html"), html);
 			
-			// PDF
+			// [2] create a PDF
 			data.put("pdfmode", true);
 			final String xhtml = CheatsheetRenderer.renderXHTML(data);
 			final ByteBuffer pdf = CheatsheetRenderer.renderPDF(xhtml);
