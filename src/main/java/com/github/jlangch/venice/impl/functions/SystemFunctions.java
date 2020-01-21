@@ -637,15 +637,15 @@ public class SystemFunctions {
 				public VncVal apply(final VncList args) {
 					assertArity("java-version-info", args, 0);
 
-					return VncHashMap.of(
+					return VncOrderedMap.of(
 							new VncKeyword("version"),
 							new VncString(System.getProperty("java.version")),
 							new VncKeyword("vendor"),
 							new VncString(System.getProperty("java.vendor")),
-							new VncKeyword("vm-name"),
-							new VncString(System.getProperty("java.vm.name")),
 							new VncKeyword("vm-version"),
 							new VncString(System.getProperty("java.vm.version")),
+							new VncKeyword("vm-name"),
+							new VncString(System.getProperty("java.vm.name")),
 							new VncKeyword("vm-vendor"),
 							new VncString(System.getProperty("java.vm.vendor")));
 				}
