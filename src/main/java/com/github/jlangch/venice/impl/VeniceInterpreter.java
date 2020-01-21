@@ -306,7 +306,7 @@ public class VeniceInterpreter implements Serializable  {
 							env.pushGlobalDynamic(globVar.getName(), val);
 						}
 						else {
-							env.setGlobal(new Var(globVar.getName(), val));
+							env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
 						}
 						return val;
 					}

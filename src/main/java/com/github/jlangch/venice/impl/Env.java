@@ -215,18 +215,22 @@ public class Env implements Serializable {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
-		final Var v = getGlobalVar(sym);
-
-		// allow shadowing of a global non function var by a local var
-		// e.g.:   (do (defonce x 1) (defonce y 3) (let [x 10 y 20] (+ x y)))
-		if (v != null && !v.isOverwritable() && Types.isVncFunction(v.getVal())) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-				throw new VncException(String.format(
-							"The global var '%s' must not be shadowed by a local var!", 
-							sym));
+		if (failOnShadowingGlobalVars) {
+			final Var v = getGlobalVar(sym);
+	
+			// check shadowing of a global non function var by a local var
+			//
+			// e.g.:   (do (defonce x 1) (let [x 10 y 20] (+ x y)))
+			//         (let [+ 10] (core/+ + 20))
+			if (v != null && !v.isOverwritable() && Types.isVncFunction(v.getVal())) {
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+					throw new VncException(String.format(
+								"The global var '%s' must not be shadowed by a local var!", 
+								sym));
+				}
 			}
 		}
-
+		
 		setLocalVar(sym, new Var(sym, val));
 		
 		return this;
@@ -474,18 +478,19 @@ public class Env implements Serializable {
 		if (qualified && name.startsWith("core/")) {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
-		
-		if (!qualified) {
-			final VncSymbol ns = Namespaces.getCurrentNS();
-			if (!Namespaces.isCoreNS(ns)) {
-				final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
-				final Var v = getGlobalVarRaw(qualifiedKey);
-				if (v != null) return v;
+		else {
+			if (!qualified) {
+				final VncSymbol ns = Namespaces.getCurrentNS();
+				if (!Namespaces.isCoreNS(ns)) {
+					final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
+					final Var v = getGlobalVarRaw(qualifiedKey);
+					if (v != null) return v;
+				}
 			}
+	
+			// symbol with namespace
+			return getGlobalVarRaw(sym);
 		}
-
-		// symbol with namespace
-		return getGlobalVarRaw(sym);
 	}
 
 	private Var getGlobalVarRaw(final VncSymbol sym) {
@@ -571,6 +576,9 @@ public class Env implements Serializable {
 	
 	
 	private static final long serialVersionUID = 9002640180394221858L;
+	
+	// Note: Clojure allows shadowing global vars by local vars
+	private boolean failOnShadowingGlobalVars = false; 
 
 	private final Env outer;
 	private final int level;
