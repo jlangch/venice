@@ -103,6 +103,11 @@ public class ReservedSymbols {
 					"proxify",
 					"*version*",
 					"*newline*",
-					"*ns*"));
+					"*ns*",
+					"*loaded-modules*",
+					"*loaded-files*",
+					"*load-path*",
+					"*run-mode*",
+					"*macroexpand-on-load*"));
 	
 }
