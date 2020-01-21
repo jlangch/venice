@@ -534,8 +534,8 @@ public class VeniceInterpreter implements Serializable  {
 						eval_ast(expressions.butlast(), env);
 						orig_ast = expressions.last();						
 					}
-					break;
 				}
+				break;
 	
 				case "recur":  { // (recur exprs*)
 					// +----------------+-------------------------------------------+---------------+
@@ -551,9 +551,16 @@ public class VeniceInterpreter implements Serializable  {
 					// | case           | (case const const tail ... default tail)  | No            |
 					// | or, and        | (or test test ... tail)                   | No            |
 					// +----------------+-------------------------------------------+---------------+
-	
+
+					if (recursionPoint == null) {
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("recur", ast))) {
+							throw new VncException("The recur expression is not in tail position!");
+						}
+					}
+
 					final Env recur_env = recursionPoint.getLoopEnv();
 	
+					// denormalize for best performance (loops are performance critical)
 					switch(ast.size()) {
 						case 2:
 							// [1][2] calculate and bind the single new value
@@ -601,8 +608,8 @@ public class VeniceInterpreter implements Serializable  {
 						eval_ast(expressions.butlast(), env);
 					}
 					orig_ast = expressions.last();						
-					break;
 				}
+				break;
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try", ast))) {

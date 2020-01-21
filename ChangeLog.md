@@ -15,6 +15,7 @@ and this project adheres to
 ### Added
 
 - performance improvements to function invocation
+- throw an exception if a recur expression is not in tail position
 
 ### Fixed
 
