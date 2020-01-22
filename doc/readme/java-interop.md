@@ -4,7 +4,7 @@ Venice supports calling Java constructors, static and instance methods as well a
 accessing static class and instance fields. 
 
 Venice is using reflection to access Java methods and fields. Java Reflection is 
-impressively fast, especially when caching the the reflection meta data on classes, 
+impressively fast, especially when caching the reflection meta data on classes, 
 methods, and fields as Venice is doing. See the benchmark further down.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
