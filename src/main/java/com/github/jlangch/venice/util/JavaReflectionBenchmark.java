@@ -59,7 +59,7 @@ public class JavaReflectionBenchmark {
 			.benchmark(ii -> {
 				final long start = System.nanoTime();
 	
-				for(int kk=0; kk<100; kk++) {
+				for(long kk=0; kk<100L; kk++) {
 					final BigInteger i1 = BigInteger.valueOf(ii);
 					final BigInteger i2 = BigInteger.valueOf(100L);
 					final BigInteger sum = i1.add(i2);
@@ -92,7 +92,7 @@ public class JavaReflectionBenchmark {
 						try {
 							final long start = System.nanoTime();
 			
-							for(int kk=0; kk<100; kk++) {
+							for(long kk=0; kk<100L; kk++) {
 								final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {ii});
 								final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
 								final BigInteger sum = (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
