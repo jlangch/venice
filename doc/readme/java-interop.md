@@ -3,9 +3,10 @@
 Venice supports calling Java constructors, static and instance methods as well as 
 accessing static class and instance fields. 
 
-Venice is using reflection to access Java methods and fields. Java Reflection is 
-suprisingly fast, especially when caching the reflection meta data on classes, 
-methods, and fields as Venice is doing. See the benchmark further down.
+To access methods and fields of Java objects Venice is using reflection. Java 
+reflection is suprisingly fast, especially when caching the reflection meta 
+data on classes, methods, and fields as Venice is doing. See the benchmark 
+further down.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
 object types byte, short, int, long, float, double, Byte, Short, Integer, Long, 
@@ -229,17 +230,19 @@ _Note:_ this is not the fastest way to filter collections
 The benchmarks did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
 
 
-| Java 8 Server VM  |   Calls | Elapsed | Per Call |
-| :---              |    ---: |    ---: |     ---: |
-| Native Java       |  10'000 |  903 µs |    95 ns |
-| Reflective Java   |  10'000 |  735 µs |    77 ns |
+| Java 8 Server VM  | Calls | Elapsed | Per Call |
+| :---              |  ---: |    ---: |     ---: |
+| Native Java       | 8'000 |  903 µs |    95 ns |
+| Reflective Java   | 8'000 |  735 µs |    77 ns |
 
-| Java 11 Server VM |   Calls | Elapsed | Per Call |
-| :---              |    ---: |    ---: |     ---: |
-| Native Java       |  10'000 |  867 µs |    91 ns |
-| Reflective Java   |  10'000 |  577 µs |    60 ns |
+| Java 11 Server VM | Calls | Elapsed | Per Call |
+| :---              |  ---: |    ---: |     ---: |
+| Native Java       | 8'000 |  867 µs |    91 ns |
+| Reflective Java   | 8'000 |  577 µs |    60 ns |
 
-_Warmup  1'000'000 calls, benchmarking 10'000 calls_
+_Warmup  1'000'000 calls, benchmarking 10'000 calls. The benchmark removes_
+_20% of the slowest measures as outliers giving an effective number of 8'000_
+_calls._
 
 Reflective calls are impressively fast compared to native calls. 
 

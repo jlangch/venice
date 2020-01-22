@@ -90,7 +90,9 @@ public class Benchmark {
         final String sPerCall = formatNanos(elapsed 
 												/ measures.size() 
 												/ (microIterations > 2 ? microIterations : 1));
-        
+
+        System.out.println(String.format("%s Calls : %12s", title, measures.size()));
+
         System.out.println(String.format("%s Elapsed : %12s", title, sElapsed));
         
         System.out.println(String.format("%s Per call: %12s", title, sPerCall));
@@ -112,10 +114,11 @@ public class Benchmark {
 	
 	private List<Long> stripOutliers(final List<Long> measures) {
 		// definition: the top 20% of the measures are outliers
+		final int limit = (measures.size() * 8) / 10;
 		return measures
 					.stream()
 					.sorted()
-					.limit(measures.size() - measures.size() / 20) 
+					.limit(limit) 
 					.collect(Collectors.toList());
 	}
 	
