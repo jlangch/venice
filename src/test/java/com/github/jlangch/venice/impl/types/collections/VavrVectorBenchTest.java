@@ -40,102 +40,152 @@ public class VavrVectorBenchTest {
 	private final int iterations = 10_000;
 	private final int actions = 1_000;
 
+	
 	@Test
 	public void test_vector_prepend() {
-    	new Benchmark("Vector::prepend", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v = v.prepend(0L);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::prepend")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v = v.prepend(0L);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	@Test
 	public void test_vector_append() {
-    	new Benchmark("Vector::append", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v = v.append(0L);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::append")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v = v.append(0L);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 
 	@Test
 	public void test_vector_first() {
-    	new Benchmark("Vector::first", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.get(0);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::first")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.get(0);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
  	}
 	
 	@Test
 	public void test_vector_last() {
-    	new Benchmark("Vector::last", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.last();
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::last")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.last();
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 
 	@Test
 	public void test_vector_rest() {
-    	new Benchmark("Vector::rest", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.tail();
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::rest")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.tail();
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	@Test
 	public void test_vector_butlast() {
-    	new Benchmark("Vector::butlast", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.slice(0, v.length()-1);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::butlast")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.slice(0, v.length()-1);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	@Test
 	public void test_vector_drop_1() {
-    	new Benchmark("Vector::drop", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		Vector<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.drop(1);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Vector::drop1")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		Vector<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.drop(1);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	

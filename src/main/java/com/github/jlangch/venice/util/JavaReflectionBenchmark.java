@@ -24,10 +24,12 @@ package com.github.jlangch.venice.util;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 
-
 // ${JAVA_11_HOME}/bin/java -cp "libs/*" com.github.jlangch.venice.util.JavaReflectionBenchmark
 // ${JAVA_8_HOME}/bin/java -cp "libs/*" com.github.jlangch.venice.util.JavaReflectionBenchmark
 
+// https://dev.to/o_a_e/jmh-with-gradle--from-easy-to-simple-52ec
+// https://www.cuba-platform.com/blog/think-twice-before-using-reflection/
+// https://github.com/cuba-rnd/entity-lambda-accessors-benchmark
 public class JavaReflectionBenchmark {
 	
 	public static void main(final String[] args) {
@@ -47,19 +49,26 @@ public class JavaReflectionBenchmark {
 	private static void test_native() {
 		final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
 
-		new Benchmark("Native Java", 10_000, 100, 100).benchmark(ii -> {
-			final long start = System.nanoTime();
-
-			for(int kk=0; kk<100; kk++) {
-				final BigInteger i1 = BigInteger.valueOf(ii);
-				final BigInteger i2 = BigInteger.valueOf(100L);
-				final BigInteger sum = i1.add(i2);
-				
-				total[0] = total[0].add(sum); // prevent JIT from optimizing too much
-			}
-
-			return System.nanoTime() - start;
-		});
+		Benchmark
+			.builder()
+			.title("Native Java")
+			.warmupIterations(10000)
+			.iterations(100)
+			.microIterations(100)
+			.build()
+			.benchmark(ii -> {
+				final long start = System.nanoTime();
+	
+				for(int kk=0; kk<100; kk++) {
+					final BigInteger i1 = BigInteger.valueOf(ii);
+					final BigInteger i2 = BigInteger.valueOf(100L);
+					final BigInteger sum = i1.add(i2);
+					
+					total[0] = total[0].add(sum); // prevent JIT from optimizing too much
+				}
+	
+				return System.nanoTime() - start;
+			});
 
 		System.out.println("SUM: " + total[0]);
 	}
@@ -71,25 +80,32 @@ public class JavaReflectionBenchmark {
 			// cache methods
 			final Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
 			final Method mAdd = BigInteger.class.getDeclaredMethod("add", BigInteger.class);
-	
-			new Benchmark("Reflective Java", 10_000, 100, 100).benchmark(ii -> {
-				try {
-					final long start = System.nanoTime();
-	
-					for(int kk=0; kk<100; kk++) {
-						final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {ii});
-						final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
-						final BigInteger sum = (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
-	
-						total[0] = total[0].add(sum); // prevent JIT from optimizing too much
-					}
-				
-					return System.nanoTime() - start;
-				}
-				catch(Exception ex) {
-					throw new RuntimeException(ex);
-				}
-			});
+
+			Benchmark
+				.builder()
+				.title("Reflective Java")
+				.warmupIterations(10000)
+				.iterations(100)
+				.microIterations(100)
+				.build()
+				.benchmark(ii -> {
+						try {
+							final long start = System.nanoTime();
+			
+							for(int kk=0; kk<100; kk++) {
+								final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {ii});
+								final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
+								final BigInteger sum = (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
+			
+								total[0] = total[0].add(sum); // prevent JIT from optimizing too much
+							}
+						
+							return System.nanoTime() - start;
+						}
+						catch(Exception ex) {
+							throw new RuntimeException(ex);
+						}
+					});
 	
 			System.out.println("SUM: " + total[0]);
 		}

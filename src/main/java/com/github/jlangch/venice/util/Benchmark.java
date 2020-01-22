@@ -37,29 +37,16 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
  */
 public class Benchmark {
 
-	public Benchmark(
+	private Benchmark(
 			final String title, 
-			final int iterations
-	) {
-		this(title, iterations, iterations, 0);
-	}
-
-	public Benchmark(
-			final String title, 
-			final int iterations, 
-			final int microIterations
-	) {
-		this(title, iterations, iterations, microIterations);
-	}
-
-	public Benchmark(
-			final String title, 
-			final int warmupIterations, 
+			final int warmupIterations,
+			final boolean runGC,
 			final int iterations, 
 			final int microIterations
 	) {
 		this.title = title;
 		this.warmupIterations = warmupIterations;
+		this.runGC = runGC;
 		this.iterations = iterations;
 		this.microIterations = microIterations;
 	}
@@ -71,9 +58,9 @@ public class Benchmark {
            task.apply(ii);
         }
         
-        // run GC twice after warmup
-        System.gc();
-        System.gc();
+        if (runGC) {
+        	runSystemGC();
+        }
         
         // benchmark
         final List<Long> raw = new ArrayList<>();       
@@ -122,9 +109,64 @@ public class Benchmark {
 					.collect(Collectors.toList());
 	}
 	
+    private void runSystemGC() {
+        // Run the GC twice, and force finalization before each GCs.
+        System.runFinalization();
+        System.gc();
+        System.runFinalization();
+        System.gc();
+
+        try { Thread.sleep(1000); } catch(Exception ex) {}
+    }
+	
+	public static Builder builder() {
+		return new Builder();
+	}
+	
+	public static class Builder {
+		public Builder() {
+		}
+
+		public Builder title(final String title) {
+			this.title = title;
+			return this;
+		}
+
+		public Builder warmupIterations(final int warmupIterations) {
+			this.warmupIterations = warmupIterations;
+			return this;
+		}
+
+		public Builder iterations(final int iterations) {
+			this.iterations = iterations;
+			return this;
+		}
+
+		public Builder runGC(final boolean runGC) {
+			this.runGC = runGC;
+			return this;
+		}
+
+		public Builder microIterations(final int microIterations) {
+			this.microIterations = microIterations;
+			return this;
+		}
+
+		public Benchmark build() {
+			return new Benchmark(title, warmupIterations, runGC, iterations, microIterations);
+		}
+		
+		private String title = "Benchmark";
+		private int warmupIterations = 10;
+		private boolean runGC = true;
+		private int iterations = 10;
+		private int microIterations = 1;
+	}
+
 	
 	private final String title;
 	private final int warmupIterations;
+	private final boolean runGC;
 	private final int iterations;
 	private final int microIterations;
 }

@@ -35,10 +35,16 @@ public class Embed_06_PrecompiledShootout_2 {
         final Venice venice = new Venice();
         final PreCompiled precompiled = venice.precompile("example", expr, false);
 
-    	new Benchmark("Precompilation", 100_000).benchmark(ii -> {
-    		final long start = System.nanoTime();
-    		venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
-    		return System.nanoTime() - start;
-    	});
+		Benchmark
+			.builder()
+			.title("Precompilation")
+			.warmupIterations(100_000)
+			.iterations(5000)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	    		venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
+	    		return System.nanoTime() - start;
+	    	});
     }
 }

@@ -32,12 +32,18 @@ public class Embed_05_PrecompiledShootout_1 {
     	final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
 
         final Venice venice = new Venice();
-   	
-    	new Benchmark("No precompilation", 10_000).benchmark(ii -> {
-    		final long start = System.nanoTime();
-    		venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
-    		return System.nanoTime() - start;
-    	});
+
+		Benchmark
+			.builder()
+			.title("No precompilation")
+			.warmupIterations(10_000)
+			.iterations(1000)
+			.build()
+			.benchmark(ii -> {
+	  			final long start = System.nanoTime();
+	    		venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
+	    		return System.nanoTime() - start;
+	    	});
     }
 
 }

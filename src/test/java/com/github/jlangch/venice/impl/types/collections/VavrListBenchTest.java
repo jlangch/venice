@@ -37,22 +37,36 @@ public class VavrListBenchTest {
 
 	
 	@Test
-	public void test_vector_prepend() {
-    	new Benchmark("List::prepend", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		List<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v = v.prepend(0L);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+	public void test_list_prepend() {
+		Benchmark
+			.builder()
+			.title("List::prepend")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		List<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v = v.prepend(0L);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	@Test
-	public void test_vector_append() {
-    	new Benchmark("List::append", iterations, actions).benchmark(ii -> {
+	public void test_list_append() {
+		Benchmark
+		.builder()
+		.title("List::append")
+		.warmupIterations(iterations)
+		.iterations(iterations)
+		.microIterations(actions)
+		.build()
+		.benchmark(ii -> {
     		final long start = System.nanoTime();
              
     		List<Long> v = create(1000);
@@ -65,8 +79,15 @@ public class VavrListBenchTest {
 	}
 
 	@Test
-	public void test_vector_first() {
-    	new Benchmark("List::first", iterations, actions).benchmark(ii -> {
+	public void test_list_first() {
+		Benchmark
+		.builder()
+		.title("List::first")
+		.warmupIterations(iterations)
+		.iterations(iterations)
+		.microIterations(actions)
+		.build()
+		.benchmark(ii -> {
     		final long start = System.nanoTime();
              
     		List<Long> v = create(1000);
@@ -79,8 +100,15 @@ public class VavrListBenchTest {
  	}
 	
 	@Test
-	public void test_vector_last() {
-    	new Benchmark("List::last", iterations, actions).benchmark(ii -> {
+	public void test_list_last() {
+		Benchmark
+		.builder()
+		.title("List::last")
+		.warmupIterations(iterations)
+		.iterations(iterations)
+		.microIterations(actions)
+		.build()
+		.benchmark(ii -> {
     		final long start = System.nanoTime();
              
     		List<Long> v = create(1000);
@@ -93,45 +121,66 @@ public class VavrListBenchTest {
 	}
 
 	@Test
-	public void test_vector_rest() {
-    	new Benchmark("List::rest", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		List<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.tail();
-    		}
-
-            return System.nanoTime() - start;
-    	});
+	public void test_list_rest() {
+		Benchmark
+			.builder()
+			.title("List::rest")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	   			final long start = System.nanoTime();
+	             
+	    		List<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.tail();
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	@Test
-	public void test_vector_butlast() {
-    	new Benchmark("List::butlast", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		List<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.slice(0, v.length()-1);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+	public void test_list_butlast() {
+		Benchmark
+			.builder()
+			.title("List::butlast")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		List<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.slice(0, v.length()-1);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 	
 	@Test
-	public void test_vector_drop_1() {
-    	new Benchmark("List::drop", iterations, actions).benchmark(ii -> {
-    		final long start = System.nanoTime();
-             
-    		List<Long> v = create(1000);
-    		for(int jj=0; jj<actions; jj++) {
-    			v.drop(1);
-    		}
-
-            return System.nanoTime() - start;
-    	});
+	public void test_list_drop_1() {
+		Benchmark
+			.builder()
+			.title("List::drop1")
+			.warmupIterations(iterations)
+			.iterations(iterations)
+			.microIterations(actions)
+			.build()
+			.benchmark(ii -> {
+	    		final long start = System.nanoTime();
+	             
+	    		List<Long> v = create(1000);
+	    		for(int jj=0; jj<actions; jj++) {
+	    			v.drop(1);
+	    		}
+	
+	            return System.nanoTime() - start;
+	    	});
 	}
 
 	

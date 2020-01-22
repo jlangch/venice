@@ -602,7 +602,7 @@
      (prof :on)
      (prof :clear)
      (let [fn-perf-warmup# (fn _warmup [] (dorun ~warmup-iterations ~expr))
-           fn-perf-gc# (fn _warmup-gc [] (dorun 2 (gc)))
+           fn-perf-gc# (fn _warmup-gc [] (do (dorun 2 (gc)) (sleep 1000)))
            fn-perf-test# (fn _test [] (dorun ~test-iterations ~expr))]
        (fn-perf-warmup#)
        (fn-perf-gc#)
