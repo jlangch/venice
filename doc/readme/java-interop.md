@@ -205,7 +205,7 @@ _Note:_ this is not the fastest way to filter collections
         final Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
         final Method mAdd = BigInteger.class.getDeclaredMethod("add", BigInteger.class);
         
-         new Benchmark("Reflectiv Java", 1_000_000, 10_000, 1).benchmark(ii -> {
+         new Benchmark("Reflective Java", 1_000_000, 10_000, 1).benchmark(ii -> {
              try {
                 final long start = System.nanoTime();
                 final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {ii});
@@ -232,13 +232,13 @@ The benchmarks did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
 
 | Java 8 Server VM  | Calls | Elapsed | Per Call |
 | :---              |  ---: |    ---: |     ---: |
-| Native Java       | 8'000 |  903 µs |    95 ns |
-| Reflective Java   | 8'000 |  735 µs |    77 ns |
+| Native Java       | 8'000 |  614 µs |    76 ns |
+| Reflective Java   | 8'000 |  638 µs |    79 ns |
 
 | Java 11 Server VM | Calls | Elapsed | Per Call |
 | :---              |  ---: |    ---: |     ---: |
-| Native Java       | 8'000 |  867 µs |    91 ns |
-| Reflective Java   | 8'000 |  577 µs |    60 ns |
+| Native Java       | 8'000 |  597 µs |    74 ns |
+| Reflective Java   | 8'000 |  528 µs |    66 ns |
 
 _Warmup  1'000'000 calls, benchmarking 10'000 calls. The benchmark removes_
 _20% of the slowest measures as outliers giving an effective number of 8'000_
