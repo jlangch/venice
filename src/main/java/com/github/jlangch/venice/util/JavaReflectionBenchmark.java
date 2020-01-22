@@ -25,6 +25,9 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 
 
+// ${JAVA_11_HOME}/bin/java -cp "libs/*" com.github.jlangch.venice.util.JavaReflectionBenchmark
+// ${JAVA_8_HOME}/bin/java -cp "libs/*" com.github.jlangch.venice.util.JavaReflectionBenchmark
+
 public class JavaReflectionBenchmark {
 	
 	public static void main(final String[] args) {

@@ -74,7 +74,7 @@ public class Benchmark {
         // run GC twice after warmup
         System.gc();
         System.gc();
-
+        
         // benchmark
         final List<Long> raw = new ArrayList<>();       
         for(int ii=0; ii<iterations; ii++) {
@@ -89,7 +89,7 @@ public class Benchmark {
         final String sElapsed = formatNanos(elapsed);
         final String sPerCall = formatNanos(elapsed 
 												/ measures.size() 
-												/ (microIterations > 2 ? microIterations : 1));
+												/ (microIterations > 1 ? microIterations : 1));
 
         System.out.println(String.format("%s Calls   : %12s", title, measures.size() * microIterations));
 
