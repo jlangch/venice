@@ -49,17 +49,19 @@ public class JavaReflectionBenchmark {
 	private static void test_native() {
 		final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
 
+		final int microIterations = 400;
+		
 		Benchmark
 			.builder()
 			.title("Native Java")
 			.warmupIterations(10000)
-			.iterations(100)
-			.microIterations(100)
+			.iterations(400)
+			.microIterations(microIterations)
 			.build()
 			.benchmark(ii -> {
 				final long start = System.nanoTime();
 	
-				for(long kk=0; kk<100L; kk++) {
+				for(long kk=0; kk<microIterations; kk++) {
 					final BigInteger i1 = BigInteger.valueOf(ii);
 					final BigInteger i2 = BigInteger.valueOf(100L);
 					final BigInteger sum = i1.add(i2);
@@ -76,6 +78,8 @@ public class JavaReflectionBenchmark {
 	private static void test_reflective() {
 		try {
 			final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
+
+			final int microIterations = 400;
 	
 			// cache methods
 			final Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
@@ -85,14 +89,14 @@ public class JavaReflectionBenchmark {
 				.builder()
 				.title("Reflective Java")
 				.warmupIterations(10000)
-				.iterations(100)
-				.microIterations(100)
+				.iterations(400)
+				.microIterations(microIterations)
 				.build()
 				.benchmark(ii -> {
 						try {
 							final long start = System.nanoTime();
 			
-							for(long kk=0; kk<100L; kk++) {
+							for(long kk=0; kk<microIterations; kk++) {
 								final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {ii});
 								final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
 								final BigInteger sum = (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		

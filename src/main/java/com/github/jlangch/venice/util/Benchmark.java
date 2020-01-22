@@ -98,7 +98,7 @@ public class Benchmark {
 	private long sum(final List<Long> measures) {
 		return measures.stream().mapToLong(p -> p).sum();
 	}
-	
+
 	private List<Long> stripOutliers(final List<Long> measures) {
 		// definition: the top 20% of the measures are outliers
 		final int limit = (measures.size() * 8) / 10;
