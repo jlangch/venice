@@ -33,7 +33,7 @@ public class PerformanceTest {
 
 	@Test
 	public void test_native() {
-		final BigInteger[] total = new BigInteger[] {BigInteger.valueOf(0L)};
+		final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
 		
      	new Benchmark("Native Java", 1_000_000, 10_000, 1).benchmark(ii -> {
     		final long start = System.nanoTime();
@@ -46,11 +46,13 @@ public class PerformanceTest {
        		
     		return elapsed;
     	});
+     	
+     	System.out.println(total[0]);
 	}
 
 	@Test
 	public void test_reflective() throws Exception {
-		final BigInteger[] total = new BigInteger[] {BigInteger.valueOf(0L)};
+		final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
 		
 		// cache methods
 		final Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
@@ -72,6 +74,8 @@ public class PerformanceTest {
      			throw new RuntimeException(ex);
      		}
     	});
+     	
+     	System.out.println(total[0]);
 	}
 
 }

@@ -4,7 +4,7 @@ Venice supports calling Java constructors, static and instance methods as well a
 accessing static class and instance fields. 
 
 Venice is using reflection to access Java methods and fields. Java Reflection is 
-impressively fast, especially when caching the reflection meta data on classes, 
+suprisingly fast, especially when caching the reflection meta data on classes, 
 methods, and fields as Venice is doing. See the benchmark further down.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
@@ -178,7 +178,7 @@ _Note:_ this is not the fastest way to filter collections
 
 ```java
     public void test_native() {
-        final BigInteger[] total = new BigInteger[] {BigInteger.valueOf(0L)};
+        final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
         
          new Benchmark("Native Java", 100_000, 10_000, 1).benchmark(ii -> {
             final long start = System.nanoTime();
@@ -198,7 +198,7 @@ _Note:_ this is not the fastest way to filter collections
 
 ```java
     public void test_reflective() throws Exception {
-        final BigInteger[] total = new BigInteger[] {BigInteger.valueOf(0L)};
+        final BigInteger[] total = new BigInteger[] { BigInteger.ZERO };
         
         // cache methods
         final Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
