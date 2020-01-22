@@ -16,6 +16,9 @@ and this project adheres to
 
 - ...
 
+### Changed
+- to OpenPDF libs to 1.3.12
+
 
 
 ## [1.7.16] - 2020-01-21
