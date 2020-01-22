@@ -1,7 +1,11 @@
 # Java Interop
 
 Venice supports calling Java constructors, static and instance methods as well as 
-accessing static class and instance fields.
+accessing static class and instance fields. 
+
+Venice is using reflection to access Java methods and fields. Java Reflection is 
+impressively fast, especially when caching the the reflection meta data on classes, 
+methods, and fields as Venice is doing. See the benchmark further down.
 
 The Venice types long, double, and decimal are coerced to Java's primitive and
 object types byte, short, int, long, float, double, Byte, Short, Integer, Long, 
@@ -165,3 +169,77 @@ _Note:_ this is not the fastest way to filter collections
 
    (str (filter #(> (:age %) 30) users)))
 ```
+
+
+## Performance of reflective Java calls
+
+
+**Native Java calls:**
+
+```java
+    public void test_native() {
+        final BigInteger[] total = new BigInteger[] {BigInteger.valueOf(0L)};
+        
+         new Benchmark("Native Java", 100_000, 10_000, 1).benchmark(ii -> {
+            final long start = System.nanoTime();
+            final BigInteger i1 = BigInteger.valueOf(ii);
+            final BigInteger i2 = BigInteger.valueOf(100L);
+            final BigInteger sum = i1.add(i2);               
+            final long elapsed = System.nanoTime() - start;
+            
+            total[0] = total[0].add(sum); // prevent JIT from optimizing too much
+               
+            return elapsed;
+        });
+    }
+```
+
+**Reflective Java calls:**
+
+```java
+    public void test_reflective() throws Exception {
+        final BigInteger[] total = new BigInteger[] {BigInteger.valueOf(0L)};
+        
+        // cache methods
+        final Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
+        final Method mAdd = BigInteger.class.getDeclaredMethod("add", BigInteger.class);
+        
+         new Benchmark("Reflectiv Java", 1_000_000, 10_000, 1).benchmark(ii -> {
+             try {
+                final long start = System.nanoTime();
+                final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {ii});
+                final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
+                final BigInteger sum = (BigInteger)mAdd.invoke(i1, new Object[] {i2});                  
+                final long elapsed = System.nanoTime() - start;
+                
+                total[0] = total[0].add(sum); // prevent JIT from optimizing too much
+                   
+                return elapsed;
+            }
+             catch(Exception ex) {
+                 throw new RuntimeException(ex);
+             }
+        });
+    }
+
+```
+
+**Results:**
+
+The benchmarks did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
+
+
+| Java 8 Server VM  |   Calls | Elapsed | Per Call |
+| :---              |    ---: |    ---: |     ---: |
+| Native Java       | 100'000 |  903 µs |    95 ns |
+| Reflective Java   | 100'000 |  735 µs |    77 ns |
+
+| Java 11 Server VM |   Calls | Elapsed | Per Call |
+| :---              |    ---: |    ---: |     ---: |
+| Native Java       | 100'000 |  867 µs |    91 ns |
+| Reflective Java   | 100'000 |  577 µs |    60 ns |
+
+_Warmup  1'000'000 calls, benchmarking 10'000 calls_
+
+Reflective calls are impressively fast compared to native calls. 
+
