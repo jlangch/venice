@@ -70,6 +70,10 @@ public class Benchmark {
         for(int ii=0; ii<warmupIterations; ii++) {
            task.apply(ii);
         }
+        
+        // run GC twice after warmup
+        System.gc();
+        System.gc();
 
         // benchmark
         final List<Long> raw = new ArrayList<>();       
