@@ -231,13 +231,13 @@ The benchmarks did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
 
 | Java 8 Server VM  |   Calls | Elapsed | Per Call |
 | :---              |    ---: |    ---: |     ---: |
-| Native Java       | 100'000 |  903 µs |    95 ns |
-| Reflective Java   | 100'000 |  735 µs |    77 ns |
+| Native Java       |  10'000 |  903 µs |    95 ns |
+| Reflective Java   |  10'000 |  735 µs |    77 ns |
 
 | Java 11 Server VM |   Calls | Elapsed | Per Call |
 | :---              |    ---: |    ---: |     ---: |
-| Native Java       | 100'000 |  867 µs |    91 ns |
-| Reflective Java   | 100'000 |  577 µs |    60 ns |
+| Native Java       |  10'000 |  867 µs |    91 ns |
+| Reflective Java   |  10'000 |  577 µs |    60 ns |
 
 _Warmup  1'000'000 calls, benchmarking 10'000 calls_
 
