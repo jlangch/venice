@@ -56,7 +56,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 0 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 0 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -79,7 +80,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 1 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 1 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -102,7 +104,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 2 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 2 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -125,7 +128,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 3 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 3 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -148,7 +152,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 4 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 4 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -171,7 +176,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 5 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 5 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -194,7 +200,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 6 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 6 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -217,7 +224,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 7 arg instance method " + method.getName(), 
+						"Could not generate the function to access the 7 arg instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -245,7 +253,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-					"Could not generate the function to access the 0 arg void instance method " + method.getName(), 
+					"Could not generate the function to access the 0 arg void instance method '" + method.getName() 
+						+ "' on " + method.getDeclaringClass().getName(), 
 					ex);
 		}
 	}
@@ -268,7 +277,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-					"Could not generate the function to access the 1 arg void instance method " + method.getName(), 
+					"Could not generate the function to access the 1 arg void instance method '" + method.getName() 
+						+ "' on " + method.getDeclaringClass().getName(), 
 					ex);
 		}
 	}
@@ -291,7 +301,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 2 arg void instance method " + method.getName(), 
+						"Could not generate the function to access the 2 arg void instance method '" 
+							+ method.getName() + "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -314,7 +325,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 3 arg void instance method " + method.getName(), 
+						"Could not generate the function to access the 3 arg void instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -337,7 +349,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 4 arg void instance method " + method.getName(), 
+						"Could not generate the function to access the 4 arg void instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -360,7 +373,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 5 arg void instance method " + method.getName(), 
+						"Could not generate the function to access the 5 arg void instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -383,7 +397,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 6 arg void instance method " + method.getName(), 
+						"Could not generate the function to access the 6 arg void instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -406,7 +421,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 7 arg void instance method " + method.getName(), 
+						"Could not generate the function to access the 7 arg void instance method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -435,7 +451,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 0 arg static method " + method.getName(), 
+						"Could not generate the function to access the 0 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -458,7 +475,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 1 arg static method " + method.getName(), 
+						"Could not generate the function to access the 1 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -481,7 +499,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 2 arg static method " + method.getName(), 
+						"Could not generate the function to access the 2 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -504,7 +523,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 3 arg static method " + method.getName(), 
+						"Could not generate the function to access the 3 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -527,7 +547,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 4 arg static method " + method.getName(), 
+						"Could not generate the function to access the 4 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -550,7 +571,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 5 arg static method " + method.getName(), 
+						"Could not generate the function to access the 5 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -573,7 +595,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 6 arg static method " + method.getName(), 
+						"Could not generate the function to access the 6 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -596,7 +619,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 7 arg static method " + method.getName(), 
+						"Could not generate the function to access the 7 arg static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -624,7 +648,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-					"Could not generate the function to access the 0 arg void static method " + method.getName(), 
+					"Could not generate the function to access the 0 arg void static method '" + method.getName() 
+						+ "' on " + method.getDeclaringClass().getName(), 
 					ex);
 		}
 	}
@@ -647,7 +672,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-					"Could not generate the function to access the 1 arg void static method " + method.getName(), 
+					"Could not generate the function to access the 1 arg void static method '" + method.getName() 
+						+ "' on " + method.getDeclaringClass().getName(), 
 					ex);
 		}
 	}
@@ -670,7 +696,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 2 arg void static method " + method.getName(), 
+						"Could not generate the function to access the 2 arg void static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -693,7 +720,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 3 arg void static method " + method.getName(), 
+						"Could not generate the function to access the 3 arg void static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -716,7 +744,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 4 arg void static method " + method.getName(), 
+						"Could not generate the function to access the 4 arg void static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -739,7 +768,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 5 arg void static method " + method.getName(), 
+						"Could not generate the function to access the 5 arg void static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -762,7 +792,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 6 arg void static method " + method.getName(), 
+						"Could not generate the function to access the 6 arg void static method '" + method.getName() 
+							+ "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -785,7 +816,8 @@ public class LambdaMetafactoryUtil {
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the 7 arg void static method " + method.getName(), 
+						"Could not generate the function to access the 7 arg void static method '" 
+							+ method.getName() + "' on " + method.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
@@ -1008,94 +1040,58 @@ public class LambdaMetafactoryUtil {
 	// Fields
 	// ------------------------------------------------------------------------
 
-	public static Function1<Object,Object> instanceField_get(final Field field) {
+	public static MethodHandle instanceField_get(final Field field) {
 		try {
+			// fields are not supported by LambdaMetafactory
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			final MethodHandle handle = caller.unreflectGetter(field);
-			
-			return (Function1<Object,Object>)LambdaMetafactory
-					.metafactory(
-						caller,
-						"apply",
-						MethodType.methodType(Function1.class),
-						MethodType.methodType(Object.class, Object.class),
-						handle,
-						handle.type())
-					.getTarget()
-					.invoke();
+			return caller.unreflectGetter(field);
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the field " + field.getName(), 
+						"Could not generate the function to access the field " + field.getName() 
+							+ " on " + field.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
 	
-	public static Consumer2<Object,Object> instanceField_set(final Field field) {
+	public static MethodHandle instanceField_set(final Field field) {
 		try {
+			// fields are not supported by LambdaMetafactory
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			final MethodHandle handle = caller.unreflectSetter(field);
-			
-			return (Consumer2<Object,Object>)LambdaMetafactory
-					.metafactory(
-						caller,
-						"accept",
-						MethodType.methodType(Consumer2.class),
-						MethodType.methodType(Void.TYPE, Object.class, Object.class),
-						handle,
-						handle.type())
-					.getTarget()
-					.invoke();
+			return caller.unreflectSetter(field);
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the field " + field.getName(), 
+						"Could not generate the function to access the field " 
+							+ field.getName() + " on " + field.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
 
-	public static Function0<Object> staticField_get(final Field field) {
+	public static MethodHandle staticField_get(final Field field) {
 		try {
+			// fields are not supported by LambdaMetafactory
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			final MethodHandle handle = caller.unreflectGetter(field);
-			
-			return (Function0<Object>)LambdaMetafactory
-					.metafactory(
-						caller,
-						"apply",
-						MethodType.methodType(Function0.class),
-						MethodType.methodType(Object.class),
-						handle,
-						handle.type())
-					.getTarget()
-					.invoke();
+			return caller.unreflectGetter(field);
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the field " + field.getName(), 
+						"Could not generate the function to access the field " + field.getName() 
+							+ " on " + field.getDeclaringClass().getName(), 
 						ex);
 		}
 	}
 	
-	public static Consumer1<Object> staticField_set(final Field field) {
+	public static MethodHandle staticField_set(final Field field) {
 		try {
+			// fields are not supported by LambdaMetafactory
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			final MethodHandle handle = caller.unreflectSetter(field);
-			
-			return (Consumer1<Object>)LambdaMetafactory
-					.metafactory(
-						caller,
-						"accept",
-						MethodType.methodType(Consumer1.class),
-						MethodType.methodType(Void.TYPE, Object.class),
-						handle,
-						handle.type())
-					.getTarget()
-					.invoke();
+			return caller.unreflectSetter(field);
 		} 
 		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the field " + field.getName(), 
+						"Could not generate the function to access the field " + field.getName() 
+							+ " on " + field.getDeclaringClass().getName(), 
 						ex);
 		}
 	}

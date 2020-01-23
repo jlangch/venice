@@ -23,7 +23,9 @@ package com.github.jlangch.venice.impl.util.reflect;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
@@ -40,7 +42,7 @@ import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Functio
 public class LambdaMetafactoryUtilTest {
 
 	@Test
-	public void test0ArgFunction() throws Exception {
+	public void test_instanceMethod_0_args() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_void");
@@ -51,7 +53,7 @@ public class LambdaMetafactoryUtilTest {
 	}
 
 	@Test
-	public void test1ArgFunction() throws Exception {
+	public void test_instanceMethod_1_args() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_string", String.class);
@@ -62,7 +64,7 @@ public class LambdaMetafactoryUtilTest {
 	}
 
 	@Test
-	public void test2ArgFunction() throws Exception {
+	public void test_instanceMethod_2_args() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_string_string", String.class, String.class);
@@ -76,7 +78,7 @@ public class LambdaMetafactoryUtilTest {
 
 	
 	@Test
-	public void test0ArgVoidFunction() throws Exception {
+	public void test_instanceMethodVoid_0_args() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_void");
@@ -84,11 +86,11 @@ public class LambdaMetafactoryUtilTest {
 		final Consumer1<Object> fn = LambdaMetafactoryUtil.instanceMethodVoid_0_args(m);
 		fn.accept(to);
 		
-		assertEquals("void", to.last());
+		assertEquals("void", TestObject.last());
 	}
 	
 	@Test
-	public void test1ArgVoidFunction() throws Exception {
+	public void test_instanceMethodVoid_1_args() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_string", String.class);
@@ -96,14 +98,14 @@ public class LambdaMetafactoryUtilTest {
 		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.instanceMethodVoid_1_args(m);
 		
 		fn.accept(to, "arg1");		
-		assertEquals("arg1", to.last());
+		assertEquals("arg1", TestObject.last());
 		
 		fn.accept(to, null);		
-		assertEquals("null", to.last());
+		assertEquals("null", TestObject.last());
 	}
 	
 	@Test
-	public void test2ArgVoidFunction() throws Exception {
+	public void test_instanceMethodVoid_2_args() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_string_string", String.class, String.class);
@@ -111,18 +113,18 @@ public class LambdaMetafactoryUtilTest {
 		final Consumer3<Object,Object,Object> fn = LambdaMetafactoryUtil.instanceMethodVoid_2_args(m);
 
 		fn.accept(to, "arg1", "arg2");	
-		assertEquals("arg1-arg2", to.last());
+		assertEquals("arg1-arg2", TestObject.last());
 
 		fn.accept(to, null, "arg2");	
-		assertEquals("null-arg2", to.last());
+		assertEquals("null-arg2", TestObject.last());
 
 		fn.accept(to, null, null);	
-		assertEquals("null-null", to.last());
+		assertEquals("null-null", TestObject.last());
 	}
 	
 
 	@Test
-	public void test1ArgFunction_long() throws Exception {
+	public void test_instanceMethod_1_args_long() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_long_long", Long.class);
@@ -134,7 +136,7 @@ public class LambdaMetafactoryUtilTest {
 	}
 	
 	@Test
-	public void test1ArgFunction_long_primitive() throws Exception {
+	public void test_instanceMethod_1_args_long_primitive() throws Exception {
 		final TestObject to = new TestObject();
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_long_long_primitive", long.class);
@@ -152,7 +154,7 @@ public class LambdaMetafactoryUtilTest {
 	}
 	
 	@Test
-	public void test0ArgConstructor_String() throws Exception {
+	public void test_constructor_0_args_string() throws Exception {
 		final Constructor<?> c = String.class.getConstructor();
 
 		final Function0<Object> fn = LambdaMetafactoryUtil.constructor_0_args(c);
@@ -160,7 +162,7 @@ public class LambdaMetafactoryUtilTest {
 	}
 	
 	@Test
-	public void test1ArgConstructor_Long() throws Exception {
+	public void test_constructor_1_args_long() throws Exception {
 		final Constructor<?> c = Long.class.getConstructor(long.class);
 
 		final Function1<Object,Object> fn = LambdaMetafactoryUtil.constructor_1_args(c);
@@ -168,14 +170,57 @@ public class LambdaMetafactoryUtilTest {
 		assertEquals(100L, fn.apply(100L));
 	}
 	
-
 	@Test
-	public void test1_argstaticFunction() throws Exception {
+	public void test_staticMethod_1_args() throws Exception {
 		final Method m = TestObject.class.getDeclaredMethod("fn_static_string_string", String.class);
 
 		final Function1<Object,Object> fn = LambdaMetafactoryUtil.staticMethod_1_args(m);
 		assertEquals("arg1", fn.apply("arg1"));
-		assertEquals("null", fn.apply(null));
+		assertEquals(null, fn.apply(null));
+	}
+	
+	@Test
+	public void test_staticMethodVoid_1_args() throws Exception {
+		final Method m = TestObject.class.getDeclaredMethod("fn_static_void_string", String.class);
+
+		final Consumer1<Object> fn = LambdaMetafactoryUtil.staticMethodVoid_1_args(m);
+		
+		fn.accept("arg1");
+		assertEquals("arg1", TestObject.last());
+		
+
+		fn.accept(null);
+		assertEquals(null, TestObject.last());
+	}
+	
+	@Test
+	public void test_instanceField_get() throws Throwable {
+		final TestObject to = new TestObject();
+		
+		final Field f = TestObject.class.getField("field_string");
+
+		final MethodHandle get_ = LambdaMetafactoryUtil.instanceField_get(f);
+		final MethodHandle set_ = LambdaMetafactoryUtil.instanceField_set(f);
+		
+		set_.invoke(to, "arg1");	
+		assertEquals("arg1", get_.invoke(to));
+		
+		set_.invoke(to, null);
+		assertEquals(null, get_.invoke(to));
+	}
+	
+	@Test
+	public void test_staticField_get() throws Throwable {
+		final Field f = TestObject.class.getField("field_static_string");
+
+		final MethodHandle get_ = LambdaMetafactoryUtil.staticField_get(f);
+		final MethodHandle set_ = LambdaMetafactoryUtil.staticField_set(f);
+		
+		set_.invoke("arg1");
+		assertEquals("arg1", get_.invoke());
+		
+		set_.invoke(null);
+		assertEquals(null, get_.invoke());
 	}
 	
 	
@@ -231,20 +276,30 @@ public class LambdaMetafactoryUtilTest {
 			return (Long)last;
 		}
 
+		public String field_string;
 		
+		
+	
 		// static ------------------------------------------------------------
 
 		public static String fn_static_string_string(final String s1) {
-			return "" + s1;
+			last = s1;
+			return (String)last;
+		}
+		
+		public static void fn_static_void_string(final String s1) {
+			last = s1;
 		}
 
-		
-		public Object last() {
+		public static Object last() {
 			return last;
 		}
 		
+		public static String field_static_string;
 		
-		private Object last = "init";
+		
+		
+		private static Object last = "init";
 	}
 
 }
