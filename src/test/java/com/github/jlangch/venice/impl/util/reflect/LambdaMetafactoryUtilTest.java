@@ -24,12 +24,11 @@ package com.github.jlangch.venice.impl.util.reflect;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Method;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer2;
+import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function3;
 import com.github.jlangch.venice.support.JavaObject;
@@ -38,27 +37,15 @@ import com.github.jlangch.venice.support.JavaObject;
 public class LambdaMetafactoryUtilTest {
 
 	@Test
-	public void testGetter() throws Exception {
+	public void test0ArgFunction() throws Exception {
 		final JavaObject jo = new JavaObject();
 		jo.setString("hello");
 		
 		final Method m = JavaObject.class.getDeclaredMethod("getString");
 
-		final Function<Object,Object> fn = LambdaMetafactoryUtil.getter(m);
+		final Function1<Object,Object> fn = LambdaMetafactoryUtil.function0Args(m);
 
 		assertEquals("hello", fn.apply(jo));
-	}
-
-	@Test
-	public void testSetter() throws Exception {
-		final JavaObject jo = new JavaObject();
-		
-		final Method m = JavaObject.class.getDeclaredMethod("setString", String.class);
-
-		final BiConsumer<Object,Object> fn = LambdaMetafactoryUtil.setter(m);
-		fn.accept(jo, "hello");
-		
-		assertEquals("hello", jo.getString());
 	}
 
 	@Test
@@ -67,20 +54,8 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = JavaObject.class.getDeclaredMethod("_String", String.class);
 
-		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function2(m);
+		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
 		assertEquals("hello", fn.apply(jo, "hello"));
-	}
-
-	@Test
-	public void test1ArgVoidFunction() throws Exception {
-		final JavaObject jo = new JavaObject();
-		
-		final Method m = JavaObject.class.getDeclaredMethod("setString", String.class);
-
-		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.consumer2(m);
-		fn.accept(jo, "hello");
-		
-		assertEquals("hello", jo.getString());
 	}
 
 	@Test
@@ -89,9 +64,22 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = JavaObject.class.getDeclaredMethod("_StringString", String.class, String.class);
 
-		final Function3<Object,Object,Object,Object> fn = LambdaMetafactoryUtil.function3(m);
+		final Function3<Object,Object,Object,Object> fn = LambdaMetafactoryUtil.function2Args(m);
 
 		assertEquals("hello,world", fn.apply(jo, "hello", "world"));
+	}
+
+	
+	@Test
+	public void test1ArgVoidFunction() throws Exception {
+		final JavaObject jo = new JavaObject();
+		
+		final Method m = JavaObject.class.getDeclaredMethod("setString", String.class);
+
+		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.consumer1Args(m);
+		fn.accept(jo, "hello");
+		
+		assertEquals("hello", jo.getString());
 	}
 	
 }
