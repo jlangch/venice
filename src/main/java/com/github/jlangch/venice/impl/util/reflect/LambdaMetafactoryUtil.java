@@ -26,6 +26,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
@@ -37,7 +38,7 @@ public class LambdaMetafactoryUtil {
 	// Instance method with return value
 	// ------------------------------------------------------------------------
 	
-	public static Function1<Object,Object> function0Args(final Method method) {
+	public static Function1<Object,Object> instanceMethod_0_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -60,7 +61,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function2<Object,Object,Object> function1Args(final Method method) {
+	public static Function2<Object,Object,Object> instanceMethod_1_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -83,7 +84,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function3<Object,Object,Object,Object> function2Args(final Method method) {
+	public static Function3<Object,Object,Object,Object> instanceMethod_2_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -106,7 +107,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function4<Object,Object,Object,Object,Object> function3Args(final Method method) {
+	public static Function4<Object,Object,Object,Object,Object> instanceMethod_3_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -129,7 +130,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function5<Object,Object,Object,Object,Object,Object> function4Args(final Method method) {
+	public static Function5<Object,Object,Object,Object,Object,Object> instanceMethod_4_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -152,7 +153,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function6<Object,Object,Object,Object,Object,Object,Object> function5Args(final Method method) {
+	public static Function6<Object,Object,Object,Object,Object,Object,Object> instanceMethod_5_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -175,7 +176,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function7<Object,Object,Object,Object,Object,Object,Object,Object> function6Args(final Method method) {
+	public static Function7<Object,Object,Object,Object,Object,Object,Object,Object> instanceMethod_6_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -198,7 +199,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function8<Object,Object,Object,Object,Object,Object,Object,Object,Object> function7Args(final Method method) {
+	public static Function8<Object,Object,Object,Object,Object,Object,Object,Object,Object> instanceMethod_7_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -226,7 +227,7 @@ public class LambdaMetafactoryUtil {
 	// Instance method void
 	// ------------------------------------------------------------------------
 
-	public static Consumer1<Object> consumer0Args(Method method) {
+	public static Consumer1<Object> instanceMethodVoid_0_args(Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -249,7 +250,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer2<Object,Object> consumer1Args(Method method) {
+	public static Consumer2<Object,Object> instanceMethodVoid_1_args(Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -272,7 +273,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer3<Object,Object,Object> consumer2Args(final Method method) {
+	public static Consumer3<Object,Object,Object> instanceMethodVoid_2_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -295,7 +296,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer4<Object,Object,Object,Object> consumer3Args(final Method method) {
+	public static Consumer4<Object,Object,Object,Object> instanceMethodVoid_3_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -318,7 +319,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer5<Object,Object,Object,Object,Object> consumer4Args(final Method method) {
+	public static Consumer5<Object,Object,Object,Object,Object> instanceMethodVoid_4_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -341,7 +342,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer6<Object,Object,Object,Object,Object,Object> consumer5Args(final Method method) {
+	public static Consumer6<Object,Object,Object,Object,Object,Object> instanceMethodVoid_5_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -364,7 +365,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer7<Object,Object,Object,Object,Object,Object,Object> consumer6Args(final Method method) {
+	public static Consumer7<Object,Object,Object,Object,Object,Object,Object> instanceMethodVoid_6_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -387,7 +388,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer8<Object,Object,Object,Object,Object,Object,Object,Object> consumer7Args(final Method method) {
+	public static Consumer8<Object,Object,Object,Object,Object,Object,Object,Object> instanceMethodVoid_7_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -416,7 +417,7 @@ public class LambdaMetafactoryUtil {
 	// Static method with return value
 	// ------------------------------------------------------------------------
 	
-	public static Function0<Object> functionStatic0Args(final Method method) {
+	public static Function0<Object> staticMethod_0_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -439,7 +440,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function1<Object,Object> functionStatic1Args(final Method method) {
+	public static Function1<Object,Object> staticMethod_1_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -462,7 +463,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function2<Object,Object,Object> functionStatic2Args(final Method method) {
+	public static Function2<Object,Object,Object> staticMethod_2_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -485,7 +486,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function3<Object,Object,Object,Object> functionStatic3Args(final Method method) {
+	public static Function3<Object,Object,Object,Object> staticMethod_3_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -508,7 +509,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function4<Object,Object,Object,Object,Object> functionStatic4Args(final Method method) {
+	public static Function4<Object,Object,Object,Object,Object> staticMethod_4_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -531,7 +532,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function5<Object,Object,Object,Object,Object,Object> functionStatic5Args(final Method method) {
+	public static Function5<Object,Object,Object,Object,Object,Object> staticMethod_5_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -554,7 +555,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function6<Object,Object,Object,Object,Object,Object,Object> functionStatic6Args(final Method method) {
+	public static Function6<Object,Object,Object,Object,Object,Object,Object> staticMethod_6_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -577,7 +578,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function7<Object,Object,Object,Object,Object,Object,Object,Object> functionStatic7Args(final Method method) {
+	public static Function7<Object,Object,Object,Object,Object,Object,Object,Object> staticMethod_7_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -605,7 +606,7 @@ public class LambdaMetafactoryUtil {
 	// Static method void
 	// ------------------------------------------------------------------------
 
-	public static Consumer0 consumerStatic0Args(Method method) {
+	public static Consumer0 staticMethodVoid_0_args(Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -628,7 +629,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer1<Object> consumerStatic1Args(Method method) {
+	public static Consumer1<Object> staticMethodVoid_1_args(Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -651,7 +652,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer2<Object,Object> consumerStatic2Args(final Method method) {
+	public static Consumer2<Object,Object> staticMethodVoid_2_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -674,7 +675,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer3<Object,Object,Object> consumerStatic3Args(final Method method) {
+	public static Consumer3<Object,Object,Object> staticMethodVoid_3_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -697,7 +698,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer4<Object,Object,Object,Object> consumerStatic4Args(final Method method) {
+	public static Consumer4<Object,Object,Object,Object> staticMethodVoid_4_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -720,7 +721,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer5<Object,Object,Object,Object,Object> consumerStatic5Args(final Method method) {
+	public static Consumer5<Object,Object,Object,Object,Object> staticMethodVoid_5_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -743,7 +744,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer6<Object,Object,Object,Object,Object,Object> consumerStatic6Args(final Method method) {
+	public static Consumer6<Object,Object,Object,Object,Object,Object> staticMethodVoid_6_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -766,7 +767,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
-	public static Consumer7<Object,Object,Object,Object,Object,Object,Object> consumerStatic7Args(final Method method) {
+	public static Consumer7<Object,Object,Object,Object,Object,Object,Object> staticMethodVoid_7_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -794,7 +795,7 @@ public class LambdaMetafactoryUtil {
 	// Constructors
 	// ------------------------------------------------------------------------
 
-	public static Function0<Object> constructor0Args(final Constructor<?> constructor) {
+	public static Function0<Object> constructor_0_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -817,7 +818,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function1<Object,Object> constructor1Args(final Constructor<?> constructor) {
+	public static Function1<Object,Object> constructor_1_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -840,7 +841,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function2<Object,Object,Object> constructor2Args(final Constructor<?> constructor) {
+	public static Function2<Object,Object,Object> constructor_2_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -863,7 +864,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function3<Object,Object,Object,Object> constructor3Args(final Constructor<?> constructor) {
+	public static Function3<Object,Object,Object,Object> constructor_3_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -886,7 +887,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function4<Object,Object,Object,Object,Object> constructor4Args(final Constructor<?> constructor) {
+	public static Function4<Object,Object,Object,Object,Object> constructor_4_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -909,7 +910,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function5<Object,Object,Object,Object,Object,Object> constructor5Args(final Constructor<?> constructor) {
+	public static Function5<Object,Object,Object,Object,Object,Object> constructor_5_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -932,7 +933,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function6<Object,Object,Object,Object,Object,Object,Object> constructor6Args(final Constructor<?> constructor) {
+	public static Function6<Object,Object,Object,Object,Object,Object,Object> constructor_6_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -955,7 +956,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function7<Object,Object,Object,Object,Object,Object,Object,Object> constructor7Args(final Constructor<?> constructor) {
+	public static Function7<Object,Object,Object,Object,Object,Object,Object,Object> constructor_7_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -978,7 +979,7 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 	
-	public static Function8<Object,Object,Object,Object,Object,Object,Object,Object,Object> constructor8Args(final Constructor<?> constructor) {
+	public static Function8<Object,Object,Object,Object,Object,Object,Object,Object,Object> constructor_8_args(final Constructor<?> constructor) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflectConstructor(constructor);
@@ -1002,6 +1003,103 @@ public class LambdaMetafactoryUtil {
 	}
 	
 	
+
+	// ------------------------------------------------------------------------
+	// Fields
+	// ------------------------------------------------------------------------
+
+	public static Function1<Object,Object> instanceField_get(final Field field) {
+		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			final MethodHandle handle = caller.unreflectGetter(field);
+			
+			return (Function1<Object,Object>)LambdaMetafactory
+					.metafactory(
+						caller,
+						"apply",
+						MethodType.methodType(Function1.class),
+						MethodType.methodType(Object.class, Object.class),
+						handle,
+						handle.type())
+					.getTarget()
+					.invoke();
+		} 
+		catch (Throwable ex) {
+			throw new JavaMethodInvocationException(
+						"Could not generate the function to access the field " + field.getName(), 
+						ex);
+		}
+	}
+	
+	public static Consumer2<Object,Object> instanceField_set(final Field field) {
+		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			final MethodHandle handle = caller.unreflectSetter(field);
+			
+			return (Consumer2<Object,Object>)LambdaMetafactory
+					.metafactory(
+						caller,
+						"accept",
+						MethodType.methodType(Consumer2.class),
+						MethodType.methodType(Void.TYPE, Object.class, Object.class),
+						handle,
+						handle.type())
+					.getTarget()
+					.invoke();
+		} 
+		catch (Throwable ex) {
+			throw new JavaMethodInvocationException(
+						"Could not generate the function to access the field " + field.getName(), 
+						ex);
+		}
+	}
+
+	public static Function0<Object> staticField_get(final Field field) {
+		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			final MethodHandle handle = caller.unreflectGetter(field);
+			
+			return (Function0<Object>)LambdaMetafactory
+					.metafactory(
+						caller,
+						"apply",
+						MethodType.methodType(Function0.class),
+						MethodType.methodType(Object.class),
+						handle,
+						handle.type())
+					.getTarget()
+					.invoke();
+		} 
+		catch (Throwable ex) {
+			throw new JavaMethodInvocationException(
+						"Could not generate the function to access the field " + field.getName(), 
+						ex);
+		}
+	}
+	
+	public static Consumer1<Object> staticField_set(final Field field) {
+		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			final MethodHandle handle = caller.unreflectSetter(field);
+			
+			return (Consumer1<Object>)LambdaMetafactory
+					.metafactory(
+						caller,
+						"accept",
+						MethodType.methodType(Consumer1.class),
+						MethodType.methodType(Void.TYPE, Object.class),
+						handle,
+						handle.type())
+					.getTarget()
+					.invoke();
+		} 
+		catch (Throwable ex) {
+			throw new JavaMethodInvocationException(
+						"Could not generate the function to access the field " + field.getName(), 
+						ex);
+		}
+	}
+
 	
 	// ------------------------------------------------------------------------
 	// SAM

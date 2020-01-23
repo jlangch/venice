@@ -45,7 +45,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_void");
 
-		final Function1<Object,Object> fn = LambdaMetafactoryUtil.function0Args(m);
+		final Function1<Object,Object> fn = LambdaMetafactoryUtil.instanceMethod_0_args(m);
 
 		assertEquals("-", fn.apply(to));
 	}
@@ -56,7 +56,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_string", String.class);
 
-		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
+		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.instanceMethod_1_args(m);
 		assertEquals("arg1", fn.apply(to, "arg1"));
 		assertEquals("null", fn.apply(to, null));
 	}
@@ -67,7 +67,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_string_string", String.class, String.class);
 
-		final Function3<Object,Object,Object,Object> fn = LambdaMetafactoryUtil.function2Args(m);
+		final Function3<Object,Object,Object,Object> fn = LambdaMetafactoryUtil.instanceMethod_2_args(m);
 
 		assertEquals("arg1-arg2", fn.apply(to, "arg1", "arg2"));
 		assertEquals("null-arg2", fn.apply(to, null, "arg2"));
@@ -81,7 +81,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_void");
 
-		final Consumer1<Object> fn = LambdaMetafactoryUtil.consumer0Args(m);
+		final Consumer1<Object> fn = LambdaMetafactoryUtil.instanceMethodVoid_0_args(m);
 		fn.accept(to);
 		
 		assertEquals("void", to.last());
@@ -93,7 +93,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_string", String.class);
 
-		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.consumer1Args(m);
+		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.instanceMethodVoid_1_args(m);
 		
 		fn.accept(to, "arg1");		
 		assertEquals("arg1", to.last());
@@ -108,7 +108,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_string_string", String.class, String.class);
 
-		final Consumer3<Object,Object,Object> fn = LambdaMetafactoryUtil.consumer2Args(m);
+		final Consumer3<Object,Object,Object> fn = LambdaMetafactoryUtil.instanceMethodVoid_2_args(m);
 
 		fn.accept(to, "arg1", "arg2");	
 		assertEquals("arg1-arg2", to.last());
@@ -127,7 +127,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_long_long", Long.class);
 
-		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
+		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.instanceMethod_1_args(m);
 		assertEquals(100L, fn.apply(to, Long.valueOf(100L)));
 		assertEquals(100L, fn.apply(to, 100L));
 		assertEquals(null, fn.apply(to, null));
@@ -139,7 +139,7 @@ public class LambdaMetafactoryUtilTest {
 		
 		final Method m = TestObject.class.getDeclaredMethod("fn_long_long_primitive", long.class);
 
-		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
+		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.instanceMethod_1_args(m);
 		assertEquals(100L, fn.apply(to, Long.valueOf(100L)));
 		assertEquals(100L, fn.apply(to, 100L));
 		
@@ -155,7 +155,7 @@ public class LambdaMetafactoryUtilTest {
 	public void test0ArgConstructor_String() throws Exception {
 		final Constructor<?> c = String.class.getConstructor();
 
-		final Function0<Object> fn = LambdaMetafactoryUtil.constructor0Args(c);
+		final Function0<Object> fn = LambdaMetafactoryUtil.constructor_0_args(c);
 		assertEquals("", fn.apply());
 	}
 	
@@ -163,17 +163,17 @@ public class LambdaMetafactoryUtilTest {
 	public void test1ArgConstructor_Long() throws Exception {
 		final Constructor<?> c = Long.class.getConstructor(long.class);
 
-		final Function1<Object,Object> fn = LambdaMetafactoryUtil.constructor1Args(c);
+		final Function1<Object,Object> fn = LambdaMetafactoryUtil.constructor_1_args(c);
 		assertEquals(100L, fn.apply(Long.valueOf(100L)));
 		assertEquals(100L, fn.apply(100L));
 	}
 	
 
 	@Test
-	public void test1ArgStaticFunction() throws Exception {
+	public void test1_argstaticFunction() throws Exception {
 		final Method m = TestObject.class.getDeclaredMethod("fn_static_string_string", String.class);
 
-		final Function1<Object,Object> fn = LambdaMetafactoryUtil.functionStatic1Args(m);
+		final Function1<Object,Object> fn = LambdaMetafactoryUtil.staticMethod_1_args(m);
 		assertEquals("arg1", fn.apply("arg1"));
 		assertEquals("null", fn.apply(null));
 	}
