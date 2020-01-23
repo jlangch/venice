@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.reflect;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer2;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer3;
+import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function0;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function3;
@@ -55,7 +57,8 @@ public class LambdaMetafactoryUtilTest {
 		final Method m = TestObject.class.getDeclaredMethod("fn_string_string", String.class);
 
 		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
-		assertEquals("hello", fn.apply(to, "hello"));
+		assertEquals("arg1", fn.apply(to, "arg1"));
+		assertEquals("null", fn.apply(to, null));
 	}
 
 	@Test
@@ -66,7 +69,9 @@ public class LambdaMetafactoryUtilTest {
 
 		final Function3<Object,Object,Object,Object> fn = LambdaMetafactoryUtil.function2Args(m);
 
-		assertEquals("hello-world", fn.apply(to, "hello", "world"));
+		assertEquals("arg1-arg2", fn.apply(to, "arg1", "arg2"));
+		assertEquals("null-arg2", fn.apply(to, null, "arg2"));
+		assertEquals("null-null", fn.apply(to, null, null));
 	}
 
 	
@@ -89,9 +94,12 @@ public class LambdaMetafactoryUtilTest {
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_string", String.class);
 
 		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.consumer1Args(m);
-		fn.accept(to, "hello");
 		
-		assertEquals("hello", to.last());
+		fn.accept(to, "arg1");		
+		assertEquals("arg1", to.last());
+		
+		fn.accept(to, null);		
+		assertEquals("null", to.last());
 	}
 	
 	@Test
@@ -101,11 +109,74 @@ public class LambdaMetafactoryUtilTest {
 		final Method m = TestObject.class.getDeclaredMethod("fn_void_string_string", String.class, String.class);
 
 		final Consumer3<Object,Object,Object> fn = LambdaMetafactoryUtil.consumer2Args(m);
-		fn.accept(to, "hello", "world");
-		
-		assertEquals("hello-world", to.last());
+
+		fn.accept(to, "arg1", "arg2");	
+		assertEquals("arg1-arg2", to.last());
+
+		fn.accept(to, null, "arg2");	
+		assertEquals("null-arg2", to.last());
+
+		fn.accept(to, null, null);	
+		assertEquals("null-null", to.last());
 	}
 	
+
+	@Test
+	public void test1ArgFunction_long() throws Exception {
+		final TestObject to = new TestObject();
+		
+		final Method m = TestObject.class.getDeclaredMethod("fn_long_long", Long.class);
+
+		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
+		assertEquals(100L, fn.apply(to, Long.valueOf(100L)));
+		assertEquals(100L, fn.apply(to, 100L));
+		assertEquals(null, fn.apply(to, null));
+	}
+	
+	@Test
+	public void test1ArgFunction_long_primitive() throws Exception {
+		final TestObject to = new TestObject();
+		
+		final Method m = TestObject.class.getDeclaredMethod("fn_long_long_primitive", long.class);
+
+		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
+		assertEquals(100L, fn.apply(to, Long.valueOf(100L)));
+		assertEquals(100L, fn.apply(to, 100L));
+		
+		assertEquals(100L, fn.apply(to, Integer.valueOf(100)));
+		assertEquals(100L, fn.apply(to, 100));		
+		assertEquals(100L, fn.apply(to, new Float(100.0)));
+		assertEquals(100L, fn.apply(to, 100.0));
+		assertEquals(100L, fn.apply(to, new Double(100.0D)));
+		assertEquals(100L, fn.apply(to, 100.0D));
+	}
+	
+	@Test
+	public void test0ArgConstructor_String() throws Exception {
+		final Constructor<?> c = String.class.getConstructor();
+
+		final Function0<Object> fn = LambdaMetafactoryUtil.constructor0Args(c);
+		assertEquals("", fn.apply());
+	}
+	
+	@Test
+	public void test1ArgConstructor_Long() throws Exception {
+		final Constructor<?> c = Long.class.getConstructor(long.class);
+
+		final Function1<Object,Object> fn = LambdaMetafactoryUtil.constructor1Args(c);
+		assertEquals(100L, fn.apply(Long.valueOf(100L)));
+		assertEquals(100L, fn.apply(100L));
+	}
+	
+
+	@Test
+	public void test1ArgStaticFunction() throws Exception {
+		final Method m = TestObject.class.getDeclaredMethod("fn_static_string_string", String.class);
+
+		final Function1<Object,Object> fn = LambdaMetafactoryUtil.functionStatic1Args(m);
+		assertEquals("arg1", fn.apply("arg1"));
+		assertEquals("null", fn.apply(null));
+	}
 	
 	
 	@SuppressWarnings("unused")
@@ -114,40 +185,66 @@ public class LambdaMetafactoryUtilTest {
 		public TestObject() {
 		}
 		
+		
+		// void ------------------------------------------------------------
+		
 		public void fn_void_void() {
 			last = "void";
 		}
+	
+		
+		// strings ------------------------------------------------------------
 		
 		public void fn_void_string(final String s1) {
-			last = s1;
+			last = "" + s1;
 		}
 		
 		public void fn_void_string_string(final String s1, final String s2) {
-			last = s1 + "-" + s2;
+			last = "" + s1 + "-" + s2;
 		}
 		
 		public String fn_string_void() {
 			last = "-";
-			return last;
+			return (String)last;
 		}
 		
 		public String fn_string_string(final String s1) {
-			last = s1;
-			return last;
+			last = "" + s1;
+			return (String)last;
 		}
 		
 		public String fn_string_string_string(final String s1, final String s2) {
-			last = s1 + "-" + s2;
+			last = "" + s1 + "-" + s2;
+			return (String)last;
+		}
+		
+		
+		// Long ------------------------------------------------------------
+
+		public Long fn_long_long(final Long s1) {
+			last = s1;
+			return (Long)last;
+		}
+
+		public long fn_long_long_primitive(final long s1) {
+			last = s1;
+			return (Long)last;
+		}
+
+		
+		// static ------------------------------------------------------------
+
+		public static String fn_static_string_string(final String s1) {
+			return "" + s1;
+		}
+
+		
+		public Object last() {
 			return last;
 		}
 		
 		
-		public String last() {
-			return last;
-		}
-		
-		
-		private String last = "init";
+		private Object last = "init";
 	}
 
 }
