@@ -78,11 +78,11 @@ public class Benchmark {
 												/ measures.size() 
 												/ (microIterations > 1 ? microIterations : 1));
 
-        System.out.println(String.format("%s Calls   : %12s", title, measures.size() * microIterations));
+        System.out.println(String.format("%s Calls (80%%): %12s", title, measures.size() * microIterations));
 
-        System.out.println(String.format("%s Elapsed : %12s", title, sElapsed));
+        System.out.println(String.format("%s Elapsed   : %12s", title, sElapsed));
         
-        System.out.println(String.format("%s Per call: %12s", title, sPerCall));
+        System.out.println(String.format("%s Per call  : %12s", title, sPerCall));
 	}
 	
 	
@@ -100,7 +100,7 @@ public class Benchmark {
 	}
 
 	private List<Long> stripOutliers(final List<Long> measures) {
-		// definition: the top 20% of the measures are outliers
+		// definition: the slowest 20% of the measures are outliers
 		final int limit = (measures.size() * 8) / 10;
 		return measures
 					.stream()

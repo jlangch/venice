@@ -1,8 +1,8 @@
 # Recursion
 
 
-Venice does not support automated tail call optimization (TCO). The _recur_ syntax 
-is a way to mimic TCO for self-recursion. In addition the _trampoline_ function for 
+Venice does not support automated tail call optimization (TCO). The  _recur_  syntax 
+is a way to mimic TCO for self-recursion. In addition the  _trampoline_  function for 
 mutual recursion is available for more involved forms of recursion.
 
 
@@ -38,10 +38,19 @@ mutual recursion is available for more involved forms of recursion.
 )
 ```
 
-Simple recursion a few thousand calls deep throws a _StackOverflowError_.
+Simple recursion a few thousand calls deep throws a  _StackOverflowError_ .
 
 
 ## self-recursive calls (loop - recur)
+
+Venice self-recursive calls do not consume stack space. It's the only
+non-stack-consuming looping construct in Venice. The `recur` expression
+must be in tail position.
+
+_Definition:_  The tail position is a position which an expression would return 
+a value from. There are no more forms evaluated after the form in the tail 
+position is evaluated.
+ 
 
 ```clojure
 (do
