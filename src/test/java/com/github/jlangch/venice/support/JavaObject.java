@@ -189,6 +189,14 @@ public class JavaObject {
 		return "" + s1 + "," + s2 + "," + s3;
 	}
 
+	public String _String(String s1) {
+		return s1;
+	}
+
+	public String _StringString(String s1, String s2) {
+		return "" + s1 + "," + s2;
+	}
+
 	public String _StringStringString(String s1, String s2, String s3) {
 		return "" + s1 + "," + s2 + "," + s3;
 	}

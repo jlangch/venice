@@ -78,11 +78,11 @@ public class Benchmark {
 												/ measures.size() 
 												/ (microIterations > 1 ? microIterations : 1));
 
-        System.out.println(String.format("%s Calls (80%%): %12s", title, measures.size() * microIterations));
+        System.out.println(String.format("%s Calls (80%%): %9s", title, measures.size() * microIterations));
 
-        System.out.println(String.format("%s Elapsed   : %12s", title, sElapsed));
+        System.out.println(String.format("%s Elapsed    : %12s", title, sElapsed));
         
-        System.out.println(String.format("%s Per call  : %12s", title, sPerCall));
+        System.out.println(String.format("%s Per call   : %12s", title, sPerCall));
 	}
 	
 	
