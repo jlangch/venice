@@ -27,59 +27,127 @@ import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer2;
+import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Consumer3;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function3;
-import com.github.jlangch.venice.support.JavaObject;
 
 
 public class LambdaMetafactoryUtilTest {
 
 	@Test
 	public void test0ArgFunction() throws Exception {
-		final JavaObject jo = new JavaObject();
-		jo.setString("hello");
+		final TestObject to = new TestObject();
 		
-		final Method m = JavaObject.class.getDeclaredMethod("getString");
+		final Method m = TestObject.class.getDeclaredMethod("fn_string_void");
 
 		final Function1<Object,Object> fn = LambdaMetafactoryUtil.function0Args(m);
 
-		assertEquals("hello", fn.apply(jo));
+		assertEquals("-", fn.apply(to));
 	}
 
 	@Test
 	public void test1ArgFunction() throws Exception {
-		final JavaObject jo = new JavaObject();
+		final TestObject to = new TestObject();
 		
-		final Method m = JavaObject.class.getDeclaredMethod("_String", String.class);
+		final Method m = TestObject.class.getDeclaredMethod("fn_string_string", String.class);
 
 		final Function2<Object,Object,Object> fn = LambdaMetafactoryUtil.function1Args(m);
-		assertEquals("hello", fn.apply(jo, "hello"));
+		assertEquals("hello", fn.apply(to, "hello"));
 	}
 
 	@Test
 	public void test2ArgFunction() throws Exception {
-		final JavaObject jo = new JavaObject();
+		final TestObject to = new TestObject();
 		
-		final Method m = JavaObject.class.getDeclaredMethod("_StringString", String.class, String.class);
+		final Method m = TestObject.class.getDeclaredMethod("fn_string_string_string", String.class, String.class);
 
 		final Function3<Object,Object,Object,Object> fn = LambdaMetafactoryUtil.function2Args(m);
 
-		assertEquals("hello,world", fn.apply(jo, "hello", "world"));
+		assertEquals("hello-world", fn.apply(to, "hello", "world"));
 	}
 
 	
 	@Test
-	public void test1ArgVoidFunction() throws Exception {
-		final JavaObject jo = new JavaObject();
+	public void test0ArgVoidFunction() throws Exception {
+		final TestObject to = new TestObject();
 		
-		final Method m = JavaObject.class.getDeclaredMethod("setString", String.class);
+		final Method m = TestObject.class.getDeclaredMethod("fn_void_void");
 
-		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.consumer1Args(m);
-		fn.accept(jo, "hello");
+		final Consumer1<Object> fn = LambdaMetafactoryUtil.consumer0Args(m);
+		fn.accept(to);
 		
-		assertEquals("hello", jo.getString());
+		assertEquals("void", to.last());
 	}
 	
+	@Test
+	public void test1ArgVoidFunction() throws Exception {
+		final TestObject to = new TestObject();
+		
+		final Method m = TestObject.class.getDeclaredMethod("fn_void_string", String.class);
+
+		final Consumer2<Object,Object> fn = LambdaMetafactoryUtil.consumer1Args(m);
+		fn.accept(to, "hello");
+		
+		assertEquals("hello", to.last());
+	}
+	
+	@Test
+	public void test2ArgVoidFunction() throws Exception {
+		final TestObject to = new TestObject();
+		
+		final Method m = TestObject.class.getDeclaredMethod("fn_void_string_string", String.class, String.class);
+
+		final Consumer3<Object,Object,Object> fn = LambdaMetafactoryUtil.consumer2Args(m);
+		fn.accept(to, "hello", "world");
+		
+		assertEquals("hello-world", to.last());
+	}
+	
+	
+	
+	@SuppressWarnings("unused")
+	private static class TestObject {
+
+		public TestObject() {
+		}
+		
+		public void fn_void_void() {
+			last = "void";
+		}
+		
+		public void fn_void_string(final String s1) {
+			last = s1;
+		}
+		
+		public void fn_void_string_string(final String s1, final String s2) {
+			last = s1 + "-" + s2;
+		}
+		
+		public String fn_string_void() {
+			last = "-";
+			return last;
+		}
+		
+		public String fn_string_string(final String s1) {
+			last = s1;
+			return last;
+		}
+		
+		public String fn_string_string_string(final String s1, final String s2) {
+			last = s1 + "-" + s2;
+			return last;
+		}
+		
+		
+		public String last() {
+			return last;
+		}
+		
+		
+		private String last = "init";
+	}
+
 }
