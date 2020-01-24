@@ -46,18 +46,18 @@ public class ReflectionBenchmark {
 	
 	
 	@Benchmark
-	public void bench_native() {
+	public BigInteger bench_native() {
 		final BigInteger i1 = BigInteger.valueOf(10L);
 		final BigInteger i2 = BigInteger.valueOf(100L);
-		final BigInteger sum = i1.add(i2);
+		return i1.add(i2);
 	}
 
 	@Benchmark
-	public void bench_reflective() {
+	public BigInteger bench_reflective() {
 		try {
 			final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {10L});
 			final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
-			final BigInteger sum = (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
+			return (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
@@ -65,11 +65,11 @@ public class ReflectionBenchmark {
 	}
 
 	@Benchmark
-	public void bench_LambdaMetafactory_1() {
+	public BigInteger bench_LambdaMetafactory_1() {
 		try {
 			final BigInteger i1 = (BigInteger)fnValueOf.apply(10L);
 			final BigInteger i2 = (BigInteger)fnValueOf.apply(100L);
-			final BigInteger sum = (BigInteger)fnAdd.apply(i1, i2);      		
+			return (BigInteger)fnAdd.apply(i1, i2);      		
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
@@ -77,11 +77,11 @@ public class ReflectionBenchmark {
 	}
 
 	@Benchmark
-	public void bench_LambdaMetafactory_2() {
+	public BigInteger bench_LambdaMetafactory_2() {
 		try {
 			final BigInteger i1 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {10L}, fnValueOf);
 			final BigInteger i2 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {100L}, fnValueOf);
-			final BigInteger sum = (BigInteger)LambdaMetafactoryUtil.invoke_instanceMethod(i1, new Object[] {i2}, fnAdd);      		
+			return (BigInteger)LambdaMetafactoryUtil.invoke_instanceMethod(i1, new Object[] {i2}, fnAdd);      		
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);

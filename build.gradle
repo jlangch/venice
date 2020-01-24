@@ -272,6 +272,7 @@ artifacts {
 
 dependencies {
 	jmhImplementation project
+	jmhImplementation 'io.vavr:vavr:0.10.2'
 	jmhImplementation 'org.openjdk.jmh:jmh-core:1.23'
 	jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
 

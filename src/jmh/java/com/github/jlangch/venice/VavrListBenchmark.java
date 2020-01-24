@@ -23,8 +23,6 @@ package com.github.jlangch.venice;
 
 import java.util.concurrent.TimeUnit;
 
-import com.github.jlangch.venice.util.Benchmark;
-
 import io.vavr.collection.List;
 
 import org.openjdk.jmh.annotations.*;
@@ -55,12 +53,12 @@ public class VavrListBenchmark {
 
 	@Benchmark
 	public void first() {
-		list.get(0L);
+		list.get(0);
  	}
 	
 	@Benchmark
 	public void last() {
-		list.last(0L);
+		list.last();
 	}
 
 	@Benchmark
