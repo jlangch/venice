@@ -42,38 +42,38 @@ public class VavrListBenchmark {
 	
 	
 	@Benchmark
-	public void prepend() {
-		list.prepend(0L);
+	public Object prepend() {
+		return list.prepend(0L);
 	}
 	
 	@Benchmark
-	public void append() {
-		list.append(0L);
+	public Object append() {
+		return list.append(0L);
 	}
 
 	@Benchmark
-	public void first() {
-		list.get(0);
+	public Object first() {
+		return list.get(0);
  	}
 	
 	@Benchmark
-	public void last() {
-		list.last();
+	public Object last() {
+		return list.last();
 	}
 
 	@Benchmark
-	public void rest() {
-		list.tail();
+	public Object rest() {
+		return list.tail();
 	}
 	
 	@Benchmark
-	public void butlast() {
-		list.slice(0, list.length()-1);
+	public Object butlast() {
+		return list.slice(0, list.length()-1);
 	}
 	
 	@Benchmark
-	public void drop_1() {
-		list.drop(1);
+	public Object drop_1() {
+		return list.drop(1);
 	}
 
 

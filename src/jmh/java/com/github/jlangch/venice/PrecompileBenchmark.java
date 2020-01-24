@@ -43,24 +43,18 @@ public class PrecompileBenchmark {
 	}
 
 	@Benchmark
-    public void bench_no_precompilation() {
-    	venice.eval("test", expr, Parameters.of("x", -10));
-    	venice.eval("test", expr, Parameters.of("x", 0));
-    	venice.eval("test", expr, Parameters.of("x", 10));
+    public Object bench_no_precompilation() {
+		return venice.eval("test", expr, Parameters.of("x", -10, "y", 0, "z", 10));
     }
 
 	@Benchmark
-    public void bench_precompilation_no_macroexpand() {
-    	venice.eval(precompiledNoMacroExpand, Parameters.of("x", -10));
-    	venice.eval(precompiledNoMacroExpand, Parameters.of("x", 0));
-    	venice.eval(precompiledNoMacroExpand, Parameters.of("x", 10));
+    public Object bench_precompilation_no_macroexpand() {
+		return venice.eval(precompiledNoMacroExpand, Parameters.of("x", -10, "y", 0, "z", 10));
     }
     
 	@Benchmark
-	public void bench_precompilation_macroexpand() {
-    	venice.eval(precompiledMacroExpand, Parameters.of("x", -10));
-    	venice.eval(precompiledMacroExpand, Parameters.of("x", 0));
-    	venice.eval(precompiledMacroExpand, Parameters.of("x", 10));
+	public Object bench_precompilation_macroexpand() {
+    	return venice.eval(precompiledMacroExpand, Parameters.of("x", -10, "y", 0, "z", 10));
     }
 
     private void init() {
@@ -70,7 +64,9 @@ public class PrecompileBenchmark {
     }
     
     
-	private String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
+	private String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+						  "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+						  "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
 	
 	private Venice venice;
 	

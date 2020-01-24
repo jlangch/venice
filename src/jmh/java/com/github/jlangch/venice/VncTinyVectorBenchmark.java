@@ -23,7 +23,8 @@ package com.github.jlangch.venice;
 
 import java.util.concurrent.TimeUnit;
 
-import io.vavr.collection.Vector;
+import com.github.jlangch.venice.impl.types.collections.*;
+import com.github.jlangch.venice.impl.types.*;
 
 import org.openjdk.jmh.annotations.*;
 
@@ -35,25 +36,25 @@ import org.openjdk.jmh.annotations.*;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class VavrVectorBenchmark {
+public class VncTinyVectorBenchmark {
 	
-	public VavrVectorBenchmark() {
+	public VncTinyVectorBenchmark() {
 	}
 	
 	
 	@Benchmark
 	public Object prepend() {
-		return vector.prepend(0L);
+		return vector.addAtStart(val);
 	}
 	
 	@Benchmark
 	public Object append() {
-		return vector.append(0L);
+		return vector.addAtEnd(val);
 	}
 
 	@Benchmark
 	public Object first() {
-		return vector.get(0);
+		return vector.first();
  	}
 	
 	@Benchmark
@@ -63,30 +64,15 @@ public class VavrVectorBenchmark {
 
 	@Benchmark
 	public Object rest() {
-		return vector.tail();
+		return vector.rest();
 	}
 	
 	@Benchmark
 	public Object butlast() {
-		return vector.slice(0, vector.length()-1);
-	}
-	
-	@Benchmark
-	public Object drop_1() {
-		return vector.drop(1);
+		return vector.butlast();
 	}
 
-
-	private Vector<Long> create(final int len) {
-		Vector<Long> v = Vector.empty();
-		
-		for(int ii=0; ii<len; ii++) {
-			v = v.append(0L);
-		}
-		
-		return v;
-	}
 	
-	
-	private final Vector<Long> vector = create(1000);
+	private final VncVal val = new VncLong(0L);
+	private final VncVector vector = VncTinyVector.of(new VncLong(1L), new VncLong(2L), new VncLong(3L));
 }
