@@ -159,6 +159,8 @@ public class LambdaMetafactoryUtilTest {
 
 		final Function0<Object> fn = LambdaMetafactoryUtil.constructor_0_args(c);
 		assertEquals("", fn.apply());
+		
+		assertEquals("", LambdaMetafactoryUtil.invoke_constructor(new Object[0], fn));
 	}
 	
 	@Test
@@ -168,6 +170,8 @@ public class LambdaMetafactoryUtilTest {
 		final Function1<Object,Object> fn = LambdaMetafactoryUtil.constructor_1_args(c);
 		assertEquals(100L, fn.apply(Long.valueOf(100L)));
 		assertEquals(100L, fn.apply(100L));
+		
+		assertEquals(100L, LambdaMetafactoryUtil.invoke_constructor(new Object[] {Long.valueOf(100L)}, fn));
 	}
 	
 	@Test

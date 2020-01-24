@@ -115,6 +115,16 @@ public class ReflectionUtil {
 				&& void.class.equals(method.getReturnType());
 	}
 	
+	/**
+	 * Checks if a method returns void
+	 * 
+	 * @param method the method to check
+	 * @return true if the method returns void, otherwise false
+	 */
+	public static boolean isReturnVoid(final Method method) {
+		return void.class.equals(method.getReturnType());
+	}
+	
 	public static String getAttributeNameByGetter(final Method getter) {
 		if (!isGetter(getter)) {
 			throw new IllegalArgumentException("Passed method is not a getter!");

@@ -38,6 +38,20 @@ public class LambdaMetafactoryUtil {
 	// Instance method with return value
 	// ------------------------------------------------------------------------
 	
+	public static Object instanceMethod(final Method method, final int arity) {
+		switch(arity) {
+			case 0: return instanceMethod_0_args(method);
+			case 1: return instanceMethod_1_args(method);
+			case 2: return instanceMethod_2_args(method);
+			case 3: return instanceMethod_3_args(method);
+			case 4: return instanceMethod_4_args(method);
+			case 5: return instanceMethod_5_args(method);
+			case 6: return instanceMethod_6_args(method);
+			case 7: return instanceMethod_7_args(method);
+			default: return null;
+		}
+	}
+
 	public static Function1<Object,Object> instanceMethod_0_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
@@ -234,6 +248,20 @@ public class LambdaMetafactoryUtil {
 	// ------------------------------------------------------------------------
 	// Instance method void
 	// ------------------------------------------------------------------------
+
+	public static Object instanceMethodVoid(final Method method, final int arity) {
+		switch(arity) {
+			case 0: return instanceMethodVoid_0_args(method);
+			case 1: return instanceMethodVoid_1_args(method);
+			case 2: return instanceMethodVoid_2_args(method);
+			case 3: return instanceMethodVoid_3_args(method);
+			case 4: return instanceMethodVoid_4_args(method);
+			case 5: return instanceMethodVoid_5_args(method);
+			case 6: return instanceMethodVoid_6_args(method);
+			case 7: return instanceMethodVoid_7_args(method);
+			default: return null;
+		}
+	}
 
 	public static Consumer1<Object> instanceMethodVoid_0_args(Method method) {
 		try {
@@ -433,6 +461,20 @@ public class LambdaMetafactoryUtil {
 	// Static method with return value
 	// ------------------------------------------------------------------------
 	
+	public static Object staticMethod(final Method method, final int arity) {
+		switch(arity) {
+			case 0: return staticMethod_0_args(method);
+			case 1: return staticMethod_1_args(method);
+			case 2: return staticMethod_2_args(method);
+			case 3: return staticMethod_3_args(method);
+			case 4: return staticMethod_4_args(method);
+			case 5: return staticMethod_5_args(method);
+			case 6: return staticMethod_6_args(method);
+			case 7: return staticMethod_7_args(method);
+			default: return null;
+		}
+	}
+	
 	public static Function0<Object> staticMethod_0_args(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
@@ -629,6 +671,20 @@ public class LambdaMetafactoryUtil {
 	// ------------------------------------------------------------------------
 	// Static method void
 	// ------------------------------------------------------------------------
+	
+	public static Object staticMethodVoid(final Method method, final int arity) {
+		switch(arity) {
+			case 0: return staticMethodVoid_0_args(method);
+			case 1: return staticMethodVoid_1_args(method);
+			case 2: return staticMethodVoid_2_args(method);
+			case 3: return staticMethodVoid_3_args(method);
+			case 4: return staticMethodVoid_4_args(method);
+			case 5: return staticMethodVoid_5_args(method);
+			case 6: return staticMethodVoid_6_args(method);
+			case 7: return staticMethodVoid_7_args(method);
+			default: return null;
+		}
+	}
 
 	public static Consumer0 staticMethodVoid_0_args(Method method) {
 		try {
@@ -1096,6 +1152,89 @@ public class LambdaMetafactoryUtil {
 		}
 	}
 
+	
+	// ------------------------------------------------------------------------
+	// Invoker
+	// ------------------------------------------------------------------------
+	
+	@SuppressWarnings("unchecked")
+	public static Object invoke_constructor(final Object[] args, final Object fn) {
+		switch(args.length) {
+			case 0: return ((Function0<Object>)fn).apply();
+			case 1: return ((Function1<Object,Object>)fn).apply(args[0]);
+			case 2: return ((Function2<Object,Object,Object>)fn).apply(args[0], args[1]);
+			case 3: return ((Function3<Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2]);
+			case 4: return ((Function4<Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3]);
+			case 5: return ((Function5<Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4]);
+			case 6: return ((Function6<Object,Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4], args[5]);
+			case 7: return ((Function7<Object,Object,Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+			default: throw new JavaMethodInvocationException("Could invoke constructor with more than 7 arguments!");
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Object invoke_instanceMethod(final Object target, final Object[] args, final Object fn) {
+		switch(args.length) {
+			case 0: return ((Function1<Object,Object>)fn).apply(target);
+			case 1: return ((Function2<Object,Object,Object>)fn).apply(target, args[0]);
+			case 2: return ((Function3<Object,Object,Object,Object>)fn).apply(target, args[0], args[1]);
+			case 3: return ((Function4<Object,Object,Object,Object,Object>)fn).apply(target, args[0], args[1], args[2]);
+			case 4: return ((Function5<Object,Object,Object,Object,Object,Object>)fn).apply(target, args[0], args[1], args[2], args[3]);
+			case 5: return ((Function6<Object,Object,Object,Object,Object,Object,Object>)fn).apply(target, args[0], args[1], args[2], args[3], args[4]);
+			case 6: return ((Function7<Object,Object,Object,Object,Object,Object,Object,Object>)fn).apply(target, args[0], args[1], args[2], args[3], args[4], args[5]);
+			case 7: return ((Function8<Object,Object,Object,Object,Object,Object,Object,Object,Object>)fn).apply(target, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+			default: throw new JavaMethodInvocationException("Could invoke instance method with more than 7 arguments!");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void invoke_instanceMethodVoid(final Object target, final Object[] args, final Object fn) {
+		switch(args.length) {
+			case 0: ((Consumer1<Object>)fn).accept(target); break;
+			case 1: ((Consumer2<Object,Object>)fn).accept(target, args[0]); break;
+			case 2: ((Consumer3<Object,Object,Object>)fn).accept(target, args[0], args[1]); break;
+			case 3: ((Consumer4<Object,Object,Object,Object>)fn).accept(target, args[0], args[1], args[2]); break;
+			case 4: ((Consumer5<Object,Object,Object,Object,Object>)fn).accept(target, args[0], args[1], args[2], args[3]); break;
+			case 5: ((Consumer6<Object,Object,Object,Object,Object,Object>)fn).accept(target, args[0], args[1], args[2], args[3], args[4]); break;
+			case 6: ((Consumer7<Object,Object,Object,Object,Object,Object,Object>)fn).accept(target, args[0], args[1], args[2], args[3], args[4], args[5]); break;
+			case 7: ((Consumer8<Object,Object,Object,Object,Object,Object,Object,Object>)fn).accept(target, args[0], args[1], args[2], args[3], args[4], args[5], args[6]); break;
+			default: throw new JavaMethodInvocationException("Could invoke instance method with more than 7 arguments!"); 
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Object invoke_staticMethod(final Object[] args, final Object fn) {
+		switch(args.length) {
+			case 0: return ((Function0<Object>)fn).apply();
+			case 1: return ((Function1<Object,Object>)fn).apply(args[0]);
+			case 2: return ((Function2<Object,Object,Object>)fn).apply(args[0], args[1]);
+			case 3: return ((Function3<Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2]);
+			case 4: return ((Function4<Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3]);
+			case 5: return ((Function5<Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4]);
+			case 6: return ((Function6<Object,Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4], args[5]);
+			case 7: return ((Function7<Object,Object,Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+			case 8: return ((Function8<Object,Object,Object,Object,Object,Object,Object,Object,Object>)fn).apply(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+			default: throw new JavaMethodInvocationException("Could invoke static method with more than 8 arguments!");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void invoke_staticMethodVoid(final Object[] args, final Object fn) {
+		switch(args.length) {
+			case 0: ((Consumer0)fn).accept(); break;
+			case 1: ((Consumer1<Object>)fn).accept(args[0]); break;
+			case 2: ((Consumer2<Object,Object>)fn).accept(args[0], args[1]); break;
+			case 3: ((Consumer3<Object,Object,Object>)fn).accept(args[0], args[1], args[2]); break;
+			case 4: ((Consumer4<Object,Object,Object,Object>)fn).accept(args[0], args[1], args[2], args[3]); break;
+			case 5: ((Consumer5<Object,Object,Object,Object,Object>)fn).accept(args[0], args[1], args[2], args[3], args[4]); break;
+			case 6: ((Consumer6<Object,Object,Object,Object,Object,Object>)fn).accept(args[0], args[1], args[2], args[3], args[4], args[5]); break;
+			case 7: ((Consumer7<Object,Object,Object,Object,Object,Object,Object>)fn).accept(args[0], args[1], args[2], args[3], args[4], args[5], args[6]); break;
+			case 8: ((Consumer8<Object,Object,Object,Object,Object,Object,Object,Object>)fn).accept(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]); break;
+			default: throw new JavaMethodInvocationException("Could invoke static method with more than 8 arguments!"); 
+		}
+	}
+
+	
 	
 	// ------------------------------------------------------------------------
 	// SAM
