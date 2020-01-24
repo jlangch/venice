@@ -79,6 +79,10 @@ repositories {
 }
 
 sourceSets {
+    jmh {
+    	java.srcDirs = ['src/jmh/java']
+    }
+    
     main {
         java {
             srcDirs = ['src/main/java']
@@ -168,12 +172,109 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                   "; echo 'Bundling done.'"
 }
 
+task ('jmhHelp', description:'Print help for the jmh task') {
+	doLast {  
+		println ""
+		println "Usage of jmh tasks:"
+		println ""
+		
+		println "Only execute specific benchmark(s):"
+		println "\t./gradlew jmh -Pinclude=\".*MyBenchmark.*\""
+		
+		println ""
+		println "Specify extra profilers:"
+		println "\t./gradlew jmh -Pprofilers=\"gc,stack\""
+		
+		println ""
+		println "Prominent profilers (for full list call jmhProfilers task):"
+		println "\tcomp - JitCompilations, tune your iterations"
+		println "\tstack - which methods used most time"
+		println "\tgc - print garbage collection stats"
+		println "\ths_thr - thread usage"
+		
+		println ""
+		println "Change report format from JSON to one of [CSV, JSON, NONE, SCSV, TEXT]:"
+		println "\t./gradlew jmh -Pformat=csv"
+		
+		println ""
+		println "Specify JVM arguments:"
+		println "\t./gradlew jmh -PjvmArgs=\"-Dtest.cluster=local\""
+		
+		println ""
+		println "Run in verification mode (execute benchmarks with minimum of fork/warmup-/benchmark-iterations):"
+		println "\tgw jmh -Pverify"
+		
+		println ""
+		println "Resources:"
+		println "\thttp://tutorials.jenkov.com/java-performance/jmh.html (Introduction)"
+		println "\thttp://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/ (Samples)"
+	}       
+}
+
+task jmhProfilers(type: JavaExec, description:'Lists the available profilers for the jmh task', group: 'Development') {
+	classpath = sourceSets.jmh.runtimeClasspath
+	main = 'org.openjdk.jmh.Main'
+	args '-lprof'
+}
+
+// ./gradlew jmh -Pinclude=".*ReflectionBenchmark"
+// ./gradlew jmh -Pinclude=".*PrecompileBenchmark"
+task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
+	classpath = sourceSets.jmh.runtimeClasspath
+	main = 'org.openjdk.jmh.Main'
+
+	def include = project.properties.get('include', '');
+	def exclude = project.properties.get('exclude');
+	def format = project.properties.get('format', 'json');
+	def profilers = project.properties.get('profilers');
+	def jvmArgs = project.properties.get('jvmArgs')
+	def verify =  project.properties.get('verify');
+
+	def resultFile = file("build/reports/jmh/result.${format}")
+	
+	args include
+	if (exclude) {
+		args '-e', exclude
+	}
+	if (verify != null) { // execute benchmarks with the minimum amount of execution (only to check if they are working)
+		println ">> Running in verify mode"
+		args '-f' , 1
+		args '-wi' , 1
+		args '-i' , 1
+	}
+	args '-foe', 'true'   //fail-on-error
+	args '-v', 'NORMAL'   //verbosity [SILENT, NORMAL, EXTRA]
+	if (profilers) {
+		profilers.split(',').each {
+			args '-prof', it
+		}
+	}
+	args '-jvmArgsPrepend', '-Xmx3072m'
+	args '-jvmArgsPrepend', '-Xms3072m'
+	if (jvmArgs) {
+		for (jvmArg in jvmArgs.split(' ')) {
+			args '-jvmArgsPrepend', jvmArg
+		}
+	}
+	args '-rf', format
+	args '-rff', resultFile
+	
+	doFirst {
+		println "\nExecuting JMH with: $args \n"
+		resultFile.parentFile.mkdirs()
+	}
+}
+
 artifacts {
     archives sourcesJar
     archives javadocJar
 }
 
 dependencies {
+	jmhImplementation project
+	jmhImplementation 'org.openjdk.jmh:jmh-core:1.23'
+	jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+
     // unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
