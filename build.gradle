@@ -39,7 +39,7 @@
 //   - Micro benchmarks
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark"
 //     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} jmh -Pinclude=".*PrecompileBenchmark"
-//     # "-XX:+PrintCompilation" "-XX:CompileThreshold"
+//     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 // -----------------------------------------------------------------------------
 // Modify the Venice version:
 //   - gradle.properties
