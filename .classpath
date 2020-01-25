@@ -12,5 +12,7 @@
 	<classpathentry kind="lib" path="lib/provided/jline-3.13.3.jar" sourcepath="lib/provided/jline-3.13.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/provided/vavr-0.10.2.jar" sourcepath="lib/provided/vavr-0.10.2-sources.jar"/>
 	<classpathentry kind="lib" path="src/main/resources"/>
+	<classpathentry kind="lib" path="lib/eclipse/jmh-core-1.23.jar" sourcepath="lib/eclipse/jmh-core-1.23-sources.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/jmh-generator-annprocess-1.23.jar" sourcepath="lib/eclipse/jmh-generator-annprocess-1.23-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
