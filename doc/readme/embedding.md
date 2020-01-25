@@ -243,9 +243,9 @@ public class PrecompileBenchmark {
   
     @State(Scope.Benchmark)
     public static class State_ {
-        public String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
-                             "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
-                             "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
+        public String expr = "(+ (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+                             "   (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+                             "   (cond (< z 0) -1 (> z 0) 1 :else 0))";
 
         public Venice venice = new Venice();
         public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
