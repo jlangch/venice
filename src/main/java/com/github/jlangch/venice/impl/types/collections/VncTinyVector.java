@@ -36,6 +36,22 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
+//	Benchmark                       Mode  Cnt  Score   Error  Units
+//	VncTinyVectorBenchmark.append   avgt    3  9.900 ± 0.762  ns/op
+//	VncTinyVectorBenchmark.butlast  avgt    3  9.036 ± 0.199  ns/op
+//	VncTinyVectorBenchmark.first    avgt    3  3.007 ± 0.060  ns/op
+//	VncTinyVectorBenchmark.last     avgt    3  3.609 ± 0.370  ns/op
+//	VncTinyVectorBenchmark.prepend  avgt    3  9.061 ± 3.517  ns/op
+//	VncTinyVectorBenchmark.rest     avgt    3  8.993 ± 0.503  ns/op
+//	
+//	Benchmark                    Mode  Cnt    Score   Error  Units
+//	VavrVectorBenchmark.append   avgt    3   91.589 ± 2.012  ns/op
+//	VavrVectorBenchmark.butlast  avgt    3   10.162 ± 0.534  ns/op
+//	VavrVectorBenchmark.drop_1   avgt    3    9.519 ± 0.277  ns/op
+//	VavrVectorBenchmark.first    avgt    3    5.040 ± 0.099  ns/op
+//	VavrVectorBenchmark.last     avgt    3    5.978 ± 0.243  ns/op
+//	VavrVectorBenchmark.prepend  avgt    3  130.839 ± 4.116  ns/op
+//	VavrVectorBenchmark.rest     avgt    3    9.515 ± 0.106  ns/op
 
 /**
  * An immutable vector optimized for keeping 1 to 4 values.
@@ -168,38 +184,30 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
-		if (len > 0) action.accept(first);
-		if (len > 1) action.accept(second);
-		if (len > 2) action.accept(third);
-		if (len > 3) action.accept(fourth);
+		if (len > 0) {
+			action.accept(first);
+			if (len > 1) {
+				action.accept(second);
+				if (len > 2) {
+					action.accept(third);
+					if (len > 3) action.accept(fourth);
+				}
+			}
+		}
 	}
 
 	@Override
 	public List<VncVal> getList() { 
 		final ArrayList<VncVal> list = new ArrayList<>(len);
-		switch (len) {
-			case 0:	
-				break;
-			case 1:	
-				list.add(first); 
-				break;
-			case 2:	
-				list.add(first); 
+		if (len > 0) {
+			list.add(first);
+			if (len > 1) {
 				list.add(second);
-				break;
-			case 3:	
-				list.add(first); 
-				list.add(second); 
-				list.add(third); 
-				break;
-			case 4:	
-				list.add(first); 
-				list.add(second); 
-				list.add(third); 
-				list.add(fourth); 
-				break;
-			default: 
-				throw new IllegalStateException("Vector length out of range");
+				if (len > 2) {
+					list.add(third);
+					if (len > 3) list.add(fourth);
+				}
+			}
 		}
 		return list;
 	}

@@ -158,38 +158,30 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
-		if (len > 0) action.accept(first);
-		if (len > 1) action.accept(second);
-		if (len > 2) action.accept(third);
-		if (len > 3) action.accept(fourth);
+		if (len > 0) {
+			action.accept(first);
+			if (len > 1) {
+				action.accept(second);
+				if (len > 2) {
+					action.accept(third);
+					if (len > 3) action.accept(fourth);
+				}
+			}
+		}
 	}
 
 	@Override
 	public List<VncVal> getList() { 
 		final ArrayList<VncVal> list = new ArrayList<>(len);
-		switch (len) {
-			case 0:	
-				break;
-			case 1:	
-				list.add(first); 
-				break;
-			case 2:	
-				list.add(first); 
+		if (len > 0) {
+			list.add(first);
+			if (len > 1) {
 				list.add(second);
-				break;
-			case 3:	
-				list.add(first); 
-				list.add(second); 
-				list.add(third); 
-				break;
-			case 4:	
-				list.add(first); 
-				list.add(second); 
-				list.add(third); 
-				list.add(fourth); 
-				break;
-			default: 
-				throw new IllegalStateException("List length out of range");
+				if (len > 2) {
+					list.add(third);
+					if (len > 3) list.add(fourth);
+				}
+			}
 		}
 		return list;
 	}

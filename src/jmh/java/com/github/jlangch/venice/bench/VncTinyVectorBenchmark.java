@@ -82,6 +82,11 @@ public class VncTinyVectorBenchmark {
 	public Object butlast() {
 		return vector.butlast();
 	}
+	
+	@Benchmark
+	public Object drop_1() {
+		return vector.removeAt(0);
+	}
 
 	
 	private final VncVal val = new VncLong(0L);
