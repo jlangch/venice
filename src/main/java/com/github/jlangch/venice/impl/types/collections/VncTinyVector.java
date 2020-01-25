@@ -55,19 +55,19 @@ public class VncTinyVector extends VncVector {
 	public VncTinyVector(final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 0;
-		this.first = null;
-		this.second = null;
-		this.third = null;
-		this.fourth = null;
+		this.first = Constants.Nil;
+		this.second = Constants.Nil;
+		this.third = Constants.Nil;
+		this.fourth = Constants.Nil;
 	}
 	
 	public VncTinyVector(final VncVal first, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 1;
 		this.first = first;
-		this.second = null;
-		this.third = null;
-		this.fourth = null;
+		this.second = Constants.Nil;
+		this.third = Constants.Nil;
+		this.fourth = Constants.Nil;
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal meta) {
@@ -75,8 +75,8 @@ public class VncTinyVector extends VncVector {
 		this.len = 2;
 		this.first = first;
 		this.second = second;
-		this.third = null;
-		this.fourth = null;
+		this.third = Constants.Nil;
+		this.fourth = Constants.Nil;
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
@@ -85,12 +85,21 @@ public class VncTinyVector extends VncVector {
 		this.first = first;
 		this.second = second;
 		this.third = third;
-		this.fourth = null;
+		this.fourth = Constants.Nil;
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = 4;
+		this.first = first;
+		this.second = second;
+		this.third = third;
+		this.fourth = fourth;
+	}
+
+	private VncTinyVector(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		this.len = len;
 		this.first = first;
 		this.second = second;
 		this.third = third;
@@ -154,14 +163,7 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVector withMeta(final VncVal meta) {
-		switch (len) {
-			case 0:	return new VncTinyVector(meta);
-			case 1:	return new VncTinyVector(first, meta);
-			case 2:	return new VncTinyVector(first, second, meta);
-			case 3:	return new VncTinyVector(first, second, third, meta);
-			case 4:	return new VncTinyVector(first, second, third, fourth, meta);
-			default: throw new IllegalStateException("Length out of range");
-		}
+		return new VncTinyVector(len, first, second, third, fourth, meta);
 	}
 
 	@Override
@@ -249,22 +251,22 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVal first() {
-		return len >= 1 ? first : Constants.Nil;
+		return first;
 	}
 
 	@Override
 	public VncVal second() {
-		return len >= 2 ? second : Constants.Nil;
+		return second;
 	}
 
 	@Override
 	public VncVal third() {
-		return len >= 3 ? third : Constants.Nil;
+		return third;
 	}
 
 	@Override
 	public VncVal fourth() {
-		return len >= 4 ? fourth : Constants.Nil;
+		return fourth;
 	}
 
 	@Override
