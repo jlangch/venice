@@ -348,11 +348,10 @@ long?            [  200]:    20,49 us      102 ns
 
 ## Benchmarks with JMH
 
-Venice benchmarks are done using [JMH](http://openjdk.java.net/projects/code-tools/jmh/) 
-(the Java Microbenchmark Harness). This has been added to the JDK starting with JDK 12; 
+The most accurate benchmarks can be done using [JMH](http://openjdk.java.net/projects/code-tools/jmh/) 
+(the Java Microbenchmark Harness). JMH has been added to the JDK starting with JDK 12; 
 for earlier versions, the dependencies have to be added explicitly.
 
-The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
 
 **Results Java 8 Server VM:**
 
