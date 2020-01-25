@@ -38,7 +38,7 @@
 //
 //   - Micro benchmarks
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark"
-//     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} jmh -Pinclude=".*PrecompileBenchmark"
+//     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+UseParallelGC"
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 // -----------------------------------------------------------------------------
 // Modify the Venice version:
@@ -223,8 +223,6 @@ task jmhProfilers(type: JavaExec, description:'Lists the available profilers for
 	args '-lprof'
 }
 
-// ./gradlew jmh -Pinclude=".*ReflectionBenchmark"
-// ./gradlew jmh -Pinclude=".*PrecompileBenchmark"
 task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
 	classpath = sourceSets.jmh.runtimeClasspath
 	main = 'org.openjdk.jmh.Main'
