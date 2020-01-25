@@ -17,7 +17,7 @@ or rules engine.
 Precompiling these Venice expressions or rules results in performance improvement that can be
 pretty impressive. See the Precompilation Performance Benchmark further down.
 
-For security reasons it might be necessary to establish a sandbox for the Venice expressions
+For security reasons it might be necessary to establish a **sandbox** for the Venice expressions
 and rules.
 
 
@@ -199,13 +199,13 @@ The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
 | precompilation_no_macroexpand | avgt |    3 |   45.714 | ±    1.468 | us/op |
 | precompilation_macroexpand    | avgt |    3 |    7.022 | ±    0.415 | us/op |
 
-**Results Java 11 Server VM:**
+**Results Java 11 Server VM (-XX:+UseParallelGC):**
 
 | Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
 | :---                          | ---: | ---: |     ---: |       ---: |  ---: |
-| no_precompilation             | avgt |    3 | 4459,692 | ± 2058,839 | us/op |
-| precompilation_no_macroexpand | avgt |    3 |   51,370 | ±   10,793 | us/op |
-| precompilation_macroexpand    | avgt |    3 |    8,225 | ±    1,181 | us/op |
+| no_precompilation             | avgt |    3 | 3949,762 |  ± 570,639 | us/op |
+| precompilation_no_macroexpand | avgt |    3 |   45,350 |  ±  13,561 | us/op |
+| precompilation_macroexpand    | avgt |    3 |    7,273 |  ±   1,652 | us/op |
 
 
 ### Benchmark

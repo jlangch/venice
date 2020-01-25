@@ -1,7 +1,14 @@
 # Benchmarks & Profiling
 
+* [Benchmark](#benchmark)
+* [Profiling](#profiling)
+* [Benchmarks with JMH](#benchmarks-with-jmh)
+
+
 All benchmarks and profiling did run on a 2017 MacBook Pro (Core i7 2.8 GHz) with a 
 Java 11 server VM.
+
+
 
 ## Benchmark
 
@@ -338,3 +345,76 @@ dec              [ 4900]:   522,94 us      106 ns
 long?            [  200]:    20,49 us      102 ns
 -------------------------------------------------
 ```
+
+## Benchmarks with JMH
+
+Venice benchmarks are done using [JMH](http://openjdk.java.net/projects/code-tools/jmh/) 
+(the Java Microbenchmark Harness). This has been added to the JDK starting with JDK 12; 
+for earlier versions, the dependencies have to be added explicitly.
+
+The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
+
+**Results Java 8 Server VM:**
+
+| Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
+| :---                          | ---: | ---: |     ---: |       ---: |  ---: |
+| no_precompilation             | avgt |    3 | 3691.460 | ± 1149.737 | us/op |
+| precompilation_no_macroexpand | avgt |    3 |   45.714 | ±    1.468 | us/op |
+| precompilation_macroexpand    | avgt |    3 |    7.022 | ±    0.415 | us/op |
+
+**Results Java 11 Server VM (-XX:+UseParallelGC):**
+
+| Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
+| :---                          | ---: | ---: |     ---: |       ---: |  ---: |
+| no_precompilation             | avgt |    3 | 3949,762 |  ± 570,639 | us/op |
+| precompilation_no_macroexpand | avgt |    3 |   45,350 |  ±  13,561 | us/op |
+| precompilation_macroexpand    | avgt |    3 |    7,273 |  ±   1,652 | us/op |
+
+
+### Code
+
+```java
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import com.github.jlangch.venice.*;
+import org.openjdk.jmh.annotations.*;
+
+
+@Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
+@Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
+@Fork(1)
+@BenchmarkMode (Mode.AverageTime)
+@OutputTimeUnit (TimeUnit.MICROSECONDS)
+@State (Scope.Benchmark)
+@Threads (1)
+public class PrecompileBenchmark {
+    @Benchmark
+    public Object no_precompilation(State_ state) {
+        return state.venice.eval("test", state.expr, state.parameters);
+    }
+
+    @Benchmark
+    public Object precompilation_no_macroexpand(State_ state) {
+        return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
+    }
+    
+    @Benchmark
+    public Object precompilation_macroexpand(State_ state) {
+        return state.venice.eval(state.precompiledMacroExpand, state.parameters);
+    }
+  
+    @State(Scope.Benchmark)
+    public static class State_ {
+        public String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+                             "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+                             "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
+
+        public Venice venice = new Venice();
+        public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
+        public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
+        public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
+    }
+}
+```
+
