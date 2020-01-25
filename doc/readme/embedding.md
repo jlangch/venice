@@ -189,15 +189,23 @@ Venice benchmarks are done using JMH (the Java Microbenchmark Harness). This has
 been added to the JDK starting with JDK 12; for earlier versions, the dependencies 
 have to be added explicitly.
 
-The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz) with a Java 11 server VM.
+The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
 
-**Results:**
+**Results Java 8 Server VM:**
 
-| Benchmark                     | Mode | Cnt |    Score |      Error | Units |
-| :---                          | ---: |---: |     ---: |       ---: |  ---: |
-| no_precompilation             | avgt |   3 | 4459,692 | ± 2058,839 | us/op |
-| precompilation_no_macroexpand | avgt |   3 |   51,370 | ±   10,793 | us/op |
-| precompilation_macroexpand    | avgt |   3 |    8,225 | ±    1,181 | us/op |
+| Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
+| :---                          | ---: | ---: |     ---: |       ---: |  ---: |
+| no_precompilation             | avgt |    3 | 3691.460 | ± 1149.737 | us/op |
+| precompilation_no_macroexpand | avgt |    3 |   45.714 | ±    1.468 | us/op |
+| precompilation_macroexpand    | avgt |    3 |    7.022 | ±    0.415 | us/op |
+
+**Results Java 11 Server VM:**
+
+| Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
+| :---                          | ---: | ---: |     ---: |       ---: |  ---: |
+| no_precompilation             | avgt |    3 | 4459,692 | ± 2058,839 | us/op |
+| precompilation_no_macroexpand | avgt |    3 |   51,370 | ±   10,793 | us/op |
+| precompilation_macroexpand    | avgt |    3 |    8,225 | ±    1,181 | us/op |
 
 
 ### Benchmark
