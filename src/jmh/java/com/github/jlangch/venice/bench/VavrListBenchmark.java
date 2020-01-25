@@ -19,14 +19,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.bench;
 
 import java.util.concurrent.TimeUnit;
 
-import com.github.jlangch.venice.impl.types.collections.*;
-import com.github.jlangch.venice.impl.types.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 
-import org.openjdk.jmh.annotations.*;
+import io.vavr.collection.List;
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -36,43 +44,47 @@ import org.openjdk.jmh.annotations.*;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class VncTinyVectorBenchmark {
+public class VavrListBenchmark {
 	
-	public VncTinyVectorBenchmark() {
+	public VavrListBenchmark() {
 	}
 	
 	
 	@Benchmark
 	public Object prepend() {
-		return vector.addAtStart(val);
+		return list.prepend(0);
 	}
 	
 	@Benchmark
 	public Object append() {
-		return vector.addAtEnd(val);
+		return list.append(0);
 	}
 
 	@Benchmark
 	public Object first() {
-		return vector.first();
+		return list.get(0);
  	}
 	
 	@Benchmark
 	public Object last() {
-		return vector.last();
+		return list.last();
 	}
 
 	@Benchmark
 	public Object rest() {
-		return vector.rest();
+		return list.tail();
 	}
 	
 	@Benchmark
 	public Object butlast() {
-		return vector.butlast();
+		return list.slice(0, list.length()-1);
 	}
-
 	
-	private final VncVal val = new VncLong(0L);
-	private final VncVector vector = VncTinyVector.range(1,4);
+	@Benchmark
+	public Object drop_1() {
+		return list.drop(1);
+	}
+	
+	
+	private final List<Integer> list = List.range(0, 1000);
 }

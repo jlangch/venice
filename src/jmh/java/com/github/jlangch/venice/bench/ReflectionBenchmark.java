@@ -19,16 +19,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.bench;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
+
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
-import org.openjdk.jmh.annotations.*;
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)

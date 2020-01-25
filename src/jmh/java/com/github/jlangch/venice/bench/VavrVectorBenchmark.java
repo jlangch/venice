@@ -19,13 +19,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.bench;
 
 import java.util.concurrent.TimeUnit;
 
-import io.vavr.collection.List;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 
-import org.openjdk.jmh.annotations.*;
+import io.vavr.collection.Vector;
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -35,47 +44,47 @@ import org.openjdk.jmh.annotations.*;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class VavrListBenchmark {
+public class VavrVectorBenchmark {
 	
-	public VavrListBenchmark() {
+	public VavrVectorBenchmark() {
 	}
 	
 	
 	@Benchmark
 	public Object prepend() {
-		return list.prepend(0);
+		return vector.prepend(0);
 	}
 	
 	@Benchmark
 	public Object append() {
-		return list.append(0);
+		return vector.append(0);
 	}
 
 	@Benchmark
 	public Object first() {
-		return list.get(0);
+		return vector.get(0);
  	}
 	
 	@Benchmark
 	public Object last() {
-		return list.last();
+		return vector.last();
 	}
 
 	@Benchmark
 	public Object rest() {
-		return list.tail();
+		return vector.tail();
 	}
 	
 	@Benchmark
 	public Object butlast() {
-		return list.slice(0, list.length()-1);
+		return vector.slice(0, vector.length()-1);
 	}
 	
 	@Benchmark
 	public Object drop_1() {
-		return list.drop(1);
+		return vector.drop(1);
 	}
 	
 	
-	private final List<Integer> list = List.range(0, 1000);
+	private final Vector<Integer> vector = Vector.range(0, 1000);
 }

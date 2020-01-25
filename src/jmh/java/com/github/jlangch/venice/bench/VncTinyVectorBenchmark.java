@@ -19,14 +19,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.bench;
 
 import java.util.concurrent.TimeUnit;
 
-import io.vavr.collection.List;
-import io.vavr.collection.Vector;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 
-import org.openjdk.jmh.annotations.*;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -36,25 +47,25 @@ import org.openjdk.jmh.annotations.*;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class VavrVectorBenchmark {
+public class VncTinyVectorBenchmark {
 	
-	public VavrVectorBenchmark() {
+	public VncTinyVectorBenchmark() {
 	}
 	
 	
 	@Benchmark
 	public Object prepend() {
-		return vector.prepend(0);
+		return vector.addAtStart(val);
 	}
 	
 	@Benchmark
 	public Object append() {
-		return vector.append(0);
+		return vector.addAtEnd(val);
 	}
 
 	@Benchmark
 	public Object first() {
-		return vector.get(0);
+		return vector.first();
  	}
 	
 	@Benchmark
@@ -64,19 +75,15 @@ public class VavrVectorBenchmark {
 
 	@Benchmark
 	public Object rest() {
-		return vector.tail();
+		return vector.rest();
 	}
 	
 	@Benchmark
 	public Object butlast() {
-		return vector.slice(0, vector.length()-1);
+		return vector.butlast();
 	}
+
 	
-	@Benchmark
-	public Object drop_1() {
-		return vector.drop(1);
-	}
-	
-	
-	private final Vector<Integer> vector = Vector.range(0, 1000);
+	private final VncVal val = new VncLong(0L);
+	private final VncVector vector = VncTinyVector.range(1,4);
 }
