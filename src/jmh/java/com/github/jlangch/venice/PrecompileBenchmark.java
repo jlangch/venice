@@ -24,9 +24,7 @@ package com.github.jlangch.venice.examples;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.PreCompiled;
-import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.*;
 import org.openjdk.jmh.annotations.*;
 
 
@@ -38,19 +36,18 @@ import org.openjdk.jmh.annotations.*;
 @State (Scope.Benchmark)
 @Threads (1)
 public class PrecompileBenchmark {
- 
 	@Benchmark
-    public Object bench_no_precompilation(State_ state) {
+    public Object no_precompilation(State_ state) {
 		return state.venice.eval("test", state.expr, state.parameters);
     }
 
 	@Benchmark
-    public Object bench_precompilation_no_macroexpand(State_ state) {
+    public Object precompilation_no_macroexpand(State_ state) {
 		return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
     }
     
 	@Benchmark
-	public Object bench_precompilation_macroexpand(State_ state) {
+	public Object precompilation_macroexpand(State_ state) {
     	return state.venice.eval(state.precompiledMacroExpand, state.parameters);
     }
   
@@ -65,5 +62,4 @@ public class PrecompileBenchmark {
     	public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
     	public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
     }
-    
 }

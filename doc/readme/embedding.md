@@ -193,20 +193,23 @@ The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz) with a Java 11 ser
 
 **Results:**
 
-| Embed Type                       |   Calls | Elapsed |   Per Call |
-| :---                             |    ---: |    ---: |       ---: |
-| No precompilation                |   8'000 | 32.57 s | 3430.00 us |
-| Precompilation                   |  80'000 |   1.47s |   18.43 us |
-| Precompilation / macro expansion |  80'000 |   0.68s |    7.12 us |
-
-_The benchmark source code can be found in the checked in Java package_ 
-_'com.github.jlangch.venice.examples'. The slowest 20% of the runs are_ 
-_considered as outliers and are removed._
+| Benchmark                     | Mode | Cnt |    Score |      Error | Units |
+| :---                          | ---: |---: |     ---: |       ---: |  ---: |
+| no_precompilation             | avgt |   3 | 4459,692 | ± 2058,839 | us/op |
+| precompilation_no_macroexpand | avgt |   3 |   51,370 | ±   10,793 | us/op |
+| precompilation_macroexpand    | avgt |   3 |    8,225 | ±    1,181 | us/op |
 
 
 ### Benchmark
 
 ```java
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import com.github.jlangch.venice.*;
+import org.openjdk.jmh.annotations.*;
+
+
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
 @Fork(1)
@@ -215,40 +218,32 @@ _considered as outliers and are removed._
 @State (Scope.Benchmark)
 @Threads (1)
 public class PrecompileBenchmark {
-    public PrecompileBenchmark() {
-        init();
+    @Benchmark
+    public Object no_precompilation(State_ state) {
+        return state.venice.eval("test", state.expr, state.parameters);
     }
 
     @Benchmark
-    public Object bench_no_precompilation() {
-        return venice.eval("test", expr, parameters);
-    }
-
-    @Benchmark
-    public Object bench_precompilation_no_macroexpand() {
-        return venice.eval(precompiledNoMacroExpand, parameters);
+    public Object precompilation_no_macroexpand(State_ state) {
+        return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
     }
     
     @Benchmark
-    public Object bench_precompilation_macroexpand() {
-        return venice.eval(precompiledMacroExpand, parameters);
+    public Object precompilation_macroexpand(State_ state) {
+        return state.venice.eval(state.precompiledMacroExpand, state.parameters);
     }
+  
+    @State(Scope.Benchmark)
+    public static class State_ {
+        public String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+                             "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+                             "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
 
-    private void init() {
-        this.venice = new Venice();
-        this.precompiledNoMacroExpand = venice.precompile("example", expr, false);
-        this.precompiledMacroExpand = venice.precompile("example", expr, true);
+        public Venice venice = new Venice();
+        public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
+        public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
+        public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
     }
-    
-    
-    private String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
-                          "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
-                          "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
-    
-    private Venice venice;    
-    private PreCompiled precompiledNoMacroExpand;
-    private PreCompiled precompiledMacroExpand;
-    private Parameters parameters = Parameters.of("x", -10, "y", 0, "z", 10);
 }
 ```
 
