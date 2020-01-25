@@ -271,38 +271,32 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVal last() {
-		switch (len) {
-			case 0:	return Constants.Nil;
-			case 1:	return first;
-			case 2:	return second;
-			case 3:	return third;
-			case 4:	return fourth;
-			default: throw new IllegalStateException("Length out of range");
-		}
+		if (len == 0) return Constants.Nil;
+		if (len == 1) return first;
+		if (len == 2) return second;
+		if (len == 3) return third;
+		if (len == 4) return fourth;
+		else throw new IllegalStateException("Length out of range");
 	}
 	
 	@Override
 	public VncVector rest() {
-		switch (len) {
-			case 0:	return this;
-			case 1:	return new VncTinyVector(getMeta());
-			case 2:	return new VncTinyVector(second, getMeta());
-			case 3:	return new VncTinyVector(second, third, getMeta());
-			case 4:	return new VncTinyVector(second, third, fourth, getMeta());
-			default: throw new IllegalStateException("Length out of range");
-		}
+		if (len == 0) return this;
+		if (len == 1) return new VncTinyVector(getMeta());
+		if (len == 2) return new VncTinyVector(second, getMeta());
+		if (len == 3) return new VncTinyVector(second, third, getMeta());
+		if (len == 4) return new VncTinyVector(second, third, fourth, getMeta());
+		else throw new IllegalStateException("Length out of range");
 	}
 	
 	@Override
 	public VncVector butlast() {
-		switch (len) {
-			case 0:	return this;
-			case 1:	return new VncTinyVector(getMeta());
-			case 2:	return new VncTinyVector(first, getMeta());
-			case 3:	return new VncTinyVector(first, second, getMeta());
-			case 4:	return new VncTinyVector(first, second, third, getMeta());
-			default: throw new IllegalStateException("Length out of range");
-		}
+		if (len == 0) return this;
+		if (len == 1) return new VncTinyVector(getMeta());
+		if (len == 2) return new VncTinyVector(first, getMeta());
+		if (len == 3) return new VncTinyVector(first, second, getMeta());
+		if (len == 4) return new VncTinyVector(first, second, third, getMeta());
+		else throw new IllegalStateException("Length out of range");
 	}
 
 	@Override
@@ -345,14 +339,12 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector addAtStart(final VncVal val) {
-		switch (len) {
-			case 0:	return new VncTinyVector(val, getMeta()); 
-			case 1: return new VncTinyVector(val, first, getMeta()); 
-			case 2:	return new VncTinyVector(val, first, second, getMeta()); 
-			case 3:	return VncVector.of(val, first, second, third).withMeta(getMeta());
-			case 4:	return VncVector.of(val, first, second, third, fourth).withMeta(getMeta());
-			default: throw new IllegalStateException("Vector length out of range");
-		}
+		if (len == 0) return new VncTinyVector(val, getMeta()); 
+		if (len == 1) return new VncTinyVector(val, first, getMeta()); 
+		if (len == 2) return new VncTinyVector(val, first, second, getMeta()); 
+		if (len == 3) return new VncTinyVector(val, first, second, third, getMeta());
+		if (len == 4) return VncVector.of(val, first, second, third, fourth).withMeta(getMeta());
+		else throw new IllegalStateException("Vector length out of range");
 	}
 	
 	@Override

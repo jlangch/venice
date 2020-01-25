@@ -86,5 +86,5 @@ public class VavrVectorBenchmark {
 	}
 	
 	
-	private final Vector<Integer> vector = Vector.range(0, 1000);
+	private final Vector<Integer> vector = Vector.range(1, 4);
 }
