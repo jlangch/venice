@@ -17,7 +17,7 @@ and this project adheres to
 - ...
 
 ### Changed
-- to OpenPDF libs to 1.3.12
+- OpenPDF libs to 1.3.12
 
 
 
