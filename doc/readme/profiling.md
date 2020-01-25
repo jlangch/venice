@@ -12,7 +12,8 @@ Java 11 server VM.
 
 ## Benchmark
 
-Venice's *benchmark* module measures the computation time of an expression. 
+Venice provides out of-the-box benchmarks using the *benchmark* module to measures the 
+execution time of an expression. 
 
 Benchmarking an expression incorporates four phases:
    1. Run the expression in a warm-up phase to allow the JIT compiler to do optimizations. 
