@@ -384,10 +384,10 @@ import org.openjdk.jmh.annotations.*;
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
 @Fork(1)
-@BenchmarkMode (Mode.AverageTime)
-@OutputTimeUnit (TimeUnit.MICROSECONDS)
-@State (Scope.Benchmark)
-@Threads (1)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+@State(Scope.Benchmark)
+@Threads(1)
 public class PrecompileBenchmark {
     @Benchmark
     public Object no_precompilation(State_ state) {
