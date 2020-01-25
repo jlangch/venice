@@ -43,12 +43,12 @@ public class VavrListBenchmark {
 	
 	@Benchmark
 	public Object prepend() {
-		return list.prepend(0L);
+		return list.prepend(0);
 	}
 	
 	@Benchmark
 	public Object append() {
-		return list.append(0L);
+		return list.append(0);
 	}
 
 	@Benchmark
@@ -75,18 +75,7 @@ public class VavrListBenchmark {
 	public Object drop_1() {
 		return list.drop(1);
 	}
-
-
-	private List<Long> create(final int len) {
-		List<Long> v = List.empty();
-		
-		for(int ii=0; ii<len; ii++) {
-			v = v.append(0L);
-		}
-		
-		return v;
-	}
 	
 	
-	private final List<Long> list = create(1000);
+	private final List<Integer> list = List.range(0, 1000);
 }

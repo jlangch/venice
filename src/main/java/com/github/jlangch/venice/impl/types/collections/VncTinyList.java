@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -103,7 +104,13 @@ public class VncTinyList extends VncList {
 			default: return VncList.of(mvs);
 		}
 	}
-	
+
+	public static VncList range(final int from, final int toExclusive) {
+		final List<VncVal> list = new ArrayList<>();
+		for(int ii=from; ii<toExclusive; ii++) list.add(new VncLong(ii));
+		return VncTinyList.ofList(list, null);
+	}
+
 	private static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
 		switch (list.size()) {
 			case 0:	return new VncTinyList(meta);

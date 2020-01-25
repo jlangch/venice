@@ -30,6 +30,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -105,6 +106,12 @@ public class VncTinyVector extends VncVector {
 			case 4:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], mvs[3], null);
 			default: return VncVector.of(mvs);
 		}
+	}
+	
+	public static VncVector range(final int from, final int toExclusive) {
+		final List<VncVal> list = new ArrayList<>();
+		for(int ii=from; ii<toExclusive; ii++) list.add(new VncLong(ii));
+		return VncTinyVector.ofList(list, null);
 	}
 	
 	private static VncVector ofList(final List<? extends VncVal> list, final VncVal meta) {

@@ -185,6 +185,10 @@ public class Embed_11_PrecompileSerialize {
 
 ## Precompilation Benchmark
 
+Venice benchmarks are done using JMH (the Java Microbenchmark Harness). This has 
+been added to the JDK starting with JDK 12; for earlier versions, the dependencies 
+have to be added explicitly.
+
 The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz) with a Java 11 server VM.
 
 **Results:**
@@ -200,71 +204,51 @@ _'com.github.jlangch.venice.examples'. The slowest 20% of the runs are_
 _considered as outliers and are removed._
 
 
-### Without Precompilation
+### Benchmark
 
 ```java
-import com.github.jlangch.venice.*;
-
-public class Embed_05_PrecompiledShootout_1 {
-
-    // SIMPLIFIED: see source code for details!
-
-    public static void main(final String[] args) {
-        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
-
-        final Venice venice = new Venice();
-        
-        for(int ii=0; ii<100; ii++) {
-            venice.eval("test", expr, Parameters.of("x", (ii%3) - 1));
-        }
+@Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
+@Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
+@Fork(1)
+@BenchmarkMode (Mode.AverageTime)
+@OutputTimeUnit (TimeUnit.MICROSECONDS)
+@State (Scope.Benchmark)
+@Threads (1)
+public class PrecompileBenchmark {
+    public PrecompileBenchmark() {
+        init();
     }
-}
-```
 
-
-### With Precompilation
-
-```java
-import com.github.jlangch.venice.*;
-
-public class Embed_06_PrecompiledShootout_2 {
-
-    // SIMPLIFIED: see source code for details!
-
-    public static void main(final String[] args) {
-        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
-
-        final Venice venice = new Venice();
-        final PreCompiled precompiled = venice.precompile("example", expr, false);
-
-        for(int ii=0; ii<100; ii++) {
-           venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
-        }
+    @Benchmark
+    public Object bench_no_precompilation() {
+        return venice.eval("test", expr, parameters);
     }
-}
-```
 
-
-### With Precompilation and Upfront Macro Expansion
-
-```java
-import com.github.jlangch.venice.*;
-
-public class Embed_07_PrecompiledShootout_3 {
-
-    // SIMPLIFIED: see source code for details!
-
-    public static void main(final String[] args) {
-        final String expr = "(cond (< x 0) -1 (> x 0) 1 :else 0)";
-
-        final Venice venice = new Venice();
-        
-        final PreCompiled precompiled = venice.precompile("example", expr, true);
-
-        for(int ii=0; ii<100; ii++) {
-           venice.eval(precompiled, Parameters.of("x", (ii%3) - 1));
-        }
+    @Benchmark
+    public Object bench_precompilation_no_macroexpand() {
+        return venice.eval(precompiledNoMacroExpand, parameters);
     }
+    
+    @Benchmark
+    public Object bench_precompilation_macroexpand() {
+        return venice.eval(precompiledMacroExpand, parameters);
+    }
+
+    private void init() {
+        this.venice = new Venice();
+        this.precompiledNoMacroExpand = venice.precompile("example", expr, false);
+        this.precompiledMacroExpand = venice.precompile("example", expr, true);
+    }
+    
+    
+    private String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+                          "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+                          "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
+    
+    private Venice venice;    
+    private PreCompiled precompiledNoMacroExpand;
+    private PreCompiled precompiledMacroExpand;
+    private Parameters parameters = Parameters.of("x", -10, "y", 0, "z", 10);
 }
 ```
 

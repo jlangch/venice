@@ -74,5 +74,5 @@ public class VncTinyVectorBenchmark {
 
 	
 	private final VncVal val = new VncLong(0L);
-	private final VncVector vector = VncTinyVector.of(new VncLong(1L), new VncLong(2L), new VncLong(3L));
+	private final VncVector vector = VncTinyVector.range(1,4);
 }

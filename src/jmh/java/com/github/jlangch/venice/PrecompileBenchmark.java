@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.examples;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.Parameters;
@@ -38,38 +39,31 @@ import org.openjdk.jmh.annotations.*;
 @Threads (1)
 public class PrecompileBenchmark {
  
-	public PrecompileBenchmark() {
-		init();
-	}
-
 	@Benchmark
-    public Object bench_no_precompilation() {
-		return venice.eval("test", expr, Parameters.of("x", -10, "y", 0, "z", 10));
+    public Object bench_no_precompilation(State_ state) {
+		return state.venice.eval("test", state.expr, state.parameters);
     }
 
 	@Benchmark
-    public Object bench_precompilation_no_macroexpand() {
-		return venice.eval(precompiledNoMacroExpand, Parameters.of("x", -10, "y", 0, "z", 10));
+    public Object bench_precompilation_no_macroexpand(State_ state) {
+		return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
     }
     
 	@Benchmark
-	public Object bench_precompilation_macroexpand() {
-    	return venice.eval(precompiledMacroExpand, Parameters.of("x", -10, "y", 0, "z", 10));
+	public Object bench_precompilation_macroexpand(State_ state) {
+    	return state.venice.eval(state.precompiledMacroExpand, state.parameters);
     }
+  
+    @State(Scope.Benchmark)
+    public static class State_ {
+    	public String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+							 "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+							 "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
 
-    private void init() {
-        this.venice = new Venice();
-        this.precompiledNoMacroExpand = venice.precompile("example", expr, false);
-        this.precompiledMacroExpand = venice.precompile("example", expr, true);
+    	public Venice venice = new Venice();
+    	public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
+    	public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
+    	public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
     }
     
-    
-	private String expr = "(do (cond (< x 0) -1 (> x 0) 1 :else 0) " +
-						  "    (cond (< y 0) -1 (> y 0) 1 :else 0) " +
-						  "    (cond (< z 0) -1 (> z 0) 1 :else 0))";
-	
-	private Venice venice;
-	
-	private PreCompiled precompiledNoMacroExpand;
-	private PreCompiled precompiledMacroExpand;
 }

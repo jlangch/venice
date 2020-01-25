@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import java.util.concurrent.TimeUnit;
 
+import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 
 import org.openjdk.jmh.annotations.*;
@@ -43,12 +44,12 @@ public class VavrVectorBenchmark {
 	
 	@Benchmark
 	public Object prepend() {
-		return vector.prepend(0L);
+		return vector.prepend(0);
 	}
 	
 	@Benchmark
 	public Object append() {
-		return vector.append(0L);
+		return vector.append(0);
 	}
 
 	@Benchmark
@@ -75,18 +76,7 @@ public class VavrVectorBenchmark {
 	public Object drop_1() {
 		return vector.drop(1);
 	}
-
-
-	private Vector<Long> create(final int len) {
-		Vector<Long> v = Vector.empty();
-		
-		for(int ii=0; ii<len; ii++) {
-			v = v.append(0L);
-		}
-		
-		return v;
-	}
 	
 	
-	private final Vector<Long> vector = create(1000);
+	private final Vector<Integer> vector = Vector.range(0, 1000);
 }
