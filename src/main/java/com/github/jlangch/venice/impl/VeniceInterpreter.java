@@ -133,9 +133,20 @@ public class VeniceInterpreter implements Serializable  {
 		return val;
 	}
 
-	// print
-	public String PRINT(final VncVal exp) {
-		return Printer.pr_str(exp, true);
+	public VncVal MACROEXPAND(
+			final VncVal ast, 
+			final Env env, 
+			final boolean macroexpand
+	) {
+		if (macroexpand) {
+			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
+													new VncSymbol("core/macroexpand-all"));
+			if (macroexpandFn != null) {
+				return macroexpandFn.apply(VncList.of(ast));
+			}
+		}
+		
+		return ast;		
 	}
 	
 	public VncVal RE(
@@ -152,18 +163,16 @@ public class VeniceInterpreter implements Serializable  {
 			final Env env,
 			final boolean macroexpand
 	) {
+		VncVal ast = READ(script, name);			
 		if (macroexpand) {
-			VncVal ast = READ(script, name);			
-			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
-													new VncSymbol("core/macroexpand-all"));
-			if (macroexpandFn != null) {
-				ast = macroexpandFn.apply(VncList.of(ast));
-			}
-			return EVAL(ast, env);
+			ast = MACROEXPAND(ast, env, macroexpand);			
 		}
-		else {
-			return EVAL(READ(script, name), env);		
-		}
+		return EVAL(ast, env);
+	}
+
+	// print
+	public String PRINT(final VncVal exp) {
+		return Printer.pr_str(exp, true);
 	}
 		
 	public Env createEnv(final boolean macroexpandOnLoad, final VncKeyword runMode) {  

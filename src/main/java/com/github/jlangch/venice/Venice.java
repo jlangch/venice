@@ -43,11 +43,9 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
-import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -105,10 +103,10 @@ public class Venice {
 	 * 
 	 * @param scriptName A mandatory script name
 	 * @param script A mandatory script
-	 * @param expandMacros if true expand all macros
+	 * @param macroexpand If true expand macros upfront
 	 * @return the pre-compiled script
 	 */
-	public PreCompiled precompile(final String scriptName, final String script, final boolean expandMacros) {
+	public PreCompiled precompile(final String scriptName, final String script, final boolean macroexpand) {
 		if (StringUtil.isBlank(scriptName)) {
 			throw new IllegalArgumentException("A 'scriptName' must not be blank");
 		}
@@ -123,17 +121,11 @@ public class Venice {
 												new AcceptAllInterceptor(), 
 												loadPaths);
 		
-		final Env env = venice.createEnv(false, new VncKeyword("macroexpand"))
+		final Env env = venice.createEnv(macroexpand, new VncKeyword("macroexpand"))
 							  .setStdoutPrintStream(null);
 
-		VncVal ast = venice.READ(script, scriptName);	
-		if (expandMacros) {
-			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
-												new VncSymbol("core/macroexpand-all"));
-			if (macroexpandFn != null) {
-				ast = macroexpandFn.apply(VncList.of(ast));
-			}
-		}
+		VncVal ast = venice.READ(script, scriptName);
+		ast = venice.MACROEXPAND(ast, env, macroexpand);
 		
 		final PreCompiled pc = new PreCompiled(scriptName, ast);
 
@@ -209,7 +201,7 @@ public class Venice {
 	 * @return The result
 	 */
 	public Object eval(final String script) {
-		return eval(null, script, null);
+		return eval(null, script, false, null);
 	}
 
 	/**
@@ -220,7 +212,7 @@ public class Venice {
 	 * @return The result
 	 */
 	public Object eval(final String scriptName, final String script) {
-		return eval(scriptName, script, null);
+		return eval(scriptName, script, false, null);
 	}
 
 	/**
@@ -231,9 +223,9 @@ public class Venice {
 	 * @return The result
 	 */
 	public Object eval(final String script, final Map<String,Object> params) {
-		return eval(null, script, params);
+		return eval(null, script, false, params);
 	}
-
+	
 	/**
 	 * Evaluates a script with parameters
 	 * 
@@ -242,7 +234,29 @@ public class Venice {
 	 * @param params The optional parameters
 	 * @return The result
 	 */
-	public Object eval(final String scriptName, final String script, final Map<String,Object> params) {
+	public Object eval(
+			final String scriptName, 
+			final String script, 
+			final Map<String,Object> params
+	) {
+		return eval(scriptName, script, false, params);
+	}
+
+	/**
+	 * Evaluates a script with parameters
+	 * 
+	 * @param scriptName An optional scriptName
+	 * @param script A mandatory script
+	 * @param macroexpand If true expand macros upfront
+	 * @param params The optional parameters
+	 * @return The result
+	 */
+	public Object eval(
+			final String scriptName, 
+			final String script, 
+			final boolean macroexpand,
+			final Map<String,Object> params
+	) {
 		if (StringUtil.isBlank(script)) {
 			throw new IllegalArgumentException("A 'script' must not be blank");
 		}
@@ -255,13 +269,13 @@ public class Venice {
 
 			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor, loadPaths);
 
-			final Env env = createEnv(venice, params);
+			final Env env = createEnv(venice, macroexpand, params);
 			
 			meterRegistry.reset();  // no metrics for creating env and loading modules 
 
 			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 			
-			final VncVal result = venice.RE(script, scriptName, env);
+			final VncVal result = venice.RE(script, scriptName, env, macroexpand);
 						
 			final Object jResult = result.convertToJavaObject();
 	
@@ -307,8 +321,12 @@ public class Venice {
 	}
 	
 	
-	private Env createEnv(final VeniceInterpreter venice, final Map<String,Object> params) {
-		return addParams(venice.createEnv(false, new VncKeyword("script")), params);
+	private Env createEnv(
+			final VeniceInterpreter venice, 
+			final boolean macroexpand, 
+			final Map<String,Object> params
+	) {
+		return addParams(venice.createEnv(macroexpand, new VncKeyword("script")), params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
