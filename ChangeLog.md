@@ -10,7 +10,13 @@ and this project adheres to
 
 
 
-## [1.7.17] - 2020-01-xx
+## [1.8.0] - 2020-02-xx
+
+### Scope
+
+Improve Java interop. **MethodHandle** and **LambdaMetafactory** improve reflection performance
+and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
+
 
 ### Added
 
