@@ -49,11 +49,9 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.Licenses;
@@ -230,18 +228,8 @@ public class REPL {
 
 	private VncVal runCodeFragment(final String snippet, final Env env) {
 		try {				
-			ThreadLocalMap.clearCallStack();
-			
-			VncVal ast = venice.READ(snippet, "user");			
-			if (macroexpand) {
-				final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
-														new VncSymbol("core/macroexpand-all"));
-				if (macroexpandFn != null) {
-					ast = macroexpandFn.apply(VncList.of(ast));
-				}
-			}
-			
-			return venice.EVAL(ast, env);
+			ThreadLocalMap.clearCallStack();			
+			return venice.RE(snippet, "user", env, macroexpand);
 		} 
 		catch (ContinueException ex) {
 			// just continue

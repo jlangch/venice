@@ -34,7 +34,6 @@ import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
-import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -161,15 +160,7 @@ public class Launcher {
 							Arrays.asList(
 								convertCliArgsToVar(cli)));
 
-		VncVal ast = venice.READ(script, name);			
-		if (macroexpand) {
-			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
-													new VncSymbol("core/macroexpand-all"));
-			if (macroexpandFn != null) {
-				ast = macroexpandFn.apply(VncList.of(ast));
-			}
-		}	
-		return venice.PRINT(venice.EVAL(ast, env));
+		return venice.PRINT(venice.RE(script, name, env, macroexpand));
 	}
 	
 	private static Env createEnv(

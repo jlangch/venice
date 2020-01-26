@@ -140,13 +140,32 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public VncVal RE(
 			final String script, 
-			final String filename, 
+			final String name, 
 			final Env env
 	) {
-		final VncVal ast = READ(script, filename);			
-		return EVAL(ast, env);		
+		return EVAL(READ(script, name), env);		
 	}
 	
+	public VncVal RE(
+			final String script, 
+			final String name, 
+			final Env env,
+			final boolean macroexpand
+	) {
+		if (macroexpand) {
+			VncVal ast = READ(script, name);			
+			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
+													new VncSymbol("core/macroexpand-all"));
+			if (macroexpandFn != null) {
+				ast = macroexpandFn.apply(VncList.of(ast));
+			}
+			return EVAL(ast, env);
+		}
+		else {
+			return EVAL(READ(script, name), env);		
+		}
+	}
+		
 	public Env createEnv(final boolean macroexpandOnLoad, final VncKeyword runMode) {  
 		return createEnv(null, macroexpandOnLoad, runMode);
 	}
