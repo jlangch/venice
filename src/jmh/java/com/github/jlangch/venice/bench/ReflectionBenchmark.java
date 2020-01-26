@@ -44,14 +44,15 @@ import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 
-// Benchmark                                      Mode  Cnt   Score   Error  Units
-// -------------------------------------------------------------------------------
-// ReflectionBenchmark.bench_native               avgt    3  23.701 ± 1.406  ns/op
-// ReflectionBenchmark.bench_reflective           avgt    3  57.975 ± 3.189  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_1  avgt    3  24.539 ± 2.248  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_2  avgt    3  24.560 ± 1.015  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_3  avgt    3  24.691 ± 1.335  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_4  avgt    3  30.845 ± 4.883  ns/op
+// Benchmark                                      Mode  Cnt   Score    Error  Units
+// --------------------------------------------------------------------------------
+// ReflectionBenchmark.bench_native               avgt    3  23.633 ±  3.612  ns/op
+// ReflectionBenchmark.bench_reflective           avgt    3  60.137 ±  9.836  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_1  avgt    3  24.285 ±  1.144  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_2  avgt    3  24.358 ±  2.592  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_3  avgt    3  25.711 ± 23.963  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_4  avgt    3  31.686 ±  2.343  ns/op
+// ReflectionBenchmark.bench_MethodHandle         avgt    3  35.298 ±  0.927  ns/op
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
@@ -137,12 +138,29 @@ public class ReflectionBenchmark {
 			throw new RuntimeException(ex);
 		}
 	}
+
+	@Benchmark
+	public BigInteger bench_MethodHandle() {
+		try {
+			final BigInteger i1 = (BigInteger)mhValueOf.invoke(10L);
+			final BigInteger i2 = (BigInteger)mhValueOf.invoke(100L);
+			return (BigInteger)mhAdd.invoke(i1, i2);      		
+		}
+		catch(Throwable ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 	
 	private void init() {
 		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+
 			mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
 			mAdd = BigInteger.class.getDeclaredMethod("add", BigInteger.class);
-			
+
+			mhValueOf = caller.findStatic(BigInteger.class, "valueOf", MethodType.methodType(BigInteger.class, long.class));
+			mhAdd = caller.findVirtual(BigInteger.class, "add", MethodType.methodType(BigInteger.class, BigInteger.class));
+
 			fnValueOf = LambdaMetafactoryUtil.staticMethod_1_args(mValueOf);
 			fnAdd = LambdaMetafactoryUtil.instanceMethod_1_args(mAdd);
 			
@@ -255,6 +273,8 @@ public class ReflectionBenchmark {
 	
 	private Method mValueOf;
 	private Method mAdd;
+	private MethodHandle mhValueOf;
+	private MethodHandle mhAdd;
 	private Function1<Object,Object> fnValueOf;
 	private Function2<Object,Object,Object> fnAdd;
 	private Function1<Long,BigInteger> fnGenericValueOf;
