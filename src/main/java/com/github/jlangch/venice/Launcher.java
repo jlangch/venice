@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -37,6 +34,7 @@ import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -62,7 +60,7 @@ public class Launcher {
 		JavaInterop.register(interceptor);
 		
 		final List<String> loadPaths = LoadPath.parseFromString(cli.switchValue("-loadpath"));
-		final boolean macroexpandOnLoad = cli.switchPresent("-macroexpand");
+		final boolean macroexpand = cli.switchPresent("-macroexpand");
 
 		try {
 			if (cli.switchPresent("-file")) {
@@ -71,7 +69,7 @@ public class Launcher {
 				final String script = new String(FileUtil.load(new File(file)));
 				
 				System.out.println(
-						runScript(cli, loadPaths, macroexpandOnLoad, interceptor, script, new File(file).getName()));
+						runScript(cli, loadPaths, macroexpand, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-cp-file")) {
 				// run the file from the classpath
@@ -79,14 +77,14 @@ public class Launcher {
 				final String script = new ClassPathResource(file).getResourceAsString();
 				
 				System.out.println(
-						runScript(cli, loadPaths, macroexpandOnLoad, interceptor, script, new File(file).getName()));
+						runScript(cli, loadPaths, macroexpand, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-script")) {
 				// run the script passed as command line argument
 				final String script = cli.switchValue("-script");
 				
 				System.out.println(
-						runScript(cli, loadPaths, macroexpandOnLoad, interceptor, script, "script"));
+						runScript(cli, loadPaths, macroexpand, interceptor, script, "script"));
 			}
 			else if (cli.switchPresent("-app")) {
 				// run the Venice application archive
@@ -101,7 +99,7 @@ public class Launcher {
 
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", stripVeniceFileExt(mainFile));
 
-				runApp(cli, macroexpandOnLoad, interceptor, appBootstrap, appName, appFile);
+				runApp(cli, macroexpand, interceptor, appBootstrap, appName, appFile);
 			}
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
@@ -124,7 +122,7 @@ public class Launcher {
 	
 	private static String runApp(
 			final CommandLineArgs cli,
-			final boolean macroexpandOnLoad,
+			final boolean macroexpand,
 			final IInterceptor interceptor,
 			final String script,
 			final String name,
@@ -136,12 +134,12 @@ public class Launcher {
 			
 		final Env env = createEnv(
 							venice,
+							macroexpand,
 							new VncKeyword("app"),
 							Arrays.asList(
 								convertCliArgsToVar(cli),
 								convertAppNameToVar(name),
-								convertAppArchiveToVar(appArchive),
-								convertMacroexpandOnLoadToVar(macroexpandOnLoad)));
+								convertAppArchiveToVar(appArchive)));
 
 		return venice.PRINT(venice.RE(script, name, env));
 	}
@@ -149,7 +147,7 @@ public class Launcher {
 	private static String runScript(
 			final CommandLineArgs cli,
 			final List<String> loadPaths,
-			final boolean macroexpandOnLoad,
+			final boolean macroexpand,
 			final IInterceptor interceptor,
 			final String script,
 			final String name
@@ -158,20 +156,29 @@ public class Launcher {
 		
 		final Env env = createEnv(
 							venice, 
+							macroexpand,
 							new VncKeyword("script"),
 							Arrays.asList(
-								convertCliArgsToVar(cli),
-								convertMacroexpandOnLoadToVar(macroexpandOnLoad)));
-	
-		return venice.PRINT(venice.RE(script, name, env));
+								convertCliArgsToVar(cli)));
+
+		VncVal ast = venice.READ(script, name);			
+		if (macroexpand) {
+			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
+													new VncSymbol("core/macroexpand-all"));
+			if (macroexpandFn != null) {
+				ast = macroexpandFn.apply(VncList.of(ast));
+			}
+		}	
+		return venice.PRINT(venice.EVAL(ast, env));
 	}
 	
 	private static Env createEnv(
-			final VeniceInterpreter venice, 
+			final VeniceInterpreter venice,
+			final boolean macroexpand, 
 			final VncKeyword runMode,
 			final List<Var> vars
 	) {
-		return venice.createEnv(false, runMode)
+		return venice.createEnv(macroexpand, runMode)
 					 .addGlobalVars(vars)
 					 .setStdoutPrintStream(new PrintStream(System.out, true));
 	}
@@ -186,10 +193,6 @@ public class Launcher {
 
 	private static Var convertCliArgsToVar(final CommandLineArgs cli) {
 		return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
-	}
-	
-	private static Var convertMacroexpandOnLoadToVar(final boolean macroexpandOnLoad) {
-		return new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true);
 	}
 
 	private static String stripVeniceFileExt(final String s) {
