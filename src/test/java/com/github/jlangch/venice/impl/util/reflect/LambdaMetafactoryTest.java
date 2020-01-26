@@ -48,8 +48,7 @@ public class LambdaMetafactoryTest {
 		BigInteger i1 = fnValueOf.apply(10L);
 		BigInteger i2 = fnValueOf.apply(100L);
 		BigInteger sum = fnAdd.apply(i1, i2);      		
-		
-		
+				
 		assertEquals(110L, sum.longValue());
 	}
 
