@@ -44,13 +44,14 @@ import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 
-
+// Benchmark                                      Mode  Cnt   Score   Error  Units
+// -------------------------------------------------------------------------------
+// ReflectionBenchmark.bench_native               avgt    3  23.701 ± 1.406  ns/op
+// ReflectionBenchmark.bench_reflective           avgt    3  57.975 ± 3.189  ns/op
 // ReflectionBenchmark.bench_LambdaMetafactory_1  avgt    3  24.539 ± 2.248  ns/op
 // ReflectionBenchmark.bench_LambdaMetafactory_2  avgt    3  24.560 ± 1.015  ns/op
 // ReflectionBenchmark.bench_LambdaMetafactory_3  avgt    3  24.691 ± 1.335  ns/op
 // ReflectionBenchmark.bench_LambdaMetafactory_4  avgt    3  30.845 ± 4.883  ns/op
-// ReflectionBenchmark.bench_native               avgt    3  23.701 ± 1.406  ns/op
-// ReflectionBenchmark.bench_reflective           avgt    3  57.975 ± 3.189  ns/op
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
