@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice;
 
+import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.Constants.True;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -59,6 +62,7 @@ public class Launcher {
 		JavaInterop.register(interceptor);
 		
 		final List<String> loadPaths = LoadPath.parseFromString(cli.switchValue("-loadpath"));
+		final boolean macroexpandOnLoad = cli.switchPresent("-macroexpand");
 
 		try {
 			if (cli.switchPresent("-file")) {
@@ -67,7 +71,7 @@ public class Launcher {
 				final String script = new String(FileUtil.load(new File(file)));
 				
 				System.out.println(
-						runScript(cli, loadPaths, interceptor, script, new File(file).getName()));
+						runScript(cli, loadPaths, macroexpandOnLoad, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-cp-file")) {
 				// run the file from the classpath
@@ -75,14 +79,14 @@ public class Launcher {
 				final String script = new ClassPathResource(file).getResourceAsString();
 				
 				System.out.println(
-						runScript(cli, loadPaths, interceptor, script, new File(file).getName()));
+						runScript(cli, loadPaths, macroexpandOnLoad, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-script")) {
 				// run the script passed as command line argument
 				final String script = cli.switchValue("-script");
 				
 				System.out.println(
-						runScript(cli, loadPaths, interceptor, script, "script"));
+						runScript(cli, loadPaths, macroexpandOnLoad, interceptor, script, "script"));
 			}
 			else if (cli.switchPresent("-app")) {
 				// run the Venice application archive
@@ -97,7 +101,7 @@ public class Launcher {
 
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", stripVeniceFileExt(mainFile));
 
-				runApp(cli, interceptor, appBootstrap, appName, appFile);
+				runApp(cli, macroexpandOnLoad, interceptor, appBootstrap, appName, appFile);
 			}
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
@@ -120,6 +124,7 @@ public class Launcher {
 	
 	private static String runApp(
 			final CommandLineArgs cli,
+			final boolean macroexpandOnLoad,
 			final IInterceptor interceptor,
 			final String script,
 			final String name,
@@ -128,14 +133,15 @@ public class Launcher {
 		final List<String> loadPaths = Arrays.asList(appArchive.getAbsolutePath());
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
-		
+			
 		final Env env = createEnv(
 							venice,
 							new VncKeyword("app"),
 							Arrays.asList(
 								convertCliArgsToVar(cli),
 								convertAppNameToVar(name),
-								convertAppArchiveToVar(appArchive)));
+								convertAppArchiveToVar(appArchive),
+								convertMacroexpandOnLoadToVar(macroexpandOnLoad)));
 
 		return venice.PRINT(venice.RE(script, name, env));
 	}
@@ -143,6 +149,7 @@ public class Launcher {
 	private static String runScript(
 			final CommandLineArgs cli,
 			final List<String> loadPaths,
+			final boolean macroexpandOnLoad,
 			final IInterceptor interceptor,
 			final String script,
 			final String name
@@ -152,7 +159,9 @@ public class Launcher {
 		final Env env = createEnv(
 							venice, 
 							new VncKeyword("script"),
-							Arrays.asList(convertCliArgsToVar(cli)));
+							Arrays.asList(
+								convertCliArgsToVar(cli),
+								convertMacroexpandOnLoadToVar(macroexpandOnLoad)));
 	
 		return venice.PRINT(venice.RE(script, name, env));
 	}
@@ -177,6 +186,10 @@ public class Launcher {
 
 	private static Var convertCliArgsToVar(final CommandLineArgs cli) {
 		return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
+	}
+	
+	private static Var convertMacroexpandOnLoadToVar(final boolean macroexpandOnLoad) {
+		return new Var(new VncSymbol("*macroexpand-on-load*"), macroexpandOnLoad ? True : False, true);
 	}
 
 	private static String stripVeniceFileExt(final String s) {
@@ -209,5 +222,4 @@ public class Launcher {
 					app.getPath()));
 		}
 	}
-
 }

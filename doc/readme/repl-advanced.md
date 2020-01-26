@@ -1,6 +1,40 @@
 # Advanced REPL 
 
 
+## Macro Expansion
+
+Expanding macros ahead of evaluation can speed up the execution of a script by 
+a factor of 3 to 10.
+
+Upfront macro expansion can be activated in the REPL by the `!macroexpand` command:
+
+```text
+venice> !macroexpand
+```
+
+The upfront macro expansion is applied to typed scripts and files loaded from 
+filesystem or classpath.
+
+
+An example:
+
+```text
+venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
+                             (range -10000 10001))))
+Elapsed time: 271,66 ms
+=> 0
+```
+     
+```text
+venice> !macroexpand
+venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
+                             (range -10000 10001))))
+Elapsed time: 26,35 ms
+=> 0
+```
+
+
+
 ## Display global symbols
 
 ```text

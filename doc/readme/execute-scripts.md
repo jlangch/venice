@@ -101,3 +101,31 @@ foo> java -jar bin/venice-1.7.16.jar -file script.venice -loadpath "/users/foo/v
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
 
+
+## Macro Expansion
+
+Expanding macros ahead of evaluation can speed up the execution of a by 
+a factor of 3 to 10.
+
+Upfront macro expansion can be activated with the option `-macroexpand`
+
+Macro expansion works for executing scripts or files.
+
+
+**Example**
+
+Run a script without upfront macro expansion:
+
+```text
+foo> java -jar venice-1.7.16.jar -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
+Elapsed time: 271,66 ms
+=> 0
+```
+ 
+Run a scrip with upfront macro expansion:
+    
+```text
+foo> java -jar venice-1.7.16.jar -macroexpand -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
+Elapsed time: 26,35 ms
+=> 0
+```

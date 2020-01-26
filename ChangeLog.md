@@ -20,7 +20,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- Upfront macro expansion for executing scripts and files
 
 ### Changed
 - OpenPDF libs to 1.3.12
