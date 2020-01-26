@@ -45,12 +45,12 @@ import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Functio
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 
 
-// Benchmark                                      Mode  Cnt   Score   Error  Units
-// ReflectionBenchmark.bench_native               avgt    3  23.629 ± 2.056  ns/op
-// ReflectionBenchmark.bench_reflective           avgt    3  60.146 ± 7.360  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_1  avgt    3  24.620 ± 0.550  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_2  avgt    3  26.997 ± 2.877  ns/op
-// ReflectionBenchmark.bench_LambdaMetafactory_3  avgt    3  31.649 ± 4.724  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_1  avgt    3  24.539 ± 2.248  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_2  avgt    3  24.560 ± 1.015  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_3  avgt    3  24.691 ± 1.335  ns/op
+// ReflectionBenchmark.bench_LambdaMetafactory_4  avgt    3  30.845 ± 4.883  ns/op
+// ReflectionBenchmark.bench_native               avgt    3  23.701 ± 1.406  ns/op
+// ReflectionBenchmark.bench_reflective           avgt    3  57.975 ± 3.189  ns/op
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
@@ -87,6 +87,7 @@ public class ReflectionBenchmark {
 
 	@Benchmark
 	public BigInteger bench_LambdaMetafactory_1() {
+		// Typed SAM
 		try {
 			final BigInteger i1 = (BigInteger)fnTypedValueOf.apply(10L);
 			final BigInteger i2 = (BigInteger)fnTypedValueOf.apply(100L);
@@ -99,6 +100,20 @@ public class ReflectionBenchmark {
 
 	@Benchmark
 	public BigInteger bench_LambdaMetafactory_2() {
+		// Generic SAM
+		try {
+			final BigInteger i1 = (BigInteger)fnGenericValueOf.apply(10L);
+			final BigInteger i2 = (BigInteger)fnGenericValueOf.apply(100L);
+			return fnGenericAdd.apply(i1, i2);      		
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Benchmark
+	public BigInteger bench_LambdaMetafactory_3() {
+		// Generic SAM (Object)
 		try {
 			final BigInteger i1 = (BigInteger)fnValueOf.apply(10L);
 			final BigInteger i2 = (BigInteger)fnValueOf.apply(100L);
@@ -110,7 +125,8 @@ public class ReflectionBenchmark {
 	}
 
 	@Benchmark
-	public BigInteger bench_LambdaMetafactory_3() {
+	public BigInteger bench_LambdaMetafactory_4() {
+		// Generic SAM (Object) / generic dispatch
 		try {
 			final BigInteger i1 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {10L}, fnValueOf);
 			final BigInteger i2 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {100L}, fnValueOf);
@@ -129,15 +145,18 @@ public class ReflectionBenchmark {
 			fnValueOf = LambdaMetafactoryUtil.staticMethod_1_args(mValueOf);
 			fnAdd = LambdaMetafactoryUtil.instanceMethod_1_args(mAdd);
 			
-			fnTypedValueOf = compileValueOf(mValueOf);
-			fnTypedAdd = compileAdd(mAdd);
+			fnGenericValueOf = compileValueOfGeneric(mValueOf);
+			fnGenericAdd = compileAddGeneric(mAdd);
+			
+			fnTypedValueOf = compileValueOfTyped(mValueOf);
+			fnTypedAdd = compileAddTyped(mAdd);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 	
-	private static Function1<Long,BigInteger> compileValueOf(final Method method) {
+	private static Function1<Long,BigInteger> compileValueOfGeneric(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -158,7 +177,7 @@ public class ReflectionBenchmark {
 		}
 	}
 	
-	private static Function2<BigInteger,BigInteger,BigInteger> compileAdd(final Method method) {
+	private static Function2<BigInteger,BigInteger,BigInteger> compileAddGeneric(final Method method) {
 		try {
 			final MethodHandles.Lookup caller = MethodHandles.lookup();
 			final MethodHandle handle = caller.unreflect(method);
@@ -179,11 +198,66 @@ public class ReflectionBenchmark {
 		}
 	}
 	
+	private static BigInteger_ValueOf compileValueOfTyped(final Method method) {
+		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			final MethodHandle handle = caller.unreflect(method);
+			
+			return (BigInteger_ValueOf)LambdaMetafactory
+					.metafactory(
+						caller,
+						"apply",
+						MethodType.methodType(BigInteger_ValueOf.class),
+						MethodType.methodType(BigInteger.class, Long.class),
+						handle,
+						handle.type())
+					.getTarget()
+					.invoke();
+		} 
+		catch (Throwable ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	private static BigInteger_Add compileAddTyped(final Method method) {
+		try {
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			final MethodHandle handle = caller.unreflect(method);
+			
+			return (BigInteger_Add)LambdaMetafactory
+					.metafactory(
+						caller,
+						"apply",
+						MethodType.methodType(BigInteger_Add.class),
+						MethodType.methodType(BigInteger.class, BigInteger.class, BigInteger.class),
+						handle,
+						handle.type())
+					.getTarget()
+					.invoke();
+		} 
+		catch (Throwable ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	
+	@FunctionalInterface
+	public static interface BigInteger_ValueOf {
+		BigInteger apply(Long u);
+	}
+	
+	@FunctionalInterface
+	public static interface BigInteger_Add {
+		BigInteger apply(BigInteger t, BigInteger u);
+	}
+
 	
 	private Method mValueOf;
 	private Method mAdd;
 	private Function1<Object,Object> fnValueOf;
 	private Function2<Object,Object,Object> fnAdd;
-	private Function1<Long,BigInteger> fnTypedValueOf;
-	private Function2<BigInteger,BigInteger,BigInteger> fnTypedAdd;
+	private Function1<Long,BigInteger> fnGenericValueOf;
+	private Function2<BigInteger,BigInteger,BigInteger> fnGenericAdd;
+	private BigInteger_ValueOf fnTypedValueOf;
+	private BigInteger_Add fnTypedAdd;
 }

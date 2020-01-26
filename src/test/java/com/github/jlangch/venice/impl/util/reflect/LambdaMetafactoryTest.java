@@ -94,5 +94,4 @@ public class LambdaMetafactoryTest {
 			throw new RuntimeException(ex);
 		}
 	}
-
 }
