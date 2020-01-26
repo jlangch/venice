@@ -23,6 +23,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - Upfront macro expansion for all execution modes (REPL, Launcher, and embedding in Java)
 
 ### Changed
+
 - OpenPDF libs to 1.3.12
 
 
