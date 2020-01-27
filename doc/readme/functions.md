@@ -242,7 +242,7 @@ more parameters constant:
 
 Taking an initial value as its first argument, `->` threads it through one or more 
 expressions. Starting with the second form, the macro inserts the first value as 
-its first argument and repeats insert the result of the form to the first argument
+its first argument and repeats inserting the result of the form to the first argument
 of the next form. 
 
 ```clojure
@@ -260,7 +260,7 @@ of the next form.
 
 Taking an initial value as its first argument, `->>` threads it through one or more 
 expressions. Starting with the second form, the macro inserts the first value as 
-its last argument and repeats insert the result of the form to the last argument
+its last argument and repeats inserting the result of the form to the last argument
 of the next form. 
 
 ```clojure
