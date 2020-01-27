@@ -238,7 +238,12 @@ more parameters constant:
 
 ## Function threading macros
 
-Thread first `->`
+**Thread first** `->`
+
+Taking an initial value as its first argument, `->` threads it through one or more 
+expressions. Starting with the second form, the macro inserts the first value as 
+its first argument and repeats insert the result of the form to the first argument
+of the next form. 
 
 ```clojure
 (do
@@ -251,7 +256,12 @@ Thread first `->`
   (-> person :email :private)) ;; => nil
 ```
 
-Thread last `->>`
+**Thread last** `->>`
+
+Taking an initial value as its first argument, `->>` threads it through one or more 
+expressions. Starting with the second form, the macro inserts the first value as 
+its last argument and repeats insert the result of the form to the last argument
+of the next form. 
 
 ```clojure
 (->> (range 0 8)
@@ -259,7 +269,7 @@ Thread last `->>`
      (map #(+ 2 %)))  ;; => (3 5 7 9)
 ```
 
-Thread any `as->`, `-<>`
+**Thread any** `as->`, `-<>`
 
 ```clojure
 ;allows to use arbitrary positioning of the argument
@@ -279,7 +289,7 @@ Thread any `as->`, `-<>`
 ```
 
 ```clojure
-; allows to use arbitrary positioning of the argument
+; allows to use arbitrary positioning of the argument using the placeholder '<>'
 (-<> (range 0 8)
      (filter odd? <>)
      (reduce + <>)
