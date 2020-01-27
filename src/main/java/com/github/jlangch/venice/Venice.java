@@ -50,7 +50,6 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
-import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.util.NullOutputStream;
@@ -290,14 +289,6 @@ public class Venice {
 	 */
 	public static String getVersion() {
 		return Version.VERSION;
-	}
-	
-	public void enableJavaInteropReflectionCache(final boolean enable) {
-		ReflectionAccessor.enableCache(enable);
-	}
-
-	public boolean isJavaInteropReflectionCacheEnabled() {
-		return ReflectionAccessor.isCacheEnabled();
 	}
 	
 	public void enableTimer() {

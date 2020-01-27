@@ -32,7 +32,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -53,15 +52,6 @@ import com.github.jlangch.venice.impl.util.Tuple4;
 
 
 public class ReflectionAccessor {
-
-	public static void enableCache(final boolean enable) {
-		clearCache();
-		cachingEnabled.set(enable);
-	}
-
-	public static boolean isCacheEnabled() {
-		return cachingEnabled.get();
-	}
 
 	public static void clearCache() {
 		classCache.clear();
@@ -342,7 +332,6 @@ public class ReflectionAccessor {
 			}
 		}
 	}
-
 
 	public static boolean isStaticMethod(
 			final Class<?> clazz,
@@ -913,65 +902,49 @@ public class ReflectionAccessor {
 	}
 
 	private static Class<?> memoizedClassForName(final String className) {
-		return isCacheEnabled()
-				? classCache.computeIfAbsent(className, k -> ReflectionUtil.classForName(k))
-				: ReflectionUtil.classForName(className);
+		return classCache.computeIfAbsent(className, k -> ReflectionUtil.classForName(k));
 	}
 
 	private static List<String> memoizedBeanGetterProperties(final Class<?> clazz) {
-		return isCacheEnabled()
-				? getterPropertiesCache.computeIfAbsent(
+		return getterPropertiesCache.computeIfAbsent(
 					clazz, 
-					k -> ReflectionUtil.getBeanGetterProperties(k))
-				: ReflectionUtil.getBeanGetterProperties(clazz);
+					k -> ReflectionUtil.getBeanGetterProperties(k));
 	}
 
 	private static List<String> memoizedBeanSetterProperties(final Class<?> clazz) {
-		return isCacheEnabled()
-				? setterPropertiesCache.computeIfAbsent(
+		return setterPropertiesCache.computeIfAbsent(
 					clazz, 
-					k -> ReflectionUtil.getBeanSetterProperties(k))
-				: ReflectionUtil.getBeanSetterProperties(clazz);
+					k -> ReflectionUtil.getBeanSetterProperties(k));
 	}
 
 	private static Method memoizedBeanGetterMethod(final Class<?> clazz, final String propertyName) {
-		return isCacheEnabled()
-				? getterMethodCache.computeIfAbsent(
+		return getterMethodCache.computeIfAbsent(
 					new Tuple2<>(clazz,propertyName), 
-					k -> ReflectionUtil.getBeanGetterMethod(k._1, k._2))
-				: ReflectionUtil.getBeanGetterMethod(clazz, propertyName);
+					k -> ReflectionUtil.getBeanGetterMethod(k._1, k._2));
 	}
 
 	private static Method memoizedBeanSetterMethod(final Class<?> clazz, final String propertyName) {
-		return isCacheEnabled()
-				? setterMethodCache.computeIfAbsent(
+		return setterMethodCache.computeIfAbsent(
 					new Tuple2<>(clazz,propertyName), 
-					k -> ReflectionUtil.getBeanSetterMethod(k._1, k._2))
-				: ReflectionUtil.getBeanSetterMethod(clazz, propertyName);
+					k -> ReflectionUtil.getBeanSetterMethod(k._1, k._2));
 	}
 
 	private static List<Constructor<?>> memoizedPublicConstructors(final Class<?> clazz, final int args) {
-		return isCacheEnabled()
-				? constructorCache.computeIfAbsent(
+		return constructorCache.computeIfAbsent(
 					new Tuple2<>(clazz,args), 
-					k -> ReflectionUtil.getPublicConstructors(k._1, k._2))
-				: ReflectionUtil.getPublicConstructors(clazz, args);
+					k -> ReflectionUtil.getPublicConstructors(k._1, k._2));
 	}
 	
 	private static Field memoizedStaticField(final Class<?> clazz, final String fieldName) {
-		return isCacheEnabled()
-				? staticFieldCache.computeIfAbsent(
+		return staticFieldCache.computeIfAbsent(
 					new Tuple2<>(clazz,fieldName), 
-					k ->  ReflectionUtil.getPublicStaticField(k._1, k._2))
-				: ReflectionUtil.getPublicStaticField(clazz, fieldName);
+					k ->  ReflectionUtil.getPublicStaticField(k._1, k._2));
 	}
 	
 	private static Field memoizedInstanceField(final Class<?> clazz, final String fieldName) {
-		return isCacheEnabled()
-				? instanceFieldCache.computeIfAbsent(
+		return instanceFieldCache.computeIfAbsent(
 					new Tuple2<>(clazz,fieldName), 
-					k ->  ReflectionUtil.getPublicInstanceField(k._1, k._2))
-				: ReflectionUtil.getPublicInstanceField(clazz, fieldName);
+					k ->  ReflectionUtil.getPublicInstanceField(k._1, k._2));
 	}
 	
 	private static List<Method> memoizedStaticMethod(
@@ -980,11 +953,9 @@ public class ReflectionAccessor {
 			final Integer arity, 
 			final boolean includeInheritedClasses
 	) {
-		return isCacheEnabled()
-				? staticMethodCache.computeIfAbsent(
+		return staticMethodCache.computeIfAbsent(
 					new Tuple4<>(clazz,methodName,arity,includeInheritedClasses), 
-					k ->  ReflectionUtil.getAllPublicStaticMethods(k._1, k._2, k._3, k._4))
-				: ReflectionUtil.getAllPublicStaticMethods(clazz,methodName,arity,includeInheritedClasses);
+					k ->  ReflectionUtil.getAllPublicStaticMethods(k._1, k._2, k._3, k._4));
 	}
 	
 	private static List<Method> memoizedInstanceMethod(
@@ -993,11 +964,9 @@ public class ReflectionAccessor {
 			final Integer arity, 
 			final boolean includeInheritedClasses
 	) {
-		return isCacheEnabled()
-				? instanceMethodCache.computeIfAbsent(
+		return instanceMethodCache.computeIfAbsent(
 					new Tuple4<>(clazz,methodName,arity,includeInheritedClasses), 
-					k ->  ReflectionUtil.getAllPublicInstanceMethods(k._1, k._2, k._3, k._4))
-				: ReflectionUtil.getAllPublicInstanceMethods(clazz,methodName,arity,includeInheritedClasses);
+					k ->  ReflectionUtil.getAllPublicInstanceMethods(k._1, k._2, k._3, k._4));
 	}
 	
 	private static String formatArgTypes(final Object[] args) {
@@ -1015,8 +984,6 @@ public class ReflectionAccessor {
 				.collect(Collectors.joining(", "));
 	}
 
-	
-	private static final AtomicBoolean cachingEnabled = new AtomicBoolean(true);
 	
 	private static final Map<String,Class<?>> classCache = new ConcurrentHashMap<>();
 	private static final Map<Class<?>,List<String>> getterPropertiesCache = new ConcurrentHashMap<>();

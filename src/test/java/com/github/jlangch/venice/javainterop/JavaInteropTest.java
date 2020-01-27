@@ -352,10 +352,18 @@ public class JavaInteropTest {
 	}
 
 	@Test
-	public void testStaticMethod() {
+	public void testStaticMethod_1() {
 		final Venice venice = new Venice();
 				
 		assertEquals(Long.valueOf(20L), venice.eval("(. :java.lang.Math :min 20 30)"));
+	}
+
+	@Test
+	public void testStaticMethod_2() {
+		final Venice venice = new Venice();
+				
+		final Object result = venice.eval("(. :java.lang.Math :random)");
+		assertTrue(result instanceof Double);
 	}
 	
 	@Test

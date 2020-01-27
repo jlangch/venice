@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
-import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -29,15 +28,6 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 public class JavaInterop {
 
-	public static void enableJavaReflectionCache(final boolean enable) {
-		ReflectionAccessor.enableCache(enable);
-	}
-
-	public static boolean isJavaReflectionCacheEnabled() {
-		return ReflectionAccessor.isCacheEnabled();
-	}
-	
-	
 	public static boolean isSandboxed() {
 		return !(getInterceptor() instanceof AcceptAllInterceptor);
 	}
