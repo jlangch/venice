@@ -185,8 +185,8 @@ public class Embed_11_PrecompileSerialize {
 
 ## Precompilation Benchmark
 
-Venice benchmarks are done using [JMH](http://openjdk.java.net/projects/code-tools/jmh/) 
-(the Java Microbenchmark Harness). This has been added to the JDK starting with JDK 12; 
+The Venice benchmarks are done using [JMH](http://openjdk.java.net/projects/code-tools/jmh/) 
+(Java Microbenchmark Harness). JMH has been added to the JDK starting with JDK 12; 
 for earlier versions, the dependencies have to be added explicitly.
 
 The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
@@ -260,7 +260,7 @@ public class PrecompileBenchmark {
 ## Sandbox
 
 If the expressions or rules come from an untrusted source a sandbox should be set in
-place to prevent malicous actions.
+place to prevent malicious actions.
 
 
 ### Strict Sandbox
