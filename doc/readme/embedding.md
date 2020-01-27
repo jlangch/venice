@@ -260,7 +260,7 @@ public class PrecompileBenchmark {
 ## Sandbox
 
 If the expressions or rules come from an untrusted source a sandbox should be set in
-place to prevent malicous actions.
+place to prevent malicious actions.
 
 
 ### Strict Sandbox
