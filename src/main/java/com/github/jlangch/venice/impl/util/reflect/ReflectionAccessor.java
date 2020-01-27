@@ -153,28 +153,10 @@ public class ReflectionAccessor {
 	}
 
 	public static Object invokeStaticMethod(
-			final String className, 
+			final Class<?> clazz, 
 			final String methodName, 
 			final Object[] args
 	) {
-		try {
-			final Class<?> clazz = classForName(className);
-			return invokeStaticMethod(clazz, methodName, args);
-		}
-		catch (JavaMethodInvocationException ex) {
-			throw ex;
-		}
-		catch (Exception ex) {
-			throw new JavaMethodInvocationException(
-					String.format(
-							"Failed to invoke static method '%s' on class '%s'",
-							methodName,
-							className),
-					ex);
-		}
-	}
-
-	public static Object invokeStaticMethod(final Class<?> clazz, final String methodName, final Object[] args) {
 		if (methodName.equals("new")) {
 			return invokeConstructor(clazz, args);
 		}
@@ -195,24 +177,6 @@ public class ReflectionAccessor {
 								clazz.getName()),
 						ex);
 			}
-		}
-	}
-
-	public static Object getStaticField(final String className, final String fieldName) {
-		try {
-			final Class<?> clazz = classForName(className);
-			return getStaticField(clazz, fieldName);
-		}
-		catch (JavaMethodInvocationException ex) {
-			throw ex;
-		}
-		catch (Exception ex) {
-			throw new JavaMethodInvocationException(
-					String.format(
-							"Failed to get static field '%s' on class '%s'",
-							fieldName,
-							className),
-					ex);
 		}
 	}
 
@@ -580,7 +544,9 @@ public class ReflectionAccessor {
 	}
 
 	private static Class<?> memoizedClassForName(final String className) {
-		return classCache.computeIfAbsent(className, k -> ReflectionUtil.classForName(k));
+		return classCache.computeIfAbsent(
+					className, 
+					k -> ReflectionUtil.classForName(k));
 	}
 
 	private static List<String> memoizedBeanGetterProperties(final Class<?> clazz) {
