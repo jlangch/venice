@@ -20,7 +20,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- optonal upfront macro expansion for all execution modes (REPL, Launcher, and embedding in Java)
+- optional upfront macro expansion for all execution modes (REPL, Launcher, and embedding in Java)
 
 ### Changed
 
