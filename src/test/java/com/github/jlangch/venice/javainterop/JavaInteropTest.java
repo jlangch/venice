@@ -367,17 +367,6 @@ public class JavaInteropTest {
 	}
 	
 	@Test
-	public void testStaticField() {
-		final Venice venice = new Venice();
-				
-		assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. :java.lang.Math :PI)"), 0.0000001D);
-		
-		assertEquals(0, venice.eval("(:red (. :java.awt.Color :BLUE))"));		
-		assertEquals(0, venice.eval("(:green (. :java.awt.Color :BLUE))"));		
-		assertEquals(255, venice.eval("(:blue (. :java.awt.Color :BLUE))"));		
-	}
-	
-	@Test
 	public void testLocalDate() {
 		final Venice venice = new Venice();
 		
