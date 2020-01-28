@@ -85,6 +85,17 @@ Based on the Java type _BigDecimal_.
 (+ 1.0M 2.0M)
 ```
 
+### type coercion
+
+Number types are implicitly coerced to the most complex type in an expression
+
+```clojure
+(+ 1 2.0 1.0M) ;; => 4.0M
+
+(+ 1.0M 2.0 1I) ;; => 4.0M
+```
+
+
 ## Keywords
 
 Keywords (e.g. `:a`) are symbolic identifiers.
