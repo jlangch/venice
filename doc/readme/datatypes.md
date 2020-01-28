@@ -161,6 +161,9 @@ Immutable persistent hash set.
 ```clojure
 #{1 2 3}
 (set 1 2 3)
+
+(cons 3 #{1 2})          ;; => #{1 2 3}
+(contains? #{:a :b} :a)  ;; => true
 ```
 
 ### sorted-set
@@ -169,6 +172,9 @@ Immutable persistent sorted set.
 
 ```clojure
 (sorted-set 2 3 1)
+
+(cons 3 (sorted-set 2 1))          ;; => #{1 2 3}
+(contains? (sorted-set :a :b) :a)  ;; => true
 ```
 
 ### hash-map
@@ -202,6 +208,12 @@ Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
 
 ```clojure
 (stack )
+
+(let [s (stack)]
+  (push! s 4)
+  (push! s 3)
+  (pop! s)
+  (peek s))   ;; => 4
 ```
 
 
@@ -213,4 +225,10 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
 (queue) ;; unbounded queue
 
 (queue 100) ;; bounded queue
+
+(let [q (queue)]
+  (offer! q 1)
+  (offer! q 2)
+  (offer! q 3)
+  (poll! q))    ;; => 1
 ```
