@@ -52,6 +52,9 @@ import org.openjdk.jmh.annotations.Warmup;
 // FieldAccessBenchmark.static_reflect                 avgt    5  4.378 ± 0.058  ns/op
 // FieldAccessBenchmark.static_unreflect_invoke        avgt    5  1.901 ± 0.037  ns/op
 // FieldAccessBenchmark.static_unreflect_invokeExact   avgt    5  1.904 ± 0.055  ns/op
+//
+// static_* cases are faster than dynamic_* due to aggressive inlining
+
 
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
@@ -61,6 +64,10 @@ import org.openjdk.jmh.annotations.Warmup;
 @State(Scope.Benchmark)
 public class FieldAccessBenchmark {
 
+	public FieldAccessBenchmark() {
+		init();
+	}
+	
 	@Benchmark
 	public int plain() {
 		return value;
@@ -68,73 +75,81 @@ public class FieldAccessBenchmark {
 
 	@Benchmark
 	public int dynamic_reflect() throws InvocationTargetException, IllegalAccessException {
-		return (int) reflective.get(this);
+		return (int)reflective.get(this);
 	}
 
 	@Benchmark
 	public int dynamic_unreflect_invoke() throws Throwable {
-		return (int) unreflect.invoke(this);
+		return (int)unreflect.invoke(this);
 	}
 
 	@Benchmark
 	public int dynamic_unreflect_invokeExact() throws Throwable {
-		return (int) unreflect.invokeExact(this);
+		return (int)unreflect.invokeExact(this);
 	}
 
 	@Benchmark
 	public int dynamic_mh_invoke() throws Throwable {
-		return (int) mh.invoke(this);
+		return (int)mh.invoke(this);
 	}
 
 	@Benchmark
 	public int dynamic_mh_invokeExact() throws Throwable {
-		return (int) mh.invokeExact(this);
+		return (int)mh.invokeExact(this);
 	}
 
 	@Benchmark
 	public int static_reflect() throws InvocationTargetException, IllegalAccessException {
-		return (int) static_reflective.get(this);
+		return (int)static_reflective.get(this);
 	}
 
 	@Benchmark
 	public int static_unreflect_invoke() throws Throwable {
-		return (int) static_unreflect.invoke(this);
+		return (int)static_unreflect.invoke(this);
 	}
 
 	@Benchmark
 	public int static_unreflect_invokeExact() throws Throwable {
-		return (int) static_unreflect.invokeExact(this);
+		return (int)static_unreflect.invokeExact(this);
 	}
 
 	@Benchmark
 	public int static_mh_invoke() throws Throwable {
-		return (int) static_mh.invoke(this);
+		return (int)static_mh.invoke(this);
 	}
 
 	@Benchmark
 	public int static_mh_invokeExact() throws Throwable {
-		return (int) static_mh.invokeExact(this);
+		return (int)static_mh.invokeExact(this);
 	}
 
 
+	private void init() {
+		try {
+			reflective = FieldAccessBenchmark.class.getDeclaredField("value");
+			unreflect = MethodHandles.lookup().unreflectGetter(reflective);
+			mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
+		} 
+		catch (IllegalAccessException | NoSuchFieldException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+	
 	private int value = 42;
 
 	private static final Field static_reflective;
 	private static final MethodHandle static_unreflect;
 	private static final MethodHandle static_mh;
 
-	private static Field reflective;
-	private static MethodHandle unreflect;
-	private static MethodHandle mh;
+	private Field reflective;
+	private MethodHandle unreflect;
+	private MethodHandle mh;
 
 	static {
 		try {
-			reflective = FieldAccessBenchmark.class.getDeclaredField("value");
-			unreflect = MethodHandles.lookup().unreflectGetter(reflective);
-			mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
-			static_reflective = reflective;
-			static_unreflect = unreflect;
-			static_mh = mh;
+			static_reflective = FieldAccessBenchmark.class.getDeclaredField("value");
+			static_unreflect = MethodHandles.lookup().unreflectGetter(static_reflective);
+			static_mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
 		} 
 		catch (IllegalAccessException | NoSuchFieldException e) {
 			throw new IllegalStateException(e);
