@@ -31,43 +31,18 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 
 
-public class UserTest {
+public class JavaInterop_bean_Test {
+
 
 	@Test
-	public void test_constructor() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                                   " +
-				"   (def john (. :com.github.jlangch.venice.support.User :new          " +
-				"                \"john\" 24 (. :java.time.LocalDate :of 2018 7 21)))  " +
-				"   (str john)                                                         " + 
-				")";
-		
-		assertEquals("john, 24, 2018-07-21", venice.eval(script));
-	}
-
-	@Test
-	public void test_constructor_imports() {
+	public void test_convert_bean_to_map() {
 		final Venice venice = new Venice();
 
 		final String script =
 				"(do                                                                      " +
-				"   (import :com.github.jlangch.venice.support.User :java.time.LocalDate) " +
-				"   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
-				"   (str john)                                                            " + 
-				")";
-		
-		assertEquals("john, 24, 2018-07-21", venice.eval(script));
-	}
-
-	@Test
-	public void test_convert_to_map() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                                      " +
-				"   (import :com.github.jlangch.venice.support.User :java.time.LocalDate) " +
+				"   (import :com.github.jlangch.venice.support.User )                     " +
+				"   (import :java.time.LocalDate)                                         " +
+				"                                                                         " + 
 				"   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
 				"   (hash-map john)                                                       " + 
 				")";
@@ -82,19 +57,19 @@ public class UserTest {
 	}
 
 	@Test
-	public void test_collection_filter() {
+	public void test_bean_map_accessor() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                       " +
-				"   (import :com.github.jlangch.venice.support.User :java.time.LocalDate)  " +
-				"   (def users [                                                           " +
-				"        (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21))           " +
-				"        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12)) ])        " +
-				"   (str (filter (fn [u] (> (get u :age) 30)) users))                      " + 
+				"(do                                                                      " +
+				"   (import :com.github.jlangch.venice.support.User )                     " +
+				"   (import :java.time.LocalDate)                                         " +
+				"                                                                         " + 
+				"   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
+				"   (:age john)                                                           " + 
 				")";
 		
-		assertEquals("[pete, 48, 1970-01-12]", venice.eval(script));
+		assertEquals(24, venice.eval(script));
 	}
 
 }

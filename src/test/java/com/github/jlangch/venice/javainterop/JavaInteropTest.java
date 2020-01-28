@@ -322,17 +322,6 @@ public class JavaInteropTest {
 	}
 
 	@Test
-	public void testConstructorAccessor() {
-		final Venice venice = new Venice();
-
-		final Object obj1 = venice.eval("(. :com.github.jlangch.venice.support.JavaObject :new)", symbols());
-		assertTrue(obj1 instanceof JavaObject);
-
-		final Object obj2 = venice.eval("(. :com.github.jlangch.venice.support.JavaObject :new 100)", symbols());
-		assertTrue(obj2 instanceof JavaObject);
-	}
-
-	@Test
 	public void testOverloadedMethod() {
 		final Venice venice = new Venice();
 
