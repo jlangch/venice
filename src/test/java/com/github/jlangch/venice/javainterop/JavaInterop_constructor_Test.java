@@ -345,10 +345,10 @@ public class JavaInterop_constructor_Test {
 	
 	public static class TestObject_VarArg_1 {
 		public TestObject_VarArg_1(final String... vals) {
-				this._long = Long.valueOf(vals.length);
-				this._string = String.join(":", vals);
-				this._double = null;
-			}
+			this._long = Long.valueOf(vals.length);
+			this._string = String.join(":", vals);
+			this._double = null;
+		}
 		
 		public final Long _long;
 		public final String _string;
@@ -357,10 +357,10 @@ public class JavaInterop_constructor_Test {
 	
 	public static class TestObject_VarArg_2 {
 		public TestObject_VarArg_2(final String val1, final String val2, final String... vals) {
-				this._long = Long.valueOf(vals.length);
-				this._string = val1 + ":" + val2 + ":" + String.join(":", vals);
-				this._double = null;
-			}
+			this._long = Long.valueOf(vals.length);
+			this._string = val1 + ":" + val2 + ":" + String.join(":", vals);
+			this._double = null;
+		}
 		
 		public final Long _long;
 		public final String _string;
