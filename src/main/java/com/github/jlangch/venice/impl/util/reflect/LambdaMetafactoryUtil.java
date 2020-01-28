@@ -1137,7 +1137,21 @@ public class LambdaMetafactoryUtil {
 						ex);
 		}
 	}
-	
+
+	public static MethodHandle staticField_get(final Class<?> clazz, final String fieldName) {
+		try {
+			// fields are not supported by LambdaMetafactory
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			return caller.unreflectGetter(clazz.getDeclaredField(fieldName));
+		} 
+		catch (Throwable ex) {
+			throw new JavaMethodInvocationException(
+						"Could not generate the function to access the field " + fieldName 
+							+ " on " + clazz.getName(), 
+						ex);
+		}
+	}
+
 	public static MethodHandle staticField_set(final Field field) {
 		try {
 			// fields are not supported by LambdaMetafactory
@@ -1148,6 +1162,20 @@ public class LambdaMetafactoryUtil {
 			throw new JavaMethodInvocationException(
 						"Could not generate the function to access the field " + field.getName() 
 							+ " on " + field.getDeclaringClass().getName(), 
+						ex);
+		}
+	}
+
+	public static MethodHandle staticField_set(final Class<?> clazz, final String fieldName) {
+		try {
+			// fields are not supported by LambdaMetafactory
+			final MethodHandles.Lookup caller = MethodHandles.lookup();
+			return caller.unreflectSetter(clazz.getDeclaredField(fieldName));
+		} 
+		catch (Throwable ex) {
+			throw new JavaMethodInvocationException(
+						"Could not generate the function to access the field " + fieldName 
+							+ " on " + clazz.getName(), 
 						ex);
 		}
 	}

@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util.reflect;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -48,7 +47,7 @@ import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.Tuple4;
 
 
-public class ReflectionAccessor {
+public class ReflectionAccessor_old {
 
 	public static void clearCache() {
 		classCache.clear();
@@ -183,9 +182,9 @@ public class ReflectionAccessor {
 
 	public static Object getStaticField(final Class<?> clazz, String fieldName) {
 		try {
-			final MethodHandle mh = memoizedStaticFieldGet(clazz, fieldName);
-			if (mh != null) {
-				return mh.invoke();
+			final Field f = memoizedStaticField(clazz, fieldName);
+			if (f != null) {
+				return f.get(null);
 			}
 			else {
 				throw new JavaMethodInvocationException(noMatchingFieldErrMsg(fieldName, clazz.getName()));
@@ -194,7 +193,7 @@ public class ReflectionAccessor {
 		catch (JavaMethodInvocationException ex) {
 			throw ex;
 		}
-		catch (Throwable ex) {
+		catch (Exception ex) {
 			throw new JavaMethodInvocationException(
 					String.format(
 							"Failed to get static field '%s' on class '%s'",
@@ -341,7 +340,8 @@ public class ReflectionAccessor {
 
 	public static boolean isStaticField(final Class<?> clazz, final String fieldName) {
 		try {
-			return memoizedStaticFieldGet(clazz, fieldName) != null;
+			final Field f = memoizedStaticField(clazz, fieldName);
+			return f != null;
 		}
 		catch (JavaMethodInvocationException ex) {
 			throw ex;
@@ -579,10 +579,10 @@ public class ReflectionAccessor {
 					k -> ReflectionUtil.getPublicConstructors(k._1, k._2));
 	}
 	
-	private static MethodHandle memoizedStaticFieldGet(final Class<?> clazz, final String fieldName) {
+	private static Field memoizedStaticField(final Class<?> clazz, final String fieldName) {
 		return staticFieldCache.computeIfAbsent(
 					new Tuple2<>(clazz,fieldName), 
-					k ->  LambdaMetafactoryUtil.staticField_get(k._1, k._2));
+					k ->  ReflectionUtil.getPublicStaticField(k._1, k._2));
 	}
 	
 	private static Field memoizedInstanceField(final Class<?> clazz, final String fieldName) {
@@ -635,7 +635,7 @@ public class ReflectionAccessor {
 	private static final Map<Tuple2<Class<?>,String>,Method> getterMethodCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple2<Class<?>,String>,Method> setterMethodCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple2<Class<?>,Integer>,List<Constructor<?>>> constructorCache = new ConcurrentHashMap<>();
-	private static final Map<Tuple2<Class<?>,String>,MethodHandle> staticFieldCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,String>,Field> staticFieldCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple2<Class<?>,String>,Field> instanceFieldCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> staticMethodCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> instanceMethodCache = new ConcurrentHashMap<>();
