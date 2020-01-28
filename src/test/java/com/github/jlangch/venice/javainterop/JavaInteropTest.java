@@ -23,7 +23,6 @@ package com.github.jlangch.venice.javainterop;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -31,12 +30,10 @@ import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -94,67 +91,6 @@ public class JavaInteropTest {
 		assertEquals(20L, venice.eval(script));
 	}
 	
-	@Test
-	public void testImport() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                           \n" +
-				"   (import :java.lang.Long)   \n" +
-				"   (. :Long :new 10))           ";
-		
-		assertEquals(10L, venice.eval(script));
-	}
-	
-	@Test
-	public void testImport_1a() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                           \n" +
-				"   (import :java.lang.Long)   \n" +
-				"   (. (class :Long) :new 10))   ";
-		
-		assertEquals(10L, venice.eval(script));
-	}
-	
-	@Test
-	public void testImport_1b() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                     \n" +
-				"   (import :java.lang.Long)             \n" +
-				"   (. (class :java.lang.Long) :new 10))   ";
-		
-		assertEquals(10L, venice.eval(script));
-	}
-	
-	@Test
-	public void testImport_3() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                           \n" +
-				"   (import :java.lang.Long)   \n" +
-				"   (import :java.lang.Long)   \n" +
-				"   (. :Long :new 10))           ";
-		
-		assertEquals(10L, venice.eval(script));
-	}
-	
-	@Test
-	public void testImport_failure() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                           \n" +
-				"   (import :java.lang.Long)   \n" +
-				"   (import :foo.some.Long)    \n" +
-				"   (. :Long :new 10))           ";
-
-		assertThrows(VncException.class, () -> venice.eval(script));
-	}
 	
 	@Test
 	public void testVoidAccessor() {
@@ -666,151 +602,6 @@ public class JavaInteropTest {
 				") ";
 
 		assertEquals("venice.SortedMap", venice.eval(map2).toString());
-	}
-
-	@Test
-	public void test_proxy_FilenameFilter() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                           " +
-				"  (def filter-fn (fn [path name] true))       " +
-				"  (def dir (. :java.io.File :new \"/tmp\"))   " +
-				"  (. dir :list                                " +
-				"         (proxify                             " +
-				"             :java.io.FilenameFilter          " +
-				"             {:accept filter-fn}))            " +
-				") ";
-
-		System.out.println(venice.eval(script));
-	}
-
-	@Test
-	public void test_proxy_Predicate() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                              " +
-				"    (import :com.github.jlangch.venice.support.Functions)        " +
-				"    (import :java.util.function.Predicate)                       " +
-			    "                                                                 " +
-			    "    (def pred-fn (fn[x] (== x \"abc\")))                         " +
-			    "                                                                 " +
-			    "    (def pred-fn-proxy (proxify :Predicate { :test pred-fn }))   " +
-			    "                                                                 " +
-				"    (let [functions (. :Functions :new)]                         " +
-			    "         (. functions :evalPredicate                             " +
-			    "                      pred-fn-proxy                              " +
-			    "                      \"abc\" ))                                 " +
-				") ";
-
-		assertEquals(true, (Boolean)venice.eval(script));
-	}
-
-	@Test
-	public void test_proxy_Predicate_class() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                              " +
-				"    (import :com.github.jlangch.venice.support.Functions)        " +
-				"    (import :java.util.function.Predicate)                       " +
-			    "                                                                 " +
-			    "    (def pred-fn (fn[x] (== x \"abc\")))                         " +
-			    "                                                                 " +
-			    "    (def pred-fn-proxy                                           " +
-			    "         (proxify (class :Predicate) { :test pred-fn }))         " +
-			    "                                                                 " +
-				"    (let [functions (. :Functions :new)]                         " +
-			    "         (. functions :evalPredicate                             " +
-			    "                      pred-fn-proxy                              " +
-			    "                      \"abc\" ))                                 " +
-				") ";
-
-		assertEquals(true, (Boolean)venice.eval(script));
-	}
-	
-	@Test
-	@Disabled
-	public void test_proxy_SwingInvoker() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                                        " +
-				"   (import :java.lang.Runnable)                                            " +
-				"   (import :javax.swing.JPanel)                                            " +
-				"   (import :javax.swing.JFrame)                                            " +
-				"   (import :javax.swing.JLabel)                                            " +
-				"   (import :javax.swing.SwingUtilities)                                    " +
-				"                                                                           " +
-				"   (def swing-open-window                                                  " +
-				"        (fn [title]                                                        " +
-				"            (let [frame (. :JFrame :new title)                             " +
-				"                  label (. :JLabel :new \"Hello World\")                   " +
-				"                  closeOP (. :JFrame :EXIT_ON_CLOSE)]                      " +
-				"                 (. frame :setDefaultCloseOperation closeOP)               " +
-				"                 (. frame :add label)                                      " +
-				"                 (. frame :setSize 200 200)                                " +
-				"                 (. frame :setVisible true))))                             " +
-				"                                                                           " +
-				"   (def swing-view                                                         " +
-				"        (fn [title]                                                        " +
-				"            (. :SwingUtilities :invokeLater                                " +
-				"               (proxify :Runnable { :run #(swing-open-window title) }))))  " +
-				"                                                                           " +
-				"   (swing-view \"test\")                                                   " +
-				"   (sleep 20000)                                                           " +
-				") ";
-
-		venice.eval(script);
-	}
-			
-	@Test
-	public void test_proxy_Streams_filter() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                              " +
-				"    (import :java.util.function.Predicate)                       " +
-				"    (import :java.util.stream.Collectors)                        " +
-			    "                                                                 " +
-				"    (-> (. [1 2 3 4] :stream)                                    " +
-			    "        (. :filter (proxify :Predicate { :test #(> % 2) }))      " +
-			    "        (. :collect (. :Collectors :toList)))                    " +
-				") ";
-
-		assertEquals("[3, 4]", venice.eval(script).toString());
-	}
-		
-	@Test
-	public void test_proxy_Streams_reduce() {
-		final Venice venice = new Venice();
-		
-		final String script =
-				"(do                                                                      " +
-				"    (import :java.util.function.BinaryOperator)                          " +
-			    "                                                                         " +
-				"    (-> (. [1 2 3 4] :stream)                                            " +
-			    "        (. :reduce 0 (proxify :BinaryOperator { :apply #(+ %1 %2) })))   " +
-				") ";
-		
-		assertEquals("10", venice.eval(script).toString());
-	}
-	
-	@Test
-	public void test_proxy_Streams_reduce_optional() {
-		final Venice venice = new Venice();
-		
-		final String script =
-				"(do                                                                      " +
-				"    (import :java.util.function.BinaryOperator)                          " +
-			    "                                                                         " +
-				"    (-> (. [1 2 3 4] :stream)                                            " +
-			    "        (. :reduce (proxify :BinaryOperator { :apply #(+ %1 %2) }))      " +
-				"        (. :orElse 0))                                                   " +
-				") ";
-		
-		assertEquals("10", venice.eval(script).toString());
 	}
 
 	
