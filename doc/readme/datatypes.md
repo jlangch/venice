@@ -184,6 +184,12 @@ Immutable persistent hash map.
 ```clojure
 {:a 100 :b 200}
 (hash-map :a 100 :b 200)
+
+(cons {:c 3} {:a 1 :b 2})        ;; => {:a 1 :b 2 :c 3}
+(get {:a 1 :b 2} :b)             ;; => 2
+(:b {:a 1 :b 2})                 ;; => 2
+(assoc {:a 1} :b 2 :c 3)         ;; => {:a 1 :b 2 :c 3}
+(dissoc {:a 1 :b 2 :c 3} :c :b)  ;;=> {:a 1}
 ```
 
 ### ordered-map
@@ -192,6 +198,10 @@ Immutable persistent ordered map.
 
 ```clojure
 (ordered-map :a 100 :b 200)
+
+(cons {:c 3} (ordered-map :a 1 :b 2))  ;; => {:a 1 :b 2 :c 3}
+(get (ordered-map :a 1 :b 2) :b)       ;; => 2
+(:b (ordered-map :a 1 :b 2))           ;; => 2
 ```
 
 ### sorted-map
@@ -200,6 +210,10 @@ Immutable persistent sorted map.
 
 ```clojure
 (sorted-map :a 100 :b 200)
+
+(cons {:c 3} (sorted-map :b 2 :a 1))  ;; => {:a 1 :b 2 :c 3}
+(get (sorted-map :a 1 :b 2) :b)       ;; => 2
+(:b (sorted-map :a 1 :b 2))           ;; => 2
 ```
 
 ### stack
