@@ -163,6 +163,8 @@ created.
 
 ## Maps, Sets, and Keywords as functions
 
+Maps, sets, and keywords are functions too.
+
 ```clojure
 (do
    ; instead of (get {:a 1 :b 2} :b)
@@ -219,6 +221,12 @@ more parameters constant:
 
 
 ## Function Composition
+
+Creates a new function composed of one or more functions. The composed
+functions are executed form right to left.
+
+`(comp not zero?)` is equivalent to `(fn [x] (not (zero? x))`
+
 
 ```clojure
 (filter (comp not zero?) [0 1 0 2 0 3 0 4])  ;; => [1 2 3 4]
