@@ -201,6 +201,96 @@ public class JavaInterop_constructor_Test {
 		assertEquals("john, 24, 2018-07-21", venice.eval(script));
 	}
 	
+	@Test
+	public void testVarArg1Constructor_1() {
+		final String clazz = TestObject_VarArg_1.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_1 obj;
+		
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '())");
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '())");
+		assertEquals(0L, obj._long);
+		assertEquals("", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
+	public void testVarArg1Constructor_2() {
+		final String clazz = TestObject_VarArg_1.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_1 obj;
+		
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '(\"c\"))");
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '(\"c\"))");
+		assertEquals(1L, obj._long);
+		assertEquals("c", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
+	public void testVarArg1Constructor_3() {
+		final String clazz = TestObject_VarArg_1.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_1 obj;
+		
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '(\"c\" \"d\"))");
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '(\"c\" \"d\"))");
+		assertEquals(2L, obj._long);
+		assertEquals("c:d", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
+	public void testVarArg2Constructor_1() {
+		final String clazz = TestObject_VarArg_2.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_2 obj;
+		
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '())");
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '())");
+		assertEquals(0L, obj._long);
+		assertEquals("a:b:", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
+	public void testVarArg2Constructor_2() {
+		final String clazz = TestObject_VarArg_2.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_2 obj;
+		
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '(\"c\"))");
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '(\"c\"))");
+		assertEquals(1L, obj._long);
+		assertEquals("a:b:c", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
+	public void testVarArg2Constructor_3() {
+		final String clazz = TestObject_VarArg_2.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_2 obj;
+		
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '(\"c\" \"d\"))");
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '(\"c\" \"d\"))");
+		assertEquals(2L, obj._long);
+		assertEquals("a:b:c:d", obj._string);
+		assertNull(obj._double);
+	}
+	
 	
 	public static class TestObject {
 		public TestObject() {
@@ -242,9 +332,38 @@ public class JavaInterop_constructor_Test {
 			this._double = val3;
 		}
 		
+		public TestObject(final String val1, final String val2, final String... vals) {
+			this._long = Long.valueOf(vals.length);
+			this._string = val1 + ":" + val2 + ":" + String.join(":", vals);
+			this._double = null;
+		}
 		
 		public final Long _long;
 		public final String _string;
 		public final Double _double;
 	}
+	
+	public static class TestObject_VarArg_1 {
+		public TestObject_VarArg_1(final String... vals) {
+				this._long = Long.valueOf(vals.length);
+				this._string = String.join(":", vals);
+				this._double = null;
+			}
+		
+		public final Long _long;
+		public final String _string;
+		public final Double _double;
+	}	
+	
+	public static class TestObject_VarArg_2 {
+		public TestObject_VarArg_2(final String val1, final String val2, final String... vals) {
+				this._long = Long.valueOf(vals.length);
+				this._string = val1 + ":" + val2 + ":" + String.join(":", vals);
+				this._double = null;
+			}
+		
+		public final Long _long;
+		public final String _string;
+		public final Double _double;
+	}	
 }
