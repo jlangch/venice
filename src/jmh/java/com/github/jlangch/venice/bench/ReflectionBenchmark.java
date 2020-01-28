@@ -44,6 +44,8 @@ import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function1;
 import com.github.jlangch.venice.impl.util.reflect.LambdaMetafactoryUtil.Function2;
 
+// Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
+//
 // Benchmark                                      Mode  Cnt   Score    Error  Units
 // --------------------------------------------------------------------------------
 // ReflectionBenchmark.bench_native               avgt    3  23.633 ±  3.612  ns/op
@@ -76,79 +78,49 @@ public class ReflectionBenchmark {
 	}
 
 	@Benchmark
-	public BigInteger bench_reflective() {
-		try {
-			final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {10L});
-			final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
-			return (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
+	public BigInteger bench_reflective() throws Exception {
+		final BigInteger i1 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {10L});
+		final BigInteger i2 = (BigInteger)mValueOf.invoke(BigInteger.class, new Object[] {100L});
+		return (BigInteger)mAdd.invoke(i1, new Object[] {i2});	       		
 	}
 
 	@Benchmark
 	public BigInteger bench_LambdaMetafactory_1() {
 		// Typed SAM
-		try {
-			final BigInteger i1 = (BigInteger)fnTypedValueOf.apply(10L);
-			final BigInteger i2 = (BigInteger)fnTypedValueOf.apply(100L);
-			return fnTypedAdd.apply(i1, i2);      		
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		final BigInteger i1 = (BigInteger)fnTypedValueOf.apply(10L);
+		final BigInteger i2 = (BigInteger)fnTypedValueOf.apply(100L);
+		return fnTypedAdd.apply(i1, i2);      		
 	}
 
 	@Benchmark
 	public BigInteger bench_LambdaMetafactory_2() {
 		// Generic SAM
-		try {
-			final BigInteger i1 = (BigInteger)fnGenericValueOf.apply(10L);
-			final BigInteger i2 = (BigInteger)fnGenericValueOf.apply(100L);
-			return fnGenericAdd.apply(i1, i2);      		
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		final BigInteger i1 = (BigInteger)fnGenericValueOf.apply(10L);
+		final BigInteger i2 = (BigInteger)fnGenericValueOf.apply(100L);
+		return fnGenericAdd.apply(i1, i2);      		
 	}
 
 	@Benchmark
 	public BigInteger bench_LambdaMetafactory_3() {
 		// Generic SAM (Object)
-		try {
-			final BigInteger i1 = (BigInteger)fnValueOf.apply(10L);
-			final BigInteger i2 = (BigInteger)fnValueOf.apply(100L);
-			return (BigInteger)fnAdd.apply(i1, i2);      		
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		final BigInteger i1 = (BigInteger)fnValueOf.apply(10L);
+		final BigInteger i2 = (BigInteger)fnValueOf.apply(100L);
+		return (BigInteger)fnAdd.apply(i1, i2);      		
 	}
 
 	@Benchmark
 	public BigInteger bench_LambdaMetafactory_4() {
 		// Generic SAM (Object) / generic dispatch
-		try {
-			final BigInteger i1 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {10L}, fnValueOf);
-			final BigInteger i2 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {100L}, fnValueOf);
-			return (BigInteger)LambdaMetafactoryUtil.invoke_instanceMethod(i1, new Object[] {i2}, fnAdd);      		
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		final BigInteger i1 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {10L}, fnValueOf);
+		final BigInteger i2 = (BigInteger)LambdaMetafactoryUtil.invoke_staticMethod(new Object[] {100L}, fnValueOf);
+		return (BigInteger)LambdaMetafactoryUtil.invoke_instanceMethod(i1, new Object[] {i2}, fnAdd);      		
 	}
 
 	@Benchmark
-	public BigInteger bench_MethodHandle() {
-		try {
-			final BigInteger i1 = (BigInteger)mhValueOf.invoke(10L);
-			final BigInteger i2 = (BigInteger)mhValueOf.invoke(100L);
-			return (BigInteger)mhAdd.invoke(i1, i2);      		
-		}
-		catch(Throwable ex) {
-			throw new RuntimeException(ex);
-		}
+	public BigInteger bench_MethodHandle() throws Throwable {
+		final BigInteger i1 = (BigInteger)mhValueOf.invoke(10L);
+		final BigInteger i2 = (BigInteger)mhValueOf.invoke(100L);
+		return (BigInteger)mhAdd.invoke(i1, i2);      		
 	}
 	
 	private void init() {

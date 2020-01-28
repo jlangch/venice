@@ -189,7 +189,7 @@ The Venice benchmarks are done using [JMH](http://openjdk.java.net/projects/code
 (Java Microbenchmark Harness). JMH has been added to the JDK starting with JDK 12; 
 for earlier versions, the dependencies have to be added explicitly.
 
-The benchmark did run on a 2017 MacBook Pro (Core i7 2.8 GHz).
+The benchmark did run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 
 **Results Java 8 Server VM:**
 
