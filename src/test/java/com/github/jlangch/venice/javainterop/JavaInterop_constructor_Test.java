@@ -247,6 +247,21 @@ public class JavaInterop_constructor_Test {
 	}
 	
 	@Test
+	public void testVarArg1Constructor_4() {
+		final String clazz = TestObject_VarArg_1.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_1 obj;
+		
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '(:c \"d\"))");
+		obj = (TestObject_VarArg_1)venice.eval("(. :" + clazz + " :new '(:c \"d\"))");
+		assertEquals(2L, obj._long);
+		assertEquals("c:d", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
 	public void testVarArg2Constructor_1() {
 		final String clazz = TestObject_VarArg_2.class.getName();
 		
@@ -286,6 +301,21 @@ public class JavaInterop_constructor_Test {
 		
 		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '(\"c\" \"d\"))");
 		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new \"a\" \"b\" '(\"c\" \"d\"))");
+		assertEquals(2L, obj._long);
+		assertEquals("a:b:c:d", obj._string);
+		assertNull(obj._double);
+	}
+	
+	@Test
+	public void testVarArg2Constructor_4() {
+		final String clazz = TestObject_VarArg_2.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_VarArg_2 obj;
+		
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new :a \"b\" '(:c \"d\"))");
+		obj = (TestObject_VarArg_2)venice.eval("(. :" + clazz + " :new :a \"b\" '(:c \"d\"))");
 		assertEquals(2L, obj._long);
 		assertEquals("a:b:c:d", obj._string);
 		assertNull(obj._double);
