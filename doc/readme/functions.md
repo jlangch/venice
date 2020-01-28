@@ -250,7 +250,7 @@ of the next form.
   (defn bigint [x] (. :java.math.BigInteger :new x))
   (-> (bigint "1000")
       (. :multiply (bigint "600"))
-      (. :add (bigint "300")))))
+      (. :add (bigint "300")))))  ;; => 600300
 ```
 
 ```clojure
@@ -280,15 +280,16 @@ of the next form.
 **Thread any** `as->`, `-<>`
 
 ```clojure
-;allows to use arbitrary positioning of the argument
-(as-> [:foo :bar] v
-      (map name v)
-      (first v)
-      (str/subs v 1))  ;; => "oo"
+; allows to use arbitrary positioning of the argument
+(as-> (range 0 8) v
+      (filter odd? v)
+      (reduce + v)
+      (* v 2))  ;; => 32
 ```
 
 ```clojure
-; allows the use of if statements in the thread
+; the chosen threading symbol may be used multiple times in a form
+; thus allowing the use of complex forms like if expressions
 (as-> {:a 1 :b 2} m
       (update m :a #(+ % 10))
       (if true
@@ -298,16 +299,22 @@ of the next form.
 
 ```clojure
 ; allows to use arbitrary positioning of the argument using the placeholder '<>'
+; note: the threading symbol <> may only be used once in a form
 (-<> (range 0 8)
      (filter odd? <>)
      (reduce + <>)
-     (* <> 2))  ;; => "Result: 32"
+     (* <> 2))  ;; => 32
 ```
 
 
 ## Multimethods
 
 Multimethods are a powerful mechanism for runtime polymorphism.
+
+`defmulti` creates a new multimethod with the associated dispatch function.
+
+`defmethod` creates a new method for a multimethod associated with a dispatch-value.
+
 
 ```clojure
 
@@ -319,6 +326,8 @@ Multimethods are a powerful mechanism for runtime polymorphism.
   (defmulti area (fn [s] (:shape s)))
 
   ; defmethod provides a function implementation for a particular dispatch value 
+  ; in the examples the dispatch value s are :rect, :circle, and :default for
+  ; the default dispatch
   (defmethod area :rect [r] (* (:width r) (:height r)))
   (defmethod area :circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
   (defmethod area :default [s] 0) 
@@ -329,7 +338,7 @@ Multimethods are a powerful mechanism for runtime polymorphism.
 )
 ```
 
-Keyword as discriminator function:
+Keyword as dispatch function:
 
 ```clojure
 (do
