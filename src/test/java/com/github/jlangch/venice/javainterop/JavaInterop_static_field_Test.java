@@ -60,14 +60,15 @@ public class JavaInterop_static_field_Test {
 		assertEquals(255, venice.eval("(:blue (. :java.awt.Color :BLUE))"));		
 	}
 
+	
 	public static enum TestEnum {
 		RED, GREEN, BLUE;
 	}
 	
 	public static class TestObject {
-		public static long LONG_VAL = 100L;
-		public static double DOUBLE_VAL = 3.14159265D;
-		public static String STRING_VAL = "alpha";
-		public static TestEnum ENUM_VAL = TestEnum.BLUE;
+		public static final long LONG_VAL = 100L;
+		public static final double DOUBLE_VAL = 3.14159265D;
+		public static final String STRING_VAL = "alpha";
+		public static final TestEnum ENUM_VAL = TestEnum.BLUE;
 	}
 }

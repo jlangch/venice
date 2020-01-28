@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.util.reflect;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -207,9 +206,9 @@ public class ReflectionAccessor {
 	public static Object getInstanceField(final Object target, final String fieldName) {
 		try {
 			final Class<?> clazz = target.getClass();
-			final Field f = memoizedInstanceField(clazz, fieldName);
-			if (f != null) {
-				return f.get(target);
+			final MethodHandle mh = memoizedInstanceField(clazz, fieldName);
+			if (mh != null) {
+				return mh.invoke(target);
 			}
 			else {
 				throw new JavaMethodInvocationException(noMatchingFieldErrMsg(fieldName, clazz.getName()));
@@ -218,7 +217,7 @@ public class ReflectionAccessor {
 		catch (JavaMethodInvocationException ex) {
 			throw ex;
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			throw new JavaMethodInvocationException(
 					String.format(
 							"Failed to get instance field '%s' on target '%s'",
@@ -357,10 +356,9 @@ public class ReflectionAccessor {
 	}
 
 	public static boolean isInstanceField(final Object target, final String fieldName) {
+		final Class<?> clazz = target.getClass();
 		try {
-			final Class<?> clazz = target.getClass();
-			final Field f = memoizedInstanceField(clazz, fieldName);
-			return f != null;
+			return memoizedInstanceField(clazz, fieldName) != null;
 		}
 		catch (JavaMethodInvocationException ex) {
 			throw ex;
@@ -370,7 +368,7 @@ public class ReflectionAccessor {
 					String.format(
 							"Failed to check for available instance field '%s' on target '%s'",
 							fieldName,
-							target.getClass().getName()),
+							clazz.getName()),
 					ex);
 		}
 	}
@@ -585,10 +583,10 @@ public class ReflectionAccessor {
 					k ->  LambdaMetafactoryUtil.staticField_get(k._1, k._2));
 	}
 	
-	private static Field memoizedInstanceField(final Class<?> clazz, final String fieldName) {
+	private static MethodHandle memoizedInstanceField(final Class<?> clazz, final String fieldName) {
 		return instanceFieldCache.computeIfAbsent(
 					new Tuple2<>(clazz,fieldName), 
-					k ->  ReflectionUtil.getPublicInstanceField(k._1, k._2));
+					k ->  LambdaMetafactoryUtil.instanceField_get(k._1, k._2));
 	}
 	
 	private static List<Method> memoizedStaticMethod(
@@ -636,7 +634,7 @@ public class ReflectionAccessor {
 	private static final Map<Tuple2<Class<?>,String>,Method> setterMethodCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple2<Class<?>,Integer>,List<Constructor<?>>> constructorCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple2<Class<?>,String>,MethodHandle> staticFieldCache = new ConcurrentHashMap<>();
-	private static final Map<Tuple2<Class<?>,String>,Field> instanceFieldCache = new ConcurrentHashMap<>();
+	private static final Map<Tuple2<Class<?>,String>,MethodHandle> instanceFieldCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> staticMethodCache = new ConcurrentHashMap<>();
 	private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> instanceMethodCache = new ConcurrentHashMap<>();
 }
