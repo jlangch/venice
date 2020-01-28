@@ -40,6 +40,9 @@ Booleans are defined by constants _true_ and _false_.
 (println "ab\"cd")
 (println "PI: \u03C0")
 (println """{ "age": 42 }""")
+
+(str "ab" "c" "d")  ;; => "abcd"
+(str/format "value: %.4f" 1.45)  ;; "value: 1.4500"
 ```
 
 
@@ -130,6 +133,11 @@ Immutable persistent list.
 ```clojure
 '(1 2 3)
 (list 1 2 (+ 1 2))
+
+(cons 1 '(2 3 4))  ;; => (1 2 3 4)
+(conj '(1 2 3) 4)  ;; => (1 2 3 4)
+(first '(2 3 4)    ;; => 2
+(rest '(2 3 4)     ;; => (3 4)
 ```
 
 ### vector
@@ -139,6 +147,11 @@ Immutable persistent vector.
 ```clojure
 [1 2 3]
 (vector 1 2 (+ 1 2))
+
+(cons 1 [2 3 4])  ;; => [1 2 3 4]
+(conj [1 2 3] 4)  ;; => [1 2 3 4]
+(first [2 3 4]    ;; => 2
+(rest [2 3 4]     ;; => [3 4]
 ```
 
 ### hash-set
