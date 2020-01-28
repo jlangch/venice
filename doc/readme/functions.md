@@ -247,6 +247,14 @@ of the next form.
 
 ```clojure
 (do
+  (defn bigint [x] (. :java.math.BigInteger :new x))
+  (-> (bigint "1000")
+      (. :multiply (bigint "600"))
+      (. :add (bigint "300")))))
+```
+
+```clojure
+(do
   (def person
     {:name "Peter Meier"
      :address {:street "Lindenstrasse 45"
