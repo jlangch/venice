@@ -108,6 +108,31 @@ larger blocks that are a single expression.
 ```
 
 
+
+## Introduction for Beginners
+
+_TODO_
+
+#### Variables
+
+#### Functions
+
+#### Immutability
+
+#### Let and Local Variables
+
+#### Filter-Map-Reduce
+
+#### Control Structures
+
+#### Loops
+
+standard functions:  (apply + [1 2 3 4 5])  (reduce + [1 2 3 4 5])  (filter even? [1 2 3 4 5])
+
+recursion:  loop-recur  
+
+
+
 ## Functional Concepts
 
 Functional Programming is all about programming with functions.
