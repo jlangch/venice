@@ -46,20 +46,26 @@
 
   (defn merge-ip-locations-by-country [ip-locations]
     (vals (reduce (fn [x y]
-                   (let [country (:country-iso y)
-                         r (get x country)]
-                     (if (nil? r)
-                       (assoc x country y)
-                       (let [freq (+ (:freq r) (:freq y))]
-                         (assoc x country (assoc r :freq freq))))))
+                    (let [country (:country-iso y)
+                          r (get x country)]
+                      (if (nil? r)
+                        (assoc x country y)
+                        (let [freq (+ (:freq r) (:freq y))]
+                          (assoc x country (assoc r :freq freq))))))
                   {}
                   ip-locations)))
 
-  (defn draw [format file locations]
-    (-> (mercator/load-mercator-image)
-        (mercator/draw-locations locations)
-        (mercator/crop-image 400 600)
-        (mercator/save-image format file)))
+  (defn get-mercator-img [mercator-img]
+    (if (some? mercator-img)
+      mercator-img
+      (mercator/load-mercator-image)))
+
+  (defn draw [styles mercator-img format file locations]
+    (let [img (get-mercator-img mercator-img)]
+      (-> img
+          (mercator/draw-locations locations styles)
+          (mercator/crop-image 400 600)
+          (mercator/save-image format file))))
 
   (defn parse-ip [log]
     (->> (tc-util/simple-ipaddr-access-log-entry-parser)
@@ -90,7 +96,7 @@
         :country (:country-name data)
         :country-iso (:country-iso data) } ))
 
-  (defn create-map [ip-freq-map ip-loc-resolver out-file]
+  (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
          (filter #(not (private-ip? (:ip %))))
@@ -99,7 +105,7 @@
                         (second (:loc x))
                         {:label (format-label (:country-iso x) (:freq x))
                          :font-size-px 14}]))
-         (draw :png out-file)))
+         (draw styles mercator-img :png out-file)))
 
   (defn create-ip-loc-resolver []
     ; this may take some time
@@ -111,12 +117,7 @@
 
   (def ip-loc-rv nil)
 
-  (defn download-maxmind-db [lic-key]
-    (io/mkdirs (io/file-parent maxmind-country-zip))
-    (geoip/download-maxmind-db-to-zipfile
-      (io/file maxmind-country-zip) :country lic-key))
-
-  (defn run [out-file & log-files]
+  (defn process [styles mercator-img out-file log-files]
     (if (io/exists-file? maxmind-country-zip)
       (do
         (when (nil? ip-loc-rv)
@@ -124,11 +125,25 @@
         (println "Processing log files...")
         (-<> (map io/file log-files)
              (parse-log-files <>)
-             (create-map <> ip-loc-rv out-file)))
+             (create-map styles mercator-img <> ip-loc-rv out-file)))
       (do
         (println "The MaxMind country file" maxmind-country-zip " does not exist!")
         (println "Please download it:")
         (println "    (download-maxmind-db -your-maxmind-lic-key-)"))))
+
+  (defn load-image [file]
+    (mercator/load-image file))
+
+  (defn download-maxmind-db [lic-key]
+    (io/mkdirs (io/file-parent maxmind-country-zip))
+    (geoip/download-maxmind-db-to-zipfile
+      (io/file maxmind-country-zip) :country lic-key))
+
+  (defn run-custom [styles mercator-img out-file & log-files]
+    (process styles mercator-img out-file log-files))
+
+  (defn run [out-file & log-files]
+    (process nil nil out-file log-files))
 
 
   (println """

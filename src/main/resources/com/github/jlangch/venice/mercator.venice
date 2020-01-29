@@ -95,8 +95,6 @@
 (import :com.github.jlangch.venice.javainterop.delegate.Graphics2DComposite)
 
 
-(def default-font-style (. :Font :PLAIN))
-
 (defn color [r g b a]
   (. :Color :new (int r) (int g) (int b) (int a)))
 
@@ -154,12 +152,13 @@
     :bmp  "BMP"
     :jpg  "JPG" })
 
-; default marker
-(def marker-fill-color (color 255 128 128 255))
-(def marker-border-color (color 255 0 0 255))
-(def marker-label-color (color 255 255 255 255))
-(def marker-radius 10)
-(def marker-font-size-px 14)
+; default styles
+(def default-styles { :marker { :fill-color (color 255 128 128 255)
+                                :border-color (color 255 0 0 255)
+                                :label-color (color 255 255 255 255)
+                                :radius 10
+                                :font-size-px 14 }
+                      :font (. :Font :PLAIN) } )
 
 
 
@@ -247,48 +246,55 @@
   (. g :setColor border-color)
   (. g :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
 
-(defn draw-text [g x y color label font-size-px]
-  (. g :setFont (font font-size-px default-font-style))
+(defn draw-text [g x y color label label-font label-size-px]
+  (. g :setFont (font label-size-px label-font))
   (. g :setColor color)
   (. g :drawString label x y))
 
-(defn draw-marker [g2d img-width img-height pos opts circle? label?]
+(defn draw-marker [g2d img-width img-height pos styles opts circle? label?]
   (let [x (:x pos)
         y (- img-height (:y pos))
         label (:label opts)
-        radius (:radius opts marker-radius)
-        font-size (:font-size-px opts marker-font-size-px)
+        radius (:radius opts (-> styles :marker :radius))
+        font-size (:font-size-px opts (-> styles :marker :font-size-px))
         label-y-off (- (long (/ (- (+ radius radius) font-size) 2)))]
     (when circle?
       (draw-circle g2d x y
                    radius
-                   (:fill-color opts marker-fill-color)
-                   (:border-color opts marker-border-color)))
+                   (:fill-color opts (-> styles :marker :fill-color))
+                   (:border-color opts (-> styles :marker :border-color))))
     (when (and label? (some? label))
       (draw-text g2d (+ x radius radius) (+ y radius label-y-off)
-                 (:label-color opts marker-label-color)
+                 (:label-color opts (-> styles :marker :label-color))
                  label
+                 (:font styles)
                  font-size))))
 
-(defn draw-locations [image locations]
-  (let [[img-width img-height] (image-dimensions image)
-        ; use a delegate on Graphics2D to work around illegal reflective
-        ; access on JDK internal classes with Java 9+
-        g2d (delegate :Graphics2DComposite (. image :createGraphics))
-        mapper (spherical-mapper img-width img-height)]
-    (. g2d :setFont (font marker-font-size-px default-font-style))
-    (let [data (map #(vector (mapper (second %) (first %)) (third %)) locations)]
-      ;; layer 1: circles
-      (docoll (fn [l] (draw-marker g2d img-width img-height
-                                   (first l) (second l) true false))
-              data)
+(defn draw-locations
+  ([image locations]
+    (draw-locations image locations default-styles))
+  ([image locations styles]
+    (let [[img-width img-height] (image-dimensions image)
+          ; use a delegate on Graphics2D to work around illegal reflective
+          ; access on JDK internal classes with Java 9+
+          g2d (delegate :Graphics2DComposite (. image :createGraphics))
+          mapper (spherical-mapper img-width img-height)
+          styles (merge default-styles styles)]
+      (. g2d :setFont (font (-> styles :marker :font-size-px) (:font styles)))
+      (let [data (map #(vector (mapper (second %) (first %)) (third %)) locations)]
+        ;; layer 1: circles
+        (docoll (fn [l] (draw-marker g2d img-width img-height
+                                     (first l) styles (second l)
+                                     true false))
+                data)
 
-      ;; layer 2: labels
-      (docoll (fn [l] (draw-marker g2d img-width img-height
-                                   (first l) (second l) false true))
-              data)
-      ))
-  image)
+        ;; layer 2: labels
+        (docoll (fn [l] (draw-marker g2d img-width img-height
+                                     (first l) styles (second l)
+                                     false true))
+                data)
+        ))
+    image))
 
 (defn test []
   (-> (load-mercator-image)
