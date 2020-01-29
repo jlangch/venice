@@ -95,19 +95,13 @@
 (import :com.github.jlangch.venice.javainterop.delegate.Graphics2DComposite)
 
 
-(defn color [r g b a]
-  (. :Color :new (int r) (int g) (int b) (int a)))
-
-(defn font [size style]
-  (memoize (fn [size style] (. :Font :new "SansSerif" style size))))
-
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
 (def cities
   { :zurich     [ 47.37174       8.54226   { :label "Zurich"
                                              :radius 10
-                                             :fill-color (color 128 128 255 255)
-                                             :border-color (color 0 0 255 255)
-                                             :label-color (color 255 255 255 255)
+                                             :fill-color [128 128 255 255]
+                                             :border-color [0 0 255 255]
+                                             :label-color [255 255 255 255]
                                              :font-size-px 14 } ]
     :new-york   [ 40.712778    -74.005833  { :label "New York" } ]
     :tokyo      [ 35.6894875   139.6917064 { :label "Tokyo" } ]
@@ -152,15 +146,25 @@
     :bmp  "BMP"
     :jpg  "JPG" })
 
+(def font-style
+  { :plain  (. :Font :PLAIN)
+    :italic (. :Font :ITALIC)
+    :bold   (. :Font :BOLD) })
+
 ; default styles
-(def default-styles { :marker { :fill-color (color 255 128 128 255)
-                                :border-color (color 255 0 0 255)
-                                :label-color (color 255 255 255 255)
+(def default-styles { :marker { :fill-color [255 128 128 255]
+                                :border-color [255 0 0 255]
+                                :label-color [255 255 255 255]
                                 :radius 10
                                 :font-size-px 14 }
-                      :font (. :Font :PLAIN) } )
+                      :font {:style :plain} } )
 
+(defn color
+  ([r g b a] (. :Color :new (int r) (int g) (int b) (int a)))
+  ([values]  (apply color values)))
 
+(defn font [size style]
+  (memoize (fn [size style] (. :Font :new "SansSerif" (get font-style style) size))))
 
 (defn- limit [val [lower upper]]
   (min upper (max lower val)))
@@ -261,11 +265,11 @@
     (when circle?
       (draw-circle g2d x y
                    radius
-                   (:fill-color opts (-> styles :marker :fill-color))
-                   (:border-color opts (-> styles :marker :border-color))))
+                   (color (:fill-color opts (-> styles :marker :fill-color)))
+                   (color (:border-color opts (-> styles :marker :border-color)))))
     (when (and label? (some? label))
       (draw-text g2d (+ x radius radius) (+ y radius label-y-off)
-                 (:label-color opts (-> styles :marker :label-color))
+                 (color (:label-color opts (-> styles :marker :label-color)))
                  label
                  (:font styles)
                  font-size))))
