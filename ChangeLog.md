@@ -21,6 +21,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - optional upfront macro expansion for all execution modes (REPL, Launcher, and embedding in Java)
+- customizable mercator maps and rendering styles to mercator module
 
 ### Changed
 
