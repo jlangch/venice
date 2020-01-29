@@ -68,9 +68,9 @@
 ;;;;
 ;;;; E.g.:  [ 47.37174  8.54226  { :label "Zurich"
 ;;;;                               :radius 12
-;;;;                               :fill-color (color 128 128 255 255)
-;;;;                               :border-color (color 0 0 255 255)
-;;;;                               :label-color (color 255 255 255 255)
+;;;;                               :fill-color [128 128 255 255]
+;;;;                               :border-color [0 0 255 255]
+;;;;                               :label-color [255 255 255 255]
 ;;;;                               :font-size-px 20 } ]
 ;;;;
 ;;;; Only the :label parameter is mandatory if an option map is passed. All
@@ -78,9 +78,9 @@
 ;;;;
 ;;;;   :label          the label string
 ;;;;   :radius         the marker circle radius in pixel
-;;;;   :fill-color     the marker circle fill color (:java.awt.Color)
-;;;;   :border-color   the marker circle border color (:java.awt.Color)
-;;;;   :label-color    the label color (:java.awt.Color)
+;;;;   :fill-color     the marker circle fill color (RGBA vector)
+;;;;   :border-color   the marker circle border color (RGBA vector)
+;;;;   :label-color    the label color (RGBA vector)
 ;;;;   :font-size-px   the label font size in pixel
 
 
@@ -161,7 +161,7 @@
 
 (defn color
   ([r g b a] (. :Color :new (int r) (int g) (int b) (int a)))
-  ([values]  (apply color values)))
+  ([rgba]  (apply color rgba)))
 
 (defn font [size style]
   (memoize (fn [size style] (. :Font :new "SansSerif" (get font-style style) size))))
