@@ -2463,8 +2463,14 @@ public class CoreFunctions {
 						"sequence of keys and v is the new value and returns a new nested structure. " +
 						"If any levels do not exist, hash-maps or vectors will be created.")
 					.examples(
-						"(do\n   (def users [{:name \"James\" :age 26}  {:name \"John\" :age 43}])\n   (assoc-in users [1 :age] 44))",
-						"(do\n   (def users [{:name \"James\" :age 26}  {:name \"John\" :age 43}])\n   (assoc-in users [2] {:name \"Jack\" :age 19}) )")
+						"(do                                               \n" +
+						"  (def users [ {:name \"James\" :age 26}          \n" +
+						"               {:name \"John\" :age 43}] )        \n" +
+						"  (assoc-in users [1 :age] 44))                   ",
+						"(do                                               \n" +
+						"  (def users [ {:name \"James\" :age 26}          \n" +
+						"               {:name \"John\" :age 43}] )        \n" +
+						"  (assoc-in users [2] {:name \"Jack\" :age 19}) ) ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2605,7 +2611,8 @@ public class CoreFunctions {
 					.doc("Returns the value mapped to key, not-found or nil if key not present.")
 					.examples(
 						"(get {:a 1 :b 2} :b)",
-						";; keywords act like functions on maps \n(:b {:a 1 :b 2})")
+						";; keywords act like functions on maps \n" +
+						"(:b {:a 1 :b 2})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2739,7 +2746,9 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(find map key)")
 					.doc("Returns the map entry for key, or nil if key not present.")
-					.examples("(find {:a 1 :b 2} :b)", "(find {:a 1 :b 2} :z)")
+					.examples(
+						"(find {:a 1 :b 2} :b)", 
+						"(find {:a 1 :b 2} :z)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
