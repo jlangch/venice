@@ -254,10 +254,7 @@ public class ReflectionAccessor {
 			}
 			catch(Exception ex) {
 				throw new JavaMethodInvocationException(
-						String.format(
-								"Failed to get bean property '%s' on target '%s'",
-								propertyName,
-								target.getClass().getName()),
+						failedToGetBeanPropertyErrMsg(target, propertyName),
 						ex);
 			}
 		}
@@ -284,10 +281,7 @@ public class ReflectionAccessor {
 			}
 			catch(Exception ex) {
 				throw new JavaMethodInvocationException(
-						String.format(
-								"Failed to set bean property '%s' on target '%s'",
-								propertyName,
-								target.getClass().getName()),
+						failedToSetBeanPropertyErrMsg(target, propertyName),
 						ex);
 			}
 		}
@@ -540,6 +534,22 @@ public class ReflectionAccessor {
 				"No matching public constructor found: '%s'",
 				clazz.getName());
 	}
+
+	private static String failedToGetBeanPropertyErrMsg(final Object target, final String propertyName) {
+		return String.format(
+				"Failed to get bean property '%s' on target '%s'",
+				propertyName,
+				target.getClass().getName());
+	}
+
+	private static String failedToSetBeanPropertyErrMsg(final Object target, final String propertyName) {
+		return String.format(
+				"Failed to set bean property '%s' on target '%s'",
+				propertyName,
+				target.getClass().getName());
+	}
+
+
 
 	private static Class<?> memoizedClassForName(final String className) {
 		return classCache.computeIfAbsent(

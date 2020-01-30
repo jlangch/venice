@@ -24,9 +24,13 @@ package com.github.jlangch.venice.javainterop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.Venice;
 
 
@@ -183,6 +187,119 @@ public class JavaInterop_constructor_Test {
 		assertEquals("abc", obj._string);
 		assertEquals(100.12D, obj._double, 0.01);
 	}
+
+	@Test
+	public void testOneArgConstructorBoxing() {
+		final String clazz = TestObject_Boxing.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_Boxing obj;
+		
+		// Long arg constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100)");
+		assertEquals(100L, obj._long);
+		assertNull(obj._double);
+		
+		// Double arg constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100.12)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100.12)");
+		assertNull(obj._long);
+		assertEquals(100.12D, obj._double, 0.01);
+	}
+
+	@Test
+	public void testOneArgCoercedConstructorBoxing() {
+		final String clazz = TestObject_Boxing.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_Boxing obj;
+		
+		// Coerce Integer to Long constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I)");
+		assertEquals(100L, obj._long);
+		assertNull(obj._double);
+	}
+
+	@Test
+	public void testTwoArgConstructorBoxing() {
+		final String clazz = TestObject_Boxing.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_Boxing obj;
+		
+		// Long,Double arg constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100 100.12)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100 100.12)");
+		assertEquals(100L, obj._long);
+		assertEquals(100.12D, obj._double, 0.01);
+		
+		// Long,Double arg constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I 100.12)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I 100.12)");
+		assertEquals(100L, obj._long);
+		assertEquals(100.12D, obj._double, 0.01);
+	}
+
+	@Test
+	public void testTwoArgCoercedConstructorBoxing() {
+		final String clazz = TestObject_Boxing.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_Boxing obj;
+		
+		// Integer,Long arg constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I 100)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I 100)");
+		assertEquals(100L, obj._long);
+		assertEquals(100.0D, obj._double);
+	
+		// Integer,Double arg constructor
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I 100.12)");
+		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I 100.12)");
+		assertEquals(100L, obj._long);
+		assertEquals(100.12D, obj._double, 0.01);
+	}
+
+	@Test
+	public void testOneArgListConstructor() {
+		final String clazz = TestObject_List.class.getName();
+		
+		final Venice venice = new Venice();
+
+		TestObject_List obj;
+		
+		obj = (TestObject_List)venice.eval("(. :" + clazz + " :new [1 2 3])");
+		obj = (TestObject_List)venice.eval("(. :" + clazz + " :new [1 2 3])");
+		assertEquals(3L, obj._len);
+		assertEquals(6L, obj._sum);
+
+		obj = (TestObject_List)venice.eval("(. :" + clazz + " :new '(1 2 3))");
+		obj = (TestObject_List)venice.eval("(. :" + clazz + " :new '(1 2 3))");
+		assertEquals(3L, obj._len);
+		assertEquals(6L, obj._sum);
+
+		obj = (TestObject_List)venice.eval("(. :" + clazz + " :new [1 2 3])");
+		assertEquals(3L, obj._len);
+		assertEquals(6L, obj._sum);
+	}
+
+	@Test
+	public void testOneArgListConstructor_Failed() {
+		final String clazz = TestObject_List.class.getName();
+		
+		final Venice venice = new Venice();
+		
+		// Java exception: cannot cast Integer to Long
+		assertThrows(JavaMethodInvocationException.class, () -> 
+			venice.eval("(. :" + clazz + " :new [1I 2 3])"));
+	}
+
 	
 	@Test
 	public void testJavaObjArgConstructor() {
@@ -372,7 +489,40 @@ public class JavaInterop_constructor_Test {
 		public final String _string;
 		public final Double _double;
 	}
-	
+
+	public static class TestObject_Boxing {
+		public TestObject_Boxing() {
+			this._long = null;
+			this._double = null;
+		}
+		
+		public TestObject_Boxing(final long val) {
+			this._long = val;
+			this._double = null;
+		}
+		public TestObject_Boxing(final double val) {
+			this._long = null;
+			this._double = val;
+		}
+		public TestObject_Boxing(final long val1, final double val2) {
+			this._long = val1;
+			this._double = val2;
+		}
+		
+		public final Long _long;
+		public final Double _double;
+	}
+
+	public static class TestObject_List {
+		public TestObject_List(final List<Long> vals) {
+			this._sum = vals.stream().mapToLong(v -> v.longValue()).sum();
+			this._len = vals.size();
+		}
+		
+		public final Long _sum;
+		public final long _len;
+	}
+
 	public static class TestObject_VarArg_1 {
 		public TestObject_VarArg_1(final String... vals) {
 			this._long = Long.valueOf(vals.length);
