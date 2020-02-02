@@ -34,7 +34,20 @@ import org.junit.jupiter.api.Test;
 public class MethodHandleTest {
 
 	@Test
-	public void test() throws Throwable {
+	public void test_1() throws Throwable {
+		final MethodHandles.Lookup caller = MethodHandles.lookup();
+
+		final MethodHandle mh = caller.findConstructor(
+									Long.class,
+									MethodType.methodType(void.class, long.class));
+				
+		final Long l1 = (Long)mh.invoke(10L);
+		
+		assertEquals(10L, l1);
+	}
+
+	@Test
+	public void test_2() throws Throwable {
 		final MethodHandles.Lookup caller = MethodHandles.lookup();
 
 		final MethodHandle mhValueOf = caller.findStatic(
