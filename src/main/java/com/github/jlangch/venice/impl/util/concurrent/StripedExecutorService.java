@@ -456,20 +456,6 @@ public class StripedExecutorService extends AbstractExecutorService {
         }
 
         /**
-         * We use finalize() only for debugging purposes.  If
-         * DEBUG==false, the body of the method will be compiled
-         * away, thus rendering it a trivial finalize() method,
-         * which means that the object will not incur any overhead
-         * since it won't be registered with the Finalizer.
-         */
-        protected void finalize() throws Throwable {
-            if (DEBUG) {
-                System.out.println("SerialExecutor finalized " + stripe);
-                super.finalize();
-            }
-        }
-
-        /**
          * For every task that is executed, we add() a wrapper to
          * the queue of tasks that will run the current task and
          * then schedule the next task in the queue.

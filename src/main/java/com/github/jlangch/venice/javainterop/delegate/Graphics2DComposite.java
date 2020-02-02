@@ -394,7 +394,7 @@ public class Graphics2DComposite {
 	}
 
 	public void finalize() {
-		g2d.finalize();
+		g2d.dispose();
 	}
 
 	public String toString() {

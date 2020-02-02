@@ -147,9 +147,9 @@ public class LambdaMetafactoryUtilTest {
 		
 		assertEquals(100L, fn.apply(to, Integer.valueOf(100)));
 		assertEquals(100L, fn.apply(to, 100));		
-		assertEquals(100L, fn.apply(to, new Float(100.0)));
+		assertEquals(100L, fn.apply(to, Float.valueOf(100.0F)));
 		assertEquals(100L, fn.apply(to, 100.0));
-		assertEquals(100L, fn.apply(to, new Double(100.0D)));
+		assertEquals(100L, fn.apply(to, Double.valueOf(100.0D)));
 		assertEquals(100L, fn.apply(to, 100.0D));
 	}
 	
@@ -226,6 +226,55 @@ public class LambdaMetafactoryUtilTest {
 		set_.invoke(null);
 		assertEquals(null, get_.invoke());
 	}
+	
+//	@Test
+//	public void test_Graphics2D_LambdaMetafactory_1() throws Throwable {
+//	    BufferedImage img = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+//
+//		final Method m_getGraphics = BufferedImage.class.getDeclaredMethod("getGraphics");
+//		final Method m_fillOval = Graphics2D.class.getMethod("fillOval", int.class, int.class, int.class, int.class);
+//
+//		final Function1<Object,Object> fn_getGraphics = LambdaMetafactoryUtil.instanceMethod_0_args(m_getGraphics);
+//		final Consumer5<Object,Object,Object,Object,Object> fn_fillOval = LambdaMetafactoryUtil.instanceMethodVoid_4_args(m_fillOval);
+//		
+//		Object g2d = fn_getGraphics.apply(img);
+//		fn_fillOval.accept(g2d, 10, 20, 5, 5);
+//	}
+//	
+//	@Test
+//	public void test_Graphics2D_LambdaMetafactory_2() throws Throwable {
+//	    BufferedImage img = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+//
+//		final Method m_getGraphics = BufferedImage.class.getDeclaredMethod("getGraphics");
+//		final Function1<Object,Object> fn_getGraphics = LambdaMetafactoryUtil.instanceMethod_0_args(m_getGraphics);
+//		Object g2d = fn_getGraphics.apply(img);
+//
+//		final Method m_fillOval = g2d.getClass().getMethod("fillOval", int.class, int.class, int.class, int.class);
+//		final Consumer5<Object,Object,Object,Object,Object> fn_fillOval = LambdaMetafactoryUtil.instanceMethodVoid_4_args(m_fillOval);
+//		fn_fillOval.accept(g2d, 10, 20, 5, 5);
+//	}
+//	
+//	@Test
+//	public void test_Graphics2D_Reflection_1() throws Throwable {
+//	    BufferedImage img = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+//
+//		final Method m_getGraphics = BufferedImage.class.getDeclaredMethod("getGraphics");
+//		final Method m_fillOval = Graphics2D.class.getMethod("fillOval", int.class, int.class, int.class, int.class);
+//		
+//		Object g2d = m_getGraphics.invoke(img);
+//		m_fillOval.invoke(g2d, 10, 20, 5, 5);
+//	}
+//	
+//	@Test
+//	public void test_Graphics2D_Reflection_2() throws Throwable {
+//	    BufferedImage img = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+//
+//		final Method m_getGraphics = BufferedImage.class.getDeclaredMethod("getGraphics");		
+//		Object g2d = m_getGraphics.invoke(img);  // returns a 'sun.java2d.SunGraphics2D'
+//		
+//		final Method m_fillOval = g2d.getClass().getMethod("fillOval", int.class, int.class, int.class, int.class);
+//		m_fillOval.invoke(g2d, 10, 20, 5, 5);
+//	}
 	
 	
 	@SuppressWarnings("unused")
