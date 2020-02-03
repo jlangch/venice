@@ -5674,6 +5674,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(meta obj)")
 					.doc("Returns the metadata of obj, returns nil if there is no metadata.")
+					.examples("(meta (vary-meta [1 2] assoc :a 1))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5710,6 +5711,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(vary-meta obj f & args)")
 					.doc("Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.")
+					.examples("(meta (vary-meta [1 2] assoc :a 1))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
