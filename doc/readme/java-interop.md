@@ -205,6 +205,6 @@ returned from `BufferedImage::createGraphics()` one gets warnings because of
 accessing a JDK private class. And even worse Oracle will deny this access in 
 a future Java release.
 
-**Venice is handling these cases completely transparent to you. You don't need to add**
+**Venice Java Interop is handling these cases completely transparent to you. You don't need to add**
 **explicit type hints. Venice knows about the formal type of objects returned from**
 **methods and invokes methods or fields on the formal type instead of the real type.**
