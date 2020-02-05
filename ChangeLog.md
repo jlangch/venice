@@ -20,12 +20,29 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
+- 
+
+
+
+## [1.7.17] - 2020-02-xx
+
+
+### Added
+
 - optional upfront macro expansion for all execution modes (REPL, Launcher, and embedding in Java)
 - customizable mercator maps and rendering styles to mercator module
 
 ### Changed
 
 - OpenPDF libs to 1.3.12
+
+### Fixed
+
+- Java Interop reflection to use the formal type an instance method returns for subsequent
+  calls on the returned object. This fixes the warnings "An illegal reflective access operation has occurred"
+  on Java 9+. Later Java versions will even deny this access.
+  E.g.: java.awt.BufferedImage::createGraphics() defines 'java.awt.Graphics2D' as the formal type 
+  in the API and returns a 'sun.java2d.SunGraphics2D' object. 
 
 
 
