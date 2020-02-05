@@ -144,7 +144,7 @@ a Java Dynamic Proxy:
         (. :collect (. :Collectors :toList))))
 ```
 
-_Note:_ this is not the fastest way to filter collections
+_Note:_  this is not the fastest way to filter collections
 
 
 ## Filtering Java objects:
@@ -165,6 +165,50 @@ _Note:_ this is not the fastest way to filter collections
 
    (str (filter #(> (:age %) 30) users)))
 ```
+
+
+
+## Java 9+ and private modules:
+
+Some public Java APIs return objects of classes that are defined in private module. This 
+causes problems accessing methods or fields via reflection on these objects or 
+classes. Java 9 changed the rules in that access to classes defined in private modules
+result in severe warnings. 
+
+Code that run fine with Java 8 gets problems with Java 9+:
+
+```clojure
+(do
+   (import :java.awt.image.BufferedImage) 
+   (import :java.awt.Graphics2D)
+
+   (let [img (. :BufferedImage :new 40 40 1) 
+         g2d (. img :createGraphics)]
+     (. g2d :fillOval 10 20 5 5)
+     img))
+```
+
+With plain reflection one gets these warnings with Java 9+:
+
+```text
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor (file:/.../classes/java/main/) to method sun.java2d.SunGraphics2D.fillOval(int,int,int,int)
+WARNING: Please consider reporting this to the maintainers of com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+```
+
+`java.awt.BufferedImage::createGraphics()` returns effectively an object of type 
+`sun.java2d.SunGraphics2D`. The API defines the return type as `java.awt.Graphics2D` 
+(the formal type). When invoking the method `fillOval` on the graphics context 
+returned from `BufferedImage::createGraphics()` one gets warnings because of 
+accessing a private class. And even worse Oracle will deny this access in 
+upcoming Java versions.
+
+Venice is handling these cases completely transparent to you. You don't need to add
+explicit type hints. Venice knows about the formal type of objects returned from 
+methods and invokes methods or fields on the formal type instead of the real type. 
+The Java compiler is actually doing the same with compiled code.
 
 
 
