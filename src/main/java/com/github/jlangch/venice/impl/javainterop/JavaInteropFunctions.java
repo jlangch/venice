@@ -202,6 +202,51 @@ public class JavaInteropFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
+
+	public static class FormalTypeFn extends AbstractJavaFn {
+		public FormalTypeFn() {
+			super(
+				"formal-type", 
+				VncFunction
+					.meta()
+					.arglists("(formal-type object)")		
+					.doc("Returns the formal type of a Java object")
+					.examples(
+							"(do \n" +
+							"   (import :java.awt.image.BufferedImage) \n" +
+							"   (import :java.awt.Graphics) \n" +
+							"\n" +
+							"   ;; cast the graphics context to 'java.awt.Graphics' instead of the \n" +
+							"   ;; implicit cast to 'java.awt.Graphics2D' as Venice is doing \n" +
+							"   (let [img (. :BufferedImage :new 40 40 1) \n" +
+							"         gd (cast :Graphics (. img :createGraphics))] \n" +
+							"     (formal-type gd)))")
+					.build());
+		}
+
+		@Override
+		public VncVal apply(final VncList args) {
+			if (args.size() != 1) {
+				throw new ArityException(1, "formal-type");
+			}
+
+			if (Types.isVncJavaObject(args.first())) {
+				final VncJavaObject obj = (VncJavaObject)args.first();
+				return new VncKeyword(
+						obj.getDelegateFormalType() == null
+							? obj.getDelegate().getClass().getName()
+							: obj.getDelegateFormalType().getName());
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'forma-type' is not supported on non Java object (%s)", 
+						Types.getType(args.first())));
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
 	public static class JavaClassFn extends AbstractJavaFn {
 		public JavaClassFn() {
 			super(
@@ -606,6 +651,7 @@ public class JavaInteropFunctions {
 					.add(new JavaFn())
 					.add(new ProxifyFn())
 					.add(new CastFn())
+					.add(new FormalTypeFn())
 					.add(new SupersFn())
 					.add(new BasesFn())
 					.add(new DescribeJavaClassFn())
