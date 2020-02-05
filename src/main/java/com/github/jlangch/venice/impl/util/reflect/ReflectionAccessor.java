@@ -614,13 +614,13 @@ public class ReflectionAccessor {
 	private static MethodHandle memoizedStaticFieldGet(final Class<?> clazz, final String fieldName) {
 		return staticFieldCache.computeIfAbsent(
 					new Tuple2<>(clazz,fieldName), 
-					k ->  LambdaMetafactoryUtil.staticField_get(k._1, k._2));
+					k ->  MethodHandleUtil.staticField_get(k._1, k._2));
 	}
 	
 	private static MethodHandle memoizedInstanceField(final Class<?> clazz, final String fieldName) {
 		return instanceFieldCache.computeIfAbsent(
 					new Tuple2<>(clazz,fieldName), 
-					k ->  LambdaMetafactoryUtil.instanceField_get(k._1, k._2));
+					k ->  MethodHandleUtil.instanceField_get(k._1, k._2));
 	}
 	
 	private static List<Method> memoizedStaticMethod(

@@ -26,7 +26,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
@@ -1092,127 +1091,6 @@ public class LambdaMetafactoryUtil {
 	
 	
 
-	// ------------------------------------------------------------------------
-	// instance Fields
-	// ------------------------------------------------------------------------
-
-	public static MethodHandle instanceField_get(final Field field) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectGetter(field);
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the instance field " + field.getName() 
-							+ " on " + field.getDeclaringClass().getName(), 
-						ex);
-		}
-	}
-
-	public static MethodHandle instanceField_get(final Class<?> clazz, final String fieldName) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectGetter(clazz.getDeclaredField(fieldName));
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the instance field " + fieldName 
-							+ " on " + clazz.getName(), 
-						ex);
-		}
-	}
-	
-	public static MethodHandle instanceField_set(final Field field) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectSetter(field);
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the instance field " 
-							+ field.getName() + " on " + field.getDeclaringClass().getName(), 
-						ex);
-		}
-	}
-	
-	public static MethodHandle instanceField_set(final Class<?> clazz, final String fieldName) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectSetter(clazz.getDeclaredField(fieldName));
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the instance field " 
-							+ fieldName + " on " + clazz.getName(), 
-						ex);
-		}
-	}
-
-	
-
-	// ------------------------------------------------------------------------
-	// static Fields
-	// ------------------------------------------------------------------------
-
-	public static MethodHandle staticField_get(final Field field) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectGetter(field);
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the static field " + field.getName() 
-							+ " on " + field.getDeclaringClass().getName(), 
-						ex);
-		}
-	}
-
-	public static MethodHandle staticField_get(final Class<?> clazz, final String fieldName) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectGetter(clazz.getDeclaredField(fieldName));
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the static field " + fieldName 
-							+ " on " + clazz.getName(), 
-						ex);
-		}
-	}
-
-	public static MethodHandle staticField_set(final Field field) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectSetter(field);
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the static field " + field.getName() 
-							+ " on " + field.getDeclaringClass().getName(), 
-						ex);
-		}
-	}
-
-	public static MethodHandle staticField_set(final Class<?> clazz, final String fieldName) {
-		try {
-			// fields are not supported by LambdaMetafactory
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			return caller.unreflectSetter(clazz.getDeclaredField(fieldName));
-		} 
-		catch (Throwable ex) {
-			throw new JavaMethodInvocationException(
-						"Could not generate the function to access the static field " + fieldName 
-							+ " on " + clazz.getName(), 
-						ex);
-		}
-	}
 
 	
 	// ------------------------------------------------------------------------
