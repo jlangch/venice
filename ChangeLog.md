@@ -20,7 +20,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- 
+- functions `cast` and `formal-type` to allow explicit casts on Java objects 
 
 
 
