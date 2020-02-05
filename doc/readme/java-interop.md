@@ -205,7 +205,7 @@ a future Java release.
 With Venice version 1.7.17+ the above code runs fine without changes on Java 8 and Java 9+.
 
 **Venice Java Interop is handling these cases completely transparent for you. You don't need to add**
-**explicit type hints. Venice knows about the formal type of values returned from**
+**explicit type hints or add casts. Venice knows about the formal type of values returned from**
 **methods and invokes methods or fields on the formal type instead of the real type.**
 
 
