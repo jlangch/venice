@@ -175,7 +175,7 @@ causes problems accessing methods or fields via reflection on these objects or
 classes. Java 9 changed the rules in that access to classes defined in private modules
 result in severe warnings. 
 
-Code that runs fine with Java 8 gets problems with Java 9+:
+Code that runs fine with Java 8 but gets problems with Java 9+:
 
 ```clojure
 (do
