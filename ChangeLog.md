@@ -38,11 +38,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- Java Interop reflection to use the formal type an instance method returns for subsequent
-  calls on the returned object. This fixes the warnings "An illegal reflective access operation has occurred"
-  on Java 9+. Later Java versions will even deny this access.
-  E.g.: java.awt.BufferedImage::createGraphics() defines 'java.awt.Graphics2D' as the formal type 
-  in the API and returns a 'sun.java2d.SunGraphics2D' object. 
+- Java Interop reflection to use the formal type an instance method returns for subsequent calls on the returned object. This fixes the warnings "An illegal reflective access operation has occurred" on Java 9+. Later Java versions will even deny this access.
+  E.g.: java.awt.BufferedImage::createGraphics() defines 'java.awt.Graphics2D' as the formal type in the API and returns a 'sun.java2d.SunGraphics2D' object. 
 
 
 
