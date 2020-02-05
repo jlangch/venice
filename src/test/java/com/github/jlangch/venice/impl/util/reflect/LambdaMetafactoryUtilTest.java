@@ -23,9 +23,7 @@ package com.github.jlangch.venice.impl.util.reflect;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Disabled;
@@ -200,35 +198,6 @@ public class LambdaMetafactoryUtilTest {
 		assertEquals(null, TestObject.last());
 	}
 	
-	@Test
-	public void test_instanceField_get() throws Throwable {
-		final TestObject to = new TestObject();
-		
-		final Field f = TestObject.class.getField("field_string");
-
-		final MethodHandle get_ = LambdaMetafactoryUtil.instanceField_get(f);
-		final MethodHandle set_ = LambdaMetafactoryUtil.instanceField_set(f);
-		
-		set_.invoke(to, "arg1");	
-		assertEquals("arg1", get_.invoke(to));
-		
-		set_.invoke(to, null);
-		assertEquals(null, get_.invoke(to));
-	}
-	
-	@Test
-	public void test_staticField_get() throws Throwable {
-		final Field f = TestObject.class.getField("field_static_string");
-
-		final MethodHandle get_ = LambdaMetafactoryUtil.staticField_get(f);
-		final MethodHandle set_ = LambdaMetafactoryUtil.staticField_set(f);
-		
-		set_.invoke("arg1");
-		assertEquals("arg1", get_.invoke());
-		
-		set_.invoke(null);
-		assertEquals(null, get_.invoke());
-	}
 	
 //	@Test
 //	public void test_Graphics2D_LambdaMetafactory_1() throws Throwable {
@@ -331,8 +300,6 @@ public class LambdaMetafactoryUtilTest {
 			last = s1;
 			return (Long)last;
 		}
-
-		public String field_string;
 		
 		
 	
@@ -350,10 +317,7 @@ public class LambdaMetafactoryUtilTest {
 		public static Object last() {
 			return last;
 		}
-		
-		public static String field_static_string;
-		
-		
+			
 		
 		private static Object last = "init";
 	}
