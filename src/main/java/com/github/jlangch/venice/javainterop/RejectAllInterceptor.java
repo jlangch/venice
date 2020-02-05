@@ -27,14 +27,16 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 
 
 public class RejectAllInterceptor extends Interceptor {
 	
 	@Override
-	public Object onInvokeInstanceMethod(
+	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String method, 
 			final Object... args
 	) throws SecurityException {
@@ -45,7 +47,7 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onInvokeStaticMethod(
+	public ReturnValue onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String method, 
@@ -58,7 +60,7 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onInvokeConstructor(
+	public ReturnValue onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver,
 			final Object... args
@@ -70,7 +72,7 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetBeanProperty(
+	public ReturnValue onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
@@ -95,7 +97,7 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetStaticField(
+	public ReturnValue onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
@@ -107,7 +109,7 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetInstanceField(
+	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName

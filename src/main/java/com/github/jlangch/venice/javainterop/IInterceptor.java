@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
+
 /**
  * Defines a Venice interceptor
  */
@@ -29,16 +31,18 @@ public interface IInterceptor {
 	/**
 	 * Invokes an instance method
 	 * 
-	 * @param invoker	the invoker
-	 * @param receiver	an object
-	 * @param method	a method
-	 * @param args		a list of arguments
+	 * @param invoker				the invoker
+	 * @param receiver				an object
+	 * @param receiverFormalType 	the formal type of the receiver (e.g a superclass)
+	 * @param method				a method
+	 * @param args					a list of arguments
 	 * @return the return value
 	 * @throws SecurityException if the instance method is not whitelisted
 	 */
-	Object onInvokeInstanceMethod(
+	ReturnValue onInvokeInstanceMethod(
 			IInvoker invoker, 
 			Object receiver, 
+			Class<?> receiverFormalType,
 			String method, 
 			Object... args
 	) throws SecurityException;
@@ -53,7 +57,7 @@ public interface IInterceptor {
 	 * @return the return value
 	 * @throws SecurityException if the static method is not whitelisted
 	 */
-	Object onInvokeStaticMethod(
+	ReturnValue onInvokeStaticMethod(
 			IInvoker invoker, 
 			Class<?> receiver, 
 			String method, 
@@ -69,7 +73,7 @@ public interface IInterceptor {
 	 * @return the create object
 	 * @throws SecurityException if the constructor is not whitelisted
 	 */
-	Object onInvokeConstructor(
+	ReturnValue onInvokeConstructor(
 			IInvoker invoker, 
 			Class<?> receiver, 
 			Object... args
@@ -84,7 +88,7 @@ public interface IInterceptor {
 	 * @return the property's value
 	 * @throws SecurityException if the bean property (instance method) is not whitelisted
 	 */
-	Object onGetBeanProperty(
+	ReturnValue onGetBeanProperty(
 			IInvoker invoker, 
 			Object receiver, 
 			String property
@@ -115,7 +119,7 @@ public interface IInterceptor {
 	 * @return the field's value
 	 * @throws SecurityException if the static field is not whitelisted
 	 */
-	Object onGetStaticField(
+	ReturnValue onGetStaticField(
 			IInvoker invoker, 
 			Class<?> receiver, 
 			String fieldName
@@ -130,7 +134,7 @@ public interface IInterceptor {
 	 * @return the field's value
 	 * @throws SecurityException if the instance field is not whitelisted
 	 */
-	Object onGetInstanceField(
+	ReturnValue onGetInstanceField(
 			IInvoker invoker, 
 			Object receiver, 
 			String fieldName

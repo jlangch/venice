@@ -22,44 +22,45 @@
 package com.github.jlangch.venice.impl.javainterop;
 
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 import com.github.jlangch.venice.javainterop.IInvoker;
 
 
-public class Invoker implements IInvoker{
+public class Invoker implements IInvoker {
 
 	@Override
-	public Object callInstanceMethod(Object receiver, String method, Object... args) {
-		return ReflectionAccessor.invokeInstanceMethod(receiver, method, args);
+	public ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args) {
+		return ReflectionAccessor.invokeInstanceMethod(receiver, receiverFormalType, method, args);
 	}
 
 	@Override
-	public Object callStaticMethod(Class<?> receiver, String method, Object... args) {
+	public ReturnValue callStaticMethod(Class<?> receiver, String method, Object... args) {
 		return ReflectionAccessor.invokeStaticMethod(receiver, method, args);
 	}
 
 	@Override
-	public Object callConstructor(Class<?> receiver, Object... args) {
+	public ReturnValue callConstructor(Class<?> receiver, Object... args) {
 		return ReflectionAccessor.invokeConstructor(receiver, args);
 	}
 
 	@Override
-	public Object getBeanProperty(Object receiver, String property) {
+	public ReturnValue getBeanProperty(Object receiver, String property) {
 		return ReflectionAccessor.getBeanProperty(receiver, property);
 	}
 
 	@Override
-	public Object setBeanProperty(Object receiver, String property, Object value) {
+	public ReturnValue setBeanProperty(Object receiver, String property, Object value) {
 		ReflectionAccessor.setBeanProperty(receiver, property, value);
 		return null;
 	}
 
 	@Override
-	public Object getStaticField(Class<?> receiver, String fieldName) {
+	public ReturnValue getStaticField(Class<?> receiver, String fieldName) {
 		return ReflectionAccessor.getStaticField(receiver, fieldName);
 	}
 
 	@Override
-	public Object getInstanceField(Object receiver, String fieldName) {
+	public ReturnValue getInstanceField(Object receiver, String fieldName) {
 		return ReflectionAccessor.getInstanceField(receiver, fieldName);
 	}
 

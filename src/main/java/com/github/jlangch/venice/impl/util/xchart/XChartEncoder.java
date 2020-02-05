@@ -73,8 +73,8 @@ public final class XChartEncoder {
 	) throws IOException {
 		final double scaleFactor = DPI / 72.0;
 		
-		final int chartWidth = (Integer)ReflectionAccessor.getBeanProperty(xchart, "width"); 
-		final int chartHeight = (Integer)ReflectionAccessor.getBeanProperty(xchart, "height");
+		final int chartWidth = (Integer)ReflectionAccessor.getBeanProperty(xchart, "width").getValue(); 
+		final int chartHeight = (Integer)ReflectionAccessor.getBeanProperty(xchart, "height").getValue();
 
 		final BufferedImage image = new BufferedImage(
 										(int)(chartWidth * scaleFactor),

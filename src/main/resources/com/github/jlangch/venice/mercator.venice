@@ -92,7 +92,6 @@
 (import :java.awt.Font)
 (import :java.awt.RenderingHints)
 (import :java.net.URL)
-(import :com.github.jlangch.venice.javainterop.delegate.Graphics2DComposite)
 
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
@@ -279,9 +278,7 @@
     (draw-locations image locations default-styles))
   ([image locations styles]
     (let [[img-width img-height] (image-dimensions image)
-          ; use a delegate on Graphics2D to work around illegal reflective
-          ; access on JDK internal classes with Java 9+
-          g2d (delegate :Graphics2DComposite (. image :createGraphics))
+          g2d (. image :createGraphics)
           mapper (spherical-mapper img-width img-height)
           styles (merge default-styles styles)]
       (. g2d :setFont (font (-> styles :marker :font-size-px) (:font styles)))

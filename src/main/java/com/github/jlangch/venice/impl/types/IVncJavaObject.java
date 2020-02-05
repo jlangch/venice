@@ -26,4 +26,6 @@ public interface IVncJavaObject {
 
 	Object getDelegate();
 
+	default Class<?> getDelegateFormalType() { return null; }
+
 }

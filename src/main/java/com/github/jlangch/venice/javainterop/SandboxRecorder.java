@@ -27,6 +27,8 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
+
 
 public class SandboxRecorder extends Interceptor {
 	
@@ -45,18 +47,19 @@ public class SandboxRecorder extends Interceptor {
 
 
 	@Override
-	public Object onInvokeInstanceMethod(
+	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String method, 
 			final Object... args
 	) throws SecurityException {
 		format("%s:%s(%s)", type(receiver), method, arguments(args));
-		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
+		return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
 	}
 
 	@Override
-	public Object onInvokeStaticMethod(
+	public ReturnValue onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String method, 
@@ -67,7 +70,7 @@ public class SandboxRecorder extends Interceptor {
 	}
 
 	@Override
-	public Object onInvokeConstructor(
+	public ReturnValue onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final Object... args
@@ -77,7 +80,7 @@ public class SandboxRecorder extends Interceptor {
 	}
 
 	@Override
-	public Object onGetBeanProperty(
+	public ReturnValue onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
@@ -98,7 +101,7 @@ public class SandboxRecorder extends Interceptor {
 	}
 
 	@Override
-	public Object onGetStaticField(
+	public ReturnValue onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
@@ -108,7 +111,7 @@ public class SandboxRecorder extends Interceptor {
 	}
 
 	@Override
-	public Object onGetInstanceField(
+	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName

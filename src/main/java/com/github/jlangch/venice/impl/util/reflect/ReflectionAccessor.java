@@ -83,7 +83,7 @@ public class ReflectionAccessor {
 		}
 	}
 
-	public static Object invokeConstructor(final Class<?> clazz, final Object[] args) {
+	public static ReturnValue invokeConstructor(final Class<?> clazz, final Object[] args) {
 		try {
 			final List<Constructor<?>> ctors = memoizedPublicConstructors(clazz, args.length);
 			if (ctors.isEmpty()) {
@@ -91,7 +91,7 @@ public class ReflectionAccessor {
 			} 
 			else if (ctors.size() == 1) {
 				final Constructor<?> ctor = (Constructor<?>)ctors.get(0);
-				return ctor.newInstance(Boxing.boxArgs(ctor.getParameterTypes(), args));
+				return new ReturnValue(ctor.newInstance(Boxing.boxArgs(ctor.getParameterTypes(), args)));
 			} 
 			else {
 				// overloaded
@@ -102,7 +102,7 @@ public class ReflectionAccessor {
 					
 					if (ArgTypeMatcher.isCongruent(params, args, true, ctor.isVarArgs())) {
 						Object[] boxedArgs = Boxing.boxArgs(params, args);
-						return ctor.newInstance(boxedArgs);
+						return new ReturnValue(ctor.newInstance(boxedArgs));
 					}
 				}
 
@@ -112,7 +112,7 @@ public class ReflectionAccessor {
 										
 					if (ArgTypeMatcher.isCongruent(params, args, false, ctor.isVarArgs())) {
 						Object[] boxedArgs = Boxing.boxArgs(params, args);
-						return ctor.newInstance(boxedArgs);
+						return new ReturnValue(ctor.newInstance(boxedArgs));
 					}
 				}
 
@@ -129,13 +129,22 @@ public class ReflectionAccessor {
 		}
 	}
 
-	public static Object invokeInstanceMethod(
+	public static ReturnValue invokeInstanceMethod(
 			final Object target,
 			final String methodName, 
 			final Object[] args
 	) {
+		return invokeInstanceMethod(target, null, methodName, args);
+	}
+	
+	public static ReturnValue invokeInstanceMethod(
+			final Object target,
+			final Class<?> targetFormalType,
+			final String methodName, 
+			final Object[] args
+	) {
 		try {
-			final Class<?> clazz = target.getClass();
+			final Class<?> clazz = targetFormalType == null ? target.getClass() : targetFormalType;
 			final List<Method> methods = memoizedInstanceMethod(clazz, methodName, args.length, true);
 			return invokeMatchingMethod(methodName, methods, target, args);
 		}
@@ -143,16 +152,27 @@ public class ReflectionAccessor {
 			throw ex;
 		}
 		catch (Exception ex) {
-			throw new JavaMethodInvocationException(
-					String.format(
-							"Failed to invoke instance method '%s' on target '%s'",
-							methodName,
-							target == null ? "<null>" : target.getClass().getName()),
-					ex);
+			if (targetFormalType == null) {
+				throw new JavaMethodInvocationException(
+						String.format(
+								"Failed to invoke instance method '%s' on target '%s'",
+								methodName,
+								target == null ? "<null>" : target.getClass().getName()),
+						ex);
+			}
+			else {
+				throw new JavaMethodInvocationException(
+						String.format(
+								"Failed to invoke instance method '%s' on target '%s' with formal type '%s'",
+								methodName,
+								target == null ? "<null>" : target.getClass().getName(),
+								targetFormalType.getName()),
+						ex);
+			}
 		}
 	}
 
-	public static Object invokeStaticMethod(
+	public static ReturnValue invokeStaticMethod(
 			final Class<?> clazz, 
 			final String methodName, 
 			final Object[] args
@@ -180,11 +200,11 @@ public class ReflectionAccessor {
 		}
 	}
 
-	public static Object getStaticField(final Class<?> clazz, String fieldName) {
+	public static ReturnValue getStaticField(final Class<?> clazz, String fieldName) {
 		try {
 			final MethodHandle mh = memoizedStaticFieldGet(clazz, fieldName);
 			if (mh != null) {
-				return mh.invoke();
+				return new ReturnValue(mh.invoke());
 			}
 			else {
 				throw new JavaMethodInvocationException(noMatchingFieldErrMsg(fieldName, clazz.getName()));
@@ -203,12 +223,12 @@ public class ReflectionAccessor {
 		}
 	}
 
-	public static Object getInstanceField(final Object target, final String fieldName) {
+	public static ReturnValue getInstanceField(final Object target, final String fieldName) {
 		try {
 			final Class<?> clazz = target.getClass();
 			final MethodHandle mh = memoizedInstanceField(clazz, fieldName);
 			if (mh != null) {
-				return mh.invoke(target);
+				return new ReturnValue(mh.invoke(target));
 			}
 			else {
 				throw new JavaMethodInvocationException(noMatchingFieldErrMsg(fieldName, clazz.getName()));
@@ -235,7 +255,7 @@ public class ReflectionAccessor {
 		return memoizedBeanSetterProperties(target.getClass());
 	}
 			
-	public static Object getBeanProperty(
+	public static ReturnValue getBeanProperty(
 			final Object target, 
 			final String propertyName
 	) {	
@@ -250,7 +270,7 @@ public class ReflectionAccessor {
 		}
 		else {
 			try {
-				return method.invoke(target);
+				return new ReturnValue(method.invoke(target));
 			}
 			catch(Exception ex) {
 				throw new JavaMethodInvocationException(
@@ -367,7 +387,7 @@ public class ReflectionAccessor {
 		}
 	}
 
-	private static Object invokeMatchingMethod(
+	private static ReturnValue invokeMatchingMethod(
 			final String methodName, 
 			final List<Method> methods, 
 			final Object target,
@@ -408,15 +428,19 @@ public class ReflectionAccessor {
 		throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target, args));
 	}
 	
-	private static Object invoke(final Method method, final Object target, final Object[] args) {
+	private static ReturnValue invoke(final Method method, final Object target, final Object[] args) {
 		try {
 			if (method.getDeclaringClass().getName().equals("java.util.stream.ReferencePipeline")) {
 				// ReferencePipeline is not a public class, hence its methods can not be invoked
 				// by reflection.
-				return invokeStreamMethod(method.getName(), target, args);
+				return new ReturnValue(
+							invokeStreamMethod(method.getName(), target, args),
+							method.getReturnType());
 			}
 			else {
-				return method.invoke(target, args);
+				return new ReturnValue(
+							method.invoke(target, args),
+							method.getReturnType());
 			}
 		} 
 		catch (SecurityException ex) {

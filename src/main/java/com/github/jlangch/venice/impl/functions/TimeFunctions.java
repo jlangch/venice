@@ -1913,7 +1913,7 @@ public class TimeFunctions {
 	private static DateTimeFormatter getPredefinedDateTimeFormatter(final VncKeyword fmt) {
 		final String fmtName = fmt.getValue();
 		try {
-			return (DateTimeFormatter)ReflectionAccessor.getStaticField(DateTimeFormatter.class, fmtName);
+			return (DateTimeFormatter)ReflectionAccessor.getStaticField(DateTimeFormatter.class, fmtName).getValue();
 		}
 		catch(Exception ex) {
 			throw new VncException(String.format(

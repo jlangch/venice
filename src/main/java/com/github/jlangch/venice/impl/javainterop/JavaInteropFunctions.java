@@ -181,7 +181,7 @@ public class JavaInteropFunctions {
 
 			final Object delegate = Coerce.toVncJavaObject(args.second()).getDelegate();
 
-			return new VncJavaObject(
+			return VncJavaObject.from(
 					ReflectionAccessor.invokeConstructor(clazz, new Object[] { delegate }));
 		}
 

@@ -24,6 +24,11 @@ package com.github.jlangch.venice.impl.util.reflect;
 
 public class ReturnValue {
 
+	public ReturnValue(final Object value) {
+		this.value = value;
+		this.formalType = null;
+	}
+
 	public ReturnValue(final Object value, final Class<?> formalType) {
 		this.value = value;
 		this.formalType = formalType;

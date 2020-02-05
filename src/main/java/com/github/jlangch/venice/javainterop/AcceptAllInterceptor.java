@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
+
 public class AcceptAllInterceptor extends Interceptor {
 	
 	public AcceptAllInterceptor() {
@@ -28,17 +30,18 @@ public class AcceptAllInterceptor extends Interceptor {
 	
 
 	@Override
-	public Object onInvokeInstanceMethod(
+	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String method, 
 			final Object... args
 	) throws SecurityException {
-		return super.onInvokeInstanceMethod(invoker, receiver, method, args);
+		return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
 	}
 
 	@Override
-	public Object onInvokeStaticMethod(
+	public ReturnValue onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String method, 
@@ -48,7 +51,7 @@ public class AcceptAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onInvokeConstructor(
+	public ReturnValue onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver,
 			final Object... args
@@ -57,7 +60,7 @@ public class AcceptAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetBeanProperty(
+	public ReturnValue onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
@@ -76,7 +79,7 @@ public class AcceptAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetStaticField(
+	public ReturnValue onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
@@ -85,7 +88,7 @@ public class AcceptAllInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetInstanceField(
+	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName

@@ -61,6 +61,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 
 
 public class JavaInteropUtil {
@@ -145,9 +146,15 @@ public class JavaInteropUtil {
 				else {
 					// instance method/field:   (. person :getLastName)
 					//	                        (. person :setLastName \"john\")
-					Object target = arg0 instanceof IVncJavaObject
-											? ((IVncJavaObject)arg0).getDelegate()
-											: arg0.convertToJavaObject();
+					Object target = null;
+					Class<?> targetFormalType = null;
+					if (arg0 instanceof IVncJavaObject) {
+						target = ((IVncJavaObject)arg0).getDelegate();
+						targetFormalType = ((IVncJavaObject)arg0).getDelegateFormalType();
+					}
+					else {
+						target = arg0.convertToJavaObject();
+					}
 											
 					// Delay & Agents exceptionally get the original Venice data types passed!
 					final Object[] methodArgs = isDelayOrAgentClass(target) 
@@ -159,7 +166,7 @@ public class JavaInteropUtil {
 						return JavaInteropUtil.convertToVncVal(
 								JavaInterop
 									.getInterceptor()
-									.onInvokeInstanceMethod(new Invoker(), target, methodName, methodArgs));
+									.onInvokeInstanceMethod(new Invoker(), target, targetFormalType, methodName, methodArgs));
 					}
 					else if (ReflectionAccessor.isInstanceField(target, methodName)) {
 						// instance field
@@ -259,16 +266,23 @@ public class JavaInteropUtil {
 	}
 	
 	public static VncVal convertToVncVal(final Object value) {
-		return convertToVncVal(value, false);
+		return convertToVncVal(value, null, false);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static VncVal convertToVncVal(
+	private static VncVal convertToVncVal(
 			final Object value, 
+			final Class<?> formalType,
 			final boolean recursive
 	) {
 		if (value == null) {
 			return Constants.Nil;
+		}
+		else if (value instanceof ReturnValue) {
+			return convertToVncVal(
+						((ReturnValue)value).getValue(),
+						((ReturnValue)value).getFormalType(),
+						recursive);
 		}
 		else if (value instanceof VncVal) {
 			return (VncVal)value;
@@ -315,7 +329,7 @@ public class JavaInteropUtil {
 			if (recursive) {
 				final List<VncVal> list = new ArrayList<>();
 				for(Object o : (List<Object>)value) {
-					list.add(convertToVncVal(o, recursive));
+					list.add(convertToVncVal(o, null, recursive));
 				}
 				return new VncList(list);
 			}
@@ -327,7 +341,7 @@ public class JavaInteropUtil {
 			if (recursive) {
 				final Set<VncVal> set = new HashSet<>();
 				for(Object o : (Set<Object>)value) {
-					set.add(convertToVncVal(o, recursive));
+					set.add(convertToVncVal(o, null, recursive));
 				}
 				return VncHashSet.ofAll(set);
 			}
@@ -340,8 +354,8 @@ public class JavaInteropUtil {
 				final HashMap<VncVal,VncVal> map = new HashMap<>();
 				for(Map.Entry<Object, Object> o : ((Map<Object,Object>)value).entrySet()) {
 					map.put(
-						convertToVncVal(o.getKey(), recursive),
-						convertToVncVal(o.getValue(), recursive));
+						convertToVncVal(o.getKey(), null, recursive),
+						convertToVncVal(o.getValue(), null, recursive));
 				}
 				return new VncHashMap(map);
 			}
@@ -369,7 +383,9 @@ public class JavaInteropUtil {
 			return new VncString(((Class<?>)value).getName());
 		}
 		else { 
-			return new VncJavaObject(value);
+			return formalType == null
+						? new VncJavaObject(value)
+						: VncJavaObject.from(value, formalType);
 		}
 	}
 

@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.IInvoker;
 
@@ -53,19 +54,37 @@ import com.github.jlangch.venice.javainterop.IInvoker;
 public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	public VncJavaObject(final Object obj) {
-		this(obj, Constants.Nil);
+		this(obj, null, Constants.Nil);
 	}
 	
 	public VncJavaObject(final Object obj, final VncVal meta) {
+		this(obj, null, meta);
+	}
+
+	private VncJavaObject(final Object obj, final Class<?> formalType, final VncVal meta) {
 		super(meta);
 
 		this.delegate = obj instanceof VncVal ? ((VncVal)obj).convertToJavaObject() : obj;
+		this.delegateFormalType = formalType;
+	}
+
+	
+	public static VncJavaObject from(final ReturnValue val) {
+		return new VncJavaObject(val.getValue(), val.getFormalType(), Constants.Nil);
 	}
 	
+	public static VncJavaObject from(final Object val, final Class<?> formalType) {
+		return new VncJavaObject(val, formalType, Constants.Nil);
+	}
 	
 	@Override
 	public Object getDelegate() {
 		return delegate;
+	}
+	
+	@Override
+	public Class<?> getDelegateFormalType() {
+		return delegateFormalType;
 	}
 	
 	@Override
@@ -271,8 +290,8 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 					builder.put(
 							new VncKeyword(property), 
 							JavaInteropUtil.convertToVncVal(
-									interceptor.onGetBeanProperty(
-											invoker, delegate, property)));
+									interceptor
+										.onGetBeanProperty(invoker, delegate, property)));
 				}
 				catch(Exception ex) {
 					throw new RuntimeException(ex);
@@ -286,4 +305,5 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
     private static final long serialVersionUID = -1848883965231344442L;
 
 	private final Object delegate;
+	private final Class<?> delegateFormalType;
 }

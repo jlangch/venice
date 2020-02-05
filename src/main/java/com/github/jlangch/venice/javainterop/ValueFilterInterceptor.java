@@ -21,24 +21,26 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 
 public class ValueFilterInterceptor extends Interceptor {
 	
 	@Override
-	public Object onInvokeInstanceMethod(
+	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String method, 
 			final Object... args
 	) throws SecurityException {
 		filterAccessor(receiver, method);
 		return filterReturnValue(
 				super.onInvokeInstanceMethod(
-						invoker, receiver, method, filterArguments(args)));
+						invoker, receiver, receiverFormalType, method, filterArguments(args)));
 	}
 
 	@Override
-	public Object onInvokeStaticMethod(
+	public ReturnValue onInvokeStaticMethod(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String method, 
@@ -51,7 +53,7 @@ public class ValueFilterInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onInvokeConstructor(
+	public ReturnValue onInvokeConstructor(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final Object... args
@@ -63,7 +65,7 @@ public class ValueFilterInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetBeanProperty(
+	public ReturnValue onGetBeanProperty(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String property
@@ -87,7 +89,7 @@ public class ValueFilterInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetStaticField(
+	public ReturnValue onGetStaticField(
 			final IInvoker invoker, 
 			final Class<?> receiver, 
 			final String fieldName
@@ -99,7 +101,7 @@ public class ValueFilterInterceptor extends Interceptor {
 	}
 
 	@Override
-	public Object onGetInstanceField(
+	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
 			final String fieldName
@@ -111,8 +113,8 @@ public class ValueFilterInterceptor extends Interceptor {
 	}
 
 	
-	protected Object filterReturnValue(final Object returnValue) {
-		return filter(returnValue);
+	protected ReturnValue filterReturnValue(final ReturnValue returnValue) {
+		return returnValue;
 	}
 	
 	protected Object filterArgument(final Object arg) {

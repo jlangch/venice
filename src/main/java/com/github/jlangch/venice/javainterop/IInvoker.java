@@ -21,21 +21,22 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 
 public interface IInvoker {
  
-	Object callInstanceMethod(Object receiver, String method, Object... args);
+	ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args);
 
-	Object callStaticMethod(Class<?> receiver, String method, Object... args);
+	ReturnValue callStaticMethod(Class<?> receiver, String method, Object... args);
 
-	Object callConstructor(Class<?> receiver, Object... args);
+	ReturnValue callConstructor(Class<?> receiver, Object... args);
 
-	Object getBeanProperty(Object receiver, String property);
+	ReturnValue getBeanProperty(Object receiver, String property);
 
-	Object setBeanProperty(Object receiver, String property, Object value);
+	ReturnValue setBeanProperty(Object receiver, String property, Object value);
 
-	Object getStaticField(Class<?> receiver, String fieldName);
+	ReturnValue getStaticField(Class<?> receiver, String fieldName);
 
-	Object getInstanceField(Object receiver, String fieldName);
+	ReturnValue getInstanceField(Object receiver, String fieldName);
 
 }
