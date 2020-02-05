@@ -205,3 +205,19 @@ a future Java release.
 **Venice Java Interop is handling these cases completely transparent to you. You don't need to add**
 **explicit type hints. Venice knows about the formal type of objects returned from**
 **methods and invokes methods or fields on the formal type instead of the real type.**
+
+
+It's possible to do a cast explicitly, but it is not necessary in most cases:
+
+```
+(do
+   (import :java.awt.image.BufferedImage)
+   (import :java.awt.Graphics)
+
+   ;; cast the graphics context to 'java.awt.Graphics' instead of the 
+   ;; implicit cast to 'java.awt.Graphics2D' as Venice is doing
+   (let [img (. :BufferedImage :new 40 40 1)
+         gd (cast :Graphics (. img :createGraphics))]
+     (. gd :fillOval 10 20 5 5)
+     img))
+```

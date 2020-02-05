@@ -1362,12 +1362,12 @@ public class DocGenerator {
 		
 		general.addItem(getDocItem("."));
 		general.addItem(getDocItem("proxify"));
-		general.addItem(getDocItem("delegate"));
 		general.addItem(getDocItem("import"));
 		general.addItem(getDocItem("imports"));
 		general.addItem(getDocItem("supers"));
 		general.addItem(getDocItem("bases"));
 		general.addItem(getDocItem("class"));
+		general.addItem(getDocItem("cast"));
 		general.addItem(getDocItem("java-obj?"));
 		general.addItem(getDocItem("java-iterator-to-list"));
 		general.addItem(getDocItem("java-enumeration-to-list"));

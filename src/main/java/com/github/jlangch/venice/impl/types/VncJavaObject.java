@@ -109,6 +109,10 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 		return new VncJavaObject(delegate, meta);
 	}
 
+	public VncJavaObject castTo(final Class<?> clazz) {
+		return VncJavaObject.from(delegate, clazz);
+	}
+
 	public VncVal getProperty(final VncString name) {
 		return JavaInteropUtil.convertToVncVal(
 				JavaInterop

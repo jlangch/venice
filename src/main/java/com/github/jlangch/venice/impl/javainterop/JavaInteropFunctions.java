@@ -54,7 +54,6 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
-import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
@@ -158,31 +157,46 @@ public class JavaInteropFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
-	public static class DelegateFn extends AbstractJavaFn {
-		public DelegateFn() {
+	public static class CastFn extends AbstractJavaFn {
+		public CastFn() {
 			super(
-				"delegate", 
+				"cast", 
 				VncFunction
 					.meta()
-					.arglists("(delegate classname object)")		
-					.doc("Wraps the delegate object with an instance of type classname")
+					.arglists("(cast class object)")		
+					.doc("Casts a Java object")
+					.examples(
+							"(do \n" +
+							"   (import :java.awt.image.BufferedImage) \n" +
+							"   (import :java.awt.Graphics) \n" +
+							"\n" +
+							"   ;; cast the graphics context to 'java.awt.Graphics' instead of the \n" +
+							"   ;; implicit cast to 'java.awt.Graphics2D' as Venice is doing \n" +
+							"   (let [img (. :BufferedImage :new 40 40 1) \n" +
+							"         gd (cast :Graphics (. img :createGraphics))] \n" +
+							"     (. gd :fillOval 10 20 5 5)\n" +
+							"     img))")
 					.build());
 		}
 
 		@Override
 		public VncVal apply(final VncList args) {
 			if (args.size() != 2) {
-				throw new ArityException(2, "delegate");
+				throw new ArityException(2, "cast");
 			}
 
-			final Class<?> clazz = JavaInteropUtil.toClass(
-										args.first(), 
-										Namespaces.getCurrentNamespace().getJavaImports());
-
-			final Object delegate = Coerce.toVncJavaObject(args.second()).getDelegate();
-
-			return VncJavaObject.from(
-					ReflectionAccessor.invokeConstructor(clazz, new Object[] { delegate }));
+			if (Types.isVncJavaObject(args.second())) {
+				final Class<?> clazz = JavaInteropUtil.toClass(
+											args.first(), 
+											Namespaces.getCurrentNamespace().getJavaImports());
+				
+				return ((VncJavaObject)args.second()).castTo(clazz);
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'cast' does not allow casting a non Java object (%s)", 
+						Types.getType(args.second())));
+			}
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -591,7 +605,7 @@ public class JavaInteropFunctions {
 					.Builder()
 					.add(new JavaFn())
 					.add(new ProxifyFn())
-					.add(new DelegateFn())
+					.add(new CastFn())
 					.add(new SupersFn())
 					.add(new BasesFn())
 					.add(new DescribeJavaClassFn())
