@@ -184,7 +184,7 @@ Code that run fine with Java 8 gets problems with Java 9+:
 
    (let [img (. :BufferedImage :new 40 40 1) 
          g2d (. img :createGraphics)]
-     (. g2d :fillOval 10 20 5 5)
+     (. g2d :fillOval 10 20 5 5)   ;; <<-- warning
      img))
 ```
 
@@ -199,17 +199,12 @@ WARNING: All illegal access operations will be denied in a future release
 ```
 
 `java.awt.BufferedImage::createGraphics()` returns effectively an object of type 
-`sun.java2d.SunGraphics2D`. The API defines the return type as `java.awt.Graphics2D` 
+`sun.java2d.SunGraphics2D` while the API defines the return type as `java.awt.Graphics2D` 
 (the formal type). When invoking the method `fillOval` on the graphics context 
 returned from `BufferedImage::createGraphics()` one gets warnings because of 
-accessing a private class. And even worse Oracle will deny this access in 
-upcoming Java versions.
+accessing a JDK private class. And even worse Oracle will deny this access in 
+a future Java release.
 
-Venice is handling these cases completely transparent to you. You don't need to add
-explicit type hints. Venice knows about the formal type of objects returned from 
-methods and invokes methods or fields on the formal type instead of the real type. 
-The Java compiler is actually doing the same with compiled code.
-
-
-
-
+**Venice is handling these cases completely transparent to you. You don't need to add**
+**explicit type hints. Venice knows about the formal type of objects returned from**
+**methods and invokes methods or fields on the formal type instead of the real type.**
