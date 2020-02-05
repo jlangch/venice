@@ -179,12 +179,9 @@ Code that run fine with Java 8 gets problems with Java 9+:
 
 ```clojure
 (do
-   (import :java.awt.image.BufferedImage) 
-   (import :java.awt.Graphics2D)
-
-   (let [img (. :BufferedImage :new 40 40 1) 
+   (let [img (. :java.awt.image.BufferedImage :new 40 40 1) 
          g2d (. img :createGraphics)]
-     (. g2d :fillOval 10 20 5 5)   ;; <<-- warning
+     (. g2d :fillOval 10 20 5 5)   ;; <<-- warning "illegal reflective access"
      img))
 ```
 
