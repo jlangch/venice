@@ -205,7 +205,7 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.17-snapshot</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.17</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -1377,7 +1377,7 @@ public class Example {
                     </div>
                     <div class="examples">
                         <code>*version*
-=&gt; &quot;1.7.17-snapshot&quot;</code>
+=&gt; &quot;1.7.17&quot;</code>
                     </div>
                 </div>
                 
@@ -1600,7 +1600,7 @@ form, etc.</code>
 
 ;; invoke static method 
 (. :java.time.ZonedDateTime :now)
-=&gt; 2020-01-21T23:58:27.187+01:00[Europe/Zurich]
+=&gt; 2020-02-05T12:31:04.379+01:00[Europe/Zurich]
 
 ;; invoke static method 
 (. :java.lang.Math :min 10 20)
@@ -2233,7 +2233,7 @@ If for instances &quot;chart.venice&quot; in the above example requires
 &quot;utils.venice&quot; just add (load-file &quot;utils&quot;) to &quot;chart.venice&quot;.
 
 The app can be run from the command line as:
-&gt; java -jar venice-1.7.16.jar -app test.zip
+&gt; java -jar venice-1.7.17.jar -app test.zip
 
 Or with additional Java libraries (all JARs in &apos;libs&apos; dir):
 &gt; java -cp &quot;libs/*&quot; com.github.jlangch.venice.Launcher -app test.zip</code>
@@ -2462,14 +2462,16 @@ value to thread into any argument position.</code>
                         <code>Associates a value in a nested associative structure, where ks is a sequence of keys and v is the new value and returns a new nested structure. If any levels do not exist, hash-maps or vectors will be created.</code>
                     </div>
                     <div class="examples">
-                        <code>(do
-   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])
-   (assoc-in users [1 :age] 44))
+                        <code>(do                                               
+  (def users [ {:name &quot;James&quot; :age 26}          
+               {:name &quot;John&quot; :age 43}] )        
+  (assoc-in users [1 :age] 44))                   
 =&gt; [{:age 26 :name &quot;James&quot;} {:age 44 :name &quot;John&quot;}]
 
-(do
-   (def users [{:name &quot;James&quot; :age 26}  {:name &quot;John&quot; :age 43}])
-   (assoc-in users [2] {:name &quot;Jack&quot; :age 19}) )
+(do                                               
+  (def users [ {:name &quot;James&quot; :age 26}          
+               {:name &quot;John&quot; :age 43}] )        
+  (assoc-in users [2] {:name &quot;Jack&quot; :age 19}) ) 
 =&gt; [{:age 26 :name &quot;James&quot;} {:age 43 :name &quot;John&quot;} {:age 19 :name &quot;Jack&quot;}]</code>
                     </div>
                 </div>
@@ -3653,7 +3655,7 @@ the same effects, if any, and returns the opposite truth value.</code>
                     </div>
                     <div class="examples">
                         <code>(complement even?)
-=&gt; function anonymous-cce49b60-87b3-4558-993a-01f420ab1076 {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-12529971-9aea-4e85-8c6d-6a82e7dc1f9f {visibility :public, ns &quot;core&quot;}
 
 (filter (complement even?) &apos;(1 2 3 4))
 =&gt; (1 3)</code>
@@ -4335,7 +4337,7 @@ Options:
                     </div>
                     <div class="examples">
                         <code>(current-time-millis)
-=&gt; 1579647507159</code>
+=&gt; 1580902264352</code>
                     </div>
                 </div>
                 
@@ -5161,7 +5163,7 @@ Test...
                     </div>
                     <div class="examples">
                         <code>(dobench 10 (+ 1 1))
-=&gt; (2960 947 1301 1000 868 848 862 576 564 543)</code>
+=&gt; (3639 1464 2185 1837 1637 1615 1373 1255 1130 1384)</code>
                     </div>
                 </div>
                 
@@ -6429,10 +6431,10 @@ Worker2
                     </div>
                     <div class="examples">
                         <code>(gensym )
-=&gt; G__18184
+=&gt; G__18236
 
 (gensym &quot;prefix_&quot;)
-=&gt; prefix_18211</code>
+=&gt; prefix_18263</code>
                     </div>
                 </div>
                 
@@ -9837,10 +9839,10 @@ To recursively expand all macros in a form use (macroexpand-all form).</code>
                     </div>
                     <div class="examples">
                         <code>(macroexpand-all &apos;(and true true))
-=&gt; (let [cond__17239__auto true] (if cond__17239__auto true cond__17239__auto))
+=&gt; (let [cond__17291__auto true] (if cond__17291__auto true cond__17291__auto))
 
 (macroexpand-all &apos;(and true (or true false) true))
-=&gt; (let [cond__17265__auto true] (if cond__17265__auto (let [cond__17265__auto (let [cond__17266__auto true] (if cond__17266__auto cond__17266__auto false))] (if cond__17265__auto true cond__17265__auto)) cond__17265__auto))
+=&gt; (let [cond__17317__auto true] (if cond__17317__auto (let [cond__17317__auto (let [cond__17318__auto true] (if cond__17318__auto cond__17318__auto false))] (if cond__17317__auto true cond__17317__auto)) cond__17317__auto))
 
 (macroexpand-all &apos;(let [n 5] (cond (&lt; n 0) -1 (&gt; n 0) 1 :else 0)))
 =&gt; (let [n 5] (if (&lt; n 0) -1 (if (&gt; n 0) 1 (if :else 0 nil))))</code>
@@ -10245,7 +10247,7 @@ To recursively expand all macros in a form use (macroexpand-all form).</code>
           :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
   (time (fibonacci 25)))
-Elapsed time: 8.20 ms
+Elapsed time: 10.66 ms
 =&gt; 75025</code>
                     </div>
                 </div>
@@ -10329,7 +10331,8 @@ the result by calling (f val-in-result val-in-latter).</code>
                         <code>Returns the metadata of obj, returns nil if there is no metadata.</code>
                     </div>
                     <div class="examples">
-                        <code></code>
+                        <code>(meta (vary-meta [1 2] assoc :a 1))
+=&gt; {:a 1 :line 1 :column 26 :file &quot;example&quot;}</code>
                     </div>
                 </div>
                 
@@ -10501,7 +10504,7 @@ the result by calling (f val-in-result val-in-latter).</code>
 =&gt; #{1 2 3}
 
 (mutable-set [1 2] 3)
-=&gt; #{3 [1 2]}</code>
+=&gt; #{[1 2] 3}</code>
                     </div>
                 </div>
                 
@@ -10576,7 +10579,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     </div>
                     <div class="examples">
                         <code>(nano-time)
-=&gt; 5469579814565</code>
+=&gt; 113386569090024</code>
                     </div>
                 </div>
                 
@@ -11670,7 +11673,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                     </div>
                     <div class="examples">
                         <code>(pid)
-=&gt; &quot;1718&quot;</code>
+=&gt; &quot;37607&quot;</code>
                     </div>
                 </div>
                 
@@ -12284,10 +12287,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-double)
-=&gt; 0.9451012461998608
+=&gt; 0.5857929296065647
 
 (rand-double 100.0)
-=&gt; 5.204233282988513</code>
+=&gt; 19.564076869907964</code>
                     </div>
                 </div>
                 
@@ -12313,10 +12316,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-gaussian)
-=&gt; -1.4254266561529951
+=&gt; 0.29823587434630294
 
 (rand-gaussian 0.0 5.0)
-=&gt; 1.4474272326205724</code>
+=&gt; 3.411261016831279</code>
                     </div>
                 </div>
                 
@@ -12342,10 +12345,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-long)
-=&gt; 2284730713432773755
+=&gt; 2136119590711462551
 
 (rand-long 100)
-=&gt; 10</code>
+=&gt; 91</code>
                     </div>
                 </div>
                 
@@ -13059,12 +13062,12 @@ nil
                     </div>
                     <div class="examples">
                         <code>(repeatedly 5 #(rand-long 11))
-=&gt; (1 8 1 2 6)
+=&gt; (8 0 10 0 2)
 
 ;; compare with repeat, which only calls the &apos;rand-long&apos;
 ;; function once, repeating the value five times. 
 (repeat 5 (rand-long 11))
-=&gt; (9 9 9 9 9)</code>
+=&gt; (6 6 6 6 6)</code>
                     </div>
                 </div>
                 
@@ -13841,13 +13844,13 @@ sh returns a map of
                     </div>
                     <div class="examples">
                         <code>(shuffle &apos;(1 2 3 4 5 6))
-=&gt; (1 3 5 4 2 6)
+=&gt; (3 4 5 2 1 6)
 
 (shuffle [1 2 3 4 5 6])
-=&gt; [2 1 6 4 5 3]
+=&gt; [1 5 3 2 6 4]
 
 (shuffle &quot;abcdef&quot;)
-=&gt; (&quot;d&quot; &quot;f&quot; &quot;e&quot; &quot;b&quot; &quot;c&quot; &quot;a&quot;)</code>
+=&gt; (&quot;a&quot; &quot;d&quot; &quot;b&quot; &quot;f&quot; &quot;c&quot; &quot;e&quot;)</code>
                     </div>
                 </div>
                 
@@ -16449,7 +16452,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     </div>
                     <div class="examples">
                         <code>(time (+ 100 200))
-Elapsed time: 11.24 µs
+Elapsed time: 10.95 µs
 =&gt; 300</code>
                     </div>
                 </div>
@@ -16521,7 +16524,7 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/date)
-=&gt; Tue Jan 21 23:58:15 CET 2020</code>
+=&gt; Wed Feb 05 12:30:53 CET 2020</code>
                     </div>
                 </div>
                 
@@ -16567,13 +16570,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-month (time/local-date))
-=&gt; 21
+=&gt; 5
 
 (time/day-of-month (time/local-date-time))
-=&gt; 21
+=&gt; 5
 
 (time/day-of-month (time/zoned-date-time))
-=&gt; 21</code>
+=&gt; 5</code>
                     </div>
                 </div>
                 
@@ -16596,13 +16599,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-week (time/local-date))
-=&gt; :TUESDAY
+=&gt; :WEDNESDAY
 
 (time/day-of-week (time/local-date-time))
-=&gt; :TUESDAY
+=&gt; :WEDNESDAY
 
 (time/day-of-week (time/zoned-date-time))
-=&gt; :TUESDAY</code>
+=&gt; :WEDNESDAY</code>
                     </div>
                 </div>
                 
@@ -16625,13 +16628,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-year (time/local-date))
-=&gt; 21
+=&gt; 36
 
 (time/day-of-year (time/local-date-time))
-=&gt; 21
+=&gt; 36
 
 (time/day-of-year (time/zoned-date-time))
-=&gt; 21</code>
+=&gt; 36</code>
                     </div>
                 </div>
                 
@@ -16677,13 +16680,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/first-day-of-month (time/local-date))
-=&gt; 2020-01-01
+=&gt; 2020-02-01
 
 (time/first-day-of-month (time/local-date-time))
-=&gt; 2020-01-01
+=&gt; 2020-02-01
 
 (time/first-day-of-month (time/zoned-date-time))
-=&gt; 2020-01-01</code>
+=&gt; 2020-02-01</code>
                     </div>
                 </div>
                 
@@ -16708,19 +16711,19 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)
-=&gt; &quot;21-01-2020&quot;
+=&gt; &quot;05-02-2020&quot;
 
 (time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)
-=&gt; &quot;2020-01-21T23:58:15.965CET&quot;
+=&gt; &quot;2020-02-05T12:30:53.406CET&quot;
 
 (time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)
-=&gt; &quot;2020-01-21T23:58:15.972+01:00&quot;
+=&gt; &quot;2020-02-05T12:30:53.41+01:00&quot;
 
 (time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))
-=&gt; &quot;2020-01-21T23:58:15.978CET&quot;
+=&gt; &quot;2020-02-05T12:30:53.414CET&quot;
 
 (time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))
-=&gt; &quot;2020-01-21T23:58:15.983+01:00&quot;</code>
+=&gt; &quot;2020-02-05T12:30:53.418+01:00&quot;</code>
                     </div>
                 </div>
                 
@@ -16781,10 +16784,10 @@ Elapsed time: 11.24 µs
 =&gt; 0
 
 (time/hour (time/local-date-time))
-=&gt; 23
+=&gt; 12
 
 (time/hour (time/zoned-date-time))
-=&gt; 23</code>
+=&gt; 12</code>
                     </div>
                 </div>
                 
@@ -16807,13 +16810,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/last-day-of-month (time/local-date))
-=&gt; 2020-01-31
+=&gt; 2020-02-29
 
 (time/last-day-of-month (time/local-date-time))
-=&gt; 2020-01-31
+=&gt; 2020-02-29
 
 (time/last-day-of-month (time/zoned-date-time))
-=&gt; 2020-01-31</code>
+=&gt; 2020-02-29</code>
                     </div>
                 </div>
                 
@@ -16897,10 +16900,10 @@ Elapsed time: 11.24 µs
 =&gt; 28
 
 (time/length-of-month (time/local-date-time))
-=&gt; 31
+=&gt; 29
 
 (time/length-of-month (time/zoned-date-time))
-=&gt; 31</code>
+=&gt; 29</code>
                     </div>
                 </div>
                 
@@ -16959,7 +16962,7 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date)
-=&gt; 2020-01-21
+=&gt; 2020-02-05
 
 (time/local-date 2018 8 1)
 =&gt; 2018-08-01
@@ -16971,7 +16974,7 @@ Elapsed time: 11.24 µs
 =&gt; 2013-08-01
 
 (time/local-date (. :java.util.Date :new))
-=&gt; 2020-01-21</code>
+=&gt; 2020-02-05</code>
                     </div>
                 </div>
                 
@@ -17025,7 +17028,7 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date-time)
-=&gt; 2020-01-21T23:58:15.687
+=&gt; 2020-02-05T12:30:53.123
 
 (time/local-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00
@@ -17043,7 +17046,7 @@ Elapsed time: 11.24 µs
 =&gt; 2013-08-01T02:00
 
 (time/local-date-time (. :java.util.Date :new))
-=&gt; 2020-01-21T23:58:15.711</code>
+=&gt; 2020-02-05T12:30:53.148</code>
                     </div>
                 </div>
                 
@@ -17138,13 +17141,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/minus (time/local-date) :days 2)
-=&gt; 2020-01-19
+=&gt; 2020-02-03
 
 (time/minus (time/local-date-time) :days 2)
-=&gt; 2020-01-19T23:58:16.077
+=&gt; 2020-02-03T12:30:53.482
 
 (time/minus (time/zoned-date-time) :days 2)
-=&gt; 2020-01-19T23:58:16.082+01:00[Europe/Zurich]</code>
+=&gt; 2020-02-03T12:30:53.486+01:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17170,10 +17173,10 @@ Elapsed time: 11.24 µs
 =&gt; 0
 
 (time/minute (time/local-date-time))
-=&gt; 58
+=&gt; 30
 
 (time/minute (time/zoned-date-time))
-=&gt; 58</code>
+=&gt; 30</code>
                     </div>
                 </div>
                 
@@ -17196,13 +17199,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/month (time/local-date))
-=&gt; 1
+=&gt; 2
 
 (time/month (time/local-date-time))
-=&gt; 1
+=&gt; 2
 
 (time/month (time/zoned-date-time))
-=&gt; 1</code>
+=&gt; 2</code>
                     </div>
                 </div>
                 
@@ -17300,13 +17303,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/plus (time/local-date) :days 2)
-=&gt; 2020-01-23
+=&gt; 2020-02-07
 
 (time/plus (time/local-date-time) :days 2)
-=&gt; 2020-01-23T23:58:16.061
+=&gt; 2020-02-07T12:30:53.471
 
 (time/plus (time/zoned-date-time) :days 2)
-=&gt; 2020-01-23T23:58:16.066+01:00[Europe/Zurich]</code>
+=&gt; 2020-02-07T12:30:53.474+01:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17332,10 +17335,10 @@ Elapsed time: 11.24 µs
 =&gt; 0
 
 (time/second (time/local-date-time))
-=&gt; 15
+=&gt; 53
 
 (time/second (time/zoned-date-time))
-=&gt; 15</code>
+=&gt; 53</code>
                     </div>
                 </div>
                 
@@ -17358,7 +17361,7 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/to-millis (time/local-date))
-=&gt; 1579561200000</code>
+=&gt; 1580857200000</code>
                     </div>
                 </div>
                 
@@ -17383,13 +17386,13 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/with-time (time/local-date) 22 00 15 333)
-=&gt; 2020-01-21T22:00:15.333
+=&gt; 2020-02-05T22:00:15.333
 
 (time/with-time (time/local-date-time) 22 00 15 333)
-=&gt; 2020-01-21T22:00:15.333
+=&gt; 2020-02-05T22:00:15.333
 
 (time/with-time (time/zoned-date-time) 22 00 15 333)
-=&gt; 2020-01-21T22:00:15.333+01:00[Europe/Zurich]</code>
+=&gt; 2020-02-05T22:00:15.333+01:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17554,7 +17557,7 @@ Elapsed time: 11.24 µs
                     </div>
                     <div class="examples">
                         <code>(time/zoned-date-time)
-=&gt; 2020-01-21T23:58:15.728+01:00[Europe/Zurich]
+=&gt; 2020-02-05T12:30:53.165+01:00[Europe/Zurich]
 
 (time/zoned-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -17572,10 +17575,10 @@ Elapsed time: 11.24 µs
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 (time/zoned-date-time (. :java.util.Date :new))
-=&gt; 2020-01-21T23:58:15.752+01:00[Europe/Zurich]
+=&gt; 2020-02-05T12:30:53.190+01:00[Europe/Zurich]
 
 (time/zoned-date-time :UTC)
-=&gt; 2020-01-21T22:58:15.756Z[UTC]
+=&gt; 2020-02-05T11:30:53.194Z[UTC]
 
 (time/zoned-date-time :UTC 2018 8 1)
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -17593,7 +17596,7 @@ Elapsed time: 11.24 µs
 =&gt; 2013-08-01T00:00Z[UTC]
 
 (time/zoned-date-time :UTC (. :java.util.Date :new))
-=&gt; 2020-01-21T22:58:15.778Z[UTC]</code>
+=&gt; 2020-02-05T11:30:53.217Z[UTC]</code>
                     </div>
                 </div>
                 
@@ -18070,7 +18073,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(uuid )
-=&gt; &quot;052f4cbf-0614-4c43-83a1-686897cad19e&quot;</code>
+=&gt; &quot;d5d2a377-b0d2-432b-81dd-ea88a520f4f9&quot;</code>
                     </div>
                 </div>
                 
@@ -18164,7 +18167,8 @@ unpack it after trampoline returns.</code>
                         <code>Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.</code>
                     </div>
                     <div class="examples">
-                        <code></code>
+                        <code>(meta (vary-meta [1 2] assoc :a 1))
+=&gt; {:a 1 :line 1 :column 26 :file &quot;example&quot;}</code>
                     </div>
                 </div>
                 
@@ -18242,7 +18246,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(version )
-=&gt; &quot;1.7.17-snapshot&quot;</code>
+=&gt; &quot;1.7.17&quot;</code>
                     </div>
                 </div>
                 
