@@ -37,6 +37,6 @@ public interface IInvoker {
 
 	ReturnValue getStaticField(Class<?> receiver, String fieldName);
 
-	ReturnValue getInstanceField(Object receiver, String fieldName);
+	ReturnValue getInstanceField(Object receiver, Class<?> receiverFormalType, String fieldName);
 
 }

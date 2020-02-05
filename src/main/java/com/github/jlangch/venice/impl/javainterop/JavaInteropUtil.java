@@ -173,7 +173,7 @@ public class JavaInteropUtil {
 						return JavaInteropUtil.convertToVncVal(
 								JavaInterop
 									.getInterceptor()
-									.onGetInstanceField(new Invoker(), target, methodName));
+									.onGetInstanceField(new Invoker(), target, targetFormalType, methodName));
 					}
 					else {
 						throw new JavaMethodInvocationException(String.format(

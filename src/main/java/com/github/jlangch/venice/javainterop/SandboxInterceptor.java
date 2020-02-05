@@ -45,7 +45,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final String method, 
 			final Object... args
 	) throws SecurityException {
-		validateAccessor(receiver, method);
+		validateClassAccessor(receiverFormalType, method);
+		validateObjAccessor(receiver, method);
 	
 		return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
 	}
@@ -57,7 +58,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final String method, 
 			final Object... args
 	) throws SecurityException {
-		validateAccessor(receiver, method);
+		validateClassAccessor(receiver, method);
 
 		return super.onInvokeStaticMethod(invoker, receiver, method, args);
 	}
@@ -77,7 +78,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final Object receiver, 
 			final String property
 	) throws SecurityException {
-		validateAccessor(receiver, property);
+		validateObjAccessor(receiver, property);
 		
 		return super.onGetBeanProperty(invoker, receiver, property);
 	}
@@ -89,7 +90,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final String property, 
 			final Object value
 	) throws SecurityException {
-		validateAccessor(receiver, property);
+		validateObjAccessor(receiver, property);
 		
 		super.onSetBeanProperty(invoker, receiver, property, value);
 	}
@@ -100,7 +101,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			final Class<?> receiver, 
 			final String fieldName
 	) throws SecurityException {
-		validateAccessor(receiver, fieldName);
+		validateClassAccessor(receiver, fieldName);
 		
 		return super.onGetStaticField(invoker, receiver, fieldName);
 	}
@@ -109,11 +110,12 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
-		validateAccessor(receiver, fieldName);
+		validateObjAccessor(receiver, fieldName);
 		
-		return super.onGetInstanceField(invoker, receiver, fieldName);
+		return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
 	}
 
 	@Override
@@ -192,7 +194,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 
 	@Override
 	protected Object filterAccessor(final Object o, final String accessor) {
-		validateAccessor(o, accessor);
+		validateObjAccessor(o, accessor);
 		return o;
 	}
 
@@ -214,9 +216,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 		}
 	}
 
-	private void validateAccessor(final Object receiver, final String accessor) {
-		if (receiver != null) {
-			final Class<?> clazz= getClass(receiver);
+	private void validateClassAccessor(final Class<?> clazz, final String accessor) {
+		if (clazz != null) {
 			if (!sandboxRules.isWhiteListed(clazz, accessor)) {
 				throw new SecurityException(String.format(
 						"%s: Access denied to accessor %s::%s", 
@@ -224,6 +225,12 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 						clazz.getName(), 
 						accessor));
 			}
+		}
+	}
+
+	private void validateObjAccessor(final Object receiver, final String accessor) {
+		if (receiver != null) {
+			validateClassAccessor(getClass(receiver), accessor);
 		}
 	}
 

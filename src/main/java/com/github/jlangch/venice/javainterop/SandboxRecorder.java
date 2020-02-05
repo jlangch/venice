@@ -114,10 +114,11 @@ public class SandboxRecorder extends Interceptor {
 	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
 		format("%s.%s", type(receiver), fieldName);
-		return super.onGetInstanceField(invoker, receiver, fieldName);
+		return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
 	}
 
 	@Override

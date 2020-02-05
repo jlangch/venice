@@ -130,6 +130,7 @@ public interface IInterceptor {
 	 * 
 	 * @param invoker	the invoker
 	 * @param receiver	an object
+	 * @param receiverFormalType 	the formal type of the receiver (e.g a superclass)
 	 * @param fieldName	a field name 
 	 * @return the field's value
 	 * @throws SecurityException if the instance field is not whitelisted
@@ -137,6 +138,7 @@ public interface IInterceptor {
 	ReturnValue onGetInstanceField(
 			IInvoker invoker, 
 			Object receiver, 
+			Class<?> receiverFormalType,
 			String fieldName
 	) throws SecurityException;
 

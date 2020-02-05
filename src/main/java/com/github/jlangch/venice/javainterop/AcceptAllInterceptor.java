@@ -90,10 +90,11 @@ public class AcceptAllInterceptor extends Interceptor {
 	@Override
 	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
-			final Object receiver, 
+			final Object receiver,
+			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
-		return super.onGetInstanceField(invoker, receiver, fieldName);
+		return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
 	}
 
 	@Override

@@ -60,8 +60,8 @@ public class Invoker implements IInvoker {
 	}
 
 	@Override
-	public ReturnValue getInstanceField(Object receiver, String fieldName) {
-		return ReflectionAccessor.getInstanceField(receiver, fieldName);
+	public ReturnValue getInstanceField(Object receiver, Class<?> receiverFormalType, String fieldName) {
+		return ReflectionAccessor.getInstanceField(receiver, receiverFormalType, fieldName);
 	}
 
 }

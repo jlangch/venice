@@ -223,9 +223,9 @@ public class ReflectionAccessor {
 		}
 	}
 
-	public static ReturnValue getInstanceField(final Object target, final String fieldName) {
+	public static ReturnValue getInstanceField(final Object target, Class<?> targetFormalType, final String fieldName) {
 		try {
-			final Class<?> clazz = target.getClass();
+			final Class<?> clazz = targetFormalType == null ? target.getClass() : targetFormalType;
 			final MethodHandle mh = memoizedInstanceField(clazz, fieldName);
 			if (mh != null) {
 				return new ReturnValue(mh.invoke(target));

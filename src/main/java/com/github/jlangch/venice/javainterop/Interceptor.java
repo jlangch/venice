@@ -90,9 +90,10 @@ public abstract class Interceptor implements IInterceptor {
 	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
-		return invoker.getInstanceField(receiver, fieldName);
+		return invoker.getInstanceField(receiver, receiverFormalType, fieldName);
 	}
 
 	@Override

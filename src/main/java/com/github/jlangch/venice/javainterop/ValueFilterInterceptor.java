@@ -104,12 +104,13 @@ public class ValueFilterInterceptor extends Interceptor {
 	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
 		filterAccessor(receiver, fieldName);
 		return filterReturnValue(
 				super.onGetInstanceField(
-						invoker, receiver, fieldName));
+						invoker, receiver, receiverFormalType, fieldName));
 	}
 
 	

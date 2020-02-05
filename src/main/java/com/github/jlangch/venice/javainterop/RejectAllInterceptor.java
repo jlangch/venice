@@ -112,6 +112,7 @@ public class RejectAllInterceptor extends Interceptor {
 	public ReturnValue onGetInstanceField(
 			final IInvoker invoker, 
 			final Object receiver, 
+			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
 		throw new SecurityException(String.format(
