@@ -202,7 +202,7 @@ returned from `BufferedImage::createGraphics()` one gets warnings because of
 accessing a JDK private class. And even worse Oracle will deny this access in 
 a future Java release.
 
-With Venice version 1.7.17+ the above code runs fine without changes on Java 8 and Java 9+.
+With Venice version 1.7.17+ the above code runs fine without warnings on Java 8 and Java 9+.
 
 **Venice Java Interop is handling these cases completely transparent for you. You don't need to add**
 **explicit type hints or add casts. Venice knows about the formal type of values returned from**
