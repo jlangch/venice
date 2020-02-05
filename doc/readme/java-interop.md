@@ -175,7 +175,7 @@ causes problems accessing methods or fields via reflection on these objects or
 classes. Java 9 changed the rules in that access to classes defined in private modules
 result in severe warnings. 
 
-Code that runs fine with Java 8 but gets problems with Java 9+:
+Code that runs fine with Java 8 but gets problems with Java 9+ (Venice version prior to 1.7.17):
 
 ```clojure
 (do
@@ -201,6 +201,8 @@ WARNING: All illegal access operations will be denied in a future release
 returned from `BufferedImage::createGraphics()` one gets warnings because of 
 accessing a JDK private class. And even worse Oracle will deny this access in 
 a future Java release.
+
+With Venice version 1.7.17+ the above code runs fine without changes on Java 8 and Java 9+.
 
 **Venice Java Interop is handling these cases completely transparent for you. You don't need to add**
 **explicit type hints. Venice knows about the formal type of values returned from**
