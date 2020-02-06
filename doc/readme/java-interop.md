@@ -170,7 +170,7 @@ _Note:_  this is not the fastest way to filter collections
 
 ## Java 9+:
 
-Some public Java APIs return objects of classes that are defined in private module. This 
+Some public Java APIs return objects of classes that are defined in private modules. This 
 causes problems when accessing methods or fields of the objects via reflection. Java 9 
 changed the rules in that access to classes defined in private modules
 result in severe warnings. 
