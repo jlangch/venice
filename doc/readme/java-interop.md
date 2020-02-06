@@ -202,13 +202,16 @@ returned from `createGraphics` one gets warnings because of reflectively accessi
 JDK private class `SunGraphics2D`. And even worse Oracle will deny this access in 
 a future Java release.
 
-Venice 1.7.17 honors now the  _formal type_  of the values returned by methods or fields.
+Venice 1.7.17 honors now the  _formal type_  of the values returned by methods or 
+fields.
 
-With Venice version 1.7.17+ the above code runs now fine without warnings on Java 8 and Java 9+.
+With Venice version 1.7.17+ the above code runs now fine without warnings on 
+Java 8 and Java 9+.
 
-**Venice Java Interop is handling these cases completely transparent for you. You don't need to add**
-**explicit type hints or add casts. Venice knows about the formal type of values returned from**
-**methods and invokes methods or fields on the formal type instead of the real type.**
+**Venice Java Interop is handling these cases completely transparent for you. You**
+**don't need to add explicit type hints or add casts. Venice knows about the formal**
+**type of values returned from methods and invokes methods or fields on the formal**
+**type instead of the real type.**
 
 
 It's possible to do a cast explicitly, but it is not necessary:
