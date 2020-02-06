@@ -198,8 +198,8 @@ WARNING: All illegal access operations will be denied in a future release
 `java.awt.BufferedImage::createGraphics()` returns effectively an object of type 
 `sun.java2d.SunGraphics2D` while the API defines the return type as `java.awt.Graphics2D` 
 (the formal type). When invoking the method `fillOval` on the graphics context 
-returned from `BufferedImage::createGraphics()` one gets warnings because of 
-accessing a JDK private class. And even worse Oracle will deny this access in 
+returned from `createGraphics` one gets warnings because of reflectively accessing the 
+JDK private class `SunGraphics2D`. And even worse Oracle will deny this access in 
 a future Java release.
 
 Venice 1.7.17 honors now the  _formal type_  of the values returned by methods or fields.
