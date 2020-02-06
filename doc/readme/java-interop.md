@@ -216,7 +216,7 @@ Java 8 and Java 9+.
 
 It's possible to do a cast explicitly, but it is not necessary:
 
-```
+```clojure
 (do
    (import :java.awt.image.BufferedImage)
    (import :java.awt.Graphics)
