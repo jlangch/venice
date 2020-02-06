@@ -168,11 +168,11 @@ _Note:_  this is not the fastest way to filter collections
 
 
 
-## Java 9+ and private modules:
+## Java 9+:
 
 Some public Java APIs return objects of classes that are defined in private module. This 
-causes problems accessing methods or fields via reflection on these objects or 
-classes. Java 9 changed the rules in that access to classes defined in private modules
+causes problems when accessing methods or fields of the objects via reflection. Java 9 
+changed the rules in that access to classes defined in private modules
 result in severe warnings. 
 
 Code that runs fine with Java 8 but gets problems with Java 9+ (Venice version prior to 1.7.17):
@@ -202,14 +202,16 @@ returned from `BufferedImage::createGraphics()` one gets warnings because of
 accessing a JDK private class. And even worse Oracle will deny this access in 
 a future Java release.
 
-With Venice version 1.7.17+ the above code runs fine without warnings on Java 8 and Java 9+.
+Venice 1.7.17 honors now the  _formal type_  of the values returned by methods or fields.
+
+With Venice version 1.7.17+ the above code runs now fine without warnings on Java 8 and Java 9+.
 
 **Venice Java Interop is handling these cases completely transparent for you. You don't need to add**
 **explicit type hints or add casts. Venice knows about the formal type of values returned from**
 **methods and invokes methods or fields on the formal type instead of the real type.**
 
 
-It's possible to do a cast explicitly, but it is not necessary in most cases:
+It's possible to do a cast explicitly, but it is not necessary:
 
 ```
 (do
