@@ -9,3 +9,6 @@
 [Project Euler](https://projecteuler.net/)
 
 [Dali SVG](https://github.com/stathissideris/dali)
+
+[Lisp 1.5 programmer's manual](http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf)
+
