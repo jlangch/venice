@@ -17,6 +17,13 @@ and this project adheres to
 Improve Java interop. **MethodHandle** and **LambdaMetafactory** improve reflection performance
 and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
+### Added
+
+- ...
+
+
+
+## [1.7.18] - 2020-02-xx
 
 ### Added
 
@@ -28,7 +35,6 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 ## [1.7.17] - 2020-02-05
-
 
 ### Added
 
