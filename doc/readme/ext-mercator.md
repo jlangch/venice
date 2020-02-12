@@ -1,6 +1,6 @@
 # MERCATOR Maps
 
-The [(Mercator Projection)](https://en.wikipedia.org/wiki/Mercator_projection)
+The [Mercator Projection](https://en.wikipedia.org/wiki/Mercator_projection)
 is a cylindrical map projection. 
 
 Venice's **geoip** module uses the Mercator map projection to show IP 
