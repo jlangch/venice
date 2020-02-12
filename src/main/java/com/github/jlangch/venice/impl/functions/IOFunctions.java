@@ -39,6 +39,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.CopyOption;
@@ -1196,7 +1197,10 @@ public class IOFunctions {
 						"or binary (bytebuf). \n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"  :user-agent agent - e.g :user-agent \"Mozilla\", defaults to nil \n" +
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8\n\n" +
+						"If the server returns a 403 (access denied) sending a user-agent\n" +
+						"may fool the website.")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1207,10 +1211,17 @@ public class IOFunctions {
 				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					final VncVal binary = options.get(new VncKeyword("binary"));
+					final VncVal useragent = options.get(new VncKeyword("user-agent"));
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 
-					try (BufferedInputStream is = new BufferedInputStream(new URL(uri).openStream())) {
+					
+				    final URLConnection conn = (URLConnection)new URL(uri).openConnection();
+				    if (Types.isVncString(useragent)) {
+				    	conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
+				    }
+					
+					try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
 						byte data[] = IOStreamUtil.copyIStoByteArray(is);
 
 						return binary == True

@@ -21,7 +21,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - functions `cast` and `formal-type` to allow explicit casts on Java objects 
-
+- an optional user-agent string for `io/download`. Some servers reply with a 403 (access denied)
+  if there is no user-agent sent with the HTTP request.
+  E.g.: `(io/download "https://foo/foo.png :binary true :user-agent "Mozilla")`
 
 
 ## [1.7.17] - 2020-02-05
