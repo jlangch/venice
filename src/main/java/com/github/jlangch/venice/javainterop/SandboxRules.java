@@ -605,8 +605,11 @@ public class SandboxRules {
 				"class:java.nio.HeapByteBuffer:*",
 				
 				"class:java.util.Date:*",
+				"class:java.util.List:*",
 				"class:java.util.ArrayList:*",
+				"class:java.util.Set:*",
 				"class:java.util.HashSet:*",
+				"class:java.util.Map:*",
 				"class:java.util.HashMap:*",
 				"class:java.util.LinkedHashMap:*",
 				"class:java.util.Locale:*",
