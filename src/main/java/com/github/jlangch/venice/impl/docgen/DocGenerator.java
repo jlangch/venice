@@ -1099,7 +1099,6 @@ public class DocGenerator {
 		file_io.addItem(getDocItem("io/slurp"));
 		file_io.addItem(getDocItem("io/slurp-lines"));
 		file_io.addItem(getDocItem("io/spit"));
-		file_io.addItem(getDocItem("io/download"));
 		file_io.addItem(getDocItem("io/temp-file"));
 
 		final DocSection file_test = new DocSection("file test");
@@ -1128,9 +1127,9 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
 		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
 
-		final DocSection web = new DocSection("web");
-		all.addSection(web);
-		web.addItem(getDocItem("io/download"));
+		final DocSection http = new DocSection("http");
+		all.addSection(http);
+		http.addItem(getDocItem("io/download"));
 
 		final DocSection zip = new DocSection("zip");
 		all.addSection(zip);
