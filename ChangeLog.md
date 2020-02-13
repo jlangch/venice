@@ -31,6 +31,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - an optional user-agent string for `io/download`. Some servers reply with a 403 (access denied)
   if there is no user-agent sent with the HTTP request.
   E.g.: `(io/download "https://foo/foo.png :binary true :user-agent "Mozilla")`
+- new sandbox default rules due to introduction of formal types: 
+    - class:java.util.List:*
+    - class:java.util.Set:*
+    - class:java.util.Map:*
 
 
 
