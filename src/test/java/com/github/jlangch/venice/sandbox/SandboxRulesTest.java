@@ -110,7 +110,7 @@ public class SandboxRulesTest {
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "max"));
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "abs"));
 		
-		assertFalse(wl.isWhiteListed(java.util.List.class, "size"));
+		assertFalse(wl.isWhiteListed(java.util.BitSet.class, "isEmpty"));
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class SandboxRulesTest {
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "max"));
 		assertTrue(wl.isWhiteListed(java.lang.Math.class, "abs"));
 		
-		assertTrue(wl.isWhiteListed(java.util.List.class, "size"));
+		assertTrue(wl.isWhiteListed(java.util.BitSet.class, "isEmpty"));
 	}
 
 	@Test
