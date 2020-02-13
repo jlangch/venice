@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 
 
-public class JavaInterop_FormalType_Test {
+public class JavaInterop_formal_type_Test {
 
 
 	@Test
