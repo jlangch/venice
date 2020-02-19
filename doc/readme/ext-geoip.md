@@ -68,12 +68,12 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
   ;; The MaxMind country database. 
   ;; Please make sure this file exists. It can be downloaded by just copy/paste 
   ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
-  ;; your license key. A free MaxMind license key can be obtained from
+  ;; your license key. A free MaxMind GeoLite2 license key can be obtained from
   ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
   
   ;; the png map created
-  (def map-out-file "./world-map.png")
+  (def map-out-file "./ip-world-map.png")
 
   (defn download-maxmind-db [lic-key]
     (when (some? (io/file-parent maxmind-country-zip))
@@ -118,7 +118,7 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
            ; draw the data to a PNG
            (draw :png map-out-file)))
     (do
-      (println "The MaxMind country file" maxmind-country-zip " does not exist!")
+      (println "The MaxMind country file" maxmind-country-zip "does not exist!")
       (println "Please download it:")
       (println "    (download-maxmind-db YOUR-MAXMIND-LIC-KEY)"))))
 ```
@@ -140,7 +140,7 @@ to locations and visualize them on a map.
   ;; The MaxMind country database. 
   ;; Please make sure this file exists. It can be downloaded by just copy/paste 
   ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
-  ;; your license key. A free MaxMind license key can be obtained from
+  ;; your license key. A free MaxMind GeoLite2 license key can be obtained from
   ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
 
@@ -245,7 +245,7 @@ to locations and visualize them on a map.
              (parse-log-files <>)
              (create-map <> ip-loc-rv out-file)))
       (do
-        (println "The MaxMind country file" maxmind-country-zip " does not exist!")
+        (println "The MaxMind country file" maxmind-country-zip "does not exist!")
         (println "Please download it:")
         (println "    (download-maxmind-db YOUR-MAXMIND-LIC-KEY)"))))
 
