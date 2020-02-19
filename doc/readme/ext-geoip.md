@@ -13,9 +13,15 @@ that can be visualized on a world map. The 'geoip' module uses the free
   (load-module :geoip)
 
 
+  ;; The MaxMind country database. 
+  ;; Please make sure this file exists. It can be downloaded by just copy/paste 
+  ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
+  ;; your license key. A free MaxMind license key can be obtained from
+  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
   
-  (def map-file "./world-map.png")
+  ;; the png  map created
+  (def map-out-file "./world-map.png")
 
   (defn download-maxmind-db [lic-key]
     (io/mkdirs (io/file-parent maxmind-country-zip))
@@ -47,7 +53,7 @@ that can be visualized on a world map. The 'geoip' module uses the free
                           (second (:loc x))
                           {:label (:country-iso x)
                            :font-size-px 14}]))
-           (draw :png map-file)))
+           (draw :png map-out-file)))
     (do
       (println "The MaxMind country file" maxmind-country-zip " does not exist!")
       (println "Please download it:")
@@ -68,6 +74,11 @@ to locations and visualize them on a map.
   (load-module :geoip)
 
 
+  ;; The MaxMind country database. 
+  ;; Please make sure this file exists. It can be downloaded by just copy/paste 
+  ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
+  ;; your license key. A free MaxMind license key can be obtained from
+  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
 
   (def private-ip-addresses
