@@ -5,6 +5,57 @@ that can be visualized on a world map. The 'geoip' module uses the free
 [MaxMind](https://www.maxmind.com/) location databases.
 
 
+## Example: Visualize some IP addresses on a map
+
+```clojure
+(do
+  (load-module :mercator)
+  (load-module :geoip)
+
+
+  (def maxmind-country-zip "resources/geoip-country.zip")
+  
+  (def map-file "./world-map.png")
+
+  (defn download-maxmind-db [lic-key]
+    (io/mkdirs (io/file-parent maxmind-country-zip))
+    (geoip/download-maxmind-db-to-zipfile
+      (io/file maxmind-country-zip) :country lic-key))
+
+  (defn draw [format file locations]
+    (-> (mercator/load-mercator-image)
+        (mercator/draw-locations locations)
+        (mercator/crop-image 400 600)
+        (mercator/save-image format file)))
+
+  (def resolver (geoip/ip-to-country-loc-resolver
+                   maxmind-country-zip
+                   (geoip/download-google-country-db)))
+
+  (defn map-ip-to-location [ip ip-loc-resolver]
+    (let [data (ip-loc-resolver ip)]
+      { :loc (geoip/map-location-to-numerics (:loc data))
+        :ip ip
+        :country (:country-name data)
+        :country-iso (:country-iso data) } ))
+
+  (if (io/exists-file? maxmind-country-zip)
+    (do
+      (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
+           (map #(map-ip-to-location % resolver))
+           (map (fn [x] [ (first (:loc x))
+                          (second (:loc x))
+                          {:label (:country-iso x)
+                           :font-size-px 14}]))
+           (draw :png map-file)))
+    (do
+      (println "The MaxMind country file" maxmind-country-zip " does not exist!")
+      (println "Please download it:")
+      (println "    (download-maxmind-db YOUR-MAXMIND-LIC-KEY)"))))
+```
+<img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-example.png">
+
+
 ## Example: Visualize Tomcat IP addresses on a map
 
 The script `tomcat-geoip.venice` parses Tomcat access log files, maps IP addresses
@@ -75,7 +126,8 @@ to locations and visualize them on a map.
     (merge-freq-maps (flatten (map parse-log-file log-files))))
 
   (defn map-to-location [ip-freq ip-loc-resolver]
-    (let [ip (key ip-freq) data (ip-loc-resolver ip)]
+    (let [ip (key ip-freq) 
+          data (ip-loc-resolver ip)]
       { :loc (geoip/map-location-to-numerics (:loc data))
         :ip ip
         :freq (val ip-freq)
@@ -120,7 +172,7 @@ to locations and visualize them on a map.
       (do
         (println "The MaxMind country file" maxmind-country-zip " does not exist!")
         (println "Please download it:")
-        (println "    (download-maxmind-db -your-maxmind-lic-key-)"))))
+        (println "    (download-maxmind-db YOUR-MAXMIND-LIC-KEY)"))))
 
 
   (println """
