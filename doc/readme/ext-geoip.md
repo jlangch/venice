@@ -5,7 +5,7 @@ that can be visualized on a world map. The 'geoip' module uses the free
 [MaxMind](https://www.maxmind.com/) location databases.
 
 
-## Example: Visualize some IP addresses on a map
+## Example: Visualize IP addresses on a map
 
 ```clojure
 (do
@@ -20,7 +20,7 @@ that can be visualized on a world map. The 'geoip' module uses the free
   ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
   
-  ;; the png  map created
+  ;; the png map created
   (def map-out-file "./world-map.png")
 
   (defn download-maxmind-db [lic-key]
@@ -48,11 +48,21 @@ that can be visualized on a world map. The 'geoip' module uses the free
   (if (io/exists-file? maxmind-country-zip)
     (do
       (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
+      
+           ; retrieve the location data for the IP addresses
            (map #(map-ip-to-location % resolver))
+           
+           ; enrich the data with with a label and define optional colors and font
            (map (fn [x] [ (first (:loc x))
                           (second (:loc x))
-                          {:label (:country-iso x)
-                           :font-size-px 14}]))
+                          { :label (:country-iso x)
+                            :fill-color [255 128 128 255]
+                            :border-color [255 0 0 255]
+                            :label-color [255 255 255 255]
+                            :radius 10
+                            :font-size-px 14 }]))
+                           
+           ; draw the data to a PNG
            (draw :png map-out-file)))
     (do
       (println "The MaxMind country file" maxmind-country-zip " does not exist!")
