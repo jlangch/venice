@@ -49,6 +49,13 @@ Alternatively the databases can be downloaded using the Venice GeoIP module. You
   (download-maxmind-country-db YOUR-MAXMIND-LIC-KEY))
 ```
 
+**Note**
+
+The MindMax country database does not include GPS location data. Venice uses Google's free
+country database to map the countries' ISO codes to latitude, longitude coordinates.
+
+https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
+
 
 ## Example: Visualize IP addresses on a map
 
