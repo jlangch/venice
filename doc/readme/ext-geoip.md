@@ -20,12 +20,12 @@ key in these URLs:
 
 **Manually download GeoLite2 Country database** 
 
-https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=YOUR_KEY&suffix=zip"
+https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=YOUR_KEY&suffix=zip
 
 
 **Manually download GeoLite2 City database**
 
-https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=YOUR_KEY&suffix=zip"
+https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=YOUR_KEY&suffix=zip
 
 
 **Download GeoLite2 databases with Venice**
