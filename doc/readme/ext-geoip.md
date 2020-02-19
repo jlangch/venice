@@ -5,6 +5,51 @@ that can be visualized on a world map. The 'geoip' module uses the free
 [MaxMind](https://www.maxmind.com/) location databases.
 
 
+## MaxMind GeoLite2 databases
+
+MindMax offers free GEO IP databases. Starting with December 30, 2019 a license key
+is required to download the free GeoLite2 databases. The license key is free, but 
+requires a registration at MindMax.
+
+Venice supports both the country as well as the city GEO database. The city database is
+pretty large and lookups are therefore much slower than with the country database. 
+
+To sign up for a GeoLite2 account visit [GeoLite2](https://dev.maxmind.com/geoip/geoip2/geolite2/). 
+If you have already a key the databases can be manually downloaded. Just insert your 
+key in these URLs:
+
+**Manually download GeoLite2 Country database** 
+
+https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=YOUR_KEY&suffix=zip"
+
+
+**Manually download GeoLite2 City database**
+
+https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=YOUR_KEY&suffix=zip"
+
+
+**Download GeoLite2 databases with Venice**
+
+Alternatively the databases can be downloaded using the Venice GeoIP module. You just run it from a REPL.
+
+```clojure
+(do
+  (load-module :geoip)
+  
+  (def maxmind-country-zip "resources/geoip-country.zip")
+
+  (defn download-maxmind-country-db [lic-key]
+    (when (some? (io/file-parent maxmind-country-zip))
+      (io/mkdirs (io/file-parent maxmind-country-zip)))
+    (geoip/download-maxmind-db-to-zipfile
+      (io/file maxmind-country-zip) 
+      :country 
+      lic-key))
+
+  (download-maxmind-country-db YOUR-MAXMIND-LIC-KEY))
+```
+
+
 ## Example: Visualize IP addresses on a map
 
 ```clojure
