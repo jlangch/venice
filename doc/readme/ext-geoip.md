@@ -24,7 +24,8 @@ that can be visualized on a world map. The 'geoip' module uses the free
   (def map-out-file "./world-map.png")
 
   (defn download-maxmind-db [lic-key]
-    (io/mkdirs (io/file-parent maxmind-country-zip))
+    (when (some? (io/file-parent maxmind-country-zip))
+      (io/mkdirs (io/file-parent maxmind-country-zip)))
     (geoip/download-maxmind-db-to-zipfile
       (io/file maxmind-country-zip) :country lic-key))
 
@@ -177,7 +178,8 @@ to locations and visualize them on a map.
   (def ip-loc-rv nil)
 
   (defn download-maxmind-db [lic-key]
-    (io/mkdirs (io/file-parent maxmind-country-zip))
+    (when (some? (io/file-parent maxmind-country-zip))
+      (io/mkdirs (io/file-parent maxmind-country-zip)))
     (geoip/download-maxmind-db-to-zipfile
       (io/file maxmind-country-zip) :country lic-key))
 
