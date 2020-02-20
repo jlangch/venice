@@ -17,20 +17,6 @@ surface. Longitude is an angle which ranges from 0° at the prime meridian
 to +180° eastward and -180° westward.
 
 
-### Mercator World Map
-
-Venice uses a square  _Mercator_  map with a latitude range -85.0° to + 85.0°.
-
-The function `(mercator/load-mercator-image)` loads it from [Wikipedia Mercator Map](https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG)
-
-You can provide your own map though, but it must:
-
-- follow the [Web Mercator projection](https://en.wikipedia.org/wiki/Web_Mercator_projection)
-- be a square image
-- have a latitude range -85.0° to + 85.0°
-- have a longitude range 0° to 360°
-
-
 ### Example
 
 Show a few cities (Zurich, New York, Tokyo, ...) given by its coordinates on 
@@ -64,3 +50,50 @@ a world map:
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/mercator.png">
+
+
+### Customizing
+
+#### Mercator World Map
+
+Venice uses a square  _Mercator_  map with a latitude range -85.0° to + 85.0°.
+
+The function `(mercator/load-mercator-image)` loads it from [Wikipedia Mercator Map](https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG)
+
+You can provide your own map though, but it must:
+
+- follow the [Web Mercator projection](https://en.wikipedia.org/wiki/Web_Mercator_projection)
+- be a square image
+- have a latitude range -85.0° to + 85.0°
+- have a longitude range 0° to 360°
+
+
+#### Markers
+
+The markers can be customized with a label, size and color passed as an optional map to each location. E.g.:
+
+```clojure
+{ :label "Zurich"
+  :radius 10
+  :fill-color [128 128 255 255]
+  :border-color [0 0 255 255]
+  :label-color [255 255 255 255]
+  :font-size-px 14 }
+```
+
+Label:
+
+| Property          | Type   | Example           | Description                    |
+| :---              | :---   | :---              | :---                           |
+| :label            | string | "Zurich"          | A label                        |
+| :label-color      | vector | [255 255 255 255] | The label's color as RGBA      |
+| :font-size-px     | long   | 14                | The label's font size in pixel |
+
+Marker:
+
+| Property          | Type   | Example           | Description                       |
+| :---              | :---   | :---              | :---                              |
+| :radius           | long   | 10                | The marker's radius in pixel      |
+| :border-color     | vector | [0 0 255 255]     | The marker's border color as RGBA |
+| :fill-color       | vector | [128 128 255 255] | The marker's fill color as RGBA   |
+
