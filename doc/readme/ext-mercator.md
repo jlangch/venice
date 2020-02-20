@@ -91,7 +91,7 @@ a world map:
 
 #### Mercator World Map
 
-Venice uses a square **Mercator**  map with a latitude range -85.0° to + 85.0°.
+Venice uses a square **Mercator**  map with a latitude range -85.0° to +85.0°.
 
 The function `(mercator/load-mercator-image)` loads it from [Wikipedia Mercator Map](https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG)
 
@@ -99,8 +99,8 @@ You can provide your own map though, but it must:
 
 - follow the [Web Mercator projection](https://en.wikipedia.org/wiki/Web_Mercator_projection) standard
 - be a square image
-- have a latitude range -85.0° to + 85.0°
-- have a longitude range 0° to 360°
+- have a latitude range -85.0° to +85.0°
+- have a longitude range -180° to +180°
 
 
 #### Markers

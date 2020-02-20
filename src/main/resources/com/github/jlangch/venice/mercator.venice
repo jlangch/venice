@@ -37,7 +37,7 @@
 ;;;; The formulas are taken from:
 ;;;; https://en.wikipedia.org/wiki/Web_Mercator_projection
 ;;;;
-;;;; A square Mercator map with a latitude range -85.0° to + 85.0°:
+;;;; A square Mercator map with a latitude range -85.0° to +85.0°:
 ;;;; https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG
 ;;;;
 ;;;; Resources:
