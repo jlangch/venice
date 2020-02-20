@@ -30,11 +30,17 @@ Basic rendering flow:
 
 ##### `load-mercator-image`
 
-Loads the mercator image
+Usage: (load-mercator-image)
+
+Loads the mercator image (returns an image of type `:java.awt.image.BufferedImage`)
+
 
 ##### `draw-locations`
 
-Draws the locations. Expects a list of locations. A location is a vector composed of a latitude, a longitude, and an optional marker properties 
+Usage: (draw-locations image locations) (draw-locations image locations default-styles)
+
+Draws the locations. Expects a list of locations and a :java.awt.image.BufferedImage. 
+A location is a vector composed of a latitude, a longitude, and an optional marker properties 
 map.
 
 Location examples:
@@ -42,13 +48,20 @@ Location examples:
 - `[47.3717400 8.5422600]`
 - `[47.3717400 8.5422600 { :label "Zurich" }]`
 
+
 ##### `crop-image`
 
-Crops the image north and south
+Usage: (crop-image image crop-top crop-bottom)
+
+Crops the map image north and south to remove uninteresting image parts
+
 
 ##### `save-image`
 
-Saves the image to a file or stream
+Usage: (save-image image format file)
+
+Saves the image to a file in the given format (:png, :jpg, :gif)
+
 
 
 ### Example
