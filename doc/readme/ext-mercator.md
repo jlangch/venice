@@ -17,6 +17,32 @@ surface. Longitude is an angle which ranges from 0° at the prime meridian
 to +180° eastward and -180° westward.
 
 
+### API
+
+Basic rendering flow:
+
+```clojure
+  (-> (mercator/load-mercator-image)
+      (mercator/draw-locations locations)
+      (mercator/crop-image 400 600)
+      (mercator/save-image :png "./test-map.png")))
+```
+
+| Function            | Description                    |
+| :---                | :---                           |
+| `load-mercator-image` | Loads the mercator image       |
+| `draw-locations`     | Draws the locations in the image. Expects list of locations. A location 
+is vector with a latitude, a longitude, and an optional marker properties 
+map.
+
+Location examples: 
+
+- `[47.3717400 8.5422600]`
+- `[47.3717400 8.5422600 { :label "Zurich" }]`                      |
+| `crop-image`         | Crops the image north and south                      |
+| `save-image`         | Saves the image to a file or stream                      |
+
+
 ### Example
 
 Show a few cities (Zurich, New York, Tokyo, ...) given by its coordinates on 
@@ -27,6 +53,7 @@ a world map:
   (load-module :mercator)
 
   (def cities
+                  ; latitude       longitude  
     { :zurich     [ 47.3717400     8.5422600 { :label "Zurich"
                                                :radius 10
                                                :fill-color [128 128 255 255]
