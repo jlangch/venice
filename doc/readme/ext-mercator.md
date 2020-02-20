@@ -16,6 +16,21 @@ at north and -90° at south pole.
 surface. Longitude is an angle which ranges from 0° at the prime meridian
 to +180° eastward and -180° westward.
 
+
+### Mercator World Map
+
+Venice uses a square  _Mercator_  map with a latitude range -85.0° to + 85.0°.
+
+The function `(mercator/load-mercator-image)` loads it from [Wikipedia Mercator Map](https://upload.wikimedia.org/wikipedia/commons/7/73/Mercator_projection_Square.JPG)
+
+You can provide your own map though, but it must:
+
+- follow the [Web Mercator projection](https://en.wikipedia.org/wiki/Web_Mercator_projection)
+- be a square image
+- have a latitude range -85.0° to + 85.0°
+- have a longitude range 0° to 360°
+
+
 ### Example
 
 Show a few cities (Zurich, New York, Tokyo, ...) given by its coordinates on 
