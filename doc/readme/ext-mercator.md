@@ -23,7 +23,7 @@ Basic rendering flow:
 
 ```clojure
   (-> (mercator/load-mercator-image)
-      (mercator/draw-locations locations)
+      (mercator/draw-locations '([47.3717400 8.5422600]))
       (mercator/crop-image 400 600)
       (mercator/save-image :png "./test-map.png")))
 ```
