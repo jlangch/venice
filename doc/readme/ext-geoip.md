@@ -36,17 +36,15 @@ Alternatively the databases can be downloaded using the Venice GeoIP module. You
 (do
   (load-module :geoip)
   
-  (def maxmind-country-zip "resources/geoip-country.zip")
-
-  (defn download-maxmind-country-db [lic-key]
-    (when (some? (io/file-parent maxmind-country-zip))
-      (io/mkdirs (io/file-parent maxmind-country-zip)))
+  (defn download-maxmind-country-db [lic-key dest-zip]
+    (when (some? (io/file-parent dest-zip))
+      (io/mkdirs (io/file-parent dest-zip)))
     (geoip/download-maxmind-db-to-zipfile
-      (io/file maxmind-country-zip) 
+      (io/file dest-zip) 
       :country 
       lic-key))
 
-  (download-maxmind-country-db YOUR-MAXMIND-LIC-KEY))
+  (download-maxmind-country-db YOUR-MAXMIND-LIC-KEY "resources/geoip-country.zip"))
 ```
 
 **Note**
