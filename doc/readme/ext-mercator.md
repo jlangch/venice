@@ -28,19 +28,27 @@ Basic rendering flow:
       (mercator/save-image :png "./test-map.png")))
 ```
 
-| Function            | Description                    |
-| :---                | :---                           |
-| `load-mercator-image` | Loads the mercator image       |
-| `draw-locations`     | Draws the locations in the image. Expects list of locations. A location 
-is vector with a latitude, a longitude, and an optional marker properties 
-map.<br>
+##### `load-mercator-image`
 
-Location examples: <br>
+Loads the mercator image
+
+##### `draw-locations`
+
+Draws the locations. Expects list of locations. A location is a vector composed of a latitude, a longitude, and an optional marker properties 
+map.
+
+Location examples:
 
 - `[47.3717400 8.5422600]`
-- `[47.3717400 8.5422600 { :label "Zurich" }]`                      |
-| `crop-image`         | Crops the image north and south                      |
-| `save-image`         | Saves the image to a file or stream                      |
+- `[47.3717400 8.5422600 { :label "Zurich" }]`
+
+##### `crop-image`
+
+Crops the image north and south
+
+##### `save-image`
+
+Saves the image to a file or stream
 
 
 ### Example
