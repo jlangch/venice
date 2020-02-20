@@ -62,7 +62,7 @@ The function `(mercator/load-mercator-image)` loads it from [Wikipedia Mercator 
 
 You can provide your own map though, but it must:
 
-- follow the [Web Mercator projection](https://en.wikipedia.org/wiki/Web_Mercator_projection)
+- follow the [Web Mercator projection](https://en.wikipedia.org/wiki/Web_Mercator_projection) standard
 - be a square image
 - have a latitude range -85.0° to + 85.0°
 - have a longitude range 0° to 360°
