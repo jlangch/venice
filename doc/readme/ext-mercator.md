@@ -33,9 +33,9 @@ Basic rendering flow:
 | `load-mercator-image` | Loads the mercator image       |
 | `draw-locations`     | Draws the locations in the image. Expects list of locations. A location 
 is vector with a latitude, a longitude, and an optional marker properties 
-map.
+map.<br>
 
-Location examples: 
+Location examples: <br>
 
 - `[47.3717400 8.5422600]`
 - `[47.3717400 8.5422600 { :label "Zurich" }]`                      |
