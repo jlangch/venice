@@ -205,7 +205,7 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.17</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.18</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -999,7 +999,7 @@
                             
                             <tr>
                                 <td class="shrink">General</td>
-                                <td class="expand"><code><a href="#1534">.</a> <a href="#1535">proxify</a> <a href="#1536">delegate</a> <a href="#1537">import</a> <a href="#1538">imports</a> <a href="#1539">supers</a> <a href="#1540">bases</a> <a href="#1541">class</a> <a href="#1542">java-obj?</a> <a href="#1543">java-iterator-to-list</a> <a href="#1544">java-enumeration-to-list</a> <span> </span><br/><span>Invoke constructors</span><br/><span>Invoke static or instance methods</span><br/><span>Access static or instance fields</span><br/></code></td>
+                                <td class="expand"><code><a href="#1534">.</a> <a href="#1535">proxify</a> <a href="#1536">import</a> <a href="#1537">imports</a> <a href="#1538">supers</a> <a href="#1539">bases</a> <a href="#1540">class</a> <a href="#1541">cast</a> <a href="#1542">formal-type</a> <a href="#1543">java-obj?</a> <a href="#1544">java-iterator-to-list</a> <a href="#1545">java-enumeration-to-list</a> <span> </span><br/><span>Invoke constructors</span><br/><span>Invoke static or instance methods</span><br/><span>Access static or instance fields</span><br/></code></td>
                             </tr>
                             
                         </tbody>
@@ -1007,7 +1007,7 @@
                     
                 </div>
                 
-                <div class="section" id="1545">
+                <div class="section" id="1546">
                     <h2>IO</h2>
                     
                     <h3></h3>
@@ -1016,22 +1016,22 @@
                             
                             <tr>
                                 <td class="shrink">to</td>
-                                <td class="expand"><code><a href="#1546">print</a> <a href="#1547">println</a> <a href="#1548">printf</a> <a href="#1549">flush</a> <a href="#1550">newline</a> </code></td>
+                                <td class="expand"><code><a href="#1547">print</a> <a href="#1548">println</a> <a href="#1549">printf</a> <a href="#1550">flush</a> <a href="#1551">newline</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">to-str</td>
-                                <td class="expand"><code><a href="#1551">pr-str</a> <a href="#1257">with-out-str</a> </code></td>
+                                <td class="expand"><code><a href="#1552">pr-str</a> <a href="#1257">with-out-str</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">from</td>
-                                <td class="expand"><code><a href="#1552">readline</a> <a href="#1553">read-string</a> </code></td>
+                                <td class="expand"><code><a href="#1553">readline</a> <a href="#1554">read-string</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">file i/o</td>
-                                <td class="expand"><code><a href="#1554">io/file</a> <a href="#1555">io/file-parent</a> <a href="#1556">io/file-name</a> <a href="#1557">io/file-path</a> <a href="#1558">io/file-absolute-path</a> <a href="#1559">io/file-canonical-path</a> <a href="#1560">io/file-ext?</a> <a href="#1561">io/list-files</a> <a href="#1562">io/list-files-glob</a> <a href="#1563">io/list-file-tree</a> <a href="#1564">io/file-size</a> <a href="#1565">io/delete-file</a> <a href="#1566">io/delete-file-on-exit</a> <a href="#1567">io/delete-file-tree</a> <a href="#1568">io/copy-file</a> <a href="#1569">io/move-file</a> <a href="#1570">io/mkdir</a> <a href="#1571">io/mkdirs</a> <a href="#1572">io/slurp</a> <a href="#1573">io/slurp-lines</a> <a href="#1574">io/spit</a> <a href="#1575">io/download</a> <a href="#1576">io/temp-file</a> </code></td>
+                                <td class="expand"><code><a href="#1555">io/file</a> <a href="#1556">io/file-parent</a> <a href="#1557">io/file-name</a> <a href="#1558">io/file-path</a> <a href="#1559">io/file-absolute-path</a> <a href="#1560">io/file-canonical-path</a> <a href="#1561">io/file-ext?</a> <a href="#1562">io/list-files</a> <a href="#1563">io/list-files-glob</a> <a href="#1564">io/list-file-tree</a> <a href="#1565">io/file-size</a> <a href="#1566">io/delete-file</a> <a href="#1567">io/delete-file-on-exit</a> <a href="#1568">io/delete-file-tree</a> <a href="#1569">io/copy-file</a> <a href="#1570">io/move-file</a> <a href="#1571">io/mkdir</a> <a href="#1572">io/mkdirs</a> <a href="#1573">io/slurp</a> <a href="#1574">io/slurp-lines</a> <a href="#1575">io/spit</a> <a href="#1576">io/temp-file</a> </code></td>
                             </tr>
                             
                             <tr>
@@ -1050,18 +1050,23 @@
                             </tr>
                             
                             <tr>
+                                <td class="shrink">http</td>
+                                <td class="expand"><code><a href="#1594">io/download</a> </code></td>
+                            </tr>
+                            
+                            <tr>
                                 <td class="shrink">zip</td>
-                                <td class="expand"><code><a href="#1594">io/zip</a> <a href="#1595">io/zip-file</a> <a href="#1596">io/zip-list</a> <a href="#1597">io/zip-list-entry-names</a> <a href="#1598">io/zip-append</a> <a href="#1599">io/zip-remove</a> <a href="#1600">io/zip?</a> <a href="#1601">io/unzip</a> <a href="#1602">io/unzip-first</a> <a href="#1603">io/unzip-nth</a> <a href="#1604">io/unzip-all</a> <a href="#1605">io/unzip-to-dir</a> </code></td>
+                                <td class="expand"><code><a href="#1595">io/zip</a> <a href="#1596">io/zip-file</a> <a href="#1597">io/zip-list</a> <a href="#1598">io/zip-list-entry-names</a> <a href="#1599">io/zip-append</a> <a href="#1600">io/zip-remove</a> <a href="#1601">io/zip?</a> <a href="#1602">io/unzip</a> <a href="#1603">io/unzip-first</a> <a href="#1604">io/unzip-nth</a> <a href="#1605">io/unzip-all</a> <a href="#1606">io/unzip-to-dir</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">gzip</td>
-                                <td class="expand"><code><a href="#1606">io/gzip</a> <a href="#1607">io/gzip-to-stream</a> <a href="#1608">io/gzip?</a> <a href="#1609">io/ungzip</a> <a href="#1610">io/ungzip-to-stream</a> </code></td>
+                                <td class="expand"><code><a href="#1607">io/gzip</a> <a href="#1608">io/gzip-to-stream</a> <a href="#1609">io/gzip?</a> <a href="#1610">io/ungzip</a> <a href="#1611">io/ungzip-to-stream</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">other</td>
-                                <td class="expand"><code><a href="#1257">with-out-str</a> <a href="#1611">io/load-classpath-resource</a> <a href="#1612">io/mime-type</a> <a href="#1613">io/default-charset</a> </code></td>
+                                <td class="expand"><code><a href="#1257">with-out-str</a> <a href="#1612">io/load-classpath-resource</a> <a href="#1613">io/mime-type</a> <a href="#1614">io/default-charset</a> </code></td>
                             </tr>
                             
                         </tbody>
@@ -1069,7 +1074,7 @@
                     
                 </div>
                 
-                <div class="section" id="1614">
+                <div class="section" id="1615">
                     <h2>Application</h2>
                     
                     <h3></h3>
@@ -1078,7 +1083,7 @@
                             
                             <tr>
                                 <td class="shrink">Management</td>
-                                <td class="expand"><code><a href="#1615">app/build</a> <a href="#1616">app/manifest</a> </code></td>
+                                <td class="expand"><code><a href="#1616">app/build</a> <a href="#1617">app/manifest</a> </code></td>
                             </tr>
                             
                         </tbody>
@@ -1377,7 +1382,7 @@ public class Example {
                     </div>
                     <div class="examples">
                         <code>*version*
-=&gt; &quot;1.7.17&quot;</code>
+=&gt; &quot;1.7.18&quot;</code>
                     </div>
                 </div>
                 
@@ -1600,7 +1605,7 @@ form, etc.</code>
 
 ;; invoke static method 
 (. :java.time.ZonedDateTime :now)
-=&gt; 2020-02-05T12:31:04.379+01:00[Europe/Zurich]
+=&gt; 2020-02-20T13:16:42.153+01:00[Europe/Zurich]
 
 ;; invoke static method 
 (. :java.lang.Math :min 10 20)
@@ -2204,7 +2209,7 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                 
                  
                 
-                <div class="detail" id="1615">
+                <div class="detail" id="1616">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>app/build</h1>
                     
@@ -2245,7 +2250,7 @@ Or with additional Java libraries (all JARs in &apos;libs&apos; dir):
                 
                  
                 
-                <div class="detail" id="1616">
+                <div class="detail" id="1617">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>app/manifest</h1>
                     
@@ -2657,7 +2662,7 @@ value to thread into any argument position.</code>
                 
                  
                 
-                <div class="detail" id="1540">
+                <div class="detail" id="1539">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>bases</h1>
                     
@@ -3246,6 +3251,38 @@ of test-constant result-expr</code>
                 
                  
                 
+                <div class="detail" id="1541">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>cast</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(cast class object)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Casts a Java object</code>
+                    </div>
+                    <div class="examples">
+                        <code>(do 
+   (import :java.awt.image.BufferedImage) 
+   (import :java.awt.Graphics) 
+
+   ;; cast the graphics context to &apos;java.awt.Graphics&apos; instead of the 
+   ;; implicit cast to &apos;java.awt.Graphics2D&apos; as Venice is doing 
+   (let [img (. :BufferedImage :new 40 40 1) 
+         gd (cast :Graphics (. img :createGraphics))] 
+     (. gd :fillOval 10 20 5 5)
+     img))
+=&gt; BufferedImage@5e5792a0: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
+                    </div>
+                </div>
+                
+                 
+                
                 <div class="detail" id="1013">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>ceil</h1>
@@ -3411,7 +3448,7 @@ of test-constant result-expr</code>
                 
                  
                 
-                <div class="detail" id="1541">
+                <div class="detail" id="1540">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>class</h1>
                     
@@ -3655,7 +3692,7 @@ the same effects, if any, and returns the opposite truth value.</code>
                     </div>
                     <div class="examples">
                         <code>(complement even?)
-=&gt; function anonymous-12529971-9aea-4e85-8c6d-6a82e7dc1f9f {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-424c62af-cc50-439d-9028-a01302707e00 {visibility :public, ns &quot;core&quot;}
 
 (filter (complement even?) &apos;(1 2 3 4))
 =&gt; (1 3)</code>
@@ -4337,7 +4374,7 @@ Options:
                     </div>
                     <div class="examples">
                         <code>(current-time-millis)
-=&gt; 1580902264352</code>
+=&gt; 1582201002128</code>
                     </div>
                 </div>
                 
@@ -4879,28 +4916,6 @@ working...
                 
                  
                 
-                <div class="detail" id="1536">
-                    <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>delegate</h1>
-                    
-                    <div class="arglists">
-                        <div class="arglist">
-                           
-                           <code>(delegate classname object)</code>
-                           
-                        </div>
-                    </div>
-                    
-                    <div class="descr">
-                        <code>Wraps the delegate object with an instance of type classname</code>
-                    </div>
-                    <div class="examples">
-                        <code></code>
-                    </div>
-                </div>
-                
-                 
-                
                 <div class="detail" id="1481">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>deliver</h1>
@@ -5163,7 +5178,7 @@ Test...
                     </div>
                     <div class="examples">
                         <code>(dobench 10 (+ 1 1))
-=&gt; (3639 1464 2185 1837 1637 1615 1373 1255 1130 1384)</code>
+=&gt; (3021 1110 1746 1315 1009 971 794 596 551 673)</code>
                     </div>
                 </div>
                 
@@ -5951,7 +5966,7 @@ evaluated in order. Returns x.</code>
                 
                  
                 
-                <div class="detail" id="1549">
+                <div class="detail" id="1550">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>flush</h1>
                     
@@ -6080,6 +6095,37 @@ of *out*. With arg flushes the passed output stream.</code>
    (force x))                                      
 working...
 =&gt; 100</code>
+                    </div>
+                </div>
+                
+                 
+                
+                <div class="detail" id="1542">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>formal-type</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(formal-type object)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Returns the formal type of a Java object</code>
+                    </div>
+                    <div class="examples">
+                        <code>(do 
+   (import :java.awt.image.BufferedImage) 
+   (import :java.awt.Graphics) 
+
+   ;; cast the graphics context to &apos;java.awt.Graphics&apos; instead of the 
+   ;; implicit cast to &apos;java.awt.Graphics2D&apos; as Venice is doing 
+   (let [img (. :BufferedImage :new 40 40 1) 
+         gd (cast :Graphics (. img :createGraphics))] 
+     (formal-type gd)))
+=&gt; :java.awt.Graphics</code>
                     </div>
                 </div>
                 
@@ -6349,8 +6395,8 @@ After 300ms: done=true
     (fn [] (log &quot;Worker&quot; n)))                    
   (apply futures-wait (futures-fork 3 factory)))     
 Worker0
-Worker1
 Worker2
+Worker1
 =&gt; nil</code>
                     </div>
                 </div>
@@ -6765,7 +6811,7 @@ otherwise else expr, if supplied, else nil.</code>
                 
                  
                 
-                <div class="detail" id="1537">
+                <div class="detail" id="1536">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>import</h1>
                     
@@ -6814,7 +6860,7 @@ alpha: true
                 
                  
                 
-                <div class="detail" id="1538">
+                <div class="detail" id="1537">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>imports</h1>
                     
@@ -7170,7 +7216,7 @@ alpha: true
                 
                  
                 
-                <div class="detail" id="1568">
+                <div class="detail" id="1569">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/copy-file</h1>
                     
@@ -7217,7 +7263,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1613">
+                <div class="detail" id="1614">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/default-charset</h1>
                     
@@ -7239,7 +7285,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1565">
+                <div class="detail" id="1566">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/delete-file</h1>
                     
@@ -7261,7 +7307,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1566">
+                <div class="detail" id="1567">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/delete-file-on-exit</h1>
                     
@@ -7283,7 +7329,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1567">
+                <div class="detail" id="1568">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/delete-file-tree</h1>
                     
@@ -7305,7 +7351,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1575">
+                <div class="detail" id="1594">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/download</h1>
                     
@@ -7322,7 +7368,11 @@ Options:
 
 Options: 
   :binary true/false - e.g :binary true, defaults to false 
-  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8</code>
+  :user-agent agent - e.g :user-agent &quot;Mozilla&quot;, defaults to nil 
+  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8
+
+If the server returns a 403 (access denied) sending a user-agent
+may fool the website.</code>
                     </div>
                     <div class="examples">
                         <code></code>
@@ -7377,7 +7427,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1554">
+                <div class="detail" id="1555">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file</h1>
                     
@@ -7409,7 +7459,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1558">
+                <div class="detail" id="1559">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-absolute-path</h1>
                     
@@ -7498,7 +7548,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1559">
+                <div class="detail" id="1560">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-canonical-path</h1>
                     
@@ -7521,7 +7571,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1560">
+                <div class="detail" id="1561">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-ext?</h1>
                     
@@ -7569,7 +7619,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1556">
+                <div class="detail" id="1557">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-name</h1>
                     
@@ -7592,7 +7642,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1555">
+                <div class="detail" id="1556">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-parent</h1>
                     
@@ -7615,7 +7665,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1557">
+                <div class="detail" id="1558">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-path</h1>
                     
@@ -7638,7 +7688,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1564">
+                <div class="detail" id="1565">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-size</h1>
                     
@@ -7684,7 +7734,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1606">
+                <div class="detail" id="1607">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/gzip</h1>
                     
@@ -7709,7 +7759,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1607">
+                <div class="detail" id="1608">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/gzip-to-stream</h1>
                     
@@ -7739,7 +7789,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1608">
+                <div class="detail" id="1609">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/gzip?</h1>
                     
@@ -7762,7 +7812,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1563">
+                <div class="detail" id="1564">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/list-file-tree</h1>
                     
@@ -7787,7 +7837,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1561">
+                <div class="detail" id="1562">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/list-files</h1>
                     
@@ -7812,7 +7862,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1562">
+                <div class="detail" id="1563">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/list-files-glob</h1>
                     
@@ -7836,7 +7886,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1611">
+                <div class="detail" id="1612">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/load-classpath-resource</h1>
                     
@@ -7858,7 +7908,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1612">
+                <div class="detail" id="1613">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/mime-type</h1>
                     
@@ -7884,7 +7934,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1570">
+                <div class="detail" id="1571">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/mkdir</h1>
                     
@@ -7906,7 +7956,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1571">
+                <div class="detail" id="1572">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/mkdirs</h1>
                     
@@ -7928,7 +7978,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1569">
+                <div class="detail" id="1570">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/move-file</h1>
                     
@@ -7950,7 +8000,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1572">
+                <div class="detail" id="1573">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/slurp</h1>
                     
@@ -7976,7 +8026,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1573">
+                <div class="detail" id="1574">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/slurp-lines</h1>
                     
@@ -8035,7 +8085,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1574">
+                <div class="detail" id="1575">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/spit</h1>
                     
@@ -8144,7 +8194,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1609">
+                <div class="detail" id="1610">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/ungzip</h1>
                     
@@ -8169,7 +8219,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1610">
+                <div class="detail" id="1611">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/ungzip-to-stream</h1>
                     
@@ -8195,7 +8245,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1601">
+                <div class="detail" id="1602">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip</h1>
                     
@@ -8220,7 +8270,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1604">
+                <div class="detail" id="1605">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-all</h1>
                     
@@ -8246,7 +8296,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1602">
+                <div class="detail" id="1603">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-first</h1>
                     
@@ -8271,7 +8321,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1603">
+                <div class="detail" id="1604">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-nth</h1>
                     
@@ -8297,7 +8347,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1605">
+                <div class="detail" id="1606">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-to-dir</h1>
                     
@@ -8481,7 +8531,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1594">
+                <div class="detail" id="1595">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip</h1>
                     
@@ -8522,7 +8572,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1598">
+                <div class="detail" id="1599">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-append</h1>
                     
@@ -8551,7 +8601,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1595">
+                <div class="detail" id="1596">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-file</h1>
                     
@@ -8582,7 +8632,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1596">
+                <div class="detail" id="1597">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-list</h1>
                     
@@ -8608,7 +8658,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1597">
+                <div class="detail" id="1598">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-list-entry-names</h1>
                     
@@ -8630,7 +8680,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1599">
+                <div class="detail" id="1600">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-remove</h1>
                     
@@ -8656,7 +8706,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1600">
+                <div class="detail" id="1601">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip?</h1>
                     
@@ -8679,7 +8729,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1544">
+                <div class="detail" id="1545">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-enumeration-to-list</h1>
                     
@@ -8701,7 +8751,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1543">
+                <div class="detail" id="1544">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-iterator-to-list</h1>
                     
@@ -8723,7 +8773,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1542">
+                <div class="detail" id="1543">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-obj?</h1>
                     
@@ -8786,7 +8836,7 @@ Options:
                     </div>
                     <div class="examples">
                         <code>(java-version-info)
-=&gt; {:version &quot;1.8.0_242&quot; :vendor &quot;Azul Systems, Inc.&quot; :vm-version &quot;25.242-b20&quot; :vm-name &quot;OpenJDK 64-Bit Server VM&quot; :vm-vendor &quot;Azul Systems, Inc.&quot;}</code>
+=&gt; {:version &quot;1.8.0_242&quot; :vendor &quot;AdoptOpenJDK&quot; :vm-version &quot;25.242-b08&quot; :vm-name &quot;OpenJDK 64-Bit Server VM&quot; :vm-vendor &quot;AdoptOpenJDK&quot;}</code>
                     </div>
                 </div>
                 
@@ -10247,7 +10297,7 @@ To recursively expand all macros in a form use (macroexpand-all form).</code>
           :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
   (time (fibonacci 25)))
-Elapsed time: 10.66 ms
+Elapsed time: 9.56 ms
 =&gt; 75025</code>
                     </div>
                 </div>
@@ -10579,7 +10629,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     </div>
                     <div class="examples">
                         <code>(nano-time)
-=&gt; 113386569090024</code>
+=&gt; 141994409221592</code>
                     </div>
                 </div>
                 
@@ -10652,7 +10702,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                 
                  
                 
-                <div class="detail" id="1550">
+                <div class="detail" id="1551">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>newline</h1>
                     
@@ -11673,7 +11723,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                     </div>
                     <div class="examples">
                         <code>(pid)
-=&gt; &quot;37607&quot;</code>
+=&gt; &quot;33011&quot;</code>
                     </div>
                 </div>
                 
@@ -11860,7 +11910,7 @@ Walked: (1 2 {:a 1 :b 2})
                 
                  
                 
-                <div class="detail" id="1551">
+                <div class="detail" id="1552">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>pr-str</h1>
                     
@@ -11921,7 +11971,7 @@ Walked: 2
                 
                  
                 
-                <div class="detail" id="1546">
+                <div class="detail" id="1547">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>print</h1>
                     
@@ -11948,7 +11998,7 @@ Returns nil.</code>
                 
                  
                 
-                <div class="detail" id="1548">
+                <div class="detail" id="1549">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>printf</h1>
                     
@@ -11977,7 +12027,7 @@ line 2: 456
                 
                  
                 
-                <div class="detail" id="1547">
+                <div class="detail" id="1548">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>println</h1>
                     
@@ -12287,10 +12337,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-double)
-=&gt; 0.5857929296065647
+=&gt; 0.6787968179275903
 
 (rand-double 100.0)
-=&gt; 19.564076869907964</code>
+=&gt; 58.04902230397639</code>
                     </div>
                 </div>
                 
@@ -12316,10 +12366,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-gaussian)
-=&gt; 0.29823587434630294
+=&gt; 2.3992963185961504
 
 (rand-gaussian 0.0 5.0)
-=&gt; 3.411261016831279</code>
+=&gt; -2.829626557990908</code>
                     </div>
                 </div>
                 
@@ -12345,10 +12395,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-long)
-=&gt; 2136119590711462551
+=&gt; 8922805426947261947
 
 (rand-long 100)
-=&gt; 91</code>
+=&gt; 76</code>
                     </div>
                 </div>
                 
@@ -12399,7 +12449,7 @@ This function is based on a cryptographically strong random number generator (RN
                 
                  
                 
-                <div class="detail" id="1553">
+                <div class="detail" id="1554">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>read-string</h1>
                     
@@ -12426,7 +12476,7 @@ This function is based on a cryptographically strong random number generator (RN
                 
                  
                 
-                <div class="detail" id="1552">
+                <div class="detail" id="1553">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>readline</h1>
                     
@@ -13062,12 +13112,12 @@ nil
                     </div>
                     <div class="examples">
                         <code>(repeatedly 5 #(rand-long 11))
-=&gt; (8 0 10 0 2)
+=&gt; (0 7 1 0 8)
 
 ;; compare with repeat, which only calls the &apos;rand-long&apos;
 ;; function once, repeating the value five times. 
 (repeat 5 (rand-long 11))
-=&gt; (6 6 6 6 6)</code>
+=&gt; (7 7 7 7 7)</code>
                     </div>
                 </div>
                 
@@ -13844,13 +13894,13 @@ sh returns a map of
                     </div>
                     <div class="examples">
                         <code>(shuffle &apos;(1 2 3 4 5 6))
-=&gt; (3 4 5 2 1 6)
+=&gt; (6 5 2 3 1 4)
 
 (shuffle [1 2 3 4 5 6])
-=&gt; [1 5 3 2 6 4]
+=&gt; [4 3 1 6 2 5]
 
 (shuffle &quot;abcdef&quot;)
-=&gt; (&quot;a&quot; &quot;d&quot; &quot;b&quot; &quot;f&quot; &quot;c&quot; &quot;e&quot;)</code>
+=&gt; (&quot;d&quot; &quot;b&quot; &quot;f&quot; &quot;e&quot; &quot;c&quot; &quot;a&quot;)</code>
                     </div>
                 </div>
                 
@@ -15901,7 +15951,7 @@ line3&quot;)
                 
                  
                 
-                <div class="detail" id="1539">
+                <div class="detail" id="1538">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>supers</h1>
                     
@@ -16452,7 +16502,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     </div>
                     <div class="examples">
                         <code>(time (+ 100 200))
-Elapsed time: 10.95 µs
+Elapsed time: 9.57 µs
 =&gt; 300</code>
                     </div>
                 </div>
@@ -16524,7 +16574,7 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/date)
-=&gt; Wed Feb 05 12:30:53 CET 2020</code>
+=&gt; Thu Feb 20 13:16:30 CET 2020</code>
                     </div>
                 </div>
                 
@@ -16570,13 +16620,13 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-month (time/local-date))
-=&gt; 5
+=&gt; 20
 
 (time/day-of-month (time/local-date-time))
-=&gt; 5
+=&gt; 20
 
 (time/day-of-month (time/zoned-date-time))
-=&gt; 5</code>
+=&gt; 20</code>
                     </div>
                 </div>
                 
@@ -16599,13 +16649,13 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-week (time/local-date))
-=&gt; :WEDNESDAY
+=&gt; :THURSDAY
 
 (time/day-of-week (time/local-date-time))
-=&gt; :WEDNESDAY
+=&gt; :THURSDAY
 
 (time/day-of-week (time/zoned-date-time))
-=&gt; :WEDNESDAY</code>
+=&gt; :THURSDAY</code>
                     </div>
                 </div>
                 
@@ -16628,13 +16678,13 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-year (time/local-date))
-=&gt; 36
+=&gt; 51
 
 (time/day-of-year (time/local-date-time))
-=&gt; 36
+=&gt; 51
 
 (time/day-of-year (time/zoned-date-time))
-=&gt; 36</code>
+=&gt; 51</code>
                     </div>
                 </div>
                 
@@ -16711,19 +16761,19 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)
-=&gt; &quot;05-02-2020&quot;
+=&gt; &quot;20-02-2020&quot;
 
 (time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)
-=&gt; &quot;2020-02-05T12:30:53.406CET&quot;
+=&gt; &quot;2020-02-20T13:16:31.144CET&quot;
 
 (time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)
-=&gt; &quot;2020-02-05T12:30:53.41+01:00&quot;
+=&gt; &quot;2020-02-20T13:16:31.149+01:00&quot;
 
 (time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))
-=&gt; &quot;2020-02-05T12:30:53.414CET&quot;
+=&gt; &quot;2020-02-20T13:16:31.155CET&quot;
 
 (time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))
-=&gt; &quot;2020-02-05T12:30:53.418+01:00&quot;</code>
+=&gt; &quot;2020-02-20T13:16:31.161+01:00&quot;</code>
                     </div>
                 </div>
                 
@@ -16784,10 +16834,10 @@ Elapsed time: 10.95 µs
 =&gt; 0
 
 (time/hour (time/local-date-time))
-=&gt; 12
+=&gt; 13
 
 (time/hour (time/zoned-date-time))
-=&gt; 12</code>
+=&gt; 13</code>
                     </div>
                 </div>
                 
@@ -16962,7 +17012,7 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date)
-=&gt; 2020-02-05
+=&gt; 2020-02-20
 
 (time/local-date 2018 8 1)
 =&gt; 2018-08-01
@@ -16974,7 +17024,7 @@ Elapsed time: 10.95 µs
 =&gt; 2013-08-01
 
 (time/local-date (. :java.util.Date :new))
-=&gt; 2020-02-05</code>
+=&gt; 2020-02-20</code>
                     </div>
                 </div>
                 
@@ -17028,7 +17078,7 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date-time)
-=&gt; 2020-02-05T12:30:53.123
+=&gt; 2020-02-20T13:16:30.864
 
 (time/local-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00
@@ -17046,7 +17096,7 @@ Elapsed time: 10.95 µs
 =&gt; 2013-08-01T02:00
 
 (time/local-date-time (. :java.util.Date :new))
-=&gt; 2020-02-05T12:30:53.148</code>
+=&gt; 2020-02-20T13:16:30.889</code>
                     </div>
                 </div>
                 
@@ -17141,13 +17191,13 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/minus (time/local-date) :days 2)
-=&gt; 2020-02-03
+=&gt; 2020-02-18
 
 (time/minus (time/local-date-time) :days 2)
-=&gt; 2020-02-03T12:30:53.482
+=&gt; 2020-02-18T13:16:31.254
 
 (time/minus (time/zoned-date-time) :days 2)
-=&gt; 2020-02-03T12:30:53.486+01:00[Europe/Zurich]</code>
+=&gt; 2020-02-18T13:16:31.260+01:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17173,10 +17223,10 @@ Elapsed time: 10.95 µs
 =&gt; 0
 
 (time/minute (time/local-date-time))
-=&gt; 30
+=&gt; 16
 
 (time/minute (time/zoned-date-time))
-=&gt; 30</code>
+=&gt; 16</code>
                     </div>
                 </div>
                 
@@ -17303,13 +17353,13 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/plus (time/local-date) :days 2)
-=&gt; 2020-02-07
+=&gt; 2020-02-22
 
 (time/plus (time/local-date-time) :days 2)
-=&gt; 2020-02-07T12:30:53.471
+=&gt; 2020-02-22T13:16:31.238
 
 (time/plus (time/zoned-date-time) :days 2)
-=&gt; 2020-02-07T12:30:53.474+01:00[Europe/Zurich]</code>
+=&gt; 2020-02-22T13:16:31.244+01:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17335,10 +17385,10 @@ Elapsed time: 10.95 µs
 =&gt; 0
 
 (time/second (time/local-date-time))
-=&gt; 53
+=&gt; 31
 
 (time/second (time/zoned-date-time))
-=&gt; 53</code>
+=&gt; 31</code>
                     </div>
                 </div>
                 
@@ -17361,7 +17411,7 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/to-millis (time/local-date))
-=&gt; 1580857200000</code>
+=&gt; 1582153200000</code>
                     </div>
                 </div>
                 
@@ -17386,13 +17436,13 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/with-time (time/local-date) 22 00 15 333)
-=&gt; 2020-02-05T22:00:15.333
+=&gt; 2020-02-20T22:00:15.333
 
 (time/with-time (time/local-date-time) 22 00 15 333)
-=&gt; 2020-02-05T22:00:15.333
+=&gt; 2020-02-20T22:00:15.333
 
 (time/with-time (time/zoned-date-time) 22 00 15 333)
-=&gt; 2020-02-05T22:00:15.333+01:00[Europe/Zurich]</code>
+=&gt; 2020-02-20T22:00:15.333+01:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17557,7 +17607,7 @@ Elapsed time: 10.95 µs
                     </div>
                     <div class="examples">
                         <code>(time/zoned-date-time)
-=&gt; 2020-02-05T12:30:53.165+01:00[Europe/Zurich]
+=&gt; 2020-02-20T13:16:30.905+01:00[Europe/Zurich]
 
 (time/zoned-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -17575,10 +17625,10 @@ Elapsed time: 10.95 µs
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 (time/zoned-date-time (. :java.util.Date :new))
-=&gt; 2020-02-05T12:30:53.190+01:00[Europe/Zurich]
+=&gt; 2020-02-20T13:16:30.930+01:00[Europe/Zurich]
 
 (time/zoned-date-time :UTC)
-=&gt; 2020-02-05T11:30:53.194Z[UTC]
+=&gt; 2020-02-20T12:16:30.933Z[UTC]
 
 (time/zoned-date-time :UTC 2018 8 1)
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -17596,7 +17646,7 @@ Elapsed time: 10.95 µs
 =&gt; 2013-08-01T00:00Z[UTC]
 
 (time/zoned-date-time :UTC (. :java.util.Date :new))
-=&gt; 2020-02-05T11:30:53.217Z[UTC]</code>
+=&gt; 2020-02-20T12:16:30.957Z[UTC]</code>
                     </div>
                 </div>
                 
@@ -18073,7 +18123,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(uuid )
-=&gt; &quot;d5d2a377-b0d2-432b-81dd-ea88a520f4f9&quot;</code>
+=&gt; &quot;58a5d968-12fb-428a-a7d5-e0294296cff3&quot;</code>
                     </div>
                 </div>
                 
@@ -18246,7 +18296,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(version )
-=&gt; &quot;1.7.17&quot;</code>
+=&gt; &quot;1.7.18&quot;</code>
                     </div>
                 </div>
                 
