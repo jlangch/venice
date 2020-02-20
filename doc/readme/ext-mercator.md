@@ -34,7 +34,7 @@ Loads the mercator image
 
 ##### `draw-locations`
 
-Draws the locations. Expects a list of locations. A location is a vector composed of a latitude, a longitude, and optional marker properties 
+Draws the locations. Expects a list of locations. A location is a vector composed of a latitude, a longitude, and an optional marker properties 
 map.
 
 Location examples:
