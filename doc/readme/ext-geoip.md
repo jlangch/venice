@@ -12,7 +12,7 @@ is required to download the free GeoLite2 databases. The license key is free, bu
 requires a registration at MindMax.
 
 Venice supports both the country as well as the city GEO database. The city database is
-pretty large and lookups are therefore much slower than with the country database. 
+pretty large and lookups are therefore much slower compared to the country database. 
 
 To sign up for a GeoLite2 account visit [GeoLite2](https://dev.maxmind.com/geoip/geoip2/geolite2/). 
 If you have already a key the databases can be manually downloaded. Just insert your 
