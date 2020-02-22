@@ -24,14 +24,17 @@
 
 (ns bench)
 
+
 (defn bench/remove-outliers [samples low high]
   (filter #(and (>= %1 low) (<= %1 high)) samples))
+
 
 (defn bench/chart-vert-line [name x y-max]
   { name { :x [x x]
            :y [0 y-max]
            :style { :render-style :line
                     :marker-type :none }}})
+
 
 (defn bench/create-chart [data median outlier-low outlier-high params]
   (let [y-max (apply max (:y data))

@@ -29,111 +29,120 @@
 
 (ns semver)
 
-  (def pattern "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$")
+(def pattern "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$")
 
-  (defn
-    ^{ :arglists '("(semver/parse-long x)")
-       :doc "Attempt to parse `o` to a long, returning `o` if that fails or the parsed version of `o` if successful."
-       :examples '("""(semver/parse-long "123")""") }
-    parse-long
-    [o]
-    (try
-      (if (nil? o) nil (long o))
-      (catch :VncException e o)))
 
-  (defn
-    ^{ :arglists '("(semver/valid v)")
-       :doc "Checks if the supplied version map is valid or not"
-       :examples '("""(semver/valid? (semver/parse "1.2.3"))""") }
-    valid?
-    [v]
-    (and (map? v)
-         (number? (:major v))
-         (number? (:minor v))
-         (number? (:patch v))
-         (>= (:major v) 0)
-         (>= (:minor v) 0)
-         (>= (:patch v) 0)
-         (or (nil? (:pre-release v))
-             (string? (:pre-release v)))
-         (or (nil? (:meta-data v))
-             (string? (:meta-data v)))))
+(defn
+  ^{ :arglists '("(semver/parse-long x)")
+     :doc "Attempt to parse `o` to a long, returning `o` if that fails or the parsed version of `o` if successful."
+     :examples '("""(semver/parse-long "123")""") }
+  parse-long
+  [o]
+  (try
+    (if (nil? o) nil (long o))
+    (catch :VncException e o)))
 
-  (defn
-    ^{ :arglists '("(semver/valid-format? s)")
-       :doc "Checks the string `s` for semantic versioning formatting"
-       :examples '("""(semver/valid-format? "1.2.3")""") }
-    valid-format?
-    [s]
-    (->> (regex/matcher pattern s)
-         (regex/matches?)))
 
-  (defn
-    ^{ :arglists '("(semver/parse s)")
-       :doc "Parses string `s` into a version map"
-       :examples '("""(semver/parse "1.2.3")""") }
-    parse
-    [s]
-    (let [[_ major minor patch pre-release meta] (regex/matches pattern s)]
-      {:major (parse-long major)
-       :minor (parse-long minor)
-       :patch (parse-long patch)
-       :pre-release pre-release
-       :meta-data meta}))
+(defn
+  ^{ :arglists '("(semver/valid v)")
+     :doc "Checks if the supplied version map is valid or not"
+     :examples '("""(semver/valid? (semver/parse "1.2.3"))""") }
+  valid?
+  [v]
+  (and (map? v)
+       (number? (:major v))
+       (number? (:minor v))
+       (number? (:patch v))
+       (>= (:major v) 0)
+       (>= (:minor v) 0)
+       (>= (:patch v) 0)
+       (or (nil? (:pre-release v))
+           (string? (:pre-release v)))
+       (or (nil? (:meta-data v))
+           (string? (:meta-data v)))))
 
-  (defn
-    ^{ :arglists '("(semver/version o)")
-       :doc "If `o` is a valid version map, does nothing. Otherwise, we'll attempt to parse `o` and return a version map."
-       :examples '("""(semver/version "1.2.3")""") }
-    version
-    [o]
-    (if (and (map? o) (valid? o))
-      o
-      (parse o)))
 
-  (defn
-    ^{ :arglists '("(semver/cmp a b)")
-       :doc "Compares versions a and b, returning -1 if a is older than b, 0 if they're the same version, and 1 if a is newer than b"
-       :examples '("""(semver/cmp "1.2.3" "1.5.4")"""
-                   """(semver/cmp (semver/version "1.2.3") (semver/version "1.5.4"))""") }
-    cmp
-    [a b]
-    (let [key-for-ident #(when %
-                           (into [] (map parse-long (str/split % "\\."))))
-          key           (juxt :major
-                              :minor
-                              :patch
-                              ;; Because non-existent pre-release tags take
-                              ;; precedence over existing ones
-                              #(nil? (% :pre-release))
-                              #(key-for-ident (:pre-release %))
-                              #(key-for-ident (:meta-data %)))]
-      (compare (key (version a))
-               (key (version b)))))
+(defn
+  ^{ :arglists '("(semver/valid-format? s)")
+     :doc "Checks the string `s` for semantic versioning formatting"
+     :examples '("""(semver/valid-format? "1.2.3")""") }
+  valid-format?
+  [s]
+  (->> (regex/matcher pattern s)
+       (regex/matches?)))
 
-  (defn
-    ^{ :arglists '("(semver/newer? a b)")
-       :doc "Is version a newer than version b?"
-       :examples '("""(semver/newer? "1.5.4" "1.2.3")"""
-                   """(semver/newer? (semver/version "1.5.4") (semver/version "1.2.3"))""") }
-    newer?
-    [a b]
-    (pos? (cmp a b)))
 
-  (defn
-    ^{ :arglists '("(semver/older? a b)")
-       :doc "Is version a older than version b?"
-       :examples '("""(semver/newer? "1.2.3" "1.5.4")"""
-                   """(semver/newer? (semver/version "1.2.3") (semver/version "1.5.4"))""") }
-    older?
-    [a b]
-    (neg? (cmp a b)))
+(defn
+  ^{ :arglists '("(semver/parse s)")
+     :doc "Parses string `s` into a version map"
+     :examples '("""(semver/parse "1.2.3")""") }
+  parse
+  [s]
+  (let [[_ major minor patch pre-release meta] (regex/matches pattern s)]
+    {:major (parse-long major)
+     :minor (parse-long minor)
+     :patch (parse-long patch)
+     :pre-release pre-release
+     :meta-data meta}))
 
-  (defn
-    ^{ :arglists '("(semver/equal? a b)")
-       :doc "Is version a the same as version b?"
-       :examples '("""(semver/newer? "1.2.3" "1.2.3")"""
-                   """(semver/newer? (semver/version "1.2.3") (semver/version "1.2.3"))""") }
-    equal?
-    [a b]
-    (zero? (cmp a b)))
+
+(defn
+  ^{ :arglists '("(semver/version o)")
+     :doc "If `o` is a valid version map, does nothing. Otherwise, we'll attempt to parse `o` and return a version map."
+     :examples '("""(semver/version "1.2.3")""") }
+  version
+  [o]
+  (if (and (map? o) (valid? o))
+    o
+    (parse o)))
+
+
+(defn
+  ^{ :arglists '("(semver/cmp a b)")
+     :doc "Compares versions a and b, returning -1 if a is older than b, 0 if they're the same version, and 1 if a is newer than b"
+     :examples '("""(semver/cmp "1.2.3" "1.5.4")"""
+                 """(semver/cmp (semver/version "1.2.3") (semver/version "1.5.4"))""") }
+  cmp
+  [a b]
+  (let [key-for-ident #(when %
+                         (into [] (map parse-long (str/split % "\\."))))
+        key           (juxt :major
+                            :minor
+                            :patch
+                            ;; Because non-existent pre-release tags take
+                            ;; precedence over existing ones
+                            #(nil? (% :pre-release))
+                            #(key-for-ident (:pre-release %))
+                            #(key-for-ident (:meta-data %)))]
+    (compare (key (version a))
+             (key (version b)))))
+
+
+(defn
+  ^{ :arglists '("(semver/newer? a b)")
+     :doc "Is version a newer than version b?"
+     :examples '("""(semver/newer? "1.5.4" "1.2.3")"""
+                 """(semver/newer? (semver/version "1.5.4") (semver/version "1.2.3"))""") }
+  newer?
+  [a b]
+  (pos? (cmp a b)))
+
+
+(defn
+  ^{ :arglists '("(semver/older? a b)")
+     :doc "Is version a older than version b?"
+     :examples '("""(semver/newer? "1.2.3" "1.5.4")"""
+                 """(semver/newer? (semver/version "1.2.3") (semver/version "1.5.4"))""") }
+  older?
+  [a b]
+  (neg? (cmp a b)))
+
+
+(defn
+  ^{ :arglists '("(semver/equal? a b)")
+     :doc "Is version a the same as version b?"
+     :examples '("""(semver/newer? "1.2.3" "1.2.3")"""
+                 """(semver/newer? (semver/version "1.2.3") (semver/version "1.2.3"))""") }
+  equal?
+  [a b]
+  (zero? (cmp a b)))

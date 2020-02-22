@@ -123,6 +123,7 @@
 
 (def latitude-range [-85.0 85.0])
 
+
 ;; spherical mercator projection bounding box based on the
 ;; latitude range [-85.0 85.0]
 (def spherical-box
@@ -130,6 +131,7 @@
     :right   20037508.34
     :bottom -19971868.88
     :left   -20037508.34 })
+
 
 ;; elliptical mercator projection bounding box based on the
 ;; latitude range [-85.0 85.0]
@@ -139,16 +141,19 @@
     :bottom -19929239.11
     :left   -20037508.34 })
 
+
 (def bitmap-format
   { :png  "PNG"
     :gif  "GIF"
     :bmp  "BMP"
     :jpg  "JPG" })
 
+
 (def font-style
   { :plain  (. :Font :PLAIN)
     :italic (. :Font :ITALIC)
     :bold   (. :Font :BOLD) })
+
 
 ; default styles
 (def default-styles { :marker { :fill-color [255 128 128 255]
@@ -158,18 +163,25 @@
                                 :font-size-px 14 }
                       :font {:style :plain} } )
 
+
 (defn color
-  ([r g b a] (. :Color :new (int r) (int g) (int b) (int a)))
-  ([rgba]  (apply color rgba)))
+  ([r g b]      (color r g b 255))
+  ([r g b a]    (. :Color :new (int r) (int g) (int b) (int a)))
+  ([[r g b a]]  (color r g b a)))
+
 
 (defn font [size style]
-  (memoize (fn [size style] (. :Font :new "SansSerif" (get font-style style) size))))
+  (memoize (fn [size style]
+             (. :Font :new "SansSerif" (get font-style style) size))))
+
 
 (defn- limit [val [lower upper]]
   (min upper (max lower val)))
 
+
 (defn spherical-x-axis [longitude]
   (* (to-radians longitude) earth-radius-major))
+
 
 (defn spherical-y-axis [latitude]
   (-<> (to-radians (limit latitude latitude-range))
@@ -179,8 +191,10 @@
        (log <>)
        (* <> earth-radius-major)))
 
+
 (defn elliptical-x-axis [longitude]
   (* (to-radians longitude) earth-radius-major))
+
 
 (defn elliptical-y-axis [latitude]
   (let [latitude-radians
@@ -199,13 +213,16 @@
                latitude-on-earth-proj)]
       (* -1.0 earth-radius-major (log latitude-on-earth-proj-normalized))))
 
+
 (defn x-axis-normalize [x box]
   (/ (- x (:left box))
      (- (:right box) (:left box))))
 
+
 (defn y-axis-normalize [y box]
   (/ (- y (:bottom box))
      (- (:top box) (:bottom box))))
+
 
 (defn spherical-mapper [map-width map-height]
   (fn [longitude latitude]
@@ -216,6 +233,7 @@
       :y (long (* map-height (y-axis-normalize (spherical-y-axis latitude)
                                                spherical-box))) }))
 
+
 (defn elliptical-mapper [map-width map-height]
   (fn [longitude latitude]
     { :longitude longitude
@@ -225,42 +243,51 @@
       :y (long (* map-height (y-axis-normalize (elliptical-y-axis latitude)
                                                elliptical-box))) }))
 
+
 (defn load-mercator-image []
   (. :ImageIO :read (. :URL :new mercator-map)))
+
 
 (defn load-image [file]
   (. :ImageIO :read (io/file file)))
 
+
 (defn save-image [image format file]
   (. :ImageIO :write image (get bitmap-format format) (io/file file)))
 
+
 (defn image-dimensions [image]
   [ (. image :getWidth nil) (. image :getHeight nil)])
+
 
 (defn crop-image [image crop-top crop-bottom]
   (let [[width height] (image-dimensions image)]
     (. image :getSubimage 0 crop-top width (- height crop-top crop-bottom))))
 
-(defn draw-circle [g x y radius fill-color border-color]
-  (. g :setRenderingHints { (. :RenderingHints :KEY_ANTIALIASING)
-                            (. :RenderingHints :VALUE_ANTIALIAS_ON) } )
-  (. g :setColor fill-color)
-  (. g :fillOval (- x radius) (- y radius) (* 2 radius) (* 2 radius))
-  (. g :setColor border-color)
-  (. g :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
 
-(defn draw-text [g x y color label label-font label-size-px]
-  (. g :setFont (font label-size-px label-font))
-  (. g :setColor color)
-  (. g :drawString label x y))
+(defn draw-circle [g2d x y radius fill-color border-color]
+  (. g2d :setRenderingHints { (. :RenderingHints :KEY_ANTIALIASING)
+                              (. :RenderingHints :VALUE_ANTIALIAS_ON) } )
+  (. g2d :setColor fill-color)
+  (. g2d :fillOval (- x radius) (- y radius) (* 2 radius) (* 2 radius))
+  (. g2d :setColor border-color)
+  (. g2d :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
+
+
+(defn draw-text [g2d x y color label label-font label-size-px]
+  (. g2d :setFont (font label-size-px label-font))
+  (. g2d :setColor color)
+  (. g2d :drawString label x y))
+
 
 (defn draw-marker [g2d img-width img-height pos styles opts circle? label?]
   (let [x (:x pos)
         y (- img-height (:y pos))
         label (:label opts)
         radius (:radius opts (-> styles :marker :radius))
+        diameter (* 2 radius)
         font-size (:font-size-px opts (-> styles :marker :font-size-px))
-        label-y-off (- (long (/ (- (+ radius radius) font-size) 2)))]
+        label-y-off (- (long (/ (- diameter font-size) 2)))]
     (when circle?
       (draw-circle g2d x y
                    radius
@@ -273,29 +300,34 @@
                  (:font styles)
                  font-size))))
 
+
 (defn draw-locations
   ([image locations]
     (draw-locations image locations default-styles))
+
   ([image locations styles]
     (let [[img-width img-height] (image-dimensions image)
           g2d (. image :createGraphics)
           mapper (spherical-mapper img-width img-height)
           styles (merge default-styles styles)]
       (. g2d :setFont (font (-> styles :marker :font-size-px) (:font styles)))
-      (let [data (map #(vector (mapper (second %) (first %)) (third %)) locations)]
-        ;; layer 1: circles
-        (docoll (fn [l] (draw-marker g2d img-width img-height
-                                     (first l) styles (second l)
-                                     true false))
+      (let [data (map #(vector (mapper (second %) (first %)) (third %))
+                      locations)]
+        ;; layer 1: draw all circles
+        (docoll #(let [[pos opts] %]
+                   (draw-marker g2d img-width img-height
+                                pos styles opts
+                                true false))
                 data)
 
-        ;; layer 2: labels
-        (docoll (fn [l] (draw-marker g2d img-width img-height
-                                     (first l) styles (second l)
-                                     false true))
-                data)
-        ))
+        ;; layer 2: draw all labels
+        (docoll #(let [[pos opts] %]
+                   (draw-marker g2d img-width img-height
+                                pos styles opts
+                                false true))
+                data)))
     image))
+
 
 (defn test []
   (-> (load-mercator-image)

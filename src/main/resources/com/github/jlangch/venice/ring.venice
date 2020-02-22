@@ -27,6 +27,7 @@
 
 (ns ring)
 
+
 (import :com.github.jlangch.venice.RingRedirectException
         :com.github.jlangch.venice.VncException
         :com.github.jlangch.venice.servlet.IVeniceServlet
@@ -53,6 +54,7 @@
         (println (str "Redirect to: " url)))
   (throw (. :RingRedirectException :new url)))
 
+
 (defn
   ^{:doc "Create a HTTP Not-Found 404 response with content-type text/html. " }
   ring/not-found-response
@@ -60,6 +62,7 @@
   ([msg] { :status 404
            :headers { "Content-Type" "text/html; charset=utf-8" }
            :body """<html><body><p>~(str/escape-html msg)</p></body></html>""" }))
+
 
 (defn
   ^{ :doc """
@@ -72,11 +75,13 @@
   [req name]
   (first (get (:parameters req) name)))
 
+
 (defn
   ^{ :doc "Returns all the values of the specified request parameter as a list" }
   ring/get-request-parameters
   [req name]
   (get (:parameters req) name))
+
 
 (defn
   ^{ :doc """
@@ -89,11 +94,13 @@
   [req name]
   (first (get (:headers req) name)))
 
+
 (defn
   ^{ :doc "Returns all the values of the specified request header as a list." }
   ring/get-request-headers
   [req name]
   (get (:headers req) name))
+
 
 (defn
   ^{ :doc """
@@ -104,6 +111,7 @@
   [req]
   (into #{} (map #(first (str/split % " *; *"))
                  (get (:headers req) "Accept"))))
+
 
 (defn
   ^{ :doc "Returns true if debugging is turned on else false" }
@@ -123,6 +131,7 @@
           (println (str "Session invalidated: " (. session :getId))))
     (. session :invalidate)))
 
+
 (defn
   ^{:doc "Removes all attributes from the session" }
   ring/session-clear
@@ -132,12 +141,14 @@
          (java-enumeration-to-list)
          (docoll #(. session :removeAttribute %)))))
 
+
 (defn
   ^{:doc "Get the session ID" }
   ring/session-id
   [req]
   (if-let [session (:session req)]
     (. session :getId)))
+
 
 (defn
   ^{:doc "Sets a value on the session" }
@@ -148,12 +159,14 @@
   (if-let [session (:session req)]
     (. session :setAttribute name (java-wrap value))))
 
+
 (defn
   ^{:doc "Get a value from the session" }
   ring/session-get-value
   [req name]
   (if-let [session (:session req)]
     (. session :getAttribute name)))
+
 
 (defn
   ^{:doc "Remove a value from the session" }
@@ -162,12 +175,14 @@
   (if-let [session (:session req)]
     (. session :removeAttribute name)))
 
+
 (defn
   ^{:doc "Returns the time (milliseconds since epoch) when this session was last accessed." }
   ring/session-last-access-time
   [req name]
   (if-let [session (:session req)]
     (. session :getLastAccessedTime)))
+
 
 (defn
   ^{:doc "Returns the time (milliseconds since epoch) when this session was created." }
@@ -187,6 +202,7 @@
   [handler]
   (fn [req] (handler req)))
 
+
 (defn
   ^{ :doc """
           Turns handler debug flag on the request on/off and then calls
@@ -198,6 +214,7 @@
     (fn [req]
       (handler (assoc req :debug on)))))
 
+
 (defn
   ^{ :doc "Prints the URI from the request and then calls the handler" }
   ring/mw-print-uri
@@ -206,6 +223,7 @@
     (when (ring/debug? req)
           (println (str "URI: " (:uri req))))
     (handler req)))
+
 
 (defn
   ^{ :doc """
@@ -221,6 +239,7 @@
       (when (ring/debug? req)
             (println (str "Session " id ", request #: " counter))))
     (handler req)))
+
 
 (defn
   ^{ :doc """
@@ -240,6 +259,7 @@
             (. session :setMaxInactiveInterval (coalesce timeout -1)))
       (handler (assoc req :session session)))))
 
+
 (defn
   ^{ :doc "Dumps the request and then calls the handler." }
   ring/mw-dump-request
@@ -247,6 +267,7 @@
   (fn [req]
     (ring/dump-request req)
     (handler req)))
+
 
 (defn
   ^{ :doc "Calls the handler and the dumps the handler's response." }
@@ -347,6 +368,7 @@
   ring/regex-charset
   (regex/pattern ".*charset=([^\\s;]+).*"))
 
+
 (defn-
   ^{ :doc """
           Looks up a header in a Ring response (or request) case insensitively,
@@ -360,6 +382,7 @@
          (filter #(str/equals-ignore-case? header-name (key %)))
          (first))))
 
+
 (defn-
   ^{ :doc """
           Gets the character encoding of a Ring response.
@@ -372,6 +395,7 @@
       (when (regex/matches? m)
         (regex/group m 1)))))
 
+
 (defn-
   ^{:doc "Return the HttpServletRequest cookies as a map" }
   ring/get-cookies
@@ -380,6 +404,7 @@
     (if cookies
       (reduce (fn [m c] (assoc m (. c :getName) c)) {} cookies)
       {})))
+
 
 (defn-
   ^{ :doc "Dumps the request." }
@@ -404,6 +429,7 @@
   (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:parameters req)))
   (println "   cookies:      ")
   (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies req))))
+
 
 (defn-
   ^{ :doc "Dumps the response." }
@@ -435,10 +461,12 @@
     {}
     (java-enumeration-to-list (. request :getHeaderNames))))
 
+
 (defn- ring/get-parameters
   ^{ :doc "Creates a name/value map of the request parameters." }
   [request]
   (. request :getParameterMap))
+
 
 (defn-
   ^{ :doc "Returns the content length, or nil if there is no content." }
@@ -447,11 +475,13 @@
   (let [length (. request :getContentLength)]
     (if (>= length 0) length nil)))
 
+
 (defn-
   ^{ :doc "Returns the SSL client certificate of the request, if one exists." }
   ring/get-client-cert
   [request]
   (first (. request :getAttribute "javax.servlet.request.X509Certificate")))
+
 
 (defn-
   ^{ :doc "Update a HttpServletResponse with a map of headers." }
@@ -467,6 +497,7 @@
   (if-let [content-type (get headers "Content-Type")]
     (. response :setContentType content-type)))
 
+
 (defn- ring/make-output-stream
   [response  async-context]
   (let [os (. response :getOutputStream)]
@@ -477,6 +508,7 @@
         (proxify :Runnable
                  {:run (fn [] (. context :complete))} )))))
 
+
 (defn- ring/make-blocking-service-method
   [handler]
   (fn [servlet request response]
@@ -485,6 +517,7 @@
          (ring/merge-servlet-keys <> servlet request response)
          (handler <>)
          (ring/update-servlet-response response <>))))
+
 
 (defn- ring/make-async-service-method
   [handler]
@@ -500,6 +533,7 @@
          (. response :sendError 500 (. exception :getMessage))
          (. async-context :complete ))))))
 
+
 (defn
   ^{ :doc """
           Turns a handler into a function that takes the same arguments
@@ -513,6 +547,7 @@
    (if (:async? options)
      (ring/make-async-service-method handler)
      (ring/make-blocking-service-method handler))))
+
 
 (defn- ring/write-body-to-stream
   [body response output-stream]
@@ -544,6 +579,7 @@
                 "Response stream not supported for body type "
                                   (type body)))))))
 
+
 (defn-
   ^{ :doc "Update the HttpServletResponse using a response map." }
   ring/update-servlet-response
@@ -560,6 +596,7 @@
      (ring/set-response-headers response headers)
      (let [output-stream (ring/make-output-stream response async-context)]
        (ring/write-body-to-stream body response-map output-stream)))))
+
 
 (defn-
   ^{ :doc "Create the request map from the HttpServletRequest object." }
@@ -582,6 +619,7 @@
    :ssl-client-cert    (ring/get-client-cert request)
    :body               (. request :getInputStream)})
 
+
  (defn-
    ^{ :doc "Associate servlet-specific keys with the request map." }
    ring/merge-servlet-keys
@@ -603,6 +641,7 @@
   [regex uri]
   (regex/matches? (regex/matcher regex uri)))
 
+
 (defn ring/uri-filter-regex
   ;; handles URIs like:
   ;; "/abc/**/*.png"
@@ -621,6 +660,7 @@
        (map #(if (== "*" %) "[^/]+" %) <>)
        (str/join "" <>)
        (regex/pattern <>)))
+
 
 (defn ring/uri-params-regex
   ;; handles URIs like:
@@ -642,6 +682,7 @@
        (str/join "" <>)
        (regex/pattern <>)))
 
+
 (defn- ring/get-uri-param-names
   [uri-template]
   (-<> (regex/pattern ":[0-9a-zA-Z_]+")
@@ -649,9 +690,11 @@
        (regex/find-all <>)
        (map #(keyword %) <>)))
 
+
 (defn- ring/get-uri-param-values
   [uri-regex uri]
   (rest (regex/matches uri-regex uri)))
+
 
 (defn ring/compile-route-filter-uri
   [route]
@@ -662,6 +705,7 @@
     :uri-param-values (fn [uri] '())
     :len (count (second route))
     :handler (third route) })
+
 
 (defn ring/compile-route-params-uri
   [route]
@@ -674,6 +718,7 @@
       :len (count (second route))
       :handler (third route) }))
 
+
 (defn ring/compile-routes
  [routes]
  (map
@@ -683,11 +728,13 @@
          (ring/compile-route-filter-uri route)))
    routes))
 
+
 (defn- ring/priority-route
   [routes]
   (if (empty? routes)
     nil
     (last (sort #(compare (:len %1) (:len %2)) routes))))
+
 
 (defn- ring/get-route
   [verb uri routes]
@@ -709,9 +756,11 @@
   (-> (. res :getWriter)
       (. :println (str "<html><body><p>Not Found</p></body></html>"))))
 
+
 (defn- ring/send-redirect
   [req res redirect-uri]
   (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
+
 
 (defn- ring/send-error
   [res]
@@ -719,6 +768,7 @@
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
       (. :println (str "<html><body><p>Internal Error</p></body></html>"))))
+
 
 (defn
   ^{ :doc """

@@ -24,16 +24,21 @@
 
 (ns test)
 
+
 (defmacro test/fn ([] `(+ 1 ~x)))
+
 
 (defn test/test-fn [x]
   (str "test: " x))
 
+
 (defn- test/test-fn-private [x]
   (str "test: " x))
 
+
 (defn- test/error [msg]
   msg)
+
 
 (defn test/unexpected-error [msg]
   (test/error (str "Unexpected " msg)))

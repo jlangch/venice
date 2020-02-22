@@ -24,6 +24,7 @@
 
 (ns maven)
 
+
 (defn-
   maven/download-artefact-file
   [uri target-dir target-file]
@@ -32,6 +33,7 @@
      (println (str "         to " target "..."))
      (->> (io/download uri :binary true)
           (io/spit target))))
+
 
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
@@ -46,6 +48,7 @@
         uri (str/join "/" [repo group-path artefact-id version file-name-base])]
     [uri file-name-base]))
 
+
 (defn-
   maven/download-artefact-by-type
   [artefact repo dir file-suffix]
@@ -53,6 +56,7 @@
         uri (str (first elements) file-suffix)
         target-file (str (second elements) file-suffix)]
     (maven/download-artefact-file uri dir target-file)))
+
 
 (defn
   ^{ :arglists '("(maven/download artefact options*)")

@@ -33,6 +33,7 @@
 
    [] (some? (. :com.fasterxml.jackson.databind.ObjectMapper :class)))
 
+
 (defn
   ^{ :arglists '("(jackson/available-jdk8-module?)")
      :doc "Returns true if Jackson JSON jdk8 is available otherwise false"
@@ -42,6 +43,7 @@
 
    [] (some? (. :com.fasterxml.jackson.datatype.jdk8.Jdk8Module :class)))
 
+
 (defn
    ^{ :arglists '("(jackson/pretty-print json)")
       :doc "Pretty prints JSON"
@@ -50,6 +52,7 @@
    jackson/pretty-print
 
    [json] (jackson/to-pretty-json (jackson/parse json)))
+
 
 (defn
    ^{ :arglists '("(jackson/to-json val)")
@@ -64,6 +67,7 @@
             (-> mapper
                 (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
                 (. :writeValueAsString val))))
+
 
 (defn
    ^{ :arglists '("jackson/to-pretty-json  val")
@@ -80,6 +84,7 @@
                 (. :setDateFormat (. :com.fasterxml.jackson.databind.util.StdDateFormat :new))
                 (. :writerWithDefaultPrettyPrinter)
                 (. :writeValueAsString val))))
+
 
 (defn
    ^{ :arglists '("(jackson/parse s)")

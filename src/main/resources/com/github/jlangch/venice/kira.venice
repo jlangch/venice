@@ -41,6 +41,7 @@
 
 (ns kira)
 
+
 ;; -----------------------------------------------------------------------------
 ;; Framework functions
 ;; -----------------------------------------------------------------------------
@@ -49,7 +50,9 @@
     source
     (io/slurp source)))
 
+
 (def kira/delimiters ["<%" "%>"])
+
 
 (defn kira/parser-regex [delimiters]
   (regex/pattern
@@ -61,14 +64,17 @@
 
 (def kira/parser-regex-memo (memoize kira/parser-regex))
 
+
 (defn kira/emit-string [s]
   (when (not-empty? s)
     (print (str "(print " (pr-str s) ")"))))
+
 
 (defn kira/emit-expr [expr]
   (if (str/starts-with? expr "=")
     (print (str "(print " (str/trim (str/subs expr 1)) ")"))
     (print expr)))
+
 
 (defn kira/parse-string [source delimiters]
   (let [regex (kira/parser-regex delimiters)]
@@ -82,6 +88,7 @@
                 (recur after))
             (kira/emit-string after))))
       (print ")"))))
+
 
 (defn kira/compile-fn [args src delimiters]
   (eval
@@ -98,6 +105,7 @@
   ^{ :doc "Emit a string" }
   kira/emit [s] (print (str s)))
 
+
 (defn
   ^{ :doc """
           XML escapes a string and emits it. If the passed data is not of
@@ -108,6 +116,7 @@
   kira/escape-xml
   ([s]   (kira/escape-xml s identity))
   ([s f] (kira/emit (str/escape-xml (str (f s))))))
+
 
 (defn
   ^{ :doc """
@@ -122,9 +131,11 @@
              (str/join)
              (kira/emit)))
 
+
 (defn
   ^{ :doc "Applies the function f to the items of the collection." }
   kira/foreach [coll f] (docoll f coll))
+
 
 (defmacro
   ^{ :doc """
@@ -137,6 +148,7 @@
     `(kira/compile-fn '~args ~source ~kira/delimiters))
   ([args source delimiters]
     `(kira/compile-fn '~args ~source ~delimiters)))
+
 
 (defn
   ^{ :doc """

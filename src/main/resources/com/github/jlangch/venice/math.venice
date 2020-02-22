@@ -24,9 +24,10 @@
 
 (ns math)
 
-(defonce math/bigint-zero (. :java.math.BigInteger :ZERO))
 
+(defonce math/bigint-zero (. :java.math.BigInteger :ZERO))
 (defonce math/bigint-one (. :java.math.BigInteger :ONE))
+
 
 (defn
    ^{ :arglists '("(math/bigint x)")

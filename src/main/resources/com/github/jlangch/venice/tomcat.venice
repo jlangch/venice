@@ -37,6 +37,7 @@
 
 (ns tc)
 
+
 (import :com.github.jlangch.venice.servlet.IVeniceServlet
         :com.github.jlangch.venice.servlet.VeniceServlet
         :org.apache.catalina.startup.Tomcat
@@ -49,17 +50,11 @@
         :org.apache.tomcat.util.net.SSLHostConfig)
 
 (defonce tc/default-http-port 8080)
-
 (defonce tc/default-https-port 8443)
-
 (defonce tc/default-base-dir ".")
-
 (defonce tc/default-context-path "") ; root
-
 (defonce tc/default-context-doc-base ".")
-
 (defonce tc/http-connector "org.apache.coyote.http11.Http11NioProtocol")
-
 (defonce tc/session-id "JSESSIONID")
 
 
@@ -89,6 +84,7 @@
        "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA:"
        "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA"))
 
+
 (defn- tc/create-executor [options]
   (let [executor (. :StandardThreadExecutor :new)]
     (doto executor
@@ -97,6 +93,7 @@
       (. :setMaxThreads (:max-threads options 200))
       (. :setMinSpareThreads (:min-spare-threads options 25))
       (. :setMaxIdleTime (:max-idle-time options 60000)))))
+
 
 (defn- tc/create-ssl-host-config [options]
   (let [ssl-host-config (. :SSLHostConfig :new)]
@@ -108,11 +105,13 @@
       (. :setSslProtocol (:tls-protocol options "TLSv1.2")))
     ssl-host-config))
 
+
 (defmacro tc/create-executored-connector
   [connector-generator executor options]
   `(let [connector# (~connector-generator ~options)]
      (. (. connector# :getProtocolHandler) :setExecutor ~executor)
      connector#))
+
 
 (defn- tc/create-http-connector [options]
   (let [connector (. :Connector :new tc/http-connector)]
@@ -121,6 +120,7 @@
     (when (:https? options false)
       (. connector :setRedirectPort (:https-port options tc/default-https-port)))
     connector))
+
 
 (defn- tc/create-https-connector
   [options]
@@ -135,6 +135,7 @@
     (. (. connector :getProtocolHandler) :setSSLEnabled  true)
     connector))
 
+
 (defmacro tc/create-executored-connectors
   [body service options]
   `(let [executor# (tc/create-executor ~options)]
@@ -142,11 +143,13 @@
      (~body ~service ~options executor#)
      ~service))
 
+
 (defmacro tc/create-connector-fn
   [create-fn service options & executor]
   `(. ~service :addConnector (if (:executor? ~options true)
                                (tc/create-executored-connector ~create-fn (first ~@executor) ~options)
                                (~create-fn ~options))))
+
 
 (defn- tc/create-connector
   [service options & executor]
@@ -155,6 +158,7 @@
   (when (:https? options false)
     (tc/create-connector-fn tc/create-https-connector service options executor))
   service)
+
 
 (defn- tc/create-server [options]
   (let [base-dir (:base-dir options tc/default-base-dir)
@@ -172,12 +176,14 @@
     (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat))
 
+
 (defn tc/reply-text
   [res status text]
   (. res :setStatus status)
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
       (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
+
 
 (defn tc/hello-world-servlet
   ^{ :doc "'Hello World' demo servlet" }
@@ -194,6 +200,7 @@
         :doOptions       (fn [req res _] (tc/reply-text res 404 "Not Found"))
         :doTrace         (fn [req res _] (tc/reply-text res 404 "Not Found"))
         :getLastModified (fn [] -1) })))
+
 
 (defn tc/run-tomcat
   ^{ :doc """
@@ -230,10 +237,12 @@
         (. (. server :getServer) :await))
     server)))
 
-  (defn tc/stop-tomcat
-    [server]
-    (. server :stop))
 
-  (defn tc/destroy-tomcat
-    [server]
-    (. server :destroy))
+(defn tc/stop-tomcat
+  [server]
+  (. server :stop))
+
+
+(defn tc/destroy-tomcat
+  [server]
+  (. server :destroy))

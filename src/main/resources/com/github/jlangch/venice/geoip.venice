@@ -81,7 +81,7 @@
   ^{ :arglists '("(geoip/ip-to-country-loc-resolver geoip-zip location-csv)")
      :doc """
           Returns a resolve function that resolves IP address to its
-          asscioated country and latitude/longitude location. The resolve
+          associated country and latitude/longitude location. The resolve
           function returns the country and the latitude/longitude or nil
           if no data is found.
 
@@ -121,7 +121,7 @@
   ^{ :arglists '("(geoip/ip-to-city-loc-resolver geoip-zip)")
      :doc """
           Returns a resolve function that resolves IP address to its
-          asscioated city and latitude/longitude location. The resolve
+          associated city and latitude/longitude location. The resolve
           function returns the city and the latitude/longitude or nil
           if no data is found.
 
@@ -284,7 +284,7 @@
 (defn
   ^{ :arglists '("(geoip/parse-maxmind-city-ip-db ip-type zip maxmind-cities)")
      :doc """
-          Parses the MaxMind city IP blocks database. Expects a Maxmind
+          Parses the MaxMind city IP blocks database. Expects a MaxMind
           city IP database zip. ip-type is either :IPv4 or :IPv6. The zip may
           be a bytebuf, a file, a string (file path) or an InputStream.
           The maxmind-countries are optional and map the geoname-id to country
@@ -353,7 +353,7 @@
   ^{ :arglists '("(geoip/parse-maxmind-country-db zip)")
      :doc """
           Parses the MaxMind country-location CSV file. Returns a map with
-          key = geoname-id and the country data as value.
+          geoname-id as key and the country data as value.
 
           Return:
              { "49518" {:country-iso "RW" :country-name "Rwanda"}
@@ -415,9 +415,9 @@
   geoip/ip4? [ip]
 
   (case (type ip)
-    :venice.String         (str/contains? ip ".")
-    :java.net.Inet4Address true
-    :java.net.Inet6Address false
+    :venice.String          (str/contains? ip ".")
+    :java.net.Inet4Address  true
+    :java.net.Inet6Address  false
     false))
 
 
@@ -431,9 +431,9 @@
   geoip/ip6? [ip]
 
   (case (type ip)
-    :venice.String         (str/contains? ip ":")
-    :java.net.Inet4Address false
-    :java.net.Inet6Address true
+    :venice.String          (str/contains? ip ":")
+    :java.net.Inet4Address  false
+    :java.net.Inet6Address  true
     false))
 
 
@@ -444,6 +444,7 @@
   geoip/download-google-country-db-to-csvfile [csvfile]
 
   (io/spit csvfile (geoip/download-google-country-db)))
+
 
 (defn
   ^{ :arglists '("(geoip/download-google-country-db)")
@@ -517,6 +518,7 @@
   (-> (str/replace-all geoip/maxmind-geoip-url "{db}" "GeoLite2-City-CSV")
       (str/replace-all  "{key}" lic-key)))
 
+
 (defn
   ^{ :arglists '("(map-location-to-numerics loc)")
      :doc """
@@ -535,6 +537,7 @@
 (defn- geoip/find-ip-country [ip ip-data]
   (some (fn [x] (if (cidr/in-range? ip (first x)) (second x) nil)) ip-data))
 
+
 (defn- geoip/parse-google-countries-csv [csv]
   ;; Format Google country location CSV:
   ;;
@@ -547,6 +550,7 @@
   (->> (csv/read csv)
        (map (juxt #(nth % 0) #(vector (nth % 1) (nth % 2))))  ; [iso, [lat, lon]]
        (into {})))
+
 
 (defn- geoip/unzip-entry [zip entry-name]
  (let [entry (->> (io/zip-list-entry-names zip)
