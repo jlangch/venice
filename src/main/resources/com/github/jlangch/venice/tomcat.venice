@@ -49,16 +49,16 @@
         :org.apache.coyote.http11.Http11NioProtocol
         :org.apache.tomcat.util.net.SSLHostConfig)
 
-(defonce tc/default-http-port 8080)
-(defonce tc/default-https-port 8443)
-(defonce tc/default-base-dir ".")
-(defonce tc/default-context-path "") ; root
-(defonce tc/default-context-doc-base ".")
-(defonce tc/http-connector "org.apache.coyote.http11.Http11NioProtocol")
-(defonce tc/session-id "JSESSIONID")
+(defonce default-http-port 8080)
+(defonce default-https-port 8443)
+(defonce default-base-dir ".")
+(defonce default-context-path "") ; root
+(defonce default-context-doc-base ".")
+(defonce http-connector "org.apache.coyote.http11.Http11NioProtocol")
+(defonce session-id "JSESSIONID")
 
 
-(def tc/https-ciphers
+(def https-ciphers
   (str "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:"
        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:"
        "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384:"
@@ -85,7 +85,7 @@
        "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA"))
 
 
-(defn- tc/create-executor [options]
+(defn- create-executor [options]
   (let [executor (. :StandardThreadExecutor :new)]
     (doto executor
       (. :setName (:executor-name options "tc-executor"))
@@ -95,7 +95,7 @@
       (. :setMaxIdleTime (:max-idle-time options 60000)))))
 
 
-(defn- tc/create-ssl-host-config [options]
+(defn- create-ssl-host-config [options]
   (let [ssl-host-config (. :SSLHostConfig :new)]
     (doto ssl-host-config
       (. :setHostName (:tls-hostname options "_default_"))
@@ -106,14 +106,14 @@
     ssl-host-config))
 
 
-(defmacro tc/create-executored-connector
+(defmacro create-executored-connector
   [connector-generator executor options]
   `(let [connector# (~connector-generator ~options)]
      (. (. connector# :getProtocolHandler) :setExecutor ~executor)
      connector#))
 
 
-(defn- tc/create-http-connector [options]
+(defn- create-http-connector [options]
   (let [connector (. :Connector :new tc/http-connector)]
     (doto connector
       (. :setPort (:port options tc/default-http-port)))
@@ -122,7 +122,7 @@
     connector))
 
 
-(defn- tc/create-https-connector
+(defn- create-https-connector
   [options]
   (let [connector (. :Connector :new tc/http-connector)
         ssl-config (tc/create-ssl-host-config options)
@@ -136,7 +136,7 @@
     connector))
 
 
-(defmacro tc/create-executored-connectors
+(defmacro create-executored-connectors
   [body service options]
   `(let [executor# (tc/create-executor ~options)]
      (. ~service :addExecutor executor#)
@@ -144,14 +144,14 @@
      ~service))
 
 
-(defmacro tc/create-connector-fn
+(defmacro create-connector-fn
   [create-fn service options & executor]
   `(. ~service :addConnector (if (:executor? ~options true)
                                (tc/create-executored-connector ~create-fn (first ~@executor) ~options)
                                (~create-fn ~options))))
 
 
-(defn- tc/create-connector
+(defn- create-connector
   [service options & executor]
   (when (:http? options true)
     (tc/create-connector-fn tc/create-http-connector service options executor))
@@ -160,7 +160,7 @@
   service)
 
 
-(defn- tc/create-server [options]
+(defn- create-server [options]
   (let [base-dir (:base-dir options tc/default-base-dir)
         resources-dir (io/file base-dir "resources")
         tomcat (doto (. :Tomcat :new)
@@ -177,17 +177,18 @@
     tomcat))
 
 
-(defn tc/reply-text
-  [res status text]
+(defn reply-text [res status text]
   (. res :setStatus status)
   (. res :setContentType "text/html")
   (-> (. res :getWriter)
       (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
 
 
-(defn tc/hello-world-servlet
+(defn
   ^{ :doc "'Hello World' demo servlet" }
-  []
+
+  hello-world-servlet []
+
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
       { :init            (fn [config] nil)
@@ -202,7 +203,7 @@
         :getLastModified (fn [] -1) })))
 
 
-(defn tc/run-tomcat
+(defn
   ^{ :doc """
           Start a Tomcat to serve given servlet with supplied options
           :base-dir - the server's base directory (default: ".")
@@ -222,6 +223,9 @@
           :min-spare-threads - minimum number of spare threads in executor (default: 25)
           :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)
           """ }
+
+  run-tomcat
+
   ([servlet options]
     (tc/run-tomcat servlet nil nil options))
 
@@ -238,11 +242,11 @@
     server)))
 
 
-(defn tc/stop-tomcat
+(defn stop-tomcat
   [server]
   (. server :stop))
 
 
-(defn tc/destroy-tomcat
+(defn destroy-tomcat
   [server]
   (. server :destroy))

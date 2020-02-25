@@ -53,9 +53,9 @@
       :doc "Returns true if x is a big integer"
       :examples '("(math/bigint? (math/bigint 1000000))") }
 
-   math/bigint?
+   math/bigint? [x]
 
-   [x] (instance? :java.math.BigInteger x))
+   (instance? :java.math.BigInteger x))
 
 
 (defn
@@ -63,9 +63,9 @@
       :doc "Returns the sum of two bigints"
       :examples '("(math/bigint-add (math/bigint \"100\") (math/bigint \"200\"))") }
 
-   math/bigint-add
+   math/bigint-add [x y]
 
-   [x y] (. (math/bigint x) :add (math/bigint y)))
+   (. (math/bigint x) :add (math/bigint y)))
 
 
 (defn
@@ -73,9 +73,9 @@
       :doc "Subtracts y from x"
       :examples '("(math/bigint-sub (math/bigint \"100\") (math/bigint \"200\"))") }
 
-   math/bigint-sub
+   math/bigint-sub [x y]
 
-   [x y] (. (math/bigint x) :subtract (math/bigint y)))
+   (. (math/bigint x) :subtract (math/bigint y)))
 
 
 (defn
@@ -83,18 +83,18 @@
       :doc "Returns the product of two bigints"
       :examples '("(math/bigint-mul (math/bigint \"100\") (math/bigint \"200\"))") }
 
-   math/bigint-mul
+   math/bigint-mul [x y]
 
-   [x y] (. (math/bigint x) :multiply (math/bigint y)))
+   (. (math/bigint x) :multiply (math/bigint y)))
 
 (defn
    ^{ :arglists '("(math/bigint-div x y)")
       :doc "Returns x divided by y"
       :examples '("(math/bigint-div (math/bigint \"100\") (math/bigint \"200\"))") }
 
-   math/bigint-div
+   math/bigint-div [x y]
 
-   [x y] (. (math/bigint x) :divide (math/bigint y)))
+   (. (math/bigint x) :divide (math/bigint y)))
 
 
 (defn
@@ -102,9 +102,9 @@
       :doc "Negates x"
       :examples '("(math/bigint-neg (math/bigint \"100\"))") }
 
-   math/bigint-neg
+   math/bigint-neg [x]
 
-   [x] (. (math/bigint x) :negate))
+   (. (math/bigint x) :negate))
 
 
 (defn
@@ -112,9 +112,9 @@
       :doc "Returns the signum of x"
       :examples '("(math/bigint-sig (math/bigint \"-100\"))") }
 
-   math/bigint-sig
+   math/bigint-sig [x]
 
-   [x] (. (math/bigint x) :signum))
+   (. (math/bigint x) :signum))
 
 
 (defn
@@ -122,9 +122,9 @@
       :doc "Returns the absolute value of x"
       :examples '("(math/bigint-abs (math/bigint \"-100\"))") }
 
-   math/bigint-abs
+   math/bigint-abs [x]
 
-   [x] (. (math/bigint x) :abs))
+   (. (math/bigint x) :abs))
 
 
 (defn
@@ -132,6 +132,6 @@
       :doc "Converts the big integer x to a long"
       :examples '("(math/bigint-to-long (math/bigint \"-100\"))") }
 
-   math/bigint-to-long
+   math/bigint-to-long [x]
 
-   [x] (. (math/bigint x) :longValue))
+   (. (math/bigint x) :longValue))

@@ -31,16 +31,19 @@
         :java.io.StringReader
         :org.xml.sax.InputSource)
 
+
 (def-dynamic xml/*stack*)
 (def-dynamic xml/*current*)
 (def-dynamic xml/*sb*)
 (def-dynamic xml/*state*) ; :element :chars :between
 
+
 (defn
   ^{ :arglists '("(xml/handler)")
      :doc "Create a SAX parser content handler" }
-  xml/handler
-  []
+
+  xml/handler []
+
   (let [push-content (fn [elem content]
                        (let [new (conj (or (:content elem) []) content)]
                           (assoc elem :content new)))
@@ -84,6 +87,7 @@
           :processingInstruction (fn [target data] nil)
           :skippedEntity (fn [name] nil) }))))
 
+
 (defn
   ^{ :arglists '("(xml/parse s)" "(xml/parse s handler)")
      :doc """
@@ -93,8 +97,11 @@
           Returns a tree of XML element maps with the
           keys :tag, :attrs, and :content.
           """ }
+
   xml/parse
+
   ([s] (xml/parse s (xml/handler)))
+
   ([s handler]
     (binding [xml/*stack* []
               xml/*current* {}
@@ -102,6 +109,7 @@
               xml/*sb* nil]
       (. :XMLUtil :parse s false handler)
       (first (:content xml/*current*)))))
+
 
 (defn
   ^{ :arglists '("(xml/parse-str s)" "(xml/parse-str s handler)")
@@ -115,29 +123,36 @@
             (load-module :xml)
             (xml/parse-str "<a><b>B</b></a>"))
           """ ) }
+
   xml/parse-str
+
   ([s] (xml/parse (xml/input-source-from-str s) (xml/handler)))
   ([s handler] (xml/parse (xml/input-source-from-str s) handler)))
+
 
 (defn
   ^{ :arglists '("(xml/input-source-from-str s)")
      :doc "Create a SAX InputSource from a string" }
-  xml/input-source-from-str
-  [s]
+
+  xml/input-source-from-str [s]
+
   (->> (. :StringReader :new s)
        (. :InputSource :new)))
+
 
 (defn
   ^{ :arglists '("(xml/parse-attributes attrs)")
      :doc "Parse SAX attributes into a map." }
-  xml/parse-attributes
-  [attributes]
+
+  xml/parse-attributes [attributes]
+
   (let [len (. attributes :getLength)]
     (when (> len 0)
       (apply merge
              (map (fn [x] { (keyword (. attributes :getQName x))
                             (. attributes :getValue x) } )
                   (range len))))))
+
 
 (defn
   ^{ :arglists '("(xml/path-> path nodes)")
@@ -153,9 +168,11 @@
                         first]]
               (xml/path-> path nodes)))
           """ ) }
-  xml/path->
-  [path nodes]
+
+  xml/path-> [path nodes]
+
   ((apply comp (reverse path)) (if (sequential? nodes) nodes [nodes])))
+
 
 (def
   ^{ :arglists '("(xml/children nodes)")
@@ -169,6 +186,7 @@
           """ ) }
   xml/children
   (partial mapcat #(:content %)))
+
 
 (def
   ^{ :arglists '("(xml/text nodes)")
@@ -185,16 +203,20 @@
   xml/text
   (comp (partial filter string?) (partial mapcat #(:content %))))
 
+
 (defn xml/tagp [pred]
   (comp
     (partial filter #(pred (:tag %)))
     xml/children))
 
+
 (defn xml/tag= [tag]
   (xml/tagp (partial == tag)))
 
+
 (defn xml/attrp [attr pred]
   (partial filter #(pred (-> % :attrs attr))))
+
 
 (defn xml/attr= [attr val]
   (xml/attrp attr (partial == val)))

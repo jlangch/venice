@@ -25,9 +25,7 @@
 (ns maven)
 
 
-(defn-
-  maven/download-artefact-file
-  [uri target-dir target-file]
+(defn- maven/download-artefact-file [uri target-dir target-file]
   (let [target (str target-dir "/" target-file)]
      (println (str "Downloading " uri))
      (println (str "         to " target "..."))
@@ -37,8 +35,9 @@
 
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
-  maven/parse-artefact
-  [artefact repo]
+
+  maven/parse-artefact [artefact repo]
+
   (let [elements (str/split artefact ":")
         group-id (first elements)
         artefact-id (second elements)
@@ -49,9 +48,7 @@
     [uri file-name-base]))
 
 
-(defn-
-  maven/download-artefact-by-type
-  [artefact repo dir file-suffix]
+(defn- maven/download-artefact-by-type [artefact repo dir file-suffix]
   (let [elements (maven/parse-artefact artefact repo)
         uri (str (first elements) file-suffix)
         target-file (str (second elements) file-suffix)]
@@ -60,15 +57,19 @@
 
 (defn
   ^{ :arglists '("(maven/download artefact options*)")
-     :doc "Downloads an artefact in the format 'group-id:artefact-id:version' from a Maven repository. "
+     :doc """
+          Downloads an artefact in the format 'group-id:artefact-id:version'
+          from a Maven repository.
+          """
      :examples '(
-       "(maven/download \"com.vaadin:vaadin-client:8.7.2\")"
-       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :sources true :pom true)"
-       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :dir \".\")"
-       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true)"
-       "(maven/download \"com.vaadin:vaadin-client:8.7.2\" :dir \".\" :sources true :repo \"https://repo1.maven.org/maven2\")" ) }
-  maven/download
-  [artefact & options]
+          """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :sources true :pom true)"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir ".")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true)"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")""" ) }
+
+  maven/download [artefact & options]
+
   (let [opts (apply hash-map options)
         jar (:jar opts true)
         sources (:sources opts false)
