@@ -74,7 +74,7 @@ a world map:
   (load-module :mercator)
 
   (def cities
-                  ; latitude       longitude  
+                  ; latitude       longitude   marker
     { :zurich     [ 47.3717400     8.5422600 { :label "Zurich"
                                                :radius 10
                                                :fill-color [128 128 255 255]

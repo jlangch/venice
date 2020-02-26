@@ -101,6 +101,11 @@
          (map #(map-to-location % ip-loc-resolver))
          (filter #(not (private-ip? (:ip %))))
          (merge-ip-locations-by-country)
+         (map #(let [[lat lon] (:loc %)
+                     country (:country-iso %)
+                     frequency (:freq %)
+                     label (format-label country frequency)]
+                 [lat lon {:label label :font-size-px 14}]))
          (map (fn [x] [ (first (:loc x))
                         (second (:loc x))
                         {:label (format-label (:country-iso x) (:freq x))

@@ -103,15 +103,18 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
            ; retrieve the location data for the IP addresses
            (map #(map-ip-to-location % resolver))
            
-           ; enrich the data with with a label and define optional colors and font
-           (map (fn [x] [ (first (:loc x))
-                          (second (:loc x))
-                          { :label (:country-iso x)
-                            :fill-color [255 128 128 255]
-                            :border-color [255 0 0 255]
-                            :label-color [255 255 255 255]
-                            :radius 10
-                            :font-size-px 14 }]))
+           ; map to locations, enrich the data with with a label and define
+           ; optional colors and font
+           (map #(let [[lat lon] (:loc %)
+                       country (:country-iso %)]
+                   [lat
+                    lon
+                    { :label country
+                      :fill-color [255 128 128 255]
+                      :border-color [255 0 0 255]
+                      :label-color [255 255 255 255]
+                      :radius 10
+                      :font-size-px 14}]))
                            
            ; draw the data to a PNG
            (draw :png map-out-file)))
@@ -210,11 +213,12 @@ to locations and visualize them on a map.
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
          (filter #(not (private-ip? (:ip %))))
-         (merge-ip-locations-by-country)
-         (map (fn [x] [ (first (:loc x))
-                        (second (:loc x))
-                        {:label (format-label (:country-iso x) (:freq x))
-                         :font-size-px 14}]))
+         (merge-ip-locations-by-country)        
+         (map #(let [[lat lon] (:loc %)
+                     country (:country-iso %)
+                     frequency (:freq %)
+                     label (format-label country frequency)]
+                  [lat lon {:label label :font-size-px 14}]))
          (draw :png out-file)))
 
   (defn create-ip-loc-resolver []

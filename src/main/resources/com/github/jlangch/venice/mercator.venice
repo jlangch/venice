@@ -96,6 +96,7 @@
 
 ;; Some cities (https://www.laengengrad-breitengrad.de/)
 (def cities
+  ; id            latitude       longitude   marker
   { :zurich     [ 47.37174       8.54226   { :label "Zurich"
                                              :radius 10
                                              :fill-color [128 128 255 255]
@@ -308,10 +309,11 @@
   ([image locations styles]
     (let [[img-width img-height] (image-dimensions image)
           g2d (. image :createGraphics)
-          mapper (spherical-mapper img-width img-height)
+          geo-mapper (spherical-mapper img-width img-height)
           styles (merge default-styles styles)]
       (. g2d :setFont (font (-> styles :marker :font-size-px) (:font styles)))
-      (let [data (map #(vector (mapper (second %) (first %)) (third %))
+      (let [data (map #(let [[lat lon  styles] %]
+                         (vector (geo-mapper lon lat) styles))
                       locations)]
         ;; layer 1: draw all circles
         (docoll #(let [[pos opts] %]
