@@ -156,8 +156,9 @@ to locations and visualize them on a map.
 
   (defn format-label [country-iso freq]
     (cond
-      (> freq 1000) (str country-iso " " (/ freq 1000) "k")
-      :else         (str country-iso " " freq)))
+      (> freq 1000000) (printf "%s %.1fm" country-iso (/ freq 1000000.0))
+      (> freq 1000)    (printf "%s %.1fk" country-iso (/ freq 1000.0))
+      :else            (printf "%s %d" country-iso freq)))
 
   (defn merge-freq-maps [freq-maps]
     (apply (partial merge-with +) freq-maps))
