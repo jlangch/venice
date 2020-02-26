@@ -164,12 +164,12 @@ to locations and visualize them on a map.
 
   (defn merge-ip-locations-by-country [ip-locations]
     (vals (reduce (fn [x y]
-                   (let [country (:country-iso y)
-                         r (get x country)]
-                     (if (nil? r)
-                       (assoc x country y)
-                       (let [freq (+ (:freq r) (:freq y))]
-                         (assoc x country (assoc r :freq freq))))))
+                    (let [country (:country-iso y)
+                          r (get x country)]
+                      (if (nil? r)
+                        (assoc x country y)
+                        (let [freq (+ (:freq r) (:freq y))]
+                          (assoc x country (assoc r :freq freq))))))
                   {}
                   ip-locations)))
 
