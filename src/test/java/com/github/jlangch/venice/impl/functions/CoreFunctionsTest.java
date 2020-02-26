@@ -1046,11 +1046,22 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_filter_k() {
+		final Venice venice = new Venice();
+
+		assertEquals("{}", venice.eval("(str (filter-k (fn [k] (= k :d)) {:a 1 :b 2 :c 3}))"));
+		
+		assertEquals("{:a 1}", venice.eval("(str (filter-k (fn [k] (= k :a)) {:a 1 :b 2 :c 3}))"));
+	}
+
+	@Test
 	public void test_filter_kv() {
 		final Venice venice = new Venice();
 
+		assertEquals("{}", venice.eval("(str (filter-kv (fn [k v] (= k :d)) {:a 1 :b 2 :c 3}))"));
 		assertEquals("{:a 1}", venice.eval("(str (filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3}))"));
 		
+		assertEquals("{}", venice.eval("(str (filter-kv (fn [k v] (= v 0)) {:a 1 :b 2 :c 3}))"));
 		assertEquals("{:a 1}", venice.eval("(str (filter-kv (fn [k v] (= v 1)) {:a 1 :b 2 :c 3}))"));
 	}
 

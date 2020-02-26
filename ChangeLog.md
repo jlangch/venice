@@ -19,6 +19,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
+- function `filter-k` to filter maps by key
 - function `filter-kv` to filter maps by key and/or value
 
 

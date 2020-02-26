@@ -5217,6 +5217,42 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction filter_k =
+		new VncFunction(
+				"filter-k",
+				VncFunction
+					.meta()
+					.arglists("(filter-k f map)")
+					.doc(
+						"Returns a map with entries for which the predicate (f key) returns " +
+						"logical true. f is a function with one arguments.")
+					.examples(
+						"(filter-k #(= % :a) {:a 1 :b 2 :c 3})")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("filter-k", args, 2);
+
+				final IVncFunction filterFn = Coerce.toIVncFunction(args.first());
+				VncMap map = Coerce.toVncMap(args.second());
+
+				if (map.isEmpty()) {
+					return map;
+				}
+				else {
+					for(VncVal key : map.keys().getList()) {
+						if (filterFn.apply(VncList.of(key)) == False) {
+							map = map.dissoc(key);
+						}
+					}
+
+					return map;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction filter_kv =
 		new VncFunction(
 				"filter-kv",
@@ -5225,8 +5261,7 @@ public class CoreFunctions {
 					.arglists("(filter-kv f map)")
 					.doc(
 						"Returns a map with entries for which the predicate (f key value) returns " +
-						"logical true. f is a function with two arguments with the key and the " +
-						"value of the map entry being processed.")
+						"logical true. f is a function with two arguments.")
 					.examples(
 						"(filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3})",
 						"(filter-kv (fn [k v] (= v 2)) {:a 1 :b 2 :c 3})")
@@ -6084,6 +6119,7 @@ public class CoreFunctions {
 				.add(partial)
 				.add(mapv)
 				.add(partition)
+				.add(filter_k)
 				.add(filter_kv)
 				.add(reduce)
 				.add(reduce_kv)
