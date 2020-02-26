@@ -19,6 +19,16 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
+- ...
+
+
+
+
+
+## [1.7-19] - 2020-02-xx
+
+### Added
+
 - function `filter-k` to filter maps by key
 - function `filter-kv` to filter maps by key and/or value
 
