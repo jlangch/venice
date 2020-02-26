@@ -163,15 +163,12 @@ to locations and visualize them on a map.
     (apply (partial merge-with +) freq-maps))
 
   (defn merge-ip-locations-by-country [ip-locations]
-    (vals (reduce (fn [x y]
-                    (let [country (:country-iso y)
-                          r (get x country)]
-                      (if (nil? r)
-                        (assoc x country y)
-                        (let [freq (+ (:freq r) (:freq y))]
-                          (assoc x country (assoc r :freq freq))))))
-                  {}
-                  ip-locations)))
+    ;; ip-locations: list of map with keys :loc :ip :freq :country :country-iso
+    ;; group by :country-iso and sum up :freq
+    (->> (vals (group-by :country-iso ip-locations))
+         (map #(let [sum (apply + (map :freq %))
+                     location (dissoc (first %) :ip)]
+                 (assoc location :freq sum)))))
 
   (defn draw [format file locations]
     (-> (mercator/load-mercator-image)
