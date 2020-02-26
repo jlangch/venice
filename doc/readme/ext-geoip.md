@@ -180,6 +180,7 @@ to locations and visualize them on a map.
     (->> (tc-util/simple-ipaddr-access-log-entry-parser)
          (tc-util/parse-access-log log)
          (map :ip)
+         (filter #(not (private-ip? %)))
          (frequencies)))
 
   (defn parse-zip-logs [log-file]
@@ -209,7 +210,6 @@ to locations and visualize them on a map.
   (defn create-map [ip-freq-map ip-loc-resolver out-file]
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
-         (filter #(not (private-ip? (:ip %))))
          (merge-ip-locations-by-country)        
          (map #(let [[lat lon] (:loc %)
                      country (:country-iso %)
