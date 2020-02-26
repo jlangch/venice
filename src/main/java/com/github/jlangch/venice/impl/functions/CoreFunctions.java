@@ -5224,11 +5224,12 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(filter-kv f map)")
 					.doc(
-						"Returns a map with entries for which (predicate key value) returns " +
+						"Returns a map with entries for which the predicate (f key value) returns " +
 						"logical true. f is a function with two arguments with the key and the " +
 						"value of the map entry being processed.")
 					.examples(
-						"(filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3})")
+						"(filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3})",
+						"(filter-kv (fn [k v] (= v 2)) {:a 1 :b 2 :c 3})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
