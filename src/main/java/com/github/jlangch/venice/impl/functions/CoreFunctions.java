@@ -5217,6 +5217,46 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction filter_kv =
+		new VncFunction(
+				"filter-kv",
+				VncFunction
+					.meta()
+					.arglists("(filter-kv f map)")
+					.doc(
+						"Returns a map with entries for which (predicate key value) returns " +
+						"logical true. f is a function with two arguments with the key and the " +
+						"value of the map entry being processed.")
+					.examples(
+						"(filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3})")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("filter-kv", args, 2);
+
+				final IVncFunction filterFn = Coerce.toIVncFunction(args.first());
+				final VncMap map = Coerce.toVncMap(args.second());
+
+				if (map.isEmpty()) {
+					return map;
+				}
+				else {
+					HashMap<VncVal, VncVal> filtered = new HashMap<>();
+					for(VncMapEntry entry : map.entries()) {
+						final VncVal key = entry.getKey();
+						final VncVal val = entry.getValue();
+
+						if (filterFn.apply(VncList.of(key, val)) == True) {
+							filtered.put(key, val);
+						}
+					}
+
+					return new VncHashMap(filtered, map.getMeta());
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction reduce =
 		new VncFunction(
@@ -5293,7 +5333,7 @@ public class CoreFunctions {
 				"reduce-kv",
 				VncFunction
 					.meta()
-					.arglists("(reduce-kv f init coll))")
+					.arglists("(reduce-kv f init coll)")
 					.doc(
 						"Reduces an associative collection. f should be a function of 3 " +
 						"arguments. Returns the result of applying f to init, the first key " +
@@ -6043,6 +6083,7 @@ public class CoreFunctions {
 				.add(partial)
 				.add(mapv)
 				.add(partition)
+				.add(filter_kv)
 				.add(reduce)
 				.add(reduce_kv)
 				.add(replace)

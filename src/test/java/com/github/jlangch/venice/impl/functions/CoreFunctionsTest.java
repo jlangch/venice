@@ -1044,7 +1044,16 @@ public class CoreFunctionsTest {
 		assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush (. :java.lang.System :out))))"));	
 		assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush *out*)))"));	
 	}
-	
+
+	@Test
+	public void test_filter_kv() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a 1}", venice.eval("(str (filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3}))"));
+		
+		assertEquals("{:a 1}", venice.eval("(str (filter-kv (fn [k v] (= v 1)) {:a 1 :b 2 :c 3}))"));
+	}
+
 	@Test
 	public void test_find() {
 		final Venice venice = new Venice();

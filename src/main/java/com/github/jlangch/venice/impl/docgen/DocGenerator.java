@@ -614,6 +614,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("into"));
 		map_modify.addItem(getDocItem("concat"));
 		map_modify.addItem(getDocItem("flatten"));
+		map_modify.addItem(getDocItem("filter-kv"));
 		map_modify.addItem(getDocItem("reduce-kv"));
 		map_modify.addItem(getDocItem("merge"));
 		map_modify.addItem(getDocItem("merge-with"));
