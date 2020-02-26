@@ -5242,7 +5242,7 @@ public class CoreFunctions {
 					return map;
 				}
 				else {
-					HashMap<VncVal, VncVal> filtered = new HashMap<>();
+					final HashMap<VncVal, VncVal> filtered = new HashMap<>();
 					for(VncMapEntry entry : map.entries()) {
 						final VncVal key = entry.getKey();
 						final VncVal val = entry.getValue();
