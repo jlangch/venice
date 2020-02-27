@@ -262,7 +262,7 @@ to locations and visualize them on a map.
               [4] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
-  (when (false? *macroexpand-on-load*)
+  (when-not *macroexpand-on-load*
     (println """
 
              Warning: macroexpand-on-load is not activated. To get a much better

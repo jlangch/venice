@@ -186,7 +186,7 @@
               [5] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
-  (when (false? *macroexpand-on-load*)
+  (when-not *macroexpand-on-load*
     (println """
 
              -------------------------------------------------------------------
