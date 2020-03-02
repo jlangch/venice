@@ -183,7 +183,7 @@
                         (load-image "resources/mercator-2.png")
                         "./ip-map.png"
                         "resources/localhost_access_log.2019-12.zip")
-              [5] (download-maxmind-db -your-maxmind-lic-key-)
+              [5] (download-maxmind-db YOUR-MAXMIND-LIC-KEY)
            """)
 
   (when-not *macroexpand-on-load*

@@ -259,7 +259,7 @@ to locations and visualize them on a map.
               [3] (apply (partial run "./ip-map.png")
                          (io/list-files-glob "resources"
                                              "localhost_access_log.*.log"))
-              [4] (download-maxmind-db -your-maxmind-lic-key-)
+              [4] (download-maxmind-db YOUR-MAXMIND-LIC-KEY)
            """)
 
   (when-not *macroexpand-on-load*
