@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -224,5 +224,5 @@ public class VncMutableSet extends VncSet {
 	
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Set<VncVal> value = new HashSet<VncVal>();	
+	private final Set<VncVal> value = ConcurrentHashMap.newKeySet();	
 }
