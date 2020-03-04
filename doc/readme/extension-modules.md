@@ -5,7 +5,8 @@ that not all application require thus keeping load time and
 resource usage low if the modules are not used.
 
 Extension Modules are plain Venice scripts and must be loaded 
-explicitly `(load-module :name)`.
+explicitly `(load-module :name)`. Venice tracks the modules loaded
+and loads a module only once and skips subsequent load attempts.
 
 * [Kira Template](ext-kira.md)
 * [XML](ext-xml.md)
@@ -20,3 +21,20 @@ explicitly `(load-module :name)`.
 * [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
 * [Mercator Maps](ext-mercator.md)
 * [GEO IP](ext-geoip.md)
+
+### Explicitely forcing a module reload
+
+Venice can be forced to reload an already loaded module
+
+```clojure
+(load-module :math)
+
+; use the module
+(math/bigint-add (math/bigint "100") 
+                 (math/bigint "200"))
+             
+; reload the module
+(ns-remove math)
+(load-module :math true)
+```
+
