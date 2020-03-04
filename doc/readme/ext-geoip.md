@@ -272,17 +272,8 @@ to locations and visualize them on a map.
               [3] (apply (partial run "./ip-map.png")
                          (io/list-files-glob "resources"
                                              "localhost_access_log.2020-*"))
-              [4] (run-custom
-                        ;; colors are specified as RGBA vectors
-                        { :marker { :fill-color [255 128 128 255]
-                                    :border-color [255 0 0 255]
-                                    :label-color [131 52 235 255]
-                                    :radius 10
-                                    :font-size-px 14 } }
-                        (load-image "resources/mercator-2.png")
-                        "./ip-map.png"
-                        "resources/localhost_access_log.2019-12.zip")
-              [5] (download-maxmind-db -your-maxmind-lic-key-)
+
+              [4] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
   (when-not *macroexpand-on-load*
