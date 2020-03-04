@@ -25,7 +25,13 @@
   (load-module :geoip)
 
 
+  ;; The MaxMind country database.
+  ;; Please make sure this file exists. It can be downloaded by running
+  ;; the (download-maxmind-db YOUR-MAXMIND-LIC-KEY) function below.
+  ;; A free MaxMind GeoLite2 license key can be obtained from
+  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
+
 
   (def private-ip-addresses
         [ (cidr/parse "10.0.0.0/8")
@@ -39,9 +45,9 @@
 
   (defn format-label [country-iso freq]
     (cond
-      (> freq 1000000) (printf "%s %.1fm" country-iso (/ freq 1000000.0))
-      (> freq 1000)    (printf "%s %.1fk" country-iso (/ freq 1000.0))
-      :else            (printf "%s %d" country-iso freq)))
+      (> freq 1000000) (str/format "%s %.1fm" country-iso (/ freq 1000000.0))
+      (> freq 1000)    (str/format "%s %.1fk" country-iso (/ freq 1000.0))
+      :else            (str/format "%s %d" country-iso freq)))
 
 
   (defn merge-freq-maps [freq-maps]
@@ -81,6 +87,7 @@
 
   (defn parse-zip-logs [log-file]
     (->> (io/zip-list-entry-names log-file)
+         (filter #(io/file-ext? % "log"))
          (map #(parse-ip (io/unzip log-file %)))))
 
 
@@ -172,7 +179,7 @@
                        "resources/localhost_access_log.2019-12-01.log")
               [3] (apply (partial run "./ip-map.png")
                          (io/list-files-glob "resources"
-                                             "localhost_access_log.*.log"))
+                                             "localhost_access_log.2020-*"))
               [4] (run-custom
                         ;; colors are specified as RGBA vectors
                         { :marker { :fill-color [255 128 128 255]
@@ -183,7 +190,7 @@
                         (load-image "resources/mercator-2.png")
                         "./ip-map.png"
                         "resources/localhost_access_log.2019-12.zip")
-              [5] (download-maxmind-db YOUR-MAXMIND-LIC-KEY)
+              [5] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
   (when-not *macroexpand-on-load*
