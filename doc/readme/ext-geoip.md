@@ -145,16 +145,13 @@ to locations and visualize them on a map.
   ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
 
-
   (def private-ip-addresses
         [ (cidr/parse "10.0.0.0/8")
           (cidr/parse "172.16.0.0/12")
           (cidr/parse "192.168.0.0/16") ])
 
-
   (defn private-ip? [ip]
     (any? #(cidr/in-range? ip %) private-ip-addresses))
-
 
   (defn format-label [country-iso freq]
     (cond
@@ -162,10 +159,8 @@ to locations and visualize them on a map.
       (> freq 1000)    (str/format "%s %.1fk" country-iso (/ freq 1000.0))
       :else            (str/format "%s %d" country-iso freq)))
 
-
   (defn merge-freq-maps [freq-maps]
     (apply (partial merge-with +) freq-maps))
-
 
   (defn merge-ip-locations-by-country [ip-locations]
     ;; ip-locations: list of map with keys :loc :ip :freq :country :country-iso
@@ -175,12 +170,10 @@ to locations and visualize them on a map.
                      location (dissoc (first %) :ip)]
                  (assoc location :freq sum)))))
 
-
   (defn get-mercator-img [mercator-img]
     (if (some? mercator-img)
       mercator-img
       (mercator/load-mercator-image)))
-
 
   (defn draw [styles mercator-img format file locations]
     (let [img (get-mercator-img mercator-img)]
@@ -189,7 +182,6 @@ to locations and visualize them on a map.
           (mercator/crop-image 400 600)
           (mercator/save-image format file))))
 
-
   (defn parse-ip [log]
     (->> (tc-util/simple-ipaddr-access-log-entry-parser)
          (tc-util/parse-access-log log)
@@ -197,12 +189,10 @@ to locations and visualize them on a map.
          (filter #(not (private-ip? %)))
          (frequencies)))
 
-
   (defn parse-zip-logs [log-file]
     (->> (io/zip-list-entry-names log-file)
          (filter #(io/file-ext? % "log"))
          (map #(parse-ip (io/unzip log-file %)))))
-
 
   (defn parse-log-file [log-file]
     (println "Parsing" log-file "...")
@@ -210,12 +200,10 @@ to locations and visualize them on a map.
       (parse-zip-logs log-file)
       (parse-ip log-file)))
 
-
   (defn parse-log-files [log-files]
     ;; returns an aggregated map with IP frequencies:
     ;;    { "196.52.43.56" 3 "178.197.226.244" 8 }
     (merge-freq-maps (flatten (map parse-log-file log-files))))
-
 
   (defn map-to-location [ip-freq ip-loc-resolver]
     (let [ip (key ip-freq)
@@ -225,7 +213,6 @@ to locations and visualize them on a map.
         :freq (val ip-freq)
         :country (:country-name data)
         :country-iso (:country-iso data) } ))
-
 
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
     (->> (entries ip-freq-map)
@@ -238,7 +225,6 @@ to locations and visualize them on a map.
                  [lat lon {:label label :font-size-px 14}]))
          (draw styles mercator-img :png out-file)))
 
-
   (defn create-ip-loc-resolver []
     ; this may take some time
     (when (io/exists-file? maxmind-country-zip)
@@ -247,9 +233,7 @@ to locations and visualize them on a map.
                      maxmind-country-zip
                      (geoip/download-google-country-db))))
 
-
   (def ip-loc-rv nil)
-
 
   (defn process [styles mercator-img out-file log-files]
     (if (io/exists-file? maxmind-country-zip)
@@ -265,24 +249,19 @@ to locations and visualize them on a map.
         (println "Please download it:")
         (println "    (download-maxmind-db -your-maxmind-lic-key-)"))))
 
-
   (defn load-image [file]
     (mercator/load-image file))
-
 
   (defn download-maxmind-db [lic-key]
     (io/mkdirs (io/file-parent maxmind-country-zip))
     (geoip/download-maxmind-db-to-zipfile
       (io/file maxmind-country-zip) :country lic-key))
 
-
   (defn run-custom [styles mercator-img out-file & log-files]
     (process styles mercator-img out-file log-files))
 
-
   (defn run [out-file & log-files]
     (process nil nil out-file log-files))
-
 
   (println """
            Actions:
