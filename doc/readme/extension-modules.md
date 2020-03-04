@@ -22,7 +22,7 @@ and loads a module only once and skips subsequent load attempts.
 * [Mercator Maps](ext-mercator.md)
 * [GEO IP](ext-geoip.md)
 
-### Explicitely forcing a module reload
+### Explicitly forcing a module reload
 
 Venice can be forced to reload an already loaded module
 
