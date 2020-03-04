@@ -35,6 +35,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Changed
 
 - JLine3 lib to actual version 3.14.0
+- build to Gradle 6.2.2
 
 
 
