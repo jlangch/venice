@@ -55,7 +55,7 @@ country database to map the countries' ISO codes to latitude, longitude coordina
 https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
 
 
-## Example: Lookup IP location
+## Example 1: Lookup IP location
 
 ```clojure
 (do
@@ -107,7 +107,7 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
 
 
 
-## Example: Visualize IP addresses on a map
+## Example 2: Visualize IP addresses on a map
 
 ```clojure
 (do
@@ -178,7 +178,7 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-example.png">
 
 
-## Example: Visualize Tomcat IP addresses on a map
+## Example 3: Visualize Tomcat IP addresses on a map
 
 The script `tomcat-geoip.venice` parses Tomcat access log files, maps IP addresses
 to locations and visualizes them on a map.
