@@ -300,6 +300,7 @@ Run the script from a REPL:
 ```text
 venice> !macroexpand
 venice> (load-file "tomcat-geoip.venice")
+venice> (lookup-ip "41.216.186.131")
 venice> (run "./ip-map.png" "localhost_access_log.2019-12.zip")
 ```
 
