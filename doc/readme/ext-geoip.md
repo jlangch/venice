@@ -55,6 +55,58 @@ country database to map the countries' ISO codes to latitude, longitude coordina
 https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
 
 
+## Example: Lookup IP location
+
+```clojure
+(do
+  (load-module :geoip)
+
+  ;; The MaxMind country database. 
+  ;; Please make sure this file exists. It can be downloaded by just copy/paste 
+  ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
+  ;; your license key. A free MaxMind GeoLite2 license key can be obtained from
+  ;; 'https://www.maxmind.com/en/home'
+  (def maxmind-country-zip "resources/geoip-country.zip")
+  
+  (def resolver nil)
+  
+  (defn download-maxmind-db [lic-key]
+    (when (some? (io/file-parent maxmind-country-zip))
+      (io/mkdirs (io/file-parent maxmind-country-zip)))
+    (geoip/download-maxmind-db-to-zipfile
+      (io/file maxmind-country-zip) :country lic-key))
+
+  (defn create-resolver[] 
+      ; this may take some time
+      (println "Parsing MaxMind DB ...")
+      (geoip/ip-to-country-loc-resolver
+          maxmind-country-zip
+          (geoip/download-google-country-db)))
+     
+  (defn lookup-ip [ip]
+    (when (nil? resolver)
+      (def resolver (create-resolver)))
+    (resolver ip))
+  
+  (when-not *macroexpand-on-load*
+    (println """
+
+             -------------------------------------------------------------------
+             Warning: macroexpand-on-load is not activated. To get a much better
+                      performance activate macroexpand-on-load before loading
+                      this script.
+
+                      From the REPL run: !macroexpand
+             -------------------------------------------------------------------
+             """))
+
+  ; example
+  ; (lookup-ip "41.216.186.131")
+)
+```
+
+
+
 ## Example: Visualize IP addresses on a map
 
 ```clojure
