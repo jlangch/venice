@@ -4,7 +4,7 @@ The [Mercator Projection](https://en.wikipedia.org/wiki/Mercator_projection)
 is a cylindrical map projection. 
 
 Venice's **mercator** module draws locations given by world coordinates 
-on a mercator map. A location is drawn as round marker with a label. 
+on a mercator map. A location is drawn as a round marker with a label. 
 
 World coordinates are given by a latitude and a longitude:
 
@@ -75,11 +75,11 @@ a world map:
 
   (def cities
                   ; latitude       longitude   marker
-    { :zurich     [ 47.3717400     8.5422600 { :label "Zurich"
-                                               :radius 10
-                                               :fill-color [128 128 255 255]
-                                               :border-color [0 0 255 255]
-                                               :label-color [255 255 255 255]
+    { :zurich     [ 47.3717400     8.5422600 { :label        "Zurich"
+                                               :radius       10
+                                               :fill-color   [128 128 255 255]
+                                               :border-color [  0   0 255 255]
+                                               :label-color  [255 255 255 255]
                                                :font-size-px 14 } ]
       :new-york   [ 40.7127780   -74.0058330 { :label "New York" } ]
       :tokyo      [ 35.6894875   139.6917064 { :label "Tokyo" } ]
@@ -121,12 +121,12 @@ You can provide your own map though, but it must:
 The markers can be customized with a label, size and color passed as an optional map to each location. E.g.:
 
 ```clojure
-{ :label "Zurich"
-  :radius 10
-  :fill-color [128 128 255 255]
-  :border-color [0 0 255 255]
-  :label-color [255 255 255 255]
-  :font-size-px 14 }
+{ :label         "Zurich"
+  :radius        10
+  :fill-color    [128 128 255 255]
+  :border-color  [  0   0 255 255]
+  :label-color   [255 255 255 255]
+  :font-size-px  14 }
 ```
 
 Label:

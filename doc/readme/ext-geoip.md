@@ -65,10 +65,10 @@ E.g.:
 ```text
 IP address:     "41.216.186.131"
 
-Location info:  { :ip "41.216.186.131" 
-                  :loc ["17.357822" "-62.782998"] 
-                  :country-iso "KN"
-                  :country-name "St Kitts and Nevis" }
+Location info:  { :ip            "41.216.186.131" 
+                  :loc           ["17.357822" "-62.782998"] 
+                  :country-iso   "KN"
+                  :country-name  "St Kitts and Nevis" }
 ```
 
 
@@ -150,6 +150,8 @@ markers on a world map.
   ;; the png map created
   (def map-out-file "./ip-world-map.png")
 
+  (def resolver nil)
+
   (defn download-maxmind-db [lic-key]
     (when (some? (io/file-parent maxmind-country-zip))
       (io/mkdirs (io/file-parent maxmind-country-zip)))
@@ -162,19 +164,25 @@ markers on a world map.
         (mercator/crop-image 400 600)
         (mercator/save-image format file)))
 
-  (def resolver (geoip/ip-to-country-loc-resolver
-                   maxmind-country-zip
-                   (geoip/download-google-country-db)))
+  (defn create-resolver[] 
+      ; this may take some time
+      (println "Parsing MaxMind DB ...")
+      (geoip/ip-to-country-loc-resolver
+          maxmind-country-zip
+          (geoip/download-google-country-db)))
 
   (defn map-ip-to-location [ip ip-loc-resolver]
     (let [data (ip-loc-resolver ip)]
-      { :loc (geoip/map-location-to-numerics (:loc data))
-        :ip ip
-        :country (:country-name data)
+      { :loc         (geoip/map-location-to-numerics (:loc data))
+        :ip          ip
+        :country     (:country-name data)
         :country-iso (:country-iso data) } ))
 
   (if (io/exists-file? maxmind-country-zip)
     (do
+      ; create the IP resolver
+      (def resolver (create-resolver))
+      
       (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
       
            ; retrieve the location data for the IP addresses
@@ -183,14 +191,14 @@ markers on a world map.
            ; map to locations, enrich the data with with a label and define
            ; optional colors and font
            (map #(let [[lat lon] (:loc %)
-                       country (:country-iso %)]
+                       country   (:country-iso %)]
                    [lat
                     lon
-                    { :label country
-                      :fill-color [255 128 128 255]
-                      :border-color [255 0 0 255]
-                      :label-color [255 255 255 255]
-                      :radius 10
+                    { :label        country
+                      :fill-color   [255 128 128 255]
+                      :border-color [255   0   0 255]
+                      :label-color  [255 255 255 255]
+                      :radius       10
                       :font-size-px 14}]))
                            
            ; draw the data to a PNG
@@ -230,6 +238,8 @@ Script  _tomcat-geoip.venice_ :
         [ (cidr/parse "10.0.0.0/8")
           (cidr/parse "172.16.0.0/12")
           (cidr/parse "192.168.0.0/16") ])
+
+  (def resolver nil)
 
   (defn private-ip? [ip]
     (any? #(cidr/in-range? ip %) private-ip-addresses))
@@ -289,10 +299,10 @@ Script  _tomcat-geoip.venice_ :
   (defn map-to-location [ip-freq ip-loc-resolver]
     (let [ip (key ip-freq)
           data (ip-loc-resolver ip)]
-      { :loc (geoip/map-location-to-numerics (:loc data))
-        :ip ip
-        :freq (val ip-freq)
-        :country (:country-name data)
+      { :loc         (geoip/map-location-to-numerics (:loc data))
+        :ip          ip
+        :freq        (val ip-freq)
+        :country     (:country-name data)
         :country-iso (:country-iso data) } ))
 
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
@@ -300,13 +310,13 @@ Script  _tomcat-geoip.venice_ :
          (map #(map-to-location % ip-loc-resolver))
          (merge-ip-locations-by-country)
          (map #(let [[lat lon] (:loc %)
-                     country (:country-iso %)
+                     country   (:country-iso %)
                      frequency (:freq %)
-                     label (format-label country frequency)]
+                     label     (format-label country frequency)]
                  [lat lon {:label label :font-size-px 14}]))
          (draw styles mercator-img :png out-file)))
 
-  (defn create-ip-loc-resolver []
+  (defn create-resolver []
     ; this may take some time
     (when (io/exists-file? maxmind-country-zip)
       (println "Parsing MaxMind country DB...")
@@ -314,17 +324,15 @@ Script  _tomcat-geoip.venice_ :
                      maxmind-country-zip
                      (geoip/download-google-country-db))))
 
-  (def ip-loc-rv nil)
-
   (defn process [styles mercator-img out-file log-files]
     (if (io/exists-file? maxmind-country-zip)
       (do
-        (when (nil? ip-loc-rv)
-          (def ip-loc-rv (create-ip-loc-resolver)))
+        (when (nil? resolver)
+          (def resolver (create-resolver)))
         (println "Processing log files...")
         (-<> (map io/file log-files)
              (parse-log-files <>)
-             (create-map styles mercator-img <> ip-loc-rv out-file)))
+             (create-map styles mercator-img <> resolver out-file)))
       (do
         (println "The MaxMind country file" maxmind-country-zip " does not exist!")
         (println "Please download it:")
@@ -339,9 +347,9 @@ Script  _tomcat-geoip.venice_ :
       (io/file maxmind-country-zip) :country lic-key))
 
   (defn lookup-ip [ip]
-    (when (nil? ip-loc-rv)
-      (def ip-loc-rv (create-ip-loc-resolver)))
-    (ip-loc-rv ip))
+    (when (nil? resolver)
+      (def resolver (create-resolver)))
+    (resolver ip))
 
   (defn run-custom [styles mercator-img out-file & log-files]
     (process styles mercator-img out-file log-files))
