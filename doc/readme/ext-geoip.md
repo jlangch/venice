@@ -55,6 +55,7 @@ country database to map the countries' ISO codes to latitude, longitude coordina
 https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
 
 
+
 ## Example 1: Lookup IP location
 
 ```clojure
@@ -100,8 +101,13 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
              -------------------------------------------------------------------
              """))
 
-  ; example
+  ; example:
   ; (lookup-ip "41.216.186.131")
+  ;
+  ; => { :ip "41.216.186.131" 
+  ;      :loc ["17.357822" "-62.782998"] 
+  ;      :country-iso "KN"
+  ;      :country-name "St Kitts and Nevis" }
 )
 ```
 
@@ -176,6 +182,7 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
       (println "    (download-maxmind-db YOUR-MAXMIND-LIC-KEY)"))))
 ```
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-example.png">
+
 
 
 ## Example 3: Visualize Tomcat IP addresses on a map
