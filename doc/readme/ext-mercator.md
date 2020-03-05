@@ -3,10 +3,10 @@
 The [Mercator Projection](https://en.wikipedia.org/wiki/Mercator_projection)
 is a cylindrical map projection. 
 
-Venice's **geoip** module uses the Mercator map projection to show IP 
-locations on a world map.
+Venice's **mercator** module draws locations given by world coordinates 
+on a mercator map. A location is drawn as round marker with a label. 
 
-World coordinates are given by a latitude and a longitude.
+World coordinates are given by a latitude and a longitude:
 
 **Latitude** specifies the north-south position of a point on the Earth's
 surface. Latitude is an angle which ranges from 0° at the equator to +90°

@@ -58,6 +58,22 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
 
 ## Example 1: Lookup IP location
 
+The **geoip** module returns location information for IP4 or IP6 addresses.
+
+E.g.:
+
+```text
+IP address:     "41.216.186.131"
+
+Location info:  { :ip "41.216.186.131" 
+                  :loc ["17.357822" "-62.782998"] 
+                  :country-iso "KN"
+                  :country-name "St Kitts and Nevis" }
+```
+
+
+IP lookup:
+
 ```clojure
 (do
   (load-module :geoip)
@@ -103,17 +119,20 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
 
   ; example:
   ; (lookup-ip "41.216.186.131")
-  ;
-  ; => { :ip "41.216.186.131" 
-  ;      :loc ["17.357822" "-62.782998"] 
-  ;      :country-iso "KN"
-  ;      :country-name "St Kitts and Nevis" }
 )
 ```
 
 
 
 ## Example 2: Visualize IP addresses on a map
+
+To visualize IP addresses on a world map Venice' **mercator** and **geoip**
+modules can be combined to draw the locations. 
+
+The **geoip** module returns the IP locations (country, latitude, and 
+longitude) that are passed to the **mercator** module to draw corresponding
+markers on a world map.
+
 
 ```clojure
 (do
@@ -187,8 +206,11 @@ https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/co
 
 ## Example 3: Visualize Tomcat IP addresses on a map
 
-The script `tomcat-geoip.venice` parses Tomcat access log files, maps IP addresses
-to locations and visualizes them on a map.
+The script `tomcat-geoip.venice` parses Tomcat access log files for IP addresses, 
+maps the IP addresses to locations, and visualizes them on a world map.
+
+
+Script  _tomcat-geoip.venice_ :
 
 ```clojure
 (do
