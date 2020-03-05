@@ -257,6 +257,11 @@ to locations and visualizes them on a map.
     (geoip/download-maxmind-db-to-zipfile
       (io/file maxmind-country-zip) :country lic-key))
 
+  (defn lookup-ip [ip]
+    (when (nil? ip-loc-rv)
+      (def ip-loc-rv (create-ip-loc-resolver)))
+    (ip-loc-rv ip))
+
   (defn run-custom [styles mercator-img out-file & log-files]
     (process styles mercator-img out-file log-files))
 
@@ -265,15 +270,16 @@ to locations and visualizes them on a map.
 
   (println """
            Actions:
-              [1] (run "./ip-map.png"
-                       "resources/localhost_access_log.2019-12.zip")
+              [1] (lookup-ip "41.216.186.131")
               [2] (run "./ip-map.png"
+                       "resources/localhost_access_log.2019-12.zip")
+              [3] (run "./ip-map.png"
                        "resources/localhost_access_log.2019-12-01.log")
-              [3] (apply (partial run "./ip-map.png")
+              [4] (apply (partial run "./ip-map.png")
                          (io/list-files-glob "resources"
                                              "localhost_access_log.2020-*"))
 
-              [4] (download-maxmind-db -your-maxmind-lic-key-)
+              [5] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
   (when-not *macroexpand-on-load*
