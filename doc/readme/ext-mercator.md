@@ -6,9 +6,8 @@ navigation because of its unique property of being conformal (preserving angles)
 and allowing a ship to sail in a constant compass direction to reach its 
 destination.
 
-Many major online street mapping services like  _Google Maps_  
-or  _OpenStreetMap_  use a variant of the Mercator projection called
-[Web Mercator](https://en.wikipedia.org/wiki/Web_Mercator_projection).
+Many major online street mapping services like  _Google Maps_  or  _OpenStreetMap_  
+use a variant of the Mercator projection called [Web Mercator](https://en.wikipedia.org/wiki/Web_Mercator_projection).
 
 Venice's **mercator** module is based on the Web Mercator projection 
 and draws locations given in world coordinates on a Mercator map. 
