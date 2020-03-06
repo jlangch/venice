@@ -87,7 +87,7 @@ public class ReflectionAccessor {
 		try {
 			final List<Constructor<?>> ctors = memoizedPublicConstructors(clazz, args.length);
 			if (ctors.isEmpty()) {
-				throw new JavaMethodInvocationException(noMatchingConstructorErrMsg(clazz));
+				throw new JavaMethodInvocationException(noMatchingConstructorErrMsg(clazz, args));
 			} 
 			else if (ctors.size() == 1) {
 				final Constructor<?> ctor = (Constructor<?>)ctors.get(0);
@@ -116,7 +116,7 @@ public class ReflectionAccessor {
 					}
 				}
 
-				throw new JavaMethodInvocationException(noMatchingConstructorErrMsg(clazz));
+				throw new JavaMethodInvocationException(noMatchingConstructorErrMsg(clazz, args));
 			}
 		} 
 		catch (JavaMethodInvocationException ex) {
@@ -124,7 +124,13 @@ public class ReflectionAccessor {
 		}
 		catch (Exception ex) {
 			throw new JavaMethodInvocationException(
-					String.format("Failed to invoke constructor '%s'", clazz.getName()),
+					new StringBuilder()
+							.append("Failed to invoke constructor ")
+							.append(clazz.getName())
+							.append("(")
+							.append(formatArgTypes(args))
+							.append(")")
+							.toString(),
 					ex);
 		}
 	}
@@ -553,10 +559,14 @@ public class ReflectionAccessor {
 				target == null ? "<null>" : target.getClass().getName());
 	}
 
-	private static String noMatchingConstructorErrMsg(final Class<?> clazz) {
-		return String.format(
-				"No matching public constructor found: '%s'",
-				clazz.getName());
+	private static String noMatchingConstructorErrMsg(final Class<?> clazz, final Object[] args) {
+		return new StringBuilder()
+						.append("No matching public constructor found: ")
+						.append(clazz.getName())
+						.append("(")
+						.append(formatArgTypes(args))
+						.append(")")
+						.toString();
 	}
 
 	private static String failedToGetBeanPropertyErrMsg(final Object target, final String propertyName) {
@@ -648,7 +658,7 @@ public class ReflectionAccessor {
 	private static String formatArgTypes(final Object[] args) {
 		return Arrays
 				.stream(args)
-				.map(o -> o.getClass().getSimpleName())
+				.map(o -> o == null ? "null" : o.getClass().getSimpleName())
 				.collect(Collectors.joining(", "));
 	}
 	

@@ -32,6 +32,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - function `filter-k` to filter maps by key
 - function `filter-kv` to filter maps by key and/or value
 
+### Fixed
+
+- an issue with Java Interop exception messages
+
 ### Changed
 
 - JLine3 lib to actual version 3.14.0
