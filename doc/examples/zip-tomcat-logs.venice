@@ -22,7 +22,7 @@
 ;;;; ---------------------------------------------------------------------------
 ;;;; Zips the last month's Tomcat log files
 ;;;;
-;;;; > java -jar venice-1.7.18.jar -file zip-tomcat-logs.venice ./logs
+;;;; > java -jar venice-1.7.19.jar -file zip-tomcat-logs.venice ./logs
 ;;;; ---------------------------------------------------------------------------
 
 (do

@@ -25,12 +25,13 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.7.19] - 2020-03-xx
+## [1.7.19] - 2020-03-06
 
 ### Added
 
 - function `filter-k` to filter maps by key
 - function `filter-kv` to filter maps by key and/or value
+- improvements to mercator and geoip modules
 
 ### Fixed
 
