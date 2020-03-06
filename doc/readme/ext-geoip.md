@@ -141,22 +141,12 @@ markers on a world map.
 
 
   ;; The MaxMind country database. 
-  ;; Please make sure this file exists. It can be downloaded by just copy/paste 
-  ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
-  ;; your license key. A free MaxMind GeoLite2 license key can be obtained from
-  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
   
   ;; the png map created
   (def map-out-file "./ip-world-map.png")
 
   (def resolver nil)
-
-  (defn download-maxmind-db [lic-key]
-    (when (some? (io/file-parent maxmind-country-zip))
-      (io/mkdirs (io/file-parent maxmind-country-zip)))
-    (geoip/download-maxmind-db-to-zipfile
-      (io/file maxmind-country-zip) :country lic-key))
 
   (defn draw [format file locations]
     (-> (mercator/load-mercator-image)
@@ -165,11 +155,12 @@ markers on a world map.
         (mercator/save-image format file)))
 
   (defn create-resolver[] 
+    (when (io/exists-file? maxmind-country-zip)
       ; this may take some time
-      (println "Parsing MaxMind DB ...")
-      (geoip/ip-to-country-loc-resolver
-          maxmind-country-zip
-          (geoip/download-google-country-db)))
+      (println "Loading Google country DB ...")
+      (let [coutry-db (geoip/download-google-country-db)]
+        (println "Parsing MaxMind DB ...")
+        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
 
   (defn map-ip-to-location [ip ip-loc-resolver]
     (let [data (ip-loc-resolver ip)]
@@ -228,10 +219,6 @@ Script  _tomcat-geoip.venice_ :
 
 
   ;; The MaxMind country database.
-  ;; Please make sure this file exists. It can be downloaded by running
-  ;; the (download-maxmind-db YOUR-MAXMIND-LIC-KEY) function below.
-  ;; A free MaxMind GeoLite2 license key can be obtained from
-  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
 
   (def private-ip-addresses
@@ -267,6 +254,7 @@ Script  _tomcat-geoip.venice_ :
       (mercator/load-mercator-image)))
 
   (defn draw [styles mercator-img format file locations]
+    (println "Drawing Mercator map ...")
     (let [img (get-mercator-img mercator-img)]
       (-> img
           (mercator/draw-locations locations styles)
@@ -306,6 +294,7 @@ Script  _tomcat-geoip.venice_ :
         :country-iso (:country-iso data) } ))
 
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
+    (println "Mapping IP addresses ...")
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
          (merge-ip-locations-by-country)
@@ -316,13 +305,13 @@ Script  _tomcat-geoip.venice_ :
                  [lat lon {:label label :font-size-px 14}]))
          (draw styles mercator-img :png out-file)))
 
-  (defn create-resolver []
-    ; this may take some time
+  (defn create-resolver[] 
     (when (io/exists-file? maxmind-country-zip)
-      (println "Parsing MaxMind country DB...")
-      (geoip/ip-to-country-loc-resolver
-                     maxmind-country-zip
-                     (geoip/download-google-country-db))))
+      ; this may take some time
+      (println "Loading Google country DB ...")
+      (let [coutry-db (geoip/download-google-country-db)]
+        (println "Parsing MaxMind DB ...")
+        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
 
   (defn process [styles mercator-img out-file log-files]
     (if (io/exists-file? maxmind-country-zip)
@@ -340,11 +329,6 @@ Script  _tomcat-geoip.venice_ :
 
   (defn load-image [file]
     (mercator/load-image file))
-
-  (defn download-maxmind-db [lic-key]
-    (io/mkdirs (io/file-parent maxmind-country-zip))
-    (geoip/download-maxmind-db-to-zipfile
-      (io/file maxmind-country-zip) :country lic-key))
 
   (defn lookup-ip [ip]
     (when (nil? resolver)
@@ -364,11 +348,9 @@ Script  _tomcat-geoip.venice_ :
                        "resources/localhost_access_log.2019-12.zip")
               [3] (run "./ip-map.png"
                        "resources/localhost_access_log.2019-12-01.log")
-              [4] (apply (partial run "./ip-map.png")
-                         (io/list-files-glob "resources"
-                                             "localhost_access_log.2020-*"))
-
-              [5] (download-maxmind-db -your-maxmind-lic-key-)
+              [4] (apply run "./ip-map.png"
+                             (io/list-files-glob "resources"
+                                                 "localhost_access_log.2020-*"))
            """)
 
   (when-not *macroexpand-on-load*
