@@ -80,20 +80,10 @@ IP lookup:
   (load-module :geoip)
 
   ;; The MaxMind country database. 
-  ;; Please make sure this file exists. It can be downloaded by just copy/paste 
-  ;; the 'download-maxmind-db' function below to a Venice REPL and run it with 
-  ;; your license key. A free MaxMind GeoLite2 license key can be obtained from
-  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
   
   (def resolver nil)
   
-  (defn download-maxmind-db [lic-key]
-    (when (some? (io/file-parent maxmind-country-zip))
-      (io/mkdirs (io/file-parent maxmind-country-zip)))
-    (geoip/download-maxmind-db-to-zipfile
-      (io/file maxmind-country-zip) :country lic-key))
-
   (defn create-resolver[] 
       ; this may take some time
       (println "Parsing MaxMind DB ...")
