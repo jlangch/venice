@@ -1,10 +1,19 @@
 # MERCATOR Maps
 
 The [Mercator Projection](https://en.wikipedia.org/wiki/Mercator_projection)
-is a cylindrical map projection. 
+is a cylindrical map projection. It became the standard map projection for 
+navigation because of its unique property of being conformal (preserving angles) 
+and allowing a ship to sail in a constant compass direction to reach its 
+destination.
 
-Venice's **mercator** module draws locations given by world coordinates 
-on a mercator map. A location is drawn as a round marker with a label. 
+Many major online street mapping services like  _Google Maps_  
+or  _OpenStreetMap_  use a variant of the Mercator projection called
+[Web Mercator](https://en.wikipedia.org/wiki/Web_Mercator_projection).
+
+Venice's **mercator** module is based on the Web Mercator projection 
+and draws locations given in world coordinates on a Mercator map. 
+A location is drawn as a round marker with a label. Markers and labels
+can be optionally styled with colors and size.
 
 World coordinates are given by a latitude and a longitude:
 
