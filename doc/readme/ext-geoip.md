@@ -30,7 +30,8 @@ https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&lic
 
 **Download GeoLite2 databases with Venice**
 
-Alternatively the databases can be downloaded using the Venice GeoIP module. You just run it from a REPL.
+Alternatively the databases can be downloaded using the Venice GeoIP module. You just 
+run this snippet from a REPL.
 
 ```clojure
 (do
@@ -205,8 +206,11 @@ markers on a world map.
 
 ## Example 3: Visualize Tomcat IP addresses on a map
 
-The script `tomcat-geoip.venice` parses Tomcat access log files for IP addresses, 
-maps the IP addresses to locations, and visualizes them on a world map.
+The script `tomcat-geoip.venice` 
+  - parses IP addresses from Tomcat access log files
+  - aggregates the IP address (computes frequency)
+  - maps the IP addresses to locations
+  - visualizes them on a world map.
 
 
 Script  _tomcat-geoip.venice_ :
