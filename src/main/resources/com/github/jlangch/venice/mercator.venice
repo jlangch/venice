@@ -150,19 +150,19 @@
     :jpg  "JPG" })
 
 
-(def font-style
+(def font-styles
   { :plain  (. :Font :PLAIN)
     :italic (. :Font :ITALIC)
     :bold   (. :Font :BOLD) })
 
 
 ; default styles
-(def default-styles { :marker { :fill-color [255 128 128 255]
-                                :border-color [255 0 0 255]
-                                :label-color [255 255 255 255]
-                                :radius 10
+(def default-styles { :marker { :fill-color   [255 128 128 255]
+                                :border-color [255   0   0 255]
+                                :label-color  [255 255 255 255]
+                                :radius       10
                                 :font-size-px 14 }
-                      :font {:style :plain} } )
+                      :font { :style :plain }})
 
 
 (defn color
@@ -171,13 +171,26 @@
   ([[r g b a]]  (color r g b a)))
 
 
-(defn font [size style]
+(def font
   (memoize (fn [size style]
-             (. :Font :new "SansSerif" (get font-style style) size))))
+             (. :Font :new "SansSerif"
+                           (get font-styles style (:plain font-styles))
+                           size))))
 
 
 (defn- limit [val [lower upper]]
   (min upper (max lower val)))
+
+
+(defn- text-metrics [g2d text text-font]
+  (let [ctx          (. g2d :getFontRenderContext)
+        line-metrics (. text-font :getLineMetrics text ctx)
+        width        (. (. text-font :getStringBounds text ctx) :getWidth)
+        ascent       (. line-metrics :getAscent)
+        descent      (. line-metrics :getDescent)]
+    { :width   (long width)
+      :ascent  (long ascent)
+      :descent (long descent) }))
 
 
 (defn spherical-x-axis [longitude]
@@ -275,31 +288,33 @@
   (. g2d :drawOval (- x radius) (- y radius) (* 2 radius) (* 2 radius)))
 
 
-(defn draw-text [g2d x y color label label-font label-size-px]
-  (. g2d :setFont (font label-size-px label-font))
+(defn draw-text [g2d x y color label font]
+  (. g2d :setFont font)
   (. g2d :setColor color)
   (. g2d :drawString label x y))
 
 
 (defn draw-marker [g2d img-width img-height pos styles opts circle? label?]
-  (let [x (:x pos)
-        y (- img-height (:y pos))
-        label (:label opts)
-        radius (:radius opts (-> styles :marker :radius))
-        diameter (* 2 radius)
-        font-size (:font-size-px opts (-> styles :marker :font-size-px))
-        label-y-off (- (long (/ (- diameter font-size) 2)))]
+  (let [x         (:x pos)
+        y         (- img-height (:y pos))
+        label     (:label opts)
+        radius    (:radius opts (-> styles :marker :radius))
+        diameter  (* 2 radius)
+        font-size (:font-size-px opts (-> styles :marker :font-size-px))]
     (when circle?
       (draw-circle g2d x y
                    radius
                    (color (:fill-color opts (-> styles :marker :fill-color)))
                    (color (:border-color opts (-> styles :marker :border-color)))))
     (when (and label? (some? label))
-      (draw-text g2d (+ x radius radius) (+ y radius label-y-off)
-                 (color (:label-color opts (-> styles :marker :label-color)))
-                 label
-                 (:font styles)
-                 font-size))))
+      (let [label-font (font font-size (:font styles))
+            metrics    (text-metrics g2d label label-font)
+            x-off      (long (* 1.5 radius))
+            y-off      (long (/ (- (:ascent metrics) (:descent metrics)) 2))]
+        (draw-text g2d (+ x x-off) (+ y y-off)
+                   (color (:label-color opts (-> styles :marker :label-color)))
+                   label
+                   label-font)))))
 
 
 (defn draw-locations
