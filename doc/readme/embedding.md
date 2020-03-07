@@ -2,9 +2,9 @@
 
 * [Overview](#overview)
 * [Passing Parameters](#passing-parameters)
-* [stdout/stderr Redirection](#stdout-stderr-redirection)
+* [stdout/stderr Redirection](#stdoutstderr-redirection)
 * [Precompiling](#precompiling)
-* [Serialize/Deserialize Precompiled Scripts](#serialize-deserialize-precompiled-scripts)
+* [Serialize/Deserialize Precompiled Scripts](#serializedeserialize-precompiled-scripts)
 * [Precompilation Benchmark](#precompilation-benchmark)
 * [Sandbox](#sandbox)
 
