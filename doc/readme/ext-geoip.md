@@ -82,20 +82,21 @@ IP lookup:
   ;; The MaxMind country database. 
   (def maxmind-country-zip "resources/geoip-country.zip")
   
-  (def resolver nil)
+  (def resolver (delay (create-resolver)))
   
-  (defn create-resolver[] 
-    (when (io/exists-file? maxmind-country-zip)
-      ; this may take some time
-      (println "Loading Google country DB ...")
-      (let [coutry-db (geoip/download-google-country-db)]
-        (println "Parsing MaxMind DB ...")
-        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
+  (defn create-resolver [] 
+    ; this may take some time
+    (println "Loading Google country DB ...")
+    (let [country-db (geoip/download-google-country-db)]
+      (println "Parsing MaxMind DB ...")
+      (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
      
-  (defn lookup-ip [ip]
-    (when (nil? resolver)
-      (def resolver (create-resolver)))
-    (resolver ip))
+  (defn lookup-ip [ip] (@resolver ip))
+
+
+  (when-not (io/exists-file? maxmind-country-zip)
+    (throw (. :VncException :new 
+              (str "The MaxMind country file" maxmind-country-zip "does not exist!"))))
   
   (when-not *macroexpand-on-load*
     (println """
@@ -138,21 +139,20 @@ markers on a world map.
   ;; the png map created
   (def map-out-file "./ip-world-map.png")
 
-  (def resolver nil)
+  (def resolver (delay (create-resolver)))
+  
+  (defn create-resolver[] 
+    ; this may take some time
+    (println "Loading Google country DB ...")
+    (let [country-db (geoip/download-google-country-db)]
+      (println "Parsing MaxMind DB ...")
+      (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
 
   (defn draw [format file locations]
     (-> (mercator/load-mercator-image)
         (mercator/draw-locations locations)
         (mercator/crop-image 400 600)
         (mercator/save-image format file)))
-
-  (defn create-resolver[] 
-    (when (io/exists-file? maxmind-country-zip)
-      ; this may take some time
-      (println "Loading Google country DB ...")
-      (let [coutry-db (geoip/download-google-country-db)]
-        (println "Parsing MaxMind DB ...")
-        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
 
   (defn map-ip-to-location [ip ip-loc-resolver]
     (let [data (ip-loc-resolver ip)]
@@ -161,32 +161,31 @@ markers on a world map.
         :country     (:country-name data)
         :country-iso (:country-iso data) } ))
 
-  (if (io/exists-file? maxmind-country-zip)
-    (do
-      ; create the IP resolver
-      (def resolver (create-resolver))
-      
-      (->> ["91.223.55.1" "220.100.34.45" "167.120.90.10"]
-      
-           ; retrieve the location data for the IP addresses
-           (map #(map-ip-to-location % resolver))
-           
-           ; map to locations, enrich the data with with a label and define
-           ; optional colors and font
-           (map #(let [[lat lon] (:loc %)
-                       country   (:country-iso %)]
-                   [lat
-                    lon
-                    { :label        country
-                      :fill-color   [255 128 128 255]
-                      :border-color [255   0   0 255]
-                      :label-color  [255 255 255 255]
-                      :radius       10
-                      :font-size-px 14}]))
-                           
-           ; draw the data to a PNG
-           (draw :png map-out-file)))
-    (println "The MaxMind country file" maxmind-country-zip "does not exist!")))
+  (defn visualize [& ip]
+    (->> ; retrieve the location data for the IP addresses
+         (map #(map-ip-to-location % @resolver) ip)
+         
+         ; map to locations, enrich the data with with a label and define
+         ; optional colors and font
+         (map #(let [[lat lon] (:loc %)
+                     country   (:country-iso %)]
+                 [lat
+                  lon
+                  { :label        country
+                    :fill-color   [255 128 128 255]
+                    :border-color [255   0   0 255]
+                    :label-color  [255 255 255 255]
+                    :radius       10
+                    :font-size-px 14}]))
+
+         ; draw the data to a PNG
+         (draw :png map-out-file)))
+  
+  (when-not (io/exists-file? maxmind-country-zip)
+    (throw (. :VncException :new 
+              (str "The MaxMind country file" maxmind-country-zip "does not exist!"))))
+    
+  (visualize "91.223.55.1" "220.100.34.45" "167.120.90.10"))
 ```
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-example.png">
 
@@ -218,7 +217,14 @@ Script  _tomcat-geoip.venice_ :
           (cidr/parse "172.16.0.0/12")
           (cidr/parse "192.168.0.0/16") ])
 
-  (def resolver nil)
+  (def resolver (delay (create-resolver)))
+
+  (defn create-resolver[] 
+    ; this may take some time
+    (println "Loading Google country DB ...")
+    (let [country-db (geoip/download-google-country-db)]
+      (println "Parsing MaxMind DB ...")
+      (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
 
   (defn private-ip? [ip]
     (any? #(cidr/in-range? ip %) private-ip-addresses))
@@ -297,41 +303,27 @@ Script  _tomcat-geoip.venice_ :
                  [lat lon {:label label :font-size-px 14}]))
          (draw styles mercator-img :png out-file)))
 
-  (defn create-resolver[] 
-    (when (io/exists-file? maxmind-country-zip)
-      ; this may take some time
-      (println "Loading Google country DB ...")
-      (let [coutry-db (geoip/download-google-country-db)]
-        (println "Parsing MaxMind DB ...")
-        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
-
   (defn process [styles mercator-img out-file log-files]
-    (if (io/exists-file? maxmind-country-zip)
-      (do
-        (when (nil? resolver)
-          (def resolver (create-resolver)))
-        (println "Processing log files...")
-        (-<> (map io/file log-files)
-             (parse-log-files <>)
-             (create-map styles mercator-img <> resolver out-file)))
-      (do
-        (println "The MaxMind country file" maxmind-country-zip " does not exist!")
-        (println "Please download it:")
-        (println "    (download-maxmind-db -your-maxmind-lic-key-)"))))
+     (println "Processing log files...")
+     (-<> (map io/file log-files)
+          (parse-log-files <>)
+          (create-map styles mercator-img <> @resolver out-file)))
 
   (defn load-image [file]
     (mercator/load-image file))
 
-  (defn lookup-ip [ip]
-    (when (nil? resolver)
-      (def resolver (create-resolver)))
-    (resolver ip))
+  (defn lookup-ip [ip] (@resolver ip))
 
   (defn run-custom [styles mercator-img out-file & log-files]
     (process styles mercator-img out-file log-files))
 
   (defn run [out-file & log-files]
     (process nil nil out-file log-files))
+
+  
+  (when-not (io/exists-file? maxmind-country-zip)
+    (throw (. :VncException :new 
+              (str "The MaxMind country file" maxmind-country-zip "does not exist!"))))
 
   (println """
            Actions:
