@@ -7,6 +7,7 @@
     "prompt": null,
     "result": "\u001b[38;5;20m",
     "stdout": "\u001b[38;5;243m",
+    "stderr": "\u001b[38;5;199m",
     "error": "\u001b[38;5;196m",
     "system": "\u001b[48;5;35m\u001b[38;5;15m",
     "interrupt": "\u001b[48;5;196m\u001b[38;5;15m",

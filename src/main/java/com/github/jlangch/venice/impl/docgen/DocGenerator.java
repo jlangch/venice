@@ -905,6 +905,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("gensym"));
 		util.addItem(getDocItem("time"));
 		util.addItem(getDocItem("with-out-str"));
+		util.addItem(getDocItem("with-err-str"));
 		
 		final DocSection profil = new DocSection("Profiling");
 		all.addSection(profil);
@@ -1507,20 +1508,22 @@ public class DocGenerator {
 				.filter(e -> !StringUtil.isEmpty(e))
 				.forEach(e -> {
 					if (run) {
-						final CapturingPrintStream ps = CapturingPrintStream.create();
+						final CapturingPrintStream ps_out = CapturingPrintStream.create();
 						
 						try {
 							final String result = (String)runner.eval(
 														"example",
 														"(pr-str " + e + ")",
-														Parameters.of("*out*", ps));
+														Parameters.of(
+															"*out*", ps_out,
+															"*err*", ps_out));
 							
 							if (sb.length() > 0) {
 								sb.append("\n\n");
 							}
 							sb.append(e).append("\n");
-							if (!ps.isEmpty()) {
-								final String out = ps.getOutput();
+							if (!ps_out.isEmpty()) {
+								final String out = ps_out.getOutput();
 								sb.append(out);
 								if (!out.endsWith("\n")) sb.append("\n");
 							}
@@ -1533,8 +1536,8 @@ public class DocGenerator {
 								}
 								sb.append(e);
 								sb.append("\n");
-								if (!ps.isEmpty()) {
-									final String out = ps.getOutput();
+								if (!ps_out.isEmpty()) {
+									final String out = ps_out.getOutput();
 									sb.append(out);
 									if (!out.endsWith("\n")) sb.append("\n");
 								}

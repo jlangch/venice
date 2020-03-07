@@ -404,6 +404,14 @@ public class Env implements Serializable {
 		return this;
 	}
 	
+	public Env setStderrPrintStream(final PrintStream ps) {
+		replaceGlobalDynamic(
+				new VncSymbol("*err*"), 
+				new VncJavaObject(ps != null ? ps : nullPrintStream()));
+		
+		return this;
+	}
+	
 	private String toString(
 			final Map<VncSymbol,Var> vars, 
 			final String indent, final 

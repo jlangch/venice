@@ -109,19 +109,27 @@ public class REPL {
 									 })
 									.build();
  
-		final PrintStream ps = config.useColors() 
-									? new ReplPrintStream(
-											Charset.defaultCharset().name(), 
-											System.out, 
-											terminal, 
-											config.getColor("colors.stdout"))
-									: System.out;
-											
+		final PrintStream ps_out = config.useColors() 
+										? new ReplPrintStream(
+												Charset.defaultCharset().name(), 
+												System.out, 
+												terminal, 
+												config.getColor("colors.stdout"))
+										: System.out;
+
+		final PrintStream ps_err = config.useColors() 
+										? new ReplPrintStream(
+												Charset.defaultCharset().name(), 
+												System.out, 
+												terminal, 
+												config.getColor("colors.stderr"))
+										: System.out;
+
 		printer = new TerminalPrinter(config, terminal, false);
 		
 		venice = new VeniceInterpreter(interceptor, loadPaths);
 		
-		Env env = loadEnv(cli, ps);
+		Env env = loadEnv(cli, ps_out, ps_err);
 
 		final ReplParser parser = new ReplParser(venice);
 		
@@ -169,7 +177,7 @@ public class REPL {
 				if (line.startsWith("!")) {
 					final String cmd = StringUtil.trimToEmpty(line.substring(1));				
 					if (cmd.equals("reload")) {
-						env = loadEnv(cli, ps);
+						env = loadEnv(cli, ps_out, ps_err);
 						printer.println("system", "reloaded");					
 						continue;
 					}
@@ -292,6 +300,7 @@ public class REPL {
 			printer.println("default",   "default");
 			printer.println("result",    "result");
 			printer.println("stdout",    "stdout");
+			printer.println("stderr",    "stderr");
 			printer.println("error",     "error");
 			printer.println("system",    "system");
 			printer.println("interrupt", "interrupt");
@@ -480,11 +489,13 @@ public class REPL {
 
 	private Env loadEnv(
 			final CommandLineArgs cli,
-			final PrintStream ps
+			final PrintStream ps_out,
+			final PrintStream ps_err
 	) {
 		return venice.createEnv(macroexpand, new VncKeyword("repl"))
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
-					 .setStdoutPrintStream(ps);
+					 .setStdoutPrintStream(ps_out)
+					 .setStderrPrintStream(ps_err);
 	}
 	
 	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {

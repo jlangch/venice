@@ -26,7 +26,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- macro `with-err-str` macro that returns the captured text from stderr
+- stderr support for functions `print`, `println`, `printf`, `newline`, and `flush`
 
 
 

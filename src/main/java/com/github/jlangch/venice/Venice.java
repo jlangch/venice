@@ -121,7 +121,8 @@ public class Venice {
 												loadPaths);
 		
 		final Env env = venice.createEnv(macroexpand, new VncKeyword("macroexpand"))
-							  .setStdoutPrintStream(null);
+							  .setStdoutPrintStream(null)
+							  .setStderrPrintStream(null);
 
 		VncVal ast = venice.READ(script, scriptName);
 		ast = venice.MACROEXPAND(ast, env, macroexpand);
@@ -322,6 +323,7 @@ public class Venice {
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
 		boolean stdoutAdded = false;
+		boolean stderrAdded = false;
 		
 		if (params != null) {
 			for(Map.Entry<String,Object> entry : params.entrySet()) {
@@ -329,9 +331,14 @@ public class Venice {
 				final Object val = entry.getValue();
 
 				if (key.equals("*out*")) {
-					env.setStdoutPrintStream(buildStdOutPrintStream(val));
+					env.setStdoutPrintStream(buildPrintStream(val, "*out*"));
 					
 					stdoutAdded = true;
+				}
+				else if (key.equals("*err*")) {
+					env.setStderrPrintStream(buildPrintStream(val, "*err*"));
+					
+					stderrAdded = true;
 				}
 				else {
 					env.setGlobal(
@@ -345,11 +352,15 @@ public class Venice {
 		if (!stdoutAdded) {
 			env.setStdoutPrintStream(stdout);
 		}
-		
+
+		if (!stderrAdded) {
+			env.setStderrPrintStream(stderr);
+		}
+
 		return env;
 	}
 	
-	private PrintStream buildStdOutPrintStream(final Object val) {
+	private PrintStream buildPrintStream(final Object val, final String type) {
 		if (val == null) {
 			return new PrintStream(new NullOutputStream());
 		}
@@ -361,8 +372,9 @@ public class Venice {
 		}
 		else {
 			throw new VncException(String.format(
-						"The *out* parameter value (%s) must be either null or an "
+						"The %s parameter value (%s) must be either null or an "
 							+ "instance of PrintStream or OutputStream",
+						type,
 						val.getClass().getSimpleName()));
 		}
 	}
@@ -413,7 +425,8 @@ public class Venice {
 		if (env == null) {
 			env = new VeniceInterpreter()
 						.createEnv(true, new VncKeyword("script"))
-						.setStdoutPrintStream(null);
+						.setStdoutPrintStream(null)
+						.setStderrPrintStream(null);
 			precompiledEnv.set(env);
 		}
 		
@@ -437,4 +450,5 @@ public class Venice {
 	private final MeterRegistry meterRegistry = new MeterRegistry(false);
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 	private final PrintStream stdout = new PrintStream(System.out, true);
+	private final PrintStream stderr = new PrintStream(System.err, true);
 }

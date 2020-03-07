@@ -799,6 +799,22 @@
 
 
 (defmacro
+  ^{ :arglists '("(with-err-str & forms)")
+     :doc """
+          Evaluates exprs in a context in which *err* is bound to a capturing
+          output stream. Returns the string created by any nested printing
+          calls.
+          """
+     :examples '("""(with-err-str (println *err* "a string"))""") }
+
+  with-err-str [& forms]
+
+  `(binding [*err* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
+     (do ~@forms)
+     (. *err* :getOutput)))
+
+
+(defmacro
   ^{ :arglists '("(delay & body)")
      :doc """
           Takes a body of expressions and yields a Delay object that will invoke
@@ -820,76 +836,119 @@
 
 
 (defn
-  ^{ :arglists '("(print & xs)")
+  ^{ :arglists '("(print & xs)", "(print os & xs)")
      :doc """
-          Prints to stdout, with no args, prints the empty string. With one
-          arg x, prints x.toString(). With more than one arg, prints the
-          concatenation of the str values of the args with delimiter ' '.
+          Without output stream prints to the output stream that is the current
+          value of *out*. With no args, prints the empty string. With one arg x,
+          prints x.toString(). With more than one arg, prints the concatenation
+          of the string values of the args with delimiter ' '.
+          With an output stream prints to that output stream.
           Returns nil.
           """
-     :examples '("(print [10 20 30])") }
+     :examples '(
+         "(print [10 20 30])",
+         "(print *out* [10 20 30])",
+         "(print *err* [10 20 30])" ) }
 
   print
 
   ([] nil)
-  ([x] (. *out* :append (str (coalesce x "nil"))) nil)
-  ([& xs] (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))) nil))
+  ([x] (when-not (instance? :java.io.PrintStream x)
+         (. *out* :append (str (coalesce x "nil")))
+         nil))
+  ([& xs] (if (instance? :java.io.PrintStream (first xs))
+            (. (first xs) :append (str/join " " (map #(str (coalesce % "nil")) (rest xs))))
+            (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs)))
+          nil)))
 
 
 (defn
-  ^{ :arglists '("(printf fmt & args)")
-     :doc "Prints formatted output, as per format."
+  ^{ :arglists '("(printf fmt & args)", "(printf os fmt & args)")
+     :doc """
+          Without output stream prints formatted output as per format to the
+          output stream that is the current value of *out*.
+          With an output stream prints to that output stream.
+          Returns nil.
+          """
      :examples '(
           """(printf "%s: %d" "abc" 100)"""
-          """(printf "line 1: %s%nline 2: %s%n" "123" "456")""" ) }
+          """(printf "line 1: %s%nline 2: %s%n" "123" "456")"""
+          """(printf *out* "%s: %d" "abc" 100)"""
+          """(printf *err* "%s: %d" "abc" 100)""" ) }
 
-  printf
-
-  [fmt & args] (print (apply str/format fmt args)))
+  printf [& xs]
+    (if (instance? :java.io.PrintStream (first xs))
+       (let [os (first xs), fmt (second xs), args (rest (rest xs))]
+         (print os (apply str/format fmt args)))
+       (let [fmt (first xs), args (rest xs)]
+         (print *out* (apply str/format fmt args))))
+    nil)
 
 
 (defn
-  ^{ :arglists '("(println & xs)")
+  ^{ :arglists '("(println & xs)", "(println os & xs)")
      :doc """
-          Prints to stdout with a tailing linefeed, with no args, prints the
+          Without output stream prints to the output stream that is the current
+          value of *out* with a tailing linefeed. With no args, prints the
           empty string. With one arg x, prints x.toString(). With more than one
-          arg, prints the concatenation of the str values of the args with
-          delimiter ' '. Returns nil.
+          arg, prints the concatenation of the string values of the args with
+          delimiter ' '.
+          With an output stream prints to that output stream.
+          Returns nil.
           """
      :examples '(
-          """
-          (do
-            (println 200)
-            (println [10 20 30]))
-          """) }
+          "(println 200)"
+          "(println [10 20 30])"
+          "(println *out* 200)"
+          "(println *err* 200)" ) }
 
   println
 
   ([] (newline))
-  ([& xs] (do (apply print xs) (newline) nil)))
+  ([& xs]
+    (if (instance? :java.io.PrintStream (first xs))
+      (do
+        (apply print xs)
+        (newline (first xs)))
+      (do
+        (apply print xs)
+        (newline)))
+    nil))
 
 
 (defn
-  ^{ :arglists '("(newline)")
-     :doc "Writes a platform-specific newline to *out*"
-     :examples '("(newline)") }
+  ^{ :arglists '("(newline)", "(newline os)")
+     :doc """
+          Without arg writes a platform-specific newline to the output stream
+          that is the current value of *out*. With arg writes a newline to the
+          passed output stream. Returns nil.
+          """
+     :examples '(
+          "(newline)"
+          "(newline *out*)"
+          "(newline *err*)" ) }
 
   newline
 
-  [] (do (. *out* :append *newline*) nil))
+  ([] (newline *out*))
+  ([os] (. os :append *newline*) nil))
 
 
 (defn
   ^{ :arglists '("(flush)", "(flush os)")
      :doc """
           Without arg flushes the output stream that is the current value
-          of *out*. With arg flushes the passed output stream.
+          of *out*. With arg flushes the passed output stream. Returns nil.
           """
-     :examples '("(flush)", "(flush *out*)") }
+     :examples '(
+          "(flush)"
+          "(flush *out*)"
+          "(flush *err*)" ) }
 
   flush
 
-  [os] (let [out (coalesce os *out*)] (. out :flush) nil))
+  ([] (flush *out*))
+  ([os] (. os :flush) nil))
 
 
 (defn
