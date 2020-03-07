@@ -30,22 +30,27 @@ public class Embed_03_StdOutRedirection {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
-        // case 1: redirect stdout to the <null> device
+        // case 1: redirect stdout/stderr to the <null> device
         venice.eval(
            "(println [1 2])", 
-           Parameters.of("*out*", null));
+           Parameters.of("*out*", null, 
+                         "*err*", null));
 
         // case 2: capture stdout within the script and return it as the result
         System.out.println(
            venice.eval("(with-out-str (println [1 2]))"));
 
-        // case 3: capturing stdout preserving the script result
-        try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+        // case 3: capturing stdout/stderr preserving the script result
+        try(CapturingPrintStream ps_out = CapturingPrintStream.create();
+        	CapturingPrintStream ps_err = CapturingPrintStream.create()
+        ) {
            final Object result = venice.eval(
                                    "(do (println [1 2]) 100)", 
-                                   Parameters.of("*out*", ps));
+                                   Parameters.of("*out*", ps_out, 
+                                                 "*err*", ps_err));
            System.out.println("result: " + result);
-           System.out.println("stdout: " + ps.getOutput());
+           System.out.println("stdout: " + ps_out.getOutput());
+           System.out.println("stderr: " + ps_err.getOutput());
         }
     }
 }
