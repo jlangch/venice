@@ -2,9 +2,9 @@
 
 * [Overview](#overview)
 * [Passing Parameters](#passing-parameters)
-* [stdout/stderr Redirection](#stdoutstderr-redirection)
+* [stdout-stderr Redirection](#stdout-stderr-redirection)
 * [Precompiling](#precompiling)
-* [Serialize/Deserialize Precompiled Scripts](#serializedeserialize-precompiled-scripts)
+* [Serialize-Deserialize Precompiled Scripts](#serialize-deserialize-precompiled-scripts)
 * [Precompilation Benchmark](#precompilation-benchmark)
 * [Sandbox](#sandbox)
 
@@ -86,7 +86,7 @@ public class Embed_02_PassingParameters {
 ```
 
 
-## stdout/stderr Redirection
+## stdout-stderr Redirection
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -162,7 +162,7 @@ public class Embed_04_Precompile {
 ```
 
 
-### Serialize/Deserialize Precompiled Scripts
+### Serialize-Deserialize Precompiled Scripts
 
 Precompiled scripts can be serialized and deserialized to store them on
 a database for example.
