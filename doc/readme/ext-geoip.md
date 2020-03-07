@@ -85,11 +85,12 @@ IP lookup:
   (def resolver nil)
   
   (defn create-resolver[] 
+    (when (io/exists-file? maxmind-country-zip)
       ; this may take some time
-      (println "Parsing MaxMind DB ...")
-      (geoip/ip-to-country-loc-resolver
-          maxmind-country-zip
-          (geoip/download-google-country-db)))
+      (println "Loading Google country DB ...")
+      (let [coutry-db (geoip/download-google-country-db)]
+        (println "Parsing MaxMind DB ...")
+        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
      
   (defn lookup-ip [ip]
     (when (nil? resolver)
@@ -185,10 +186,7 @@ markers on a world map.
                            
            ; draw the data to a PNG
            (draw :png map-out-file)))
-    (do
-      (println "The MaxMind country file" maxmind-country-zip "does not exist!")
-      (println "Please download it:")
-      (println "    (download-maxmind-db YOUR-MAXMIND-LIC-KEY)"))))
+    (println "The MaxMind country file" maxmind-country-zip "does not exist!")))
 ```
 <img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-example.png">
 
