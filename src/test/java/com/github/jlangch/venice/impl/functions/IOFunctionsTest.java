@@ -369,7 +369,28 @@ public class IOFunctionsTest {
 	public void test_shell_with_out_str() {
 		final Venice venice = new Venice();
 				 
+		assertEquals("s: \n", venice.eval("(str \"s: \" (with-out-str (newline)))"));
 		assertEquals("s: hello", venice.eval("(str \"s: \" (with-out-str (print \"hello\")))"));
+		assertEquals("s: hello\n", venice.eval("(str \"s: \" (with-out-str (println \"hello\")))"));
+		
+		assertEquals("s: hello", venice.eval("(str \"s: \" (with-out-str *out* (print \"hello\")))"));
+		assertEquals("s: hello\n", venice.eval("(str \"s: \" (with-out-str *out* (println \"hello\")))"));
+
+		assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-out-str (printf \"%s: %d\" \"abc\" 100)))"));
+		assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-out-str (printf *out* \"%s: %d\" \"abc\" 100)))"));
+	}
+
+	@Test
+	public void test_shell_with_err_str() {
+		final Venice venice = new Venice();
+				 
+		assertEquals("s: \n", venice.eval("(str \"s: \" (with-err-str (newline *err*)))"));
+		
+		assertEquals("s: hello", venice.eval("(str \"s: \" (with-err-str (print *err* \"hello\")))"));
+		
+		assertEquals("s: hello\n", venice.eval("(str \"s: \" (with-err-str (println *err* \"hello\")))"));
+
+		assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-err-str (printf *err* \"%s: %d\" \"abc\" 100)))"));
 	}
 
 	@Test
