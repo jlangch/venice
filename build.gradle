@@ -41,12 +41,17 @@
 //     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+UseParallelGC"
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 // -----------------------------------------------------------------------------
-// Modify the Venice version:
-//   - gradle.properties
-//   - pom.xml
-//   - doc/readme/build-dependencies.md
-//   - doc/maven-central.svg
+// Release Venice:
+//   - Change version in 'gradle.properties' to 'x.y.z'
+//   - Update ChangeLog
+//   - Build: ./gradlew updateReleaseVersion
+//            ./gradlew --warning-mode all clean shadowJar
 //   
+// Open new development cycle:
+//   - Change version in 'gradle.properties' to 'x.y.z-snapshot'
+//   - Update ChangeLog
+//   - Build ./gradlew updateNewDevVersion
+// -----------------------------------------------------------------------------
 // Upgrade Gradle wrapper
 //   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
 //   Upgrade:
@@ -144,7 +149,55 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     jvmArgs(["-Xss4096k"])
     
     args "${project.version}"
- }
+}
+
+task updateNewDevVersion {
+	doLast {	    
+	    println "Updating version: 'pom.xml'"
+	    ant.replaceregexp(
+	    		match:   '<version>[0-9]+[.][0-9]+[.][0-9]+.*</version>', 
+	    		replace: "<version>${project.version}</version>"
+	    ) {
+	        fileset(dir: '.', includes: 'pom.xml')
+	    }
+	}
+}
+
+task updateReleaseVersion {
+	doLast {	    
+	    println "Updating version: 'pom.xml'"
+	    ant.replaceregexp(
+	    		match:   '<version>[0-9]+[.][0-9]+[.][0-9]+.*</version>', 
+	    		replace: "<version>${project.version}</version>"
+	    ) {
+	        fileset(dir: '.', includes: 'pom.xml')
+	    }
+
+	    println "Updating version: 'maven-central.svg'"
+	    ant.replaceregexp(
+	    		match:   '>v[0-9]+[.][0-9]+[.][0-9]+.*</text>', 
+	    		replace: ">v${project.version}</text>", 
+ 	    		flags:   'g', 
+	    		byline:  true
+	    ) {
+	        fileset(dir: 'doc', includes: 'maven-central.svg')
+	    }
+	    
+	    println "Updating version: 'build-dependencies.md'"
+	    ant.replaceregexp(
+	    		match:   "venice:[0-9]+[.][0-9]+[.][0-9]+.*'", 
+	    		replace: "venice:${project.version}'"
+	    ) {
+	        fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
+	    }
+	    ant.replaceregexp(
+	    		match:   '<version>[0-9]+[.][0-9]+[.][0-9]+.*</version>', 
+	    		replace: "<version>${project.version}</version>"
+	    ) {
+	        fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
+	    }
+	}
+}
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
