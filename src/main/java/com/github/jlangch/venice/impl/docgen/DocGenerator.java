@@ -64,7 +64,9 @@ public class DocGenerator {
 	}
 	
 	private void run(final String version) {
-		try {			
+		try {	
+			System.out.println("Creating cheatsheet V" + version);
+			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
 			
