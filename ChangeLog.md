@@ -28,7 +28,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - macro `with-err-str` macro that returns the captured text from stderr
 - stderr support for functions `print`, `println`, `printf`, `newline`, and `flush`
-- stderr support for REPL. E.g.: `venice> (println *err* "Hello, World")`
+- stderr support for REPL. While stdout text is printed in grey stderr text 
+  is printed in light red
 
 
 
