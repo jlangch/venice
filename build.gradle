@@ -42,7 +42,8 @@
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 // -----------------------------------------------------------------------------
 // Release Venice:
-//   - Change version in 'gradle.properties' to '1.x.y'
+//   - Verify that all unit tests pass
+//   - Change version in 'gradle.properties' to '1.x.y' (remove snapshot suffix)
 //   - Update ChangeLog for the release version
 //   - Generate cheatsheets: ./gradlew cheatsheet
 //   - Update files with release version: ./gradlew updateReleaseVersion
