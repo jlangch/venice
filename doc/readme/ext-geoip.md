@@ -242,7 +242,7 @@ Script  _tomcat-geoip.venice_ :
     ;; ip-locations: list of map with keys :loc :ip :freq :country :country-iso
     ;; group by :country-iso and sum up :freq
     (->> (vals (group-by :country-iso ip-locations))
-         (map #(let [sum (apply + (map :freq %))
+         (map #(let [sum      (apply + (map :freq %))
                      location (dissoc (first %) :ip)]
                  (assoc location :freq sum)))))
 
@@ -284,7 +284,7 @@ Script  _tomcat-geoip.venice_ :
     (merge-freq-maps (flatten (map parse-log-file log-files))))
  
   (defn map-to-location [ip-freq ip-loc-resolver]
-    (let [ip (key ip-freq)
+    (let [ip   (key ip-freq)
           data (ip-loc-resolver ip)]
       { :loc         (geoip/map-location-to-numerics (:loc data))
         :ip          ip
