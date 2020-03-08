@@ -26,10 +26,6 @@
 
 
   ;; The MaxMind country database.
-  ;; Please make sure this file exists. It can be downloaded by running
-  ;; the (download-maxmind-db YOUR-MAXMIND-LIC-KEY) function below.
-  ;; A free MaxMind GeoLite2 license key can be obtained from
-  ;; 'https://www.maxmind.com/en/home'
   (def maxmind-country-zip "resources/geoip-country.zip")
 
   (def private-ip-addresses
@@ -37,12 +33,14 @@
           (cidr/parse "172.16.0.0/12")
           (cidr/parse "192.168.0.0/16") ])
 
-  (def resolver nil)
+  (def resolver (delay (create-resolver)))
 
-  (defn download-maxmind-db [lic-key]
-    (io/mkdirs (io/file-parent maxmind-country-zip))
-    (geoip/download-maxmind-db-to-zipfile
-      (io/file maxmind-country-zip) :country lic-key))
+  (defn create-resolver[]
+    ; this may take some time
+    (println "Loading Google country DB ...")
+    (let [country-db (geoip/download-google-country-db)]
+      (println "Parsing MaxMind DB ...")
+      (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
 
   (defn private-ip? [ip]
     (any? #(cidr/in-range? ip %) private-ip-addresses))
@@ -67,15 +65,16 @@
   (defn get-mercator-img [mercator-img]
     (if (some? mercator-img)
       mercator-img
-      (mercator/load-mercator-image)))
+      (do
+        (println "Downloading Mercator image...")
+        (mercator/load-mercator-image))))
 
   (defn draw [styles mercator-img format file locations]
     (println "Drawing Mercator map ...")
-    (let [img (get-mercator-img mercator-img)]
-      (-> img
-          (mercator/draw-locations locations styles)
-          (mercator/crop-image 400 600)
-          (mercator/save-image format file))))
+    (-> (get-mercator-img mercator-img)
+        (mercator/draw-locations locations styles)
+        (mercator/crop-image 400 600)
+        (mercator/save-image format file)))
 
   (defn parse-ip [log]
     (->> (tc-util/simple-ipaddr-access-log-entry-parser)
@@ -110,7 +109,7 @@
         :country-iso (:country-iso data) } ))
 
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
-    (println "Mapping IP addresses ...")
+    (printf "Mapping %d IP addresses ...%n" (count ip-freq-map))
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
          (merge-ip-locations-by-country)
@@ -121,41 +120,30 @@
                  [lat lon {:label label :font-size-px 14}]))
          (draw styles mercator-img :png out-file)))
 
-  (defn create-resolver[]
-    (when (io/exists-file? maxmind-country-zip)
-      ; this may take some time
-      (println "Loading Google country DB ...")
-      (let [coutry-db (geoip/download-google-country-db)]
-        (println "Parsing MaxMind DB ...")
-        (geoip/ip-to-country-loc-resolver maxmind-country-zip coutry-db))))
-
   (defn process [styles mercator-img out-file log-files]
-    (if (io/exists-file? maxmind-country-zip)
-      (do
-        (when (nil? resolver)
-          (def resolver (create-resolver)))
-        (println "Processing log files...")
-        (-<> (map io/file log-files)
-             (parse-log-files <>)
-             (create-map styles mercator-img <> resolver out-file)))
-      (do
-        (println "The MaxMind country file" maxmind-country-zip " does not exist!")
-        (println "Please download it:")
-        (println "    (download-maxmind-db -your-maxmind-lic-key-)"))))
+     (println "Processing log files...")
+     (-<> (map io/file log-files)
+          (parse-log-files <>)
+          (create-map styles mercator-img <> @resolver out-file)))
 
   (defn load-image [file]
+    (println "Loading Mercator image...")
     (mercator/load-image file))
 
-  (defn lookup-ip [ip]
-    (when (nil? resolver)
-      (def resolver (create-resolver)))
-    (resolver ip))
+  (defn lookup-ip [ip] (@resolver ip))
 
   (defn run-custom [styles mercator-img out-file & log-files]
     (process styles mercator-img out-file log-files))
 
   (defn run [out-file & log-files]
     (process nil nil out-file log-files))
+
+
+  (when-not (io/exists-file? maxmind-country-zip)
+    (throw (. :VncException :new
+              (str "The MaxMind country file"
+                   maxmind-country-zip
+                   "does not exist!"))))
 
   (println """
            Actions:
@@ -167,17 +155,6 @@
               [4] (apply run "./ip-map.png"
                              (io/list-files-glob "resources"
                                                  "localhost_access_log.2020-*"))
-              [5] (run-custom
-                        ;; colors are specified as RGBA vectors
-                        { :marker { :fill-color   [255 128 128 255]
-                                    :border-color [255   0   0 255]
-                                    :label-color  [131  52 235 255]
-                                    :radius       10
-                                    :font-size-px 14 } }
-                        (load-image "resources/mercator-2.png")
-                        "./ip-map.png"
-                        "resources/localhost_access_log.2019-12.zip")
-              [6] (download-maxmind-db -your-maxmind-lic-key-)
            """)
 
   (when-not *macroexpand-on-load*

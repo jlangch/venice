@@ -249,15 +249,16 @@ Script  _tomcat-geoip.venice_ :
   (defn get-mercator-img [mercator-img]
     (if (some? mercator-img)
       mercator-img
-      (mercator/load-mercator-image)))
+      (do
+        (println "Downloading Mercator image...")
+        (mercator/load-mercator-image))))
 
   (defn draw [styles mercator-img format file locations]
     (println "Drawing Mercator map ...")
-    (let [img (get-mercator-img mercator-img)]
-      (-> img
-          (mercator/draw-locations locations styles)
-          (mercator/crop-image 400 600)
-          (mercator/save-image format file))))
+    (-> (get-mercator-img mercator-img)
+        (mercator/draw-locations locations styles)
+        (mercator/crop-image 400 600)
+        (mercator/save-image format file)))
 
   (defn parse-ip [log]
     (->> (tc-util/simple-ipaddr-access-log-entry-parser)
@@ -281,7 +282,7 @@ Script  _tomcat-geoip.venice_ :
     ;; returns an aggregated map with IP frequencies:
     ;;    { "196.52.43.56" 3 "178.197.226.244" 8 }
     (merge-freq-maps (flatten (map parse-log-file log-files))))
-
+ 
   (defn map-to-location [ip-freq ip-loc-resolver]
     (let [ip (key ip-freq)
           data (ip-loc-resolver ip)]
@@ -292,7 +293,7 @@ Script  _tomcat-geoip.venice_ :
         :country-iso (:country-iso data) } ))
 
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
-    (println "Mapping IP addresses ...")
+    (printf "Mapping %d IP addresses ...%n" (count ip-freq-map))
     (->> (entries ip-freq-map)
          (map #(map-to-location % ip-loc-resolver))
          (merge-ip-locations-by-country)
@@ -310,6 +311,7 @@ Script  _tomcat-geoip.venice_ :
           (create-map styles mercator-img <> @resolver out-file)))
 
   (defn load-image [file]
+    (println "Loading Mercator image...")
     (mercator/load-image file))
 
   (defn lookup-ip [ip] (@resolver ip))
@@ -323,7 +325,9 @@ Script  _tomcat-geoip.venice_ :
   
   (when-not (io/exists-file? maxmind-country-zip)
     (throw (. :VncException :new 
-              (str "The MaxMind country file" maxmind-country-zip "does not exist!"))))
+              (str "The MaxMind country file"
+                   maxmind-country-zip 
+                   "does not exist!"))))
 
   (println """
            Actions:
