@@ -24,8 +24,9 @@ package com.github.jlangch.venice;
 public class Version {
 	
 	public static String getBuildVersion() {
-		return Version.class.getPackage().getImplementationVersion();
+		final String version = Version.class.getPackage().getImplementationVersion();
+		return version == null ? "0.0.0" : version;
 	}
 
-	public final static String VERSION = "1.7.20-snapshot";
+	public final static String VERSION = getBuildVersion();
 }

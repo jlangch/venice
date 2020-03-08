@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -60,17 +59,18 @@ public class DocGenerator {
 	}
 
 	public static void main(final String[] args) {
-		new DocGenerator().run();
+		final String version = args.length > 0 ? args[0] : "0.0.0";
+		new DocGenerator().run(version);
 	}
 	
-	private void run() {
+	private void run(final String version) {
 		try {			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
 			
 			final Map<String,Object> data = new HashMap<>();
 			data.put("meta-author", "Venice");
-			data.put("version", Version.VERSION);
+			data.put("version", version);
 			data.put("sections", concat(left, right));
 			data.put("left", left);
 			data.put("right", right);

@@ -35,6 +35,13 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class VeniceTest {
+	
+	@Test
+	public void version() {
+		final String version =  Version.VERSION;
+		
+		assertNotNull(version);
+	}
 
 	@Test
 	public void evalWithIntegerAndLong() {
