@@ -54,7 +54,7 @@
 //   - Create a Git tag 'v1.x.y' for the release
 //   - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //   
-// Open new development cycle:
+// Open new development cycle (after creating a Venice release):
 //   - Change version in 'gradle.properties' to '1.x.y-snapshot'
 //   - Add an empty ChangeLog entry for the new version
 //   - Update files with new dev cycle version: ./gradlew updateNewDevVersion
